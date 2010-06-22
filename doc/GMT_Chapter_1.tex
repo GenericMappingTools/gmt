@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.148 2010-01-13 20:03:21 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.149 2010-06-22 22:27:21 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -28,13 +28,77 @@ Please send your comments to
 \section{What is new in \gmt\ 4.x?}
 
 \GMT\ 4.x has continued to see both development of new features as well as corrections of
-legacy bugs and problems.  However, the \GMT\ 4.5.2 release is the last in the series to
-involve new options and enhancements.  Beginning with \GMT 4.5.3 there will only be bug-fixes
-in the new releases as all development is now focussed on \GMT\ 5; this new series
+legacy bugs and problems, including Windows DLL silliness.  However, the \GMT\ 4.5.3 release is mostly bug-fixes
+as all development is now focussed on \GMT\ 5; this new series
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.  We expect to maintain the \GMT 4 series
-for some time after \GMT 5 is released later this year
+for some time after \GMT 5 is released later this year.
+
+\subsection{Overview of \gmt\ 4.5.3 [Jul-15, 2010]}
+
+This is mostly a bug-fix release, including more corrections to the political boundaries distributed
+via the GSHHS netCDF files (these affect the Syria-Israel, Israel-Jordan, Moldova-Ukraine, and the
+Eritrea-Ethiopia borders) as well as missing river-lake metadata in the GSHHS distribution.
+Therefore, this version requires the new GSHHS 2.1.0 release.
+
+Here is the list of bug corrections:
+\begin{description}
+	\item [\GMTprog{configure}]:	Fixed reversed use off --enable-flock.
+	\item [\GMTprog{gmt\_init.c}]:	Chop off any eventual EOLs characters that might be in argv
+		strings as it will happen when it was created by a shell command.
+		We need this so that native Windows binaries can be used in Cygwin.
+	\item [\GMTprog{gmt\_io.c}]:	\GMTfunc{GMT\_is\_a\_blank\_line} saw ``t'' instead of TAB as whitespace.
+		Added \GMTfunc{GMT\_io.skip\_duplicates} [FALSE] to control if consecutive
+		records with identical x,y should be skipped.  This is needed
+		by programs that uses \GMTfunc{GMT\_sph\_inonout}, which does not expect to
+		find duplicates vertices.
+	\item [\GMTprog{gmt\_map.c}]:	Tried to free memory when nothing had been allocated.
+		\GMTfunc{GMT\_wesn\_clip} function would clip polygons even though
+		there were no restrictions on longitudes (w/e = 360).
+	\item [\GMTprog{gmt\_plot.c}]:	Parallels that should be straight (e.g., in \Opt{JI}) would sometimes
+		appear with jump gaps.  Fixed bug in \GMTfunc{GMT\_plot\_map\_scale} that could lead to endless loops
+		when using scales to 100 km or any exact power of 10. Error was limited to 64-bit.
+	\item [\GMTprog{gmt2rgb}]:	Option \Opt{G} was freeing the output name before it was even allocated.
+	\item [\GMTprog{grdcontour.c}]:	The L or H color for first min/max annotation was not set.
+	\item [\GMTprog{grdview.c}]:	Fixed bug in parsing of \Opt{W}[m$|$c$|$f] option when color starts with [m$|$c$|$f].
+	\item [\GMTprog{greenspline.c}]:	Must insist that one of [\Opt{R} \Opt{I}], \Opt{N}, or \Opt{T} is specified.
+	\item [\GMTprog{ps2raster.c:}]:	Now checks that all PS files begin with \%!PS.
+		End matter did not get parsed when there is no \%\%Orientation.
+	\item [\GMTprog{pshistogram.c:}]:	Fixed incorrect bin count when a datapoint equaled xmax.
+	\item [\GMTprog{pslegend.c:}]:	Uninitialized text string could put garbage in script.
+	\item [\GMTprog{psxy.c:}]:	For \Opt{Svs}, the 2nd set of coordinates did not obey \Opt{:}.
+		The \Opt{Sw$|$W} symbols did not handle the azimuth/direction conversions properly.
+	\item [\GMTprog{psxyz.c:}]:	For \Opt{Svs}, the 2nd set of coordinates did not obey \Opt{:}.
+	The \Opt{Sw$|$W} symbols did not handle the azimuth/direction conversions properly.
+	\item [\GMTprog{meca/psmeca.c}]:	Removed out of place and repeated line to compute size in \Opt{a} option.
+	\item [\GMTprog{meca/submeca.c}]:	Replaced calls to \GMTfunc{d\_atan2} by \GMTfunc{d\_atan2d} since the code expects angles in degrees.
+	\item [\GMTprog{mgd77/mgd77.c}]:	Incorrectly added track list =tracks.lis as another track name
+				after correctly including all the listed tracks. No harm done
+				other than an annoying ``Cannot find track =tracks'' message.
+	\item [\GMTprog{mgd77/mgd77magref.c}]:	Fix bug in  \Opt{A} option when using const time in calendar format.
+	\item [\GMTprog{mgg/mgd77togmt.c}]:	Now has proper synopsis.
+	\item [\GMTprog{misc/kml2gmt.c}]:	Did not anticipate optional attributes for tags like $<$PlaceMark$>$, etc.
+	\item [\GMTprog{sph/sphtriangulate.c}]:	Incorrect items for cols 3--4 for \Opt{N}.
+	\item [\GMTprog{x2sys/x2sys.c}]:	Need to include the ``.'' when checking if a suffix is present in a filename.
+		Reading of data formats .gmt and custom returned all columns and
+		not just the requested columns, causing errors upstream.
+	\item [\GMTprog{x2sys/x2sys\_datalist.c}]:	Check to see if both lon and lat had been requested only
+		checked for longitude (twice).
+	\item [\GMTprog{x2sys/x2sys\_list.c}]:	Implemented \Opt{S}[{\bf +}] to print info relevant to both cruises.
+\end{description}
+
+Here is a list of the recent enhancement to various programs; these were introduced to correct mistakes or overcome limitations:
+
+\begin{enumerate}
+	\item \GMTprog{gmtmath.c} has added function {\bf SQR} (square).
+	\item \GMTprog{grdgradient.c} now lets \Opt{S} work alone without requiring \Opt{G}.
+	\item \GMTprog{grdmath.c}] has added function {\bf SQR} (square).
+	\item \GMTprog{pswiggle.c} \Opt{Dx}{\it gap} now allows gaps to be in projected distances.
+	\item \GMTprog{mgd77/mgd77.c} was updated for 11th generation IGRF -- IGRF2010.
+	\item \GMTprog{x2sys/x2sys\_get.c} needed \Opt{-L+}[{\it list}] so internal crossovers can be added.
+\end{enumerate}
+
 
 \subsection{Overview of \gmt\ 4.5.2 [Jan-15, 2010]}
 
