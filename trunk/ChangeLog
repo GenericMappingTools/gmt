@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.751 2010-06-22 01:06:23 guru Exp $
+	$Id: ChangeLog,v 1.752 2010-06-22 22:27:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@
 
 2010-06-06	jluis
 	* mgd77/mgd77convert.c:	Fix for the never ending troubles with the dll cross on Windows
-	* x2sys/x2sys_list.c:	Implemented -S[+] to print info referent to both cruises 
+	* x2sys/x2sys_list.c:	Implemented -S[+] to print info relevant to both cruises 
 
 2010-05-31	pwessel
 	* misc/kml2gmt.c:	Did not allow for optional attributes for tags <PlaceMark> etc.

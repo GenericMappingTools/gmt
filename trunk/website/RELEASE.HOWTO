@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.26 2010-01-08 21:35:19 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.27 2010-06-22 22:27:21 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -17,7 +17,7 @@ must ensure you do all the steps listed below:
 0.  Make any changes to README, README.WIN32, and Changelog.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
-    Check version number and release data in configure.ac
+    Check version number and release data in configure.ac and install_gmt.
 
 1.  run make latest-config
     get the latest config.sub and config.guess.  Make sure this worked
@@ -46,7 +46,7 @@ must ensure you do all the steps listed below:
 If still good to go:
 
 6.  Tag the release(s), e.g.
-    cvs -q tag Release_2010_01_15_GMT_4_5_2
+    cvs -q tag Release_2010_07_15_GMT_4_5_3
 
 7.  Prepare the archives:
     make archive >& log
