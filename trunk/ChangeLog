@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.752 2010-06-22 22:27:21 guru Exp $
+	$Id: ChangeLog,v 1.753 2010-06-23 23:14:05 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+
+2010-06-24	jluis
+	* grdview.c:		Check that topo and illumination file have the same size,
+				otherwise it would crash.
 
 2010-06-21	pwessel
 	* job??.*, *.sh:	All uses of gridded files now use the extension .nc and not .grd
