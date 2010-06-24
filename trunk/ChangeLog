@@ -1,11 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.753 2010-06-23 23:14:05 jluis Exp $
+	$Id: ChangeLog,v 1.754 2010-06-24 19:12:06 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+
+2010-06-24	pwessel
+	* nearneighbor_func.c:	Did not handle periodic x input when -fg was used
+	* grdmask_func.c:	Did not handle periodic x input when -fg was used
+	* grdmask_func.c:	Did not handle periodic x input when -fg was used
+	* psmask_func.c:	Did not handle periodic x input when -fg was used
+	* surface_func.c:	Did not handle periodic x input when -fg was used
 
 2010-06-24	jluis
 	* grdview.c:		Check that topo and illumination file have the same size,
