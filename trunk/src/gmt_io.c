@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.216 2010-05-10 23:12:31 remko Exp $
+ *	$Id: gmt_io.c,v 1.217 2010-06-25 20:33:48 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -158,11 +158,6 @@ FILE *GMT_fdopen (int handle, const char *mode)
 	return (NULL);
 }
 
-char *GMT_fgets (char *str, int size, FILE *stream)
-{
-	return (fgets (str, size, stream));
-}
-
 int GMT_fgetc (FILE *stream)
 {
 	return (fgetc (stream));
@@ -211,6 +206,31 @@ void GMT_rewind (FILE *stream)
 void GMT_fflush (FILE *stream) { fflush (stream); }
 
 #endif
+
+/* This version of fgets will check for input record truncation, that is
+ * the input record is longer than the given size.  Since calls to GMT_fgets
+ * ASSUME they get a logical record, we will give a warning if truncation
+ * occurs and read until we have consumed the linefeed, thus making the
+ * i/o machinery ready for the next logical record.
+ */
+
+char *GMT_fgets (char *str, GMT_LONG size, FILE *stream)
+{
+	char *result;
+	
+	memset ((void *)str, 0, (size_t)(size * sizeof (char)));
+	if (!(result = fgets (str, (int)size, stream))) return (NULL);	/* Got nothing */
+	/* fgets will always set str[size-1] = '\0'.  Thus, we examine
+	 * str[size-2].  If this is neither '\0' or '\n' then we only
+	 * read a portion of a logical record longer than size.
+	 */
+	if (!(str[size-2] == '\n' || str[size-2] == '\0')) {	/* Only got part of a record */
+		int c, n = 0;
+		while ((c = fgetc (stream)) != '\n') n++;	/* Read char-by-char until newline is consumed */
+		fprintf (stderr, "%s: Long input record (%ld bytes) was truncated to first %ld bytes!\n", GMT_program, size+n, size);
+	}
+	return (result);
+}
 
 int GMT_fclose (FILE *stream)
 {
@@ -504,12 +524,12 @@ void GMT_io_init (void)
 
 	GMT_io.give_report = TRUE;
 
-	GMT_io.skip_if_NaN = (GMT_LONG *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (GMT_LONG), GMT_program);
-	GMT_io.in_col_type  = (GMT_LONG *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (GMT_LONG), GMT_program);
-	GMT_io.out_col_type = (GMT_LONG *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (GMT_LONG), GMT_program);
+	GMT_io.skip_if_NaN = (GMT_LONG *)GMT_memory (VNULL, (size_t)GMT_MAX_COLUMNS, sizeof (GMT_LONG), GMT_program);
+	GMT_io.in_col_type  = (GMT_LONG *)GMT_memory (VNULL, (size_t)GMT_MAX_COLUMNS, sizeof (GMT_LONG), GMT_program);
+	GMT_io.out_col_type = (GMT_LONG *)GMT_memory (VNULL, (size_t)GMT_MAX_COLUMNS, sizeof (GMT_LONG), GMT_program);
 	for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
-	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 	GMT_io.n_header_recs = gmtdefs.n_header_recs;
 	memcpy ((void *)GMT_io.io_header, (void *)gmtdefs.io_header, 2*sizeof(GMT_LONG));
 
@@ -732,9 +752,9 @@ GMT_LONG GMT_ascii_input (FILE *fp, GMT_LONG *n, double **ptr)
 			done = TRUE;
 	}
 	*ptr = GMT_curr_rec;
-	GMT_io.status = (col_no == n_use || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
+	GMT_io.status = (col_no == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;
 	if (set_nan_flag) GMT_io.status |= GMT_IO_NAN;
-	if (*n == BUFSIZ) *n = col_no;
+	if (*n == GMT_MAX_COLUMNS) *n = col_no;
 
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_curr_rec[GMT_X], GMT_curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();			/* Must account for periodicity in 360 */
@@ -775,7 +795,7 @@ GMT_LONG GMT_nc_input (FILE *fp, GMT_LONG *n, double **ptr)
 	GMT_LONG i, status, n_use;
 
 	GMT_io.status = 0;
-	if (*n == BUFSIZ)
+	if (*n == GMT_MAX_COLUMNS)
 		*n = GMT_io.nvars;
 	else if (*n > GMT_io.nvars) {
 		fprintf (stderr, "%s: GMT_nc_input is asking for %ld columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
@@ -859,7 +879,7 @@ GMT_LONG GMT_get_binary_d_input_swab (FILE *fp, GMT_LONG n) {
 GMT_LONG GMT_get_binary_f_input (FILE *fp, GMT_LONG n) {
 	/* Reads the n binary floats, then converts them to doubles */
 	GMT_LONG i;
-	static float GMT_f[BUFSIZ];
+	static float GMT_f[GMT_MAX_COLUMNS];
 	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
 	for (i = 0; i < n; i++) GMT_curr_rec[i] = (double)GMT_f[i];
 	return (FALSE);	/* OK so far */
@@ -869,7 +889,7 @@ GMT_LONG GMT_get_binary_f_input_swab (FILE *fp, GMT_LONG n) {
 	/* Reads the n binary floats, byte-swabs them, then converts the result to doubles */
 	GMT_LONG i;
 	unsigned int *ii;
-	static float GMT_f[BUFSIZ];
+	static float GMT_f[GMT_MAX_COLUMNS];
 	
 	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
 	for (i = 0; i < n; i++) {	/* Do the float swab, then assign to the double */
@@ -1167,7 +1187,7 @@ GMT_LONG GMT_bin_double_output_swab (FILE *fp, GMT_LONG n, double *ptr)
 GMT_LONG GMT_bin_float_output (FILE *fp, GMT_LONG n, double *ptr)
 {
 	GMT_LONG i;
-	static float GMT_f[BUFSIZ];
+	static float GMT_f[GMT_MAX_COLUMNS];
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
@@ -1181,7 +1201,7 @@ GMT_LONG GMT_bin_float_output_swab (FILE *fp, GMT_LONG n, double *ptr)
 {	/* Binary output after swabing the data. */
 	GMT_LONG i, k;
 	unsigned int *ii;
-	static float GMT_f[BUFSIZ];
+	static float GMT_f[GMT_MAX_COLUMNS];
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
@@ -2887,12 +2907,12 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	PFL psave = NULL;
 
 	if (use_GMT_io) {	/* Use GMT_io settings to determine if input is ascii/binary, else it defaults to ascii */
-		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
+		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : GMT_MAX_COLUMNS;
 		strcpy (open_mode, GMT_io.r_mode);
 		ascii = !GMT_io.binary[GMT_IN];
 	}
 	else {			/* Force ASCII mode */
-		n_expected_fields = BUFSIZ;	/* GMT_input will return the number of columns */
+		n_expected_fields = GMT_MAX_COLUMNS;	/* GMT_input will return the number of columns */
 		strcpy (open_mode, "r");
 		ascii = TRUE;
 		psave = GMT_input;		/* Save the previous pointer since we need to change it back at the end */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.19 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_common.h,v 1.20 2010-06-25 20:33:48 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,7 +109,7 @@ struct GMT_COMMON {
 	} b;
 	struct f {	/* [16]  -f[i|o]<col>|<colrange>[t|T|g],.. */
 		GMT_LONG active;
-		char col_type[2][BUFSIZ];
+		char col_type[2][GMT_MAX_COLUMNS];
 	} f;
 	struct g {	/* [17]  -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		GMT_LONG active;

@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.754 2010-06-24 19:12:06 guru Exp $
+	$Id: ChangeLog,v 1.755 2010-06-25 20:33:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+2010-06-25	pwessel
+	* gmt_io.c:		GMT_fgets now checks for input record truncation and handles
+				this gracefully (gives warning and winds to next record).
 
 2010-06-24	pwessel
 	* nearneighbor_func.c:	Did not handle periodic x input when -fg was used

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.29 2010-03-22 18:55:45 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.30 2010-06-25 20:33:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -832,7 +832,7 @@ int GMTAPI_Prep_IO_Session (struct GMTAPI_CTRL *API, int ID[], int direction)
 	IO = API->io_session[session_id];	/* For shorthand purposes only */
 	if (direction == GMT_IN) {	/* Determine how many input sources there are */
 		while (ID[IO->n_items] > 0) IO->n_items++;
-		IO->n_expected_fields = (GMT_io.ncol[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;			/* Init for the GMT_input machinery */
+		IO->n_expected_fields = (GMT_io.ncol[GMT_IN]) ? GMT_io.ncol[GMT_IN] : GMT_MAX_COLUMNS;			/* Init for the GMT_input machinery */
 	}
 	else	/* Only one output destination at the time */
 		IO->n_items = 1;

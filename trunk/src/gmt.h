@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.200 2010-04-22 17:29:20 remko Exp $
+ *	$Id: gmt.h,v 1.201 2010-06-25 20:33:48 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,6 +142,7 @@ extern "C" {
 #define GMT_TINY_CHUNK	8
 #define GMT_TEXT_LEN	64
 #define GMT_LONG_TEXT	256
+#define GMT_MAX_COLUMNS	4096		/* Limit on number of columns in data tables (not grids) */
 #define GMT_LEVEL	4
 #define CNULL		((char *)NULL)
 #define VNULL		((void *)NULL)
@@ -555,7 +556,7 @@ EXTERN_MSC int GMT_no_rgb[];
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
 EXTERN_MSC PFL GMT_input, GMT_output, GMT_input_ascii, GMT_output_ascii;
-EXTERN_MSC double GMT_curr_rec[BUFSIZ], GMT_prev_rec[BUFSIZ];
+EXTERN_MSC double GMT_curr_rec[GMT_MAX_COLUMNS], GMT_prev_rec[GMT_MAX_COLUMNS];
 EXTERN_MSC GMT_LONG GMT_n_file_suffix;
 EXTERN_MSC GMT_LONG *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
