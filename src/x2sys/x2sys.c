@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.144 2010-05-25 20:15:29 guru Exp $
+ *	$Id: x2sys.c,v 1.145 2010-06-25 20:33:49 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -782,7 +782,7 @@ int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	int i, n_fields, n_expect = BUFSIZ;
+	int i, n_fields, n_expect = GMT_MAX_COLUMNS;
 	size_t j;
 	char path[BUFSIZ];
 	double **z, *in;

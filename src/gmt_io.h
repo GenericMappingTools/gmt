@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.86 2010-04-03 02:25:05 guru Exp $
+ *	$Id: gmt_io.h,v 1.87 2010-06-25 20:33:48 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -79,7 +79,6 @@
 
 #ifdef WIN32
 EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);
-EXTERN_MSC char *GMT_fgets (char *line, int buf, FILE *fp);
 EXTERN_MSC int GMT_fgetc (FILE *stream);
 EXTERN_MSC int GMT_ungetc (int c, FILE *stream);
 EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
@@ -91,7 +90,6 @@ EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE 
 EXTERN_MSC void GMT_rewind (FILE *stream);
 #else
 #define GMT_fdopen(handle, mode) fdopen(handle, mode)
-#define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
 #define GMT_fgetc(stream) fgetc(stream)
 #define GMT_ungetc(c, stream) ungetc(c, stream)
 #define GMT_fputs(line,fp) fputs(line,fp)
@@ -103,6 +101,7 @@ EXTERN_MSC void GMT_rewind (FILE *stream);
 #define GMT_rewind(stream) rewind(stream)
 #endif
 
+EXTERN_MSC char *GMT_fgets (char *line, GMT_LONG size, FILE *fp);
 EXTERN_MSC int GMT_fclose (FILE *stream);
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char *mode);
 EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);	/* Look for user file */
