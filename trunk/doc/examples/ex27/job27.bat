@@ -1,6 +1,6 @@
 REM
 REM		GMT EXAMPLE 27
-REM		$Id: job27.bat,v 1.4 2009-01-16 21:43:10 guru Exp $
+REM		$Id: job27.bat,v 1.5 2010-06-27 20:23:22 jluis Exp $
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -34,7 +34,7 @@ pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5WSne -O -K -Gbla
 
 REM Put a color legend on top of the land mask justified with 147E,31S
 
-echo 147E 31S 1 2.5 | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p --ELLIPSOID=Sphere >> example_27.ps
+echo 147E 31S 1 2.5 | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p --ELLIPSOID=Sphere --MEASURE_UNIT=inch >> example_27.ps
 psscale -D0.5i/6.3i/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O >> example_27.ps
 
 REM Clean up
