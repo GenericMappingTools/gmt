@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.218 2010-06-28 08:45:19 guru Exp $
+ *	$Id: gmt_io.c,v 1.219 2010-06-28 21:58:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2650,7 +2650,10 @@ GMT_LONG	GMT_scanf_dim (char *s, double *val)
 	We return GMT_IS_FLOAT and pass val.
 	*/
 
-	*val = GMT_convert_units (s, GMT_INCH);
+	if (isalpha ((int)s[0]))	/* Probably a symbol character; just return 0 */
+		*val = 0.0;
+	else
+		*val = GMT_convert_units (s, GMT_INCH);
 	return (GMT_IS_FLOAT);
 }
 
