@@ -1,11 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.755 2010-06-25 20:33:48 guru Exp $
+	$Id: ChangeLog,v 1.756 2010-06-28 21:58:43 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+2010-06-28	pwessel
+	* gmt_io.c:		Added GMT_IS_DIMENSION for converting input dimensions which
+				may have a suffix unit (e.g., 3.5c).  This can occur in the
+				input to psxy[z].
+	* psxy[z].c:		Better handling of dimensions with units passed via columns
+				in the data file.
+
 2010-06-25	pwessel
 	* gmt_io.c:		GMT_fgets now checks for input record truncation and handles
 				this gracefully (gives warning and winds to next record).

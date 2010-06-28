@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.25 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_plot.h,v 1.26 2010-06-28 21:58:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -95,6 +95,8 @@ struct GMT_SYMBOL {
 	GMT_LONG read_size;	/* TRUE when we must read symbol size from file */
 	GMT_LONG shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
 	GMT_LONG font_no;	/* font to use for the -Sl symbol */
+	GMT_LONG n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
+	GMT_LONG nondim_col[6];	/* Which columns has angles or km for this symbol */
 
 	/* These apply to bar symbols */
 
