@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.217 2010-06-25 20:33:48 guru Exp $
+ *	$Id: gmt_io.c,v 1.218 2010-06-28 08:45:19 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2640,6 +2640,20 @@ GMT_LONG	GMT_scanf_float (char *s, double *val)
 	return (GMT_IS_FLOAT);
 }
 
+GMT_LONG	GMT_scanf_dim (char *s, double *val)
+{
+	/* Try to decode a value from s and store
+	in val.  s is a regular float with optional
+	unit info, e.g., 8.5i or 7.5c.  If a valid unit
+	is found we convert the number to inch.
+
+	We return GMT_IS_FLOAT and pass val.
+	*/
+
+	*val = GMT_convert_units (s, GMT_INCH);
+	return (GMT_IS_FLOAT);
+}
+
 GMT_LONG	GMT_scanf (char *s, GMT_LONG expectation, double *val)
 {
 	/* Called with s pointing to a char string, expectation
@@ -2666,6 +2680,11 @@ GMT_LONG	GMT_scanf (char *s, GMT_LONG expectation, double *val)
 	else if (expectation == GMT_IS_FLOAT) {
 		/* True if no special format is expected or allowed  */
 		return (GMT_scanf_float (s, val));
+	}
+
+	else if (expectation == GMT_IS_DIMENSION) {
+		/* True if units might be appended, e.g. 8.4i  */
+		return (GMT_scanf_dim (s, val));
 	}
 
 	else if (expectation == GMT_IS_RELTIME) {
