@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.87 2010-06-25 20:33:48 guru Exp $
+ *	$Id: gmt_io.h,v 1.88 2010-06-28 08:45:19 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,6 +75,7 @@
 #define GMT_IS_ABSTIME		16	/* For I/O of data in calendar+clock units */
 #define GMT_IS_RATIME		24	/* To see if time is either Relative or Absolute */
 #define GMT_IS_ARGTIME		32	/* To invoke GMT_scanf_argtime()  */
+#define GMT_IS_DIMENSION	64	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
 #define GMT_IS_UNKNOWN		128	/* Input type is not knowable without -f */
 
 #ifdef WIN32
