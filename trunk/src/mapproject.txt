@@ -44,7 +44,7 @@ Set center of projected coordinates to be at map projection center [Default is l
 Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
 The unit used for the offsets is the plot distance unit in effect (see \fBMEASURE_UNIT\fP) unless OPT(F) is used,
-in which case the offsets are in meters.
+in which case the offsets are always in meters.
 .TP
 OPT(D)
 Temporarily override \fBMEASURE_UNIT\fP and use \fBc\fP (cm), \fBi\fP (inch),
