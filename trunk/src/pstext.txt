@@ -10,7 +10,7 @@ pstext \- To plot text strings on maps
 [ OPT(D)[\fBj\fP]\fIdx\fP[/\fIdy\fP][\fBv\fP[\fIpen\fP] ] [ GMT_E_OPT ] 
 [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIzlevel\fP|\fB+\fP] ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_mo_OPT ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIzlevel\fP|\fB+\fP] ] [ GMT_t_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBpstext\fP plots text strings of variable size, font type, and orientation.
 Various map projections are provided, with the option to draw and annotate the
@@ -99,6 +99,7 @@ to have its own level given in the 3rd column, and OPT(N) is implicitly set.
 (Not implemented for paragraph mode).
 #include "explain_-t.txt"
 #include "explain_-c.txt"
+#include "explain_-f.txt"
 .TP
 OPT(m)
 Paragraph mode.  Files must be multiple segment files.  Segments are separated by

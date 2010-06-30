@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.757 2010-06-30 01:11:27 guru Exp $
+	$Id: ChangeLog,v 1.758 2010-06-30 10:05:14 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -32,6 +32,9 @@
 2010-06-24	jluis
 	* grdview.c:		Check that topo and illumination file have the same size,
 				otherwise it would crash.
+
+2010-06-30  remko
+	* pstext.c:     Did not recognize -f option, so could not use e.g. -f0T
 
 2010-06-21	pwessel
 	* job??.*, *.sh:	All uses of gridded files now use the extension .nc and not .grd
