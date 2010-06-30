@@ -113,7 +113,7 @@ at their default value to \fB-\fP.
 OPT(D)
 Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
 that relates the given position to a point on the rectangular legend box.  If you want to specify the position
-in projected units (i.e., inches or cm), use OPT(Dx).
+in map plot units (i.e., inches or cm), use OPT(Dx).
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
