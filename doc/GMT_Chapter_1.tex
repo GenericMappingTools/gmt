@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.149 2010-06-22 22:27:21 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.150 2010-06-30 22:43:05 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -52,7 +52,8 @@ Here is the list of bug corrections:
 		Added \GMTfunc{GMT\_io.skip\_duplicates} [FALSE] to control if consecutive
 		records with identical x,y should be skipped.  This is needed
 		by programs that uses \GMTfunc{GMT\_sph\_inonout}, which does not expect to
-		find duplicates vertices.
+		find duplicates vertices.  \GMTfunc{GMT\_fgets} now checks for input record truncation and handles
+		this gracefully (gives warning and winds to next record).
 	\item [\GMTprog{gmt\_map.c}]:	Tried to free memory when nothing had been allocated.
 		\GMTfunc{GMT\_wesn\_clip} function would clip polygons even though
 		there were no restrictions on longitudes (w/e = 360).
@@ -61,16 +62,27 @@ Here is the list of bug corrections:
 		when using scales to 100 km or any exact power of 10. Error was limited to 64-bit.
 	\item [\GMTprog{gmt2rgb}]:	Option \Opt{G} was freeing the output name before it was even allocated.
 	\item [\GMTprog{grdcontour.c}]:	The L or H color for first min/max annotation was not set.
+		Placement of H and L annotations improved by using centroids.
+	\item [\GMTprog{grdmask.c}]:	Did not handle periodic longitude input when \Opt{fg} was used.
 	\item [\GMTprog{grdview.c}]:	Fixed bug in parsing of \Opt{W}[m$|$c$|$f] option when color starts with [m$|$c$|$f].
+		Check that topo and illumination file have the same size, otherwise it would crash.
 	\item [\GMTprog{greenspline.c}]:	Must insist that one of [\Opt{R} \Opt{I}], \Opt{N}, or \Opt{T} is specified.
+	\item [\GMTprog{mapproject.c:}]:	Applied scaling to \Opt{C}{\it dx/dy} when \Opt{Fk} was used, despite docs
+		saying \Opt{C} is in meters when \Opt{F} is used. Fixed, and clarified
+		docs/man to say with \Opt{F}, \Opt{C} is always in meters.
+	\item [\GMTprog{nearneighbor.c:}]:	Did not handle periodic longitude input when \Opt{fg} was used.
 	\item [\GMTprog{ps2raster.c:}]:	Now checks that all PS files begin with \%!PS.
 		End matter did not get parsed when there is no \%\%Orientation.
 	\item [\GMTprog{pshistogram.c:}]:	Fixed incorrect bin count when a datapoint equaled xmax.
 	\item [\GMTprog{pslegend.c:}]:	Uninitialized text string could put garbage in script.
+	\item [\GMTprog{psmask.c:}]:	Did not handle periodic longitude input when \Opt{fg} was used.
 	\item [\GMTprog{psxy.c:}]:	For \Opt{Svs}, the 2nd set of coordinates did not obey \Opt{:}.
 		The \Opt{Sw$|$W} symbols did not handle the azimuth/direction conversions properly.
+		Added better handling of dimensions with units passed via columns in the data file.
 	\item [\GMTprog{psxyz.c:}]:	For \Opt{Svs}, the 2nd set of coordinates did not obey \Opt{:}.
-	The \Opt{Sw$|$W} symbols did not handle the azimuth/direction conversions properly.
+		The \Opt{Sw$|$W} symbols did not handle the azimuth/direction conversions properly.
+		Added better handling of dimensions with units passed via columns in the data file.
+	\item [\GMTprog{surface.c:}]:	Did not handle periodic longitude input when \Opt{fg} was used.
 	\item [\GMTprog{meca/psmeca.c}]:	Removed out of place and repeated line to compute size in \Opt{a} option.
 	\item [\GMTprog{meca/submeca.c}]:	Replaced calls to \GMTfunc{d\_atan2} by \GMTfunc{d\_atan2d} since the code expects angles in degrees.
 	\item [\GMTprog{mgd77/mgd77.c}]:	Incorrectly added track list =tracks.lis as another track name
