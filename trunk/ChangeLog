@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.758 2010-06-30 10:05:14 remko Exp $
+	$Id: ChangeLog,v 1.759 2010-06-30 22:43:05 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -11,23 +11,23 @@
 
 2010-06-28	pwessel
 	* mapproject.c:		Applied scaling to -C/dx/dy when -Fk was used, despite docs
-				saying -C is in meters when -F is used.
+				saying -C is in meters when -F is used. Fixed, and clarified
+				docs/man to say with -F, -C is always in meters.
 	* gmt_io.c:		Added GMT_IS_DIMENSION for converting input dimensions which
 				may have a suffix unit (e.g., 3.5c).  This can occur in the
-				input to psxy[z].
+				input to psxy[z], which sometimes complained about bad input.
 	* psxy[z].c:		Better handling of dimensions with units passed via columns
-				in the data file.
+				in the data file, as in psxy.
 
 2010-06-25	pwessel
 	* gmt_io.c:		GMT_fgets now checks for input record truncation and handles
 				this gracefully (gives warning and winds to next record).
 
 2010-06-24	pwessel
-	* nearneighbor_func.c:	Did not handle periodic x input when -fg was used
-	* grdmask_func.c:	Did not handle periodic x input when -fg was used
-	* grdmask_func.c:	Did not handle periodic x input when -fg was used
-	* psmask_func.c:	Did not handle periodic x input when -fg was used
-	* surface_func.c:	Did not handle periodic x input when -fg was used
+	* nearneighbor.c:	Did not handle periodic x input when -fg was used
+	* grdmask.c:		Did not handle periodic x input when -fg was used
+	* psmask.c:		Did not handle periodic x input when -fg was used
+	* surface.c:		Did not handle periodic x input when -fg was used
 
 2010-06-24	jluis
 	* grdview.c:		Check that topo and illumination file have the same size,
@@ -37,7 +37,7 @@
 	* pstext.c:     Did not recognize -f option, so could not use e.g. -f0T
 
 2010-06-21	pwessel
-	* job??.*, *.sh:	All uses of gridded files now use the extension .nc and not .grd
+	* job??.*, *.sh:	All examples with gridded files now use the extension .nc and not .grd
 
 2010-06-16	pwessel
 	* WDBII:		Based on feedback (and data) from Branislav Mikulas I have added some
@@ -48,7 +48,7 @@
 	* x2sys/x2sys_get.c:	Need -L+[<list>] so internal crossovers can be added.
 
 2010-06-06	jluis
-	* mgd77/mgd77convert.c:	Fix for the never ending troubles with the dll cross on Windows
+	* mgd77/mgd77convert.c:	Fix for the never-ending troubles with the dll cross on Windows
 	* x2sys/x2sys_list.c:	Implemented -S[+] to print info relevant to both cruises 
 
 2010-05-31	pwessel
