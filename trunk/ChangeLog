@@ -1,12 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.756 2010-06-28 21:58:43 guru Exp $
+	$Id: ChangeLog,v 1.757 2010-06-30 01:11:27 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+2010-06-29	pwessel
+	* grdcontour.c:		Placement of H and L annotations improved by using centroids
+
 2010-06-28	pwessel
+	* mapproject.c:		Applied scaling to -C/dx/dy when -Fk was used, despite docs
+				saying -C is in meters when -F is used.
 	* gmt_io.c:		Added GMT_IS_DIMENSION for converting input dimensions which
 				may have a suffix unit (e.g., 3.5c).  This can occur in the
 				input to psxy[z].
