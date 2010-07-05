@@ -5,10 +5,10 @@ pscoupe \- Plot cross-sections of focal mechanisms.
 .SH SYNOPSIS
 .br
 \fBpscoupe\fP \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
-OPT(A)\fIparameters\fP [ GMT_B_OPT ]  [ OPT(F)\fIfill\fP ]
+OPT(A)\fIparameters\fP [ GMT_B_OPT ]  [ OPT(E)\fIfill\fP ]
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ]
 [ GMT_K_OPT ] [ OPT(L)\fI[pen]\fP ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] 
-[ GMT_P_OPT ] [ OPT(S)\fI<symbol><scale>\fP[/\fBd\fP] ]
+[ GMT_P_OPT ] [ OPT(S)\fI<format><scale>\fP[/\fBd\fP] ]
 [ OPT(s)\fI<symbol><size>\fP[/\fBd\fP] ] [ OPT(T)\fIn\fP ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ]
 [ GMT_Y_OPT ] [ OPT(Z)\fIcpt\fP ]
@@ -165,8 +165,8 @@ not used; can be 0 0; allows use of the psmeca file format
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
-OPT(Sm)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
-Seismic moment tensor.
+OPT(Sm|d|z)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
+Seismic moment tensor (Harvard CMT, with zero trace).
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
 (that is seismic scalar moment = 4E+23 dynes-cm) in \fBMEASURE_UNIT\fP (unless
