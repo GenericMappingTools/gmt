@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.759 2010-06-30 22:43:05 guru Exp $
+	$Id: ChangeLog,v 1.760 2010-07-05 22:14:43 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+2010-07-05	jluis
+	* ps2raster.c:		Also converts ps files with headers but no image. Now it will
+				create a 1x1 raster instead of aborting with an error message.
+
 2010-06-29	pwessel
 	* grdcontour.c:		Placement of H and L annotations improved by using centroids
 
