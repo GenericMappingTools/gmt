@@ -9,7 +9,7 @@ psmeca \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
 [ OPT(E)\fIfill\fP] [ OPT(G)\fIfill\fP] [ GMT_H_OPT ]
 [ GMT_K_OPT ] [ OPT(L)[\fIpen\fP] ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ]
 [ GMT_P_OPT ] 
-[ OPT(S)\fI<symbol><scale>\fP[/\fBd\fP]] [ OPT(T)\fInum_of_plane\fP[\fIpen\fP] ]
+[ OPT(S)\fI<format><scale>\fP[/\fBd\fP]] [ OPT(T)\fInum_of_plane\fP[\fIpen\fP] ]
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ]
 [ GMT_Y_OPT ] [ OPT(Z)\fIcptfile\fP] [ OPT(z) ] 
 [ OPT(a)[\fIsize\fP[\fIP_symbol\fP[\fIT_symbol\fP]]] ] 
