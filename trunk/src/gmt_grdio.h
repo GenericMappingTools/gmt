@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.50 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_grdio.h,v 1.51 2010-07-07 04:56:41 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,8 +34,8 @@
 #define GMT_IMG_MAXLON		360.0
 #define GMT_IMG_MINLAT_72	-72.0059773539
 #define GMT_IMG_MAXLAT_72	+72.0059773539
-#define GMT_IMG_MINLAT_80	-80.738
-#define GMT_IMG_MAXLAT_80	+80.738
+#define GMT_IMG_MINLAT_80	-80.7380086280
+#define GMT_IMG_MAXLAT_80	+80.7380086280
 #define GMT_IMG_NLON_1M		21600	/* At 1 min resolution */
 #define GMT_IMG_NLON_2M		10800	/* At 2 min resolution */
 #define GMT_IMG_NLAT_1M_72	12672	/* At 1 min resolution */
