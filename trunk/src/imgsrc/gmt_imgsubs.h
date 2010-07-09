@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.h,v 1.10 2010-01-05 01:15:48 guru Exp $
+/* $Id: gmt_imgsubs.h,v 1.11 2010-07-09 01:01:17 guru Exp $
  *
  * Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,8 +33,8 @@
 #define GMT_IMG_MAXLON		360.0
 #define GMT_IMG_MINLAT		-72.0059773539
 #define GMT_IMG_MAXLAT		+72.0059773539
-#define GMT_IMG_MINLAT_80	-80.738
-#define GMT_IMG_MAXLAT_80	+80.738
+#define GMT_IMG_MINLAT_80	-80.7380086280
+#define GMT_IMG_MAXLAT_80	+80.7380086280
 
 #define GMT_IMG_MPIXEL 2.0
 
