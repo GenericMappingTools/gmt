@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.445 2010-06-28 21:58:43 guru Exp $
+ *	$Id: gmt_init.c,v 1.446 2010-07-09 00:21:23 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -670,6 +670,7 @@ void GMT_cont_syntax (GMT_LONG indent, GMT_LONG kind)
 	fprintf (stderr, "%sd<dist>[c|i|m|p] or D<dist>[d|e|k|m|n].\n", pad);
 	fprintf (stderr, "%s   d: Give distance between labels in specified unit [Default algorithm is d%g%c]\n", pad, gap, GMT_unit_names[gmtdefs.measure_unit][0]);
 	fprintf (stderr, "%s   D: Specify distance between labels in m(e)ter [Default], (k)m, (m)ile, (n)autical mile, or (d)egree.\n", pad);
+	fprintf (stderr, "%s   The first label appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad);
 	fprintf (stderr, "%sf<ffile.d> reads the file <ffile.d> and places labels at those locations that match\n", pad);
 	fprintf (stderr, "%s   individual points along the %ss\n", pad, type[kind]);
 	fprintf (stderr, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for straight line segments.\n", pad);

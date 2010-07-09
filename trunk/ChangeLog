@@ -1,11 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.760 2010-07-05 22:14:43 jluis Exp $
+	$Id: ChangeLog,v 1.761 2010-07-09 00:21:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+2010-07-08	pwessel
+	* ex13:			Used -G2i/10 which is a syntax from pre-GMT 4.  Changed to -Gd2i.
+	* explain_contlabel.txt: Did not fully describe the -Gd label option, including the
+				fractional part.
+	* gmt_support.c:	Now complains if -Gd<dist>[/<frac>] finds frac outside 0-1.
+
 2010-07-05	jluis
 	* ps2raster.c:		Also converts ps files with headers but no image. Now it will
 				create a 1x1 raster instead of aborting with an error message.
