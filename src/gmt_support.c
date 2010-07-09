@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.453 2010-07-09 00:21:23 guru Exp $
+ *	$Id: gmt_support.c,v 1.454 2010-07-09 00:22:01 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2990,7 +2990,7 @@ GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			else
 				L->label_dist_spacing = GMT_convert_units (&txt_a[1], GMT_INCH);
 			if (L->label_dist_frac <= 0.0 || L->label_dist_frac > 1.0) {
-				Gfprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Initial label distance fraction must be in 0-1 range\n", GMT_program, L->flag);
+				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Initial label distance fraction must be in 0-1 range\n", GMT_program, L->flag);
 				error++;
 			}
 			if (L->label_dist_spacing <= 0.0) {
