@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.64 2010-03-09 17:33:42 guru Exp $
+#  $Id: GNUmakefile,v 1.65 2010-07-10 02:45:57 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -45,9 +45,6 @@
 #	To tar full coastlines		make tar_full
 #	To tar high coastlines		make tar_high
 #
-#	To generate zipfiles:
-#	To zip everything:		make zip_dist
-#
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
 #	Date:		15-JAN-2010
@@ -69,7 +66,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 .PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
 		latest-config help update create newsite usable site archive \
-		tar_all full high tar_full tar_high zip_dist installl suppl alltests \
+		tar_all full high tar_full tar_high installl suppl alltests \
 		doctests extests tests ex examples animations cvsclean
 
 help::
