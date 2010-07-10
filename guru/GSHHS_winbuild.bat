@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.8 2010-01-08 21:35:19 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.9 2010-07-10 01:01:49 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -10,7 +10,7 @@ REM	   to its command line tool is added to PATH
 REM	3. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
-SET GSHHS=2.0.2
+SET GSHHS=2.1.0
 
 echo === 1. Get all GSHHS %GSHHS% bzipped tar balls and extract files...
 
