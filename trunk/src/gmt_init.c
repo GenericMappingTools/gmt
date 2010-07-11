@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.446 2010-07-09 00:21:23 guru Exp $
+ *	$Id: gmt_init.c,v 1.447 2010-07-11 04:05:42 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1033,7 +1033,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 	switch (opt) {
 		case '\0':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
-			processed[opt] = GMT->common->synopsis.active = TRUE;
+			GMT->common->synopsis.active = processed[opt] = TRUE;
 			GMT_give_synopsis_and_exit = TRUE;
 			break;
 
@@ -1087,17 +1087,17 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'K':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
-			processed[opt] = GMT->common->K.active = TRUE;
+			GMT->common->K.active = processed[opt] = TRUE;
 			GMT_ps.last_page = FALSE;
 			break;
 		case 'O':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
-			processed[opt] = GMT->common->O.active = TRUE;
+			GMT->common->O.active = processed[opt] = TRUE;
 			GMT_ps.overlay = TRUE;
 			break;
 		case 'P':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
-			processed[opt] = GMT->common->P.active = TRUE;
+			GMT->common->P.active = processed[opt] = TRUE;
 			GMT_ps.portrait = TRUE;
 			break;
 		case 'R':
@@ -1126,7 +1126,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'V':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
-			processed[opt] = GMT->common->V.active = TRUE;
+			GMT->common->V.active = processed[opt] = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
 			GMT_ps.verbose = TRUE;
 			break;

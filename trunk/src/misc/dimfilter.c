@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.11 2010-06-09 14:19:42 remko Exp $
+ * $Id: dimfilter.c,v 1.12 2010-07-11 04:05:42 guru Exp $
  *
  *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -482,7 +482,7 @@ fout2 = NULL;
 					/* We are doing "bow-ties" and not wedges here */
 					angle = atan2 ((double)jj, (double)ii);				/* Returns angle in -PI,+PI range */
 					if (angle < 0.0) angle += M_PI;					/* Flip to complimentary sector in 0-PI range */
-					sector[j][i] = (GMT_LONG) rint ((n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
+					sector[j][i] = (short) rint ((n_sectors * angle) / M_PI);	/* Convert to sector id 0-<n_sectors-1> */
 					if (sector[j][i] == n_sectors) sector[j][i] = 0;		/* Ensure that exact PI is set to 0 */
 				}
 			}
