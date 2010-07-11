@@ -1,5 +1,5 @@
 REM ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.32 2010-07-11 04:18:07 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.33 2010-07-11 04:25:21 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -57,7 +57,7 @@ echo === 3. Run all the examples...
 
 set GMT_SHAREDIR=C:\GMT\share
 set OLDPATH=%PATH%
-set PATH=C:\GMT\bin;C:\NETCDF\bin
+set PATH=C:\GMT\bin;C:\NETCDF\bin;%OLDPATH%
 
 cd C:\GMT\share\doc\gmt\examples
 call do_examples
