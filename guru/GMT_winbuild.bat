@@ -1,5 +1,5 @@
-ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.30 2010-07-10 01:01:49 guru Exp $
+REM ECHO OFF
+REM	$Id: GMT_winbuild.bat,v 1.31 2010-07-11 04:05:42 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -18,12 +18,18 @@ REM	   to its command line tool is added to PATH
 SET GVER=4.5.3
 SET GSHHS=2.1.0
 
+IF "%1%" == "home" (
+	SET GMTDIR=W:\RESEARCH\PROJECTS\GMTdev\GMT
+) ELSE (
+SET GMTDIR=Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT
+)
+
 echo === 1. Get all GMT%GVER% bzipped tar balls and extract files...
 
 C:
 cd \
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GMT%GVER%*.tar.bz2 C:\
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS%GSHHS%_*.tar.bz2 C:\
+copy %GMTDIR%\ftp\GMT%GVER%*.tar.bz2 C:\
+copy %GMTDIR%\ftp\GSHHS%GSHHS%_*.tar.bz2 C:\
 7z x GMT*.tar.bz2
 7z x GSHHS*.tar.bz2
 7z x GMT*.tar -aoa
@@ -31,11 +37,11 @@ copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS%GSHHS%_*.tar.bz2 C:\
 del *.tar.bz2
 del *.tar
 rename GMT%GVER% GMT
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\src\gmt_version.h C:\GMT\src
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\src\gmt_notposix.h C:\GMT\src
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmt.conf C:\GMT\share\conf
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmtdefaults_SI C:\GMT\share\conf
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmtdefaults_US C:\GMT\share\conf
+copy %GMTDIR%\src\gmt_version.h C:\GMT\src
+copy %GMTDIR%\src\gmt_notposix.h C:\GMT\src
+copy %GMTDIR%\share\conf\gmt.conf C:\GMT\share\conf
+copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMT\share\conf
+copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMT\share\conf
 
 echo === 2. Build the GMT executables, including supplements...
 
@@ -61,7 +67,7 @@ cd C:\GMT
 
 echo === 5. Build the GMT Basic installer...
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_basic.iss
+iscc /Q %GMTDIR%\guru\GMTsetup_basic.iss
 
 echo === 6. Rebuild the GMT executables enabling GDAL support...
 
@@ -71,11 +77,11 @@ call gmtsuppl
 
 echo === 7. Build the GMT+GDAL installer...
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_gdal.iss
+iscc /Q %GMTDIR%\guru\GMTsetup_gdal.iss
 
 echo === 8. Build the GMT PDF installer...
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_pdf.iss
+iscc /Q %GMTDIR%\guru\GMTsetup_pdf.iss
 
 echo === 9. DONE
 cd C:\
