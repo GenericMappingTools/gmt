@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.447 2010-07-11 04:05:42 guru Exp $
+ *	$Id: gmt_init.c,v 1.448 2010-07-11 04:41:42 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1203,7 +1203,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			}
 			break;
 		case 'b':	/* Binary i/o */
-			processed[opt] = GMT->common->b.active = TRUE;
+			GMT->common->b.active = processed[opt] = TRUE;
 			i = GMT_parse_b_option (&item[2]);
 			if (i) GMT_syntax ('b');
 			error += i;
