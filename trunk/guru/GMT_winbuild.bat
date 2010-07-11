@@ -1,5 +1,5 @@
-REM ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.33 2010-07-11 04:25:21 guru Exp $
+ECHO OFF
+REM	$Id: GMT_winbuild.bat,v 1.34 2010-07-11 04:41:42 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
