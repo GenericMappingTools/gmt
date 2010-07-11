@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.27 2010-06-22 22:27:21 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.28 2010-07-11 07:47:28 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -33,8 +33,9 @@ must ensure you do all the steps listed below:
 4.  In GMT/ftp, update .message, README.GMT, and VERSION
 
 5.  In GMT/website:
-    a) Update gmt_arrrghh.html, gmt_faq.html,
+    a) Update gmt_arrrghh.html, gmt_faq.html, gmt_home.html,
        gmt_install_form.html, gmt_news.html, gmt_releases_template.html
+       install_gmt_form.pl, gmt_nav.html
     b) create web examples:
        make web
     c) test the update of ftp and web sites locally:
