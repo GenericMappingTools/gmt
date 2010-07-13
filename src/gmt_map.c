@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.255 2010-05-18 17:10:44 jluis Exp $
+ *	$Id: gmt_map.c,v 1.256 2010-07-13 02:33:28 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1062,22 +1062,6 @@ void GMT_ilinearxy (double *x, double *y, double x_i, double y_i)
 {	/* Inversely transform both x and y linearly */
 	(*GMT_x_inverse) (x, x_i);
 	(*GMT_y_inverse) (y, y_i);
-}
-
-void GMT_coordinate_to_x (double coord, double *x)
-{
-	/* Convert a x user coordinate to map position in inches */
-
-	(*GMT_x_forward) (coord, x);
-	(*x) = (*x) * project_info.x_scale + project_info.x0;
-}
-
-void GMT_coordinate_to_y (double coord, double *y)
-{
-	/* Convert a GMT time representation to map position in x */
-
-	(*GMT_y_forward) (coord, y);
-	(*y) = (*y) * project_info.y_scale + project_info.y0;
 }
 
 /*
