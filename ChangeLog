@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.761 2010-07-09 00:21:22 guru Exp $
+	$Id: ChangeLog,v 1.762 2010-07-13 02:33:49 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
 -----------------------------------------------------------------------------------------
+
+2010-07-13	remko
+	* gmt_plot.c, gmt_map.c:	Replace GMT_coordinate_to_[xy] by already existing
+				GMT_x_to_xx and GMT_y_to_yy.
+
 2010-07-08	pwessel
 	* ex13:			Used -G2i/10 which is a syntax from pre-GMT 4.  Changed to -Gd2i.
 	* explain_contlabel.txt: Did not fully describe the -Gd label option, including the
