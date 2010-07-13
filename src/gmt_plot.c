@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.290 2010-07-13 02:32:44 remko Exp $
+ *	$Id: gmt_plot.c,v 1.291 2010-07-13 22:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -455,7 +455,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		double x2, v_w, h_w, h_l;
 		GMT_init_fill (&arrow, gmtdefs.frame_pen.rgb[0], gmtdefs.frame_pen.rgb[1], gmtdefs.frame_pen.rgb[2]);
 		x2 = 1.075 * length;
-		v_w = gmtdefs.frame_pen.width / 72.0;
+		v_w = rint (gmtdefs.dpi * gmtdefs.frame_pen.width / 72.0) / gmtdefs.dpi;	/* To ensure it matches the pen thickness which is integer rounded */
 		h_w = 5.0 * v_w;
 		h_l = 2 * h_w;
 		GMT_vector (length, 0.0, x2, 0.0, 0.0, v_w, h_l, h_w, gmtdefs.vector_shape, &arrow, FALSE);
