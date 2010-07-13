@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.233 2010-04-19 15:44:43 remko Exp $
+ *	$Id: pslib.c,v 1.234 2010-07-13 15:33:11 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4035,9 +4035,10 @@ void ps_stream_dump (unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG n
 	/* Output image dictionary */
 	if (mask < 2) {
 		fprintf (PSL->internal.fp, "/Width %ld /Height %ld /BitsPerComponent %ld\n", nx, ny, MIN(nbits,8));
-		fprintf (PSL->internal.fp, "   /ImageMatrix [%ld 0 0 %ld 0 %ld] /DataSource currentfile ", nx, -ny, ny);
-		if (PSL->internal.ascii) fprintf (PSL->internal.fp, "/ASCII85Decode filter ");
-		fprintf (PSL->internal.fp, "%s\n>> image%s\n", kind_compress[compress], kind_mask[mask]);
+		fprintf (PSL->internal.fp, "   /ImageMatrix [%ld 0 0 %ld 0 %ld] /DataSource currentfile", nx, -ny, ny);
+		if (encode) fprintf (PSL->internal.fp, " /ASCII85Decode filter");
+		if (compress) fprintf (PSL->internal.fp, " %s", kind_compress[compress]);
+		fprintf (PSL->internal.fp, "\n>> image%s\n", kind_mask[mask]);
 	}
 	if (encode == 1) {
 		/* Write each 4-tuple as ASCII85 5-tuple */
