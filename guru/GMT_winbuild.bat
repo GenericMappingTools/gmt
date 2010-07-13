@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.37 2010-07-13 00:41:43 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.38 2010-07-13 00:59:33 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -7,11 +7,12 @@ REM
 REM	Assumptions:
 REM	1. You have run make tar_all tar_coast
 REM	2. You have placed netcdf in C:\NETCDF
-REM	3. Inno Setup 5 has been installed and the path
+REM	3. You have C:\GMTdev with dirs INFO and INSTALLERS
+REM	4. Inno Setup 5 has been installed and the path
 REM	   to its command line tool is added to PATH
-REM	4. 7zip has been installed and the path
+REM	5. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
-REM	5. FWTools4.5.3 has been installed under C:\programs
+REM	6. FWTools2.4.7 has been installed under C:\programs
 REM	   and the path to its DLL is added to PATH
 
 SET GVER=4.5.3
@@ -42,8 +43,8 @@ copy %GMTDIR%\share\conf\gmt.conf.win C:\GMTdev\GMT\share\conf\gmt.conf
 copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMTdev\GMT\share\conf
 copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMTdev\GMT\share\conf
 
-copy %GMTDIR%\guru\gpl.txt C:\GMTdev\INSTALL
-copy %GMTDIR%\guru\GMT_postinstall_message.txt C:\GMTdev\INSTALL
+copy %GMTDIR%\guru\gpl.txt C:\GMTdev\INFO
+copy %GMTDIR%\guru\GMT_postinstall_message.txt C:\GMTdev\INFO
 
 echo === 2. Build the GMT executables, including supplements...
 
