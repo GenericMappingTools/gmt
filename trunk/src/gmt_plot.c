@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.289 2010-04-22 17:29:20 remko Exp $
+ *	$Id: gmt_plot.c,v 1.290 2010-07-13 02:32:44 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,8 +107,6 @@ void GMT_map_lattick (double lat, double west, double east, double len);
 GMT_LONG GMT_prepare_label (double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify);
 GMT_LONG GMT_annot_too_crowded (double x, double y, GMT_LONG side);
 GMT_LONG GMT_is_fancy_boundary (void);
-void GMT_coordinate_to_x (double coord, double *x);
-void GMT_coordinate_to_y (double coord, double *y);
 GMT_LONG GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 void GMT_timex_grid (double w, double e, double s, double n, GMT_LONG item);
 void GMT_timey_grid (double w, double e, double s, double n, GMT_LONG item);
@@ -479,7 +477,7 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && (T->interval > 1 && fmod (T->interval, 7.0) > 0.0));
 		for (i = 0; do_tick && i < nx; i++) {
 			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
-			(axis == 0) ? GMT_coordinate_to_x (knots[i], &x) : GMT_coordinate_to_y (knots[i], &x);	/* Convert to inches on the page */
+			(axis == 0) ? GMT_x_to_xx (knots[i], &x) : GMT_y_to_yy (knots[i], &x);	/* Convert to inches on the page */
 			ps_segment (x, 0.0, x, tick_len[k]);
 		}
 
@@ -487,13 +485,12 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		if (do_annot) {	/* Then do annotations too - here just set text height/width parameters in PostScript */
 
 			annot_pos = GMT_lower_axis_item(k);							/* 1 means lower annotation, 0 means upper (close to axis) */
-			font_size = (annot_pos == 1) ? gmtdefs.annot_font_size[1] : gmtdefs.annot_font_size[0];		/* Set the size of the font to use */
-			font = (annot_pos == 1) ? gmtdefs.annot_font[1] : gmtdefs.annot_font[0];			/* Set the id of the font to use */
+			font_size = gmtdefs.annot_font_size[annot_pos];		/* Set the size of the font to use */
+			font = gmtdefs.annot_font[annot_pos];				/* Set the id of the font to use */
 
 			for (i = 0; k < 4 && i < (nx - is_interval); i++) {
 				if (GMT_annot_pos (val0, val1, T, &knots[i], &t_use)) continue;				/* Outside range */
 				if (GMT_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
-				(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
 				GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
 				ps_textdim ("PSL_dim", font_size, font, string);				/* Get and set string dimensions in PostScript */
 				sprintf (cmd, "PSL_dim_%c PSL_AH%ld gt {/PSL_AH%ld PSL_dim_%c def} if", xy[rot[annot_pos]], annot_pos, annot_pos, xy[rot[annot_pos]]);		/* Update the longest annotation */
@@ -520,15 +517,15 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 		nx = GMT_coordinate_array (val0, val1, &A->item[k], &knots);	/* Get all the annotation tick knots */
 
 		annot_pos = GMT_lower_axis_item(k);							/* 1 means lower annotation, 0 means upper (close to axis) */
-		font_size = (annot_pos == 1) ? gmtdefs.annot_font_size[1] : gmtdefs.annot_font_size[0];		/* Set the id of the font to use */
-		font = (annot_pos == 1) ? gmtdefs.annot_font[1] : gmtdefs.annot_font[0];			/* Set the id of the font to use */
+		font_size = gmtdefs.annot_font_size[annot_pos];		/* Set the size of the font to use */
+		font = gmtdefs.annot_font[annot_pos];				/* Set the id of the font to use */
 
 		for (i = 0; k < 4 && i < (nx - is_interval); i++) {
 			if (GMT_annot_pos (val0, val1, T, &knots[i], &t_use)) continue;				/* Outside range */
 			if (GMT_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
-			(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
-			GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
+			(axis == 0) ? GMT_x_to_xx (t_use, &x) : GMT_y_to_yy (t_use, &x);	/* Get annotation position */
 			ps_set_length ("PSL_x", x);
+			GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
 			if (rot[annot_pos]) {	/* Rotate and adjust annotation in y direction */
 				sprintf (cmd, "PSL_x PSL_A%ld_y M", annot_pos);					/* Move to new anchor point */
 				ps_command (cmd);
