@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.48 2010-01-08 21:35:19 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.49 2010-07-13 00:13:19 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
@@ -106,7 +106,7 @@ SET TROBJ=
 IF %TRIANGLE%=="yes" SET TR=/DTRIANGLE_D
 IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
 SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC%
-SET DLL=/FD /ML
+SET DLL=/FD
 IF %CHOICE%=="static" SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF% %USE_GDAL%
 IF %CHOICE%=="static" SET DLL=
 set LOPT=/nologo /dll /incremental:no

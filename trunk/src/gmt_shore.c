@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.63 2010-05-25 01:39:53 guru Exp $
+ *	$Id: gmt_shore.c,v 1.64 2010-07-13 00:13:19 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1095,7 +1095,7 @@ void shore_prepare_sides (struct GMT_SHORE *c, GMT_LONG dir)
 	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
 		c->side[i] = (struct GSHHS_SIDE *) GMT_memory (VNULL, (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), "shore_prepare_sides");
 		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
-		c->side[i][0].id = i - 4;
+		c->side[i][0].id = (short)(i - 4);
 		c->n_entries += c->nside[i] - 1;
 	}
 		

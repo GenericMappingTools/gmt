@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.52 2010-01-08 21:35:19 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.53 2010-07-13 00:13:19 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
@@ -125,7 +125,7 @@ REM ----------------------------------------------------
 ECHO STEP 7: Make mgg
 REM ----------------------------------------------------
 cd mgg
-IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c gmt_mgg.c
+IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c gmt_mgg.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:gmt_mgg.dll /implib:gmt_mgg.lib gmt_mgg.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c gmt_mgg.c
 IF %CHOICE%=="static"  lib /out:gmt_mgg.lib gmt_mgg.obj
@@ -177,7 +177,7 @@ REM ----------------------------------------------------
 ECHO STEP 10: Make sph
 REM ----------------------------------------------------
 cd sph
-IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c sph.c
+IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:sph.dll /implib:sph.lib sph.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="static"  lib /out:sph.lib sph.obj
@@ -194,7 +194,7 @@ REM ----------------------------------------------------
 ECHO STEP 11: Make spotter
 REM ----------------------------------------------------
 cd spotter
-IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c libspotter.c
+IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c libspotter.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:spotter.dll /implib:spotter.lib libspotter.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c libspotter.c
 IF %CHOICE%=="static"  lib /out:spotter.lib libspotter.obj
