@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: east_map_0.sh,v 1.2 2010-07-12 15:14:14 remko Exp $
+#	$Id: east_map_0.sh,v 1.3 2010-07-14 15:11:30 remko Exp $
 # Test of projection
 
 . ../functions.sh
@@ -23,6 +23,6 @@ Height=0.0
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-pscoast $REGION $PROJ -P -Yc -Xc -B10g10/10g10${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
+pscoast $REGION $PROJ -P -Yc -Xc -B10g10/10g10${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
 
 pscmp $PSFILE
