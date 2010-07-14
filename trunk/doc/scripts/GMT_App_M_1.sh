@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_M_1.sh,v 1.2 2008-03-07 17:13:43 remko Exp $
+#	$Id: GMT_App_M_1.sh,v 1.3 2010-07-14 14:55:39 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
@@ -13,14 +13,14 @@ n=`cat $$.lis | wc -l`
 
 # dy is line spacing and y0 is total box height
 
-gmtset FRAME_PEN thinner ANNOT_FONT_SIZE_PRIMARY 8 TICK_LENGTH 0.04i ANNOT_OFFSET_PRIMARY 0.04i
+gmtset FRAME_PEN thinner ANNOT_FONT_SIZE_PRIMARY 8p TICK_LENGTH 0.1i ANNOT_OFFSET_PRIMARY 0.04i
 psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B0 > $ps
 
 i=1
 y=0.475
 y2=0.35
-dy=0.625
-while [ $i -le 22 ]
+dy=0.56
+while [ $i -le 24 ]
 do
 	j=`expr $i + 1`
 	left=`sed -n ${j}p $$.lis`
@@ -31,8 +31,8 @@ do
 	makecpt -C$right -T-1/1/0.25 > $$.right2.cpt
 	psscale -D1.55/$y/2.70/0.125h -C$$.left.cpt -B0 -O -K >> $ps
 	psscale -D4.50/$y/2.70/0.125h -C$$.right.cpt -B0 -O -K >> $ps
-	psscale -D1.55/$y2/2.70/0.125h -C$$.left2.cpt -B0.5 -O -K >> $ps
-	psscale -D4.50/$y2/2.70/0.125h -C$$.right2.cpt -B0.5 -O -K >> $ps
+	psscale -D1.55/$y2/2.70/0.125h -C$$.left2.cpt -Bf0.25 -O -K >> $ps
+	psscale -D4.50/$y2/2.70/0.125h -C$$.right2.cpt -Bf0.25 -O -K >> $ps
 	echo 1.55 $y 9 0 1 BC ${left} | pstext -R -J -O -K -D0/0.05 >> $ps
 	echo 4.50 $y 9 0 1 BC ${right} | pstext -R -J -O -K -D0/0.05 >> $ps
 	i=`expr $i + 2`

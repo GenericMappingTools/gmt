@@ -1,0 +1,20 @@
+#	$Id: GMT_paired.cpt,v 1.2 2007/10/01 14:20:03 remko Exp $
+# 
+# Qualitative palette with 6 pairs of colors
+# 
+# This color table is based on the specifications and designs
+# developed by Cynthia Brewer (http://colorbrewer.org/).
+# 
+# COLOR_MODEL = RGB
+ 0 166 206 227	 1 166 206 227
+ 1 031 120 180	 2 031 120 180
+ 2 178 223 138	 3 178 223 138
+ 3 051 160 044	 4 051 160 044
+ 4 251 154 153	 5 251 154 153
+ 5 227 026 028	 6 227 026 028
+ 6 253 191 111	 7 253 191 111
+ 7 255 127 000	 8 255 127 000
+ 8 202 178 214	 9 202 178 214
+ 9 106 061 154	10 106 061 154
+10 255 255 153	11 255 255 153
+11 177 089 040	12 177 089 040

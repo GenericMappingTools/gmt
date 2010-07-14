@@ -1,4 +1,4 @@
-#	$Id: GMT_share_files_ascii.lis,v 1.12 2010-07-14 13:46:39 remko Exp $
+#	$Id: GMT_share_files_ascii.lis,v 1.13 2010-07-14 14:57:22 remko Exp $
 #
 # GMT_share_ascii.lis contains all the ascii files that should go into the
 # GMT_share tar/zip files.  See GMT_share_bin.lis for binary files
@@ -21,6 +21,7 @@ share/cpt/GMT_nighttime.cpt
 share/cpt/GMT_no_green.cpt
 share/cpt/GMT_ocean.cpt
 share/cpt/GMT_panoply.cpt
+share/cpt/GMT_paired.cpt
 share/cpt/GMT_polar.cpt
 share/cpt/GMT_rainbow.cpt
 share/cpt/GMT_red2green.cpt
