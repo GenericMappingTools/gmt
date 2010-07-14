@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.763 2010-07-13 22:52:48 guru Exp $
+	$Id: ChangeLog,v 1.764 2010-07-14 13:37:12 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -13,6 +13,8 @@
 2010-07-13	remko
 	* gmt_plot.c, gmt_map.c:	Replace GMT_coordinate_to_[xy] by already existing
 				GMT_x_to_xx and GMT_y_to_yy.
+	* GMT_nighttime.cpt:	Colortable for DMSP-OLS Nighttime Lights Time Series
+				Designed by Andreas Trawoeger.
 
 2010-07-08	pwessel
 	* ex13:			Used -G2i/10 which is a syntax from pre-GMT 4.  Changed to -Gd2i.
