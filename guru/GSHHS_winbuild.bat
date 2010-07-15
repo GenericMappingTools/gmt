@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.10 2010-07-11 04:05:42 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.11 2010-07-15 18:37:51 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -15,15 +15,15 @@ SET GSHHS=2.1.0
 IF "%1%" == "home" (
 	SET GMTDIR=W:\RESEARCH\PROJECTS\GMTdev\GMT
 ) ELSE (
-SET GMTDIR=Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT
+	SET GMTDIR=%1%:\UH\RESEARCH\PROJECTS\GMTdev\GMT
 )
 
 echo === 1. Get all GSHHS %GSHHS% bzipped tar balls and extract files...
 
 C:
-cd \
-copy %GMTDIR%\ftp\GSHHS%GSHHS%_high.tar.bz2 C:\
-copy %GMTDIR%\ftp\GSHHS%GSHHS%_full.tar.bz2 C:\
+cd C:\GMTdev
+copy %GMTDIR%\ftp\GSHHS%GSHHS%_high.tar.bz2 C:\GMTdev\
+copy %GMTDIR%\ftp\GSHHS%GSHHS%_full.tar.bz2 C:\GMTdev\
 7z x GSHHS%GSHHS%_high.tar.bz2
 7z x GSHHS%GSHHS%_full.tar.bz2
 7z x GSHHS%GSHHS%_high.tar -oGMT -aoa
