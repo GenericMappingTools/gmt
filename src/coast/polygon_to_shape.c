@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.7 2010-06-17 00:55:35 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.8 2010-07-15 23:14:12 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 			fprintf(stderr,"polygon_to_shape:  ERROR  creating file %s.\n", file);
 			exit(-1);
 		}
-		fprintf (fp, "%s\n", header[lines]);
+		fprintf (fp, "%s", header[lines]);
 		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
@@ -120,8 +120,8 @@ int main (int argc, char **argv)
 						P[id].h.id, H[hemi], P[id].h.level, area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
 					for (k = 0; k < np; k++) GMT_xy_to_geo (&xx[k], &yy[k], xx[k], yy[k]);	/* Undo projection first */
 					fprintf (fp, "%.6f\t%.6f\n", xx[0], yy[0]);
-					for (k = 1; k < np; k++) {
-						if (!( GMT_IS_ZERO(xx[k]-xx[k-1]) && GMT_IS_ZERO(yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
+					for (k = 1; k < np; k++) {	/* Avoid printing zero increments */
+						if (!(GMT_IS_ZERO (xx[k]-xx[k-1]) && GMT_IS_ZERO (yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
 					}
 					GMT_free ((void *)xx);	GMT_free ((void *)yy);
 					for (k = 0; k < P[id].h.n; k++) lon[k] -= 360.0;	/* Set up lons that go -360 to -tiny */
