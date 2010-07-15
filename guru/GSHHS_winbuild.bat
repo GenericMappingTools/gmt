@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.11 2010-07-15 18:37:51 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.12 2010-07-15 20:56:38 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -34,6 +34,8 @@ del GSHHS%GSHHS%_*.tar
 echo === 2. Build the GSHHS %GSHHS% full/high installer...
 
 iscc /Q %GMTDIR%\guru\GMTsetup_hfcoast.iss
+
+copy INSTALLERS\*.exe %GMTDIR%\ftp
 
 echo === 4. DONE
 ECHO ON
