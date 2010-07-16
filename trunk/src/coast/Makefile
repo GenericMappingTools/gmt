@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.71 2010-06-17 00:55:35 guru Exp $
+#	$Id: Makefile,v 1.72 2010-07-16 00:49:14 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -138,21 +138,21 @@ shape-gshhs:
 
 shape-wdbii:
 		mkdir -p WDBII_shp WDBII_shp/f WDBII_shp/h WDBII_shp/i WDBII_shp/l WDBII_shp/c
-		polygon_to_shape wdb/wdb_f_borders.b WDBII_border_f -b
-		polygon_to_shape wdb/wdb_h_borders.b WDBII_border_h -b
-		polygon_to_shape wdb/wdb_i_borders.b WDBII_border_i -b
-		polygon_to_shape wdb/wdb_l_borders.b WDBII_border_l -b
-		polygon_to_shape wdb/wdb_c_borders.b WDBII_border_c -b
+		polygon_to_shape wdb/wdb_f_borders.b WDBII_border_f -o
+		polygon_to_shape wdb/wdb_h_borders.b WDBII_border_h -o
+		polygon_to_shape wdb/wdb_i_borders.b WDBII_border_i -o
+		polygon_to_shape wdb/wdb_l_borders.b WDBII_border_l -o
+		polygon_to_shape wdb/wdb_c_borders.b WDBII_border_c -o
 		mv WDBII_border_f_L[1-3]/* WDBII_shp/f
 		mv WDBII_border_h_L[1-3]/* WDBII_shp/h
 		mv WDBII_border_i_L[1-3]/* WDBII_shp/i
 		mv WDBII_border_l_L[1-3]/* WDBII_shp/l
 		mv WDBII_border_c_L[1-3]/* WDBII_shp/c
-		polygon_to_shape wdb/wdb_f_rivers.b WDBII_river_f -r
-		polygon_to_shape wdb/wdb_h_rivers.b WDBII_river_h -r
-		polygon_to_shape wdb/wdb_i_rivers.b WDBII_river_i -r
-		polygon_to_shape wdb/wdb_l_rivers.b WDBII_river_l -r
-		polygon_to_shape wdb/wdb_c_rivers.b WDBII_river_c -r
+		polygon_to_shape wdb/wdb_f_rivers.b WDBII_river_f -i
+		polygon_to_shape wdb/wdb_h_rivers.b WDBII_river_h -i
+		polygon_to_shape wdb/wdb_i_rivers.b WDBII_river_i -i
+		polygon_to_shape wdb/wdb_l_rivers.b WDBII_river_l -i
+		polygon_to_shape wdb/wdb_c_rivers.b WDBII_river_c -i
 		mv WDBII_river_f_L[1-3]/* WDBII_shp/f
 		mv WDBII_river_h_L[1-3]/* WDBII_shp/h
 		mv WDBII_river_i_L[1-3]/* WDBII_shp/i

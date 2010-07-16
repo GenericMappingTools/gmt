@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.8 2010-07-15 23:14:12 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.9 2010-07-16 00:49:14 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -19,7 +19,7 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
-	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first, lines = 0, n_levels, river, border;
+	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, limit, hemi, first, lines = 0, n_levels, river, border;
 	GMT_LONG np, nx;
 	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW", *ITEM[3] = {"polygon", "border", "river"};
 	char *header[2] = {"# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n",
@@ -37,16 +37,16 @@ int main (int argc, char **argv)
 	GMT_err_fail (GMT_map_setup (-180.0, 180.0, -90.0, 90.0), "");
 	
 	if (argc < 2 || argc > 4) {
-		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix [-L]\n");
+		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix [-b|i]\n");
 		fprintf (stderr,"	file_res.b is the binary local file with all polygon info for a resolution\n");
 		fprintf (stderr,"	prefix is used to form the files prefix_L[1-4].gmt\n");
 		fprintf (stderr,"	These are then converted to shapefiles via ogr2ogr\n");
-		fprintf (stderr,"	Append -b if file_res.b is a border line file\n");
-		fprintf (stderr,"	Append -r if file_res.b is a river line file\n");
+		fprintf (stderr,"	Append -o if file_res.b is a border line file\n");
+		fprintf (stderr,"	Append -i if file_res.b is a river line file\n");
 		exit (EXIT_FAILURE);
 	}
-	border = (argc == 4 && !strcmp (argv[3], "-b"));
-	river  = (argc == 4 && !strcmp (argv[3], "-r"));
+	border = (argc == 4 && !strcmp (argv[3], "-o"));
+	river  = (argc == 4 && !strcmp (argv[3], "-i"));
 	lines = 2*river + border;	/* Since only one is set to 1 we get 0, 1, or 2 */
 	fp_in = fopen (argv[1], "r");
 		
@@ -107,8 +107,9 @@ int main (int argc, char **argv)
 			else if (!lines && (P[id].h.west < 180.0 && P[id].h.east > 180.0)) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
 				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
+				limit = (id == 0) ? M270 : M180;
 				for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
-					x = (P[id].p[k].x > M270) ? P[id].p[k].x - M360 : P[id].p[k].x;
+					x = (P[id].p[k].x > limit) ? P[id].p[k].x - M360 : P[id].p[k].x;
 					lon[k] = x * I_MILL;	lat[k] = P[id].p[k].y * I_MILL;
 				}
 				for (hemi = 0; hemi < 2; hemi++) {
