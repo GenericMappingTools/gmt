@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.61 2010-03-22 18:55:47 guru Exp $
+ *	$Id: libspotter.c,v 1.62 2010-07-16 23:54:11 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -43,6 +43,10 @@
  * flowline = TRUE when calling spotter_init and then:
  *	1. Draw FROM a hotspot TO a seamount: Use spotter_backtrack
  *	2. Draw FROM a seamount TO a hotspot (and beyond): Use spotter_forthtrack
+ *
+ * All coordinates herein are assumed to be GEOCENTRIC.  The main programs are
+ * respondible for coverting to/from geodetic data coordinates.  Rotation pole
+ * latitudes are usually implied to be geocentric.
  */
 
 #include "spotter.h"

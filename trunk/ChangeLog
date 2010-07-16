@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.765 2010-07-14 13:46:39 remko Exp $
+	$Id: ChangeLog,v 1.766 2010-07-16 23:54:11 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-07-16	pwessel
+	* spotter/*.c:		Now convert geodetic to geocentric latitudes before doing
+				spherical rotations; recover geodetic for output points.
 -----------------------------------------------------------------------------------------
 2010-07-15	pwessel
 	* GMT 4.5.3 finalized and released
