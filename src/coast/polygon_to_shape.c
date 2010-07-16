@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.9 2010-07-16 00:49:14 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.10 2010-07-16 23:54:11 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -15,26 +15,20 @@ struct POLYGON {
 	struct	LONGPAIR *p;
 } P[N_POLY];
 
+#define W 0
+#define E 1
 
 int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
-	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, limit, hemi, first, lines = 0, n_levels, river, border;
-	GMT_LONG np, nx;
+	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first, lines = 0, n_levels, river, border;
+	GMT_LONG np[2];
 	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW", *ITEM[3] = {"polygon", "border", "river"};
 	char *header[2] = {"# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n",
 		"# @VGMT­1.0 @GLINESTRING @Nid|level @Tchar|integer\n"};
-	double area, *lon = NULL, *lat = NULL, *xx, *yy;
-	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
+	double area, *lon[2] = {NULL, NULL}, *lat[2] = {NULL, NULL};
         
 	argc = GMT_begin (argc, argv);
-	
-	/* Set up some GMT variables needed later */
-	project_info.degree[0] = project_info.degree[1] = TRUE;
-	/* Supply dummy linear proj */
-	project_info.projection = project_info.xyz_projection[0] = project_info.xyz_projection[1] = GMT_LINEAR;
-	project_info.pars[0] = project_info.pars[1] = 1.0;
-	GMT_err_fail (GMT_map_setup (-180.0, 180.0, -90.0, 90.0), "");
 	
 	if (argc < 2 || argc > 4) {
 		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix [-b|i]\n");
@@ -66,7 +60,6 @@ int main (int argc, char **argv)
 	fprintf (stderr, "polygon_to_shape: Found %d %ss\n", n_id, ITEM[lines]);
 	if (lines == 0) ymin = -90000000;	/* Because of Antarctica */
 	n_levels = (lines == 0) ? 4 : 3;
-	GMT_err_fail (GMT_map_setup (-180, 180, -90.0, 90.0), "");
 	for (level = 1; level <= n_levels; level++) {	/* Make separate files for each level*/
 		sprintf (file, "%s_L%d.gmt", argv[2], level);
 		if ((fp = fopen (file, "w")) == NULL) {
@@ -80,7 +73,7 @@ int main (int argc, char **argv)
 			/* Here we found a polygon of the required level.  Write out polygon tag and info */
 			area = P[id].h.area;
 			if (P[id].h.river) area = -area;	/* Flag river lakes with negative area */
-			if (P[id].h.id == 4 && !lines) {
+			if (P[id].h.id == 4 && !lines) {	/* Antarctica requires special treatment */
 				P[id].h.n--;	/* Skip the duplicate point */
 				for (hemi = 0; hemi < 2; hemi++) {
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
@@ -105,29 +98,29 @@ int main (int argc, char **argv)
 				
 			}
 			else if (!lines && (P[id].h.west < 180.0 && P[id].h.east > 180.0)) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
-				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
-				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
-				limit = (id == 0) ? M270 : M180;
-				for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
-					x = (P[id].p[k].x > limit) ? P[id].p[k].x - M360 : P[id].p[k].x;
-					lon[k] = x * I_MILL;	lat[k] = P[id].p[k].y * I_MILL;
+				for (hemi = 0; hemi < 2; hemi++) {
+					lon[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
+					lat[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
+				}
+				for (k = np[0] = np[1] = 0; k < P[id].h.n; k++) {
+					if (P[id].p[k].x < M180) {	/* part of west keep positive longs */
+						lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
+					} else if (P[id].p[k].x > M180) {	/* part of east, switch to negative lons */
+						lon[E][np[E]] = (P[id].p[k].x - M360) * I_MILL;	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
+					} else if (P[id].p[k].x == M180) {	/* part of both */
+						lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
+						lon[E][np[E]] = (P[id].p[k].x - M360);	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
+					}
 				}
 				for (hemi = 0; hemi < 2; hemi++) {
-					if ((np = GMT_wesn_clip (lon, lat, P[id].h.n, &xx, &yy, &nx)) == 0) {
-						fprintf (stderr, "%s: Error: Straddling 180 but not two parts?\n", GMT_program);
-						continue;
-					}
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
 						P[id].h.id, H[hemi], P[id].h.level, area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
-					for (k = 0; k < np; k++) GMT_xy_to_geo (&xx[k], &yy[k], xx[k], yy[k]);	/* Undo projection first */
-					fprintf (fp, "%.6f\t%.6f\n", xx[0], yy[0]);
-					for (k = 1; k < np; k++) {	/* Avoid printing zero increments */
-						if (!(GMT_IS_ZERO (xx[k]-xx[k-1]) && GMT_IS_ZERO (yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
+					fprintf (fp, "%.6f\t%.6f\n", lon[hemi][0], lat[hemi][0]);
+					for (k = 1; k < np[hemi]; k++) {	/* Avoid printing zero increments */
+						if (!(GMT_IS_ZERO (lon[hemi][k]-lon[hemi][k-1]) && GMT_IS_ZERO (lat[hemi][k]-lat[hemi][k-1]))) fprintf (fp, "%.6f\t%.6f\n", lon[hemi][k], lat[hemi][k]);
 					}
-					GMT_free ((void *)xx);	GMT_free ((void *)yy);
-					for (k = 0; k < P[id].h.n; k++) lon[k] -= 360.0;	/* Set up lons that go -360 to -tiny */
+					GMT_free ((void *)lon[hemi]);	GMT_free ((void *)lat[hemi]);
 				}
-				GMT_free ((void *)lon);	GMT_free ((void *)lat);
 			}
 			else {	/* No problems, just write as is */
 				if (lines)

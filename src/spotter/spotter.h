@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.25 2010-03-22 18:55:47 guru Exp $
+ *	$Id: spotter.h,v 1.26 2010-07-16 23:54:11 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -24,6 +24,7 @@
  */
 
 #include "gmt.h"	/* Requires GMT to compile and link */
+#include "gmt_proj.h"	/* For auxiliary latitude stuff */
 
 #define SPOTTER_VERSION "1.1"
 #define EQ_RAD 6371.0087714
