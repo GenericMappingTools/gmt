@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.10 2010-07-16 23:54:11 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.11 2010-07-17 00:01:08 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -102,6 +102,8 @@ int main (int argc, char **argv)
 					lon[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 					lat[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				}
+				fprintf (stderr, "%s: Splitting pol %d\n", P[id].h.id);
+				
 				for (k = np[0] = np[1] = 0; k < P[id].h.n; k++) {
 					if (P[id].p[k].x < M180) {	/* part of west keep positive longs */
 						lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
@@ -109,7 +111,7 @@ int main (int argc, char **argv)
 						lon[E][np[E]] = (P[id].p[k].x - M360) * I_MILL;	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
 					} else if (P[id].p[k].x == M180) {	/* part of both */
 						lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
-						lon[E][np[E]] = (P[id].p[k].x - M360);	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
+						lon[E][np[E]] = (P[id].p[k].x - M360) * I_MILL;	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
 					}
 				}
 				for (hemi = 0; hemi < 2; hemi++) {

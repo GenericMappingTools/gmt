@@ -96,6 +96,10 @@ using the DC85.d Euler poles, and only output a grid for the specified domain, r
 .br
 .sp
 This file can then be plotted with \fBgrdimage\fP.
+.SH COORDINATES
+Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
+before spherical rotations are performed.  We convert back to geodetic coordinates for output.
+Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdimage (1),

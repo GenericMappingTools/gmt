@@ -102,6 +102,10 @@ binary, double precision files, run
 .br
 .sp
 This file can then be plotted with \fBpsxy \-M\fP.
+.SH COORDINATES
+Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
+before spherical rotations are performed.  We convert back to geodetic coordinates for output.
+Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),
