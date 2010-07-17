@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.11 2010-07-17 00:01:08 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.12 2010-07-17 00:38:26 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 					lon[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 					lat[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				}
-				fprintf (stderr, "%s: Splitting pol %d\n", P[id].h.id);
+				fprintf (stderr, "%s: Splitting pol %d\n", GMT_program, P[id].h.id);
 				
 				for (k = np[0] = np[1] = 0; k < P[id].h.n; k++) {
 					if (P[id].p[k].x < M180) {	/* part of west keep positive longs */
