@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.12 2010-07-17 00:38:26 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.13 2010-07-17 05:52:22 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -105,8 +105,10 @@ int main (int argc, char **argv)
 				fprintf (stderr, "%s: Splitting pol %d\n", GMT_program, P[id].h.id);
 				
 				for (k = np[0] = np[1] = 0; k < P[id].h.n; k++) {
-					if (P[id].p[k].x < M180) {	/* part of west keep positive longs */
-						lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
+					if (P[id].h.id == 0 && P[id].p[k].x > M270) {	/* part of western Europe requires negative longs */
+						lon[W][np[W]] = (P[id].p[k].x - M360) * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
+					} else if (P[id].p[k].x < M180) {	/* part of west keep positive longs */
+							lon[W][np[W]] = P[id].p[k].x * I_MILL;	lat[W][np[W]++] = P[id].p[k].y * I_MILL;
 					} else if (P[id].p[k].x > M180) {	/* part of east, switch to negative lons */
 						lon[E][np[E]] = (P[id].p[k].x - M360) * I_MILL;	lat[E][np[E]++] = P[id].p[k].y * I_MILL;
 					} else if (P[id].p[k].x == M180) {	/* part of both */
