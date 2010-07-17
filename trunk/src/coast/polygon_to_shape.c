@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.13 2010-07-17 05:52:22 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.14 2010-07-17 23:41:45 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
 	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first, lines = 0, n_levels, river, border;
-	GMT_LONG np[2];
+	GMT_LONG np[2], n_straddle, limit;
 	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW", *ITEM[3] = {"polygon", "border", "river"};
 	char *header[2] = {"# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n",
 		"# @VGMT­1.0 @GLINESTRING @Nid|level @Tchar|integer\n"};
@@ -70,6 +70,7 @@ int main (int argc, char **argv)
 		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
+			limit = (id == 0) ? M270 : M180;
 			/* Here we found a polygon of the required level.  Write out polygon tag and info */
 			area = P[id].h.area;
 			if (P[id].h.river) area = -area;	/* Flag river lakes with negative area */
@@ -102,7 +103,6 @@ int main (int argc, char **argv)
 					lon[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 					lat[hemi] = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				}
-				fprintf (stderr, "%s: Splitting pol %d\n", GMT_program, P[id].h.id);
 				
 				for (k = np[0] = np[1] = 0; k < P[id].h.n; k++) {
 					if (P[id].h.id == 0 && P[id].p[k].x > M270) {	/* part of western Europe requires negative longs */
