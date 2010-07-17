@@ -75,6 +75,10 @@ and report the 2 most likely hotspot candidates for each seamount, run
 \fBoriginator\fP seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
 .br
 .sp
+.SH COORDINATES
+Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
+before spherical rotations are performed.  We convert back to geodetic coordinates for output.
+Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),

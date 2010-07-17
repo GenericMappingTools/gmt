@@ -81,6 +81,10 @@ grdmath 1 rot_gridA.grd ISNAN SUB 1 rot_gridB.grd ISNAN SUB 2 EQ = overlap.grd
 .sp
 The grid overlap.grd now has 1s in the regions of overlap and 0 elsewhere.  You can use it as a mask
 or use grdcontour to extract a polygon (contour).
+.SH COORDINATES
+Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
+before spherical rotations are performed.  We convert back to geodetic coordinates for output.
+Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR backtracker (1),
 .IR hotspotter (1),
