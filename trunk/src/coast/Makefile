@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.72 2010-07-16 00:49:14 guru Exp $
+#	$Id: Makefile,v 1.73 2010-07-18 03:19:12 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -167,10 +167,10 @@ shape-wdbii:
 
 tar-gshhs:
 		cp GSHHS+WDBII/README.TXT gshhs
-		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b gshhs/README.TXT
+		COPYFILE_DISABLE=true  tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b gshhs/README.TXT
 		rm -f gshhs/README.TXT
 		cd $(rootdir)/src; \
-		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+		COPYFILE_DISABLE=true  tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
 		cp GSHHS+WDBII/README.TXT gshhs
