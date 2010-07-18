@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.15 2010-06-21 23:42:56 guru Exp $
+REM             $Id: job23.bat,v 1.16 2010-07-18 21:40:14 guru Exp $
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM
@@ -55,7 +55,7 @@ psxy -R -J -O -K -Wthickest/red pts.d >> example_23.ps
 
 REM Plot red squares at cities and plot names:
 psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> example_23.ps
-echo {print $1, $2, 12, 1, 9, $4, $3} > awk.1
+echo {print $1, $2, 12, 0, 9, $4, $3} > awk.1
 gawk -f awk.1 cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> example_23.ps
 REM Place a yellow star at Rome
 echo %lon% %lat% | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> example_23.ps
