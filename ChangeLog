@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.766 2010-07-16 23:54:11 guru Exp $
+	$Id: ChangeLog,v 1.767 2010-07-18 21:40:14 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-07-16	pwessel
+	* ex23/*:		The scripts plotted names at a 1-degree angle instead of 0.
 
 2010-07-16	pwessel
 	* spotter/*.c:		Now convert geodetic to geocentric latitudes before doing
