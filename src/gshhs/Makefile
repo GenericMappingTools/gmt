@@ -1,10 +1,5 @@
-#	$Id: Makefile,v 1.16 2009-10-23 18:32:37 remko Exp $
-#
-#	makefile for gshhs directory
-#	Does not depend on GMT src or libraries
-#
-#-------------------------------------------------------------------------------
-#	!! STOP EDITING HERE, THE REST IS FIXED !!
+# $Id: Makefile,v 1.17 2010-07-18 03:16:01 guru Exp $ # # makefile for gshhs directory # Does not depend on GMT src or libraries #
+#------------------------------------------------------------------------------- # !! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../

@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.30 2010-05-25 01:39:53 guru Exp $
+/*	$Id: gshhs.h,v 1.31 2010-07-18 03:16:01 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -32,7 +32,7 @@
  *			  an ancestor ID, and area of the reduced polygon. Works on
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
- *	24-MAY-2010.  PW: Data version is now 2.1.0.
+ *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
  */
 
 #ifndef _GSHHS
