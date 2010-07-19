@@ -64,7 +64,7 @@ append \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBi\fP (inch), \f
 Without OPT(F), the output (or input, see OPT(I)) are in the units specified by \fBMEASURE_UNIT\fP (but see OPT(D)).
 .TP
 OPT(G)
-Calculate distances along track OR to the optional point set with OPT(G)\fIx0/y0\fP.  Append the distance unit;
+Calculate distances along track OR to the optional point set with OPT(G)\fIx0/y0\fP.  Append \IT(unit), the distance unit;
 choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires OPT(R) and OPT(J) to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
