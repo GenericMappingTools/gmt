@@ -6,7 +6,7 @@
 pstext \- To plot text strings on maps
 .SH SYNOPSIS
 \fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
+[ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
 [ OPT(D)[\fBj\fP]\fIdx\fP[/\fIdy\fP][\fBv\fP[\fIpen\fP] ] [ GMT_E_OPT ] 
 [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
@@ -46,6 +46,9 @@ of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. 
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
+.TP
+OPT(A)
+Angles are given as azimuths; convert them to directions using the current projection.
 #include "explain_-B_short.txt"
 .TP
 OPT(C)
