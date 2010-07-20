@@ -36,9 +36,10 @@
 #define GMT_latc_to_latg(lat) GMT_lat_swap_quick (lat, project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
 #define GMT_lata_to_latg(lat) GMT_lat_swap_quick (lat, project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
 
-void GMT_lat_swap_init (void);
+/* Need to declare those as extern to compile spotter under Windows */
+EXTERN_MSC void GMT_lat_swap_init (void);
+EXTERN_MSC double GMT_lat_swap (double lat, GMT_LONG itype);
 double GMT_lat_swap_quick (double lat, double c[]);
-double GMT_lat_swap (double lat, GMT_LONG itype);
 void GMT_scale_eqrad ();
 void GMT_vpolar (double lon0);
 void GMT_vmerc (double lon0, double slat);
