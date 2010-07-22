@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.768 2010-07-19 00:33:11 remko Exp $
+	$Id: ChangeLog,v 1.769 2010-07-22 20:46:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-07-22	pwessel
+	* psimage.c:		justify text string must be 3-char longs to hold trailing 0.
 
 2010-07-18	remko
 	* pstext.txt:		Added missing description of -A option.
