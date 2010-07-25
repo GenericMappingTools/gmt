@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.769 2010-07-22 20:46:43 guru Exp $
+	$Id: ChangeLog,v 1.770 2010-07-25 02:14:13 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-07-24	pwessel
+	* mgd77/mgd77list.c:	The -G option was not listed in synopsis or usage, only
+				in the man pages.
 
 2010-07-22	pwessel
 	* psimage.c:		justify text string must be 3-char longs to hold trailing 0.
