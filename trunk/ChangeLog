@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.771 2010-07-25 10:52:22 guru Exp $
+	$Id: ChangeLog,v 1.772 2010-07-26 20:35:42 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-07-26	pwessel
+	* mgd77/mgd77manage.c:	The -F option had no break statement.
 
 2010-07-24	pwessel
 	* mgd77/mgd77list.c:	The -G option was not listed in synopsis or usage, only

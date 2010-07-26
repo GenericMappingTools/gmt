@@ -23,9 +23,9 @@ gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scr
 .br
 \fBgmt_get_gridregion\fP \fIfile\fP [\fIoptions\fP]
 .br
-\fBgmt_get_map_width\fP OPR(R) OPT(J)
+\fBgmt_get_map_width\fP OPT(R) OPT(J)
 br
-\fBgmt_get_map_height\fP OPR(R) OPT(J)
+\fBgmt_get_map_height\fP OPT(R) OPT(J)
 .br
 \fBgmt_set_psfile\fP \fIfile\fP
 .br
@@ -37,8 +37,10 @@ br
 of \fBGMT\fP.
 The calling shell script should include the following line, before the functions can be used:
 .br
+.sp
 \fB. gmt_shell_functions.sh\fP
 .br
+.sp
 Once included in a shell script, \fBgmt_shell_functions.sh\fP allows \fBGMT\fP users to
 do some scripting more easily than otherwise. The functions made available are:
 .TP

@@ -109,6 +109,8 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .sp
 \fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
 .SH REFERENCES
+Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package. IT(Computers and Geosciences), BD(36), 348-354.
+.br
 Wessel, P. (1989), XOVER: A cross-over error detector for track data, \fIComputers and Geosciences, 15\fP(3), 333-346.
 .SH "SEE ALSO"
 .IR GMT (1),
