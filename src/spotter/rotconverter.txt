@@ -24,7 +24,7 @@ Name of a file with a plate motion model.  Separate several files with desired o
 If any of the specified rotation models cannot be opened as a file, we will try to decode
 the file name as \fIlon/lat/tstart\fP[\fI/tstop\fP]/\fIangle\fP for a single rotation given
 on the command line.  The \fItstop\fP argument is required for stage poles only.  For a
-finite rotation without any time information, give \fIlon/lat/angle\fP only.
+single finite rotation without any time information, give \fIlon/lat/angle\fP only.
 .SH OPTIONS
 .TP
 OPT(C)
