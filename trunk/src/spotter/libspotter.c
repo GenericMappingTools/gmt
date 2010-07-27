@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.62 2010-07-16 23:54:11 guru Exp $
+ *	$Id: libspotter.c,v 1.63 2010-07-27 01:07:20 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -108,6 +108,10 @@ int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in
 				e[i].omega = e[i].t_stop;
 				e[i].t_stop = 0.0;
 			}
+			if (e[i].omega == 0.0) {
+				if (gmtdefs.verbose) fprintf (stderr, "libspotter: (%s) Skipping total reconstruction rotation with zero rotation. line %ld\n", file, i);
+				continue;
+			}
 			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
 				if (K[8] == 0.0) K[8] = 10000.0;	/* No d.f. given */
 				record_to_covar (&e[i], K);
@@ -119,7 +123,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in
 
 
 		if (e[i].t_stop >= e[i].t_start) {
-			fprintf (stderr, "libspotter: ERROR: Stage rotation %ld has start time younger than stop time\n", i);
+			fprintf (stderr, "libspotter: ERROR: (%s) Stage rotation %ld has start time younger than stop time\n", file, i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
@@ -157,7 +161,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		if (verbose) fprintf (stderr, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
+		if (verbose) fprintf (stderr, "libspotter: (%s) Extending oldest stage pole back to %g Ma\n", file, (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
