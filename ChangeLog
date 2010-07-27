@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.773 2010-07-26 22:36:46 guru Exp $
+	$Id: ChangeLog,v 1.774 2010-07-27 01:07:19 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-07-26	pwessel
 	* mgd77/mgd77manage.c:	The -F option had no break statement.
 	* mgd77/mgd77track.c:	Had inactive code to write segmentheader to output.
+	* spotter/libspotter.c:	Ignore total reconstruction rotations with zero angle
 
 2010-07-24	pwessel
 	* mgd77/mgd77list.c:	The -G option was not listed in synopsis or usage, only
