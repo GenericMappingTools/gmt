@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.219 2010-06-28 21:58:43 guru Exp $
+ *	$Id: gmt_io.c,v 1.220 2010-07-27 03:13:29 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3172,7 +3172,7 @@ GMT_LONG GMT_export_table (void *dest, GMT_LONG dest_type, struct GMT_TABLE *tab
 		strcpy (open_mode, "w");
 		ascii = TRUE;
 		psave = GMT_output;		/* Save the previous pointer since we need to change it back at the end */
-		GMT_input = GMT_output_ascii;	/* Override and use ascii mode */
+		GMT_output = GMT_output_ascii;	/* Override and use ascii mode */
 	}
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
