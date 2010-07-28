@@ -4,7 +4,7 @@
 backtracker \- Reconstruct points, flowlines and hotspot tracks 
 .SH SYNOPSIS
 \fBbacktracker\fP [\fIinfile(s)\fP] OPT(E)\fIrotations.txt\fP | OPT(e)\fIlon\fP/\fIlat\fP/\fIangle\fP
-[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ GMT_H_OPT ] 
+[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ OPT(F)\fIdrift.txt\fP ] [ GMT_H_OPT ] 
 [ OPT(Lf)|\fBb\fP\fIstep\fP ] [ OPT(N)\fIupper_age\fP ] 
 [ OPT(Q)\fIfixed_age\fP ] [ OPT(S)\fIfilestem\fP ] [ OPT(T)\fIzero_age\fP ] [ GMT_V_OPT ] 
 [ OPT(W)[\fBa\fP|\fBt\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
@@ -46,6 +46,12 @@ Set the direction to go: OPT(Df) will go backward in time (from younger to older
 OPT(Db) will go forward in time (from older to younger positions) [Default].  Note: For OPT(Db) you
 are specifying the age at the given location, whereas for OPT(Df)
 you are not; instead you specify the age at the reconstructed point.
+.TP
+OPT(F)
+Supply a file with lon, lat, age records that contains the history of hotspot motion for the current hotspot.  If given,
+the reconstructions will only use the 3rd data input column (i.e., the age) to obtain the location
+of the hotspot at that time, via an interpolation of the hotspot motion history.  This adjusted
+location is then used to reconstruct the point or path [No drift].
 #include "explain_-H.txt"
 .TP
 OPT(L)
@@ -102,6 +108,13 @@ binary, double precision files, run
 .br
 .sp
 This file can then be plotted with \fBpsxy \-M\fP.
+.br
+.sp
+To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1 Ma, given a history of
+hotspot motion file (HIdrift.txt) and a set of total reconstruction rotations for the plate (PAC_APM.d), try
+.br
+.sp
+echo 204 19 80 | \fBbacktracker\fP OPT(Df) OPT(C) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
 .SH COORDINATES
 Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
 before spherical rotations are performed.  We convert back to geodetic coordinates for output.
