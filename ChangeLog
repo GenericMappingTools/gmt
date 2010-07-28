@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.774 2010-07-27 01:07:19 guru Exp $
+	$Id: ChangeLog,v 1.775 2010-07-28 02:32:07 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-07-27	pwessel
+	* spotter/backtracker.c:	Added the -F option to compute predicted hotspot tracks
+				given a hotspot motion record and plate rotations.
 
 2010-07-26	pwessel
 	* mgd77/mgd77manage.c:	The -F option had no break statement.
