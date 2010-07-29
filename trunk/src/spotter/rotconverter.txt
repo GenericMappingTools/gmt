@@ -86,5 +86,7 @@ of relative plate motions PL1-PL2.RPM, assuming symmetric spreading,, try
 \fBrotconverter\fP - PL1-PL2.RPM OPT(E) OPT(Ffs) > PL2-PL1_half.RPM
 .SH "SEE ALSO"
 .IR backtracker (1),
+.IR grdrotater (1),
+.IR grdspotter (1),
 .IR hotspotter (1),
 .IR originator (1)

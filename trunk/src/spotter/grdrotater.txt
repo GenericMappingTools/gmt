@@ -87,6 +87,7 @@ before spherical rotations are performed.  We convert back to geodetic coordinat
 Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR backtracker (1),
+.IR grdspotter (1),
 .IR hotspotter (1),
 .IR originator (1)
 .IR rotconverter (1)

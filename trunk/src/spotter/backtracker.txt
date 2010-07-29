@@ -122,6 +122,8 @@ Note: If your data already are geocentric, you can avoid the conversion by using
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),
+.IR grdrotater (1),
+.IR grdspotter (1),
 .IR mapproject (1),
 .IR hotspotter (1),
 .IR originator (1)
