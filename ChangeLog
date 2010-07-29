@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.775 2010-07-28 02:32:07 guru Exp $
+	$Id: ChangeLog,v 1.776 2010-07-29 01:06:40 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-07-28	pwessel
+	* spotter/rotconverter.c:	Complained of "bad option" when a rotation with a
+				negative longitude was given on the command line, e.g. -135/35/-2.5
+		
 2010-07-27	pwessel
 	* spotter/backtracker.c:	Added the -F option to compute predicted hotspot tracks
 				given a hotspot motion record and plate rotations.
