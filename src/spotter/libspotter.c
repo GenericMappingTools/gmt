@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.63 2010-07-27 01:07:20 guru Exp $
+ *	$Id: libspotter.c,v 1.64 2010-07-30 02:21:00 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -819,9 +819,9 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 	t_min = MAX (a[n_a-1].t_stop, b[n_b-1].t_stop);
 	t[n_k++] = t_max;
 	i = j = 0;
-	while (i < n_a && a[i].t_stop > t[0]) i++;
+	while (i < n_a && a[i].t_stop >= t[0]) i++;
 	if (i == (n_a - 1)) a_ok = FALSE;
-	while (j < n_b && b[j].t_stop > t[0]) j++;
+	while (j < n_b && b[j].t_stop >= t[0]) j++;
 	if (j == (n_b - 1)) b_ok = FALSE;
 	while (a_ok || b_ok) {
 		if (a_ok && !b_ok) {		/* Only a left */
