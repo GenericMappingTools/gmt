@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.291 2010-07-13 22:52:48 guru Exp $
+ *	$Id: gmt_plot.c,v 1.292 2010-08-03 21:55:22 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4748,7 +4748,7 @@ void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FR
 				x0 = x[i] - dx * frac;
 				y0 = y[i] - dy * frac;
 			}
-			angle = d_atan2 (dy, dx);
+			angle = d_atan2 (dy, dx);	/* In radians */
 			skip = (GMT_world_map && fabs (dx) > GMT_half_map_width (y[i]));	/* Don't do ticks on jumps */
 			if (skip) {
 				dist += gap;
@@ -4797,9 +4797,9 @@ void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FR
 							angle += M_PI;
 						case GMT_FRONT_LEFT:
 							dir1 = R2D * angle;
-							dir2 = angle + 180.0;
+							dir2 = dir1 + 180.0;
 							if (dir1 > dir2) dir1 -= 360.0;
-							dim[0] = f->f_len;	dim[1] = dir2;	dim[2] = dir2;
+							dim[0] = f->f_len;	dim[1] = dir1;	dim[2] = dir2;
 							GMT_pie (x0, y0, 0.0, dim, g, outline);
 							break;
 					}

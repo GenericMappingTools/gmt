@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.778 2010-07-31 21:12:40 guru Exp $
+	$Id: ChangeLog,v 1.779 2010-08-03 21:55:21 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-08-03	pwessel
+	* gmt_plot.c:		Bug in fault symbol psxy -Sfrc, fixed w/ thanx to J. Robert
 
 2010-07-28	pwessel
 	* spotter/rotconverter.c:	Complained of "bad option" when a rotation with a
