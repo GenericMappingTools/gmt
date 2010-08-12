@@ -69,7 +69,7 @@ choices.
 OPT(F)
 Give a comma-separated list of desired columns or ranges that should be part of the output
 (0 is first column) [Default outputs all columns].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Reverses the output row sequence from ascending time to descending [ascending].

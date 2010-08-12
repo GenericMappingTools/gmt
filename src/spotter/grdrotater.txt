@@ -32,7 +32,7 @@ angle, all in degrees.
 OPT(F)
 Specify a multi-segment closed polygon file that describes the inside area of the grid
 that should be projected [Default projects entire grid].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(N)
 Do Not output the rotated polygon outline [Default will write it to stdout].

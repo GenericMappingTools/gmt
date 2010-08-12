@@ -62,7 +62,7 @@ data with \fBsample1d\fP.
 .TP
 .B \-E
 Include Ends of time series in output.  Default loses half the filter-width of data at each end.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 .B \-I
 To ignore values; If an input value equals \fIignore_val\fP it will be set to NaN.

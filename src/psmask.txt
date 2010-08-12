@@ -48,7 +48,7 @@ In such cases redirect the output to > /dev/null on *nix systems or to > nul on 
 OPT(G)
 Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
 (See SPECIFYING FILL below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 #include "explain_-K.txt"
 .TP

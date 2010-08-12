@@ -44,7 +44,7 @@ Center bin on each value. [Default is left edge].
 OPT(G)
 Select filling of bars [Default is no fill].
 (See SPECIFYING FILL below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Inquire about min/max x and y after binning.  No plotting is done.  Append \fBo\fP

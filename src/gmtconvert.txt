@@ -39,7 +39,7 @@ record of each segment, respectively.
 .TP
 OPT(F)
 Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Invert the order of rows, i.e., output the final records in reverse order, starting with the last and ending

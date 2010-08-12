@@ -28,7 +28,7 @@ OPT(E)
 Returns the record whose column \fIcol\fP contains the minimum (\fBl\fP) or maximum (\fBh\fP)
 value.  Upper case (\fBL|H\fP) works on absolute value of the data.  In case of multiple
 matches, only the first record is returned.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Report the min/max of the first \fIn\fP columns to the nearest multiple of the provided

@@ -261,7 +261,7 @@ number of the image pattern (1-90) OR the name of a Sun rasterfile.
 \fPicon_size\fP sets the unit size in inches.  To invert black and
 white pixels, use OPT(GP) instead of \fP\-Gp\fP.  See
 Appendix E for information on individual patterns.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-K.txt"
 .TP
 OPT(L)[\fIpen\fP]

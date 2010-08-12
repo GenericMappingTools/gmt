@@ -45,7 +45,7 @@ Pass all records whose location is within one of the closed polygons in the mult
 file \fIpolygonfile\fP.  For spherical polygons (lon, lat), make sure no consecutive points
 are separated by 180 degrees or more in longitude.  Note that \fIpolygonfile\fP must be in ASCII regardless
 of whether OPT(b) is used.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Reverses the sense of the test for each of the criteria specified:

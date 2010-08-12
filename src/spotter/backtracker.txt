@@ -52,7 +52,7 @@ Supply a file with lon, lat, age records that contains the history of hotspot mo
 the reconstructions will only use the 3rd data input column (i.e., the age) to obtain the location
 of the hotspot at that time, via an interpolation of the hotspot motion history.  This adjusted
 location is then used to reconstruct the point or path [No drift].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Specify a sampled path between initial and final position: OPT(Lf) will

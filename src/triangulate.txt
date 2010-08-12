@@ -41,7 +41,7 @@ the name of the output grid file.  The interpolation is performed in the
 original coordinates, so if your triangles are close to the poles you are
 better off projecting all data to a local coordinate system before using
 \fBtriangulate\fP (this is true of all gridding routines).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] sets the grid  size for optional grid output (see OPT(G)).

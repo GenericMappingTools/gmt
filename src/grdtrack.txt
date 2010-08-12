@@ -28,7 +28,7 @@ and optionally the max latitude in the IMG file [80.738].
 (See GRID FILE FORMAT below.)
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 

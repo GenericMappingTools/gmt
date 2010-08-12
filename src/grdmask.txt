@@ -32,7 +32,7 @@ approximated by great circle arcs.  When using the OPT(A) sides will be regarded
 Alternatively, append \fBm\fP to have sides first follow meridians, then parallels. Or append \fBp\FP
 to first follow parallels, then meridians.
 #include "explain_nodereg.txt"
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(N)
 Sets the values that will be assigned to nodes that are \fIout\fPside the polygons,

@@ -33,7 +33,7 @@ Set the maximum allowed condition number for the matrix solution.  \fBtrend1d\fP
 fits a damped least squares model, retaining only that part of the eigenvalue spectrum such that 
 the ratio of the largest eigenvalue to the smallest eigenvalue is \fIcondition_#\fP.   
 [Default:  \fIcondition_#\fP = 1.0e06. ].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Iteratively increase the number of model parameters, starting at one, until 

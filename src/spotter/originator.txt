@@ -35,7 +35,7 @@ is not present (assumed to be 0 Ma).
 .TP
 OPT(D)
 Sets the flowline sampling interval in km.  [Default is 5].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Output closest approach for nearest hotspot only (ignores OPT(S)).

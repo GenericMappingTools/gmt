@@ -50,7 +50,7 @@ Do not draw the scale length bar [Default plots scale in lower right corner]
 OPT(G)
 Selects shade, color or pattern for filling the sectors [Default is no fill].
 (See SPECIFYING FILL below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Inquire.  Computes statistics needed to specify useful OPT(R).  No plot is generated.

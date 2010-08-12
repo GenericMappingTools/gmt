@@ -44,7 +44,7 @@ However, if the current \fBELLIPSOID\fP is spherical then great circle calculati
 OPT(E)
 Set the value assigned to empty nodes [NaN].
 #include "explain_nodereg.txt"
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 .TP
 OPT(L)

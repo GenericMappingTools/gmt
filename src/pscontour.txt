@@ -49,7 +49,7 @@ However, when OPT(m) is used in conjunction with OPT(D) a single multisegment fi
 .TP
 OPT(G)
 #include "explain_contlabel.txt"
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Color the triangles using the color palette table.

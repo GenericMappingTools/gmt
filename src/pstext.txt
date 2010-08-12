@@ -69,7 +69,7 @@ from the original point to the shifted point; append a \fIpen\fP to change the a
 OPT(G)
 Sets the shade or color used for drawing the text  [Default is BASEMAP_FRAME_RGB, the current frame color (by default black)]
 (See SPECIFYING COLOR below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-K.txt"
 .TP
 OPT(L)

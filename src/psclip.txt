@@ -39,7 +39,7 @@ No space between the option flag and the associated arguments.
 .TP
 OPT(E)
 Sets the viewpoint's azimuth and elevation [180/90].\"'
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-K.txt"
 .TP
 OPT(N)

@@ -34,7 +34,7 @@ OPT(D):\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:
 .TP
 OPT(E)
 Transpose the grid and exchange the \fIx\fP and \fIy\fP information.  Incompatible with the other options.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(N)
 Read the ASCII (or binary; see OPT(bi)) file \fIxyzfile\fP and replace the corresponding
