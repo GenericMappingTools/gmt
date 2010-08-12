@@ -94,7 +94,7 @@ OPT(E)
 OPT(G)
 \fIdist\fP Generate mode.  No input is read.  Create (\fIr, s, p\fP) output points every \fIdist\fP units of \fIp\fP.  See 
 OPT(Q) option.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Length controls.  Project only those points whose \fIp\fP coordinate is within \fIl_min\fP < \fIp\fP < \fIl_max\fP.  

@@ -44,7 +44,7 @@ Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid. 
 value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
 The values normally given by OPT(R), OPT(I), and OPT(F) are determined from the ESRI header instead.
 #include "explain_nodereg.txt"
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 .TP
 OPT(N)

@@ -38,7 +38,7 @@ Each block is the
 locus of points nearest the grid value  location.  For example, with OPT(R)10/15/10/15
 and and OPT(I)1:  with the OPT(F) option 10 <= (\fIx,y\fP) < 11 is one of 25 blocks;
 without it 9.5 <= (\fIx,y\fP) < 10.5 is one of 36 blocks.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 .TP
 OPT(S)

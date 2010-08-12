@@ -80,7 +80,7 @@ Select color or pattern for filling of symbols or polygons [Default is no fill].
 Note when OPT(m) is chosen, \fBpsxy\fP will search for OPT(G) and OPT(W)
 strings in all the subheaders and let any values thus found over-ride the command line settings
 (see OPT(m) below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Use the supplied \fIintens\fP value (nominally in the -1 to + 1 range) to modulate the fill color by simulating illumination [none].

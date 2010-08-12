@@ -218,7 +218,7 @@ Selects filling of focal mechanisms.  By
 convention, the compressional quadrants of the focal mechanism beach
 balls are shaded.  Set the shade (0\-255) or color (r/g/b) [Default is
 0/0/0]. 
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-K.txt"
 .TP
 OPT(L)[\fIpen\fP]

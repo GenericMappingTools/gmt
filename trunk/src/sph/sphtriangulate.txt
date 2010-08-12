@@ -31,7 +31,7 @@ the other when necessary [Default keeps both arrays in memory].
 .B \-D
 Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
 equals the first point in the segment.  Requires OPT(m) [Default uses all points].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 .B \-L
 Specify the unit used for distance and area calculations.  Choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile),

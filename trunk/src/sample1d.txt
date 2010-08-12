@@ -24,7 +24,7 @@ OPT(F)
 Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), \fBc\fP (natural cubic spline),
 and \fBn\fP (no interpolation: nearest point) [Default is OPT(Fa)].
 You may change the default interpolant; see \fBINTERPOLANT\fP in your \.gmtdefaults4 file.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 \fIxinc\fP defines the sampling interval. [Default is the separation between the first and

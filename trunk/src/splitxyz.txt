@@ -52,7 +52,7 @@ off the corners of track segments.  [Default = no filtering].
 OPT(G)
 Do not let a segment  have a gap exceeding \fIgap_distance\fP; instead, split it into two 
 segments.  [Default ignores gaps].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 .TP
 OPT(M)

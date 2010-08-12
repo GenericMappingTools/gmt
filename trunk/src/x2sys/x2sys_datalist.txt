@@ -25,7 +25,7 @@ The adjustments are only applied if the corresponding adjust file can be found [
 OPT(F)
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Apply optimal corrections to columns where such corrections are available.  Append the correction

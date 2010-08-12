@@ -186,7 +186,7 @@ of a icon-format file.  \fIicon_size\fP sets the unit size in inches.
 To invert black and white pixels, use OPT(GP) instead of
 OPT(Gp).  See \fBpspatterns\fP for information on individual
 patterns.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-K.txt"
 .TP
 OPT(L)

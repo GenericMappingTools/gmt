@@ -96,7 +96,7 @@ Set the shade (0\-255) or color (r/g/b) [Default is 0/0/0].
 OPT(g)[pen]\fP
 Outline symbols in compressional quadrants using \fIpen\fP or the default pen
 (see OPT(W)).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(h)
 Use special format derived from HYPO71 output

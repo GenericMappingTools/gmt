@@ -72,7 +72,7 @@ will use exact methods for geodesic distances (Rudoe's method for distances in l
 latitudes in degree calculations, assuming the current ellipsoid is not spherical).  With no fixed point we
 calculate cumulate distances along track. To obtain incremental distance between successive points, use OPT(G-).
 To specify the 2nd point via two extra columns in the input file, choose OPT(G+).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.

@@ -16,7 +16,7 @@ estimation or optimize the tension selection to satisfy one of four criteria.
 \fIinfiles\fP
 Data files with the (lon, lat, f) coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
 .SH OPTIONS
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 #include "explain_-I.txt"
 .TP
 OPT(Q)

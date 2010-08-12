@@ -82,7 +82,7 @@ output file is a 2-D binary grid file.  Applies to 2-D interpolation only.
 (3) If OPT(N) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Specify equidistant sampling intervals, on for each dimension, separated by slashes.

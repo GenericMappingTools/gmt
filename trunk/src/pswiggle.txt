@@ -48,7 +48,7 @@ user's units.\"'.  Use OPT(Dx) to specify the gap in projected coordinates (appe
 OPT(G)
 Set fill shade, color or pattern of positive wiggles [Default is black]
 (See SPECIFYING FILL below).
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(I)
 Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].

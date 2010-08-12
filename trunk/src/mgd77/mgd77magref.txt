@@ -94,7 +94,7 @@ The data is written out in the order they appear in \fIflags\fP [Default is OPT(
 .TP
 OPT(G)
 Specifies that coordinates are geocentric [geodetic].
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 .TP
 OPT(L)
 Computes J field vectors from certain external sources.

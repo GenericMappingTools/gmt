@@ -42,7 +42,7 @@ OPT(C)
 Convergence limit.  Iteration is assumed to have converged when the maximum absolute change in 
 any grid value is less than \fIconvergence_limit\fP.  (Units same as data z units).  [Default is scaled
 to 0.1 percent of typical gradient in input data.]
-#include "explain_-H.txt"
+#include "explain_-h.txt"
 Not used with binary data.
 .TP
 OPT(L)
