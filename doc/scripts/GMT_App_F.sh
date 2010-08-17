@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.13 2010-04-20 14:43:19 remko Exp $
+#	$Id: GMT_App_F.sh,v 1.14 2010-08-17 23:56:27 guru Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -156,6 +156,11 @@ psxy -R -J -O -K -m -Glightgray << EOF >> GMT_App_F_stand+.ps
 9	28
 5	28
 >
+1	30
+2	30
+2	29
+1	29
+>
 5	30
 9	30
 9	29
@@ -175,6 +180,11 @@ psxy -R -J -O -K -m -Glightgray << EOF >> GMT_App_F_stand+.ps
 9	31
 9	30
 7	30
+>
+1	32
+2	32
+2	31
+1	31
 >
 5	32
 9	32
