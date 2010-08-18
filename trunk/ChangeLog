@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.780 2010-08-17 23:56:27 guru Exp $
+	$Id: ChangeLog,v 1.781 2010-08-18 00:53:43 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-08-17	pwessel
 	* GMT_App_F.sh:		Missed two slots that should be shaded in Standard+
+	* misc/gmt2kml.c:	Only append running number when a segment has more than
+				one point, else just use segment label.
 
 2010-08-03	pwessel
 	* gmt_plot.c:		Bug in fault symbol psxy -Sfrc, fixed w/ thanx to J. Robert
