@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.781 2010-08-18 00:53:43 guru Exp $
+	$Id: ChangeLog,v 1.782 2010-08-18 21:58:29 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-08-18	jluis
+	* ps2rasrter.c:		Added missing on-line description of -C option.
 
 2010-08-17	pwessel
 	* GMT_App_F.sh:		Missed two slots that should be shaded in Standard+
