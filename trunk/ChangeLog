@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.782 2010-08-18 21:58:29 jluis Exp $
+	$Id: ChangeLog,v 1.783 2010-08-19 18:19:56 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-08-19	pwessel
+	* gmt_plot.c:		map_latline/lonline tried to draw a 2-point line when
+				no points were defined.  Checks that we have at least 2 points
 2010-08-18	jluis
-	* ps2rasrter.c:		Added missing on-line description of -C option.
+	* ps2raster.c:		Added missing on-line description of -C option.
 
 2010-08-17	pwessel
 	* GMT_App_F.sh:		Missed two slots that should be shaded in Standard+
