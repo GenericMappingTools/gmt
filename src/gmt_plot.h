@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.26 2010-06-28 21:58:43 guru Exp $
+ *	$Id: gmt_plot.h,v 1.27 2010-08-26 00:02:07 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,6 +85,7 @@ struct GMT_SYMBOL {
 	GMT_LONG symbol;	/* Symbol id */
 	GMT_LONG n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	GMT_LONG u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	GMT_LONG u_set;		/* TRUE if a unit was specified */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double size_x2;		/* Half size in x */
