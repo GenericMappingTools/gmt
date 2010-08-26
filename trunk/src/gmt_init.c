@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.448 2010-07-11 04:41:42 guru Exp $
+ *	$Id: gmt_init.c,v 1.449 2010-08-26 00:02:07 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5400,7 +5400,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 	static char *bar_symbols[2] = {"bB", "-bBoOuU"};
 
 	p->n_required = p->convert_angles = p->n_nondim = 0;
-	p->user_unit = p->shrink = p->read_vector = p->base_set = FALSE;
+	p->user_unit = p->shrink = p->read_vector = p->base_set = p->u_set = FALSE;
 
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
@@ -5456,7 +5456,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
-		if (text[1] && (p->u = GMT_get_unit (text[1])) < 0) decode_error = TRUE;
+		if (text[1] && (p->u = GMT_get_unit (text[1])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 		p->equal_area = FALSE;
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || text[1] == '\0')) {	/* Symbol, but no size given (size assumed given on command line) */
@@ -5811,7 +5811,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			len = strlen(text) - 1;
 			if (text[j] == 'n') {	/* Normalize option used */
 				k = GMT_get_unit (text[len]);
-				if (k >= 0) p->u = k;
+				if (k >= 0) { p->u = k; p->u_set = TRUE;}
 				p->v_norm = atof (&text[j+1]);
 				if (p->v_norm > 0.0) {
 					p->v_shrink = 1.0 / p->v_norm;
@@ -5830,6 +5830,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 
 				if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
 					p->u = GMT_get_unit (text[len]);
+					if (p->u >= 0) p->u_set = TRUE;
 					text[len] = 0;
 				}
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);

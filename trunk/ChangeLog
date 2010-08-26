@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.784 2010-08-19 18:43:33 guru Exp $
+	$Id: ChangeLog,v 1.785 2010-08-26 00:02:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-08-25	pwessel
+	* psxy[z].c:		Units given in -S without sizes (e.g., -Sci) would be
+				ignored and overridden by MEASURE_UNIT.
+
+2010-08-21	pwessel
+	* misc/gmt2kml.c:	Did not parse -D"description" for points.
 
 2010-08-19	pwessel
 	* gmt_plot.c:		map_latline/lonline tried to draw a 2-point line when
