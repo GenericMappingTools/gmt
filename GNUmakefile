@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.65 2010-07-10 02:45:57 guru Exp $
+#  $Id: GNUmakefile,v 1.66 2010-08-29 21:24:03 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -196,6 +196,8 @@ pdfdocs:	FILES
 		cd doc ; $(MAKE) pdf
 
 prep_suppl:	clean config
+
+get_gshhs:	get_coast get_high get_full
 
 get_coast get_high get_full:
 #		Set-up ftp command & get coast file
