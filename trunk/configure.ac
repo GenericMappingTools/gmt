@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.87 2010-07-19 00:33:12 remko Exp $
-AC_REVISION($Revision: 1.87 $)
+dnl $Id: configure.ac,v 1.88 2010-08-30 00:48:47 guru Exp $
+AC_REVISION($Revision: 1.88 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -18,7 +18,7 @@ MANDATE="1 Jan 2011"
 DOCDATE="January 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.1.0
-CVS_VERSION=0
+CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
