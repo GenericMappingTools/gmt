@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.449 2010-08-26 00:02:07 guru Exp $
+ *	$Id: gmt_init.c,v 1.450 2010-09-01 00:59:21 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1249,7 +1249,6 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			error += i;
 			break;
 		case 'M':
-			fprintf (stderr, "%s: Option -M is deprecated (but is processed correctly).  Please use -m instead\n", GMT_program);
 		case 'm':
 			GMT_parse_m_option (&item[2]);
 			break;
