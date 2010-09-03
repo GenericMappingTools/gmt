@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.785 2010-08-26 00:02:06 guru Exp $
+	$Id: ChangeLog,v 1.786 2010-09-03 19:41:37 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-09-03	pwessel
+	* misc/gmtstitch.c:	Could crash if -C was used.
+
+2010-08-30	pwessel
+	* nearneighbor.c:	Did not check that -S was not set.
 
 2010-08-25	pwessel
 	* psxy[z].c:		Units given in -S without sizes (e.g., -Sci) would be
