@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.787 2010-09-07 16:48:33 guru Exp $
+	$Id: ChangeLog,v 1.788 2010-09-07 22:05:43 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-09-07	pwessel
 	* ps2raster.c:		The -A- option did not reset -A for -W.
+	* grdtrack.c:		Did not ensure that given -R was adjusted to fit grid spacing
 
 2010-09-03	pwessel
 	* misc/gmtstitch.c:	Could crash if -C was used.
