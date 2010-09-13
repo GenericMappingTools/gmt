@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.88 2010-01-09 03:03:39 guru Exp $
+#  $Id: GNUmakefile,v 1.89 2010-09-13 22:46:04 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -162,6 +162,14 @@ endif
 # Must create manpages before install-man
 
 include manpages.mk
+
+# For debug test purposes:
+greenspline_test:	greenspline_test.o
+			$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+			$(COMPRESS) $@
+
+greenspline_test.o:	greenspline.c
+			$(CC) $(CFLAGS) $(CPPFLAGS) -c -DTEST greenspline.c -o greenspline_test.o
 
 # How to clean it all up
 
