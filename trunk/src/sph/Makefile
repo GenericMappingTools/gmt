@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2009-10-23 18:32:37 remko Exp $
+#	$Id: Makefile,v 1.19 2010-09-14 23:57:31 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -74,4 +74,4 @@ spotless::	clean
 #-------------------------------------------------------------------------------
 
 $(CODE):	$(CODE_O) $(SPHLIB)
-	$(CC) $(CFLAGS) $@.o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) -L. -lsph $(LIBS) -o $@
+	$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) -L. -lsph  $(LIBS) -o $@
