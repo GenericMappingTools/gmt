@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.789 2010-09-07 22:28:46 guru Exp $
+	$Id: ChangeLog,v 1.790 2010-09-15 00:02:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-09-15	pwessel
+	* sph/Makefile:		Did not have LDFLAGS in link statement
 
 2010-09-07	pwessel
 	* ps2raster.c:		The -A- option did not reset -A for -W.
