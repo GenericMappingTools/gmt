@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.64 2010-07-30 02:21:00 guru Exp $
+ *	$Id: libspotter.c,v 1.65 2010-09-17 07:35:57 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -107,10 +107,6 @@ int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in
 				K[0] = e[i].omega;
 				e[i].omega = e[i].t_stop;
 				e[i].t_stop = 0.0;
-			}
-			if (e[i].omega == 0.0) {
-				if (gmtdefs.verbose) fprintf (stderr, "libspotter: (%s) Skipping total reconstruction rotation with zero rotation. line %ld\n", file, i);
-				continue;
 			}
 			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
 				if (K[8] == 0.0) K[8] = 10000.0;	/* No d.f. given */
