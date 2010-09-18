@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 30
-REM             $Id: job30.bat,v 1.3 2010-01-14 02:34:35 jluis Exp $
+REM             $Id: job30.bat,v 1.4 2010-09-18 01:12:40 guru Exp $
 REM
 REM Purpose:	Show graph mode and math angles
 REM GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -27,8 +27,8 @@ echo 120 -1.25 > tmp
 echo 120 1.25 >> tmp
 psxy -R -J -O -K -W0.5p,- tmp >> %ps%
 
-echo 360 1 18 0 4 RB x = cos(@%12%a@%%) > tmp
-echo 360 0 18 0 4 RB y = sin(@%12%a@%%) >> tmp
+echo 360 1 18 0 4 RB x = cos(@%%12%%a@%%%%) > tmp
+echo 360 0 18 0 4 RB y = sin(@%%12%%a@%%%%) >> tmp
 echo 120 -1.25 14 0 4 LB 120\312 >> tmp
 echo 370 -1.35 24 0 12 LT a >> tmp
 echo -5 1.85 24 0 4 RT x,y >> tmp
