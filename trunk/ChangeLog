@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.791 2010-09-17 07:35:57 guru Exp $
+	$Id: ChangeLog,v 1.792 2010-09-20 21:51:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-09-20	pwessel
+	* src/ps2raster.c:	Made tolerant of \r line-endings.
 
 2010-09-15	pwessel
 	* sph/Makefile:		Did not have LDFLAGS in link statement
