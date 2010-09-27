@@ -68,8 +68,10 @@ will be average data value or NaN according to whether average constraint is > 0
 .TP
 OPT(S)
 Multiply the img file values by \fIscale\fP before storing in grid file.  [Default is 1.0].  
-(img topo files are stored in (corrected) meters; gravity files in mGal*10; vertical 
-deflection files in microradians*10, vertical gravity gradient files in Eotvos*10.)
+For recent img files: img topo files are stored in (corrected) meters [OPT(S)1];
+free-air gravity files in mGal*10 [OPT(S)0.1 to get mGal];
+vertical  deflection files in microradians*10 [OPT(S)0.1 to get microradians],
+vertical gravity gradient files in Eotvos*50 [OPT(S)0.02 to get Eotvos, or OPT(S)0.002 to get mGal/km]).
 #include "explain_-V.txt"
 Particularly recommended here, as it is helpful to see how the coordinates are adjusted.
 .TP

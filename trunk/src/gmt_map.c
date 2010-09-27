@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.256 2010-07-13 02:33:28 remko Exp $
+ *	$Id: gmt_map.c,v 1.257 2010-09-27 18:25:12 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5586,6 +5586,8 @@ GMT_LONG GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struc
 		}
 	}
 
+	for (ij_out = 0; ij_out < O->ny * O->nx; ij_out++) z_out[ij_out] = GMT_f_NaN;	/* So that nodes outside will retain a NaN value */
+
 	/* PART 1: Project input grid points and do a blockmean operation */
 
 	if (antialias) {
@@ -5632,6 +5634,7 @@ GMT_LONG GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struc
 				GMT_geo_to_xy (x_out[i_out], y_out[j_out], &x_proj, &y_proj);
 			else {
 				GMT_xy_to_geo (&x_proj, &y_proj, x_out[i_out], y_out[j_out]);
+				if (project_info.projection == GMT_GENPER && project_info.g_outside) continue;	/* We are beyond the horizon */
 
 				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
 				   errors in the grid limits. */
