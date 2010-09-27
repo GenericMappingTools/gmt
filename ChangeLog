@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.792 2010-09-20 21:51:06 guru Exp $
+	$Id: ChangeLog,v 1.793 2010-09-27 18:25:12 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-09-27	pwessel
+	* gmt_map.c:		Did not check if we were beyond the horizon in GMT_grd_project.
+				Also did not initialize output grid to NaNs.
 
 2010-09-20	pwessel
 	* src/ps2raster.c:	Made tolerant of \r line-endings.
