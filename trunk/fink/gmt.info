@@ -64,7 +64,7 @@ DescDetail: <<
 
  Also consider:
  gmt-doc: Documentation and example files
- gshhs-high: High resolution coastlines
+ gshhs-hires: High resolution coastlines
 <<
 DescPort: <<
  Removed xgrid supplementary package so X11 is not required.
