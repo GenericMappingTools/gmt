@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.h,v 1.12 2010-01-05 01:15:48 guru Exp $
+ *	$Id: gmt_mgg.h,v 1.13 2010-09-28 20:23:03 remko Exp $
  *
  *    Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -28,7 +28,7 @@ struct GMTMGG_REC {	/* Format of *.gmt file records */
 EXTERN_MSC int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minute, int *second, struct GMTMGG_TIME *gmt_struct);
 EXTERN_MSC struct GMTMGG_TIME *gmtmgg_init (int year1);
 EXTERN_MSC int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, int second, struct GMTMGG_TIME *gmt_struct);
-EXTERN_MSC void gmtmggpath_init (char *dir);
+EXTERN_MSC void gmtmggpath_init ();
 EXTERN_MSC int gmtmggpath_func (char *leg_path, char *leg);
 EXTERN_MSC int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt_struct, int anom_offset);
 EXTERN_MSC void gmtmgg_end ();

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.24 2010-09-28 20:19:01 remko Exp $
+ *	$Id: gmt_mgg.c,v 1.25 2010-09-28 20:23:03 remko Exp $
  *
  *    Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -163,7 +163,7 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
  * the gmtfile directories.
  */
  
-void gmtmggpath_init (char *dir) {
+void gmtmggpath_init () {
 	int i;
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
