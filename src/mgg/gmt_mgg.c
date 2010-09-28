@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.23 2010-03-22 18:55:47 guru Exp $
+ *	$Id: gmt_mgg.c,v 1.24 2010-09-28 20:19:01 remko Exp $
  *
  *    Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
 	return (*time);
 }
 	
-/* gmtmggpath_init reads the SHAREDIR/mgg/gmtfile_paths file and gets all
+/* gmtmggpath_init reads the ~/.gmt or SHAREDIR/mgg/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
  
@@ -168,9 +168,7 @@ void gmtmggpath_init (char *dir) {
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 
-	sprintf (file, "%s%cmgg%cgmtfile_paths", dir, DIR_DELIM, DIR_DELIM);
-	MGG_SHAREDIR = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (dir)+1), "gmtmggpath_init");
-	strcpy (MGG_SHAREDIR, dir);
+	GMT_getsharepath ("mgg", "gmtfile_paths", "", file);
 	
 	n_gmtmgg_paths = 0;
 

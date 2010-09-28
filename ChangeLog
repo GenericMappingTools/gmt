@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.793 2010-09-27 18:25:12 guru Exp $
+	$Id: ChangeLog,v 1.794 2010-09-28 20:19:01 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-09-28	remko
+	* gmt_mgg.c:		Use GMT_getsharepath to find gmtfile_paths file.
 
 2010-09-27	pwessel
 	* gmt_map.c:		Did not check if we were beyond the horizon in GMT_grd_project.
