@@ -21,8 +21,6 @@ Replace the current information if a leg already is in the system.  [Default is 
 OPT(D)
 Delete information for these legs from the system index files.
 .TP
-OPT(P)
-Set the path to where the \fIgmt_legs.d\fP and \fIgmt_index.b\fP files reside.  [Default is the \fB$GMT_SHAREDIR\fP/mgg directory].
 #include "explain_-V.txt"
 .SH EXAMPLES
 To add new cruises to the system:

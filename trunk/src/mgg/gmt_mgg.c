@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.25 2010-09-28 20:23:03 remko Exp $
+ *	$Id: gmt_mgg.c,v 1.26 2010-09-28 20:38:51 remko Exp $
  *
  *    Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -32,7 +32,7 @@
  *	carter_depth_from_twt	- Convert twt to depth
  *	carter_twt_from_depth	- Convert depth to twt
  */
- 
+
 #define _GMT_MGG_LIB
 #include "gmt.h"	/* System dependent files */
 #include "gmt_mgg.h"	/* System dependent files */
@@ -40,7 +40,6 @@
 
 char *gmtmgg_path[10];	/* Max 10 directories for now */
 int n_gmtmgg_paths = 0;	/* Number of these directories */
-char *MGG_SHAREDIR;	/* Copy of GMT_SHAREDIR (for DLL purposes) */
 
 GMT_LONG MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
 
@@ -50,7 +49,7 @@ GMT_LONG MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
  * arguments. The Julian day is returned. the yymmddhhmmss is passed
  * through the argument list.
  */
- 
+
 int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minute, int *second, struct GMTMGG_TIME *gmt_struct)
 {
 	int day_time, julian_day;
@@ -96,7 +95,7 @@ int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minu
  *	12-JUL-1987
  *
  */
- 
+
 struct GMTMGG_TIME *gmtmgg_init (int year1)
 {
 	struct GMTMGG_TIME *gmt_struct;
@@ -139,7 +138,7 @@ struct GMTMGG_TIME *gmtmgg_init (int year1)
  */
  /* MODIFIED 10 July, 1987 by W. Smith  --  I killed a bug in
      month calculation */
- 
+
 int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, int second, struct GMTMGG_TIME *gmt_struct)
 {
 	int mon, n_days, bad = 0;
@@ -158,18 +157,18 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
 	*time = n_days * 86400 + hour * 3600 + minute * 60 + second;
 	return (*time);
 }
-	
+
 /* gmtmggpath_init reads the ~/.gmt or SHAREDIR/mgg/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
- 
+
 void gmtmggpath_init () {
 	int i;
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 
 	GMT_getsharepath ("mgg", "gmtfile_paths", "", file);
-	
+
 	n_gmtmgg_paths = 0;
 
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -177,7 +176,7 @@ void gmtmggpath_init () {
 		fprintf (stderr, "(Will only look in current directory for such files)\n");
 		return;
 	}
-	
+
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
@@ -197,7 +196,6 @@ void gmtmggpath_init () {
 void gmtmgg_end ()
 {
 	int i;
-	if (MGG_SHAREDIR) GMT_free ((void *)MGG_SHAREDIR);
 	for (i = 0; i < n_gmtmgg_paths; i++) if (gmtmgg_path[i]) GMT_free ((void *)gmtmgg_path[i]);
 }
 
@@ -205,22 +203,22 @@ void gmtmgg_end ()
  * to where this data file can be found.  gmtmggpath_init must be
  * called first
  */
- 
+
 int gmtmggpath_func (char *leg_path, char *leg)
 {
 	int id;
 	char geo_path[BUFSIZ];
-	
+
 	/* First look in current directory */
-	
+
 	sprintf (geo_path, "%s.gmt", leg);
 	if (!access(geo_path, R_OK)) {
 		strcpy(leg_path, geo_path);
 		return (0);
 	}
-	
+
 	/* Then look elsewhere */
-	
+
 	for (id = 0; id < n_gmtmgg_paths; id++) {
 		sprintf (geo_path, "%s%c%s.gmt", gmtmgg_path[id], DIR_DELIM, leg);
 		if (!access (geo_path, R_OK)) {
@@ -230,7 +228,7 @@ int gmtmggpath_func (char *leg_path, char *leg)
 	}
 	return(1);
 }
-	
+
 int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt, int anom_offset)
 {
 	int year, month, day, hour, min, sec, l_mag, l_top, test, bin, zone, l_twt;
@@ -253,9 +251,9 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 		tz = atof (s_tz) * 0.01;
 	}
 	if (string[9] == '-') tz = -tz;
-	
+
 	/* Then decode Time */
-	
+
 	if (!tflag) {	/* Time information provided */
 
 		if (version_Y2K) {	/* 4-digit year */
@@ -282,13 +280,13 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 
 		strncpy (s_mo, &string[16], (size_t) 2);	s_mo[2] = 0;
 		month = atoi (s_mo);
-	
+
 		strncpy (s_dy, &string[18], (size_t) 2);	s_dy[2] = 0;
 		day = atoi (s_dy);
-	
+
 		strncpy (s_hr, &string[20], (size_t) 2);	s_hr[2] = 0;
 		hour = atoi (s_hr);
-	
+
 		strncpy (s_mi, &string[22], (size_t) 5);	s_mi[5] = 0;
 		fmin = atof (s_mi) * 0.001;
 		min = (int) floor (fmin);
@@ -302,29 +300,29 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 		if (test < 0) return (1);
 		record->time += irint (tz * 3600.0);
 	}
-	
+
 	/* Get lat lon, return error if outside domain */
-	
+
 	strncpy (s_lat, &string[28], (size_t) 7);	s_lat[7] = 0;
 	record->lat = 10 * atoi (s_lat);
 	if (string[27] == '-') record->lat = -record->lat;
 	if (abs(record->lat) > 90000000) return (1);
-	
+
 	strncpy (s_lon, &string[36], (size_t) 8);	s_lon[8] = 0;
 	record->lon = 10 * atoi (s_lon);
 	if (string[35] == '-') record->lon = -record->lon;
 	if ((record->lon) < 0) record->lon += 360000000;
 	if (abs (record->lon) > 360000000) return (1);
-	
+
 	/* Get gravity */
-	
+
 	strncpy (s_faa, &string[104], (size_t) 4);	s_faa[4] = 0;
 	record->gmt[0] = atoi (s_faa);
 	if (record->gmt[0] == 9999 || (s_faa[0] == ' ' && s_faa[1] == ' ' && s_faa[2] == ' ' && s_faa[3] == ' '))
 		record->gmt[0] = GMTMGG_NODATA;
 	else if (string[103] == '-')
 		record->gmt[0] = -record->gmt[0];
-		
+
 	/* Get magnetics */
 
 	if (anom_offset) {		/* Read total field and subtract 'anom_ofset' */
@@ -344,7 +342,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 		if (l_mag != GMTMGG_NODATA) l_mag = irint (0.1 * l_mag);
 	}
 	record->gmt[1] = l_mag;
-	
+
 	/* Get Bathymetry */
 	strncpy (s_top_twt, &string[45], (size_t) 6);	s_top_twt[6] = '\0';
 	l_twt = atoi(s_top_twt);
@@ -391,7 +389,7 @@ int carter_setup (void)
 
 	/* Read the correction table:  */
 
-	sprintf (buffer, "%s%cmgg%ccarter.d", MGG_SHAREDIR, DIR_DELIM, DIR_DELIM);
+	GMT_getsharepath ("mgg", "carter", ".d", buffer);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
                 fprintf (stderr,"carter_setup:  Cannot open r %s\n", buffer);
                 return (-1);
@@ -458,7 +456,7 @@ int carter_setup (void)
 
 int carter_get_bin (int lat, int lon, int *bin)
 {
-	/* Given signed long ints in the 1.0e06 times decimal degree range, 
+	/* Given signed long ints in the 1.0e06 times decimal degree range,
 	   -90000000 <= lat < 90000000, 0 <= lon < 360000000, set bin
 	   number.  Returns 0 if OK, -1 if error.  */
 
@@ -531,7 +529,7 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 
 	low_hundred = nominal_z1500 / 100;
 	i = carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
-	
+
 	if (i >= (carter_offset[zone] - 1) ) {
 		fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %d msec\n", (int)twt_in_msec);
 		return (-1);
