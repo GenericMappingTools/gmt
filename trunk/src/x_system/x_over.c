@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.15 2010-03-22 18:55:47 guru Exp $
+/*	$Id: x_over.c,v 1.16 2010-09-28 21:10:46 remko Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -221,7 +221,7 @@ int main (int argc, char *argv[])
     
   }
 
-  gmtmggpath_init(GMT_SHAREDIR);
+  gmtmggpath_init();
 
   /* Read data for each leg (only 1 for internal) */
 
