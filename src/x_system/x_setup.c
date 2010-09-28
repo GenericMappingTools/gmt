@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.13 2010-03-24 02:36:45 guru Exp $
+/*	$Id: x_setup.c,v 1.14 2010-09-28 21:10:46 remko Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -92,12 +92,12 @@ int main (int argc, char *argv[])
   		exit (EXIT_FAILURE);
   	}
 
-   	sprintf (line, "%s%cmgg%cgmt_legs.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
+   	GMT_getsharepath ("mgg", "gmt_legs", ".d", line);
  	if ((fleg = fopen (line, "r")) == NULL) {
 		fprintf(stderr,"Could not open %s\n", line);
 		exit (EXIT_FAILURE);
 	}
-   	sprintf (line, "%s%cmgg%cgmt_index.b", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
+   	GMT_getsharepath ("mgg", "gmt_index", ".b", line);
 	if ((fbin = fopen (line, "rb")) == NULL) {
 		fprintf(stderr,"Could not open %sb\n", line);
 		exit (EXIT_FAILURE);
