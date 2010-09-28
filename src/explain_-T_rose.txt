@@ -4,7 +4,7 @@ Draws a simple map directional rose centered on \fIlon0/lat0\fP.  Use OPT(Tx) to
 The \fIsize\fP is the diameter of the rose, and optional label information can be specified to override
 the default values of W, E, S, and N (Give \fB::\fP to suppress all labels).  The default [plain] map rose only labels north.  Use
 OPT(Tf) to get a
-"fancy" rose, and specify what \fIkind\fP of rose you want drawn.  The default [1] draws the two principal E-W,
+"fancy" rose, and specify in \fIinfo\fP what you want drawn.  The default [1] draws the two principal E-W,
 N-S orientations, 2 adds the two intermediate NW-SE and NE-SW orientations, while 3 adds the eight minor
 orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.  For a magnetic compass rose, specify OPT(Tm).  If given,
 \fIinfo\fP must be the two parameters \fIdec/dlabel\fP, where \fIdec\fP is the magnetic declination and \fIdlabel\fP
