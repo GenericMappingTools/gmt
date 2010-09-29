@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.15 2010-06-25 20:33:49 guru Exp $
+#	$Id: legend.sh,v 1.16 2010-09-29 02:43:16 remko Exp $
 #
 # Testing pslegend capabilities
 
@@ -21,11 +21,11 @@ N 2
 V 0 1p
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
 S 0.1i e 0.15i yellow 0.25p 0.3i This ellipse is yellow
-S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
-S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
+S 0.1i w 0.15i green 0.25p 0.3i This wedge is green
+S 0.1i f 0.25i/-1/0.075ilb blue 0.25p 0.3i This is a fault
 S 0.1i - 0.15i - 0.25p,- 0.3i A contour
-S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
-S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
+S 0.1i v 0.25i/0.02i/0.06i/0.05i magenta 0.25p 0.3i This is a vector
+S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
 V 0 1p
 N 1
 D 0.2i 1p
