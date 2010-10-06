@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.88 2010-08-30 00:48:47 guru Exp $
-AC_REVISION($Revision: 1.88 $)
+dnl $Id: configure.ac,v 1.89 2010-10-06 21:08:39 guru Exp $
+AC_REVISION($Revision: 1.89 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -14,9 +14,9 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
 AC_INIT(GMT, 4.5.4, gmt-help@hawaii.edu)
-MANDATE="1 Jan 2011"
-DOCDATE="January 2011"
-DOCYEAR="2011"
+MANDATE="15 Oct 2010"
+DOCDATE="October 2010"
+DOCYEAR="2010"
 GSHHS_VERSION=2.1.0
 CVS_VERSION=1
 dnl
@@ -371,8 +371,13 @@ elif test ! "X$enable_matlab" = "X"; then
 	AC_MSG_CHECKING(Compiler options for Matlab)
 	MEX_BLD="$MATLAB/bin/mex -DGMT_MATLAB"
 	if test "$os" = "Linux" ; then		# Linux systems
-		MEX_EXT='mexglx'
-		MATLAB_MEX='glnx86'
+		if test "$ac_cv_sizeof_long" = "8" ; then
+			MEX_EXT='mexa64'
+			MATLAB_MEX='glnxa64'
+		else
+			MEX_EXT='mexglx'
+			MATLAB_MEX='glnx86'
+		fi
 		MATLAB_LIB='mat'
 	elif test "$os" = "SunOS" ; then	# Sun Workshop
 		MEX_EXT='mexsol'
