@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.795 2010-09-30 00:18:58 guru Exp $
+	$Id: ChangeLog,v 1.796 2010-10-09 22:26:19 guru Exp $
 -----------------------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------------------
+2010-10-15	pwessel
+	* GMT 4.5.4 finalized and released
+-----------------------------------------------------------------------------------------
 2010-09-29	pwessel
 	* share/time/hi.d:	Added Hawaiian time language items
 
@@ -13,7 +17,7 @@
 				Also did not initialize output grid to NaNs before filling.
 
 2010-09-20	pwessel
-	* src/ps2raster.c:	Made tolerant of \r-only line-endings.
+	* ps2raster.c:	Made tolerant of \r-only line-endings.
 
 2010-09-15	pwessel
 	* sph/Makefile:		Did not have LDFLAGS in link statement

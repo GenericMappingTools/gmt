@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.28 2010-07-11 07:47:28 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.29 2010-10-09 22:26:20 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -6,7 +6,7 @@ PRE-RELEASE TASKS:
 
 1.  Decide on a future date at which point GMT is to be released.
     Be prepared to change the date if the  bug-fixing workload is
-    too great.  Send email to gmt-team@hawaii.edu and tell
+    too great.  Send email to gmt-team@lists-hawaii.edu and tell
     them the date and ask for updates.
     
 RELEASE TASKS:
