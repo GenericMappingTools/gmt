@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.52 2010-07-31 21:02:18 guru Exp $
+#  $Id: Makefile,v 1.53 2010-10-11 20:24:47 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -142,6 +142,8 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		done
 		cp -R -f contrib www/gmt
 		rm -f www/gmt/examples/ex??/example_*.ps
+		mkdir -p www/gmt/5
+		cp -f gmt5.html www/gmt/5/index.html
 		find www -name '.*' -exec rm -f {} \;
 		rm -f www/gmt/contrib/*.sh
 

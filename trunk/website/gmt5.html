@@ -1,0 +1,73 @@
+<HTML>
+<!--    $Id: gmt5.html,v 1.1 2010-10-11 20:24:47 guru Exp $      -->
+<HEAD>
+<TITLE>GMT 5 Information</TITLE>
+<BODY bgcolor="#ffffff">
+<CENTER><H2>GMT 5 Information</H2></CENTER>
+<P>
+<H3>GMT 5 Overview</H3>
+
+GMT 5 is the next-generation version of GMT, the Generic Mapping Tools.  It is currently still in
+development but stable enough that some users and developers may wish to join in testing and influencing
+the direction we are moving in.  We anticipate GMT 5 will remain in this phase (alpha) until early
+2011 when we expect to release a formal GMT 5.0.0beta release (with tar balls and Windows installers).
+The first stable release GMT 5.0.0 may appear later in 2011.
+<H3>What it means for users</H3>
+For regular users, GMT 5 will not seem too different from GMT 4.  While there have been some minor
+syntax changes, including elimination of the <B>-m</B> (or <B>-M</B> as some of you still are using) option, and
+a renaming of several of the GMT defaults parameters, we also allow for a compatibility-mode
+compilation that will let most GMT 4-style scripts run without problems.  In fact, most users will
+simply notice that there are a few more tools and a few more options, as well as some significant
+system-level changes.  The highlights are of major features are:
+<UL>
+	<LI>GMT now has a way of dealing with GIS aspatial data, such as produced by ogr2ogr -f"GMT" from
+		shapefiles and other GIS formats.  The metadata can be used to set certain program arguments,
+		such as symbol sizes or labels. The program gmtconvert can also covert plain GMT tables into
+		the GMT/OGR format that ogr2ogr may translate into shapefiles and other GIS formats.
+		Furthermore, the ESRI Arc/Info ASCII Grid Interchange format is now a recognized grid format.
+	<LI>All GMT program that reads data tables can control how records with NaNs are handled with a
+		new <B>-s</B> option.
+	<LI>GMT now has new capabilities for handling PDF transparency.
+		All color or fill specifications in GMT (including fonts and CPT tables) may append @<I>transparency</I>
+		to change the PDF transparency level for that item.  In addition, all plot programs can take
+		a new <B>-t</B> option to modify the PDF transparency level for the entire overlay.
+		However, as <I>PostScript</I> has no provision for transparency you can only see these effect if
+		you convert it to PDF using Adobe Distiller.  To date, none of the GhostScript products has
+		implemented this <I>PostScript</I> extension.
+	<LI>Our macro language for custom plot symbols (to use in psxy and psxyz) has been extended to
+		allow for multi-parameter symbols.
+	<LI>All GMT programs that process table data can handle multi-segment files without any special options.
+		[In the passed this required <B>-m</B> and some programs did not even have the option].
+	<LI>All GMT plot programs that produce 2-D illustrations now take a new <B>-p</B> option for perspective
+		view.  This replaces the old way of using <B>-E</B><I>az/el</I>.
+	<LI>All text can now optionally be filled with patterns and/or drawn with outline pens by appending =<I>pen</I>
+		to the font color [In GMT 4, only pstext could draw an outline pen, but fill could only be solid colors].
+	<LI>There will be some new supplements: <B>potential</B> for gravity and magnetics calculations,
+		<B>isostasy</B> for plate flexure calculations, and hopefully <B>spharmonics</B> for converting between
+		global grids and spherical harmonics coefficients.
+</UL>
+<H3>What it means for developers</H3>
+The big news is for developers who wish to leverage GMT in their own applications.  We have completely revamped
+the code base so that high-level GMT functionality is now accessible via GMT "modules".  These are high-level
+functions named after their corresponding programs (.e.g., GMT_grdimage) that contains all of the functionality
+of that program within the function.  While currently callable from C/C++ only, we have built several of the
+Matlab interface modules as well and will soon start on the Python version.  Developers should consult the new
+GMT API Documentation for more details, and examine the demonstration application gmtmapper.c.<BR>
+	We have also redesigned the <I>PostScript</I> plotting library pslib; it is now referred to as PSL and
+has seen much simplification and under-the-hood improvements.  All functions have been renamed so those who
+have used PSL directly in the past will need to consult the documentation.
+
+<H3>GMT 5 Installation</H3>
+GMT 5 will only be available via cvs until it is officially released.  Because GMT 5 is expected to still have
+too many short-comings or bugs to be used for production, you will need to become familiar with the gmtswitch
+tool that lets you seamlessly switch between different GMT versions.
+To install GMT 5, cd to your GMTdev directory (where we recommend you may have other GMT distributions
+such as 4.5.4 and GMT 4 cvs) and run<P>
+	cvs checkout -d GMT5 -r GMT5_branch<P>
+You will then get the GMT 5 branch installed in a GMT5 directory.  Like for GMT 4 cvs you will need to
+make a few changes perhaps to the guru/gmtguru.macros file and to copy over coastlines, e.g.,<P>
+make get_coast get_high get_full<P>
+You can then issue make install.  Once you add the full path to the GMT5 directory to your
+~/.gmtversions file you can use gmtswitch to go between versions.
+</HEAD>
+</HTML>
