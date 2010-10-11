@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_L.tex,v 1.24 2010-05-18 01:34:53 guru Exp $
+%	$Id: GMT_Appendix_L.tex,v 1.25 2010-10-11 21:39:40 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -12,8 +12,6 @@
 
 \section{Introduction}
 \index{GMT@\GMT!on non-\UNIX\ platforms}
-\index{GMT@\GMT!Macs running MkLinux}
-\index{GMT@\GMT!Macs running MachTen}
 \index{GMT@\GMT!PCs running Interix}
 \index{GMT@\GMT!PCs running Linux}
 
@@ -46,7 +44,6 @@ DOS batch files.
 
 \end{enumerate}
 
-\item [MAC OS9:] Here your choice is a commercial offering called MachTen\footnote{www.tenon.com}.
 \end{description}
 
 \section{Cygwin and \gmt}
@@ -68,7 +65,7 @@ packages (e.g., \progname{gcc} etc) as the basic installation does not include t
 Once you are up and running under Cygwin, you may install \GMT\ 
 the same way you do under any other \UNIX\ platform by either
 running the automated install via \progname{install\_gmt.sh} or manually
-running configure first, then type make all.  If you intsall via the
+running configure first, then type make all.  If you install via the
 web form, make sure you save the parameter file without DOS CR/LF
 endings.  Use \progname{dos2unix} to get rid of those if need be.
 
@@ -154,6 +151,4 @@ which provides more detail on the port.
 \index{GMT@\GMT!under Mac OS}
 \index{Mac OS and \GMT}
 
-\GMT\ has not been ported to the classical Macintosh platform
-(i.e. Mac OS 9.x or earlier).  For that OS your only option is MachTen.
-However, \GMT\ will install directly under Mac OS X.
+\GMT\ will install directly under Mac OS X since it is fully Unix compliant.
