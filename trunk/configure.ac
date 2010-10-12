@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.89 2010-10-06 21:08:39 guru Exp $
-AC_REVISION($Revision: 1.89 $)
+dnl $Id: configure.ac,v 1.90 2010-10-12 02:54:51 guru Exp $
+AC_REVISION($Revision: 1.90 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -13,12 +13,12 @@ dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
-AC_INIT(GMT, 4.5.4, gmt-help@hawaii.edu)
+AC_INIT(GMT, 4.5.4, gmt-help@lists-hawaii.edu)
 MANDATE="15 Oct 2010"
 DOCDATE="October 2010"
 DOCYEAR="2010"
 GSHHS_VERSION=2.1.0
-CVS_VERSION=1
+CVS_VERSION=0
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
@@ -406,9 +406,14 @@ elif test ! "X$enable_matlab" = "X"; then
 		fi
 		MEX_BLD="$MATLAB/bin/mex -DGMT_MATLAB"
 		if test "$chip" = "i386" ; then		#Intel Mac
-			MEX_EXT='mexmaci'
-			MATLAB_MEX='maci'
-		else
+			if test "$ac_cv_sizeof_long" = "8" ; then
+				MEX_EXT='mexmaci64'
+				MATLAB_MEX='maci64'
+			else
+				MEX_EXT='mexmaci'
+				MATLAB_MEX='maci'
+			fi
+		else	#Legacy PPC
 			MEX_EXT='mexmac'
 			MATLAB_MEX='mac'
 		fi
