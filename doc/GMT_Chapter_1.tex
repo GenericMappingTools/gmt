@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.153 2010-10-09 22:26:20 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.154 2010-10-12 17:24:18 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -51,7 +51,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_map.c}]:	Did not check if nodes were beyond the horizon in \GMTfunc{GMT\_grd\_project}.
 		Also did not initialize output grid to NaNs before filling.
 	\item [\GMTprog{gmt\_plot.c}]:	Bug in fault symbol \GMTprog{psxy} \Opt{Sfrc} fixed (thanks to J. Robert).
-		Also, \GMT_func{GMT\_map\_latline} and \GMT_func{GMT\_map\_lonline} functions tried to draw 
+		Also, \GMTfunc{GMT\_map\_latline} and \GMTfunc{GMT\_map\_lonline} functions tried to draw 
 		two-point lines when in fact no points were defined.
 	\item [\GMTprog{grdmask.c}]:	The \Opt{Ap}$|${\bf m} options were ignored since the {\it mode} was not checked.
 	\item [\GMTprog{grdtrack.c}]:	Did not ensure that given \Opt{R} was adjusted to fit grid spacing.
@@ -76,7 +76,7 @@ Here is the list of bug corrections:
 		negative longitude was given on the command line, e.g. -135/35/-2.5.
 		Would sometimes issue a rotation twice (same time).
 	\item [\GMTprog{sph/Makefile}]:	Did not have LDFLAGS in link statement.
-}
+\end{description}
 Also, Appendix F had missing shading for two items in the Standard+ table, and example 23 placed the city names at
 an angle of 1 degree rather than horizontally.
 
