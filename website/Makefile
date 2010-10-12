@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.53 2010-10-11 20:24:47 guru Exp $
+#  $Id: Makefile,v 1.54 2010-10-12 02:54:51 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -247,6 +247,7 @@ update-ftp-local:
 	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
 	cp -f ../ftp/GMT*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
+	cp -f ../ftp/netcdf-3.6.3_win.zip ftp/windows
 	for p in doc share src suppl triangle; do \
 		\rm -f ftp/GMT_$$p.tar.bz2; \
 		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
