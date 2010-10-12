@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.796 2010-10-09 22:26:19 guru Exp $
+	$Id: ChangeLog,v 1.797 2010-10-12 17:24:18 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-10-15	pwessel
-	* GMT 4.5.4 finalized and released
+	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+
+2010-10-05	pwessel
+	* configure.ac:		Set correct mex extensions for 64-bit version
+	
 2010-09-29	pwessel
 	* share/time/hi.d:	Added Hawaiian time language items
 
@@ -17,10 +21,10 @@
 				Also did not initialize output grid to NaNs before filling.
 
 2010-09-20	pwessel
-	* ps2raster.c:	Made tolerant of \r-only line-endings.
+	* ps2raster.c:		Made tolerant of \r-only line-endings.
 
 2010-09-15	pwessel
-	* sph/Makefile:		Did not have LDFLAGS in link statement
+	* sph/Makefile:		Did not have LDFLAGS in link statement.
 
 2010-09-07	pwessel
 	* ps2raster.c:		The -A- option did not reset -A for -W.
