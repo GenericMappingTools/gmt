@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.797 2010-10-12 17:24:18 guru Exp $
+	$Id: ChangeLog,v 1.798 2010-10-13 00:25:31 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-10-15	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-13	pwessel
+	* mapproject.c:		Did not reset azimuth to NaN on start of next segment.
 
 2010-10-05	pwessel
 	* configure.ac:		Set correct mex extensions for 64-bit version
