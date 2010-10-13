@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.799 2010-10-13 02:29:20 guru Exp $
+	$Id: ChangeLog,v 1.800 2010-10-13 23:24:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -7,14 +7,16 @@
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
 2010-10-13	pwessel
-	* mapproject.c:		Did not reset azimuth to NaN on start of next segment.
+	* mapproject.c:		Did not reset azimuth to NaN at start of next segment.
 	* psscale.c:		Give warning and skip any command-line file arguments.
+	* pscoast.c:		Give warning and skip any command-line file arguments.
+	* psbasemap.c:		Give warning and skip any command-line file arguments.
 
 2010-10-05	pwessel
-	* configure.ac:		Set correct mex extensions for 64-bit version
+	* configure.ac:		Set correct mex extensions for 64-bit version.
 	
 2010-09-29	pwessel
-	* share/time/hi.d:	Added Hawaiian time language items
+	* share/time/hi.d:	Added Hawaiian time language items.
 
 2010-09-28	remko
 	* gmt_mgg.c:		Use GMT_getsharepath to find gmtfile_paths file.

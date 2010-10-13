@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.40 2010-07-15 20:56:38 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.41 2010-10-13 23:24:30 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -15,7 +15,7 @@ REM	   to its command line tool is added to PATH
 REM	6. FWTools2.4.7 has been installed under C:\programs
 REM	   and the path to its DLL is added to PATH
 
-SET GVER=4.5.3
+SET GVER=4.5.4
 SET GSHHS=2.1.0
 
 IF "%1%" == "home" (
