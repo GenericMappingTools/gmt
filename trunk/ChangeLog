@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.798 2010-10-13 00:25:31 guru Exp $
+	$Id: ChangeLog,v 1.799 2010-10-13 02:29:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 -----------------------------------------------------------------------------------------
 2010-10-13	pwessel
 	* mapproject.c:		Did not reset azimuth to NaN on start of next segment.
+	* psscale.c:		Give warning and skip any command-line file arguments.
 
 2010-10-05	pwessel
 	* configure.ac:		Set correct mex extensions for 64-bit version
