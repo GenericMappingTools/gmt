@@ -1,4 +1,4 @@
-/* $Id: gmt_qsort.c,v 1.1 2008-12-12 18:31:31 guru Exp $
+/* $Id: gmt_qsort.c,v 1.2 2010-10-13 23:24:30 guru Exp $
  *
  * TAKEN FROM FreeBSD with the following modifications:
  *   (1) 3rd arg to swapfunc changed from int to size_t
@@ -8,6 +8,8 @@
  *   we use this GMT_qsort function instead of system qsort.
  *
  *   Paul Wessel, Dec 12, 2008
+ * Updated: Only included for OS X older than Snow Leopard as
+ * SL has a fixed qsort function.
  *--------------------------------------------------------*/
 
 /*-
