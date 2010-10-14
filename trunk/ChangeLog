@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.800 2010-10-13 23:24:30 guru Exp $
+	$Id: ChangeLog,v 1.801 2010-10-14 23:33:17 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-10-15	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-14	pwessel
+	* psbasemap.c:		The -L option had trouble parsing if there were + signs
+				in the label string.
+	* pscoast.c:		---"---
+	
 2010-10-13	pwessel
 	* mapproject.c:		Did not reset azimuth to NaN at start of next segment.
 	* psscale.c:		Give warning and skip any command-line file arguments.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.454 2010-07-09 00:22:01 guru Exp $
+ *	$Id: gmt_support.c,v 1.455 2010-10-14 23:33:17 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5925,13 +5925,16 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
 
 	/* Determine if we have the optional longitude component specified by counting slashes.
-	 * We stop counting if we reach a + (optional attributes) since the fill might have a slash in it */
+	 * We stop counting if we reach a + sign since the fill or label might have a slash in them */
 
 	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
 	options = (text[i] == '+') ? i : -1;	/* -1, or starting point of first option */
 	if (options > 0) {	/* Have optional args, make a copy and truncate text */
 		strcpy (txt_cpy, &text[options]);
 		text[options] = '\0';
+		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fjlpu, change other + to ascii 1 to bypass strtok trouble later */
+			if (txt_cpy[i] == '+' && !strchr ("fjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
+		}
 	}
 
 	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u] */
@@ -6015,6 +6018,7 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 				case 'l':	/* Label specification */
 					if (p[1]) strcpy (ms->label, &p[1]);
 					ms->do_label = TRUE;
+					for (i = 0; ms->label[i]; i++) if (ms->label[i] == 1) ms->label[i] = '+';	/* Change back ASCII 1 to + */
 					break;
 
 				case 'u':	/* Add units to annotations */
