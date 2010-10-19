@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.801 2010-10-14 23:33:17 guru Exp $
+	$Id: ChangeLog,v 1.802 2010-10-19 18:03:12 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-10-15	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-19	pwessel
+	* gmtswitch:		Given D it picks the first entry in .gmtversions. Also
+				is now installed with rest of executables.
+
 2010-10-14	pwessel
 	* psbasemap.c:		The -L option had trouble parsing if there were + signs
 				in the label string.
