@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.802 2010-10-19 18:03:12 guru Exp $
+	$Id: ChangeLog,v 1.803 2010-10-19 19:32:01 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -9,6 +9,8 @@
 2010-10-19	pwessel
 	* gmtswitch:		Given D it picks the first entry in .gmtversions. Also
 				is now installed with rest of executables.
+	* mapproject.c		Did not show/explain the option of appending + to -L.
+				Corrected synopsis, usage, and man page.
 
 2010-10-14	pwessel
 	* psbasemap.c:		The -L option had trouble parsing if there were + signs
