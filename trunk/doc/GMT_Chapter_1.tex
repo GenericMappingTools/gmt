@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.154 2010-10-12 17:24:18 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.155 2010-10-20 08:29:49 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -44,19 +44,27 @@ A few minor improvements have been added:
 \item The \GMTprog{spotter} supplement now converts geodetic latitudes to geocentric before
 doing spherical rotations and recovers geodetic coordinates for output (this new behavior can
 be bypassed by setting ELLIPSOID to Sphere).  Thanks to L. M. Matias for pointing this out.
-\item We have added time-axes support for the Hawaiian language.
+\item We have added time-axes support for the Hawaiian language (Thanks to K\=awika Trang).
 \end{enumerate}
 Here is the list of bug corrections:
 \begin{description}
+	\item [\GMTprog{configure}]:	Now sets correct mex extensions for 64-bit versions.
 	\item [\GMTprog{gmt\_map.c}]:	Did not check if nodes were beyond the horizon in \GMTfunc{GMT\_grd\_project}.
 		Also did not initialize output grid to NaNs before filling.
 	\item [\GMTprog{gmt\_plot.c}]:	Bug in fault symbol \GMTprog{psxy} \Opt{Sfrc} fixed (thanks to J. Robert).
 		Also, \GMTfunc{GMT\_map\_latline} and \GMTfunc{GMT\_map\_lonline} functions tried to draw 
 		two-point lines when in fact no points were defined.
 	\item [\GMTprog{grdmask.c}]:	The \Opt{Ap}$|${\bf m} options were ignored since the {\it mode} was not checked.
+	\item [\GMTprog{grdpaste.c}]:	Lacked \Opt{fg} so could not paste 352/360 and 0/8 in longitudes.
 	\item [\GMTprog{grdtrack.c}]:	Did not ensure that given \Opt{R} was adjusted to fit grid spacing.
+	\item [\GMTprog{mapproject.c}]:	Did not show/explain the option of appending {\bf +} to \Opt{L}.
+		Corrected synopsis, usage, and man page.  Did not reset azimuth to NaN at start of new segment.
 	\item [\GMTprog{minmax.c}]:	With \Opt{I}, could end up returning \Opt{R}355/0/... since 360 became 0.
-	\item [\GMTprog{nearneighbor.c}]:	Did not check that \Opt{S} had not been set.
+	\item [\GMTprog{nearneighbor.c}]:	Did not check if \Opt{S} had not been set.
+	\item [\GMTprog{psbasemap.c}]:	The \Opt{L} option had trouble parsing if there were + signs
+		within the label string.
+	\item [\GMTprog{pscoast.c}]:	The \Opt{L} option had trouble parsing if there were + signs
+		within the label string.
 	\item [\GMTprog{ps2raster.c}]:	Made tolerant of \\r-only line-endings which caused trouble before.
 		The \Opt{A-} option did not reset \Opt{A} for \Opt{W}.
 	\item [\GMTprog{psimage.c}]:	The justify text variable must be 3-char longs to hold trailing 0.
