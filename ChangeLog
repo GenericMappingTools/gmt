@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.803 2010-10-19 19:32:01 guru Exp $
+	$Id: ChangeLog,v 1.804 2010-10-20 08:14:31 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2010-10-15	pwessel
+2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
 2010-10-19	pwessel
@@ -11,6 +11,9 @@
 				is now installed with rest of executables.
 	* mapproject.c		Did not show/explain the option of appending + to -L.
 				Corrected synopsis, usage, and man page.
+
+2010-10-17	pwessel
+	* grdpaste.c:		Lacked -fg so could not paste 352/360 and 0/8 in longitudes.
 
 2010-10-14	pwessel
 	* psbasemap.c:		The -L option had trouble parsing if there were + signs

@@ -3,12 +3,12 @@
 .SH NAME
 grdpaste \- Paste together two \fI.grd\fP files along a common edge.
 .SH SYNOPSIS
-\fBgrdpaste\fP \fIfile_a.grd file_b.grd\fP OPT(G)\fIoutfile.grd\fP [ GMT_V_OPT ]
+\fBgrdpaste\fP \fIfile_a.grd file_b.grd\fP OPT(G)\fIoutfile.grd\fP [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdpaste\fP will combine \fIfile_a.grd\fP and \fIfile_b.grd\fP into \fIoutfile.grd\fP by pasting
 them together along their common edge.  Files \fIfile_a.grd\fP and \fIfile_b.grd\fP must have the same dx, dy and have one edge
 in common.  If in doubt, check with \fBgrdinfo\fP and use \fBgrdcut\fP and/or \fBgrdsample\fP
-if necessary to prepare the edge joint.
+if necessary to prepare the edge joint.  For geographical grids, use OPT(f) to handle periodic longitudes.
 .TP
 \fIfile_a.grd\fP
 One of two files to be pasted together.
@@ -20,12 +20,13 @@ OPT(G)\fIoutfile.grd\fP
 The name for the combined output.
 .SH OPTIONS
 #include "explain_-V.txt"
+#include "explain_-f.txt"
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
 Suppose file_a.grd is 150E - 180E and 0 - 30N, and file_b.grd is 150E - 180E, -30S - 0, then you can
 make outfile.grd which will be 150 - 180 and -30S - 30N by: 
 .sp
-\fBgrdpaste\fP file_a.grd file_b.grd OPT(G)outfile.grd OPT(V)
+\fBgrdpaste\fP file_a.grd file_b.grd OPT(G)outfile.grd OPT(V) OPT(f)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdcut (1),
