@@ -1,10 +1,10 @@
 <HTML>
-<!--    $Id: gmt5.html,v 1.5 2010-10-19 18:03:12 guru Exp $      -->
+<!--    $Id: gmt5.html,v 1.6 2010-10-21 04:28:34 guru Exp $      -->
 <HEAD>
 <TITLE>GMT 5 Information</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT 5 Information</H2></CENTER>
-<CENTER><H3>Updated October 15, 2010</H3></CENTER>
+<CENTER><H3>Updated November 1, 2010</H3></CENTER>
 <P>
 <H3>GMT 5 Overview</H3>
 
@@ -19,7 +19,7 @@ syntax changes, including elimination of the <B>-m</B> (or <B>-M</B> as some of 
 a renaming of several of the GMT defaults parameters, we also allow for a compatibility-mode
 compilation that will let most GMT 4-style scripts run without problems.  In fact, most users will
 simply notice that there are a few more tools and a few more options, as well as some significant
-system-level changes.  The highlights are of major features are:
+system-level changes.  The highlights of major features are:
 <UL>
 	<LI>GMT now has a way of dealing with GIS aspatial data, such as produced by ogr2ogr -f"GMT" from
 		shapefiles and other GIS formats.  This format was specifically developed for GMT and referred
@@ -28,6 +28,11 @@ system-level changes.  The highlights are of major features are:
 		the OGR/GMT format that ogr2ogr may translate into shapefiles and other GIS formats.
 		Furthermore, the ESRI Arc/Info ASCII Grid Interchange format is now a recognized grid format;
 		you no longer have to use grd2xyz/xyz2grd to handle such files.
+	<LI>All GMT program that reads data tables can control which data columns should be read and in what order
+		via the new <B>-i</B><I>columns</I> option.  E.g., use psxy -i5-7,2 ... to read columns 5, 6, 7 and 2
+		in that order (so cols 5 and 6 becomes x,y, etc.).  This eliminates the need to use external tools
+		like cut and awk to do this, which are not good solutions when your file has multiple segment headers
+		and comments that you wish to preserve.
 	<LI>All GMT program that reads data tables can control how records with NaNs are handled with a
 		new <B>-s</B> option.
 	<LI>GMT now has new capabilities for handling PDF transparency.
@@ -40,7 +45,7 @@ system-level changes.  The highlights are of major features are:
 	<LI>Our macro language for custom plot symbols (to use with psxy and psxyz) has been extended to
 		allow for multi-parameter symbols, including full support for conditional, nested tests.
 	<LI>All GMT programs that process table data can handle multi-segment files without any special options.
-		[In the past this required <B>-m</B> and some programs did not even have the option].
+		[In the past this required <B>-m</B> and many programs did not even have the option].
 	<LI>All GMT plot programs that produce 2-D illustrations now take a new and optional <B>-p</B> option for perspective
 		view.  This replaces the old way of using <B>-E</B><I>az/el</I> that was only available to some programs.
 	<LI>All text can now optionally be filled with patterns and/or drawn with outline pens by appending =<I>pen</I>
@@ -65,7 +70,7 @@ have used PSL directly in the past will need to consult the documentation.
 <H3>Who should consider installing GMT 5?</H3>
 While GMT 5 correctly processes our 30 examples, our 86 test scripts, and ~100 figure scripts for the documentation,
 we still consider it unstable and even some simple things not exercises by these examples and scripts may cause
-crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  There are two groups of people we wish to get involved:
+crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  There are several groups of people we wish to get involved:
 <OL>
 	<LI>We need volunteers curious about GMT 5 and who
 		wish to get a head-start on this new version.  After installing, you should read Chapter 1 to see what the changes
@@ -81,7 +86,7 @@ crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  There are two gr
 		Natural candidates are meteorologists who need a myriad of symbols that often take many data columns, such
 		as wind barbs.
 	<LI>Matlab users who wish to explore the Matlab interface and ideally help us expand it to all the GMT tools.
-	<LI>Developers who either (a) have already used GMT from their applications either via system calls or direct functino calls
+	<LI>Developers who either (a) have already used GMT from their applications either via system calls or direct function calls
 		and (b) those who might consider using GMT as a library if it is easy to do are welcome to read our GMTAPI documentation.
 		Since only the C/C++ interface to GMT has been completed we will focus on developers wishing to use that interface.
 		Once it stabilizes we will begin on the Python interface and will then need additional help from Python experts.
@@ -102,8 +107,11 @@ packages.  Once you add the full path to the GMT5 directory to your
 ~/.gmtversions file you can use gmtswitch to go between versions.<BR>
 Windows users capable of using cvs and compiling GMT from source may use the gmtinstall.bat and gmtsuppl.bat scripts
 to build GMT executables.  They will also need to manage their PATH separately.  To simplify this installation we provide
-precompiled netCDF DLL/Libs for both 32- and 64-bit systems <A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/netcdf-3.6.3_win.zip">here</A>. However, before using the batch files successfully several files need to be generated. On *nix this is done by the configure script, but on windows we currently have no way to do the same job. So in practice, to build the Windows version it is necessary to build it first with Cygwin. This will hopefully change when we have a CMake build solution.
+precompiled netCDF DLL/Libs for both 32- and 64-bit systems <A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/netcdf-3.6.3_win.zip">here</A>.
+However, before using the batch files successfully several files need to be generated. On *nix this is done by the configure script, but on
+windows we currently have no way to do the same job. So in practice, to build the Windows version it is necessary to build it first with
+Cygwin. This will hopefully change when we have a CMake build solution.
 <P>
-	Sincerely, the GMT Team (Wessel, Smith, Scharroo, Luis)
+Sincerely, the GMT Team (Wessel, Smith, Scharroo, Luis)
 </HEAD>
 </HTML>
