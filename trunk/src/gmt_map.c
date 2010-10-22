@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.257 2010-09-27 18:25:12 guru Exp $
+ *	$Id: gmt_map.c,v 1.258 2010-10-22 18:52:59 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3668,12 +3668,27 @@ double GMT_great_circle_dist_cos (double lon1, double lat1, double lon2, double 
 
 	double cosa, cosb, sina, sinb;
 
-	if (lat1==lat2 && lon1==lon2) return (1.0);
+	if (lat1 == lat2 && lon1 == lon2) return (1.0);
 
 	sincosd (lat1, &sina, &cosa);
 	sincosd (lat2, &sinb, &cosb);
 
 	return (sina*sinb + cosa*cosb*cosd(lon1-lon2));
+}
+
+double GMT_great_circle_dist_new (double lon1, double lat1, double lon2, double lat2)
+{
+	/* More accurate great circle distance on a sphere in degrees */
+
+	double sx, sy, sc2;
+
+	if (lat1 == lat2 && lon1 == lon2) return (1.0);
+
+	sy = sind (0.5 * (lat2 - lat1));
+	sx = sind (0.5 * (lon2 - lon1));
+	sc2 = d_sqrt (sy * sy + cosd (lat2) * cosd (lat1) * sx * sx);
+
+	return (2.0 * d_asind (sc2));
 }
 
 GMT_LONG GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist)
