@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.804 2010-10-20 08:14:31 guru Exp $
+	$Id: ChangeLog,v 1.805 2010-10-24 21:31:43 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-24	jluis
+	* gmtdefaults:		Still had one free() that should be GMT_free (Win crash)
+
 2010-10-19	pwessel
 	* gmtswitch:		Given D it picks the first entry in .gmtversions. Also
 				is now installed with rest of executables.
