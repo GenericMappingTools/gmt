@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.56 2010-03-23 23:33:20 remko Exp $
+#	$Id: Makefile,v 1.57 2010-10-25 22:45:39 guru Exp $
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,7 +57,7 @@ PROGSPS_O	= gmt2rgb.o grdcontour.o grdimage.o grdvector.o grdview.o psbasemap.o 
 	  	pscoast.o pscontour.o pshistogram.o psimage.o pslegend.o psmask.o psrose.o \
 		psscale.o pstext.o pswiggle.o psxy.o psxyz.o
 
-SCRIPTS		= GMT gmt_shell_functions.sh gmtget gmtlogo isogmt psbbox.sh
+SCRIPTS		= GMT gmt_shell_functions.sh gmtget gmtlogo isogmt psbbox.sh ../gmtswitch
 ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS)
 
 CONFIGS		= config.mk gmt_version.h gmt_notposix.h GMT
