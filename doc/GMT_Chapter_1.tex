@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.155 2010-10-20 08:29:49 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.156 2010-10-25 00:49:10 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -32,10 +32,9 @@ However, the \GMT\ 4.5.4 release is mostly bug-fixes as all development is now f
 new series is distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.  We expect to maintain the \GMT 4 series
-for some time after \GMT 5 is released later this year; an $\alpha$-release was made available for
-CVS on Oct-15, 2010.
+for some time after \GMT 5 has been released.
 
-\subsection{Overview of \gmt\ 4.5.4 [Oct-15, 2010]}
+\subsection{Overview of \gmt\ 4.5.4 [Nov-1, 2010]}
 
 This is again mostly a bug-fix release, and coincides with the availability of \GMT\ 5.0.0$\alpha$.
 A few minor improvements have been added:
@@ -48,12 +47,13 @@ be bypassed by setting ELLIPSOID to Sphere).  Thanks to L. M. Matias for pointin
 \end{enumerate}
 Here is the list of bug corrections:
 \begin{description}
-	\item [\GMTprog{configure}]:	Now sets correct mex extensions for 64-bit versions.
+	\item [\GMTprog{configure}]:	Now sets correct mex extensions for 64-bit operating systems.
 	\item [\GMTprog{gmt\_map.c}]:	Did not check if nodes were beyond the horizon in \GMTfunc{GMT\_grd\_project}.
 		Also did not initialize output grid to NaNs before filling.
 	\item [\GMTprog{gmt\_plot.c}]:	Bug in fault symbol \GMTprog{psxy} \Opt{Sfrc} fixed (thanks to J. Robert).
 		Also, \GMTfunc{GMT\_map\_latline} and \GMTfunc{GMT\_map\_lonline} functions tried to draw 
 		two-point lines when in fact no points were defined.
+	\item [\GMTprog{gmtdefaults.c}]:	The \Opt{D} options would crash under Windows.
 	\item [\GMTprog{grdmask.c}]:	The \Opt{Ap}$|${\bf m} options were ignored since the {\it mode} was not checked.
 	\item [\GMTprog{grdpaste.c}]:	Lacked \Opt{fg} so could not paste 352/360 and 0/8 in longitudes.
 	\item [\GMTprog{grdtrack.c}]:	Did not ensure that given \Opt{R} was adjusted to fit grid spacing.
@@ -82,7 +82,7 @@ Here is the list of bug corrections:
 		Only append running number when a segment has more than one point, else just use segment label.
 	\item [\GMTprog{spotter/rotconverter.c}]:	Complained of ``bad option'' when a rotation with a
 		negative longitude was given on the command line, e.g. -135/35/-2.5.
-		Would sometimes issue a rotation twice (same time).
+		Would sometimes issue a rotation twice (for the same time).
 	\item [\GMTprog{sph/Makefile}]:	Did not have LDFLAGS in link statement.
 \end{description}
 Also, Appendix F had missing shading for two items in the Standard+ table, and example 23 placed the city names at

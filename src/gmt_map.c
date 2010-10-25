@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.258 2010-10-22 18:52:59 guru Exp $
+ *	$Id: gmt_map.c,v 1.259 2010-10-25 00:49:10 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3651,7 +3651,7 @@ GMT_LONG GMT_truncate_tm (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_
 	return (j);
 }
 
-double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2)
+double GMT_great_circle_dist_old (double lon1, double lat1, double lon2, double lat2)
 {
 	/* great circle distance on a sphere in degrees */
 
@@ -3676,9 +3676,9 @@ double GMT_great_circle_dist_cos (double lon1, double lat1, double lon2, double 
 	return (sina*sinb + cosa*cosb*cosd(lon1-lon2));
 }
 
-double GMT_great_circle_dist_new (double lon1, double lat1, double lon2, double lat2)
+double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2)
 {
-	/* More accurate great circle distance on a sphere in degrees */
+	/* Haversine formulate for great circle distance */
 
 	double sx, sy, sc2;
 
