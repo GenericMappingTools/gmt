@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.806 2010-10-27 22:10:19 guru Exp $
+	$Id: ChangeLog,v 1.807 2010-10-27 22:31:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-27	pwessel
+	* psmask.c:		Did not update internal clip level (if not -T) in order
+				to warn if clipping has not been terminated.
+
 2010-10-26	pwessel
 	* mapproject.c:		When -L is used with -fg and an ellipse we convert lats
 				to geocentric lats before doing spherical trig.
