@@ -1,17 +1,21 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.805 2010-10-24 21:31:43 jluis Exp $
+	$Id: ChangeLog,v 1.806 2010-10-27 22:10:19 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-26	pwessel
+	* mapproject.c:		When -L is used with -fg and an ellipse we convert lats
+				to geocentric lats before doing spherical trig.
+
 2010-10-24	jluis
 	* gmtdefaults:		Still had one free() that should be GMT_free (Win crash)
 
 2010-10-19	pwessel
 	* gmtswitch:		Given D it picks the first entry in .gmtversions. Also
-				is now installed with rest of executables.
+				is now installed with rest of scripts and executables.
 	* mapproject.c		Did not show/explain the option of appending + to -L.
 				Corrected synopsis, usage, and man page.
 
