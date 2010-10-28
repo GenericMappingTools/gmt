@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.451 2010-09-07 16:48:33 guru Exp $
+ *	$Id: gmt_init.c,v 1.452 2010-10-28 21:24:58 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4530,6 +4530,27 @@ GMT_LONG GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char 
 	return (GMT_NOERROR);
 }
 
+void gmt_handle_atcolon (char *txt, GMT_LONG old)
+{	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
+	 * Way = 1: Restores it the way it was. */
+	GMT_LONG pos, new;
+	char *item[2] = {"@:", "@^"}, mark[2] = {':', '^'}, *s = NULL;
+	
+	if (!txt || !txt[0]) return;	/* Nothing to do */
+	new = 1 - old;	/* The opposite of old */
+	while ((s = strstr (txt, item[old]))) {	/* As long as we keep finding these */
+		pos = ((GMT_LONG)s - (GMT_LONG)txt) + 1;	/* Skip past the @ character */
+		if (txt[pos+1] == mark[old]) {			/* Either :: or ^^ */
+			txt[pos] = txt[pos+1] = mark[new];	/* Replace @:: with @^^ or vice versa */
+		}
+		else {	/* Found @:<size>: or @^<size>^ */
+			txt[pos] = mark[new];
+			while (txt[pos] && txt[pos] != mark[old]) pos++;
+			if (txt[pos] == mark[old]) txt[pos] = mark[new];
+		}
+	}
+}
+
 GMT_LONG GMT_parse_B_option (char *in) {
 	/* GMT_parse_B_option scans an argument string and extract parameters that
 	 * set the interval for tickmarks and annotations on the boundary.
@@ -4609,10 +4630,12 @@ GMT_LONG GMT_parse_B_option (char *in) {
 
 		if (!info[i][0]) continue;
 
+		gmt_handle_atcolon (info[i], 0);	/* Temporarily modify text escape @: to @^ to avoid : parsing trouble */
 		GMT_enforce_rgb_triplets (info[i], BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
 		GMT_strip_colonitem (out1, ":=", frame_info.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
 		GMT_strip_colonitem (out2, ":", frame_info.axis[i].label, out3);	/* Pull out axis label, if any */
+		gmt_handle_atcolon (frame_info.axis[i].label, 1);			/* Restore any @^ to @: */
 
 		GMT_decode_tinfo (out3, &frame_info.axis[i]);				/* Decode the annotation intervals */
 

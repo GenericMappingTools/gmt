@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.156 2010-10-25 00:49:10 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.157 2010-10-28 21:24:58 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -48,6 +48,7 @@ be bypassed by setting ELLIPSOID to Sphere).  Thanks to L. M. Matias for pointin
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{configure}]:	Now sets correct mex extensions for 64-bit operating systems.
+	\item [\GMTprog{gmt\_init.c}]:	The \Opt{B} labels would not tolerate use of the text escape sequence @: (for changing font size).
 	\item [\GMTprog{gmt\_map.c}]:	Did not check if nodes were beyond the horizon in \GMTfunc{GMT\_grd\_project}.
 		Also did not initialize output grid to NaNs before filling.
 	\item [\GMTprog{gmt\_plot.c}]:	Bug in fault symbol \GMTprog{psxy} \Opt{Sfrc} fixed (thanks to J. Robert).
@@ -69,6 +70,7 @@ Here is the list of bug corrections:
 		The \Opt{A-} option did not reset \Opt{A} for \Opt{W}.
 	\item [\GMTprog{psimage.c}]:	The justify text variable must be 3-char longs to hold trailing 0.
 		This caused SEGV on some systems.
+	\item [\GMTprog{psmask.c}]:	Did not warn if clipping levels were not restored in last overlay.
 	\item [\GMTprog{pstext.c}]:	Added missing description of \Opt{A} option.
 	\item [\GMTprog{psxy[z].c}]:	Units given in \Opt{S} without sizes (e.g., \Opt{Sci}) would be
 		ignored and overridden by {\bf MEASURE\_UNIT}.  The \Opt{Ap}$|${\bf m} options were ignored since the {\it mode} was not checked.
