@@ -39,7 +39,7 @@ Specify the unit used for distance calculations.  Choose among \fBe\fP (m), \fBk
 \fBELLIPSOID\fP is set to an actual ellipsoid.
 .B \-N
 Read the information pertaining to each Voronoi polygon (the unique node lon, lat and polygon area) from
-a separate file [Default aquires this information from the ASCII segment headers of the output file].
+a separate file [Default acquires this information from the ASCII segment headers of the output file].
 Required if binary input via OPT(Q) is used.
 .TP
 .B \-Q
