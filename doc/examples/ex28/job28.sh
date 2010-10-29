@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 28
-#		$Id: job28.sh,v 1.6 2010-01-12 18:23:52 remko Exp $
+#		$Id: job28.sh,v 1.7 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Illustrates how to mix UTM data and UTM projection
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext, mapproject
@@ -15,9 +15,9 @@ makecpt -Ccopper -T0/1500/100 -Z > Kilauea.cpt
 grdinfo Kilauea.utm.nc --D_FORMAT=%.10g -C > tmp.txt
 # Use inverse UTM projection to determine the lon/lat of the lower left and upper right corners
 LL=`cut -f2,4 tmp.txt | mapproject -Ju5Q/1:1 -F -C -I --OUTPUT_DEGREE_FORMAT=ddd:mm:ss.x | \
-	awk '{printf "%s/%s\n", $1, $2}'`
+	$AWK '{printf "%s/%s\n", $1, $2}'`
 UR=`cut -f3,5 tmp.txt | mapproject -Ju5Q/1:1 -F -C -I --OUTPUT_DEGREE_FORMAT=ddd:mm:ss.x | \
-	awk '{printf "%s/%s\n", $1, $2}'`
+	$AWK '{printf "%s/%s\n", $1, $2}'`
 # Lay down the UTM topo grid using a 1:17,000 scale
 grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:170000 -P -K -B5000g5000WSne \
 	-U"Example 28 in Cookbook" --D_FORMAT=%.10g --ANNOT_FONT_SIZE_PRIMARY=9 \

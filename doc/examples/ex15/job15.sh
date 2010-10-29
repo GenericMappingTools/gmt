@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 15
-#		$Id: job15.sh,v 1.10 2010-06-21 23:42:55 guru Exp $
+#		$Id: job15.sh,v 1.11 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Gridding and clipping when data are missing
 # GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
@@ -27,6 +27,6 @@ psmask -C -O -K >> $ps
 grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
 grdcontour ship_clipped.nc -J -B2WSne -C250 -A1000 -L-8000/0 -G2i -O -K -X3.6i >> $ps
 pscoast $region -J -O -K -Ggray -Wthinnest >> $ps
-echo $info | awk '{print $12,$13}' | psxy -R -J -O -K -Sa0.15i -Wthick >> $ps
+echo $info | $AWK '{print $12,$13}' | psxy -R -J -O -K -Sa0.15i -Wthick >> $ps
 echo "-0.3 3.6 24 0 1 CB Gridding with missing data" | pstext -R0/3/0/4 -Jx1i -O -N >> $ps
 rm -f ship.b ship_10m.b ship.nc ship_clipped.nc .gmt*

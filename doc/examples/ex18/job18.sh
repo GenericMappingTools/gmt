@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.15 2010-06-21 23:42:55 guru Exp $
+#		$Id: job18.sh,v 1.16 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -34,7 +34,7 @@ grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i \
 grdcontour AK_gulf_grav.nc -J -C10 -L49/51 -O -K -Dsm -Wcthin,green >> $ps
 pscoast -R -J -O -K -Di -Ggray -Wthinnest >> $ps
 $AWK '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
-\rm -f sm_*[0-9].xyz	# Only consider closed contours
+rm -f sm_*[0-9].xyz	# Only consider closed contours
 
 # Now determine centers of each enclosed seamount > 50 mGal but only plot
 # the ones within 200 km of Pratt seamount.
@@ -42,7 +42,7 @@ $AWK '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> 
 # First determine mean location of each closed contour and
 # add it to the file centers.d
 
-\rm -f centers.d
+rm -f centers.d
 for file in sm_*.xyz; do
 	$AWK 'BEGIN{x=0;y=0;n=0};{x+=$1;y+=$2;n++};END{print x/n,y/n}' $file >> centers.d
 done
