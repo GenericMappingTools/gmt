@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 23
-#		$Id: job23.sh,v 1.17 2010-07-18 21:40:14 guru Exp $
+#		$Id: job23.sh,v 1.18 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
@@ -42,14 +42,14 @@ done < cities.d
 
 # Plot red squares at cities and plot names:
 psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
-awk '{print $1, $2, 12, 0, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> $ps
+$AWK '{print $1, $2, 12, 0, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> $ps
 # Place a yellow star at Rome
 echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
 # Sample the distance grid at the cities and use the distance in km for labels
 
 grdtrack -Gdist.nc cities.d \
-	| awk '{printf "%s %s 12 0 1 CT %d\n", $1, $2, int($NF+0.5)}' \
+	| $AWK '{printf "%s %s 12 0 1 CT %d\n", $1, $2, int($NF+0.5)}' \
 	| pstext -R -J -O -D0/-0.2i -N -Wwhite,o -C0.02i/0.02i >> $ps
 
 # Clean up after ourselves:

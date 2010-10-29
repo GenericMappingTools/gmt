@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 27
-#		$Id: job27.sh,v 1.5 2010-06-27 20:23:22 jluis Exp $
+#		$Id: job27.sh,v 1.6 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -28,7 +28,7 @@ grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
 # Then use pscoast to plot land; get original -R from grid remark
 # and use Mercator projection with same scale as above on a spherical Earth
 
-R=`grdinfo tasman_grav.nc | grep Remark | awk '{print $NF}'`
+R=`grdinfo tasman_grav.nc | grep Remark | $AWK '{print $NF}'`
 
 pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere \
 	-Cwhite -Dh+ --PLOT_DEGREE_FORMAT=dddF >> $ps

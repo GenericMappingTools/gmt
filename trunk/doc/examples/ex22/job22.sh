@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 22
-#		$Id: job22.sh,v 1.10 2009-02-23 01:19:22 remko Exp $
+#		$Id: job22.sh,v 1.11 2010-10-29 20:27:59 guru Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
@@ -22,8 +22,8 @@ n=`expr $n - 1`
 
 # Pull out the first and last timestamp to use in legend title
 
-first=`sed -n 2p neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
-last=`sed -n '$p' neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
+first=`sed -n 2p neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
+last=`sed -n '$p' neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
 
 # Assign a string that contains the current user @ the current computer node.
 # Note that two @@ is needed to print a single @ in pstext:
@@ -43,7 +43,7 @@ END
 
 pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
 	-Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
-awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
+$AWK -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
 	| psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> $ps
 # Create legend input file for NEIS quake plot
 

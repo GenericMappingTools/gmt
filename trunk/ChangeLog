@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.808 2010-10-28 21:24:57 guru Exp $
+	$Id: ChangeLog,v 1.809 2010-10-29 20:27:59 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+2010-10-29	pwessel
+	* ex??/job??.[c]sh:	Many used awk instead of $AWK
+
 2010-10-28	pwessel
 	* gmt_init.c:		Could not use @:<size>: and @:: in -B strings as the colons
 				interfered with the :label: parsing.  Now fixed.
