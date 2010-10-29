@@ -1,5 +1,5 @@
 <HTML>
-<!--    $Id: gmt5.html,v 1.6 2010-10-21 04:28:34 guru Exp $      -->
+<!--    $Id: gmt5.html,v 1.7 2010-10-29 08:10:22 guru Exp $      -->
 <HEAD>
 <TITLE>GMT 5 Information</TITLE>
 <BODY bgcolor="#ffffff">
@@ -31,6 +31,11 @@ system-level changes.  The highlights of major features are:
 	<LI>All GMT program that reads data tables can control which data columns should be read and in what order
 		via the new <B>-i</B><I>columns</I> option.  E.g., use psxy -i5-7,2 ... to read columns 5, 6, 7 and 2
 		in that order (so cols 5 and 6 becomes x,y, etc.).  This eliminates the need to use external tools
+		like cut and awk to do this, which are not good solutions when your file has multiple segment headers
+		and comments that you wish to preserve.
+	<LI>All GMT program that writes data tables can control which data columns should be written and in what order
+		via the new <B>-o</B><I>columns</I> option.  E.g., use blockmean -o2,1 ... to write columns 2 and 1
+		in that order (i.e. output z and y only).  This eliminates the need to use external tools
 		like cut and awk to do this, which are not good solutions when your file has multiple segment headers
 		and comments that you wish to preserve.
 	<LI>All GMT program that reads data tables can control how records with NaNs are handled with a
