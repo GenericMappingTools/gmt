@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.809 2010-10-29 20:27:59 guru Exp $
+	$Id: ChangeLog,v 1.810 2010-10-31 05:25:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+
 2010-10-29	pwessel
 	* ex??/job??.[c]sh:	Many used awk instead of $AWK
 
@@ -14,12 +15,13 @@
 				interfered with the :label: parsing.  Now fixed.
 
 2010-10-27	pwessel
-	* psmask.c:		Did not update internal clip level (if not -T) in order
-				to warn if clipping has not been terminated.
+	* psmask.c:		Did not update internal clip level (if -T not used) do could
+				not warn if clipping had not been properly terminated.
 
 2010-10-26	pwessel
-	* mapproject.c:		When -L is used with -fg and an ellipse we convert lats
-				to geocentric lats before doing spherical trig.
+	* mapproject.c:		When -L is used with -fg and an ellipsoid we convert lats
+				to geocentric lats before doing spherical trig, then
+				convert back to geodetic coordinates.
 
 2010-10-24	jluis
 	* gmtdefaults:		Still had one free() that should be GMT_free (Win crash)
@@ -123,7 +125,6 @@
 
 2010-07-18	remko
 	* pstext.txt:		Added missing description of -A option.
-	* configure.ac:		Updated to 4.5.4 CVS
 
 2010-07-16	pwessel
 	* ex23/*:		The scripts plotted names at a 1-degree angle instead of 0.

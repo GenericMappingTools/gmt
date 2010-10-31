@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.33 2010-10-09 22:26:20 guru Exp $
+	$Id: README.GMT,v 1.34 2010-10-31 05:25:22 guru Exp $
 
 Dear potential GMT users-
 
@@ -35,7 +35,7 @@ in a separate archive:
 
 GMT_triangle.tar.bz2		Shewchuk triangulation source code
 
-The install_gmt Bourne script can be used after manual ftp as well.
+The install_gmt.sh Bourne script can be used after manual ftp as well.
 Place script in the same directory as the archives and run.
 
 For new installers of GMT under Windows:
