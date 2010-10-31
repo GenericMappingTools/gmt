@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.55 2010-10-31 22:42:55 guru Exp $
+#  $Id: Makefile,v 1.56 2010-10-31 22:46:19 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -95,6 +95,7 @@ update-www-test:	update-www-local
 #	First completely remove the test www files then copy then from the www-local files
 		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
+		scp -r www/5 $(WEBSERVER2):$(LIVEWWWDIR2)
 		scp www/index.html $(WEBSERVER2):$(LIVEWWWDIR2)
 #	For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
