@@ -1,5 +1,5 @@
 <HTML>
-<!--    $Id: gmt5.html,v 1.7 2010-10-29 08:10:22 guru Exp $      -->
+<!--    $Id: gmt5.html,v 1.8 2010-10-31 07:55:48 guru Exp $      -->
 <HEAD>
 <TITLE>GMT 5 Information</TITLE>
 <BODY bgcolor="#ffffff">
@@ -23,7 +23,7 @@ system-level changes.  The highlights of major features are:
 <UL>
 	<LI>GMT now has a way of dealing with GIS aspatial data, such as produced by ogr2ogr -f"GMT" from
 		shapefiles and other GIS formats.  This format was specifically developed for GMT and referred
-		to as the OGR/GMT format.  The metadata in this format can be used to set certain program arguments,
+		to as the OGR/GMT format (See Appendix Q) .  The metadata in this format can be used to set certain program arguments,
 		such as symbol sizes or labels. The program gmtconvert can also covert plain GMT tables into
 		the OGR/GMT format that ogr2ogr may translate into shapefiles and other GIS formats.
 		Furthermore, the ESRI Arc/Info ASCII Grid Interchange format is now a recognized grid format;
@@ -48,7 +48,7 @@ system-level changes.  The highlights of major features are:
 		you convert it to PDF using Adobe Distiller.  To date, none of the GhostScript products has
 		implemented this <I>PostScript</I> extension (this may of course change in the future).
 	<LI>Our macro language for custom plot symbols (to use with psxy and psxyz) has been extended to
-		allow for multi-parameter symbols, including full support for conditional, nested tests.
+		allow for multi-parameter symbols, including full support for conditional, nested tests (See Appendix N).
 	<LI>All GMT programs that process table data can handle multi-segment files without any special options.
 		[In the past this required <B>-m</B> and many programs did not even have the option].
 	<LI>All GMT plot programs that produce 2-D illustrations now take a new and optional <B>-p</B> option for perspective
@@ -61,21 +61,23 @@ system-level changes.  The highlights of major features are:
 		<B>isostasy</B> for plate flexure calculations, and hopefully <B>spharmonics</B> for converting between
 		global grids and spherical harmonics coefficients.  This is all work in progress; ideas are welcome.
 </UL>
+In addition, many programs have been given new options and you should check with the usage and man pages to learn
+the details.  Finally, several new tools have been added; see Chapter 1 in the documentation for all the details.
 <H3>What it means for developers</H3>
 The big news is for developers who wish to leverage GMT in their own applications.  We have completely revamped
 the code base so that high-level GMT functionality is now accessible via GMT "modules".  These are high-level
 functions named after their corresponding programs (.e.g., GMT_grdimage) that contains all of the functionality
 of that program within the function.  While currently callable from C/C++ only, we have built several of the
 Matlab interface modules as well and will soon start on the Python version.  Developers should consult the new
-GMT API Documentation for more details, and examine the demonstration application gmtmapper.c.<BR>
+GMT API Documentation for more details, and look at the testgmt5.c and pslegend_func.c codes.<BR>
 	We have also redesigned the <I>PostScript</I> plotting library pslib; it is now referred to as PSL and
 has seen much simplification and under-the-hood improvements.  All functions have been renamed so those who
-have used PSL directly in the past will need to consult the documentation.
+have used PSL directly in the past will need to consult the updated documentation.
 
 <H3>Who should consider installing GMT 5?</H3>
-While GMT 5 correctly processes our 30 examples, our 86 test scripts, and ~100 figure scripts for the documentation,
-we still consider it unstable and even some simple things not exercises by these examples and scripts may cause
-crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  There are several groups of people we wish to get involved:
+While GMT 5 correctly processes our 30 examples, our 86 test scripts, and 137 figure scripts for the documentation,
+we still consider it unstable and even some simple things not exercised by these examples and scripts may cause
+crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  Still, there are several groups of people we wish to get involved:
 <OL>
 	<LI>We need volunteers curious about GMT 5 and who
 		wish to get a head-start on this new version.  After installing, you should read Chapter 1 to see what the changes
@@ -90,11 +92,12 @@ crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  There are severa
 		and multi-parameter symbols using our extended macro language.  See the expanded Appendix N for details.
 		Natural candidates are meteorologists who need a myriad of symbols that often take many data columns, such
 		as wind barbs.
-	<LI>Matlab users who wish to explore the Matlab interface and ideally help us expand it to all the GMT tools.
+	<LI>Matlab users who wish to explore the new Matlab interface and ideally help us expand it to all the GMT tools.
 	<LI>Developers who either (a) have already used GMT from their applications either via system calls or direct function calls
 		and (b) those who might consider using GMT as a library if it is easy to do are welcome to read our GMTAPI documentation.
 		Since only the C/C++ interface to GMT has been completed we will focus on developers wishing to use that interface.
 		Once it stabilizes we will begin on the Python interface and will then need additional help from Python experts.
+		We have also written the API to allow calls from Fortran but this requires Fortran users for testing.
 </OL>
 <H3>GMT 5 Installation</H3>
 GMT 5 will only be available via cvs until it is officially released.  Because GMT 5 is expected to have
@@ -116,6 +119,10 @@ precompiled netCDF DLL/Libs for both 32- and 64-bit systems <A HREF="ftp://ftp.s
 However, before using the batch files successfully several files need to be generated. On *nix this is done by the configure script, but on
 windows we currently have no way to do the same job. So in practice, to build the Windows version it is necessary to build it first with
 Cygwin. This will hopefully change when we have a CMake build solution.
+<H3>Your feedback</H3>
+We would like to hear from you about all aspects of GMT 5.  Many things are not polished yet: Man pages may leave out descriptions of new
+features, program usage messages may be inaccurate, and the main Cookbook and Tutorial has only been marginally updated.  Most of the
+example scripts have been modified to reflect new syntax.  So anything from noticing typos to finding bugs will be appreciated.
 <P>
 Sincerely, the GMT Team (Wessel, Smith, Scharroo, Luis)
 </HEAD>
