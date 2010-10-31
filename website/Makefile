@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.56 2010-10-31 22:46:19 guru Exp $
+#  $Id: Makefile,v 1.57 2010-10-31 23:02:43 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -87,6 +87,7 @@ update-www-live:	update-www-local
 #	First completely remove the live www files then copy them from the www-local files
 		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
 		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
+		scp -r www/5 $(WEBSERVER):$(LIVEWWWDIR)
 		scp www/index.html $(WEBSERVER):$(LIVEWWWDIR)
 #	Update the Perl script in the CGI bin dir
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
