@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.42 2010-03-23 00:03:52 jluis Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.43 2010-10-31 22:29:50 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -182,7 +182,7 @@ GMT_LONG GMT_is_mgg2_grid (struct GRD_HEADER *header)
 	if (!strcmp(header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
-	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
+	memset (&mggHeader, 0, sizeof(MGG_GRID_HEADER_2));
 	if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
@@ -205,7 +205,7 @@ GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header)
 	} else if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
+	memset ((void *)&mggHeader, 0, sizeof(MGG_GRID_HEADER_2));
 	if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
@@ -265,7 +265,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	long long_offset;	/* For fseek only */
 	
 	if (complex) return (GMT_GRDIO_GRD98_COMPLEX);
-
+	memset ((void *)&mggHeader, 0, sizeof(MGG_GRID_HEADER_2));
 	if (!strcmp (header->name, "=")) {
 		fp = GMT_stdin;
 		piping = TRUE;
