@@ -83,7 +83,10 @@ and \fBINSIDE\fP.
 (1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
 and the (lon, lat) point are expected to be in degrees.  Similarly, the \fBSAZ\fP and \fBSBAZ\fP
-operators calculate spherical azimuth and backazimuths in degrees, respectively.
+operators calculate spherical azimuth and back-azimuths in degrees, respectively.
+A few operators (\fBPDIST\fP, \fBLDIST\fP, and \fBINSIDE\fP) expects their argument to be
+a single file with points, lines, or polygons, respectively.  Be aware that \fBLDIST\fP in particular
+can be slow for large grids and numerous line segments.
 Note: If the current \fBELLIPSOID\fP is not spherical then geodesics are used in the calculations.
 .br
 .sp
