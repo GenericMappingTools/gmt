@@ -1,5 +1,5 @@
 <HTML>
-<!--    $Id: gmt5.html,v 1.8 2010-10-31 07:55:48 guru Exp $      -->
+<!--    $Id: gmt5.html,v 1.9 2010-10-31 22:54:24 guru Exp $      -->
 <HEAD>
 <TITLE>GMT 5 Information</TITLE>
 <BODY bgcolor="#ffffff">
@@ -23,22 +23,22 @@ system-level changes.  The highlights of major features are:
 <UL>
 	<LI>GMT now has a way of dealing with GIS aspatial data, such as produced by ogr2ogr -f"GMT" from
 		shapefiles and other GIS formats.  This format was specifically developed for GMT and referred
-		to as the OGR/GMT format (See Appendix Q) .  The metadata in this format can be used to set certain program arguments,
+		to as the OGR/GMT format (See Appendix Q).  The metadata in this format can be used to set certain program arguments,
 		such as symbol sizes or labels. The program gmtconvert can also covert plain GMT tables into
 		the OGR/GMT format that ogr2ogr may translate into shapefiles and other GIS formats.
 		Furthermore, the ESRI Arc/Info ASCII Grid Interchange format is now a recognized grid format;
 		you no longer have to use grd2xyz/xyz2grd to handle such files.
-	<LI>All GMT program that reads data tables can control which data columns should be read and in what order
+	<LI>All GMT programs that read data tables can control which data columns should be read and in what order
 		via the new <B>-i</B><I>columns</I> option.  E.g., use psxy -i5-7,2 ... to read columns 5, 6, 7 and 2
 		in that order (so cols 5 and 6 becomes x,y, etc.).  This eliminates the need to use external tools
 		like cut and awk to do this, which are not good solutions when your file has multiple segment headers
 		and comments that you wish to preserve.
-	<LI>All GMT program that writes data tables can control which data columns should be written and in what order
+	<LI>All GMT programs that write data tables can control which data columns should be written and in what order
 		via the new <B>-o</B><I>columns</I> option.  E.g., use blockmean -o2,1 ... to write columns 2 and 1
 		in that order (i.e. output z and y only).  This eliminates the need to use external tools
 		like cut and awk to do this, which are not good solutions when your file has multiple segment headers
 		and comments that you wish to preserve.
-	<LI>All GMT program that reads data tables can control how records with NaNs are handled with a
+	<LI>All GMT programs that read data tables can control how records with NaNs are handled with a
 		new <B>-s</B> option.
 	<LI>GMT now has new capabilities for handling PDF transparency.
 		All color or fill specifications in GMT (including fonts and CPT tables) may append @<I>transparency</I>
@@ -68,7 +68,7 @@ The big news is for developers who wish to leverage GMT in their own application
 the code base so that high-level GMT functionality is now accessible via GMT "modules".  These are high-level
 functions named after their corresponding programs (.e.g., GMT_grdimage) that contains all of the functionality
 of that program within the function.  While currently callable from C/C++ only, we have built several of the
-Matlab interface modules as well and will soon start on the Python version.  Developers should consult the new
+Matlab interface modules as well and will soon start on the Python and Fortran versions.  Developers should consult the new
 GMT API Documentation for more details, and look at the testgmt5.c and pslegend_func.c codes.<BR>
 	We have also redesigned the <I>PostScript</I> plotting library pslib; it is now referred to as PSL and
 has seen much simplification and under-the-hood improvements.  All functions have been renamed so those who
@@ -103,12 +103,11 @@ crashes.  Thus, you cannot count on GMT 5 for day-to-day work.  Still, there are
 GMT 5 will only be available via cvs until it is officially released.  Because GMT 5 is expected to have
 too many short-comings or bugs to be used for production, you will need to become familiar with the gmtswitch
 script that lets you seamlessly switch between different GMT versions.
-To install GMT 5, cd to your GMTdev directory (where we recommend you place other GMT distributions
-such as 4.5.4 and GMT 4 cvs) and run<P>
+To install GMT 5, first follow the GMT 4 CVS installation on the GMT website.  Once that is done, continue with these instructions.
+cd to your GMTdev directory (where you have your GMT 4 cvs tree) and run<P>
 	cvs checkout -d GMT5 -r GMT5_branch GMT<P>
-You will then get the GMT 5 branch installed in a new GMT5 directory.  Like for GMT 4 cvs (please review those instructions
-if you have never used the cvs version; in fact, you may wish to install the GMT 4 cvs first so your login is setup properly) you may need to
-make a few changes to the guru/gmtguru.macros file and to copy over coastlines, e.g.,<P>
+You will then get the GMT 5 branch installed in a new GMT5 directory.  Like for GMT 4 cvs you may need to
+make a few changes to the guru/gmtguru.macros file and to copy over the latest coastlines, e.g.,<P>
 make get_coast get_high get_full<P>
 You can then issue make install.  To build everything, including the documentation, you must make sure you have the Latex and other
 packages.  Once you add the full path to the GMT5 directory to your
