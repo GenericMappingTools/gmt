@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.166 2010-11-01 23:10:43 guru Exp $
+#	$Id: install_gmt.sh,v 1.167 2010-11-01 23:56:30 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -204,7 +204,6 @@ else
 	gdal_path=
 fi
 
-GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
