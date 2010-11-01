@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2009-10-31 16:00:23 remko Exp $
+#	$Id: Makefile,v 1.34 2010-11-01 22:31:53 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -51,8 +51,8 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libgmt_mgg.{$(SL),$(SL_VERSION)} ; \
-			$(LN_S) libgmt_mgg.{$(SL_VERSION),$(SL)} ; \
+			\mv -f libgmt_mgg.$(SL) libgmt_mgg.$(SL_VERSION) ; \
+			$(LN_S) libgmt_mgg.$(SL_VERSION) libgmt_mgg.$(SL) ; \
 		fi
 
 uninstall:
@@ -61,7 +61,7 @@ uninstall:
 			cd $(includedir); \rm -f $(LIB_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libgmt_mgg.{a,$(SL),$(SL_VERSION)}; \
+			cd $(libdir); \rm -f libgmt_mgg.a libgmt_mgg.$(SL) libgmt_mgg.$(SL_VERSION); \
 		fi
 
 install-man:	$(MAN1)

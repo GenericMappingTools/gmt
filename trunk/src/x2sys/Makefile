@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.51 2009-10-28 22:23:35 remko Exp $
+#	$Id: Makefile,v 1.52 2010-11-01 22:31:53 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -41,8 +41,8 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libx2sys.{$(SL),$(SL_VERSION)} ; \
-			$(LN_S) libx2sys.{$(SL_VERSION),$(SL)} ; \
+			\mv -f libx2sys.$(SL) libx2sys.$(SL_VERSION) ; \
+			$(LN_S) libx2sys.$(SL_VERSION) libx2sys.$(SL) ; \
 		fi
 
 uninstall:	
@@ -51,7 +51,7 @@ uninstall:
 			cd $(includedir); \rm -f $(LIB_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libx2sys.{a,$(SL),$(SL_VERSION)}; \
+			cd $(libdir); \rm -f libx2sys.a libx2sys.$(SL) libx2sys.$(SL_VERSION); \
 		fi
 
 install-man:	$(MAN1)

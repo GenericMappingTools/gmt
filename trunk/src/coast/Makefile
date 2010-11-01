@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.73 2010-07-18 03:19:12 guru Exp $
+#	$Id: Makefile,v 1.74 2010-11-01 22:31:53 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -104,11 +104,11 @@ delete:
 
 build-gshhs:
 		mkdir -p gshhs
-		polygon_to_gshhs res_f/v${VERSION}_final_f_dbase.b > gshhs/gshhs_f.b
-		polygon_to_gshhs res_h/v${VERSION}_final_h_dbase.b > gshhs/gshhs_h.b
-		polygon_to_gshhs res_i/v${VERSION}_final_i_dbase.b > gshhs/gshhs_i.b
-		polygon_to_gshhs res_l/v${VERSION}_final_l_dbase.b > gshhs/gshhs_l.b
-		polygon_to_gshhs res_c/v${VERSION}_final_c_dbase.b > gshhs/gshhs_c.b
+		polygon_to_gshhs res_f/v$(VERSION)_final_f_dbase.b > gshhs/gshhs_f.b
+		polygon_to_gshhs res_h/v$(VERSION)_final_h_dbase.b > gshhs/gshhs_h.b
+		polygon_to_gshhs res_i/v$(VERSION)_final_i_dbase.b > gshhs/gshhs_i.b
+		polygon_to_gshhs res_l/v$(VERSION)_final_l_dbase.b > gshhs/gshhs_l.b
+		polygon_to_gshhs res_c/v$(VERSION)_final_c_dbase.b > gshhs/gshhs_c.b
 		polygon_to_gshhs -l wdb/wdb_f_borders.b > gshhs/wdb_borders_f.b
 		polygon_to_gshhs -l wdb/wdb_h_borders.b > gshhs/wdb_borders_h.b
 		polygon_to_gshhs -l wdb/wdb_i_borders.b > gshhs/wdb_borders_i.b
@@ -122,11 +122,11 @@ build-gshhs:
 
 shape-gshhs:
 		mkdir -p GSHHS_shp GSHHS_shp/f GSHHS_shp/h GSHHS_shp/i GSHHS_shp/l GSHHS_shp/c
-		polygon_to_shape res_f/v${VERSION}_final_f_dbase.b GSHHS_f
-		polygon_to_shape res_h/v${VERSION}_final_h_dbase.b GSHHS_h
-		polygon_to_shape res_i/v${VERSION}_final_i_dbase.b GSHHS_i
-		polygon_to_shape res_l/v${VERSION}_final_l_dbase.b GSHHS_l
-		polygon_to_shape res_c/v${VERSION}_final_c_dbase.b GSHHS_c
+		polygon_to_shape res_f/v$(VERSION)_final_f_dbase.b GSHHS_f
+		polygon_to_shape res_h/v$(VERSION)_final_h_dbase.b GSHHS_h
+		polygon_to_shape res_i/v$(VERSION)_final_i_dbase.b GSHHS_i
+		polygon_to_shape res_l/v$(VERSION)_final_l_dbase.b GSHHS_l
+		polygon_to_shape res_c/v$(VERSION)_final_c_dbase.b GSHHS_c
 		mv GSHHS_f_L[1-4]/* GSHHS_shp/f
 		mv GSHHS_h_L[1-4]/* GSHHS_shp/h
 		mv GSHHS_i_L[1-4]/* GSHHS_shp/i
