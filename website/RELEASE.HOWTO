@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.30 2010-11-01 23:10:43 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.31 2010-11-01 23:50:57 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -34,7 +34,7 @@ must ensure you do all the steps listed below:
 
 5.  In GMT/website:
     a) Update gmt_arrrghh.html, gmt_faq.html, gmt_home.html,
-       gmt_install_form.html, gmt_news.html, gmt_releases_template.html
+       gmt_install_form.html, gmt_releases_template.html
        install_gmt_form.pl, gmt_nav.html
     b) create web examples:
        make web
