@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.81 2010-01-08 21:35:19 guru Exp $
+#	$Id: Makefile,v 1.82 2010-11-01 22:55:46 remko Exp $
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -152,8 +152,10 @@ install-man uninstall-man:
 install-doc::
 		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
 			mkdir -p $(docdir); \
-			cp -pr $(rootdir)/share/doc/gmt/{html,pdf,examples,tutorial} $(docdir); \
-			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
+			cd $(rootdir)/share/doc/gmt; \
+			cp -pr html pdf examples tutorial $(docdir); \
+			cd $(docdir); \
+			rm -rf */CVS */orig */*/CVS */*/.gmt* */*/*.ps */*/.cvs*; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
 		fi
