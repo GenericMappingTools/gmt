@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.19 2010-09-14 23:57:31 guru Exp $
+#	$Id: Makefile,v 1.20 2010-11-01 22:31:53 remko Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -26,9 +26,9 @@ SPHLIB		= libsph.a
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-CODE_O	= ${CODE_C:.c=.o}
-CODE	= ${CODE_C:.c=}
-LIB_O	= ${LIB_C:.c=.o}
+CODE_O	= $(CODE_C:.c=.o)
+CODE	= $(CODE_C:.c=)
+LIB_O	= $(LIB_C:.c=.o)
 
 all:		$(CODE)
 

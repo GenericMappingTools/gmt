@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.61 2009-10-31 16:00:23 remko Exp $
+#	$Id: Makefile,v 1.62 2010-11-01 22:31:53 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -50,8 +50,8 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libmgd77.{$(SL),$(SL_VERSION)} ; \
-			$(LN_S) libmgd77.{$(SL_VERSION),$(SL)} ; \
+			\mv -f libmgd77.$(SL) libmgd77.$(SL_VERSION) ; \
+			$(LN_S) libmgd77.$(SL_VERSION) libmgd77.$(SL) ; \
 		fi
 
 uninstall:
@@ -60,7 +60,7 @@ uninstall:
 			cd $(includedir); \rm -f $(LIB_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libmgd77.{a,$(SL),$(SL_VERSION)}; \
+			cd $(libdir); \rm -f libmgd77.a libmgd77.$(SL) libmgd77.$(SL_VERSION); \
 		fi
 
 install-man:	$(MAN1)
