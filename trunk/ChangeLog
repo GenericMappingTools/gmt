@@ -1,12 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.810 2010-10-31 05:25:22 guru Exp $
+	$Id: ChangeLog,v 1.811 2010-11-01 22:28:55 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
-
+2010-11-01	pwessel
+	* Missing html:		gmt_shell_functions, gmtcolors, gmtget, gmtlogo
+				img2google, isogmt, psbbox, sphdistance
+				sphinterpolate, sphtriangulate, x2sys_merge
+	
 2010-10-29	pwessel
 	* ex??/job??.[c]sh:	Many used awk instead of $AWK
 

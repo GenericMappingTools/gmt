@@ -326,6 +326,9 @@ share/doc/gmt/html/man/psmegaplot.html
 share/doc/gmt/html/man/pssegy.html
 share/doc/gmt/html/man/pssegyz.html
 share/doc/gmt/html/man/segy2grd.html
+share/doc/gmt/html/man/sphdistance.html
+share/doc/gmt/html/man/sphinterpolate.html
+share/doc/gmt/html/man/sphtriangulate.html
 share/doc/gmt/html/man/backtracker.html
 share/doc/gmt/html/man/hotspotter.html
 share/doc/gmt/html/man/rotconverter.html
@@ -339,6 +342,7 @@ share/doc/gmt/html/man/x2sys_cross.html
 share/doc/gmt/html/man/x2sys_report.html
 share/doc/gmt/html/man/x2sys_solve.html
 share/doc/gmt/html/man/x2sys_get.html
+share/doc/gmt/html/man/x2sys_merge.html
 share/doc/gmt/html/man/x2sys_init.html
 share/doc/gmt/html/man/x2sys_put.html
 share/doc/gmt/html/man/x_edit.html
@@ -351,3 +355,10 @@ share/doc/gmt/html/man/x_setup.html
 share/doc/gmt/html/man/x_solve_dc_drift.html
 share/doc/gmt/html/man/x_system.html
 share/doc/gmt/html/man/x_update.html
+share/doc/gmt/html/man/gmt_shell_functions.html
+share/doc/gmt/html/man/gmtcolors.html
+share/doc/gmt/html/man/gmtget.html
+share/doc/gmt/html/man/gmtlogo.html
+share/doc/gmt/html/man/img2google.html
+share/doc/gmt/html/man/isogmt.html
+share/doc/gmt/html/man/psbbox.html
