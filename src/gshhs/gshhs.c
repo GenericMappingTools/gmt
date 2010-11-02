@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.33 2010-11-02 02:25:18 guru Exp $
+/*	$Id: gshhs.c,v 1.34 2010-11-02 04:08:47 guru Exp $
  *
  *	Copyright (c) 1996-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,8 +109,8 @@ int main (int argc, char **argv)
 			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
 		level = h.flag & 255;				/* Level is 1-4 */
-		if (first) fprintf (stderr, "gshhs %s - Found GSHHS version %d\n", GSHHS_PROG_VERSION, version);
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
+		if (first) fprintf (stderr, "gshhs %s - Found GSHHS version %d in file %s\n", GSHHS_PROG_VERSION, version, file);
 		greenwich = (h.flag >> 16) & 1;			/* Greenwich is 0 or 1 */
 		src = (h.flag >> 24) & 1;			/* Greenwich is 0 (WDBII) or 1 (WVS) */
 		river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
