@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.12 2007-06-06 19:12:35 remko Exp $
+REM		$Id: job03.bat,v 1.13 2010-11-02 02:10:26 guru Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y

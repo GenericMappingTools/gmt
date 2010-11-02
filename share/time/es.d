@@ -1,6 +1,6 @@
 # GMT Time language file for ES (spanish) mode [ES]
 #
-#	$Id: es.d,v 1.1 2002-02-22 17:26:40 pwessel Exp $
+#	$Id: es.d,v 1.2 2010-11-02 02:10:26 guru Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Enero		Ene	E
