@@ -1,6 +1,6 @@
 # GMT Time language file for BR (brazilian portuguese) mode [BR]
 #
-#	$Id: br.d,v 1.1 2002-02-25 01:47:37 pwessel Exp $
+#	$Id: br.d,v 1.2 2010-11-02 02:10:26 guru Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Janeiro		Jan	J

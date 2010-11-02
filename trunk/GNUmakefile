@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.66 2010-08-29 21:24:03 guru Exp $
+#  $Id: GNUmakefile,v 1.67 2010-11-02 02:10:26 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -136,6 +136,12 @@ clean spotless::
 #-------------------------------------------------------------------------------
 ex:		examples
 webdoc:		;
+
+#-------------------------------------------------------------------------------
+# To check there are no files with DOS line-endings
+#-------------------------------------------------------------------------------
+DOS:
+		$(SHELL) guru/DOS_finder.sh
 
 #-------------------------------------------------------------------------------
 # FILES stands for all those files (makefiles, etc) that are not part of the CVS
