@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.32 2010-01-05 01:15:47 guru Exp $
+/*	$Id: gshhs.c,v 1.33 2010-11-02 02:25:18 guru Exp $
  *
  *	Copyright (c) 1996-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 	char *name[2] = {"polygon", "line"}, container[8], ancestor[8];
 	FILE *fp = NULL;
 	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
-	int  OK, level, version, greenwich, river, src, msformat = 0;
+	int  OK, level, version, greenwich, river, src, msformat = 0, first = 1;
 	struct	POINT p;
 	struct GSHHS h;
         
@@ -109,6 +109,7 @@ int main (int argc, char **argv)
 			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
 		level = h.flag & 255;				/* Level is 1-4 */
+		if (first) fprintf (stderr, "gshhs %s - Found GSHHS version %d\n", GSHHS_PROG_VERSION, version);
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
 		greenwich = (h.flag >> 16) & 1;			/* Greenwich is 0 or 1 */
 		src = (h.flag >> 24) & 1;			/* Greenwich is 0 (WDBII) or 1 (WVS) */
@@ -121,9 +122,10 @@ int main (int argc, char **argv)
 		if (river) source = tolower ((int)source);	/* Lower case c means river-lake */
 		line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;				/* Now im km^2 */
-		f_area = 0.1 * h.area_full;				/* Now im km^2 */
+		f_area = 0.1 * h.area_full;			/* Now im km^2 */
 
 		OK = (!single || h.id == ID);
+		first = 0;
 		
 		if (!msformat) c = kind[line];
 		if (OK) {
