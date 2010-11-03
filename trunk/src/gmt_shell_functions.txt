@@ -24,7 +24,7 @@ gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scr
 \fBgmt_get_gridregion\fP \fIfile\fP [\fIoptions\fP]
 .br
 \fBgmt_get_map_width\fP OPT(R) OPT(J)
-br
+.br
 \fBgmt_get_map_height\fP OPT(R) OPT(J)
 .br
 \fBgmt_set_psfile\fP \fIfile\fP
