@@ -64,14 +64,14 @@ Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use OPT(Sx) to speci
 \fIlength\fP is in z units, append unit name for labeling
 .TP
 OPT(T)
-Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 1, color = black, texture = solid].
+Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 0.25p, color = black, texture = solid].
 (See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 OPT(W)
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
-[Defaults: width = 1, color = black, texture = solid].
+[Defaults: width = 0.25p, color = black, texture = solid].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-t.txt"

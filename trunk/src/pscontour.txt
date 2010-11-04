@@ -94,7 +94,7 @@ followed by the contour level.
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
-To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
+To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 0.5p)
 given in the color palette file topo.cpt on a Lambert map
 at LEN_L inch/degree along the standard parallels 18 and 24, use 
 .br

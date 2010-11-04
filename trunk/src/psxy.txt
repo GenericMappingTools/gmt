@@ -64,7 +64,7 @@ OPT(E)
 Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
 \fIcap\fP parameter indicates the length of the end-cap on the error bars [CAP_SI (or CAP_US)].  Pen
-attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 1, color = black, texture = solid].
+attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 0.25p, color = black, texture = solid].
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
 \fB-\fP will set error pen color and turn off symbol fill.
 If upper case \fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
@@ -261,7 +261,7 @@ of lines or symbols, such as \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(T) to terminate
 #include "explain_-V.txt"
 .TP
 OPT(W)
-Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, texture = solid].
+Set pen attributes for lines or the outline of symbols [Defaults: width = 0.25p, color = black, texture = solid].
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 \fB-\fP will set outline pen color and turn off symbol fill.
 (See SPECIFYING PENS below).

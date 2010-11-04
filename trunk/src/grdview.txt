@@ -93,15 +93,15 @@ your liking.  As this option produces a flat surface it cannot be combined with 
 .TP
 OPT(Wc)
 Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
-[Default: width = 3, color = black, texture = solid].
+[Default: width = 0.75p, color = black, texture = solid].
 (See SPECIFYING PENS below).
 .TP
 OPT(Wm)
-Sets the pen attributes used for the mesh. [Default: width = 1, color = black, texture = solid].
+Sets the pen attributes used for the mesh. [Default: width = 0.25p, color = black, texture = solid].
 You must also select OPT(Qm) or OPT(Qsm) for meshlines to be drawn.
 .TP
 OPT(Wf)
-Sets the pen attributes used for the facade. [Default: width = 1, color = black, texture = solid].
+Sets the pen attributes used for the facade. [Default: width = 0.25p, color = black, texture = solid].
 You must also select OPT(N) for the facade outline to be drawn.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
