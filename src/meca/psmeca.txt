@@ -44,21 +44,21 @@ quadrants can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fP:
+.TP \fB4,5,6\fP:
 strike, dip and rake in degrees
-.IP \fB7\fP:
+.TP \fB7\fP:
 magnitude
-.IP \fB8,9\fP:
+.TP \fB8,9\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using 0,0 in columns
 8 and 9 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (8,9).
-.IP \fB10\fP:
+.TP \fB10\fP:
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -75,23 +75,23 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fP:
+.TP \fB4,5,6\fP:
 strike, dip, and rake of plane 1
-.IP \fB7,8,9\fP:
+.TP \fB7,8,9\fP:
 strike, dip, and rake of plane 2
-.IP \fB10,11\fP:
+.TP \fB10,11\fP:
 mantissa and exponent of moment in dyne-cm
-.IP \fB12,13\fP:
+.TP \fB12,13\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 12 and 13 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (12,13).
-.IP \fB14\fP:
+.TP \fB14\fP:
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -110,21 +110,21 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9\fP:
+.TP \fB4,5,6,7,8,9\fP:
 mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm
-.IP \fB10\fP:
+.TP \fB10\fP:
 exponent
-.IP \fB11,12\fP:
+.TP \fB11,12\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 11 and 12 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (11,12).
-.IP \fB13\fP:
+.TP \fB13\fP:
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -138,25 +138,25 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5\fP:
+.TP \fB4,5\fP:
 strike, dip of plane 1
-.IP \fB6\fP:
+.TP \fB6\fP:
 strike of plane 2
-.IP \fB7\fP:
+.TP \fB7\fP:
 must be -1/+1 for a normal/inverse fault
-.IP \fB8\fP:
+.TP \fB8\fP:
 magnitude
-.IP \fB9,10\fP:
+.TP \fB9,10\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (9,10).
-.IP \fB11\fP:
+.TP \fB11\fP:
 Text string to appear above the beach ball (optional).
 .RE
 .TP
@@ -175,21 +175,21 @@ can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .RS
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9,10,11,12\fP:
+.TP \fB4,5,6,7,8,9,10,11,12\fP:
 value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.
-.IP \fB13\fP:
+.TP \fB13\fP:
 exponent
-.IP \fB14,15\fP:
+.TP \fB14,15\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using (0,0) in columns
 14 and 15 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (14,15).
-.IP \fB16\fP:
+.TP \fB16\fP:
 Text string to appear above the beach ball (optional).
 .RE
 .LP

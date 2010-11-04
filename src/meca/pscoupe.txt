@@ -95,17 +95,17 @@ quadrants can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .sp
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fP:
+.TP \fB4,5,6\fP:
 strike, dip and rake
-.IP \fB7\fP:
+.TP \fB7\fP:
 magnitude
-.IP \fB8,9\fP:
+.TP \fB8,9\fP:
 not used; can be 0 0; allows use of the psmeca file format
-.IP \fB10\fP:
+.TP \fB10\fP:
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
@@ -121,19 +121,19 @@ and the circumference. The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade
 of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6\fP:
+.TP \fB4,5,6\fP:
 strike, dip, and slip of plane 1
-.IP \fB7,8,9\fP:
+.TP \fB7,8,9\fP:
 strike, dip, and slip of plane 2
-.IP \fB10,11\fP:
+.TP \fB10,11\fP:
 mantissa and exponent of moment in dyne-cm (if magnitude is uses instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
-.IP \fB12,13\fP:
+.TP \fB12,13\fP:
 not used; can be 0 0; allows use of the psmeca file format
-.IP \fB14\fP:
+.TP \fB14\fP:
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
@@ -147,21 +147,21 @@ points, respectively).  The color or shade of the compressive quadrants
 can be specified with the OPT(G) option.  The color or shade of the extensive
 quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth
-.IP \fB4,5\fP:
+.TP \fB4,5\fP:
 strike, dip of plane 1
-.IP \fB6\fP:
+.TP \fB6\fP:
 strike of plane 2
-.IP \fB7\fP:
+.TP \fB7\fP:
 must be -1/+1 for a normal/inverse fault
-.IP \fB8\fP:
+.TP \fB8\fP:
 magnitude
-.IP \fB9,10\fP:
+.TP \fB9,10\fP:
 not used; can be 0 0; allows use of the psmeca file format
-.IP \fB11\fP:
+.TP \fB11\fP:
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
@@ -179,17 +179,17 @@ anisotropic part of moment tensor (zero trace).  The color or shade of the
 compressive quadrants can be specified with the OPT(G) option.  The color or
 shade of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9\fP:
+.TP \fB4,5,6,7,8,9\fP:
 mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm
-.IP \fB10\fP:
+.TP \fB10\fP:
 exponent
-.IP \fB11,12\fP:
+.TP \fB11,12\fP:
 Not used; can be 0 0; allows use of the psmeca file format
-.IP \fB13\fP:
+.TP \fB13\fP:
 Text string to appear above the beach ball (default) or under (add \fBu\fP).
 .br
 .sp
@@ -208,21 +208,21 @@ anisotropic part of moment tensor (zero trace).  The color or shade of the
 compressive quadrants can be specified with the OPT(G) option.  The color or
 shade of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4,5,6,7,8,9,10,11,12\fP:
+.TP \fB4,5,6,7,8,9,10,11,12\fP:
 value (in 10*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
-.IP \fB13\fP:
+.TP \fB13\fP:
 exponent
-.IP \fB14,15\fP:
+.TP \fB14,15\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the OPT(C) option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (9,10).
-.IP \fB16\fP:
+.TP \fB16\fP:
 Text string to appear above the beach ball (optional).
 .br
 .TP
@@ -235,11 +235,11 @@ Choose from the following:
 units of cm, inches, meters, or points, respectively).  If \fIsize\fP must be
 read, it must be in column 4 and the text string will start in column 5.
 Parameters are expected to be in the following columns:
-.IP \fB1,2\fP:
+.TP \fB1,2\fP:
 longitude, latitude of event (OPT(:) option interchanges order)
-.IP \fB3\fP:
+.TP \fB3\fP:
 depth of event in kilometers
-.IP \fB4\fP:
+.TP \fB4\fP:
 Text string to appear above the beach ball (default) or under (add \fBu\fP).
 .br
 .SH OPTIONS

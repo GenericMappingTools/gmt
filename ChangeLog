@@ -1,17 +1,23 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.812 2010-11-01 23:10:43 guru Exp $
+	$Id: ChangeLog,v 1.813 2010-11-04 12:58:55 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-04	remko
+	* meca/*.txt:		Replaced .IP with .TP
+	* configure.ac:		Updated to version 4.5.6
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.5 finalized and released. GMT 5.0.0alpha announced, get via cvs
 -----------------------------------------------------------------------------------------
+
 2010-11-01	pwessel
 	* Missing html:		gmt_shell_functions, gmtcolors, gmtget, gmtlogo
 				img2google, isogmt, psbbox, sphdistance
 				sphinterpolate, sphtriangulate, x2sys_merge
 	* A few source files had DOS line endings by mistake
 	* Some Makefiles were not 100% GNU portable under Solaris 8.
+
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.4 finalized, placed on ftp, but not announced yet.  However, there were
