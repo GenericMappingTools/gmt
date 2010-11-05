@@ -4,7 +4,7 @@
 blockmean \- filter to block average (\fIx,y,z\fP) data by L2 norm
 .SH SYNOPSIS
 \fBblockmean\fP [ \fIxyz[w]file(s)\fP ] GMT_I_OPT  GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(D) ] [ OPT(E) ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(S)[\fBw|z\fP] ] 
+[ OPT(C) ] [ OPT(E) ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(S)[\fBw|z\fP] ] 
 [ GMT_V_OPT ] [ OPT(W)[\fBio\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBblockmean\fP reads arbitrarily located (\fIx,y,z\fP) triples [or optionally weighted
