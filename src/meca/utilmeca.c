@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.24 2010-03-22 18:55:46 guru Exp $
+/*	$Id: utilmeca.c,v 1.25 2010-11-06 02:00:29 jluis Exp $
  *    Copyright (c) 1996-2010 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -1119,7 +1119,7 @@ from nodal plane strikes, dips and rakes.
             cp1 = -cosd(meca.NP1.str) * sd1;
             sp1 = sind(meca.NP1.str) * sd1;
             cp2 = -cosd(meca.NP2.str) * sd2;
-            sp2 = sin(meca.NP2.str) * sd2;
+            sp2 = sind(meca.NP2.str) * sd2;
 
             amz = - (cd1 + cd2);
             amx = - (sp1 + sp2);
