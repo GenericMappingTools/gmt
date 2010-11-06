@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.814 2010-11-05 23:26:11 guru Exp $
+	$Id: ChangeLog,v 1.815 2010-11-06 02:04:11 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-05	jluis
+	* meca/utilmeca.c:	Fix bug afecting the plot of P & T axis
 
 2010-11-05	pwessel
 	* blockmean.txt:	Referred to unknown -D option.
