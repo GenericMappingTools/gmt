@@ -29,7 +29,7 @@ will only be computed if there is at least one value inside at least \fImin_sect
 given node.  Nodes that fail this test are assigned the value NaN (but see OPT(E)).
 If \fImin_sectors\fP is omitted, each sector needs to have at least one
 value inside it.
-[Default is quadrant search, i.e., \fIsectors\fP = \fImin_sectors\fP = 4].
+[Default is quadrant search with at least 50% coverage, i.e., \fIsectors\fP = 4 and \fImin_sectors\fP = 2].
 Note that only the nearest value per sector enters into the averaging, not all values inside the circle.
 #include "explain_-R.txt"
 .TP
