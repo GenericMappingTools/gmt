@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.815 2010-11-06 02:04:11 jluis Exp $
+	$Id: ChangeLog,v 1.816 2010-11-10 20:15:33 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-11-10	pwessel
+	* nearneighbor_func.c:	Changed default to a more reasonable -N4/2.
+	
 2010-11-05	jluis
-	* meca/utilmeca.c:	Fix bug afecting the plot of P & T axis
+	* meca/utilmeca.c:	Fix bug affecting the plot of P & T axis
 
 2010-11-05	pwessel
 	* blockmean.txt:	Referred to unknown -D option.
