@@ -76,7 +76,7 @@ OPT(Ji)[\fIlon0/\fP]\fIscale\fP (Sinusoidal)
 .br
 OPT(Jkf)[\fIlon0/\fP]\fIscale\fP (Eckert IV)
 .br
-OPT(Jk)[\fBs\fP][\fIlon0/\fP]\fIscale\fP (Eckert IV)
+OPT(Jk)[\fBs\fP][\fIlon0/\fP]\fIscale\fP (Eckert VI)
 .br
 OPT(Jn)[\fIlon0/\fP]\fIscale\fP (Robinson)
 .br
