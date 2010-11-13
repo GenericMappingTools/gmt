@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.817 2010-11-13 00:30:44 guru Exp $
+	$Id: ChangeLog,v 1.818 2010-11-13 07:07:04 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-12	pwessel
+	* spotter/rotconverter.c:	Forgot to skip args when -N or -S was used.
 
 2010-11-10	pwessel
 	* nearneighbor_func.c:	Changed default to a more reasonable -N4/2.
