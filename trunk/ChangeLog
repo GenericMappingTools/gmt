@@ -1,12 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.818 2010-11-13 07:07:04 guru Exp $
+	$Id: ChangeLog,v 1.819 2010-11-16 03:24:10 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-15	pwessel
+	* grdproject.c:	Now assign proper x/y units.
 
 2010-11-12	pwessel
 	* spotter/rotconverter.c:	Forgot to skip args when -N or -S was used.
 
 2010-11-10	pwessel
-	* nearneighbor_func.c:	Changed default to a more reasonable -N4/2.
+	* nearneighbor.c:	Changed default to a more reasonable -N4/2.
 	
 2010-11-05	jluis
 	* meca/utilmeca.c:	Fix bug affecting the plot of P & T axis
