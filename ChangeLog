@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.819 2010-11-16 03:24:10 guru Exp $
+	$Id: ChangeLog,v 1.820 2010-11-16 17:07:57 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-11-16	pwessel
+	* gmt_plot.c:	Tried to free an unallocated array in GMT_draw_custom_symbol
+	
 2010-11-15	pwessel
 	* grdproject.c:	Now assign proper x/y units.
 

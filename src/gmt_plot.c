@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.293 2010-08-19 18:19:56 guru Exp $
+ *	$Id: gmt_plot.c,v 1.294 2010-11-16 17:07:58 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3425,7 +3425,10 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	ps_comment (cmd);
 	GMT_reset_meminc ();
 
-	GMT_free ((void *)xx);	GMT_free ((void *)yy);
+	if (n_alloc) {
+		GMT_free ((void *)xx);
+		GMT_free ((void *)yy);
+	}
 }
 
 void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush) {
