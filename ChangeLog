@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.820 2010-11-16 17:07:57 guru Exp $
+	$Id: ChangeLog,v 1.821 2010-11-18 19:12:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-18	pwessel
+	* gmt_map.c:	We have a safety valve for preventing a painful slow search
+			around the map perimeter.  The search is appropriate for maps
+			but not for mapproject results.  The limit was for 200 inch
+			wide maps == 14400p.  A user ran pscoast with 14401p and was
+			caught.  Now check for 400 inch and also check current page
+			size (PAPER_MEDIA). If map width vastly outsizes the paper
+			size then it is probably a projection job.
 
 2010-11-16	pwessel
 	* gmt_plot.c:	Tried to free an unallocated array in GMT_draw_custom_symbol
