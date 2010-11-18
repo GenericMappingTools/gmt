@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.259 2010-10-25 00:49:10 guru Exp $
+ *	$Id: gmt_map.c,v 1.260 2010-11-18 19:12:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -581,7 +581,9 @@ GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 	GMT_dlon = (project_info.e - project_info.w) / GMT_n_lon_nodes;
 	GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;
 
-	if (GMT_map_width > 200.0) search = FALSE;	/* Safe-guard that prevents region search for mapproject and others (200 inc = ~> 5 meters) */
+	if (GMT_map_width > 400.0 && GMT_ps.paper_width[GMT_Y] < 1000.0) {	/* Plot is way larger than current paper size so we assume this is ***project calling */
+		search = FALSE;	/* Safe-guard that prevents region search below for mapproject and others (400 inch = ~> 10 meters) */
+	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
 		GMT_wesn_search (project_info.xmin, project_info.xmax, project_info.ymin, project_info.ymax, &project_info.w, &project_info.e, &project_info.s, &project_info.n);
