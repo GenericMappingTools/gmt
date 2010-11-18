@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.220 2010-07-27 03:13:29 guru Exp $
+ *	$Id: gmt_io.c,v 1.221 2010-11-18 21:10:18 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2921,7 +2921,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 
 	char open_mode[4], file[BUFSIZ];
 	GMT_LONG save, ascii, close_file = FALSE, no_segments;
-	GMT_LONG n_fields, n_expected_fields, k;
+	GMT_LONG n_fields, n_expected_fields, k, cdf;
 	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0, col;
 	double d, *in;
 	FILE *fp;
@@ -2939,12 +2939,15 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		ascii = TRUE;
 		psave = GMT_input;		/* Save the previous pointer since we need to change it back at the end */
 		GMT_input = GMT_input_ascii;	/* Override and use ascii mode */
+		cdf = GMT_io.netcdf[GMT_IN];	/* Save any netcdf setting */
+		GMT_io.netcdf[GMT_IN] = 0;	/* Wipe netcdf setting since GMT_fopen checks for it */
 	}
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		strcpy (file, (char *)source);
 		if ((fp = GMT_fopen (file, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
+			if (!use_GMT_io) {GMT_input = psave; GMT_io.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
 			GMT_exit (EXIT_FAILURE);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
@@ -2961,6 +2964,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		fd = (int *)source;
 		if ((fp = fdopen (*fd, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_import_table\n", GMT_program, *fd);
+			if (!use_GMT_io) {GMT_input = psave; GMT_io.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (fp == GMT_stdin)
@@ -2979,6 +2983,8 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
 		if (gmtdefs.verbose) fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
+		GMT_io.multi_segments[GMT_IN] = save;
+		if (!use_GMT_io) {GMT_input = psave; GMT_io.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
 		return (GMT_IO_EOF);
 	}
 	/* Allocate the Table structure */
@@ -3102,8 +3108,8 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		}
 	}
 	if (close_file) GMT_fclose (fp);
-	if (!use_GMT_io) GMT_input = psave;	/* Restore former pointer */
 	GMT_io.multi_segments[GMT_IN] = save;
+	if (!use_GMT_io) {GMT_input = psave; GMT_io.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
 
 	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free ((void *)T->segment[seg]);
