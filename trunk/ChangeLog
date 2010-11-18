@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.822 2010-11-18 20:46:48 guru Exp $
+	$Id: ChangeLog,v 1.823 2010-11-18 21:10:17 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-11-18	pwessel
+	* gmt_io.c:	When ASCII mode, also need to save/restore any netcdf i/o settings.
 	* gmt_map.c:	We have a safety valve for preventing a painful slow search
 			around the map perimeter.  The search is appropriate for maps
 			but not for mapproject results.  The limit was for 200 inch
