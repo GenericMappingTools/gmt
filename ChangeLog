@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.821 2010-11-18 19:12:43 guru Exp $
+	$Id: ChangeLog,v 1.822 2010-11-18 20:46:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-11-18	pwessel
@@ -10,6 +10,7 @@
 			caught.  Now check for 400 inch and also check current page
 			size (PAPER_MEDIA). If map width vastly outsizes the paper
 			size then it is probably a projection job.
+	* pslegend.c:	Need to keep the original -R around since it may be -R....r
 
 2010-11-16	pwessel
 	* gmt_plot.c:	Tried to free an unallocated array in GMT_draw_custom_symbol
