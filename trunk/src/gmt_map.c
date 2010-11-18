@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.260 2010-11-18 19:12:43 guru Exp $
+ *	$Id: gmt_map.c,v 1.261 2010-11-18 21:45:59 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -396,8 +396,6 @@ void dumppol (GMT_LONG n, double *x, double *y, GMT_LONG *id);
 GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 {
 	GMT_LONG search, k;
-
-	/* if (!project_info.region) d_swap (south, east); */  /* Got w/s/e/n, make into w/e/s/n */
 
 	if (west == east && south == north) return (GMT_MAP_NO_REGION);
 
