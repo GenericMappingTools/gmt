@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.823 2010-11-18 21:10:17 guru Exp $
+	$Id: ChangeLog,v 1.824 2010-11-19 01:45:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-11-18	pwessel
@@ -12,6 +12,10 @@
 			size (PAPER_MEDIA). If map width vastly outsizes the paper
 			size then it is probably a projection job.
 	* pslegend.c:	Need to keep the original -R around since it may be -R....r
+	* xyz2grd.c:	Failed if -Evalue was given and the ESRI grid already had a
+			nodata_value line.  Now will process this line, if present.
+			The value given on the command line will override any setting
+			found in the file.
 
 2010-11-16	pwessel
 	* gmt_plot.c:	Tried to free an unallocated array in GMT_draw_custom_symbol
