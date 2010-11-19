@@ -41,7 +41,7 @@ OPT(D):\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:
 .TP
 OPT(E)
 Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
-value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
+value that should be set to NaN in the grid [If we find the optional 6th record in the file we will use it instead].
 The values normally given by OPT(R), OPT(I), and OPT(F) are determined from the ESRI header instead.
 #include "explain_nodereg.txt"
 #include "explain_-h.txt"
