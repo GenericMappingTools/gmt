@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.825 2010-11-19 03:53:52 guru Exp $
+	$Id: ChangeLog,v 1.826 2010-11-19 22:56:32 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-11-19	pwessel
+	* gmtselect.c:		Due to resampling of parallels in -N, some points exactly on
+				a coast bin parallel could fail the test due to roundoff.
+				Fixed by not resampling coastlines since it is a Cartesian test.
+	* grdlandmask.c:	Same.
+				
 2010-11-18	pwessel
 	* gmt_io.c:		When ASCII mode, also need to save/restore any netcdf i/o settings.
 	* gmt_map.c:		We have a safety valve for preventing a painful slow search

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.456 2010-11-19 03:53:52 guru Exp $
+ *	$Id: gmt_support.c,v 1.457 2010-11-19 22:56:33 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8369,6 +8369,7 @@ void GMT_free_custom_symbols () {	/* Free the allocated list of custom symbols *
 			s = s->next;
 			if (current->fill) GMT_free ((void *)current->fill);
 			if (current->pen) GMT_free ((void *)current->pen);
+			if (current->string) GMT_free ((void *)current->string);
 			GMT_free ((void *)current);
 		}
 		GMT_free ((void *)GMT_custom_symbol[i]);

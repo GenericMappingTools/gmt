@@ -84,7 +84,8 @@ Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
 .br
 Append \fBo\fP to let points exactly on feature boundaries be considered outside the feature [Default is inside]. [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 #include "explain_-R.txt"
-If no map projection is supplied we implicitly set OPT(Jx)1.
+If no map projection is supplied we implicitly set OPT(Jx)1. Note: only supply OPT(J) when your OPT(R)
+is indicating a rectangular region in the projected coordinates (i.e., an oblique projection).
 #include "explain_-V.txt"
 .TP
 OPT(Z)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.261 2010-11-18 21:45:59 guru Exp $
+ *	$Id: gmt_map.c,v 1.262 2010-11-19 22:56:32 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4444,10 +4444,20 @@ GMT_LONG GMT_lonpath (double lon, double lat1, double lat2, double **x, double *
 	double dlat, dlat0, *tlon, *tlat, x0, x1, y0, y1, d;
 	double min_gap;
 
+	if (GMT_meridian_straight == 2) {	/* For gmtselect/grdlandmask: Straight line with no intermediate points */
+		n = 2;
+		n = GMT_alloc_memory2 ((void **)&tlon, (void **)&tlat, n, 0, sizeof (double), GMT_program);
+
+		tlon[0] = tlon[1] = lon;
+		tlat[0] = lat1;	tlat[1] = lat2;
+		*x = tlon;
+		*y = tlat;
+		return (n);
+	}
+
 	if (GMT_meridian_straight) {	/* Easy, just a straight line connect via quarter-points */
 		n = 5;
-		tlon = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_lonpath");
-		tlat = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_lonpath");
+		n = GMT_alloc_memory2 ((void **)&tlon, (void **)&tlat, n, 0, sizeof (double), GMT_program);
 
 		tlon[0] = tlon[1] = tlon[2] = tlon[3] = tlon[4] = lon;
 		dlat = lat2 - lat1;
@@ -4521,6 +4531,14 @@ GMT_LONG GMT_latpath (double lat, double lon1, double lon2, double **x, double *
 	double dlon, dlon0, *tlon, *tlat, x0, x1, y0, y1, d;
 	double min_gap;
 
+	if (GMT_parallel_straight == 2) {	/* For gmtselect/grdlandmask: Straight line with no intermediate points */
+		n = GMT_alloc_memory2 ((void **)&tlon, (void **)&tlat, 2, 0, sizeof (double), GMT_program);
+		tlat[0] = tlat[1] = lat;
+		tlon[0] = lon1;	tlon[1] = lon2;
+		*x = tlon;	*y = tlat;
+		return (n);
+	}
+	
 	if (GMT_parallel_straight) {	/* Easy, just a straight line connection via quarter points */
 		n = GMT_alloc_memory2 ((void **)&tlon, (void **)&tlat, 5, 0, sizeof (double), GMT_program);
 		tlat[0] = tlat[1] = tlat[2] = tlat[3] = tlat[4] = lat;
