@@ -3,7 +3,7 @@
 .SH NAME
 grd2xyz \- Converting grid file(s) to ASCII or binary data
 .SH SYNOPSIS
-\fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fInodata\fP] ] [ GMT_H_OPT ] [ OPT(N)\fInodata\fP ] [ GMT_Rgeo_OPT ] 
+\fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fBf\fP][\fInodata\fP] ] [ GMT_H_OPT ] [ OPT(N)\fInodata\fP ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)[\fBr\fP] ] [ GMT_V_OPT ] [ OPT(W)[\fIweight\fP] ] [ OPT(Z)[\fIflags\fP] ] 
 [ GMT_bo_OPT ] [ GMT_fo_OPT ]
 .SH DESCRIPTION
@@ -20,8 +20,9 @@ Names of 2-D binary grid files to be converted.
 .SH OPTIONS
 .TP
 OPT(E)
-Output an ESRI ArcInfo ASCII interchange grid format file.  Append \fInodata\fP which will be used wherever
-the grid value equals NaN [-9999].  Note that all data values are written as integers.
+Output an ESRI ArcInfo ASCII interchange grid format file.  Append \fBf\fP for float output [Default is integer].
+Append \fInodata\fP which will be used wherever
+the grid value equals NaN [-9999].
 .TP
 OPT(H)
 Output 1 header record based on information in the first grid file header.

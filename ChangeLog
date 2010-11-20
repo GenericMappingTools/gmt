@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.826 2010-11-19 22:56:32 guru Exp $
+	$Id: ChangeLog,v 1.827 2010-11-20 08:56:24 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-11-19	pwessel
+	* grd2xyz.c:		Extended -Ef mode to write floats (patch by Pierre Cazenave).
 	* gmtselect.c:		Due to resampling of parallels in -N, some points exactly on
 				a coast bin parallel could fail the test due to roundoff.
 				Fixed by not resampling coastlines since it is a Cartesian test.
