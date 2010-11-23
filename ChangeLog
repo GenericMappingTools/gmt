@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.827 2010-11-20 08:56:24 guru Exp $
+	$Id: ChangeLog,v 1.828 2010-11-23 20:12:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-23	pwessel
+	* grdmask.c:		Must skip "polygons" with less than 3 points.  Also, the
+				resampling distance for spherical data was wrong, now 0.1 degrees.
 
 2010-11-19	pwessel
 	* grd2xyz.c:		Extended -Ef mode to write floats (patch by Pierre Cazenave).

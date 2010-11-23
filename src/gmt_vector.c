@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.34 2010-03-22 18:55:45 guru Exp $
+ *	$Id: gmt_vector.c,v 1.35 2010-11-23 20:12:22 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -699,7 +699,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
       
 	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc = 0;
 	GMT_LONG meridian;
-	double *lon_tmp, *lat_tmp, *old;
+	double *lon_tmp = NULL, *lat_tmp = NULL, *old;
 	double a[3], b[3], x[3], *lon, *lat;
 	double c, d, fraction, theta, minlon, maxlon;
 	
