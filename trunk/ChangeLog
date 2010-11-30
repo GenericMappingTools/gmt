@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.829 2010-11-24 05:06:38 guru Exp $
+	$Id: ChangeLog,v 1.830 2010-11-30 19:51:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-11-30	pwessel
+	* xyz2grd.c:		Do not tolerate NaNs in x,y and give error (e.g., if junk is given).
 
 2010-11-23	pwessel
 	* grdmask.c:		Must skip "polygons" with less than 3 points.  Also, the

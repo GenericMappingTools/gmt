@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.42 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_grd.h,v 1.43 2010-11-30 19:51:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,7 +125,7 @@ struct GRD_HEADER {
  * For GMT_x_is_outside, see the function in gmt_support.c
  */
 
-#define GMT_y_is_outside(y,bottom,top) (((y) < bottom || (y) > top) ? TRUE : FALSE)
+#define GMT_y_is_outside(y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? TRUE : FALSE)
 EXTERN_MSC GMT_LONG GMT_x_is_outside (double *x, double left, double right);
 EXTERN_MSC void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h);
 
