@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.457 2010-11-19 22:56:33 guru Exp $
+ *	$Id: gmt_support.c,v 1.458 2010-11-30 19:51:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5897,7 +5897,7 @@ GMT_LONG GMT_x_is_outside (double *x, double left, double right)
 	 * for gridline-registered grids.  Also, if x is longitude we must check for
 	 * wrap-arounds by 360 degrees, and x may be modified accordingly.
 	 */
-
+	if (GMT_is_dnan (*x)) return (TRUE);
 	if (GMT_io.in_col_type[0] == GMT_IS_LON) {	/* Periodic longitude test */
 		while ((*x) > left) (*x) -= 360.0;	/* Make sure we start west or west */
 		while ((*x) < left) (*x) += 360.0;	/* See if we are outside east */
