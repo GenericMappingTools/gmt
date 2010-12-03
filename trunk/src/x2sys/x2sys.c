@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.145 2010-06-25 20:33:49 guru Exp $
+ *	$Id: x2sys.c,v 1.146 2010-12-03 03:29:41 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -475,7 +475,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 
 			case 'f':	/* Binary signed 4-byte float */
 				n_read += fread ((void *)&f, sizeof (float), (size_t)1, fp);
-				data[j] = (double)i;
+				data[j] = (double)f;
 				break;
 
 			case 'd':	/* Binary signed 8-byte float */
