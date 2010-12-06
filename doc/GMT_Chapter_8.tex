@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_8.tex,v 1.20 2010-01-05 01:15:44 guru Exp $
+%	$Id: GMT_Chapter_8.tex,v 1.21 2010-12-06 04:58:45 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -85,11 +85,15 @@ you can convert the images into a single animated GIF file.  This file can be
 included in PowerPoint presentations or placed on a web page and will play back
 as a movie by pausing the specified amount between frames, optionally repeating
 the entire sequence one or more times. (b) For more elaborate projects
-you will need to convert the frames into a proper movie format such as Quicktime,
-AVI, MPEG-2, MPEG-4, etc., etc.  There are both free and commercial tools that
-can help with this conversion and they tend to be platform-specific.  Most movie
+you will need to convert the frames into a proper movie format such as MPEG-4.
+There are both free and commercial tools that
+can help with this conversion and they tend to be platform-specific.  For moderate
+projects you can use \progname{convert} to build a MP4 file, but longer movies will
+require a more flexible tools, such as \progname{ffmpeg}.  These solutions are
+preferred as they can be scripted and be included in your animation script.
+Most commercial movie
 tools such as iMovie or MovieMaker can ingest still images and let you specify
-the frame duration.  Under OS X we prefer to use Quicktime.\footnote{While Quicktime
+the frame duration.  Under OS X we prefer to use QuickTime 7.\footnote{While QuickTime
 is free you must upgrade to QuickTime Pro (USD 30) to use the authoring functions.}  Free
 tools exist to call the Quicktime library functions from the command line as we
 prefer to do in our scripts.  You will find yourself experimenting with compression
