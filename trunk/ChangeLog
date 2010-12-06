@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.831 2010-12-03 03:29:41 guru Exp $
+	$Id: ChangeLog,v 1.832 2010-12-06 04:58:45 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-05	pwessel
+	* spotter/grdrotater.c:	Did not handle the rotation of an entire global grid since
+				the polygon outline interfered with the domain.
 
 2010-12-02	pwessel
 	* x2sys/x2sys.c:	Minor bug in x2sys binary reading of floats
