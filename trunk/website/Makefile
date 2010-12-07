@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.57 2010-10-31 23:02:43 guru Exp $
+#  $Id: Makefile,v 1.58 2010-12-07 19:25:50 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -280,7 +280,7 @@ clean-local:
 clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
 	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
-	
+
 netcdf: ../ftp/netcdf.tar.bz2
 
 ../ftp/netcdf.tar.bz2:
@@ -310,5 +310,5 @@ www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/gmt/html/GMT_
 	mkdir -p www/gmt
 	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk '{print $$1}' | tr '/:' '  ' | awk '{printf "sXCHAPTER1LINKXdoc/gmt/html/GMT_Docs/%sXg\n", $$NF}' > /tmp/tmp.sed)
 	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
-	
-	
+
+
