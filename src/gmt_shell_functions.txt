@@ -33,7 +33,7 @@ gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scr
 .br
 \fBgmt_set_framenext\fP \fIframenumber\fP
 .SH DESCRIPTION
-\fBgmt_shell_functions.sh\fP provides a set of functions to bourne (again) shell scripts in support
+\fBgmt_shell_functions.sh\fP provides a set of functions to Bourne (again) shell scripts in support
 of \fBGMT\fP.
 The calling shell script should include the following line, before the functions can be used:
 .br
@@ -110,7 +110,7 @@ cannot be used in DOS batch scripts either.
 .br
 2. \fBgmt_shell_functions.sh\fP were first introduced in \fBGMT\fP version 4.2.2 and have since been
 regularly expanded with other practical scripting short-cuts. If you want to suggest other functions,
-please do so by mailing to the GMT mailing list: gmt-help@hawaii.edu.
+please do so by mailing to the GMT mailing list: gmt-help@lists.hawaii.edu.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR sh (1),
