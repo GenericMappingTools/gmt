@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.262 2010-11-19 22:56:32 guru Exp $
+ *	$Id: gmt_map.c,v 1.263 2010-12-12 02:21:33 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2491,7 +2491,7 @@ GMT_LONG GMT_map_init_grinten (void) {
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 		frame_info.horizontal = 2;
-		project_info.polar = FALSE;
+		project_info.polar = TRUE;
 	}
 	else {
 		GMT_grinten (project_info.w, project_info.s, &xmin, &ymin);
@@ -3274,7 +3274,8 @@ double GMT_left_ellipse (double y)
 
 double GMT_left_circle (double y)
 {
-	y -= project_info.r;
+	/* y -= project_info.r; */
+	y -= project_info.y0;
 	return (GMT_half_map_size - d_sqrt (project_info.r * project_info.r - y * y));
 }
 
@@ -3309,7 +3310,8 @@ double GMT_right_ellipse (double y)
 
 double GMT_right_circle (double y)
 {
-	y -= project_info.r;
+	/* y -= project_info.r; */
+	y -= project_info.y0;
 	return (GMT_half_map_size + d_sqrt (project_info.r * project_info.r - y * y));
 }
 
