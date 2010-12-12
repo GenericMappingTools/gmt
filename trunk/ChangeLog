@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.832 2010-12-06 04:58:45 guru Exp $
+	$Id: ChangeLog,v 1.833 2010-12-12 02:21:33 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-11	pwessel
+	* pslegend.c:		One more place to use original -R -J
+	* gmt_map.c:		For van Grinten: errors in left/right_cirle
+	* gmt_plot.c:		A colored TICK_PEN would also color annotations
 
 2010-12-05	pwessel
 	* spotter/grdrotater.c:	Did not handle the rotation of an entire global grid since

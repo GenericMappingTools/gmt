@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.294 2010-11-16 17:07:58 guru Exp $
+ *	$Id: gmt_plot.c,v 1.295 2010-12-12 02:21:34 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1915,7 +1915,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	ps_comment ("Map annotations");
 
 	ps_setfont (gmtdefs.annot_font[0]);
-	GMT_setpen (&gmtdefs.tick_pen);
+	/* GMT_setpen (&gmtdefs.tick_pen); */
 
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 	if (project_info.region) {
@@ -2050,7 +2050,6 @@ void GMT_map_boundary (double w, double e, double s, double n)
 		case GMT_LAMB_AZ_EQ:
 		case GMT_AZ_EQDIST:
 		case GMT_GNOMONIC:
-		case GMT_VANGRINTEN:
 			if (project_info.polar)
 				GMT_polar_map_boundary (w, e, s, n);
 			else
@@ -2068,6 +2067,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 		case GMT_ECKERT4:
 		case GMT_ECKERT6:
 		case GMT_ROBINSON:
+		case GMT_VANGRINTEN:
 			GMT_basic_map_boundary (w, e, s, n);
 			break;
 	}
