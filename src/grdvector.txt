@@ -11,7 +11,7 @@ grdvector \- Plot vector fields from grid files
 .SH SYNOPSIS
 \fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP GMT_J_OPT [ OPT(A) ] 
 [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E) ]  
-[ OPT(G)\fIfill\fP] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(G)\fIfill\fP ] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(Q)\fIparameters\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBl\fP]\fIscale\fP ] 
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ]
