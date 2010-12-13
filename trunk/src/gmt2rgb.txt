@@ -5,7 +5,7 @@ gmt2rgb \- Converting a grid file, a raw, or a Sun raster file to r/g/b grids
 .SH SYNOPSIS
 \fBgmt2rgb\fP \fIinfile\fP OPT(G)\fItemplate\fP [ OPT(C)\fIcptfile\fP ] 
 [ OPT(F) ] [ GMT_Id_OPT ] [ OPT(L)\fIlayer\fP ] [ GMT_Rx_OPT ] [ GMT_V_OPT ] 
-[ OPT(W)\fIwidth\fP/\fIheight\fP[/\fIn_bytes\fP]
+[ OPT(W)\fIwidth\fP/\fIheight\fP[/\fIn_bytes\fP] ]
 .SH DESCRIPTION
 \fBgmt2rgb\fP reads one of three types of input files: (1) A Sun 8-, 24-, or 32-bit raster file; we the
 write out the red, green, and blue components (0-255 range) to separate grid files.  Since the raster file
