@@ -8,7 +8,7 @@
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
 \fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP [ OPT(D)[\fBr\fP] ] GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP] 
+[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP ] 
 [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
