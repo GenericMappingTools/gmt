@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.833 2010-12-12 02:21:33 guru Exp $
+	$Id: ChangeLog,v 1.834 2010-12-13 01:30:46 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-13	jluis
+	* ps2raster.c		For some reason -W was not forcing -A. Now it does it again  
 
 2010-12-11	pwessel
 	* pslegend.c:		One more place to use original -R -J
