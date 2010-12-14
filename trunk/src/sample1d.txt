@@ -4,7 +4,7 @@
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
 \fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP|\fBn\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
-[ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
+[ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP ] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBsample1d\fP reads a multi-column ASCII [or binary] data set from file [or standard input] and interpolates the

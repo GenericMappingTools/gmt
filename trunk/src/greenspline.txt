@@ -5,7 +5,7 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 .SH SYNOPSIS
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
-[ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] 
+[ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] 
 [ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fInodefile\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
 [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fImaskgrid\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]

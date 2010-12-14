@@ -8,7 +8,7 @@ mapproject \- Forward and Inverse map transformation of 2-D coordinates
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP[\fIlon0\fP/\fIlat0\fP] ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
 [ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][\fB+\fP|\fB-\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
-[ OPT(L)\fIline.xy\fP[/\fIunit\fP][\fB+\fP] ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ OPT(L)\fIline.xy\fP[/\fIunit\fP][\fB+\fP] ] [ OPT(Q)[\fBd\fP|\fBe\fP ] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
 [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
