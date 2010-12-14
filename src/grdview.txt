@@ -11,8 +11,8 @@
 grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grid file
 .SH SYNOPSIS
 \fBgrdview\fP \fIrelief_file\fP GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP] [ GMT_E_OPT ] 
-[ OPT(G)\fIdrapefile\fP | OPT(G)\fIgrd_r\fP,\fIgrd_g\fP,\fIgrd_b\fP ] [ OPT(I)\fIintensfile\fP] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ GMT_E_OPT ] 
+[ OPT(G)\fIdrapefile\fP | OPT(G)\fIgrd_r\fP,\fIgrd_g\fP,\fIgrd_b\fP ] [ OPT(I)\fIintensfile\fP ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ OPT(L)[\fIflags\fP] ] [ OPT(N)\fIlevel\fP[/\fIcolor\fP]] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(Q)\fItype\fP[\fBg\fP] ] [ GMT_Rgeoz_OPT ] [ OPT(S)\fIsmooth\fP ] 
 [ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fItype/pen\fP ] [ GMT_X_OPT ]
