@@ -1,21 +1,26 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.834 2010-12-13 01:30:46 jluis Exp $
+	$Id: ChangeLog,v 1.835 2010-12-14 08:34:59 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-13	pwessel
+	* splitxyz.c:		Did not list -Q in synopsis.
+	* surface.c:		Bug if using seconds (c) in search radius (got minutes).
+	* *.txt:		Fixed typos in several man pages.
 
 2010-12-13	jluis
 	* ps2raster.c		For some reason -W was not forcing -A. Now it does it again  
 
 2010-12-11	pwessel
-	* pslegend.c:		One more place to use original -R -J
-	* gmt_map.c:		For van Grinten: errors in left/right_cirle
-	* gmt_plot.c:		A colored TICK_PEN would also color annotations
+	* pslegend.c:		One more place to use original -R -J (see 2010-11-18 fix).
+	* gmt_map.c:		For van Grinten: errors in left/right_circle
+	* gmt_plot.c:		A colored TICK_PEN would also color annotations.
 
 2010-12-05	pwessel
 	* spotter/grdrotater.c:	Did not handle the rotation of an entire global grid since
 				the polygon outline interfered with the domain.
 
 2010-12-02	pwessel
-	* x2sys/x2sys.c:	Minor bug in x2sys binary reading of floats
+	* x2sys/x2sys.c:	Minor bug in x2sys binary reading of floats.
 
 2010-11-30	pwessel
 	* xyz2grd.c:		Do not tolerate NaNs in x,y and give error (e.g., if junk is given).
@@ -51,7 +56,7 @@
 				the point we were testing.
 
 2010-11-16	pwessel
-	* gmt_plot.c:		Tried to free an unallocated array in GMT_draw_custom_symbol
+	* gmt_plot.c:		Tried to free an unallocated array in GMT_draw_custom_symbol.
 	
 2010-11-15	pwessel
 	* grdproject.c:		Now assign proper x/y units.
