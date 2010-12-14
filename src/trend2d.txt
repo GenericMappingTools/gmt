@@ -4,7 +4,7 @@
 trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data.
 .SH SYNOPSIS
 \fBtrend2d\fP OPT(F)\fBxyzmrw\fP OPT(N)\fIn_model\fP[\fBr\fP] [ \fIxyz[w]file\fP ] 
-[ OPT(C)\fIcondition_number\fP ] [ GMT_H_OPT ][ OPT(I)[\fIconfidence_level\fP] ] [ GMT_V_OPT ] [ OPT(W) ] 
+[ OPT(C)\fIcondition_number\fP ] [ GMT_H_OPT ] [ OPT(I)[\fIconfidence_level\fP] ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBtrend2d\fP reads x,y,z [and w] values from the first three [four] columns on standard input 

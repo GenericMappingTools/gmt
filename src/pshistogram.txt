@@ -6,7 +6,7 @@
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
 \fBpshistogram\fP \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
-[ [ OPT(C)\fIcptfile\fP ] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(F) ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
+[ OPT(C)\fIcptfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(F) ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
 [ OPT(I)[\fBo\fP|\fBO\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ OPT(T)\fIcol\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fItype\fP ] [ GMT_c_OPT ] 
