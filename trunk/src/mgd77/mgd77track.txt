@@ -11,7 +11,7 @@
 mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
 \fBmgd77track\fP \fINGDC-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
-[ OPT(A)[\fBc\fP][\fIsize\fP][,\fIspacing\fP] ]  [ GMT_B_OPT ] [ OPT(C)|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] 
+[ OPT(A)[\fBc\fP][\fIsize\fP][,\fIspacing\fP] ]  [ GMT_B_OPT ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] 
 [ OPT(Db)\fIstopdate\fP ] [ OPT(F) ] [ OPT(G)\fBd\fP|\fBt\fP\fIgap\fP ] 
 [ OPT(I)\fIignore\fP ] [ GMT_K_OPT ] [ OPT(L)\fItrackticks\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Sa)\fIstartdist\fP[\fBu\fP] ] 
 [ OPT(Sb)\fIstopdist\fP[\fBu\fP] ] [ OPT(TT)|\fBt\fP|\fBd\fP\fIms,mc,mfs,mf,mfc\fP ] [ GMT_U_OPT ] 

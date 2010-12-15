@@ -3,9 +3,9 @@
 .SH NAME
 img2google \- Create Google Earth KML overlay tiles from bathymetry Mercator img grid 
 .SH SYNOPSIS
-\fBimg2google\fP GMT_Rgeo_OPT [ \fIimgfile\fP ] [ OPT(A)\fImode\fP[\fIaltitude\fP] ] [ OPT(C) ] 
-[ OPT(F)\fIfademin/fademax\fP] [ OPT(G)\fIprefix\fP ] [ OPT(L)\fILODmin/LODmax\fP] [ [ OPT(N)\fIlayername\fP ] ] 
-[ [ OPT(T)\fIdoctitle\fP ] [ OPT(U)\fIURL\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
+\fBimg2google\fP GMT_Rgeo_OPT [ \fIimgfile\fP ] [ OPT(A)\fImode\fP[\fIaltitude\fP ] ] [ OPT(C) ] 
+[ OPT(F)\fIfademin/fademax\fP ] [ OPT(G)\fIprefix\fP ] [ OPT(L)\fILODmin/LODmax\fP ] [ OPT(N)\fIlayername\fP ] 
+[ OPT(T)\fIdoctitle\fP ] [ OPT(U)\fIURL\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
 \fBimg2google\fP reads a 1x1 minute Mercator surface relief img file and creates a
 Google Earth overlay KML file and associated PNG tile for the specified region.  If no input file is given we

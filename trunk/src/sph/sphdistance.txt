@@ -16,6 +16,9 @@ thus bypassing the memory- and time-consuming triangularization.
 .TP
 \fIinfiles\fP
 Data files with the point coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
+.TP
+.B \-G
+Name of the output grid to hold the computed distances.
 .SH OPTIONS
 .TP
 .B \-C

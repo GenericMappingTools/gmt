@@ -3,8 +3,8 @@
 .SH NAME
 x2sys_report \- Report statistics from crossover data base
 .SH SYNOPSIS
-\fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] OPT(A) 
-[ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] 
+\fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A) ] 
+[ OPT(I)[\fIlist\fP] ] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_report\fP will read the input crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)

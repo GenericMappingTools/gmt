@@ -4,7 +4,7 @@
 mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
 \fBmgd77sniffer\fP \fINGDC-ids\fP [ OPT(A)\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP ] [ OPT(C)\fImaxspd\fP ] 
-[ OPT(D)\fBd\fP|\fBe\fP|\fBE\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP ][\fIr\fP] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
+[ OPT(D)\fBd\fP|\fBe\fP|\fBE\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP[\fIr\fP] ] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
 [ OPT(G)\fIfieldabbrev\fP,\fIgrid\fP ] [ GMT_H_OPT ] [ OPT(I)\fIfieldabbrev\fP,\fIrec1\fP,\fIrecN\fP ] 
 [ OPT(K) ] [ OPT(L)\fIcustom limits file\fP ] [ OPT(N) ]
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]

@@ -5,7 +5,7 @@ originator \- Associate seamounts with hotspot point sources
 .SH SYNOPSIS
 \fBoriginator\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
 OPT(F)\fIhs_file\fP 
-[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(L)[\fBflag\fP ] [ OPT(N)\fIupper_age\fP ] [ OPT(Q)\fIr/t\fP ] 
+[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(L)[\fIflag\fP] ] [ OPT(N)\fIupper_age\fP ] [ OPT(Q)\fIr/t\fP ] 
 [ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ OPT(Z) ] [ GMT_t_OPT ] 
 [ GMT_bi_OPT ]
 .SH DESCRIPTION

@@ -3,13 +3,13 @@
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
 .SH NAME
-sphtriangulate \- Perform optimal Delauney triangulation or Voronoi construction of spherical data
+sphtriangulate \- Perform optimal Delaunay triangulation or Voronoi construction of spherical data
 .SH SYNOPSIS
 \fBsphtriangulate\fP \fIinfiles\fP [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ GMT_H_OPT ] [ OPT(L)\fIunit\fP ] 
 [ OPT(N)\fInfile\fP ] [ OPT(Q)\fBd\fP|\fBv\fP ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBsphtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
-performs a spherical Delauney triangulation, i.e., it find how the points should be connected to give
+performs a spherical Delaunay triangulation, i.e., it find how the points should be connected to give
 the most equilateral triangulation possible on the sphere.  Optionally, you may choose OPT(Qv) which
 will do further processing to obtain the Voronoi polygons.  Normally, either set of polygons will
 be written as fillable multi-segment output; use OPT(T) to write unique arcs instead.
@@ -39,13 +39,16 @@ Specify the unit used for distance and area calculations.  Choose among \fBe\fP 
 \fBELLIPSOID\fP is set to an actual ellipsoid.  When degree is selected the areas are given in steradians.
 .TP
 .B \-N
-Write the information pertaining to each polygon (for Delauney: the three node number and the triangle area;
+Write the information pertaining to each polygon (for Delaunay: the three node number and the triangle area;
 for Voronoi the unique node lon, lat and polygon area) to a separate file [Default puts this information in
 the segment headers of the output file].  Required if binary output is needed.
 .TP
+.B \-Q
+Select between BD(d)elaunay or BD(v)oronoi mode [Delaunay].
+.TP
 .B \-T
 Write the unique arcs of the construction [Default writes fillable triangles or polygons].
-When used with OPT(A) we store arc lenght in the segment header in chosen unit (see OPT(L)).
+When used with OPT(A) we store arc length in the segment header in chosen unit (see OPT(L)).
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
@@ -63,7 +66,7 @@ make a Voronoi diagram via \fBpsxy\fP, use
 \fBsphtriangulate\fP testdata.txt \fB\-Qv\fP | psxy \fB\-Rg \-JG\fP30/30/6i \fB\-M \-L \-P \-W\fP1p \fB\-B\fP0g30 | gv \-
 .br
 .sp
-To compute the optimal Delauney triangulation network based on the multiple segment file globalnodes.d
+To compute the optimal Delaunay triangulation network based on the multiple segment file globalnodes.d
 and save the area of each triangle in the header record, try
 .br
 .sp
