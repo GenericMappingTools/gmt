@@ -4,7 +4,7 @@
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77info\fP \fINGDC-ids\fP [ OPT(C)[\fBm\fP|\fBe\fP] ] [ OPT(E)[\fBm\fP|\fBe\fP] ] 
-[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP|\fBe\fP|\fBh\fP ] [ OPT(L)[\fBv\fP] [ GMT_V_OPT ]
+[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP|\fBe\fP|\fBh\fP ] [ OPT(L)[\fBv\fP] ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total

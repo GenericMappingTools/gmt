@@ -3,10 +3,10 @@
 .SH NAME
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(D)] [ OPT(E)] [ OPT(F)\fIflags\fP ] 
-[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ OPT(Qe)|\fBi\fP ]  [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+BD(x2sys_get) OPT(T)IT(TAG) [ OPT(C) ] [ OPT(D) ] [ OPT(E) ] [ OPT(F)IT(flags) ] 
+[ OPT(L)[IT(list)] ] [ OPT(N)IT(flags) ] [ OPT(Qe)|BD(i) ]  [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
-\fBx2sys_get\fP will return the names of the track data files in the x2sys data
+BD(x2sys_get) will return the names of the track data files in the x2sys data
 base for this TAG that match the given
 requirements.  You may choose a specific region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
@@ -57,21 +57,21 @@ a certain region in the south Pacific, and have at least free air anomalies
 and bathymetry, try
 .br
 .sp
-\fBx2sys_get\fP OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(F)faa,depth 
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(F)faa,depth 
 .br
 .sp
 To find all the tracks associated with the tag MGD77 that have depth but not
 twt, try
 .br
 .sp
-\fBx2sys_get\fP OPT(V) OPT(T)MGD77 OPT(F)depth OPT(N)twt
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(F)depth OPT(N)twt
 .br
 .sp
 To find all the pairs associated with the tag MGD77 that might intersect each
 other, but only those pairs which involves tracks in your list new.lis, try
 .br
 .sp
-\fBx2sys_get\fP OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis 
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis 
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),
 .IR x2sys_cross (1),

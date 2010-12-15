@@ -6,7 +6,7 @@ grdspotter \- Create CVA image directly from gravity or bathymetry grids
 \fBgrdspotter\fP [\fIgrdfile\fP] OPT(E)\fIrotations_file\fP 
 OPT(G)\fICVAgrid\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fIagegrid\fP ] [ OPT(B)\fIn_try\fP ] [ OPT(C) ] [ OPT(D)\fIDIgrid\fP ] [ OPT(F) ] 
-[ OPT(M) ] [ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
+[ OPT(L)IT(IDgrid) ] [ OPT(M) ] [ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
 [ OPT(T) ] [ OPT(U)\fIfixed_val\fP ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
 .SH DESCRIPTION
 \fBgrdspotter\fP reads a grid file with residual bathymetry or gravity

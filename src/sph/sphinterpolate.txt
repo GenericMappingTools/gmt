@@ -15,6 +15,9 @@ estimation or optimize the tension selection to satisfy one of four criteria.
 .TP
 \fIinfiles\fP
 Data files with the (lon, lat, f) coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+.TP
+OPT(G)
+Name of the output grid to hold the interpolation.
 .SH OPTIONS
 #include "explain_-h.txt"
 #include "explain_-I.txt"

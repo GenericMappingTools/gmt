@@ -5,9 +5,9 @@
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
 [ OPT(Il)|\fBa\fP|\fBc\fP ] 
-[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(L) ] 
+[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP ] [ OPT(L) ] 
 [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
-[ GMT_V_OPT ][ OPT(W)\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
+[ GMT_V_OPT ] [ OPT(W)\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
 ("internal cross-overs") tracks (Cartesian or geographic), and report the time, position, distance along track,
