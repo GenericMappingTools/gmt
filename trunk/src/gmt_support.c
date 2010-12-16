@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.458 2010-11-30 19:51:43 guru Exp $
+ *	$Id: gmt_support.c,v 1.459 2010-12-16 02:53:27 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8303,7 +8303,10 @@ double GMT_get_annot_offset (GMT_LONG *flip, GMT_LONG level)
 
 	a = gmtdefs.annot_offset[level];
 	if (a >= 0.0) {	/* Outside annotation */
-		if (gmtdefs.tick_length > 0.0) a += gmtdefs.tick_length;
+		double dist = gmtdefs.tick_length;	/* Length of tickmark (could be negative) */
+		/* For fancy frame we must consider that the frame width might exceed the ticklength */
+		if (gmtdefs.basemap_type == GMT_IS_FANCY && gmtdefs.frame_width > dist) dist = gmtdefs.frame_width;
+		if (dist > 0.0) a += dist;
 		*flip = FALSE;
 	}
 	else {		/* Inside annotation */
