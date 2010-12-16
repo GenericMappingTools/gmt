@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.835 2010-12-14 08:34:59 guru Exp $
+	$Id: ChangeLog,v 1.836 2010-12-16 02:53:27 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-12-15	pwessel
+	* gmt_support.c:	When calculating how far to place an annotation from the tick mark
+				we must check if a fancy frame width exceeds the tick length.
 2010-12-13	pwessel
 	* splitxyz.c:		Did not list -Q in synopsis.
 	* surface.c:		Bug if using seconds (c) in search radius (got minutes).
