@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.837 2010-12-17 20:12:50 guru Exp $
+	$Id: ChangeLog,v 1.838 2010-12-20 19:53:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-20	remko
+	* utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
+				isotropic components. Thanks to Jeremy Pesicek.
 
 2010-12-17	pwessel
 	* grdfilter.c:		Allow -D2 and -D3 to handle periodic and polar boundary conditions.
