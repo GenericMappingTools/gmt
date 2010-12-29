@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.838 2010-12-20 19:53:35 remko Exp $
+	$Id: ChangeLog,v 1.839 2010-12-29 20:08:17 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-29	pwessel
+	* psscale.c:		Now patterns have constant orientation regardless of using
+				horizontal or vertical bar.
 
 2010-12-20	remko
 	* utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
