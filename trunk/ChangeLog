@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.839 2010-12-29 20:08:17 guru Exp $
+	$Id: ChangeLog,v 1.840 2011-01-01 03:39:41 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-12-31	pwessel
+	* x2sys_init.c:		Crashed if -D was not given [should imply -DTAG].
 
 2010-12-29	pwessel
 	* psscale.c:		Now patterns have constant orientation regardless of using
