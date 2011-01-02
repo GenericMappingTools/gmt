@@ -1,6 +1,6 @@
-/*	$Id: gshhs_dp.c,v 1.23 2010-01-05 01:15:47 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.24 2011-01-02 20:09:36 guru Exp $
  *
- *	Copyright (c) 1996-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line

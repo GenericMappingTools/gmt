@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.260 2010-09-28 21:16:23 remko Exp $
+ *	$Id: mgd77.c,v 1.261 2011-01-02 20:09:36 guru Exp $
  *
- *    Copyright (c) 2005-2010 by P. Wessel
+ *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.c

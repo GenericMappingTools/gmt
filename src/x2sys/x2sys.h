@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.54 2010-03-22 18:55:47 guru Exp $
+ *	$Id: x2sys.h,v 1.55 2011-01-02 20:09:36 guru Exp $
  *
- *      Copyright (c) 1999-2010 by P. Wessel
+ *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify

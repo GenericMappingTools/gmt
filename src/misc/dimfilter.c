@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.12 2010-07-11 04:05:42 guru Exp $
+ * $Id: dimfilter.c,v 1.13 2011-01-02 20:09:36 guru Exp $
  *
- *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
+ *	Copyright (c) 2009-2011 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
