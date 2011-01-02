@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77_recalc.h,v 1.7 2010-03-22 18:55:47 guru Exp $
+ *	$Id: mgd77_recalc.h,v 1.8 2011-01-02 20:09:36 guru Exp $
  *
- *    Copyright (c) 2004-2010 by P. Wessel
+ *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* Here lies some defines and a structure of items that are used when we

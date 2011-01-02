@@ -1,5 +1,5 @@
-/*	$Id: utilmeca.c,v 1.26 2010-12-20 19:53:36 remko Exp $
- *    Copyright (c) 1996-2010 by G. Patau
+/*	$Id: utilmeca.c,v 1.27 2011-01-02 20:09:36 guru Exp $
+ *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
  */

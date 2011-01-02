@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.452 2010-10-28 21:24:58 guru Exp $
+ *	$Id: gmt_init.c,v 1.453 2011-01-02 20:09:35 guru Exp $
  *
- *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

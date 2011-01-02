@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77_IGF_coeffs.h,v 1.7 2010-01-05 01:15:48 guru Exp $
+ *	$Id: mgd77_IGF_coeffs.h,v 1.8 2011-01-02 20:09:36 guru Exp $
  * 
- *    Copyright (c) 2005-2010 by P. Wessel
+ *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
  */
  

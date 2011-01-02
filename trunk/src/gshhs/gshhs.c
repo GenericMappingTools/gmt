@@ -1,6 +1,6 @@
-/*	$Id: gshhs.c,v 1.34 2010-11-02 04:08:47 guru Exp $
+/*	$Id: gshhs.c,v 1.35 2011-01-02 20:09:36 guru Exp $
  *
- *	Copyright (c) 1996-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  * PROGRAM:	gshhs.c

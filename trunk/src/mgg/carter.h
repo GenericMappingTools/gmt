@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: carter.h,v 1.10 2010-01-05 01:15:48 guru Exp $
+ *	$Id: carter.h,v 1.11 2011-01-02 20:09:36 guru Exp $
  *
- *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

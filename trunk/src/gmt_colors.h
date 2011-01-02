@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.36 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_colors.h,v 1.37 2011-01-02 20:09:35 guru Exp $
  *
- *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

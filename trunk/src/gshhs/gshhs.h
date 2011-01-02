@@ -1,10 +1,10 @@
-/*	$Id: gshhs.h,v 1.31 2010-07-18 03:16:01 guru Exp $
+/*	$Id: gshhs.h,v 1.32 2011-01-02 20:09:36 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
  * Paul Wessel, SOEST
  *
- *	Copyright (c) 1996-2010 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

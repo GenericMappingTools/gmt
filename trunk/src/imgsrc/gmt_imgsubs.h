@@ -1,6 +1,6 @@
-/* $Id: gmt_imgsubs.h,v 1.11 2010-07-09 01:01:17 guru Exp $
+/* $Id: gmt_imgsubs.h,v 1.12 2011-01-02 20:09:36 guru Exp $
  *
- * Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
+ * Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gmt_imgsubs.h -- header file supporting the GMT supplement imgsrc,
