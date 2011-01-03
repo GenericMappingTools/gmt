@@ -1,6 +1,20 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.95 2010-11-04 01:12:38 guru Exp $
-AC_REVISION($Revision: 1.95 $)
+dnl $Id: configure.ac,v 1.96 2011-01-03 01:50:33 guru Exp $
+dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+dnl     See LICENSE.TXT file for copying and redistribution conditions.
+dnl
+dnl     This program is free software; you can redistribute it and/or modify
+dnl     it under the terms of the GNU General Public License as published by
+dnl     the Free Software Foundation; version 2 of the License.
+dnl
+dnl     This program is distributed in the hope that it will be useful,
+dnl     but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl     GNU General Public License for more details.
+dnl
+dnl     Contact info: gmt.soest.hawaii.edu
+dnl ----------------------------------------------------------------------------
+AC_REVISION($Revision: 1.96 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
