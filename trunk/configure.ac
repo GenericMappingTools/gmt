@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.96 2011-01-03 01:50:33 guru Exp $
+dnl $Id: configure.ac,v 1.97 2011-01-04 02:27:58 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.96 $)
+AC_REVISION($Revision: 1.97 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -31,7 +31,7 @@ AC_INIT(GMT, 4.5.6, gmt-help@lists-hawaii.edu)
 MANDATE="1 May 2011"
 DOCDATE="May 2011"
 DOCYEAR="2011"
-GSHHS_VERSION=2.1.0
+GSHHS_VERSION=2.1.1
 CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
