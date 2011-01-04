@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.31 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_shore.h,v 1.32 2011-01-04 02:15:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,7 +25,7 @@
  * Author:	Paul Wessel
  * Date:	12-AUG-1995
  * Revised:	6-NOV-2009
- * Version:	4.5.2
+ * Version:	4.5.6
  */
 
 #include "netcdf.h"

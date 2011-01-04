@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.65 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_shore.c,v 1.66 2011-01-04 02:15:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -168,12 +168,12 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	/* Get global attributes */
         if (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version) ||
                 sscanf (c->version, "%" GMT_LL "d.%" GMT_LL "d.%" GMT_LL "d", &major, &minor, &release) < 3 ||
-                major != 2 || ((minor == 0 && release < 2) || (minor == 1 && release > 0))) {
-			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT 4.5.3\n");
-			fprintf (stderr, "GSHHS: CVS users must get the GSHHS2.1.0 tarballs from\n");
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.1.0_coast.tar.bz2\n");
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.1.0_high.tar.bz2\n");
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.1.0_full.tar.bz2\n");
+                major != 2 || minor < 1) {
+			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT %s\n", GMT_VERSION);
+			fprintf (stderr, "GSHHS: CVS users must get the GSHHS%s tarballs from\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
 			GMT_exit (EXIT_FAILURE);
 	}
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
