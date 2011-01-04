@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.74 2010-11-01 22:31:53 remko Exp $
+#	$Id: Makefile,v 1.75 2011-01-04 01:33:59 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -30,10 +30,9 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-PREV_VERSION	= 2.0.2
-# These are the values to use for the next GMT version 4.5.3
-VERSION			= 4.5
-GSHHS_DATA_VERSION	= 2.1.0
+PREV_VERSION	= 2.1.0
+# These are the values to use for the next GMT version 4.5.6
+GSHHS_DATA_VERSION	= 2.1.1
 GSHHS_PROG_VERSION	= 1.12
 
 # Douglas-Peucker parameters:
@@ -93,22 +92,22 @@ info:		info_f info_h info_i info_l info_c
 
 set_new:
 		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
-		
+
 set_old:
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_coast.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_high.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_full.tar.bz2
-		
+
 delete:		
 		\rm res_?/binned_*_?.{bin,seg,pt,pol,ndid}
 
-build-gshhs:
+build-gshhs:	update
 		mkdir -p gshhs
-		polygon_to_gshhs res_f/v$(VERSION)_final_f_dbase.b > gshhs/gshhs_f.b
-		polygon_to_gshhs res_h/v$(VERSION)_final_h_dbase.b > gshhs/gshhs_h.b
-		polygon_to_gshhs res_i/v$(VERSION)_final_i_dbase.b > gshhs/gshhs_i.b
-		polygon_to_gshhs res_l/v$(VERSION)_final_l_dbase.b > gshhs/gshhs_l.b
-		polygon_to_gshhs res_c/v$(VERSION)_final_c_dbase.b > gshhs/gshhs_c.b
+		polygon_to_gshhs res_f/GSHHS_f_polygons.b > gshhs/gshhs_f.b
+		polygon_to_gshhs res_h/GSHHS_h_polygons.b > gshhs/gshhs_h.b
+		polygon_to_gshhs res_i/GSHHS_i_polygons.b > gshhs/gshhs_i.b
+		polygon_to_gshhs res_l/GSHHS_l_polygons.b > gshhs/gshhs_l.b
+		polygon_to_gshhs res_c/GSHHS_c_polygons.b > gshhs/gshhs_c.b
 		polygon_to_gshhs -l wdb/wdb_f_borders.b > gshhs/wdb_borders_f.b
 		polygon_to_gshhs -l wdb/wdb_h_borders.b > gshhs/wdb_borders_h.b
 		polygon_to_gshhs -l wdb/wdb_i_borders.b > gshhs/wdb_borders_i.b
@@ -120,13 +119,13 @@ build-gshhs:
 		polygon_to_gshhs -l wdb/wdb_l_rivers.b > gshhs/wdb_rivers_l.b
 		polygon_to_gshhs -l wdb/wdb_c_rivers.b > gshhs/wdb_rivers_c.b
 
-shape-gshhs:
+shape-gshhs:	update
 		mkdir -p GSHHS_shp GSHHS_shp/f GSHHS_shp/h GSHHS_shp/i GSHHS_shp/l GSHHS_shp/c
-		polygon_to_shape res_f/v$(VERSION)_final_f_dbase.b GSHHS_f
-		polygon_to_shape res_h/v$(VERSION)_final_h_dbase.b GSHHS_h
-		polygon_to_shape res_i/v$(VERSION)_final_i_dbase.b GSHHS_i
-		polygon_to_shape res_l/v$(VERSION)_final_l_dbase.b GSHHS_l
-		polygon_to_shape res_c/v$(VERSION)_final_c_dbase.b GSHHS_c
+		polygon_to_shape res_f/GSHHS_f_dbase.b GSHHS_f
+		polygon_to_shape res_h/GSHHS_h_dbase.b GSHHS_h
+		polygon_to_shape res_i/GSHHS_i_dbase.b GSHHS_i
+		polygon_to_shape res_l/GSHHS_l_dbase.b GSHHS_l
+		polygon_to_shape res_c/GSHHS_c_dbase.b GSHHS_c
 		mv GSHHS_f_L[1-4]/* GSHHS_shp/f
 		mv GSHHS_h_L[1-4]/* GSHHS_shp/h
 		mv GSHHS_i_L[1-4]/* GSHHS_shp/i
@@ -134,7 +133,7 @@ shape-gshhs:
 		mv GSHHS_c_L[1-4]/* GSHHS_shp/c
 		cp GSHHS+WDBII/README.TXT GSHHS_shp
 		zip -r -q -v -9 GSHHS_shp_$(GSHHS_DATA_VERSION).zip GSHHS_shp/*
-#		rm -rf GSHHS_[fhilc]_L[1-4] GSHHS_[fhilc]_L[1-4].gmt
+		rm -rf GSHHS_[fhilc]_L[1-4] GSHHS_[fhilc]_L[1-4].gmt
 
 shape-wdbii:
 		mkdir -p WDBII_shp WDBII_shp/f WDBII_shp/h WDBII_shp/i WDBII_shp/l WDBII_shp/c
@@ -160,8 +159,8 @@ shape-wdbii:
 		mv WDBII_river_c_L[1-3]/* WDBII_shp/c
 		cp GSHHS+WDBII/README.TXT WDBII_shp
 		zip -r -q -v -9 WDBII_shp_$(GSHHS_DATA_VERSION).zip WDBII_shp/*
-#		rm -rf WDBII_border_[fhilc]_L[1-4] WDBII_border_[fhilc]_L[1-4].gmt
-#		rm -rf WDBII_river_[fhilc]_L[1-4] WDBII_river_[fhilc]_L[1-4].gmt
+		rm -rf WDBII_border_[fhilc]_L[1-4] WDBII_border_[fhilc]_L[1-4].gmt
+		rm -rf WDBII_river_[fhilc]_L[1-4] WDBII_river_[fhilc]_L[1-4].gmt
 
 # Make archive targets:
 
