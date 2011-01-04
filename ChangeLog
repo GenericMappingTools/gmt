@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.840 2011-01-01 03:39:41 guru Exp $
+	$Id: ChangeLog,v 1.841 2011-01-04 02:27:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-01-03	pwessel
+	* autoconf.ac:		Moving to use GSHHS 2.1.1 for next release.
+	* gmt_shore.c:		---"---
 
 2010-12-31	pwessel
 	* x2sys_init.c:		Crashed if -D was not given [should imply -DTAG].
