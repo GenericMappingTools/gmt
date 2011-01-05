@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.460 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.461 2011-01-05 04:37:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2320,6 +2320,7 @@ GMT_LONG GMT_cspline (double *x, double *y, GMT_LONG n, double *c)
 	/* Assumes that n >= 4 and x is monotonically increasing */
 
 	u = (double *) GMT_memory (VNULL, n, sizeof (double), "GMT_cspline");
+	c[0] = c[n-1] = 0.0;	/* The other c[i] are set directly in the loop */
 	for (i = 1; i < n-1; i++) {
 		i_dx2 = 1.0 / (x[i+1] - x[i-1]);
 		dx1 = x[i] - x[i-1];

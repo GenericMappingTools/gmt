@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.841 2011-01-04 02:27:57 guru Exp $
+	$Id: ChangeLog,v 1.842 2011-01-05 04:37:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-01-04	pwessel
+	* gmt_support.c:	GMT_cspline should initialize c[0] = c[n-1] = 0.0 in case
+				it is called repeatedly [not the case in GMT].
 
 2011-01-03	pwessel
 	* autoconf.ac:		Moving to use GSHHS 2.1.1 for next release.
