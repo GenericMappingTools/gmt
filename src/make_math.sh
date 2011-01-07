@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: make_math.sh,v 1.14 2010-03-22 18:55:45 guru Exp $
+#!/bin/bash
+#	$Id: make_math.sh,v 1.15 2011-01-07 21:40:22 guru Exp $
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath.c.  To be run from the GMT src directory.  X is either grd or gmt.
@@ -7,12 +7,13 @@
 # Usage: make_math.sh grd|gmt [-s]
 # -s for silent operation
 
+AWK=$(which gawk || which nawk || which awk)
 prefix=$1
 gush=1
 if [ $# = 2 ]; then	# Passed optional second argument (-s) to be silent
 	gush=0
 fi
-PRE=`echo $prefix | awk '{print toupper($1)}'`
+PRE=`echo $prefix | $AWK '{print toupper($1)}'`
 
 if [ $gush = 1 ]; then
 	echo "Making ${prefix}math_def.h"
@@ -22,7 +23,7 @@ year=`date +%Y`
 # First gather operator descriptions from source file
 
 grep "^/\*OPERATOR: " ${prefix}math.c | sort > $$.txt
-n_op=`cat $$.txt | wc -l | awk '{printf "%d\n", $1}'`
+n_op=`cat $$.txt | wc -l | $AWK '{printf "%d\n", $1}'`
 
 # Add backward compability
 
@@ -54,7 +55,7 @@ cat << EOF > ${prefix}math_def.h
 /* For backward compatibility: */
 
 EOF
-awk '{ if ($2 == "ADD") {printf "#define ADD\t%d\n", NR-1} \
+$AWK '{ if ($2 == "ADD") {printf "#define ADD\t%d\n", NR-1} \
 	else if ($2 == "DIV") {printf "#define DIV\t%d\n", NR-1} \
 	else if ($2 == "MUL") {printf "#define MUL\t%d\n", NR-1} \
 	else if ($2 == "POW") {printf "#define POW\t%d\n", NR-1} \
@@ -66,9 +67,9 @@ echo "" >> ${prefix}math_def.h
 echo "/* Declare all functions to return void */" >> ${prefix}math_def.h
 echo "" >> ${prefix}math_def.h
 if [ $1 = "gmt" ]; then
-	awk '{printf "void table_%s(struct GMTMATH_INFO *info, double **stack[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG start, GMT_LONG n);\t\t/* id = %d */\n", $2, NR-1}' $$.txt >> gmtmath_def.h
+	$AWK '{printf "void table_%s(struct GMTMATH_INFO *info, double **stack[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG start, GMT_LONG n);\t\t/* id = %d */\n", $2, NR-1}' $$.txt >> gmtmath_def.h
 else
-	awk '{printf "void grd_%s(struct GRDMATH_INFO *info, float *stack[], GMT_LONG *constant, double *factor, GMT_LONG last);\t\t/* id=%d */\n", $2, NR-1}' $$.txt >> grdmath_def.h
+	$AWK '{printf "void grd_%s(struct GRDMATH_INFO *info, float *stack[], GMT_LONG *constant, double *factor, GMT_LONG last);\t\t/* id=%d */\n", $2, NR-1}' $$.txt >> grdmath_def.h
 fi
 echo "" >> ${prefix}math_def.h
 
@@ -76,7 +77,7 @@ echo "" >> ${prefix}math_def.h
 echo "/* Declare operator array */" >> ${prefix}math_def.h
 echo "" >> ${prefix}math_def.h
 echo "char *operator[${PRE}MATH_N_OPERATORS] = {" >> ${prefix}math_def.h
-awk -v n_op=$n_op '{if (NR < n_op) {printf "\t\"%s\",\t\t/* id = %d */\n", $2, NR-1} else {printf "\t\"%s\"\t\t/* id = %d */\n", $2, NR-1}}' $$.txt >> ${prefix}math_def.h
+$AWK -v n_op=$n_op '{if (NR < n_op) {printf "\t\"%s\",\t\t/* id = %d */\n", $2, NR-1} else {printf "\t\"%s\"\t\t/* id = %d */\n", $2, NR-1}}' $$.txt >> ${prefix}math_def.h
 echo "};" >> ${prefix}math_def.h
 echo "" >> ${prefix}math_def.h
 
@@ -110,7 +111,7 @@ cat << EOF > ${prefix}math_explain.h
  *
  */
 EOF
-awk '{ \
+$AWK '{ \
 	printf "\t\tfprintf (stderr, \"\t%s\t%d %d\t%s", $2, $3, $4, $5; \
 	for (i = 6; i <= NF-1; i++) printf " %s", $i; \
 	printf "\\n\");\n" \
@@ -151,9 +152,9 @@ void ${prefix}math_init (PFV ops[], GMT_LONG n_args[], GMT_LONG n_out[])
 
 EOF
 if [ $1 = "gmt" ]; then
-	awk '{ printf "\tops[%d] = table_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $2, NR-1, $3, NR-1, $4}' $$.txt >> ${prefix}math.h
+	$AWK '{ printf "\tops[%d] = table_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $2, NR-1, $3, NR-1, $4}' $$.txt >> ${prefix}math.h
 else
-	awk '{ printf "\tops[%d] = grd_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $2, NR-1, $3, NR-1, $4}' $$.txt >> grdmath.h
+	$AWK '{ printf "\tops[%d] = grd_%s;\t\tn_args[%d] = %d;\t\tn_out[%d] = %d;\n", NR-1, $2, NR-1, $3, NR-1, $4}' $$.txt >> grdmath.h
 fi
 echo "}" >> ${prefix}math.h
 
@@ -170,7 +171,7 @@ Operator	args	Returns
 .br
 .sp
 EOF
-awk '{ \
+$AWK '{ \
 	a = $2"         ";
 	printf "\\fB%s\\fP\t%d %d\t%s", substr(a, 0, 9), $3, $4, $5; \
 	a = index($5,sprintf("%c",39)); \
