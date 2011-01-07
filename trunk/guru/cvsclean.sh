@@ -1,8 +1,14 @@
-#!/bin/sh
-#	$Id: cvsclean.sh,v 1.8 2008-04-09 18:16:48 remko Exp $
+#!/bin/bash
+#	$Id: cvsclean.sh,v 1.9 2011-01-07 21:40:22 guru Exp $
+
+# BSD and Solaris commands are incompatible, use GNU versions if available
+RM=$(which grm || which rm)
+GREP=$(which ggrep || which grep)
+AWK=$(which gawk || which awk)
 
 # List all backup files
 find . -name "*~" -o -name ".*~" -o -name "*.bak" -o -name ".*.bak" -o -name ".#*" -o -name ".*.swp" -o -name ".DS_Store" > $$.lis 
+
 # List all the files in .cvsignore
 for x in `find . -name .cvsignore` ; do
     $AWK '{printf "%s/%s\n","'`dirname $x`'",$0}' $x >>$$.lis
@@ -11,7 +17,7 @@ done
 # Remove the exceptions from the list
 # These are non-cvs files, we nevertheless want to keep
 # The result of grep is redirected to rm command
-xargs echo "ls -d -1 2>/dev/null" < $$.lis | sh | grep -v -e "guru/gmtguru.macros$" -e "share/coast$" | xargs rm -rvf
+xargs echo "ls -d -1 2>/dev/null" < $$.lis | sh | $GREP -v -e "guru/gmtguru.macros$" -e "share/coast$" | xargs $RM -rvf
 
 # Delete the killfile
 rm -f $$.lis

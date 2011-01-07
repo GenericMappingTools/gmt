@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.842 2011-01-05 04:37:06 guru Exp $
+	$Id: ChangeLog,v 1.843 2011-01-07 21:40:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-01-07	pwessel
+	* ps2raster.c:		Must pass the optional -C args when calculating BB.
+				Added -dSAFER as well, + fix -F option [F. Wobbe].
+	* gmtswitch:		Requires bash.
 
 2011-01-04	pwessel
 	* gmt_support.c:	GMT_cspline should initialize c[0] = c[n-1] = 0.0 in case
