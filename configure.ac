@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.98 2011-01-08 18:13:12 guru Exp $
+dnl $Id: configure.ac,v 1.99 2011-01-08 20:12:04 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.98 $)
+AC_REVISION($Revision: 1.99 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -118,7 +118,7 @@ AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS 
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
 AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
-AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
+AC_ARG_WITH(gdal_config,[  --with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
