@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.97 2011-01-04 02:27:58 guru Exp $
+dnl $Id: configure.ac,v 1.98 2011-01-08 18:13:12 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.97 $)
+AC_REVISION($Revision: 1.98 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -103,6 +103,7 @@ dnl -----------------------------------------------------------------
 dnl
 AC_ARG_ENABLE(update,   [  --enable-update=site    GMT ftp site [[ftp.soest.hawaii.edu]]])
 AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     Directory with netCDF [[auto]]])
+AC_ARG_WITH(nc_config,  [  --with-nc-config=       Full path to nc-config [[auto]]])
 AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, give directory with Matlab distribution [[auto]]])
 AC_ARG_ENABLE(octave,   [  --enable-octave=dir     Build GMT-octave interface, give directory with Octave distribution [[auto]] (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
@@ -116,7 +117,8 @@ AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript a
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
-AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL ])
+AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
+AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
@@ -272,12 +274,14 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for GMT manpage preprocessor)
 if test "X$TXT2MAN" = "X" ; then
-	if test "$os" = "SunOS" ; then		# Sun Workshop
+	if test "$GCC" = "yes"; then		# Compiler is gcc
+		TXT2MAN="cpp -w -P -nostdinc"
+	elif test "$os" = "SunOS" ; then	# Sun Workshop
 		TXT2MAN="cc -E -Xs"
 	elif test "$os" = "HP-UX" ; then	# HP
 		TXT2MAN="/usr/ccs/lbin/cpp"
-	else					# Linux, Darwin, other?
-		TXT2MAN="/usr/bin/cpp -w -P -nostdinc"
+	else					# other?
+		TXT2MAN="false"
 	fi
 fi
 AC_MSG_RESULT($TXT2MAN)
@@ -484,68 +488,78 @@ fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-netcdf to set netCDF dir
+dnl Use nc-config if possible
 dnl -----------------------------------------------------------------
 dnl
-if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
-	AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
-	NETCDF=`dirname $NETCDF`
-	NETCDF=`dirname $NETCDF`
+if test "X$with_nc_config" != "Xno" ; then
+	AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
+fi
+if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" ; then
+	AC_MSG_CHECKING(for netCDF includes)
+	NETCDF_INC=`$NC_CONF --cflags`
+	AC_MSG_RESULT($NETCDF_INC)
+	AC_MSG_CHECKING(for netCDF libs)
+	NETCDF_LIB=`$NC_CONF --libs`
+	AC_MSG_RESULT($NETCDF_LIB)
+	NC_LIB_PATH=`sed 's/^-L//;s/\ .*//' <<< $NETCDF_LIB`
+	rpath="$NC_LIB_PATH"
 else
-	NETCDF=$enable_netcdf
+	if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
+		AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
+		NETCDF=`dirname $NETCDF`
+		NETCDF=`dirname $NETCDF`
+	else
+		NETCDF=$enable_netcdf
+	fi
+	AC_MSG_CHECKING(for netCDF include directory)
+	if test "X$NETCDF_INC" = "X"; then
+		NETCDF_INC=$NETCDF/include
+	fi
+	AC_MSG_RESULT($NETCDF_INC)
+	if test ! -f $NETCDF_INC/netcdf.h; then
+		AC_MSG_WARN([[netcdf.h can not be found in $NETCDF_INC]])
+	fi
+	AC_MSG_CHECKING(for netCDF library directory)
+	if test "X$NETCDF_LIB" = "X"; then
+		NETCDF_LIB=$NETCDF/lib
+	fi
+	AC_MSG_RESULT($NETCDF_LIB)
+	if test ! -d $NETCDF_LIB; then
+		AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
+	fi
+	rpath="$NETCDF_LIB"
+	NETCDF_LIB="-L$NETCDF_LIB -lnetcdf"
+	NETCDF_INC="-I$NETCDF_INC"
 fi
-AC_MSG_CHECKING(for netCDF include directory)
-if test "X$NETCDF_INC" = "X"; then
-	NETCDF_INC=$NETCDF/include
-fi
-AC_MSG_RESULT($NETCDF_INC)
-if test ! -f $NETCDF_INC/netcdf.h; then
-	AC_MSG_WARN([[netcdf.h can not be found in $NETCDF_INC]])
-fi
-AC_MSG_CHECKING(for netCDF library directory)
-if test "X$NETCDF_LIB" = "X"; then
-	NETCDF_LIB=$NETCDF/lib
-fi
-AC_MSG_RESULT($NETCDF_LIB)
-if test ! -d $NETCDF_LIB; then
-	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
-fi
-rpath="$NETCDF_LIB"
-NETCDF_LIB="-L$NETCDF_LIB -lnetcdf"
-NETCDF_INC="-I$NETCDF_INC"
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-gdal to experimental GDAL support
+dnl Set path to gdal-config explicitly with --with-gdal-config
 dnl -----------------------------------------------------------------
 dnl
-if test ! "X$enable_gdal" = "X" ; then
+if test "X$enable_gdal" != "Xno" || test "X$with_gdal_config" != "Xno"; then
 	AC_MSG_RESULT([Compile experimental support for GDAL input])
-	CPPFLAGS="$CPPFLAGS -DUSE_GDAL"
-	if test "X$enable_gdal" = "X" || test "X$enable_gdal" = "Xyes" ; then
-		AC_PATH_PROG([GDAL], [gdal_translate], [/usr/local/bin/gdal_translate])
-		GDAL=`dirname $GDAL`
-		GDAL=`dirname $GDAL`
+	AC_PATH_PROG([GDAL_CONF], [gdal-config], [$with_gdal_config])
+	if test -x "$GDAL_CONF" ; then
+		AC_MSG_CHECKING(for GDAL includes)
+		if test "X$GDAL_INC" = "X"; then
+			GDAL_INC=`$GDAL_CONF --cflags`
+		fi
+		AC_MSG_RESULT($GDAL_INC)
+		AC_MSG_CHECKING(for GDAL libs)
+		if test "X$GDAL_LIB" = "X"; then
+			GDAL_LIB=`$GDAL_CONF --libs`
+		fi
+		AC_MSG_RESULT($GDAL_LIB)
+		GDAL_LIB_PATH=`sed 's/^-L//;s/\ .*//' <<< $GDAL_LIB`
+		rpath="$rpath:$GDAL_LIB_PATH"
+		CPPFLAGS="$CPPFLAGS -DUSE_GDAL"
 	else
-		GDAL=$enable_gdal
+		AC_MSG_RESULT([The gdal-config script distributed with GDAL could not be found. If you have installed the GDAL libraries, then make sure that gdal-config is in your path. If not, use: --with-gdal-config.])
 	fi
-	AC_MSG_CHECKING(for GDAL include directory)
-	if test "X$GDAL_INC" = "X"; then
-		GDAL_INC=$GDAL/include
+	if test "X$GDAL_INC" = "X" || test "X$GDAL_LIB" = "X"; then
+		exit 1
 	fi
-	AC_MSG_RESULT($GDAL_INC)
-	if test ! -f $GDAL_INC/gdal.h; then
-		AC_MSG_WARN([[gdal.h can not be found in $GDAL_INC]])
-	fi
-	AC_MSG_CHECKING(for GDAL library directory)
-	if test "X$GDAL_LIB" = "X"; then
-		GDAL_LIB=$GDAL/lib
-	fi
-	AC_MSG_RESULT($GDAL_LIB)
-	if test ! -d $GDAL_LIB; then
-		AC_MSG_WARN([[No such directory: $GDAL_LIB]])
-	fi
-	rpath="$rpath:$GDAL_LIB"
-	GDAL_LIB="-L$GDAL_LIB -lgdal"
-	GDAL_INC="-I$GDAL_INC"
 else
 	GDAL_LIB=
 	GDAL_INC=
@@ -792,10 +806,8 @@ AC_MSG_CHECKING(compiler options for GMT)
 if test "$GCC" = "yes"; then		# GNU cc options
 	if test "$chip" = "alpha" ; then	# Alpha PC
 		CFLAGS="$CFLAGS -mieee -Wall $GCC_64"
-	elif test "$os" = "Darwin" ; then	# MacOS X
-		CFLAGS="$CFLAGS -pedantic -fno-common -Wall $GCC_64"
-	else
-		CFLAGS="$CFLAGS -pedantic -Wall $GCC_64"
+	else				# MacOSX, Linux, ...
+		CFLAGS="$CFLAGS -Wall $GCC_64"
 	fi
 	CFLAGS="$CFLAGS -fPIC -fno-strict-aliasing"
 elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
