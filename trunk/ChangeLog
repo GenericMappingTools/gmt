@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.843 2011-01-07 21:40:22 guru Exp $
+	$Id: ChangeLog,v 1.844 2011-01-09 22:08:02 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-01-09	pwessel
+	* triangulate.c:	Did not use projected coordinates when -R -J was given.
+	
 2011-01-07	pwessel
 	* ps2raster.c:		Must pass the optional -C args when calculating BB.
 				Added -dSAFER as well, + fix -F option [F. Wobbe].
