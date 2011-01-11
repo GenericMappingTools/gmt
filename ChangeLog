@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.845 2011-01-11 10:39:55 remko Exp $
+	$Id: ChangeLog,v 1.846 2011-01-11 23:07:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-01-11	remko
 	* ps2raster.c:		Bug fix after last -F option update
+	* gmt_map.c:		Fixed bug in Haversine equation for duplicate point.
 
 2011-01-09	pwessel
 	* triangulate.c:	Did not use projected coordinates when -R -J was given.

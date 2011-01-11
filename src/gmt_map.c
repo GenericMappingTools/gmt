@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.264 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_map.c,v 1.265 2011-01-11 23:07:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3684,7 +3684,7 @@ double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2
 
 	double sx, sy, sc2;
 
-	if (lat1 == lat2 && lon1 == lon2) return (1.0);
+	if (lat1 == lat2 && lon1 == lon2) return (0.0);
 
 	sy = sind (0.5 * (lat2 - lat1));
 	sx = sind (0.5 * (lon2 - lon1));
