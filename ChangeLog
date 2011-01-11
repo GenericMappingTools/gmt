@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.844 2011-01-09 22:08:02 guru Exp $
+	$Id: ChangeLog,v 1.845 2011-01-11 10:39:55 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-01-11	remko
+	* ps2raster.c:		Bug fix after last -F option update
 
 2011-01-09	pwessel
 	* triangulate.c:	Did not use projected coordinates when -R -J was given.
