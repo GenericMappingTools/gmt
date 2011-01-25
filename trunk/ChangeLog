@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.847 2011-01-18 00:01:20 guru Exp $
+	$Id: ChangeLog,v 1.848 2011-01-25 08:06:05 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-01-25	pwessel
+	* pscontour.c:		Did not find some contours following triangle edges.
 
 2011-01-17	pwessel
 	* x2sys/x2sys_init.c:	Did not write both or -Nd -Ns to the tag file.
