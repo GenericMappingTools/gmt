@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.849 2011-02-02 22:16:24 guru Exp $
+	$Id: ChangeLog,v 1.850 2011-02-08 18:37:19 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-02-08	pwessel
+	* grdtrack.c:		Message about -L being obsolete should only come when no
+				modifier is given; else it is valid for BC setting.
 
 2011-01-25	pwessel
 	* pscontour.c:		Did not find some contours following triangle edges.
