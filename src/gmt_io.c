@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.222 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_io.c,v 1.223 2011-02-09 18:34:53 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2921,7 +2921,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 
 	char open_mode[4], file[BUFSIZ];
 	GMT_LONG save, ascii, close_file = FALSE, no_segments;
-	GMT_LONG n_fields, n_expected_fields, k, cdf;
+	GMT_LONG n_fields, n_expected_fields, k, cdf = 0;
 	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0, col;
 	double d, *in;
 	FILE *fp;
