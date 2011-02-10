@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.850 2011-02-08 18:37:19 guru Exp $
+	$Id: ChangeLog,v 1.851 2011-02-10 02:36:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-02-09	pwessel
+	* grdclip.c:		Now complains if no -S option was given.
 
 2011-02-08	pwessel
 	* grdtrack.c:		Message about -L being obsolete should only come when no
