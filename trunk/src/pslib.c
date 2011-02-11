@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.235 2011-01-02 20:09:36 guru Exp $
+ *	$Id: pslib.c,v 1.236 2011-02-11 02:14:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2142,7 +2142,7 @@ void ps_textdim (char *dim, double pointsize, PSL_LONG in_font, char *text)
 	 */
 
 	char *tempstring, *piece, *piece2, *ptr, *string;
-	PSL_LONG i = 0, font, sub, super, small, old_font;
+	PSL_LONG i = 0, font, sub, super, small, old_font, error = 0;
 	double height, small_size, size, scap_size;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
@@ -2190,7 +2190,7 @@ void ps_textdim (char *dim, double pointsize, PSL_LONG in_font, char *text)
 		ptr = strtok ((char *)NULL, "@");
 	}
 
-	while (ptr) {
+	while (ptr && !error) {
 		if (ptr[0] == '!') {	/* Composite character */
 			ptr++;
 			if (ptr[0] == '\\')	/* Octal code */
@@ -2212,8 +2212,8 @@ void ps_textdim (char *dim, double pointsize, PSL_LONG in_font, char *text)
 				old_font = font;
 				font = atoi (ptr);
 			}
-			while (*ptr != '%') ptr++;
-			ptr++;
+			while (*ptr != '\0' && *ptr != '%') ptr++;
+			if (ptr[0] != '%') error++; else ptr++;
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
@@ -2241,15 +2241,15 @@ void ps_textdim (char *dim, double pointsize, PSL_LONG in_font, char *text)
 			else {
 				i = atoi (ptr);
 				size = (double)i / PSL->internal.points_pr_unit;
-				while (*ptr != ':') ptr++;
+				while (*ptr != '\0' && *ptr != ':') ptr++;
 			}
-			ptr++;
+			if (ptr[0] != ':') error++; else ptr++;
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == ';') {	/* Color change */
 			ptr++;
-			while (*ptr != ';') ptr++;
-			ptr++;
+			while (*ptr != '\0' && *ptr != ';') ptr++;
+			if (ptr[0] != ';') error++; else ptr++;
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == '_') {	/* Small caps toggle */
@@ -2261,7 +2261,10 @@ void ps_textdim (char *dim, double pointsize, PSL_LONG in_font, char *text)
 		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%ld F%ld (%s) FP ", (PSL_LONG)irint (size*PSL->internal.scale), font, piece);
 		ptr = strtok ((char *)NULL, "@");
 	}
-
+	if (error) {
+		fprintf (stderr, "pslib: text_item %s has incomplete escape sequence - aborting.\n", text);
+		PS_exit (EXIT_FAILURE);
+	}
 	fprintf (PSL->internal.fp, "pathbbox N ");
 	fprintf (PSL->internal.fp, "/%s_h exch def exch /%s_d exch def add /%s_w exch def\n", dim, dim, dim);
 

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.851 2011-02-10 02:36:57 guru Exp $
+	$Id: ChangeLog,v 1.852 2011-02-11 02:14:48 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-02-10	pwessel
+	* pslib.c:		Add check for incomplete escape sequences.
 
 2011-02-09	pwessel
 	* grdclip.c:		Now complains if no -S option was given.
