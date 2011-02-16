@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.852 2011-02-11 02:14:48 guru Exp $
+	$Id: ChangeLog,v 1.853 2011-02-16 05:11:22 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-02-16	jluis
+	* grdproject.c:		Not providing -R was not working anymore.
 
 2011-02-10	pwessel
 	* pslib.c:		Add check for incomplete escape sequences.
