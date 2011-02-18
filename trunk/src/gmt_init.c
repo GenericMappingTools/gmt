@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.453 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_init.c,v 1.454 2011-02-18 03:44:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1441,16 +1441,12 @@ GMT_LONG GMT_parse_t_option (char *item) {
 	switch (item[2]) {
 		case 'i':	/* Toggle on input data only */
 			gmtdefs.xy_toggle[GMT_IN] = TRUE;
-			l_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
 			break;
 		case 'o':	/* Toggle on output data only */
 			gmtdefs.xy_toggle[GMT_OUT] = TRUE;
-			l_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		case '\0':	/* Toggle both input and output data */
 			gmtdefs.xy_toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_OUT] = TRUE;
-			l_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
-			l_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		default:
 			GMT_syntax (':');

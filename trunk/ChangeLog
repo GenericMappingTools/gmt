@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.853 2011-02-16 05:11:22 jluis Exp $
+	$Id: ChangeLog,v 1.854 2011-02-18 03:44:11 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-02-17	pwessel
+	* gmt_init.c:		The -: option messed up the column type arrays; should
+				only swap x|y data columns, not type columns.
 
 2011-02-16	jluis
 	* grdproject.c:		Not providing -R was not working anymore.
