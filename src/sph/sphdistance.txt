@@ -33,6 +33,7 @@ equals the first point in the segment.  Requires OPT(m) [Default uses all points
 .B \-E
 Instead of computing distances, return the ID numbers of the Voronoi polygons that each grid node is inside
 [Default computes distances].
+#include "explain_nodereg.txt"
 #include "explain_-h.txt"
 #include "explain_-I.txt"
 .TP
