@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.854 2011-02-18 03:44:11 guru Exp $
+	$Id: ChangeLog,v 1.855 2011-02-18 05:01:19 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2011-02-17	pwessel
@@ -8,6 +8,7 @@
 
 2011-02-16	jluis
 	* grdproject.c:		Not providing -R was not working anymore.
+				Test if hemisphere sign is provided when doing -Ju and no -R
 
 2011-02-10	pwessel
 	* pslib.c:		Add check for incomplete escape sequences.
