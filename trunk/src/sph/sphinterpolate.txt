@@ -19,6 +19,7 @@ Data files with the (lon, lat, f) coordinates in ASCII (or binary; see OPT(b)). 
 OPT(G)
 Name of the output grid to hold the interpolation.
 .SH OPTIONS
+#include "explain_nodereg.txt"
 #include "explain_-h.txt"
 #include "explain_-I.txt"
 .TP
