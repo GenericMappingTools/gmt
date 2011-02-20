@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.75 2011-01-04 01:33:59 guru Exp $
+#	$Id: Makefile,v 1.76 2011-02-20 00:02:48 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -132,6 +132,7 @@ shape-gshhs:	update
 		mv GSHHS_l_L[1-4]/* GSHHS_shp/l
 		mv GSHHS_c_L[1-4]/* GSHHS_shp/c
 		cp GSHHS+WDBII/README.TXT GSHHS_shp
+		cp GSHHS+WDBII/ChangeLog GSHHS_shp
 		zip -r -q -v -9 GSHHS_shp_$(GSHHS_DATA_VERSION).zip GSHHS_shp/*
 		rm -rf GSHHS_[fhilc]_L[1-4] GSHHS_[fhilc]_L[1-4].gmt
 
