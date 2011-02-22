@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.454 2011-02-18 03:44:11 guru Exp $
+ *	$Id: gmt_init.c,v 1.455 2011-02-22 19:13:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5412,7 +5412,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz) */
 	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
-	GMT_LONG check, old_style;
+	GMT_LONG check, old_style, col_off = mode;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
 	static char *allowed_symbols[2] = {"-+aAbBCcDdeEfGgHhIijJmNnpqrSsTtVvwWxy", "-+aAbCcDdeEfGgHhIijJmNnoOpqrSsTtuUVvwWxy"};
 	static char *bar_symbols[2] = {"bB", "-bBoOuU"};
@@ -5420,9 +5420,13 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 	p->n_required = p->convert_angles = p->n_nondim = 0;
 	p->user_unit = p->shrink = p->read_vector = p->base_set = p->u_set = FALSE;
 
+	/* Col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
+	   However, if size is not given then that is requred too so col_off++ */
+	
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
 		symbol_type = '*';
+		col_off++;
 	}
 	else if (isdigit ((int)text[0]) || text[0] == '.') {	/* Size, but no symbol given */
 		n = sscanf (text, "%[^/]/%s", txt_a, txt_b);
@@ -5450,6 +5454,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			symbol_type = 'l';
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			col_off++;
 		}
 		else {
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, p->string);
@@ -5462,6 +5467,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			n = sscanf (text, "%c%s", &symbol_type, text_cp);
+			col_off++;
 		}
 		else {
 			text[j] = ' ';
@@ -5476,12 +5482,14 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		if (text[1] && (p->u = GMT_get_unit (text[1])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 		p->equal_area = FALSE;
+		col_off++;
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || text[1] == '\0')) {	/* Symbol, but no size given (size assumed given on command line) */
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		p->equal_area = FALSE;
+		col_off++;
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
@@ -5583,12 +5591,12 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			break;
 		case 'E':	/* Expect axis in km to be scaled based on -J */
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + mode;
+			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Since they are in km, not inches or cm etc */
+			p->nondim_col[p->n_nondim++] = 4 + col_off;
 		case 'e':
 			p->symbol = GMT_SYMBOL_ELLIPSE;
 			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + mode;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;
 			check = FALSE;
 			break;
 
@@ -5691,13 +5699,13 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			break;
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + mode;
+			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Since they are in km, not inches or cm etc */
+			p->nondim_col[p->n_nondim++] = 4 + col_off;
 		case 'j':
 			p->symbol = GMT_SYMBOL_ROTATERECT;
 			p->n_required = 3;
 			check = FALSE;
-			p->nondim_col[p->n_nondim++] = 2 + mode;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;
@@ -5733,8 +5741,8 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 					break;
 			}
 			p->size_x = p->given_size_x = p->size_y = p->given_size_y = GMT_convert_units (&text[k], GMT_INCH);
-			p->nondim_col[p->n_nondim++] = 2 + mode;
-			p->nondim_col[p->n_nondim++] = 3 + mode;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;
+			p->nondim_col[p->n_nondim++] = 3 + col_off;
 			break;
 		case 'N':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
@@ -5803,26 +5811,26 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 				case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
 					p->v_just = 2;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;
 					break;
 				case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
 					p->v_double_heads = TRUE;
 				case 'b':	/* Input (x,y) refers to balance point of vector, single head */
 					p->v_just = 1;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;
 					break;
 				case 'T':	/* Input (x,y) refers to tail of vector, double heads */
 					p->v_double_heads = TRUE;
 				case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
 					p->v_just = 0;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;
 					break;
 				default:	/* No modifier given, default to tail, single head */
 					p->v_just = 0;
 					one = 1;
-					p->nondim_col[p->n_nondim++] = 2 + mode;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;
 					break;
 			}
 			for (j = one; text[j] && text[j] != 'n'; j++);
@@ -5866,8 +5874,8 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		case 'w':
 			p->symbol = GMT_SYMBOL_PIE;
 			p->n_required = 2;
-			p->nondim_col[p->n_nondim++] = 2 + mode;
-			p->nondim_col[p->n_nondim++] = 3 + mode;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;
+			p->nondim_col[p->n_nondim++] = 3 + col_off;
 			break;
 		case 'r':
 			p->symbol = GMT_SYMBOL_RECT;
