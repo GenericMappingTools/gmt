@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.66 2011-01-02 20:09:36 guru Exp $
+ *	$Id: libspotter.c,v 1.67 2011-02-23 21:49:14 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -1155,6 +1155,8 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	 * that rotation, the covariance matrix is R * cov(r) * R^t.
 	 * forward is TRUE if we rotate from past to now and FALSE if we
 	 * rotate from now to the past (e.g., move a hotspot up the chain).
+	 * 2011-02-23 PW: Multiply axes by two to get major & minor (we reported
+	 * SEMI-axes previously; psxy had same problem and now expects full axes)
 	 */
 
 	GMT_LONG matrix_dim = 3L;
@@ -1221,8 +1223,8 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	y_comp = GMT_dot3v (EigenVector, y_in_plane);	/* y-component of major axis in tangent plane */
 	out[kk] = fmod (360.0 + (90.0 - atan2d (y_comp, x_comp)), 360.0);	/* Azimuth of major axis */
 	if (out[kk] > 180.0) out[kk] -= 180.0;
-	out[++kk] = sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;
-	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
+	out[++kk] = 2.0 * sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;	/* Full major axis (not semi) */
+	out[++kk] = 2.0 * sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;	/* Full minor axis (not semi) */
 
 	return (0);
 }

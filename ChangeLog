@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.857 2011-02-23 21:07:21 guru Exp $
+	$Id: ChangeLog,v 1.858 2011-02-23 21:49:14 guru Exp $
 -----------------------------------------------------------------------------------------
+2011-02-23	pwessel
+	spotter/backtracker.c:	For -W, now report full-length major/minor axes and not
+				SEMI-axes (docs said major/minor but code did semi.)
 
 2011-02-22	pwessel
 	* gmt_init.c:		The symbol_parsing for psxy[z] did not properly set the
