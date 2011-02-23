@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.455 2011-02-22 19:13:53 guru Exp $
+ *	$Id: gmt_init.c,v 1.456 2011-02-23 21:07:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5591,12 +5591,13 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			break;
 		case 'E':	/* Expect axis in km to be scaled based on -J */
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + col_off;
+			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle in degrees */
+			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
+			p->nondim_col[p->n_nondim++] = 4 + mode;
 		case 'e':
 			p->symbol = GMT_SYMBOL_ELLIPSE;
 			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + col_off;
+			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle in degrees */
 			check = FALSE;
 			break;
 
@@ -5699,13 +5700,14 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			break;
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + col_off;
+			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
+			p->nondim_col[p->n_nondim++] = 4 + mode;
 		case 'j':
 			p->symbol = GMT_SYMBOL_ROTATERECT;
 			p->n_required = 3;
 			check = FALSE;
-			p->nondim_col[p->n_nondim++] = 2 + col_off;
+			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;
@@ -5741,8 +5743,8 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 					break;
 			}
 			p->size_x = p->given_size_x = p->size_y = p->given_size_y = GMT_convert_units (&text[k], GMT_INCH);
-			p->nondim_col[p->n_nondim++] = 2 + col_off;
-			p->nondim_col[p->n_nondim++] = 3 + col_off;
+			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle */
+			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
 			break;
 		case 'N':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
@@ -5811,26 +5813,26 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 				case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
 					p->v_just = 2;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + col_off;
+					p->nondim_col[p->n_nondim++] = 2 + mode;
 					break;
 				case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
 					p->v_double_heads = TRUE;
 				case 'b':	/* Input (x,y) refers to balance point of vector, single head */
 					p->v_just = 1;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + col_off;
+					p->nondim_col[p->n_nondim++] = 2 + mode;
 					break;
 				case 'T':	/* Input (x,y) refers to tail of vector, double heads */
 					p->v_double_heads = TRUE;
 				case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
 					p->v_just = 0;
 					one = 2;
-					p->nondim_col[p->n_nondim++] = 2 + col_off;
+					p->nondim_col[p->n_nondim++] = 2 + mode;
 					break;
 				default:	/* No modifier given, default to tail, single head */
 					p->v_just = 0;
 					one = 1;
-					p->nondim_col[p->n_nondim++] = 2 + col_off;
+					p->nondim_col[p->n_nondim++] = 2 + mode;
 					break;
 			}
 			for (j = one; text[j] && text[j] != 'n'; j++);

@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.856 2011-02-22 19:13:53 guru Exp $
+	$Id: ChangeLog,v 1.857 2011-02-23 21:07:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-02-22	pwessel
 	* gmt_init.c:		The symbol_parsing for psxy[z] did not properly set the
 				column types when no symbol size was given.  This affected
-				symbols that require angles (-Sw) when unit was SI.
+				symbols that require angles (-Sw, -SE, -SJ) when unit was SI.
 
 2011-02-17	pwessel
 	* gmt_init.c:		The -: option messed up the column type arrays; should
