@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.14 2010-07-17 23:41:45 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.15 2011-02-25 02:55:28 guru Exp $
  * 
  *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 			exit(-1);
 		}
 		fprintf (fp, "%s", header[lines]);
-		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL);
+		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE_DATA\n", ymin*I_MILL, ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
 			limit = (id == 0) ? M270 : M180;

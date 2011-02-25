@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.76 2011-02-20 00:02:48 guru Exp $
+#	$Id: Makefile,v 1.77 2011-02-25 02:55:28 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -121,16 +121,16 @@ build-gshhs:	update
 
 shape-gshhs:	update
 		mkdir -p GSHHS_shp GSHHS_shp/f GSHHS_shp/h GSHHS_shp/i GSHHS_shp/l GSHHS_shp/c
-		polygon_to_shape res_f/GSHHS_f_dbase.b GSHHS_f
-		polygon_to_shape res_h/GSHHS_h_dbase.b GSHHS_h
-		polygon_to_shape res_i/GSHHS_i_dbase.b GSHHS_i
-		polygon_to_shape res_l/GSHHS_l_dbase.b GSHHS_l
-		polygon_to_shape res_c/GSHHS_c_dbase.b GSHHS_c
-		mv GSHHS_f_L[1-4]/* GSHHS_shp/f
-		mv GSHHS_h_L[1-4]/* GSHHS_shp/h
-		mv GSHHS_i_L[1-4]/* GSHHS_shp/i
-		mv GSHHS_l_L[1-4]/* GSHHS_shp/l
-		mv GSHHS_c_L[1-4]/* GSHHS_shp/c
+		polygon_to_shape res_f/GSHHS_f_polygons.b GSHHS_f
+		polygon_to_shape res_h/GSHHS_h_polygons.b GSHHS_h
+		polygon_to_shape res_i/GSHHS_i_polygons.b GSHHS_i
+		polygon_to_shape res_l/GSHHS_l_polygons.b GSHHS_l
+		polygon_to_shape res_c/GSHHS_c_polygons.b GSHHS_c
+		mv GSHHS_f_L[1-4].* GSHHS_shp/f
+		mv GSHHS_h_L[1-4].* GSHHS_shp/h
+		mv GSHHS_i_L[1-4].* GSHHS_shp/i
+		mv GSHHS_l_L[1-4].* GSHHS_shp/l
+		mv GSHHS_c_L[1-4].* GSHHS_shp/c
 		cp GSHHS+WDBII/README.TXT GSHHS_shp
 		cp GSHHS+WDBII/ChangeLog GSHHS_shp
 		zip -r -q -v -9 GSHHS_shp_$(GSHHS_DATA_VERSION).zip GSHHS_shp/*
@@ -143,21 +143,21 @@ shape-wdbii:
 		polygon_to_shape wdb/wdb_i_borders.b WDBII_border_i -o
 		polygon_to_shape wdb/wdb_l_borders.b WDBII_border_l -o
 		polygon_to_shape wdb/wdb_c_borders.b WDBII_border_c -o
-		mv WDBII_border_f_L[1-3]/* WDBII_shp/f
-		mv WDBII_border_h_L[1-3]/* WDBII_shp/h
-		mv WDBII_border_i_L[1-3]/* WDBII_shp/i
-		mv WDBII_border_l_L[1-3]/* WDBII_shp/l
-		mv WDBII_border_c_L[1-3]/* WDBII_shp/c
+		mv WDBII_border_f_L[1-3].* WDBII_shp/f
+		mv WDBII_border_h_L[1-3].* WDBII_shp/h
+		mv WDBII_border_i_L[1-3].* WDBII_shp/i
+		mv WDBII_border_l_L[1-3].* WDBII_shp/l
+		mv WDBII_border_c_L[1-3].* WDBII_shp/c
 		polygon_to_shape wdb/wdb_f_rivers.b WDBII_river_f -i
 		polygon_to_shape wdb/wdb_h_rivers.b WDBII_river_h -i
 		polygon_to_shape wdb/wdb_i_rivers.b WDBII_river_i -i
 		polygon_to_shape wdb/wdb_l_rivers.b WDBII_river_l -i
 		polygon_to_shape wdb/wdb_c_rivers.b WDBII_river_c -i
-		mv WDBII_river_f_L[1-3]/* WDBII_shp/f
-		mv WDBII_river_h_L[1-3]/* WDBII_shp/h
-		mv WDBII_river_i_L[1-3]/* WDBII_shp/i
-		mv WDBII_river_l_L[1-3]/* WDBII_shp/l
-		mv WDBII_river_c_L[1-3]/* WDBII_shp/c
+		mv WDBII_river_f_L[1-3].* WDBII_shp/f
+		mv WDBII_river_h_L[1-3].* WDBII_shp/h
+		mv WDBII_river_i_L[1-3].* WDBII_shp/i
+		mv WDBII_river_l_L[1-3].* WDBII_shp/l
+		mv WDBII_river_c_L[1-3].* WDBII_shp/c
 		cp GSHHS+WDBII/README.TXT WDBII_shp
 		zip -r -q -v -9 WDBII_shp_$(GSHHS_DATA_VERSION).zip WDBII_shp/*
 		rm -rf WDBII_border_[fhilc]_L[1-4] WDBII_border_[fhilc]_L[1-4].gmt
