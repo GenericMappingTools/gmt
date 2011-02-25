@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.137 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.138 2011-02-25 15:33:52 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1094,7 +1094,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	GMT_LONG i;
-	char string[3][GRD_UNIT_LEN], *units;
+	char string[3][GMT_LONG_TEXT], *units;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
 
