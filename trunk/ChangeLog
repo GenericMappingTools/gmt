@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.858 2011-02-23 21:49:14 guru Exp $
+	$Id: ChangeLog,v 1.859 2011-02-25 15:35:26 jluis Exp $
 -----------------------------------------------------------------------------------------
+2011-02-25	jluis
+	* gmt_grdio.c:		Increase the size of the string array in GMT_grd_get_units() to
+				avoid 'Buffer overrun' that occurred with long description strings
+
 2011-02-23	pwessel
 	spotter/backtracker.c:	For -W, now report full-length major/minor axes and not
 				SEMI-axes (docs said major/minor but code did semi.)
