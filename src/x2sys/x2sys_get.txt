@@ -44,7 +44,7 @@ option in \fBx2sys_cross\fP.
 OPT(N)
 Give a comma-separated list of column names (as described in the definition
 file) that all must be absent.  A track will be excluded from the returned list
-if at least one bin reports that the track has all of the listed columns. 
+if at least one bin reports that the track some all of the listed columns. 
 .TP
 OPT(Q)
 Append \fBe\fP for external COEs only, and \fBi\fP for internal
@@ -77,8 +77,8 @@ other, but only those pairs which involves tracks in your list new.lis, try
 BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis
 .SH NOTE
 The tracks that are returned all have the requested data (OPT(F)) within the
-specified region (OPT(R)).  However, the columns of Y and N for other data types
-reflect the content of the entire track and not just the portion within the selected region.
+specified region (OPT(R)).  Furthermore, the columns of Y and N for other data types
+also reflect the content of the track portion within the selected region.
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),
 .IR x2sys_cross (1),
