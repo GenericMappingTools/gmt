@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.860 2011-02-26 07:41:03 guru Exp $
+	$Id: ChangeLog,v 1.861 2011-02-26 17:43:34 guru Exp $
 -----------------------------------------------------------------------------------------
 2011-02-25	pwessel
+	x2sys/x2sys_datalist.c:	When geographic data and -R it failed to consider periodic lons.
+	x2sys/x2sys_get.c:	The -N option did not work properly, and the reported Y|N flags
+				reflected the entire track on not just the portion inside the
+				region.  Man page updated to clarify what is returned.
 	* gmt_cdf.c:		Apply netcdf fix; thanks to Sebastian Heimann.
 	* gmt_nc.c:		---"---
 
