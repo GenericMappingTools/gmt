@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.261 2011-01-02 20:09:36 guru Exp $
+ *	$Id: mgd77.c,v 1.262 2011-02-26 17:43:34 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2558,7 +2558,11 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
 		fprintf (stderr, "%s: Warning: path file %s for MGD77 files not found\n", GMT_program, file);
-		fprintf (stderr, "%s: (Will only look in current directory for such files)\n", GMT_program);
+		fprintf (stderr, "%s: (Will only look in current directory and %s for such files)\n", GMT_program, F->MGD77_HOME);
+		F->MGD77_datadir = (char **) GMT_memory (VNULL, 1, sizeof (char *), "MGD77_path_init");
+		F->MGD77_datadir[0] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (F->MGD77_HOME)+1), "MGD77_path_init");
+		strcpy (F->MGD77_datadir[0], F->MGD77_HOME);
+		F->n_MGD77_paths = 1;
 		return;
 	}
 
