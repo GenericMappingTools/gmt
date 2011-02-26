@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.859 2011-02-25 15:35:26 jluis Exp $
+	$Id: ChangeLog,v 1.860 2011-02-26 07:41:03 guru Exp $
 -----------------------------------------------------------------------------------------
+2011-02-25	pwessel
+	* gmt_cdf.c:		Apply netcdf fix; thanks to Sebastian Heimann.
+	* gmt_nc.c:		---"---
+
 2011-02-25	jluis
 	* gmt_grdio.c:		Increase the size of the string array in GMT_grd_get_units() to
 				avoid 'Buffer overrun' that occurred with long description strings

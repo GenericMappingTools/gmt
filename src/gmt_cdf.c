@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.59 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.60 2011-02-26 07:41:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,10 +57,11 @@ GMT_LONG GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 
 GMT_LONG GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
+	int ncid, old_fill_mode;
 	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	GMT_err_trap (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
+	GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid));
+	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'u'));
 	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -68,10 +69,11 @@ GMT_LONG GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 
 GMT_LONG GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
+	int ncid, old_fill_mode;
 	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
+	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'w'));
 	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -302,7 +304,7 @@ GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	 */
 
 	size_t start[1], edge[1];
-	int ncid;
+	int ncid, old_fill_mode;
 	GMT_LONG err;
 	GMT_LONG i, inc = 1, nr_oor = 0;
 	GMT_LONG j, width_out, height_out;
@@ -356,7 +358,8 @@ GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	/* Write grid header */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
+	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'w'));
 
 	/* Set start position for writing grid */

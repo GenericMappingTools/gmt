@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.89 2011-01-02 20:09:35 guru Exp $
+ *	$Id: gmt_nc.c,v 1.90 2011-02-26 07:41:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,6 +115,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	double dummy[2], *xy = VNULL;
 	char dimname[GRD_UNIT_LEN], coord[8];
 	nc_type z_type;
+	int old_fill_mode;
 	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
@@ -146,11 +147,16 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	switch (job) {
 		case 'r':
-			GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid)); break;
+			GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
+			break;
 		case 'u':
-			GMT_err_trap (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid)); break;
+			GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid)); 
+			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+			break;
 		default:
-			GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid)); break;
+			GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
+			break;
 	}
 
 	/* Retrieve or define dimensions and variables */
