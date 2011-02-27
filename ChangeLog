@@ -1,10 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.864 2011-02-27 15:37:59 remko Exp $
+	$Id: ChangeLog,v 1.865 2011-02-27 22:59:21 guru Exp $
 -----------------------------------------------------------------------------------------
 2011-03-01	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4
 	  GMT5 branch merged to new trunk and converted to subversion.
 -----------------------------------------------------------------------------------------
+
+2011-02-27	pwessel
+	* gmt_init.c:		Processing of mathangle symbol (-Sm[bfl]) confused the unit detector.
+				Added test scripts to check for correct symbol size plotting
+				under both CM and INCH environments.
 
 2011-02-27	jluis
 	* scripts/GMT_*.sh:	Replaced $AWK for awk since the $AWK variable was not

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.456 2011-02-23 21:07:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.457 2011-02-27 22:59:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3066,6 +3066,7 @@ GMT_LONG GMT_is_invalid_number (char *t)
 	if (!t) return (TRUE);				/* Cannot be NULL */
 	i = n = 0;
 	if (t[i] == '+' || t[i] == '-') i++;		/* OK to have leading sign */
+	if (!t[i]) return (FALSE);			/* Let a single - | + slip through without warning as they are psxy symbols */
 	while (isdigit ((int)t[i])) i++, n++;		/* OK to have numbers */
 	if (t[i] == '.') {				/* Found a decimal */
 		i++;	/* Go to next character */
@@ -5474,6 +5475,23 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
 			text[j] = '/';
 			p->given_size_x = p->size_x = GMT_convert_units (txt_a, GMT_INCH);
+		}
+	}
+	else if (text[0] == 'm') {	/* mathangle gets separate treatment since m gets confused by meter in some tests */
+		k = (strchr ("bfl", text[1])) ? 2 : 1;	/* Skip the modifier b, f, or l */
+		n = sscanf (text, "%c", &symbol_type);
+		if (text[k] == '\0') {	/* No size nor unit */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			p->equal_area = FALSE;
+			col_off++;
+		}
+		else if (strchr ("CcIiMmPp", (int) text[k])) {	/* No size given, only unit information */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if ((p->u = GMT_get_unit (text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
+			p->equal_area = FALSE;
+			col_off++;
 		}
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr ("CcIiMmPp", (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
