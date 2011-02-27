@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.78 2011-02-26 07:41:04 guru Exp $
+#	$Id: Makefile,v 1.79 2011-02-27 08:51:13 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -126,7 +126,7 @@ shape-gshhs:	update
 		polygon_to_shape res_i/GSHHS_i_polygons.b GSHHS_i
 		polygon_to_shape res_l/GSHHS_l_polygons.b GSHHS_l
 		polygon_to_shape res_c/GSHHS_c_polygons.b GSHHS_c
-		rm -rf GSHHS_[fhilc]_L[1-4].gmt
+		rm -rf GSHHS_?_L?.gmt
 		mv GSHHS_f_L[1-4].* GSHHS_shp/f
 		mv GSHHS_h_L[1-4].* GSHHS_shp/h
 		mv GSHHS_i_L[1-4].* GSHHS_shp/i
@@ -143,7 +143,7 @@ shape-wdbii:
 		polygon_to_shape wdb/wdb_i_borders.b WDBII_border_i -o
 		polygon_to_shape wdb/wdb_l_borders.b WDBII_border_l -o
 		polygon_to_shape wdb/wdb_c_borders.b WDBII_border_c -o
-		rm -rf WDBII_border_[fhilc]_L[1-4].gmt
+		rm -rf WDBII_border_?_L?.gmt
 		mv WDBII_border_f_L[1-3].* WDBII_shp/f
 		mv WDBII_border_h_L[1-3].* WDBII_shp/h
 		mv WDBII_border_i_L[1-3].* WDBII_shp/i
