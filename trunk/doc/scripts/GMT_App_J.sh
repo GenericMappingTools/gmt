@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.9 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_App_J.sh,v 1.10 2011-02-27 00:43:31 jluis Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -604,7 +604,7 @@ END
 #
 #
 gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_2.ps
-gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps
+gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | awk '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps
 gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_2.ps
 pstext -R -J -O << END >> GMT_App_J_2.ps
 2.2	0.6	9	0	4	5	Solid Line:

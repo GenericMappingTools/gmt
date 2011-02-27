@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.14 2010-08-17 23:56:27 guru Exp $
+#	$Id: GMT_App_F.sh,v 1.15 2011-02-27 00:43:31 jluis Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -67,7 +67,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+awk -f $$.awk $$.txt > $$.d
 gmtset CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
@@ -295,7 +295,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+awk -f $$.awk $$.txt > $$.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:Symbol:N -P -K -m -Glightgray -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
@@ -338,7 +338,7 @@ cat << EOF > $$.awk
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+awk -f $$.awk $$.txt > $$.d
 psxy -R0/9/20/32 -J -O -K -m -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 >
 1	21
@@ -398,7 +398,7 @@ BEGIN {
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+awk -f $$.awk $$.txt > $$.d
 psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:ZapfDingbats:N -P -K -m -Glightgray -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
@@ -441,7 +441,7 @@ cat << EOF > $$.awk
 }
 EOF
 
-$AWK -f $$.awk $$.txt > $$.d
+awk -f $$.awk $$.txt > $$.d
 psxy -R0/9/20/32 -J -O -K -m -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
