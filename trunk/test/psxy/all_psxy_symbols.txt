@@ -1,0 +1,27 @@
+# $Id: all_psxy_symbols.txt,v 1.1 2011-02-27 22:59:21 guru Exp $
+# All the basic psxy symbols + two customs to fill the table
+# ALl dimensions hardwired to be in inches
+0.5	0.5	1i	-
+1.5	0.5	1i	+
+2.5	0.5	1i	a
+3.5	0.5	1i	b
+0.5	1.5	1i	c
+1.5	1.5	1i	d
+2.5	1.5	30	1i	0.5i	e
+3.5	1.5	1i	g
+0.5	2.5	1i	h
+1.5	2.5	1i	i
+2.5	2.5	30	1i	0.5i	j
+3.5	2.5	1i	kdeltoid
+0.5	3.5	1i	l/HI
+1.5	3.5	1i	0	120	mb
+2.5	3.5	1i	n
+3.5	3.5	1i	p
+0.5	4.5	1i	0.5i	r
+1.5	4.5	1i	s
+2.5	4.5	1i	t
+3.5	4.5	30	1i	vb
+0.5	5.5	1i	0	70	w
+1.5	5.5	1i	x
+2.5	5.5	1i	y
+3.5	5.5	1i	krtriangle
