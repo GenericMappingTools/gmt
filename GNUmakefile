@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.68 2011-01-03 01:50:33 guru Exp $
+#  $Id: GNUmakefile,v 1.69 2011-02-27 05:09:44 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -209,10 +209,10 @@ pdfman: 	share/doc/gmt/pdf/GMT_Manpages.pdf
 share/doc/gmt/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
 		$(SHELL) guru/pdfman.sh -s
 
-docs:		FILES
+docs:		FILES examples animations
 		cd doc ; $(MAKE) all
 
-pdfdocs:	FILES
+pdfdocs:	FILES examples animations
 		cd doc ; $(MAKE) pdf
 
 prep_suppl:	clean config
