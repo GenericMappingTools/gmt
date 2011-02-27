@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_encoding.sh,v 1.8 2009-04-17 00:31:29 remko Exp $
+#	$Id: GMT_encoding.sh,v 1.9 2011-02-27 00:43:31 jluis Exp $
 #
 #	This plots the given encoding vector to stdout
 #
@@ -24,7 +24,7 @@ cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.chart
+egrep -v '\[|\]' ../../share/pslib/$1.ps | awk -f $$.awk > $$.chart
 cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
@@ -33,7 +33,7 @@ cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.empty
+egrep -v '\[|\]' ../../share/pslib/$1.ps | awk -f $$.awk > $$.empty
 
 cat << EOF > $$.awk
 BEGIN {
@@ -54,7 +54,7 @@ EOF
 
 gmtset CHAR_ENCODING $1
 psxy -R0/9/-1/32 -Jx0.345/-0.21 -B0g1:."Octal codes for $1": -P -K -m -Ggray -X3 -Sr $$.empty
-$AWK -f $$.awk $$.chart | pstext -R -J -O -K
+awk -f $$.awk $$.chart | pstext -R -J -O -K
 psxy -R -J -O -m -Wthick << EOF
 >
 0	0
