@@ -1,18 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.863 2011-02-27 00:54:16 jluis Exp $
+	$Id: ChangeLog,v 1.864 2011-02-27 15:37:59 remko Exp $
 -----------------------------------------------------------------------------------------
 2011-03-01	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4
 	  GMT5 branch merged to new trunk and converted to subversion.
 -----------------------------------------------------------------------------------------
 
-2011-02-27	jluis		Replaced $AWK for awk in scripts GMT_App_G.sh GM T_App_F.sh 
-				GMT_App_J.sh GMT_encoding.sh since the $AWK variable was not
+2011-02-27	jluis
+	* scripts/GMT_*.sh:	Replaced $AWK for awk since the $AWK variable was not
 				set in those the scripts anyway.
 
 2011-02-25	pwessel
-	x2sys/x2sys_datalist.c:	When geographic data and -R it failed to consider periodic lons.
-	x2sys/x2sys_get.c:	The -N option did not work properly, and the reported Y|N flags
+	* x2sys/x2sys_datalist.c:	When geographic data and -R it failed to consider periodic lons.
+	* x2sys/x2sys_get.c:	The -N option did not work properly, and the reported Y|N flags
 				reflected the entire track on not just the portion inside the
 				region.  Man page updated to clarify what is returned.
 	* gmt_cdf.c:		Apply netcdf fix; thanks to Sebastian Heimann.
@@ -23,7 +23,7 @@
 				avoid 'Buffer overrun' that occurred with long description strings
 
 2011-02-23	pwessel
-	spotter/backtracker.c:	For -W, now report full-length major/minor axes and not
+	* spotter/backtracker.c:	For -W, now report full-length major/minor axes and not
 				SEMI-axes (docs said major/minor but code did semi.)
 
 2011-02-22	pwessel
