@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.69 2011-02-27 05:09:44 remko Exp $
+#  $Id: GNUmakefile,v 1.70 2011-02-28 01:34:54 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,11 +130,18 @@ all:		FILES
 #-------------------------------------------------------------------------------
 alltests:	extests tests doctests
 
-extests doctests:
-		@cd doc ; $(MAKE) $@
+extests:
+		@cd share/doc/gmt/examples ; $(MAKE) $@
 
 tests:
 		@cd test ; sh run_gmt_tests.sh
+
+doctests:
+		@cd doc ; $(MAKE) $@
+
+cleantests:
+		@cd doc ; $(MAKE) clean
+		@cd share/doc/gmt/examples ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
 # Cleaning

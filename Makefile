@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.84 2011-02-28 00:58:03 remko Exp $
+#	$Id: Makefile,v 1.85 2011-02-28 01:34:53 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -165,15 +165,6 @@ uninstall-doc:
 			\rm -rf $(docdir); \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing deleted"; \
-		fi
-
-# Run examples with the binaries from the src directory, not the installation directory.
-
-examples run-examples:
-		@if [ -d share/doc/gmt/examples ]; then \
-			cd share/doc/gmt/examples; sh do_examples.sh $(srcdir) $(srcdir) $(NETCDF_LIB); \
-		else \
-			echo "examples directory not installed"; \
 		fi
 
 # Run examples with the binaries from the src directory, not the installation directory.
