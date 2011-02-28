@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: GMT_App_J.sh,v 1.10 2011-02-27 00:43:31 jluis Exp $
+#!/bin/bash
+#	$Id: GMT_App_J.sh,v 1.11 2011-02-28 00:58:01 remko Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -75,6 +75,7 @@
 #
 #---------------------------------------------------
 # Here is the $$.r_tr_fns file:
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

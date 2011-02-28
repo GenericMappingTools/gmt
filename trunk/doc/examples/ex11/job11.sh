@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 11
-#		$Id: job11.sh,v 1.14 2010-06-21 23:42:55 guru Exp $
+#		$Id: job11.sh,v 1.15 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
 # Unix progs:	rm
-ps=example_11.ps
+. ../functions.sh
+ps=../example_11.ps
 
 # Use psxy to plot "cut-along-the-dotted" lines.
 

@@ -1,8 +1,9 @@
-#!/bin/sh
-#	$Id: GMT_App_O_3.sh,v 1.5 2010-06-21 23:42:55 guru Exp $
+#!/bin/bash
+#	$Id: GMT_App_O_3.sh,v 1.6 2011-02-28 00:58:00 remko Exp $
 #
 #	Makes Fig 3 for Appendix O (labeled lines)
 #
+. functions.sh
 
 cat << EOF > fix.d
 80      -8.5

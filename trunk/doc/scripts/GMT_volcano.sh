@@ -1,5 +1,6 @@
-#!/bin/sh
-#	$Id: GMT_volcano.sh,v 1.6 2009-04-17 00:41:43 remko Exp $
+#!/bin/bash
+#	$Id: GMT_volcano.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
+. functions.sh
 
 ln -s ../../share/doc/gmt/examples/ex20/bullseye.def .
 echo "0 0" | psxy -R-0.5/0.5/-0.5/0.5 -JX2i -P -Ba0.25g0.05WSne -Wthick -Skvolcano/2i -K > GMT_volcano.ps

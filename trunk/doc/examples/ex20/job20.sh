@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 20
-#		$Id: job20.sh,v 1.9 2008-04-28 17:45:43 remko Exp $
+#		$Id: job20.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT progs:	pscoast, psxy
@@ -8,7 +8,8 @@
 #
 # Plot a world-map with volcano symbols of different sizes
 # on top given locations and sizes in hotspots.d
-ps=example_20.ps
+. ../functions.sh
+ps=../example_20.ps
 
 cat > hotspots.d << END
 55.5	-21.0	0.25

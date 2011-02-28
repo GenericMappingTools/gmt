@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-B_linear.sh,v 1.5 2006-10-30 19:17:12 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-B_linear.sh,v 1.6 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 psbasemap -R0/12/0/0.95 -JX3/0.3 -Ba4f2g1:Frequency::,%:S -K -P > GMT_-B_linear.ps
 psxy -R -J -O -K -Sv0.005/0.02/0.015 -Gblack -Y0.1i -N -V << EOF >> GMT_-B_linear.ps

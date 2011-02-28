@@ -1,10 +1,11 @@
-#!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.12 2009-04-17 00:16:11 remko Exp $
+#!/bin/bash
+#	$Id: GMT_App_N.sh,v 1.13 2011-02-28 00:58:03 remko Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

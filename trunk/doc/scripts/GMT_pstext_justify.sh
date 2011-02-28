@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_pstext_justify.sh,v 1.5 2009-09-04 22:02:01 remko Exp $
+#!/bin/bash
+#	$Id: GMT_pstext_justify.sh,v 1.6 2011-02-28 00:58:01 remko Exp $
 #
+. functions.sh
 
 B=0.2
 M=0.38

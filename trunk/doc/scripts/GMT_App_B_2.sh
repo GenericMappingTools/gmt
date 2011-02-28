@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_App_B_2.sh,v 1.5 2010-06-21 23:42:55 guru Exp $
+#!/bin/bash
+#	$Id: GMT_App_B_2.sh,v 1.6 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

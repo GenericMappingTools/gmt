@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_atan.sh,v 1.9 2010-10-27 22:10:19 guru Exp $
+#!/bin/bash
+#	$Id: GMT_atan.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

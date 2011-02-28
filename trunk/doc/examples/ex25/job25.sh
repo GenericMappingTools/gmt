@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 25
-#		$Id: job25.sh,v 1.8 2010-06-21 23:42:56 guru Exp $
+#		$Id: job25.sh,v 1.9 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
 # Unix progs:	cat
 #
 # Create D minutes global grid with -1 over oceans and +1 over land
-ps=example_25.ps
+. ../functions.sh
+ps=../example_25.ps
 D=30
 grdlandmask -Rg -I${D}m -Dc -A500 -N-1/1/1/1/1 -F -Gwetdry.nc
 # Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere

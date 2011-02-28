@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 02
-#		$Id: job02.sh,v 1.15 2010-06-21 23:42:55 guru Exp $
+#		$Id: job02.sh,v 1.16 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Make two color images based gridded data
 # GMT progs:	gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
 # Unix progs:	rm
 #
-ps=example_02.ps
+. ../functions.sh
+ps=../example_02.ps
 gmtset HEADER_FONT_SIZE 30 OBLIQUE_ANNOTATION 0
 makecpt -Crainbow -T-2/14/2 > g.cpt
 grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \

@@ -1,8 +1,9 @@
-#!/bin/sh
-#	$Id: GMT_App_G.sh,v 1.8 2011-02-27 00:43:31 jluis Exp $
+#!/bin/bash
+#	$Id: GMT_App_G.sh,v 1.9 2011-02-28 00:58:03 remko Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

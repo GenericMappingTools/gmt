@@ -9,48 +9,46 @@
 \usepackage{mathptmx}
 \usepackage{verbatim}
 \usepackage{tocbibind}
-\usepackage{html}% Implies \usepackage{hyperref}
+\usepackage{hyperref}
+
+\usepackage{textcomp}
+%\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{microtype}
 
 \input{GMT_version}
 
 \newcommand{\GMTSITE}{gmt.soest.hawaii.edu}
+\newcommand{\gmt}{\href{http://\GMTSITE}{\textbf{GMT}}}
 
+\graphicspath{{fig/}{ppt/}{scripts/}}
 \ifpdf
-   % Here for creating PDF output with pdfLaTeX
-   \pdfcompresslevel=9
-   \DeclareGraphicsExtensions{.pdf}
-   \hypersetup{%
-      pdfauthor={Paul Wessel, Walter H. F. Smith},
-      pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
-      pdfsubject={GMT: Generic Mapping Tools},
-      pdfkeywords={GMT, projections, mapping},
-      pdfcreator={pdfLaTeX},
-      bookmarksopen=true,
-      bookmarksnumbered=true,
-      hypertexnames=true,
-      breaklinks=true,
-      %pdfstartview={FitH},
-      %linkbordercolor={1 1 0},
-      %urlbordercolor={1 0 0},
-   }%
-   \newcommand{\GMT}{\textit{GMT}}
-   \newcommand{\gmt}{\href{http://\GMTSITE}{\textbf{GMT}}}
-   \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../html/man/#1.html}}
-\else
-   % Here for creating PS or HTML output with LaTeX
-   \DeclareGraphicsExtensions{.eps}
-   \newcommand{\GMT}{\htmladdnormallink{\includegraphics{fig/GMT_glyph10.eps}}{http://\GMTSITE}}
-   \newcommand{\gmt}{\htmladdnormallink{GMT}{http://\GMTSITE}}
-   \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../man/#1.html}}
+  % Here for creating PDF output with pdfLaTeX
+  \pdfcompresslevel=9
+  \DeclareGraphicsExtensions{.pdf}
+  \hypersetup{%
+    pdfauthor={Paul Wessel, Walter H. F. Smith},
+    pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
+    pdfsubject={GMT: Generic Mapping Tools},
+    pdfkeywords={GMT, projections, mapping},
+    pdfcreator={pdfLaTeX},
+    bookmarksopen=true,
+    bookmarksnumbered=true,
+    hypertexnames=true,
+    breaklinks=true
+  }%
+  \newcommand{\GMTprogi}[1]{\href{run:../man/#1.html}{\textsfbf{#1}}}
+  \newcommand{\GMT}{\textit{GMT}}
 \fi
 
 \pagecolor{white}
 
-% GMTfig will insert an eps file, add a label, and set a caption
-\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1]\centering\includegraphics{scripts/#2}\caption{#3}\label{fig:#2}\end{figure}}
+% GMTfig will insert an image file, add a label, and set a caption
+\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1]\centering\includegraphics{#2}\caption{#3}\label{fig:#2}\end{figure}}
 % Same for examples (scales by 50% by default)
-\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{scripts/example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
-\newcommand{\GMTanimation}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{scripts/anim_#2}\caption{#3}\label{fig:GMT_animation_#2}\end{figure}}
+\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
+\newcommand{\GMTanimation}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{anim_#2}\caption{#3}\label{fig:GMT_animation_#2}\end{figure}}
 
 \newcommand{\PS}{\textit{PostScript}}
 \newcommand{\UNIX}{\textit{UNIX}}
@@ -82,23 +80,10 @@
 
 \sloppy
 
-\newcommand{\DS}{$^{\circ}$}
-\newcommand{\PM}{$\pm$}
+\newcommand{\DS}{\textdegree}
+\newcommand{\PM}{\textpm}
 \newcommand{\progname}[1]{\textslbf{#1}\index{#1@\textslbf{#1}}}
-\newcommand{\Opt}[1]{\textbf{--#1}}
-
-% Now overrule a few things for running LaTeX2HTML.
-% Note that we need \gdef because they are inside an environment and would otherwise be local to
-% that.
-\begin{htmlonly}
-   \gdef\GMT{\htmladdnormallink{\textbf{GMT}}{http://\GMTSITE}}
-   \gdef\gmt{\GMT}
-   \gdef\script#1{\htmlrule\verbatiminput{scripts/#1.tex}\htmlrule}
-   \gdef\DS{°}
-   \gdef\Opt#1{\textbf{-#1}}
-   \gdef\PM{±}
-   \gdef\progname#1{\textit{#1}\index{#1@\textit{#1}}}
-\end{htmlonly}
+\newcommand{\Opt}[2][]{\texttt{\textbf{-#2}#1}}
 
 % Restrict the indentation of lists
 \setlength\leftmargin\parindent

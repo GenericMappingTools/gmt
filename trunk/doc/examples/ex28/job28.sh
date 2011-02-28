@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 28
-#		$Id: job28.sh,v 1.7 2010-10-29 20:27:59 guru Exp $
+#		$Id: job28.sh,v 1.8 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates how to mix UTM data and UTM projection
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext, mapproject
 # Unix progs:	rm, cut, grep, $AWK
 #
-ps=example_28.ps
+. ../functions.sh
+ps=../example_28.ps
 
 # Get intensity grid and set up a color table
 grdgradient Kilauea.utm.nc -Nt1 -A45 -GKilauea.utm_i.nc

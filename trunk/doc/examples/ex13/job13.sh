@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 13
-#		$Id: job13.sh,v 1.8 2010-07-09 00:21:23 guru Exp $
+#		$Id: job13.sh,v 1.9 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrate vectors and contouring
 # GMT progs:	grdmath, grdcontour, grdvector, pstext
 # Unix progs:	echo, rm
 #
-ps=example_13.ps
+. ../functions.sh
+ps=../example_13.ps
 grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc
 grdmath z.nc DDX = dzdx.nc
 grdmath z.nc DDY = dzdy.nc

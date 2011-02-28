@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.9 2009-04-17 00:16:11 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-OK.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 psxy -R0/2.7/0/2.5 -Jx1i -K -L -m -N -P << EOF > GMT_-OK.ps
 > -G200

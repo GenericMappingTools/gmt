@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT Appendix P, example 2
-#		$Id: GMT_App_P_2.sh,v 1.4 2010-10-03 22:06:00 remko Exp $
+#		$Id: GMT_App_P_2.sh,v 1.5 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
 # GMT funcs:	gmt_init_tmpdir, gmt_remove_tmpdir
 #
+. functions.sh
 ps=GMT_App_P_2.ps
 
 # Make GMT shell functions accessible the the script

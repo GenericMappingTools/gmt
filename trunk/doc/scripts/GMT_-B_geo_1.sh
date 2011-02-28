@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-B_geo_1.sh,v 1.3 2007-02-08 21:46:27 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-B_geo_1.sh,v 1.4 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 gmtset PLOT_DEGREE_FORMAT ddd:mm:ssF
 psbasemap -R-1/2/0/0.4 -JM3 -Ba1f15mg5mS -K -P > GMT_-B_geo_1.ps
 psxy -R -J -O -K -Sv0.005/0.02/0.015 -Gblack -Y-0.35i -N -V << EOF >> GMT_-B_geo_1.ps

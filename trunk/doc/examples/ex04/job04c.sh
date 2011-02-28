@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 04c
-#		$Id: job04c.sh,v 1.2 2010-06-21 23:42:55 guru Exp $
+#		$Id: job04c.sh,v 1.3 2011-02-28 00:58:03 remko Exp $
 #
 # 3-D perspective color plot of Hawaiian topography and geoid
 # GMT progs:	grdcontour, grdview, pscoast, pstext
 # Unix progs:	echo, rm
 #
-ps=example_04c.ps
+. ../functions.sh
+ps=../example_04c.ps
 grdgradient HI_geoid4.nc -A0 -Gg_intens.nc -Nt0.75 -M
 grdgradient HI_topo4.nc -A0 -Gt_intens.nc -Nt0.75 -M
 grdview HI_geoid4.nc -Ig_intens.nc -JM6.75i -E60/30 -R195/210/18/25 -Cgeoid.cpt -Qi100 -K \

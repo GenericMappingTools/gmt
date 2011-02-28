@@ -1,8 +1,9 @@
-#!/bin/sh
-#	$Id: GMT_App_O_9.sh,v 1.8 2008-02-29 03:24:30 remko Exp $
+#!/bin/bash
+#	$Id: GMT_App_O_9.sh,v 1.9 2011-02-28 00:58:03 remko Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
+. functions.sh
 
 R=-R-85/5/10/55
 grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc

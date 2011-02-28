@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-B_log.sh,v 1.6 2009-09-04 22:02:01 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-B_log.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 gmtset GRID_PEN_PRIMARY thinnest,.
 psbasemap -R1/1000/0/1 -JX3il/0.25i -B1f2g3p:"Axis Label":S -K -P > GMT_-B_log.ps

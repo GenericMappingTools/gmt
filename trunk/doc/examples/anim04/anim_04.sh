@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.6 2010-12-06 04:58:45 guru Exp $
+#               $Id: anim_04.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:      Make DVD-res MP4 movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -8,6 +8,7 @@
 #
 # 1. Initialization
 # 1a) Assign movie parameters
+. ../functions.sh
 . gmt_shell_functions.sh
 REGION=-Rg
 altitude=160.0
@@ -19,7 +20,7 @@ Height=34.0
 px=7.2
 py=4.8
 dpi=100
-name=`basename $0 '.sh'`
+name=../`basename $0 '.sh'`
 
 # Set up flight path
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d

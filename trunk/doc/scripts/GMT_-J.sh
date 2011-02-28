@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-J.sh,v 1.8 2009-08-17 16:42:47 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-J.sh,v 1.9 2011-02-28 00:58:02 remko Exp $
 #
+. functions.sh
 
 pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 2.5	2.8	16	0	1	BC	GMT PROJECTIONS

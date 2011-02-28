@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.16 2010-10-29 20:27:59 guru Exp $
+#		$Id: job18.sh,v 1.17 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -8,7 +8,8 @@
 # GMT progs:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
 # Unix progs:	$AWK, cat, rm
 #
-ps=example_18.ps
+. ../functions.sh
+ps=../example_18.ps
 
 # Use spherical projection since SS data define on sphere
 gmtset ELLIPSOID Sphere D_FORMAT %lg

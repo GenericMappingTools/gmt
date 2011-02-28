@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 19
-#		$Id: job19.sh,v 1.18 2010-06-21 23:42:56 guru Exp $
+#		$Id: job19.sh,v 1.19 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage
 # Unix progs:	rm
 #
-ps=example_19.ps
+. ../functions.sh
+ps=../example_19.ps
 
 # First make a worldmap with graded blue oceans and rainbow continents
 

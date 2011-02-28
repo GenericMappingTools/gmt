@@ -1,12 +1,13 @@
-#!/bin/sh
-#		$Id: job26.sh,v 1.6 2008-02-22 21:10:43 remko Exp $
+#!/bin/bash
+#		$Id: job26.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
 # GMT progs:	pscoast
 # Unix progs:	rm
 #
-ps=example_26.ps
+. ../functions.sh
+ps=../example_26.ps
 
 # first do an overhead of the east coast from 160 km altitude point straight down
 

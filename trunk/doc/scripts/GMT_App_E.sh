@@ -1,10 +1,11 @@
-#!/bin/sh
-#	$Id: GMT_App_E.sh,v 1.8 2008-04-15 20:47:39 remko Exp $
+#!/bin/bash
+#	$Id: GMT_App_E.sh,v 1.9 2011-02-28 00:58:00 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
 #	Paul Wessel, v 1.1
 #
+. functions.sh
 ps=GMT_App_E.ps
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15

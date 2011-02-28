@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 15
-#		$Id: job15.sh,v 1.11 2010-10-29 20:27:59 guru Exp $
+#		$Id: job15.sh,v 1.12 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Gridding and clipping when data are missing
 # GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
 # GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
 # Unix progs:	awk, echo, rm
 #
-ps=example_15.ps
+. ../functions.sh
+ps=../example_15.ps
 gmtconvert ship.xyz -bo > ship.b
 #
 region=`minmax ship.b -I1 -bi3`
