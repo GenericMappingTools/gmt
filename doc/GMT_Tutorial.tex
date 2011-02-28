@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.72 2011-01-02 20:09:05 guru Exp $
+%       $Id: GMT_Tutorial.tex,v 1.73 2011-02-28 16:05:16 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2011.
@@ -685,7 +685,7 @@ shows a complete list of the options.
 \Opt{W}{\it pen} & Set {\it pen} for line or symbol outline \\ \hline
 \Opt{m}[{\it flag}] & Multiple segment input data; headers start with {\it flag} \\ \hline
 \end{tabular}
-\caption{Optional switches in the \GMTprog{psxy} program.}
+\caption{Optional switches in the \protect\GMTprog{psxy} program.}
 \label{tbl:psxy}
 \end{table}
 
@@ -735,7 +735,7 @@ us are shown in Table~\ref{tbl:psxysymbols}.
 \Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
 \Opt{Sy}{\it size} & vertical dash; {\it size} is length of dash \\ \hline
 \end{tabular}
-\caption{The symbol option in \GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, g, h, i, n, s, t, x})
+\caption{The symbol option in \protect\GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, g, h, i, n, s, t, x})
 will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, G, H, I, N, S, T, X}) will have area equal to that of a circle of given diameter.}
 \label{tbl:psxysymbols}
 \end{table} 
@@ -968,7 +968,7 @@ switches, there are 7 options that are particularly useful (Table~\ref{tbl:pstex
 \Opt{S}{\it pen} & Selects outline font and sets pen attributes \\ \hline
 \Opt{W}[{\it fill}][{\bf o}[{\it pen}]] & Paint the text box; draw the outline if {\bf o} is appended (also see \Opt{C}) \\ \hline
 \end{tabular}
-\caption{Some of the most frequently used options in \GMTprog{pstext}.}
+\caption{Some of the most frequently used options in \protect\GMTprog{pstext}.}
 \label{tbl:pstext}
 \end{table} 
 
@@ -1140,7 +1140,7 @@ useful options:
 \Opt{W}[{\bf a}$|${\bf c}]{\it pen} & Set contour and annotation pens \\ \hline
 \Opt{Z}{\it factor}[/{\it offset}] & [Subtract {\it offset}] and multiply data by {\it factor} prior to processing \\ \hline
 \end{tabular}
-\caption{The most useful options in \GMTprog{grdcontour}.}
+\caption{The most useful options in \protect\GMTprog{grdcontour}.}
 \label{tbl:grdcontour}
 \end{table} 
 
@@ -1208,7 +1208,7 @@ user must specify the grid domain and output filename: \\
 
 \subsection{Nearest neighbor gridding}
 
-\GMTfig[h]{GMT_nearneighbor}{Search geometry for \GMTprog{nearneighbor}.}
+\GMTfig[h]{GMT_nearneighbor}{Search geometry for \protect\GMTprog{nearneighbor}.}
 
 The \GMT\ program \GMTprog{nearneighbor} implements a simple
 ``nearest neighbor'' averaging operation.  It is the preferred
@@ -1242,7 +1242,7 @@ The most important switches are listed in Table~\ref{tbl:nearneighbor}.
 \Opt{N}{\it sectors} & Sector search, indicate number of sectors [Default is 4] \\ \hline
 \Opt{W} & Read relative weights from the 4th column of input data \\ \hline
 \end{tabular}
-\caption{Switches used with the \GMTprog{nearneighbor} program.}
+\caption{Switches used with the \protect\GMTprog{nearneighbor} program.}
 \label{tbl:nearneighbor}
 \end{table} 
 
@@ -1319,7 +1319,7 @@ switches for this program are indicated in Table~\ref{tbl:surface}\footnote{The
 \Opt{C}{\it limit} & Sets convergence limit.  Default is 1/1000 of data range. \\ \hline
 \Opt{T}{\it tension} & Sets the tension [Default is 0] \\ \hline
 \end{tabular}
-\caption{Some of the options in \GMTprog{surface}.}
+\caption{Some of the options in \protect\GMTprog{surface}.}
 \label{tbl:surface}
 \end{table}
 
@@ -1465,7 +1465,7 @@ $z$-values to go with it.  The main options are given below.
 \Opt{V} & Run in verbose mode \\ \hline
 \Opt{Z} & Make a continuous rather than discrete table \\ \hline
 \end{tabular}
-\caption{Prime options available in \GMTprog{makecpt}.}
+\caption{Prime options available in \protect\GMTprog{makecpt}.}
 \label{tbl:makecpt}
 \end{table}
 
@@ -1495,7 +1495,7 @@ and grid-line intervals for the colorbars.)
         & Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
 \Opt{I}{\it max\_intensity} & Add illumination effects \\ \hline
 \end{tabular}
-\caption{The main switches and options in \GMTprog{psscale}.}
+\caption{The main switches and options in \protect\GMTprog{psscale}.}
 \label{tbl:psscale}
 \end{table}
 
@@ -1605,7 +1605,7 @@ and a cptfile; the main other options are
 \Opt{I}{\it intenfile} & Use artificial illumination using intensities from {\it intensfile} \\ \hline
 \Opt{M} & Force gray shade using the (television) YIQ conversion \\ \hline
 \end{tabular}
-\caption{The main options in \GMTprog{grdimage}.}
+\caption{The main options in \protect\GMTprog{grdimage}.}
 \label{tbl:grdimage}
 \end{table}
 
@@ -1638,7 +1638,7 @@ required input and output filenames, the available options are
         & Insert {\bf t} to normalize by the $tan^{-1}$ transformation. \\
         & Insert {\bf e} to normalize by the cumulative Laplace distribution. \\ \hline
 \end{tabular}
-\caption{The \GMTprog{grdgradient} options.}
+\caption{The \protect\GMTprog{grdgradient} options.}
 \label{tbl:grdgradient}
 \end{table}
 
@@ -1789,7 +1789,7 @@ In addition, some options may be required:
 \Opt{Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image.  \Opt{B} is disabled. \\ \hline
 \Opt{W}{\it pen} & Draw contours on top of surface (except with \Opt{Qi}) \\ \hline
 \end{tabular}
-\caption{The most useful options in \GMTprog{grdview}.}
+\caption{The most useful options in \protect\GMTprog{grdview}.}
 \label{tbl:grdview}
 \end{table}
 

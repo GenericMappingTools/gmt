@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.27 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.28 2011-02-28 16:05:16 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2011.
@@ -214,7 +214,7 @@ the given maximum distance will host the label.
 The angle of the label is evaluated from the contour line geometry, and the final result
 is shown in Figure~\ref{fig:GMT_App_O_3}.
 \GMTfig[H]{GMT_App_O_3}{Four labels are positioned on the points along the contours that
-are closest to the locations given in the file \filename{fix.d} in the \Opt{Gf} option.}
+are closest to the locations given in the file \protect\filename{fix.d} in the \protect\Opt{Gf} option.}
 To aid in understanding the algorithm we chose to specify ``debug'' mode ({\bf +d}) which placed a
 small circle at each of the fixed points.
 
@@ -231,7 +231,7 @@ The obvious choice in this example is to specify a great circle between the high
 the low, thus placing all labels between these extrema.
 
 \GMTfig[H]{GMT_App_O_4}{Labels are placed at the intersections between contours and the
-great circle specified in the \Opt{GL} option.}
+great circle specified in the \protect\Opt{GL} option.}
 \noindent
 The thin debug line in Figure~\ref{fig:GMT_App_O_4} shows the great circle and the
 intersections where labels are plotted.  Note that any number of such lines could be specified;
@@ -247,7 +247,7 @@ algorithm makes more sense:
 \script{GMT_App_O_5}
 
 \GMTfig[H]{GMT_App_O_5}{Labels are placed at the intersections between contours and the
-multi-segment lines specified in the \Opt{GX} option.}
+multi-segment lines specified in the \protect\Opt{GX} option.}
 
 \noindent
 In this case, we have created three strands of lines whose intersections with the contours
@@ -269,7 +269,7 @@ labels are placed normal to the line:
 
 \script{GMT_App_O_6}
 
-\GMTfig[H]{GMT_App_O_6}{Labels attributes are controlled with the arguments to the \Opt{Sq} option.}
+\GMTfig[H]{GMT_App_O_6}{Labels attributes are controlled with the arguments to the \protect\Opt{Sq} option.}
 
 \noindent
 The composite illustration in Figure~\ref{fig:GMT_App_O_6} shows the new effects.  Note that
