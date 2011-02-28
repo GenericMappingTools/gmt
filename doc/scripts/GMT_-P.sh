@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-P.sh,v 1.5 2009-04-17 00:16:11 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-P.sh,v 1.6 2011-02-28 00:58:03 remko Exp $
 #
+. functions.sh
 
 pstext -R0/2.5/0/1.7 -Jx1 -P -K -N << EOF > GMT_-P.ps
 1.125	1.525	9	0	0	CB	leading

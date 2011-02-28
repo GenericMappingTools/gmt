@@ -1,7 +1,8 @@
-#!/bin/sh
-#	$Id: GMT_utm_zones.sh,v 1.5 2010-04-23 13:16:45 remko Exp $
+#!/bin/bash
+#	$Id: GMT_utm_zones.sh,v 1.6 2011-02-28 00:58:03 remko Exp $
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
+. functions.sh
 
 pscoast -Rd -JQ9i -G200 -Dl -A2000 -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
   --PLOT_DEGREE_FORMAT=dddF --HEADER_OFFSET=0.25i --ANNOT_OFFSET=0.15i --HEADER_FONT_SIZE=24 --ANNOT_FONT_SIZE=10 > GMT_utm_zones.ps

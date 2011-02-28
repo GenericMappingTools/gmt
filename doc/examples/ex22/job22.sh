@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 22
-#		$Id: job22.sh,v 1.11 2010-10-29 20:27:59 guru Exp $
+#		$Id: job22.sh,v 1.12 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
 # Unix progs:	cat, sed, awk, wget|curl
 #
-ps=example_22.ps
+. ../functions.sh
+ps=../example_22.ps
 gmtset ANNOT_FONT_SIZE_PRIMARY 10p HEADER_FONT_SIZE 18p PLOT_DEGREE_FORMAT ddd:mm:ssF
 
 # Get the data (-q quietly) from USGS using the wget (comment out in case

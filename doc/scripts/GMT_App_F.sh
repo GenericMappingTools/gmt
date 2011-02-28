@@ -1,7 +1,8 @@
-#!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.15 2011-02-27 00:43:31 jluis Exp $
+#!/bin/bash
+#	$Id: GMT_App_F.sh,v 1.16 2011-02-28 00:58:01 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

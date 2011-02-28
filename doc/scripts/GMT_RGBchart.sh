@@ -1,10 +1,11 @@
-#!/bin/sh
-#	$Id: GMT_RGBchart.sh,v 1.6 2008-04-01 02:38:37 remko Exp $
+#!/bin/bash
+#	$Id: GMT_RGBchart.sh,v 1.7 2011-02-28 00:58:00 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
+. functions.sh
 
 . gmt_shell_functions.sh
 
@@ -27,7 +28,7 @@ else
 	HEIGHT=10.5
 fi
 
-ps=$PWD/GMT_RGBchart_$SIZE.eps
+ps=$PWD/GMT_RGBchart_$SIZE.ps
 gmtset DOTS_PR_INCH 600 PAPER_MEDIA $SIZE PAGE_ORIENTATION landscape
 
 rectheight=0.56
@@ -37,6 +38,7 @@ textheight=`gmtmath -Q 1 $rectheight SUB =`
 fontsize=`gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
 fontsizeL=`gmtmath -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 
+GMTHOME=$(cd ../..; pwd)
 cd $GMT_TMPDIR
 
 # Produce allinfo.tmp from color and name files

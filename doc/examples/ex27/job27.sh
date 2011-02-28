@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 27
-#		$Id: job27.sh,v 1.6 2010-10-29 20:27:59 guru Exp $
+#		$Id: job27.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
 # GMT supplement: img2grd (to read Sandwell/Smith img files)
 # Unix progs:	rm, grep, $AWK
 #
-ps=example_27.ps
+. ../functions.sh
+ps=../example_27.ps
 
 # First extract a chunk of faa and retain short int precision to
 # save disk space.  Gravity is thus in 0.1 mGal increments.

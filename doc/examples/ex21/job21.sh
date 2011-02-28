@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 21
-#		$Id: job21.sh,v 1.13 2008-03-11 19:08:34 remko Exp $
+#		$Id: job21.sh,v 1.14 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
 # Unix progs:	cut, echo
 #
-ps=example_21.ps
+. ../functions.sh
+ps=../example_21.ps
 
 # File has time stored as dd-Mon-yy so set input format to match it
 

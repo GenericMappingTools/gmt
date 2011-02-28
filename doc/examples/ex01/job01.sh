@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 01
-#		$Id: job01.sh,v 1.16 2010-01-12 18:23:52 remko Exp $
+#		$Id: job01.sh,v 1.17 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 # GMT progs:	gmtset, grdcontour, psbasemap, pscoast
 # Unix progs:	rm
 #
-ps=example_01.ps
+. ../functions.sh
+ps=../example_01.ps
 gmtset GRID_CROSS_SIZE_PRIMARY 0 ANNOT_FONT_SIZE_PRIMARY 10
 psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -U"Example 1 in Cookbook" > $ps
 pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightgray >> $ps

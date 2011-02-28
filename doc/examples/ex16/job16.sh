@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 16
-#		$Id: job16.sh,v 1.12 2010-06-21 23:42:55 guru Exp $
+#		$Id: job16.sh,v 1.13 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
 # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -8,7 +8,8 @@
 #
 # Illustrate various means of contouring, using triangulate and surface.
 #
-ps=example_16.ps
+. ../functions.sh
+ps=../example_16.ps
 gmtset ANNOT_FONT_SIZE_PRIMARY 9
 #
 pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > $ps

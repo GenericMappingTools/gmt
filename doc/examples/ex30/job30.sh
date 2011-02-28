@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 30
-#		$Id: job30.sh,v 1.2 2010-01-11 19:48:49 guru Exp $
+#		$Id: job30.sh,v 1.3 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Show graph mode and math angles
 # GMT progs:	gmtmath, psbasemap, pstext and psxy
 # Unix progs:	echo, rm
 #
 # Draw generic x-y axes with arrows
-ps=example_30.ps
+. ../functions.sh
+ps=../example_30.ps
 
 psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS -K \
 	-U"Example 30 in Cookbook" --BASEMAP_TYPE=graph --VECTOR_SHAPE=0.5 > $ps

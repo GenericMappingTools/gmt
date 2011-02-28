@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #               GMT ANIMATION 03
-#               $Id: anim_03.sh,v 1.4 2009-02-23 01:19:22 remko Exp $
+#               $Id: anim_03.sh,v 1.5 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -8,6 +8,7 @@
 #
 # 1. Initialization
 # 1a) Assign movie parameters
+. ../functions.sh
 . gmt_shell_functions.sh
 lon=-20
 lat=65
@@ -18,7 +19,7 @@ px=4
 py=2.5
 el=35
 az=0
-name=`basename $0 '.sh'`
+name=../`basename $0 '.sh'`
 mkdir -p $$
 gmtset DOTS_PR_INCH $dpi
 frame=0

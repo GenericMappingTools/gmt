@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: GMT_encoding.sh,v 1.9 2011-02-27 00:43:31 jluis Exp $
+#	$Id: GMT_encoding.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
 #
 #	This plots the given encoding vector to stdout
 #
 #	e.g., GMT_encoding.sh ISO-8859-1 | gv -
 #
+. functions.sh
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 if [ $# -eq 0 ]; then

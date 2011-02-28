@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 12
-#		$Id: job12.sh,v 1.13 2009-04-16 19:38:18 guru Exp $
+#		$Id: job12.sh,v 1.14 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -8,7 +8,8 @@
 #
 # First draw network and label the nodes
 #
-ps=example_12.ps
+. ../functions.sh
+ps=../example_12.ps
 triangulate table_5.11 -m > net.xy
 psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -m net.xy -Wthinner -P -K -X0.9i -Y4.65i > $ps
 psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -Wthinnest >> $ps

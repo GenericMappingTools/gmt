@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 29
-#		$Id: job29.sh,v 1.4 2010-01-12 18:23:52 remko Exp $
+#		$Id: job29.sh,v 1.5 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
 # GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
 # Unix progs:	rm, echo
 #
-ps=example_29.ps
+. ../functions.sh
+ps=../example_29.ps
 
 # This example uses 370 radio occultation data for Mars to grid the topography.
 # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.83 2011-01-02 20:09:05 guru Exp $
+#	$Id: Makefile,v 1.84 2011-02-28 00:58:03 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,9 +176,11 @@ examples run-examples:
 			echo "examples directory not installed"; \
 		fi
 
-animations run-animations:
+# Run examples with the binaries from the src directory, not the installation directory.
+
+examples run-examples animations run-animations:
 		@if [ -d share/doc/gmt/examples ]; then \
-			cd share/doc/gmt/examples; sh do_animations.sh $(srcdir) $(srcdir); \
+			cd share/doc/gmt/examples; $(MAKE) $@; \
 		else \
 			echo "examples directory not installed"; \
 		fi

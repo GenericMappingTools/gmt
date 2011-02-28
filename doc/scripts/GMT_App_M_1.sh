@@ -1,8 +1,9 @@
-#!/bin/sh
-#	$Id: GMT_App_M_1.sh,v 1.3 2010-07-14 14:55:39 remko Exp $
+#!/bin/bash
+#	$Id: GMT_App_M_1.sh,v 1.4 2011-02-28 00:58:01 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
+. functions.sh
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 

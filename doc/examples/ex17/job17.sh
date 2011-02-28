@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 17
-#		$Id: job17.sh,v 1.11 2010-06-21 23:42:55 guru Exp $
+#		$Id: job17.sh,v 1.12 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Illustrates clipping of images using coastlines
 # GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
 # Unix progs:	rm
 #
-ps=example_17.ps
+. ../functions.sh
+ps=../example_17.ps
 
 # First generate geoid image w/ shading
 

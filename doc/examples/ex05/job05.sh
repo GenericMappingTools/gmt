@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT EXAMPLE 05
-#		$Id: job05.sh,v 1.7 2010-06-21 23:42:55 guru Exp $
+#		$Id: job05.sh,v 1.8 2011-02-28 00:58:03 remko Exp $
 #
 # Purpose:	Generate grid and show monochrome 3-D perspective
 # GMT progs:	grdgradient, grdmath, grdview, pstext
 # Unix progs:	echo, rm
 #
-ps=example_05.ps
+. ../functions.sh
+ps=../example_05.ps
 grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL = \
 	sombrero.nc
 echo '-5 128 5 128' > gray.cpt

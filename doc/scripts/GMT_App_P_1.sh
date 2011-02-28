@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #		GMT Appendix P, example 1
-#		$Id: GMT_App_P_1.sh,v 1.3 2010-06-21 23:42:55 guru Exp $
+#		$Id: GMT_App_P_1.sh,v 1.4 2011-02-28 00:58:01 remko Exp $
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
 # Unix progs:	mktemp, rm
 #
+. functions.sh
 ps=GMT_App_P_1.ps
 
 # Create a temporary directory. $GMT_TMPDIR will be set to its pathname.

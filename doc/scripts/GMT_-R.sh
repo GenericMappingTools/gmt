@@ -1,6 +1,7 @@
-#!/bin/sh
-#	$Id: GMT_-R.sh,v 1.10 2010-10-03 22:06:36 remko Exp $
+#!/bin/bash
+#	$Id: GMT_-R.sh,v 1.11 2011-02-28 00:58:02 remko Exp $
 #
+. functions.sh
 
 gmtset BASEMAP_TYPE PLAIN ANNOT_FONT_PRIMARY 0 ANNOT_FONT_SIZE_PRIMARY 8 TICK_LENGTH 0.05i \
 	CHAR_ENCODING ISOLatin1+
