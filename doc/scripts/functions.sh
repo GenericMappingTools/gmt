@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.2 2011-02-28 00:58:00 remko Exp $
+#	$Id: functions.sh,v 1.3 2011-02-28 01:56:53 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -41,4 +41,4 @@ trap "\rm -f .gmt* gmt.conf $$.*" EXIT
 # Start with proper GMT defaults
 gmtdefaults -Du > .gmtdefaults4
 gmtset ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_FONT_SIZE_SECONDARY 12p LABEL_FONT_SIZE 14p \
-	FRAME_WIDTH 4p CHAR_ENCODING ISOLatin1+ PAPER_MEDIA letter
+	FRAME_WIDTH 0.05i CHAR_ENCODING ISOLatin1+ PAPER_MEDIA letter
