@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.74 2011-03-01 22:30:56 remko Exp $
+#  $Id: GNUmakefile,v 1.75 2011-03-01 22:55:00 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -51,13 +51,11 @@
 #	To generate tarfiles:		make tar_all
 #	To tar source:			make tar_progs
 #	To tar shared data		make tar_share
-#	To tar c,l,i coastlines		make tar_coast
 #	To tar docs			make tar_doc
 #	To tar supplements		make tar_suppl
 #
-#	These two must be done separately:
-#	To tar full coastlines		make tar_full
-#	To tar high coastlines		make tar_high
+#	This must be done separately:
+#	To tar all coastlines		make tar_gshhs
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
@@ -80,7 +78,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 .PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl \
 		latest-config help update create newsite usable site archive \
-		tar_all full high tar_full tar_high installl suppl alltests \
+		tar_all tar_gshhs installl suppl alltests \
 		doctests extests tests ex examples animations cvsclean
 
 help::
@@ -239,9 +237,7 @@ tar_all:	tar_progs tar_share tar_doc tar_suppl
 		@echo " "
 		@echo "Completed tarring off entire archive"
 
-full:		tar_full
-
-high:		tar_high
+tar_gshhs:	tar_coast tar_full tar_high
 
 ftpdir:
 		mkdir -p ftp
@@ -276,16 +272,8 @@ tar_suppl:	ftpdir
 		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_suppl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
-#	Note: coastline files now stored relative to share, instead of GMT/share
-
-tar_coast tar_high tar_full:	ftpdir
-		echo "make GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
-		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-			COPYFILE_DISABLE=true tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 LICENSE.TXT \
-			share/coast/binned_*_[$$suf].cdf -C src/coast/GSHHS+WDBII README.TXT
-
-#	The tar_win target is for GMT Developers building GMT on a Windows platform without configure
-#	and then building GMT installers with Inno Setup
+# The tar_win target is for GMT Developers building GMT on a Windows platform without configure
+# and then building GMT installers with Inno Setup
 
 tar_win:	ftpdir
 		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
@@ -293,6 +281,14 @@ tar_win:	ftpdir
 			guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
+
+# Note: coastline files now stored relative to share, instead of GMT/share
+
+tar_%:	ftpdir
+		echo "make GSHHS$(GSHHS_VERSION)_$*.tar.bz2"
+		if [ "$*" == "coast" ]; then suf=cli; else suf=`echo $*|cut -c1`; fi; \
+			COPYFILE_DISABLE=true tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$*.tar.bz2 LICENSE.TXT \
+			share/coast/binned_*_[$$suf].cdf -C src/coast/GSHHS+WDBII README.TXT
 
 include Makefile
 
