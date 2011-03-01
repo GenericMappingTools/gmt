@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.73 2011-03-01 21:39:06 remko Exp $
+#  $Id: GNUmakefile,v 1.74 2011-03-01 22:30:56 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,17 +227,9 @@ prep_suppl:	clean config
 GSHHS_DIR	= pwessel
 get_gshhs:	get_gshhs_coast get_gshhs_high get_gshhs_full
 get_gshhs_%:
-#		Set-up ftp command & get coast file
-		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)_$*) by anonymous ftp (be patient)..."
-		echo "user anonymous $(USER)@" > ftp.job
-		echo "cd $(GSHHS_DIR)" >> ftp.job
-		echo "binary" >> ftp.job
-		echo "get GSHHS$(GSHHS_VERSION)_$*.tar.bz2" >> ftp.job
-		echo "quit" >> ftp.job
-		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
-		bzip2 -dc GSHHS$(GSHHS_VERSION)_$*.tar.bz2 | tar xvf -
-		rm -f GSHHS$(GSHHS_VERSION)_$*.tar.bz2 ftp.job
-		echo "done"
+		curl "ftp://$(FTPSITE)/$(GSHHS_DIR)/GSHHS$(GSHHS_VERSION)_$*.tar.bz2" -R -O
+		bzip2 -dc GSHHS$(GSHHS_VERSION)_$*.tar.bz2 | tar -xvf -
+		rm -f GSHHS$(GSHHS_VERSION)_$*.tar.bz2
 
 #-------------------------------------------------------------------------------
 #	TARRING OFF THE NEW VERSION
