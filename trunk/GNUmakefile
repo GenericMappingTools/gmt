@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.71 2011-03-01 19:23:43 guru Exp $
+#  $Id: GNUmakefile,v 1.72 2011-03-01 20:37:47 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,7 +78,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-.PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
+.PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_gshhs get_gshhs_cvs get_gshhs_any \
 		latest-config help update create newsite usable site archive \
 		tar_all full high tar_full tar_high installl suppl alltests \
 		doctests extests tests ex examples animations cvsclean
@@ -110,7 +110,7 @@ create:
 
 GMT$(GMT_VERSION):	archive
 
-newsite:	get_coast get_high get_full site
+newsite:	get_gshhs site
 
 usable:		install install-data install-man examples animations
 
@@ -224,40 +224,29 @@ pdfdocs:	FILES examples animations
 
 prep_suppl:	clean config
 
-get_gshhs:	get_coast get_high get_full
-
-get_coast get_high get_full:
-#		Set-up ftp command & get coast file
-		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
-		echo "user anonymous $(USER)@" > ftp.job
-		echo "cd gmt" >> ftp.job
-		echo "binary" >> ftp.job
-		echo "get GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
-		echo "quit" >> ftp.job
-		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
-		bzip2 -dc GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
-		rm -f GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
-		rm -f ftp.job
-		echo "done"
-
 # CVS UPDATE SPECIFIC GSHHS CHANGES
 NEXT_GSHHS_VERSION = 2.1.1
 
-get-gshhs-cvs:
-#		Set-up ftp command & get coast file from pub/pwessel until files are released 
-		echo "Getting CVS coasts/rivers (GSHHS$(NEXT_GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
+get_gshhs:
+		$(MAKE) DIR=gmt get_gshhs_any
+get_gshhs_cvs:
+		$(MAKE) DIR=pwessel GSHHS_VERSION=$(NEXT_GSHHS_VERSION) get_gshhs_any
+
+get_gshhs_any:
+#		Set-up ftp command & get coast file
+		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)) by anonymous ftp (be patient)..."
 		echo "user anonymous $(USER)@" > ftp.job
-		echo "cd pwessel" >> ftp.job
+		echo "cd $(DIR)" >> ftp.job
 		echo "binary" >> ftp.job
-		echo "get GSHHS$(NEXT_GSHHS_VERSION)_coast.tar.bz2" >> ftp.job
-		echo "get GSHHS$(NEXT_GSHHS_VERSION)_high.tar.bz2" >> ftp.job
-		echo "get GSHHS$(NEXT_GSHHS_VERSION)_full.tar.bz2" >> ftp.job
+		echo "get GSHHS$(GSHHS_VERSION)_coast.tar.bz2" >> ftp.job
+		echo "get GSHHS$(GSHHS_VERSION)_high.tar.bz2" >> ftp.job
+		echo "get GSHHS$(GSHHS_VERSION)_full.tar.bz2" >> ftp.job
 		echo "quit" >> ftp.job
-		ftp -dn ftp.soest.hawaii.edu < ftp.job || ( echo "ftp failed - try again later"; exit )
-		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_coast.tar.bz2 | tar xvf -
-		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_high.tar.bz2 | tar xvf -
-		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_full.tar.bz2 | tar xvf -
-		rm -f GSHHS$(NEXT_GSHHS_VERSION)_*.tar.bz2
+		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
+		bzip2 -dc GSHHS$(GSHHS_VERSION)_coast.tar.bz2 | tar xvf -
+		bzip2 -dc GSHHS$(GSHHS_VERSION)_high.tar.bz2 | tar xvf -
+		bzip2 -dc GSHHS$(GSHHS_VERSION)_full.tar.bz2 | tar xvf -
+		rm -f GSHHS$(GSHHS_VERSION)_*.tar.bz2
 		rm -f ftp.job
 		echo "done"
 
