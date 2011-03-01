@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.70 2011-02-28 01:34:54 remko Exp $
+#  $Id: GNUmakefile,v 1.71 2011-03-01 19:23:43 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -237,6 +237,27 @@ get_coast get_high get_full:
 		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
 		bzip2 -dc GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
 		rm -f GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
+		rm -f ftp.job
+		echo "done"
+
+# CVS UPDATE SPECIFIC GSHHS CHANGES
+NEXT_GSHHS_VERSION = 2.1.1
+
+get-gshhs-cvs:
+#		Set-up ftp command & get coast file from pub/pwessel until files are released 
+		echo "Getting CVS coasts/rivers (GSHHS$(NEXT_GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
+		echo "user anonymous $(USER)@" > ftp.job
+		echo "cd pwessel" >> ftp.job
+		echo "binary" >> ftp.job
+		echo "get GSHHS$(NEXT_GSHHS_VERSION)_coast.tar.bz2" >> ftp.job
+		echo "get GSHHS$(NEXT_GSHHS_VERSION)_high.tar.bz2" >> ftp.job
+		echo "get GSHHS$(NEXT_GSHHS_VERSION)_full.tar.bz2" >> ftp.job
+		echo "quit" >> ftp.job
+		ftp -dn ftp.soest.hawaii.edu < ftp.job || ( echo "ftp failed - try again later"; exit )
+		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_coast.tar.bz2 | tar xvf -
+		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_high.tar.bz2 | tar xvf -
+		bzip2 -dc GSHHS$(NEXT_GSHHS_VERSION)_full.tar.bz2 | tar xvf -
+		rm -f GSHHS$(NEXT_GSHHS_VERSION)_*.tar.bz2
 		rm -f ftp.job
 		echo "done"
 
