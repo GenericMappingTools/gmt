@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id: job20.bat,v 1.9 2008-04-28 17:45:43 remko Exp $
+REM		$Id: job20.bat,v 1.10 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:	Extend GMT to plot custom symbols
 REM GMT progs:	pscoast, psxy
@@ -14,7 +14,7 @@ if %master%==y cd ex20
 REM Plot a world-map with volcano symbols of different sizes
 REM on top given locations and sizes in hotspots.d
 
-pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > example_20.ps
+pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > ..\example_20.ps
 
 echo 55.5 -21.0 0.25 > hotspots.d
 echo 63.0 -49.0 0.25 >> hotspots.d
@@ -28,7 +28,7 @@ echo -153.5 -21.0 0.25 >> hotspots.d
 echo -116.7 -26.3 0.25 >> hotspots.d
 echo -16.5 64.4 0.25 >> hotspots.d
 
-psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> example_20.ps
+psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> ..\example_20.ps
 
 REM Overlay a few bullseyes at NY, Cairo, and Perth
 
@@ -36,7 +36,7 @@ echo 286 40.45 0.8 > cities.d
 echo 31.15 30.03 0.8 >> cities.d
 echo 115.49 -31.58 0.8 >> cities.d
 
-psxy -R -J cities.d -Skbullseye -O >> example_20.ps
+psxy -R -J cities.d -Skbullseye -O >> ..\example_20.ps
 
 del *.d
 del .gmt*

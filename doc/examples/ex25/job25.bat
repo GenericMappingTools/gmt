@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id: job25.bat,v 1.12 2010-06-21 23:42:56 guru Exp $
+REM             $Id: job25.bat,v 1.13 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:    Display distribution of antipode types
 REM
@@ -38,8 +38,8 @@ echo -0.5	gray	0.5	gray >> key.cpt
 echo 0.5	red	1.5	red >> key.cpt
 REM Create the final plot and overlay coastlines
 gmtset ANNOT_FONT_SIZE_PRIMARY +10p PLOT_DEGREE_FORMAT dddF
-grdimage key.nc -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
-pscoast -R -J -O -K -Wthinnest -Dc -A500 >> example_25.ps
+grdimage key.nc -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > ..\example_25.ps
+pscoast -R -J -O -K -Wthinnest -Dc -A500 >> ..\example_25.ps
 REM Place an explanatory legend below
 if %master%==n echo off
 call script0.bat
@@ -49,7 +49,7 @@ echo S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [%ocean% %%%%] >> tmp
 echo S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [%mixed% %%%%] >> tmp
 echo pslegend -R0/9/0/0.5 -Jx1i/-1i -O -Dx4.5i/0/6i/0.3i/TC -Y-0.2i -Fthick tmp -Sscript2.bat > script1.bat
 call script1.bat
-call script2.bat >> example_25.ps
+call script2.bat >> ..\example_25.ps
 if %master%==n echo on
 del *.nc
 del key.*

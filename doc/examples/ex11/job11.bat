@@ -1,10 +1,10 @@
-REM		$Id: job11.bat,v 1.13 2010-06-21 23:42:55 guru Exp $
+REM		$Id: job11.bat,v 1.14 2011-03-01 01:34:48 remko Exp $
 REM		GMT EXAMPLE 11
 REM
 REM Purpose:	Create a 3-D RGB Cube
 REM GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
 REM DOS calls:	echo, del
-set ps=example_11.ps
+set ps=..\example_11.ps
 
 REM Use psxy to plot "cut-along-the-dotted" lines.
 echo GMT EXAMPLE 11

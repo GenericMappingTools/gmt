@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 30
-REM             $Id: job30.bat,v 1.4 2010-09-18 01:12:40 guru Exp $
+REM             $Id: job30.bat,v 1.5 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:	Show graph mode and math angles
 REM GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -11,7 +11,7 @@ set master=y
 if exist job30.bat set master=n
 if %master%==y cd ex30
 
-set ps=example_30.ps
+set ps=..\example_30.ps
 
 gmtset CHAR_ENCODING Standard+  
 
