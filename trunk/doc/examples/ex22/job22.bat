@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.12 2009-02-23 01:19:22 remko Exp $
+REM             $Id: job22.bat,v 1.13 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM
@@ -48,8 +48,8 @@ echo 300	blue	10000	blue >> neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
-gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> example_22.ps
+pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > ..\example_22.ps
+gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> ..\example_22.ps
 
 REM Create legend input file for NEIS quake plot
 
@@ -92,7 +92,7 @@ REM Trial and error shows that 1.7i is a good legend height:
 
 if %master%==n echo off
 pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -J -R -O -F neis.legend -Glightyellow -Slegend.bat
-call legend.bat >> example_22.ps
+call legend.bat >> ..\example_22.ps
 if %master%==n echo on
 
 REM Clean up after ourselves:

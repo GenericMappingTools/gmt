@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 26
 REM
-REM             $Id: job26.bat,v 1.6 2007-10-04 01:35:21 remko Exp $
+REM             $Id: job26.bat,v 1.7 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:    Demonstrate general vertical perspective projection
 REM GMT progs:  pscoast
@@ -25,7 +25,7 @@ set Height=0.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/4i
 
-pscoast -Rg %PROJ% -X1i -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Dl -N1/1p,red -N2,0.5p -P -K -Y5i > example_26.ps
+pscoast -Rg %PROJ% -X1i -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Dl -N1/1p,red -N2,0.5p -P -K -Y5i > ..\example_26.ps
 
 REM now point from an altitude of 160 km with a specific tilt and azimuth and with
 REM a wider restricted view and a boresight twist of 45 degrees
@@ -38,7 +38,7 @@ set Height=30.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/5i
 
-pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia/blue -Di -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
+pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia/blue -Di -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> ..\example_26.ps
 if %master%==n echo on
 del .gmt*
 if %master%==y cd ..

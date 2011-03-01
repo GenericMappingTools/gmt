@@ -1,6 +1,6 @@
 REM
 REM		GMT EXAMPLE 27
-REM		$Id: job27.bat,v 1.5 2010-06-27 20:23:22 jluis Exp $
+REM		$Id: job27.bat,v 1.6 2011-03-01 01:34:48 remko Exp $
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -25,17 +25,17 @@ makecpt -T-120/120/10 -Z -Crainbow > grav.cpt
 
 REM Since this is a Mercator grid we use a linear projection
 
-grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K -U"Example 27 in Cookbook" > example_27.ps
+grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K -U"Example 27 in Cookbook" > ..\example_27.ps
 
 REM Then use pscoast to plot land; get original -R from grid remark
 REM and use Mercator projection with same scale as above on a spherical Earth
 
-pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere -Cwhite -Dh+ --PLOT_DEGREE_FORMAT=dddF >> example_27.ps
+pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere -Cwhite -Dh+ --PLOT_DEGREE_FORMAT=dddF >> ..\example_27.ps
 
 REM Put a color legend on top of the land mask justified with 147E,31S
 
-echo 147E 31S 1 2.5 | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p --ELLIPSOID=Sphere --MEASURE_UNIT=inch >> example_27.ps
-psscale -D0.5i/6.3i/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O >> example_27.ps
+echo 147E 31S 1 2.5 | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p --ELLIPSOID=Sphere --MEASURE_UNIT=inch >> ..\example_27.ps
+psscale -D0.5i/6.3i/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O >> ..\example_27.ps
 
 REM Clean up
 

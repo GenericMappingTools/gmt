@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: do_view.csh,v 1.4 2008-04-04 17:33:55 remko Exp $
+#	$Id: do_view.csh,v 1.5 2011-03-01 01:34:48 remko Exp $
 #
 #	Simple driver to view all examples using ghostview
 #
@@ -10,6 +10,6 @@ else
 	set viewer = gv
 endif
 
-foreach f (ex??/example_*.ps)
+foreach f (example_*.ps)
 	$viewer $f
 end
