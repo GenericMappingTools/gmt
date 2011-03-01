@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.866 2011-02-28 02:12:25 remko Exp $
+	$Id: ChangeLog,v 1.867 2011-03-01 03:12:37 remko Exp $
 -----------------------------------------------------------------------------------------
 2011-03-01	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4
 	  GMT5 branch merged to new trunk and converted to subversion.
 -----------------------------------------------------------------------------------------
+
+2011-03-01	remko
+	* gmt_init.c:		On Windows: Look for HOMEPATH after HOME for setting GMT_HOMEDIR
 
 2011-02-28	remko
 	* doc/* examples/*:	Run documentation and tests now as it is done in GMT5.
