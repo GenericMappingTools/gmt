@@ -1,11 +1,8 @@
 share/doc/gmt/examples/README.SCRIPTS
-share/doc/gmt/examples/do_examples.sh
-share/doc/gmt/examples/do_examples.csh
 share/doc/gmt/examples/do_examples.bat
 share/doc/gmt/examples/do_view.sh
 share/doc/gmt/examples/do_view.csh
 share/doc/gmt/examples/do_view.bat
-share/doc/gmt/examples/view.bat
 share/doc/gmt/examples/ex01/osu91a1f_16.nc
 share/doc/gmt/examples/ex01/job01.csh
 share/doc/gmt/examples/ex01/job01.sh

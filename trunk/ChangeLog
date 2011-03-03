@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.868 2011-03-01 19:23:43 guru Exp $
+	$Id: ChangeLog,v 1.869 2011-03-03 20:28:17 guru Exp $
 -----------------------------------------------------------------------------------------
 2011-03-01	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4
@@ -98,7 +98,7 @@
 				horizontal or vertical bar.
 
 2010-12-20	remko
-	* utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
+	* meca/utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
 				isotropic components. Thanks to Jeremy Pesicek.
 
 2010-12-17	pwessel
