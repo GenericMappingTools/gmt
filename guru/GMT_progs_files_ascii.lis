@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.69 2010-07-10 02:45:57 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.70 2011-03-03 19:40:18 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -14,7 +14,6 @@ configure.ac
 configure
 gmt_bench-marks
 gmtswitch
-gmtpatch.sh
 install-sh
 Makefile
 src/Makefile
