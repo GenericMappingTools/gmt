@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_define.h,v 1.2 2009-09-09 23:27:04 guru Exp $
+ *	$Id: gmtapi_define.h,v 1.3 2011-03-03 21:02:51 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of

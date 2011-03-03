@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.67 2011-02-23 21:49:14 guru Exp $
+ *	$Id: libspotter.c,v 1.68 2011-03-03 21:02:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2 of the License.
+ *   the Free Software Foundation; version 2 or any later version.
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of

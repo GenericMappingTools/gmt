@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.54 2011-01-02 20:09:35 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.55 2011-03-03 21:02:51 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -9,7 +9,7 @@ REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
 REM	it under the terms of the GNU General Public License as published by
-REM	the Free Software Foundation; version 2 of the License.
+REM	the Free Software Foundation; version 2 or any later version.
 REM
 REM	This program is distributed in the hope that it will be useful,
 REM	but WITHOUT ANY WARRANTY; without even the implied warranty of
