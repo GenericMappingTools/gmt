@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.161 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.162 2011-03-03 20:28:17 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2011.
@@ -28,11 +28,96 @@ Please send your comments to
 \section{What is new in \gmt\ 4.x?}
 
 \GMT\ 4.x will continue to see corrections of legacy bugs and problems, including Windows DLL silliness.
-However, the \GMT\ 4.5.5 release is mostly bug-fixes as all development is now focussed on \GMT\ 5; this
+However, the \GMT\ 4.x releases are mostly bug-fixes as all development is now focussed on \GMT\ 5; this
 new series is distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.  We expect to maintain the \GMT 4 series
 for some time after \GMT 5 has been released.
+
+\subsection{Overview of \gmt\ 4.5.6 [Mar-1, 2011]}
+
+This is another bug-fix release, including an update to GSHHS which fixes error is the Germany-Poland border
+and a few ``spiky'' islands. Therefore, this version requires the new GSHHS 2.1.1 release.
+Below is the list of bug corrections:
+\begin{description}
+	\item [\GMTprog{gmt\_init.c}]:	On Windows: Look for HOMEPATH after HOME for setting GMT\_HOMEDIR.
+		Processing of mathangle symbol (\Opt{Sm}[bfl]) confused the unit detector.
+		The symbol-parsing for psxy and psxyz did not properly set the
+		column types when no symbol size was given.  This affected
+		symbols that require angles (\Opt{Sw}, \Opt{SE}, \Opt{SJ}) when unit was SI.
+		The \Opt{:} option messed up the column type arrays; should
+		only swap x,y data columns, not type columns.
+	\item [\GMTprog{gmt\_cdf.c}]:	Apply netcdf fix for open/fill; thanks to Sebastian Heimann.
+	\item [\GMTprog{gmt\_grdio.c}]:	Increase the size of the string array in \GMTfunc{GMT\_grd\_get\_units} to
+		avoid ``Buffer overrun'' that occurred with long description strings.
+	\item [\GMTprog{gmt\_io.c}]:	When ASCII mode, also need to save/restore any netcdf i/o settings.
+	\item [\GMTprog{gmt\_map.c}]:	Fixed bug in Haversine equation for duplicate point.
+		For van Grinten: errors in left/right-circle functions.
+		We have a safety valve for preventing a painful slow search
+		around the map perimeter.  The search is appropriate for maps
+		but not for mapproject results.  The limit was for 200 inch
+		wide maps == 14400p.  A user ran pscoast with 14401p and was
+		caught.  Now check for 400 inch and also check current page
+		size (PAPER\_MEDIA). If map width vastly outsizes the paper
+		size then it is probably a projection job.
+	\item [\GMTprog{gmt\_nc.c}]:	Apply netcdf fix for open/fill; thanks to Sebastian Heimann.
+	\item [\GMTprog{gmt\_plot.c}]:	A colored TICK\_PEN would also color annotations.
+		Tried to free an unallocated array in \GMTfunc{GMT\_draw\_custom\_symbol}.
+	\item [\GMTprog{gmt\_support.c}]:	\GMTfunc{GMT\_cspline} should initialize c[0] = c[n-1] = 0.0 in case
+		it is called repeatedly [this is not the case in GMT].
+		When calculating how far to place an annotation from the tick mark
+		we must check if a fancy frame width exceeds the tick length.
+		\GMTfunc{GMT\_inonout\_sphpol\_count} failed to detect crossings if a
+		polygon had vertical line-segments with same longitude as
+		the point we were testing.
+	\item [\GMTprog{pslib.c}]:	Add check for incomplete escape sequences..
+	\item [\GMTprog{gmtselect.c}]:	Due to resampling of parallels in \Opt{N}, some points exactly on
+		a coast bin parallel could fail the test due to roundoff.
+		Fixed by not resampling coastlines since it is a Cartesian test.
+	\item [\GMTprog{grd2xyz.c}]:	Extended \Opt{Ef} mode to write floats (patch by Pierre Cazenave).
+	\item [\GMTprog{grdclip.c}]:	Now complains if no \Opt{S} option was given.
+	\item [\GMTprog{grdfilter.c}]:	Allow -D2 and -D3 to handle periodic and polar boundary conditions.
+	\item [\GMTprog{grdlandmask.c}]:	Same as entry for \GMTprog{gmtselect.c}.
+	\item [\GMTprog{grdmask.c}]:	Must skip ``polygons'' with less than 3 points.  Also, the
+		resampling distance for spherical data was wrong, now 0.1 degrees.
+	\item [\GMTprog{grdproject.c}]:	Not providing \Opt{R} was not working anymore.
+			Test if hemisphere sign is provided when doing \Opt{Ju} and no \Opt{R}.
+			Now assign proper x/y units.
+	\item [\GMTprog{grdtrack.c}]:	Message about \Opt{L} being obsolete should only come when no
+			modifier is given; else it is valid for BC setting.
+	\item [\GMTprog{ps2raster.c}]:	Bug fix after last \Opt{F} option update.
+		Must pass the optional \Opt{C} args when calculating BB.
+		Added \Opt{dSAFER} as well, + fix \Opt{F} option [F. Wobbe].
+		For some reason \Opt{W} was not forcing \Opt{A}. Now it does it again.
+	\item [\GMTprog{pscontour.c}]:	Did not find some contours following triangle edges.
+	\item [\GMTprog{pslegend.c}]:	Need to keep the original \Opt{R} \Opt{J} around for proper calls.
+	\item [\GMTprog{psscale.c}]:	Now patterns have constant orientation regardless of using
+		horizontal or vertical bar.
+	\item [\GMTprog{nearneighbor.c}]:	Changed default to a more reasonable \Opt{N}4/2.
+	\item [\GMTprog{splitxyz.c}]:	Did not list \Opt{Q} in the synopsis.
+	\item [\GMTprog{surface.c}]:	Bug if using seconds (c) in search radius (got minutes).
+	\item [\GMTprog{triangulate.c}]:	Did not use projected coordinates when \Opt{R} \Opt{J} was given.
+	\item [\GMTprog{xyz2grd.c}]:	Do not tolerate NaNs in x,y and give error (e.g., if junk is given).
+		Failed if \Opt{E}value was given and the ESRI grid already had a
+		nodata-value line.  Now will process this line, if present.
+		The value given on the command line will override any setting
+		found in the file.  Also made string-checks case-insensitive.
+	\item [\GMTprog{meca/utilmeca.c}]:	Patch to fix incorrect plotting of moment tensors with big
+		isotropic components. Thanks to Jeremy Pesicek.  Fix bug affecting the plot of P and T axis.
+	\item [\GMTprog{misc/gmt2kml.c}]:	Options \Opt{N+} and \Opt{D} would crash under Windows (usual DLL hell).
+	\item [\GMTprog{spotter/backtracker.c}]:	For \Opt{W}, now report full-length major/minor axes and not
+		SEMI-axes (docs said major/minor but code did semi.)
+	\item [\GMTprog{spotter/grdrotater.c}]:		Did not handle the rotation of an entire global grid since
+			the polygon outline interfered with the domain.
+	\item [\GMTprog{spotter/rotconverter.c}]:	Forgot to skip args when \Opt{N} or \Opt{S} was used.
+	\item [\GMTprog{x2sys/x2sys.c}]:	Minor bug in x2sys binary reading of floats.
+	\item [\GMTprog{x2sys/x2sys\_datalist.c}]:	When geographic data and \Opt{R} it failed to consider periodic longitudes.
+	\item [\GMTprog{x2sys/x2sys\_get.c}]:	The \Opt{N} option did not work properly, and the reported Y$|$N flags
+		reflected the entire track on not just the portion inside the
+		region.  Man page updated to clarify what is returned.
+	\item [\GMTprog{x2sys/x2sys\_init.c}]:	Did not write both of \Opt{Nd} \Opt{Ns} to the tag file.
+		Crashed if \Opt{D} was not given [should imply -DTAG].
+\end{description}
 
 \subsection{Overview of \gmt\ 4.5.5 [Nov-1, 2010]}
 
