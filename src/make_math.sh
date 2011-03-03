@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: make_math.sh,v 1.15 2011-01-07 21:40:22 guru Exp $
+#	$Id: make_math.sh,v 1.16 2011-03-03 21:02:51 guru Exp $
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath.c.  To be run from the GMT src directory.  X is either grd or gmt.
@@ -37,7 +37,7 @@ cat << EOF > ${prefix}math_def.h
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -97,7 +97,7 @@ cat << EOF > ${prefix}math_explain.h
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -132,7 +132,7 @@ cat << EOF > ${prefix}math.h
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of

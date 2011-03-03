@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.223 2011-02-09 18:34:53 remko Exp $
+ *	$Id: gmt_io.c,v 1.224 2011-03-03 21:02:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of

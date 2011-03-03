@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.13 2010-05-13 16:03:08 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.14 2011-03-03 21:02:50 guru Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation; version 2 of the License.
+ *      the Free Software Foundation; version 2 or any later version.
  *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
