@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.101 2011-02-26 17:44:10 guru Exp $
+dnl $Id: configure.ac,v 1.102 2011-03-04 06:47:15 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.101 $)
+AC_REVISION($Revision: 1.102 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -32,7 +32,7 @@ MANDATE="1 Mar 2011"
 DOCDATE="Mar 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.1.1
-CVS_VERSION=1
+CVS_VERSION=0
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories

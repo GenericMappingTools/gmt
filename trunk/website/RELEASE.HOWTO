@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.31 2010-11-01 23:50:57 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.32 2011-03-04 06:47:15 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -47,7 +47,7 @@ must ensure you do all the steps listed below:
 If still good to go:
 
 6.  Tag the release(s), e.g.
-    cvs -q tag Release_2010_11_01_GMT_4_5_5
+    cvs -q tag Release_2011_03_01_GMT_4_5_6
 
 7.  Prepare the archives:
     make archive >& log
