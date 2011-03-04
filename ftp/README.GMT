@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.35 2010-11-01 23:44:42 guru Exp $
+	$Id: README.GMT,v 1.36 2011-03-04 06:28:49 guru Exp $
 
 Dear potential GMT users-
 
-Version 4.5.5 of GMT has recently been released.
+Version 4.5.6 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:

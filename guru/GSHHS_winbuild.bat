@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.13 2010-10-19 18:04:47 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.14 2011-03-04 06:28:49 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -10,7 +10,7 @@ REM	   to its command line tool is added to PATH
 REM	3. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
-SET GSHHS=2.1.0
+SET GSHHS=2.1.1
 
 IF "%1%" == "home" (
 	SET GMTDIR=W:\RESEARCH\PROJECTS\GMTdev\GMT4
