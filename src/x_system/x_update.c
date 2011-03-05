@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.12 2010-03-24 02:36:45 guru Exp $
+/*	$Id: x_update.c,v 1.13 2011-03-05 20:46:26 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -150,13 +150,13 @@ int main (int argc, char *argv[])
 		}
 		else if ((leg1 = find_leg(lega, leg_head)) == NULL) {
 			leg1 = make_leg(lega);
-			leg1->year = year1;
+			leg1->year = (int)year1;
 			append_leg(leg1, leg_head);
 		}
       
 		if (!internal && (leg2 = find_leg(legb, leg_head)) == NULL) {
 			leg2 = make_leg(legb);
-			leg2->year = year2;
+			leg2->year = (int)year2;
 			append_leg(leg2, leg_head);
 		}
 
@@ -215,9 +215,9 @@ int main (int argc, char *argv[])
 				leg1->st_dev_gmtint[j] = (n_x_gmt[j] > 1) ?
 					sqrt((double) ((sum2_gmt[j] - sum_gmt[j]*leg1->mean_gmtint[j])/(n_x_gmt[j]-1))) : 
 					0.0;
-				leg1->n_gmtint[j] = n_x_gmt[j];
+				leg1->n_gmtint[j] = (int)n_x_gmt[j];
 			}
-			leg1->n_x_int = n_x;
+			leg1->n_x_int = (int)n_x;
 		}
 		else {	/* External */
 			for (j = 0; j < 3; j++) {
@@ -232,8 +232,8 @@ int main (int argc, char *argv[])
 
 				/* Then, recompute nxs, means, and st.devs */
 
-				leg1->n_gmtext[j] += n_x_gmt[j];
-				leg2->n_gmtext[j] += n_x_gmt[j];
+				leg1->n_gmtext[j] += (int)n_x_gmt[j];
+				leg2->n_gmtext[j] += (int)n_x_gmt[j];
 				leg1->mean_gmtext[j] = (leg1->n_gmtext[j]) ?
 					(tmpsum_1 + sum_gmt[j])/leg1->n_gmtext[j] : 0.0;
 				leg2->mean_gmtext[j] = (leg2->n_gmtext[j]) ?

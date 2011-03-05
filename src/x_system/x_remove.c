@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.8 2010-03-24 02:36:45 guru Exp $
+/*	$Id: x_remove.c,v 1.9 2011-03-05 20:46:26 guru Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -176,10 +176,10 @@ int main (int argc, char **argv)
            			exit (EXIT_FAILURE);
            		}
          		if (internal)
-          			leg[id1].n_x_int = n_x;
+          			leg[id1].n_x_int = (int)n_x;
           		else {
-          			leg[id1].n_x_ext += n_x;
-          			leg[id2].n_x_ext += n_x;
+          			leg[id1].n_x_ext += (int)n_x;
+          			leg[id2].n_x_ext += (int)n_x;
           		}
           		nrecs += n_x + 1;
           	}
