@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.45 2011-03-05 19:07:30 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.46 2011-03-05 19:27:05 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -48,13 +48,15 @@ mkdir C:\GMTdev\INSTALLERS
 
 copy %GMTDIR%\guru\GMT_postinstall_message.txt C:\GMTdev\INFO
 
-echo === 2. Build the GMT executables, including supplements, enabling GDAL...
+echo === 2. Build 32 GMT executables, including supplements, enabling GDAL...
 
-set INCLUDE=%INCLUDE%;C:\GMTdev\netcdf-3.6.3\VC10_32\include;C:\GMTdev\gdal\VC10_32\include
-set LIB=%LIB%;C:\GMTdev\netcdf-3.6.3\VC10_32\lib;C:\GMTdev\gdal\VC10_32\lib
+set OLD_INCLUDE=%INCLUDE%
+set OLD_LIB=%LIB%
+set INCLUDE=%OLD_INCLUDE%;C:\GMTdev\netcdf-3.6.3\VC10_32\include;C:\GMTdev\gdal\VC10_32\include
+set LIB=%OLD_LIBLIB%;C:\GMTdev\netcdf-3.6.3\VC10_32\lib;C:\GMTdev\gdal\VC10_32\lib
 
 cd C:\GMTdev\GMT
-mkdir bin
+mkdir bin32
 mkdir lib
 mkdir include
 cd src
@@ -77,9 +79,40 @@ cd C:\GMTdev\GMT\share\doc\gmt\examples
 for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
 cd C:\GMTdev\GMT
 
-echo === 5. Build the GMT+GDAL installer...
+echo === 5. Build the 32-bit GMT+GDAL installer...
 
-iscc /Q %GMTDIR%\guru\GMTsetup_gdal.iss
+iscc /Q %GMTDIR%\guru\GMTsetup32.iss
+
+echo === 6. Build 64 GMT executables, including supplements, enabling GDAL...
+
+set INCLUDE=%OLD_INCLUDE%;C:\GMTdev\netcdf-3.6.3\VC10_64\include;C:\GMTdev\gdal\VC10_64\include
+set LIB=%OLD_LIBLIB%;C:\GMTdev\netcdf-3.6.3\VC10_64\lib;C:\GMTdev\gdal\VC10_64\lib
+
+cd C:\GMTdev\GMT
+mkdir bin64
+cd src
+call gmtinstall yes yes 64
+call gmtsuppl
+
+echo === 7. Run all the examples...
+
+set GMT_SHAREDIR=C:\GMTdev\GMT\share
+set OLDPATH=%PATH%
+set PATH=C:\GMTdev\GMT\bin;C:\NETCDF\bin;%OLDPATH%
+
+cd C:\GMTdev\GMT\share\doc\gmt\examples
+call do_examples
+cd C:\GMTdev\GMT
+
+echo === 8. Remove all the examples PS files...
+
+cd C:\GMTdev\GMT\share\doc\gmt\examples
+for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
+cd C:\GMTdev\GMT
+
+echo === 5. Build the 64-bit GMT+GDAL installer...
+
+iscc /Q %GMTDIR%\guru\GMTsetup64.iss
 
 echo === 6. Build the GMT PDF installer...
 

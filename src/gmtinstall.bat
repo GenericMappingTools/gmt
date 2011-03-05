@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.53 2011-03-05 19:07:31 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.54 2011-03-05 19:27:05 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -59,9 +59,6 @@ REM	    GMT_SHARE_PATH is where GMT expects to find the shared data.
 REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
 ECHO ON
-SET BINDIR=..\bin
-SET LIBDIR=..\lib
-SET INCDIR=..\include
 SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
@@ -100,6 +97,9 @@ SET CHOICE="dynamic"
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
+SET BINDIR=..\bin%BITS%
+SET LIBDIR=..\lib
+SET INCDIR=..\include
 
 SET DLL_NETCDF=/DDLL_NETCDF
 IF %DLLCDF%=="no" SET DLL_NETCDF=
@@ -125,12 +125,12 @@ REM ----------------------------------------------------
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
-IF %CHOICE%=="dynamic" link %LOPT% /out:gmt%BITS%.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib libnetcdf.lib setargv.obj
+IF %CHOICE%=="dynamic" link %LOPT% /out:gmt%BITS%.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib libnetcdf.lib gdal_i.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
 REM ----------------------------------------------------
 ECHO STEP 3: Make GMT programs 
 REM ----------------------------------------------------
-set GMTLIB=gmt.lib psl.lib libnetcdf.lib setargv.obj
+set GMTLIB=gmt.lib psl.lib libnetcdf.lib gdal_i.lib setargv.obj
 %CC% %COPT% blockmean.c %GMTLIB%
 %CC% %COPT% blockmedian.c %GMTLIB%
 %CC% %COPT% blockmode.c %GMTLIB%
