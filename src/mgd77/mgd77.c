@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.262 2011-02-26 17:43:34 guru Exp $
+ *	$Id: mgd77.c,v 1.263 2011-03-05 21:24:28 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1958,7 +1958,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77 record */
 {
 	int i, j, n9, nwords, k, yyyy, mm, dd;
-	GMT_LONG pos;
+	GMT_LONG pos = 0;
 	GMT_cal_rd rata_die;
 	char line[BUFSIZ], p[BUFSIZ];
 	double tz, secs;
@@ -1967,7 +1967,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
-	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
+	for (i = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (!GMT_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
 			strcpy (MGD77Record->word[nwords++], p);		/* Just copy text without changing it at all */
@@ -2377,8 +2377,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 
 	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
 	int i, j, k, constraint, n;
-	GMT_LONG pos;
-	GMT_LONG exact, all_exact;
+	GMT_LONG pos = 0, exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
 
@@ -2405,7 +2404,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	if (option & MGD77_RESET_EXACT) F->n_exact = 0;
 	all_exact = (option & MGD77_SET_ALLEXACT);
 
-	i = pos = 0;		/* Start at the first ouput column */
+	i = 0;		/* Start at the first ouput column */
 	while ((GMT_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
@@ -2483,7 +2482,8 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 
 	F->n_out_columns = i;
 
-	i = pos = 0;		/* Start at the first ouput column */
+	pos = 0;		/* Rest pos */
+	i = 0;		/* Start at the first ouput column */
 	while ((GMT_strtok (bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		if (p[0] == '+')
 			F->Bit_test[i].match = 1;

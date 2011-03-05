@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.36 2011-03-03 21:02:51 guru Exp $
+/*	$Id: gshhs.c,v 1.37 2011-03-05 21:24:28 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -44,8 +44,9 @@ int main (int argc, char **argv)
 	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL;
 	char *name[2] = {"polygon", "line"}, container[8], ancestor[8];
 	FILE *fp = NULL;
-	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
+	int k, line, max_east = 270000000, info, single, error, ID, flip;
 	int  OK, level, version, greenwich, river, src, msformat = 0, first = 1;
+	size_t n_read;
 	struct	POINT p;
 	struct GSHHS h;
         
