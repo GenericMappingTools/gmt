@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.68 2011-03-03 21:02:51 guru Exp $
+ *	$Id: libspotter.c,v 1.69 2011-03-05 21:24:29 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -166,7 +166,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in
 		(*t_max) = MAX (e[0].t_start, e[n-1].t_start);
 	*p = e;
 
-	return (n);
+	return ((int)n);
 }
 
 /* Sort functions used to order the rotations */
@@ -413,16 +413,16 @@ int spotter_backtrack (double xp[], double yp[], double tp[], GMT_LONG np, struc
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 			}
-			track[start_k] = nn+1;
+			track[start_k] = (double)(nn+1);
 		}
 	}
 	if (path) {
 		track = (double *) GMT_memory ((void *)track, (size_t)kk, sizeof (double), "libspotter");
 		*c = track;
-		return (kk);
+		return ((int)kk);
 	}
 
-	return (np);
+	return ((int)np);
 }
 
 void set_inout_sides (double x, double y, double wesn[], GMT_LONG sideXY[2]) {
@@ -627,16 +627,16 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, stru
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 			}
-			track[start_k] = nn+1;
+			track[start_k] = (double)(nn+1);
 		}
 	}
 	if (path) {
 		track = (double *) GMT_memory ((void *)track, (size_t)kk, sizeof (double), "libspotter");
 		*c = track;
-		return (kk);
+		return ((int)kk);
 	}
 
-	return (np);
+	return ((int)np);
 }
 
 /* Converts a set of total reconstruction poles to forward stage poles for flowlines

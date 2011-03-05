@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.148 2011-03-03 21:02:51 guru Exp $
+ *	$Id: x2sys.c,v 1.149 2011-03-05 21:24:29 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -400,9 +400,9 @@ double *x2sys_dummytimes (GMT_LONG n)
 
 int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
-	int j, k, i, n_read = 0;
-	GMT_LONG pos;
-	GMT_LONG error = FALSE;
+	int j, k, i;
+	size_t n_read = 0;
+	GMT_LONG pos, error = FALSE;
 	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
 	unsigned char u;
 	short int h;

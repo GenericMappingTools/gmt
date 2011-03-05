@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.224 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_io.c,v 1.225 2011-03-05 21:24:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -240,7 +240,8 @@ int GMT_fclose (FILE *stream)
 		GMT_free (GMT_io.add_offset);
 		GMT_free (GMT_io.scale_factor);
 		GMT_free (GMT_io.missing_value);
-		GMT_io.ncid = GMT_io.nvars = GMT_io.ndim = GMT_io.nrec = 0;
+		GMT_io.ncid = GMT_io.nvars = 0;
+		GMT_io.ndim = GMT_io.nrec = 0;
 		GMT_input = GMT_input_ascii;
 		return (0);
 	}
@@ -3142,15 +3143,15 @@ GMT_LONG GMT_parse_segment_item (char *in_string, char *pattern, char *out_strin
 	 * return TRUE if the pattern was found and FALSE otherwise.
 	 * out_string must be allocated and have space for the copying */
 	char *t;
-	int i, k;
+	GMT_LONG i, k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
 	if ((i = (GMT_LONG)t - (GMT_LONG)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
 	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
-	i += (int)(strlen (pattern) + 1);	/* Position of argument */
+	i += (GMT_LONG)(strlen (pattern) + 1);	/* Position of argument */
 	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
 		i++;	/* Skip passed first quote */
-		for (k = i; k < (int)strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
+		for (k = i; k < (GMT_LONG)strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
 		strncpy (out_string, &in_string[i], (size_t)(k - i));
 		out_string[k-i] = '\0';	/* Terminate string */
 	}
