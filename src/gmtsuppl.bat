@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.55 2011-03-03 21:02:51 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.56 2011-03-05 19:07:31 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -23,7 +23,7 @@ REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 15-JAN-2010
+REM Author: Paul Wessel, 1-MAR-2011
 REM ----------------------------------------------------
 REM
 REM How to build GMT under Windows:

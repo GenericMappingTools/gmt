@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.52 2011-03-03 21:02:51 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.53 2011-03-05 19:07:31 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 15-JAN-2010
+REM Author: Paul Wessel, 01-MAR-2011
 REM ----------------------------------------------------
 REM
 REM How to build GMT executables under Windows:
@@ -58,6 +58,7 @@ REM	    Same goes for LIBDIR where GMT libraries will be kept.
 REM	    GMT_SHARE_PATH is where GMT expects to find the shared data.
 REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
+ECHO ON
 SET BINDIR=..\bin
 SET LIBDIR=..\lib
 SET INCDIR=..\include
@@ -65,10 +66,10 @@ SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to "yes" or
-REM	    pass tri as 1st argument to this script:
+REM	    pass yes as 1st argument to this script:
 REM
 SET TRIANGLE="no"
-IF "%1%" == "tri" set TRIANGLE="yes"
+IF "%1%" == "yes" set TRIANGLE="yes"
 REM
 REM STEP f: By default, GMT will be built dynamically  If
 REM	    you do NOT want to use Dynamic link libraries
@@ -76,17 +77,18 @@ REM	    (DLL) change CHOICE to "static" here:
 REM
 
 REM
-REM STEP g: To optionaly link against the GDAL library you must set
-REM	    GDAL to "yes" or pass gdal as 2nd argument to this script
-REM	    Set the right path in GDAL_INC & GDAL_LIB to reflect
-REM	    your FWTools installation.
+REM STEP g: To optionally link against the GDAL library you must set
+REM	    GDAL to "yes" or pass yes as 2nd argument to this script
+REM	    Add the GDAL lib and include paths as for netCDF above.
 SET GDAL="no"
-IF "%2%" == "gdal" set GDAL="yes"
-SET GDAL_INC=
-SET GDAL_LIB=
+IF "%2%" == "yes" set GDAL="yes"
+REM
+REM STEP h: By default we build 32-bit executables. Give 64 as the 3rd
+REM	    argument to this script to build using 64-bit libs.
+SET BITS=32
+IF "%3%" == "64" set BITS=64
+REM
 SET USE_GDAL=
-IF %GDAL%=="yes" SET GDAL_INC=/IC:\programs\FWTools2.4.7\include 
-IF %GDAL%=="yes" SET GDAL_LIB=C:\programs\FWTools2.4.7\lib\gdal_i.lib 
 IF %GDAL%=="yes" SET USE_GDAL=/DUSE_GDAL
 
 REM STEP h: Specify your compiler (currently set to MS CL)
@@ -105,7 +107,7 @@ SET TR=
 SET TROBJ=
 IF %TRIANGLE%=="yes" SET TR=/DTRIANGLE_D
 IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
-SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC%
+SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL%
 SET DLL=/FD
 IF %CHOICE%=="static" SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF% %USE_GDAL%
 IF %CHOICE%=="static" SET DLL=
@@ -114,7 +116,7 @@ REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
 REM ----------------------------------------------------
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
-IF %CHOICE%=="dynamic" link %LOPT% /out:psl.dll /implib:psl.lib pslib.obj
+IF %CHOICE%=="dynamic" link %LOPT% /out:psl%BITS%.dll /implib:psl.lib pslib.obj
 IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
@@ -123,12 +125,12 @@ REM ----------------------------------------------------
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
-IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj %GDAL_LIB%
+IF %CHOICE%=="dynamic" link %LOPT% /out:gmt%BITS%.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib libnetcdf.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
 REM ----------------------------------------------------
 ECHO STEP 3: Make GMT programs 
 REM ----------------------------------------------------
-set GMTLIB=gmt.lib psl.lib netcdf.lib setargv.obj
+set GMTLIB=gmt.lib psl.lib libnetcdf.lib setargv.obj
 %CC% %COPT% blockmean.c %GMTLIB%
 %CC% %COPT% blockmedian.c %GMTLIB%
 %CC% %COPT% blockmode.c %GMTLIB%
