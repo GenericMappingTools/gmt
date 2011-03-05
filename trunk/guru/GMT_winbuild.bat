@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.44 2011-03-04 06:28:49 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.45 2011-03-05 19:07:30 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -48,17 +48,17 @@ mkdir C:\GMTdev\INSTALLERS
 
 copy %GMTDIR%\guru\GMT_postinstall_message.txt C:\GMTdev\INFO
 
-echo === 2. Build the GMT executables, including supplements...
+echo === 2. Build the GMT executables, including supplements, enabling GDAL...
 
-set INCLUDE=%INCLUDE%;C:\NETCDF\INCLUDE
-set LIB=%LIB%;C:\NETCDF\LIB
+set INCLUDE=%INCLUDE%;C:\GMTdev\netcdf-3.6.3\VC10_32\include;C:\GMTdev\gdal\VC10_32\include
+set LIB=%LIB%;C:\GMTdev\netcdf-3.6.3\VC10_32\lib;C:\GMTdev\gdal\VC10_32\lib
 
 cd C:\GMTdev\GMT
 mkdir bin
 mkdir lib
 mkdir include
 cd src
-call gmtinstall tri no
+call gmtinstall yes yes 32
 call gmtsuppl
 
 echo === 3. Run all the examples...
@@ -77,31 +77,21 @@ cd C:\GMTdev\GMT\share\doc\gmt\examples
 for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
 cd C:\GMTdev\GMT
 
-echo === 5. Build the GMT Basic installer...
-
-iscc /Q %GMTDIR%\guru\GMTsetup_basic.iss
-
-echo === 6. Rebuild the GMT executables enabling GDAL support...
-
-cd C:\GMTdev\GMT\src
-call gmtinstall tri gdal
-call gmtsuppl
-
-echo === 7. Build the GMT+GDAL installer...
+echo === 5. Build the GMT+GDAL installer...
 
 iscc /Q %GMTDIR%\guru\GMTsetup_gdal.iss
 
-echo === 8. Build the GMT PDF installer...
+echo === 6. Build the GMT PDF installer...
 
 iscc /Q %GMTDIR%\guru\GMTsetup_pdf.iss
 
-echo === 10. PLACE INSTALLERS in ftp dir
+echo === 7. PLACE INSTALLERS in ftp dir
 
 cd C:\GMTdev\
 copy INSTALLERS\*.exe %GMTDIR%\ftp
 
 set PATH=%OLDPATH%
  
-echo === 9. DONE
+echo === 8. DONE
 
 ECHO ON
