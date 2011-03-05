@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.56 2011-03-05 19:07:31 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.57 2011-03-05 19:48:58 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -36,10 +36,6 @@ REM
 SET DLLCDF="yes"
 REM SET DLLCDF="no"
 REM
-REM STEP c: Change BINDIR and LIBDIR if necessary
-REM
-SET BINDIR="..\..\bin"
-SET LIBDIR="..\..\lib"
 REM
 REM STEP d: If you built GMT using static libraries,
 REM	    change CHOICE to "static" here:
@@ -50,6 +46,16 @@ REM
 REM STEP e: Specify your compiler (currently set to MS CL)
 SET CC=CL
 REM SET CC=icl
+REM
+REM STEP h: By default we build 32-bit executables. Give 64 as the 1st
+REM	    argument to this script to build using 64-bit libs.
+SET BITS=32
+IF "%1%" == "64" set BITS=64
+REM
+REM STEP c: Change BINDIR and LIBDIR if necessary
+REM
+SET BINDIR=..\..\bin%BITS%
+SET LIBDIR=..\..\lib
 REM ----------------------------------------------------
 REM STOP HERE - THE REST IS AUTOMATIC
 REM ----------------------------------------------------
@@ -60,7 +66,7 @@ IF %CHOICE%=="static" SET COPT=/I.. /DWIN32 /W3 /O2 /nologo %DLL_NETCDF%
 SET COPT2=/I.. /DWIN32 /W3 /nologo %DLL_NETCDF% /DDLL_PSL /DDLL_GMT 
 IF %CHOICE%=="static" SET COPT2=/I.. /DWIN32 /W3 /nologo %DLL_NETCDF%
 SET LOPT=/nologo /dll /incremental:no
-set GMTLIB=%LIBDIR%\gmt.lib %LIBDIR%\psl.lib netcdf.lib setargv.obj
+set GMTLIB=%LIBDIR%\gmt.lib %LIBDIR%\psl.lib libnetcdf.lib setargv.obj
 REM ----------------------------------------------------
 ECHO STEP 1: Make dbase
 REM ----------------------------------------------------
@@ -126,7 +132,7 @@ ECHO STEP 7: Make mgg
 REM ----------------------------------------------------
 cd mgg
 IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c gmt_mgg.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:gmt_mgg.dll /implib:gmt_mgg.lib gmt_mgg.obj %GMTLIB%
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:gmt_mgg%BITS%.dll /implib:gmt_mgg.lib gmt_mgg.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c gmt_mgg.c
 IF %CHOICE%=="static"  lib /out:gmt_mgg.lib gmt_mgg.obj
 %CC% %COPT% binlegs.c    gmt_mgg.lib %GMTLIB%
@@ -140,7 +146,7 @@ IF %CHOICE%=="static"  lib /out:gmt_mgg.lib gmt_mgg.obj
 %CC% %COPT% gmttrack.c   gmt_mgg.lib %GMTLIB%
 %CC% %COPT% mgd77togmt.c gmt_mgg.lib %GMTLIB%
 del *.obj
-IF %CHOICE%=="dynamic" move gmt_mgg.dll %BINDIR%
+IF %CHOICE%=="dynamic" move gmt_mgg%BITS%.dll %BINDIR%
 IF %CHOICE%=="dynamic" move gmt_mgg.exp %LIBDIR%
 move gmt_mgg.lib %LIBDIR%
 move *.exe %BINDIR%
@@ -178,16 +184,16 @@ ECHO STEP 10: Make sph
 REM ----------------------------------------------------
 cd sph
 IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c sph.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:sph.dll /implib:sph.lib sph.obj %GMTLIB%
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:gmt_sph%BITS%.dll /implib:gmt_sph.lib sph.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c sph.c
-IF %CHOICE%=="static"  lib /out:sph.lib sph.obj
-%CC% %COPT% sphtriangulate.c sph.lib %GMTLIB%
-%CC% %COPT% sphdistance.c    sph.lib %GMTLIB%
-%CC% %COPT% sphinterpolate.c sph.lib %GMTLIB%
+IF %CHOICE%=="static"  lib /out:gmt_sph.lib sph.obj
+%CC% %COPT% sphtriangulate.c gmt_sph.lib %GMTLIB%
+%CC% %COPT% sphdistance.c    gmt_sph.lib %GMTLIB%
+%CC% %COPT% sphinterpolate.c gmt_sph.lib %GMTLIB%
 del *.obj
-IF %CHOICE%=="dynamic" move sph.dll %BINDIR%
-IF %CHOICE%=="dynamic" move sph.exp %LIBDIR%
-move sph.lib %LIBDIR%
+IF %CHOICE%=="dynamic" move gmt_sph%BITS%.dll %BINDIR%
+IF %CHOICE%=="dynamic" move gmt_sph.exp %LIBDIR%
+move gmt_sph.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
@@ -195,19 +201,19 @@ ECHO STEP 11: Make spotter
 REM ----------------------------------------------------
 cd spotter
 IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /DDLL_EXPORT /c libspotter.c
-IF %CHOICE%=="dynamic" LINK %LOPT% /out:spotter.dll /implib:spotter.lib libspotter.obj %GMTLIB%
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:gmt_spotter%BITS%.dll /implib:gmt_spotter.lib libspotter.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c libspotter.c
-IF %CHOICE%=="static"  lib /out:spotter.lib libspotter.obj
-%CC% %COPT% backtracker.c   spotter.lib %GMTLIB%
-%CC% %COPT% grdrotater.c    spotter.lib %GMTLIB%
-%CC% %COPT% grdspotter.c    spotter.lib %GMTLIB%
-%CC% %COPT% hotspotter.c    spotter.lib %GMTLIB%
-%CC% %COPT% originator.c    spotter.lib %GMTLIB%
-%CC% %COPT% rotconverter.c  spotter.lib %GMTLIB%
+IF %CHOICE%=="static"  lib /out:gmt_spotter.lib libspotter.obj
+%CC% %COPT% backtracker.c   gmt_spotter.lib %GMTLIB%
+%CC% %COPT% grdrotater.c    gmt_spotter.lib %GMTLIB%
+%CC% %COPT% grdspotter.c    gmt_spotter.lib %GMTLIB%
+%CC% %COPT% hotspotter.c    gmt_spotter.lib %GMTLIB%
+%CC% %COPT% originator.c    gmt_spotter.lib %GMTLIB%
+%CC% %COPT% rotconverter.c  gmt_spotter.lib %GMTLIB%
 del *.obj
-IF %CHOICE%=="dynamic" move spotter.dll %BINDIR%
-IF %CHOICE%=="dynamic" move spotter.exp %LIBDIR%
-move spotter.lib %LIBDIR%
+IF %CHOICE%=="dynamic" move gmt_spotter%BITS%.dll %BINDIR%
+IF %CHOICE%=="dynamic" move gmt_spotter.exp %LIBDIR%
+move gmt_spotter.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------

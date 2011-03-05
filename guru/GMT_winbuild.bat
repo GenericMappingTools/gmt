@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.46 2011-03-05 19:27:05 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.47 2011-03-05 19:48:58 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -53,7 +53,7 @@ echo === 2. Build 32 GMT executables, including supplements, enabling GDAL...
 set OLD_INCLUDE=%INCLUDE%
 set OLD_LIB=%LIB%
 set INCLUDE=%OLD_INCLUDE%;C:\GMTdev\netcdf-3.6.3\VC10_32\include;C:\GMTdev\gdal\VC10_32\include
-set LIB=%OLD_LIBLIB%;C:\GMTdev\netcdf-3.6.3\VC10_32\lib;C:\GMTdev\gdal\VC10_32\lib
+set LIB=%OLD_LIB%;C:\GMTdev\netcdf-3.6.3\VC10_32\lib;C:\GMTdev\gdal\VC10_32\lib
 
 cd C:\GMTdev\GMT
 mkdir bin32
@@ -61,7 +61,7 @@ mkdir lib
 mkdir include
 cd src
 call gmtinstall yes yes 32
-call gmtsuppl
+call gmtsuppl 32
 
 echo === 3. Run all the examples...
 
@@ -92,7 +92,7 @@ cd C:\GMTdev\GMT
 mkdir bin64
 cd src
 call gmtinstall yes yes 64
-call gmtsuppl
+call gmtsuppl 32
 
 echo === 7. Run all the examples...
 
