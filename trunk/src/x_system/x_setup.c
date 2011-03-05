@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.14 2010-09-28 21:10:46 remko Exp $
+/*	$Id: x_setup.c,v 1.15 2011-03-05 20:46:26 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -28,12 +28,12 @@
 
 struct INFO {
 	char legname[16], use;
-	int leg_id, seq_no;
+	GMT_LONG leg_id, seq_no;
 	unsigned char *leglist;
 };
 
 struct LEGNAMES {
-	int leg_no;
+	GMT_LONG leg_no;
 	char gmt;
 } leg_info[NTOT];
 
@@ -42,16 +42,15 @@ GMT_LONG findleg (char *name);
 
 GMT_LONG nlegs_used = 0;
 char leg_used[MAXNEW][10];
-unsigned int legpointer[NTOT];
+GMT_LONG legpointer[NTOT];
 struct INFO *ptr[MAXLEGS];
 
 int main (int argc, char *argv[])
 {
-	GMT_LONG i, j, byte_1, byte_2, bit_1, bit_2, leg_1, leg_2, ok;
+	GMT_LONG i, j, byte_1, byte_2, bit_1, bit_2, leg_1, leg_2, ok, no, n_tot_legs;
 	GMT_LONG lat, lon, west = 0, east = 360, south = -90, north = 89;
-	long n_alloc, record;
-	GMT_LONG bin, no;
-	GMT_LONG nlegs, n_tot_legs;
+	long n_alloc;
+	int bin, nlegs, record;	/* Let these remain 32-bit */
 	double w, e, s, n;
 	char lname[8], line[BUFSIZ];
 	unsigned char turn_on[8];
@@ -59,7 +58,7 @@ int main (int argc, char *argv[])
 	GMT_LONG error = FALSE, skip;
 	size_t not_used = 0;
 
-	argc = GMT_begin (argc, argv);
+	argc = (int) GMT_begin (argc, argv);
 
 	for (i = 1; i < argc; i++) {
   		if (argv[i][0] == '-') {
