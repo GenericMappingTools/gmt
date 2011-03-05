@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.54 2011-03-05 19:27:05 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.55 2011-03-05 19:48:58 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
@@ -58,7 +58,6 @@ REM	    Same goes for LIBDIR where GMT libraries will be kept.
 REM	    GMT_SHARE_PATH is where GMT expects to find the shared data.
 REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
-ECHO ON
 SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
@@ -101,6 +100,7 @@ SET BINDIR=..\bin%BITS%
 SET LIBDIR=..\lib
 SET INCDIR=..\include
 
+ECHO ON
 SET DLL_NETCDF=/DDLL_NETCDF
 IF %DLLCDF%=="no" SET DLL_NETCDF=
 SET TR=
