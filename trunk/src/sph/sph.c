@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.25 2011-03-03 21:02:51 guru Exp $
+ *	$Id: sph.c,v 1.26 2011-03-06 02:09:56 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -248,7 +248,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 	double tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
-	n_sig = (vartens) ? 6 * (n - 2) : 1;
+	n_sig = (int)((vartens) ? 6 * (n - 2) : 1);
 
 	/* Create the triangulation. Main output is (P.I->(list, lptr, lend) */
 

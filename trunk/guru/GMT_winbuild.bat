@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.48 2011-03-05 20:33:47 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.49 2011-03-06 02:09:56 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -90,7 +90,7 @@ cd C:\GMTdev\GMT
 echo === 3. Remove all the examples PS files...
 
 cd C:\GMTdev\GMT\share\doc\gmt\examples
-for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
+del example_*.ps
 cd C:\GMTdev\GMT
 
 echo === 4. Build the %BITS%-bit GMT+GDAL installer...

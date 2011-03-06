@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.149 2011-03-05 21:24:29 guru Exp $
+ *	$Id: x2sys.c,v 1.150 2011-03-06 02:09:56 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -570,7 +570,8 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	 * MGG format from old Lamont by Wessel and Smith.
 	 */
 
-	int year, n_records, rata_day;
+	int year, n_records;
+	GMT_cal_rd rata_day;
 	GMT_LONG i, j;
 	char path[BUFSIZ];
 	FILE *fp;
@@ -722,7 +723,7 @@ int get_first_year (double t)
 	struct GMT_gcal CAL;
 	GMT_dt2rdc (t, &rd, &s);
 	GMT_gcal_from_rd (rd, &CAL);
-	return (CAL.year);
+	return ((int)CAL.year);
 }
 
 int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
@@ -782,7 +783,7 @@ int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	int i, n_fields, n_expect = GMT_MAX_COLUMNS;
+	GMT_LONG i, n_fields, n_expect = GMT_MAX_COLUMNS;
 	size_t j;
 	char path[BUFSIZ];
 	double **z, *in;
@@ -855,7 +856,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
-		for (k = strlen(name) - 1, dot = -1; dot == -1 && k >= 0; k--) if (name[k] == '.') dot = k;
+		for (k = (int)strlen(name) - 1, dot = -1; dot == -1 && k >= 0; k--) if (name[k] == '.') dot = k;
 		if (dot > 0) name[dot] = '\0';	/* Chop off extension */
 		p[n] = strdup (name);
 		n++;
@@ -1454,12 +1455,13 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			sscanf (&line[2], "%*s %*s %s %*s %*s %*s %*s %*s %*s %*s %s", kind, txt);	/* Get first column name after lon/x etc */
 			if (strchr (txt, '_')) {	/* A column name with underscore; we thus assume this is the correct record */
 				char ptr[BUFSIZ];
-				GMT_LONG pos = 0, item = 0;
+				GMT_LONG pos = 0;
+				int item = 0;
 				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
-					i = strlen (ptr) - 1;
+					i = (int)strlen (ptr) - 1;
 					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
 					if (i < 0) continue;		/* First records 'lon' & 'lat' have no '_' */
 					strncpy (txt, ptr, i);
