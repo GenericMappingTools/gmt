@@ -1,21 +1,22 @@
 Package: gmt
-Version: 4.5.5
+Version: 4.5.6
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/GMT%v_doc.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
 Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
 Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
 Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
-Source-MD5:  0a99b8f820689d872b18cf689efad9b9
-Source2-MD5: 55b9142fb8ad3e17a49542f42b36d923
-Source3-MD5: 051554f98bff57365eebab2d227e3285
-Source4-MD5: 38e01e420876bfe3cafe60b207c91de6
-Source5-MD5: 36a4788e72aa3dc557a256bca14f79a0
+Source-MD5:  e6795ea628bb0fde0b607802e8b87613
+Source2-MD5: e35724147ffb398bdb58e538b9e9bf3b
+Source3-MD5: 1d68830bdbd9c0c5cbd1dc4e5ca9cdea
+Source4-MD5: e87f62ec85e56ca2eac0e79d2bc6b1f0
+Source5-MD5: 1812713d2e65edea2cabdc35b5867321
+
 
 SourceDirectory: GMT%v
 BuildDepends: netcdf (>= 3.6.2-6)
-Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs-lores (>= 2.1.0)
-Recommends: %n-doc, gshhs-hires (>= 2.1.0)
+Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs-lores (>= 2.1.1)
+Recommends: %n-doc, gshhs-hires (>= 2.1.1)
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
 
@@ -36,12 +37,12 @@ SplitOff2: <<
   Package: %N-shlibs
   Files: lib/*.4.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.5-1)
-    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.5-1)
-    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.5-1)
-    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.5-1)
-    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.5-1)
-    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.5-1)
+    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.6-1)
+    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.6-1)
+    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.6-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.6-1)
+    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.6-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.6-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
