@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.14 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_gdalread.c,v 1.15 2011-03-06 17:24:28 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -35,11 +35,12 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 	const char	*format;
 	int	bGotNodata, metadata_only = FALSE, got_R = FALSE;
 	int	nPixelSize, nBands, i, m, n, nn, nReqBands = 0, got_r = FALSE;
-	int	pixel_reg = FALSE, correct_bounds = FALSE, fliplr = FALSE, error = FALSE;
+	int	pixel_reg = FALSE, correct_bounds = FALSE, fliplr = FALSE;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0, i_x_nXYSize;
 	int	jump = 0, *whichBands = NULL, *mVector;
-	int	n_commas, n_dash, pad = 0;
-	GMT_LONG n_alloc, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
+	int	n_commas, n_dash, pad = 0, nXSize = 0, nYSize = 0;
+	GMT_LONG n_alloc, error = FALSE;
+	int	nX, nY, nXYSize, nBufXSize, nBufYSize;
 	char	*tmp;
 	float	*tmpF32;
 	double	*tmpF64, dfNoData, adfMinMax[2];
@@ -125,7 +126,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (metadata_only) {
 		populate_metadata (Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
-				nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+				(int)nXSize, (int)nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 		return (GMT_NOERROR);
 	}
 
@@ -410,7 +411,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 	GDALClose(hDataset);
 
 	populate_metadata (Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
-				nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+				(int)nXSize, (int)nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 
 	return (GMT_NOERROR);
 }
