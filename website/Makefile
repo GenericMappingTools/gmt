@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.58 2010-12-07 19:25:50 guru Exp $
+#  $Id: Makefile,v 1.59 2011-03-06 03:28:42 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		20-SEPT-2009
+#	Date:		3-MAR-2011
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ help::
 #!clean-test		: Empty the remote test directories
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
-		
+
 # Place stuff in the GMT website/www directory:
 
 www/gmt/examples/ex01/example_01_100dpi.png:	../share/doc/gmt/examples/ex01/example_01.ps
@@ -167,14 +167,15 @@ update-ftp-live:
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic gdal pdf; do \
-		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
+	for p in install32 install64 pdf_install; do \
+		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -208,14 +209,15 @@ update-ftp-test:
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic gdal pdf; do \
-		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
+	for p in install32 install64 pdf_install; do \
+		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -250,13 +252,14 @@ update-ftp-local:
 	cp -f ../ftp/GMT*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
 	cp -f ../ftp/netcdf-3.6.3_win.zip ftp/windows
+	cp -f ../ftp/Whale-watching_symbols_for_GMT.zip ftp/contrib
 	for p in doc share src suppl triangle; do \
 		\rm -f ftp/GMT_$$p.tar.bz2; \
 		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
-	for p in basic gdal pdf; do \
-		rm -f windows/GMT_$$p_install.exe; \
-		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
+	for p in install32 install64 pdf_install; do \
+		rm -f windows/GMT_$$p.exe; \
+		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe); \
 	done
 
 update-gshhs-local:
