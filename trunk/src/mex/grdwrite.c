@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.16 2011-03-03 21:02:51 guru Exp $
+ *	$Id: grdwrite.c,v 1.17 2011-03-06 23:34:32 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -77,8 +77,8 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 	else {
 		grd.x_inc = x[1] - x[0];
 		grd.y_inc = y[1] - y[0];
-		for (i = 2; !error && i < grd.nx; i++) if ((x[i] - x[i-1]) != grd.x_inc) error = 1;
-		for (j = 2; !error && j < grd.ny; j++) if ((y[j] - y[j-1]) != grd.y_inc) error = 1;
+		for (i = 2; !error && i < grd.nx; i++) if (!GMT_IS_ZERO (x[i] - x[i-1] - grd.x_inc)) error = 1;
+		for (j = 2; !error && j < grd.ny; j++) if (!GMT_IS_ZERO (y[j] - y[j-1] - grd.y_inc)) error = 1;
 		if (error) return (3);
 		grd.x_min = (pix) ? x[0] - 0.5 * grd.x_inc : x[0];
 		grd.x_max = (pix) ? x[nx-1] + 0.5 * grd.x_inc : x[nx-1];
