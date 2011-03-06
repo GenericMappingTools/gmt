@@ -1,4 +1,5 @@
 share/doc/gmt/examples/README.SCRIPTS
+share/doc/gmt/examples/Makefile
 share/doc/gmt/examples/do_examples.bat
 share/doc/gmt/examples/do_examples.csh
 share/doc/gmt/examples/do_view.sh
