@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.103 2011-03-06 23:39:22 guru Exp $
+dnl $Id: configure.ac,v 1.104 2011-03-07 08:02:20 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.103 $)
+AC_REVISION($Revision: 1.104 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -501,7 +501,7 @@ if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" 
 	AC_MSG_CHECKING(for netCDF libs)
 	NETCDF_LIB=`$NC_CONF --libs`
 	AC_MSG_RESULT($NETCDF_LIB)
-	NC_LIB_PATH=`sed 's/^-L//;s/\ .*//' <<< $NETCDF_LIB`
+	NC_LIB_PATH=`echo $NETCDF_LIB | sed 's/^-L//;s/\ .*//'`
 	rpath="$NC_LIB_PATH"
 else
 	if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
@@ -551,7 +551,7 @@ if test "X$enable_gdal" != "Xno" || test "X$with_gdal_config" != "Xno"; then
 			GDAL_LIB=`$GDAL_CONF --libs`
 		fi
 		AC_MSG_RESULT($GDAL_LIB)
-		GDAL_LIB_PATH=`sed 's/^-L//;s/\ .*//' <<< $GDAL_LIB`
+		GDAL_LIB_PATH=`echo $GDAL_LIB | sed 's/^-L//;s/\ .*//'`
 		rpath="$rpath:$GDAL_LIB_PATH"
 		CPPFLAGS="$CPPFLAGS -DUSE_GDAL"
 	else
