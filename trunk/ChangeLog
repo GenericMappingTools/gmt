@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.872 2011-03-08 19:20:16 guru Exp $
+	$Id: ChangeLog,v 1.873 2011-03-08 20:04:14 guru Exp $
 -----------------------------------------------------------------------------------------
 2011-03-10	pwessel
-	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4
-	  GMT5 branch merged to new trunk and converted to subversion.
+	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4.
+	  GMT5 branch will be merged to new trunk and converted to subversion.
 -----------------------------------------------------------------------------------------
 
 2011-03-06	pwessel
@@ -34,7 +34,7 @@
 	* x2sys/x2sys_get.c:	The -N option did not work properly, and the reported Y|N flags
 				reflected the entire track on not just the portion inside the
 				region.  Man page updated to clarify what is returned.
-	* gmt_cdf.c:		Apply netcdf fix; thanks to Sebastian Heimann.
+	* gmt_cdf.c:		Apply netcdf open/initfill fix; thanks to Sebastian Heimann.
 	* gmt_nc.c:		---"---
 
 2011-02-25	jluis
