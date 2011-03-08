@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.162 2011-03-03 20:28:17 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.163 2011-03-08 19:20:16 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2011.
@@ -37,7 +37,8 @@ for some time after \GMT 5 has been released.
 \subsection{Overview of \gmt\ 4.5.6 [Mar-1, 2011]}
 
 This is another bug-fix release, including an update to GSHHS which fixes error is the Germany-Poland border
-and a few ``spiky'' islands. Therefore, this version requires the new GSHHS 2.1.1 release.
+and a few ``spiky'' islands. Therefore, this version requires the new GSHHS 2.1.1 release.  We also patched
+some errors in the ``jet'' color table.
 Below is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{gmt\_init.c}]:	On Windows: Look for HOMEPATH after HOME for setting GMT\_HOMEDIR.
@@ -104,6 +105,7 @@ Below is the list of bug corrections:
 		found in the file.  Also made string-checks case-insensitive.
 	\item [\GMTprog{meca/utilmeca.c}]:	Patch to fix incorrect plotting of moment tensors with big
 		isotropic components. Thanks to Jeremy Pesicek.  Fix bug affecting the plot of P and T axis.
+	\item [\GMTprog{mex/grdwrite.c}]:	Round-off could lead to false detection of a non-equally spaced grid.
 	\item [\GMTprog{misc/gmt2kml.c}]:	Options \Opt{N+} and \Opt{D} would crash under Windows (usual DLL hell).
 	\item [\GMTprog{spotter/backtracker.c}]:	For \Opt{W}, now report full-length major/minor axes and not
 		SEMI-axes (docs said major/minor but code did semi.)
