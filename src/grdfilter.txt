@@ -3,8 +3,8 @@
 .SH NAME
 grdfilter \- Filter a 2-D grid file in the space (or time) domain
 .SH SYNOPSIS
-\fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP OPT(F)\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ OPT(N)\fBi\fP|\fBp\fP|\fBr\fP ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+\fBgrdfilter\fP \fIinput_file\fP OPT(D)\fIdistance_flag\fP OPT(F)\fI<filtertype><width>\fP[\fImode\fP] 
+OPT(G)\fIoutput_file\fP [ GMT_I_OPT ] [ OPT(N)\fBi\fP|\fBp\fP|\fBr\fP ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
 of the selected convolution or non-convolution isotropic filters and
@@ -16,8 +16,8 @@ edges will not be used and the output can be within one-half-
 width of the input edges.  If the filter is low-pass, then the
 output may be less frequently sampled than the input.
 .TP
-\fIinput_file.grd\fP
-The file of points to be filtered.
+\fIinput_file\fP
+The grid file of points to be filtered.
 (See GRID FILE FORMATS below).
 .TP
 OPT(D)
@@ -46,7 +46,8 @@ by the full diameter \fIwidth\fP. Available convolution filters are:
 .br
 (\fBc\fP) Cosine Arch: Weights follow a cosine arch curve.
 .br
-(\fBg\fP) Gaussian: Weights are given by the Gaussian function.
+(\fBg\fP) Gaussian: Weights are given by the Gaussian function, where \fIwidth\fP is 6 times the
+conventional Gaussian sigma.
 .br
 Non-convolution filters are:
 .br
@@ -65,11 +66,11 @@ values.
 .br
 (\fBU\fP) Upper: Return maximum or all negative values only.
 .br
-In the case of \fBL|U\fP it is possible that no data passes the initial sign test; in that case
+In the case of \fBL\fP|\fBU\fP it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .TP
 OPT(G)
-\fIoutput_file.grd\fP is the output of the filter.
+\fIoutput_file\fP is the output grid file of the filter.
 (See GRID FILE FORMATS below).
 .SH OPTIONS
 .TP
