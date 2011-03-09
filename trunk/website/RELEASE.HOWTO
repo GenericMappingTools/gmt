@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.33 2011-03-06 23:39:22 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.34 2011-03-09 02:16:34 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -36,12 +36,13 @@ must ensure you do all the steps listed below:
     a) Update gmt_arrrghh.html, gmt_faq.html, gmt_home.html,
        gmt_install_form.html, gmt_releases_template.html
        install_gmt_form.pl, gmt_nav.html
-    b) create web examples:
-       make web
+    b) Clean out prior testing with
+       make clean-local
     c) test the update of ftp and web sites locally:
        make update-version-local
+       if new GSHHS, also do update-gshhs-local
     d) If OK, update the remote TEST ftp and web sites:
-       make update-version-test
+       make update-version-test [and update-gshhs-test]
        Have team members install from these sites.
 
 If still good to go:
@@ -56,13 +57,15 @@ If still good to go:
     in guru/install_gmt and website/gmt_install_form.html
 
 9.  Edit the *.iss files and run GMT_winbuild.bat under Parallels which will build
-    the three Windows installers and place them in GMT/ftp.
+    the three Windows installers and place them in GMT/ftp.  Also run GSHHS_winbuild.bat
+    if there is a GSHHS update.
 
-10. Release the new version with make update-version-live.
+10. Release the new GMT version with make update-version-live. For a new GSHHS version,
+    also do update-gshhs-live
 
 11. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
-    b) Send email to gmt-help and gmt-group with the Announcement.
+    b) Wait 24 hours, then send email to gmt-help and gmt-group with the Announcement.
 
 #-------------------------------------------------------------------------------
 
