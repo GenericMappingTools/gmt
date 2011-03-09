@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.873 2011-03-08 20:04:14 guru Exp $
+	$Id: ChangeLog,v 1.874 2011-03-09 00:28:59 guru Exp $
 -----------------------------------------------------------------------------------------
 2011-03-10	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4.
 	  GMT5 branch will be merged to new trunk and converted to subversion.
 -----------------------------------------------------------------------------------------
+
+2011-03-08	pwessel
+	* configure.ac:		Check for bad 64-bit qsort under earlier OS X did not work.
+				Needed to add -fno-common to CFLAGS under OS X Tiger
 
 2011-03-06	pwessel
 	* share/cpt:		GMT_jet.cpt had two bad values causing discontinuities.
