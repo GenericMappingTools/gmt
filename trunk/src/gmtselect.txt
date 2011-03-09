@@ -58,7 +58,7 @@ Reverses the sense of the test for each of the criteria specified:
 .br
 	\fBr\fP  select records NOT inside the specified rectangular region.
 .br
-	\fBs\fP  select records NOT considered inside as specified by OPT(A) OPT(D) OPT(N).
+	\fBs\fP  select records NOT considered inside as specified by OPT(N) (and OPT(A), OPT(D)).
 .br
 	\fBz\fP  select records NOT within the range specified by OPT(Z).
 #include "explain_-J_short.txt"
