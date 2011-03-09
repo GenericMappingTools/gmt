@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.104 2011-03-07 08:02:20 guru Exp $
+dnl $Id: configure.ac,v 1.105 2011-03-09 00:28:59 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.104 $)
+AC_REVISION($Revision: 1.105 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -170,7 +170,9 @@ dnl Get current OS and chip type
 dnl -----------------------------------------------------------------
 dnl
 os=`uname -s`
-osr=`uname -r | cut -d. -f1`
+if test "X$os" = "XDarwin" ; then
+	osr=`uname -r | cut -d. -f2`
+fi
 chip=`uname -p`
 Sun_rev=`uname -r | grep '^5.'`
 dnl
@@ -290,24 +292,37 @@ dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-64 for turning on 64-bit compilation
 dnl -----------------------------------------------------------------
 dnl
+qsort_check=0
 AC_CHECK_SIZEOF(long)
 AC_MSG_CHECKING(for 64-bit compilation)
 if test "X$enable_64" = "Xyes" ; then
+	AC_MSG_RESULT(yes: forcing 64-bit)
 	GCC_64="-m64"
 	LDFLAGS="$LDFLAGS -m64"
-	if test "X$os" = "XDarwin" && test "$osr"0 -lt 100 ; then
-		# Circumvent qsort bug on OSX prior to Snow Leopard
-		CPPFLAGS="$CPPFLAGS -DGMT_QSORT"
+	if test "X$os" = "XDarwin" ; then
+		qsort_check=1
 	fi
-	AC_MSG_RESULT(yes: forcing 64-bit)
 elif test "X$enable_64" = "Xno" ; then
 	GCC_64="-m32"
 	LDFLAGS="$LDFLAGS -m32"
 	AC_MSG_RESULT(no: forcing 32-bit)
 elif test "$ac_cv_sizeof_long" = "8" ; then
 	AC_MSG_RESULT(using default: 64-bit)
+	if test "X$os" = "XDarwin" ; then
+		qsort_check=1
+	fi
 else
 	AC_MSG_RESULT(using default: 32-bit)
+fi
+if test "$qsort_check" = "1" ; then
+	AC_MSG_CHECKING(for buggy qsort under 64-bit OS X)
+	if test $osr -lt 6 ; then
+		# Circumvent qsort bug on OSX prior to Snow Leopard
+		CPPFLAGS="$CPPFLAGS -DGMT_QSORT"
+		AC_MSG_RESULT(yes: use GMT version of qsort)
+	else
+		AC_MSG_RESULT(no: use OS X version of qsort)
+	fi
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -756,6 +771,9 @@ if test "$enable_shared" = "yes" ; then
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
 		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib '$OSX_L
+		if test $osr -eq 4 ; then	# Tiger needs special option for shared libs
+			CFLAGS="$CFLAGS -fno-common"
+		fi
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
 		SL=sl
@@ -875,7 +893,7 @@ However, if shared libraries ARE supported on this system you
 may try edit src/config.mk and manually set the macros
 CFLAGS, CPPFLAGS, LD_OPT, LDFLAGS, and LIBEXT accordingly.
 Please include the output of uname -a and mail the working
-config.mk to gmt-team@hawaii.edu.  Thanx.
+config.mk to gmt-team@lists.hawaii.edu.  Thanx.
 =============================================================
 EOF
 	cat .gmtconfigure
