@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.105 2011-03-09 00:28:59 guru Exp $
+dnl $Id: configure.ac,v 1.106 2011-03-09 01:41:25 guru Exp $
 dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
 dnl     See LICENSE.TXT file for copying and redistribution conditions.
 dnl
@@ -14,7 +14,7 @@ dnl     GNU General Public License for more details.
 dnl
 dnl     Contact info: gmt.soest.hawaii.edu
 dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.105 $)
+AC_REVISION($Revision: 1.106 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -171,7 +171,7 @@ dnl -----------------------------------------------------------------
 dnl
 os=`uname -s`
 if test "X$os" = "XDarwin" ; then
-	osr=`uname -r | cut -d. -f2`
+	osr=`uname -r | cut -d. -f1`
 fi
 chip=`uname -p`
 Sun_rev=`uname -r | grep '^5.'`
@@ -316,7 +316,7 @@ else
 fi
 if test "$qsort_check" = "1" ; then
 	AC_MSG_CHECKING(for buggy qsort under 64-bit OS X)
-	if test $osr -lt 6 ; then
+	if test $osr -lt 10 ; then
 		# Circumvent qsort bug on OSX prior to Snow Leopard
 		CPPFLAGS="$CPPFLAGS -DGMT_QSORT"
 		AC_MSG_RESULT(yes: use GMT version of qsort)
@@ -771,7 +771,7 @@ if test "$enable_shared" = "yes" ; then
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
 		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib '$OSX_L
-		if test $osr -eq 4 ; then	# Tiger needs special option for shared libs
+		if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
 			CFLAGS="$CFLAGS -fno-common"
 		fi
 	elif test "$os" = "HP-UX" ; then
