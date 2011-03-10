@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.34 2011-03-09 02:16:34 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.35 2011-03-10 17:04:03 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -17,7 +17,7 @@ must ensure you do all the steps listed below:
 0.  Make any changes to README, README.WIN32, and Changelog.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
-    Check version number and release data in configure.ac and install_gmt.
+    Check version number and release data in configure.ac and install_gmt.sh.
 
 1.  run make latest-config
     get the latest config.sub and config.guess.  Make sure this worked
