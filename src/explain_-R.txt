@@ -1,16 +1,2 @@
 .TP
-OPT(R)
-\fIxmin\fP, \fIxmax\fP, \fIymin\fP, and \fIymax\fP specify the Region of interest.  For geographic
-regions, these limits correspond to \fIwest, east, south,\fP and \fInorth\fP and you may specify them
-in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append \fBr\fP if lower left and upper right
-map coordinates are given instead of w/e/s/n.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain
-(0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude).  Alternatively, specify the name
-of an existing grid file and the OPT(R) settings (and grid spacing, if applicable) are copied from the grid.
-For calendar time coordinates you may either give (a) relative
-time (relative to the selected \fBTIME_EPOCH\fP and in the selected \fBTIME_UNIT\fP; append \fBt\fP to
-OPT(JX)|\fBx\fP), or (b) absolute time of the form [\fIdate\fP]\fBT\fP[\fIclock\fP]
-(append \fBT\fP to OPT(JX)|\fBx\fP).  At least one of \fIdate\fP and \fIclock\fP
-must be present; the \fBT\fP is always required.  The \fIdate\fP string must be of the form [-]yyyy[-mm[-dd]]
-(Gregorian calendar) or yyyy[-Www[-d]] (ISO week calendar), while the \fIclock\fP string must be of
-the form hh:mm:ss[.xxx].  The use of delimiters and their type and positions must be exactly as indicated
-(however, input, output and plot formats are customizable; see \fBgmtdefaults\fP). 
+GMT_Rx_OPT Specify the region of interest.

@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.11 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_gdalread.h,v 1.12 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,6 +60,16 @@ struct GDALREAD_CTRL {
 	} r;
 };
 
+/* Structure to hold metadata info in a per babds basis read */
+struct GDAL_BAND_FNAMES {
+	char		*DataType;
+	GMT_LONG	XSize;
+	GMT_LONG	YSize;
+	double		nodata;
+	double		MinMax[2];
+	double		ScaleOffset[2];
+};
+
 /* Structure with the output data transmited by GMT_gdalread */
 struct GD_CTRL {
 	/* active is TRUE if the option has been activated */
@@ -110,4 +120,6 @@ struct GD_CTRL {
 	struct GEOGCorners {
 		double LL[2], UL[2], UR[2], LR[2];
 	} GEOGCorners;
+
+	struct GDAL_BAND_FNAMES *band_field_names;
 };

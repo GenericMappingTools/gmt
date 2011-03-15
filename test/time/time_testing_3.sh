@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: time_testing_3.sh,v 1.5 2007-11-15 04:20:42 remko Exp $
+#	$Id: time_testing_3.sh,v 1.6 2011-03-15 02:06:46 guru Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -16,19 +16,20 @@ sample1d -I0.5 << EOF > $$.d
 4	1
 EOF
 cat << EOF > $$.answer
-1970-01-01T00:00:00.0
-1970-01-01T00:00:00.5
-1970-01-01T00:00:01.0
-1970-01-01T00:00:01.5
-1970-01-01T00:00:02.0
-1970-01-01T00:00:02.5
-1970-01-01T00:00:03.0
-1970-01-01T00:00:03.5
-1970-01-01T00:00:04.0
+>
+1970-01-01T00:00:00.0	0
+1970-01-01T00:00:00.5	0.125
+1970-01-01T00:00:01.0	0.25
+1970-01-01T00:00:01.5	0.375
+1970-01-01T00:00:02.0	0.5
+1970-01-01T00:00:02.5	0.625
+1970-01-01T00:00:03.0	0.75
+1970-01-01T00:00:03.5	0.875
+1970-01-01T00:00:04.0	1
 EOF
-gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=unix --OUTPUT_CLOCK_FORMAT=hh:mm:ss.x > $$.result
+gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=unix --FORMAT_CLOCK_OUT=hh:mm:ss.x > $$.result
 
-paste $$.result $$.answer | awk '{if ($1 != $3) print $0}' > fail
+diff $$.result $$.answer > fail
 
 rm -f $$.*
 

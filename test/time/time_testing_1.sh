@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: time_testing_1.sh,v 1.7 2008-02-20 16:02:49 remko Exp $
+#	$Id: time_testing_1.sh,v 1.8 2011-03-15 02:06:46 guru Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -14,7 +14,7 @@
 . ../functions.sh
 header "Test time conversions (rata die)"
 
-( gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --D_FORMAT=%.12g | awk '{if ($1 != $2) print $0}' > fail ) <<%
+( gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --FORMAT_FLOAT_OUT=%.12g | grep -v ">" | awk '{if ($1 != $2) print $0}' > fail ) <<%
  2000-01-01T12:00:00    730120.5
 -4713-11-25T12:00:00  -1721423.5
  1858-11-17T00:00:00    678576.0

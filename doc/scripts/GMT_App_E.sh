@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.9 2011-02-28 00:58:00 remko Exp $
+#	$Id: GMT_App_E.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -7,8 +7,6 @@
 #
 . functions.sh
 ps=GMT_App_E.ps
-
-trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 xwidth=0.45	# Width of each box (all units are in inches)
 ywidth=0.45	# Height of each box
@@ -37,7 +35,7 @@ do
 		psxy -R -J -GP0/$p -O -K $$.App_E.d -X${xwidth}i >> $ps
 		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> $ps
 		echo "0 0.225" | psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
-		echo "0 0.225 9 0 1 CM $p" | pstext -R0/$w/0/$ywidth -J -O -K -N >> $ps
+		echo "0 0.225 $p" | pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
 		y=0.0
 		x=$dx
 	done
@@ -45,5 +43,3 @@ do
 	x=$back
 done
 psxy -R -J /dev/null -O >> $ps
-
-rm -f $$.*

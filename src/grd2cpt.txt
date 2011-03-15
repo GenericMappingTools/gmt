@@ -3,103 +3,120 @@
 .SH NAME
 grd2cpt \- Make a color palette table from grid files
 .SH SYNOPSIS
-\fBgrd2cpt\fP \fIgrdfiles\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
-[ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] [ GMT_Rgeo_OPT ] 
-[ OPT(S)\fIzstart/zstop/zinc\fP ] [ OPT(T)\fB-\fP|\fB+\fP|\fB_\fP|\fB=\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
+BD(grd2cpt) IT(grdfiles) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(cptmaster) ] 
+[ OPT(D)[BD(i)|BD(o)] ] [ OPT(E)IT(nlevels) ]
+[ OPT(F)[BD(R)|BD(r)|BD(h)|BD(c) ] [ OPT(I) ] 
+[ OPT(L)IT(minlimit/maxlimit) ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[BD(i)|BD(o)] ] [ GMT_Rgeo_OPT ] 
+[ OPT(S)IT(zstart/zstop/zinc) ] [ OPT(T)BD(-)|BD(+)|BD(_)|BD(=) ] [ GMT_V_OPT ]
+[ OPT(W) ] [ OPT(Z) ]
 .SH DESCRIPTION
-\fBgrd2cpt\fP reads one or more grid files and writes a color palette (cpt) file to
+BD(grd2cpt) reads one or more grid files and writes a color palette (cpt) file to
 standard output.  The cpt file is based on an existing master cpt file of
 your choice, and the mapping from data value to colors is through the
 data's cumulative distribution function (CDF), so that the colors are\"'
 histogram equalized.  Thus if the grid(s) and the resulting cpt file are used in
-\fBgrdimage\fP with a linear projection, the colors will be uniformly
+BD(grdimage) with a linear projection, the colors will be uniformly
 distributed in area on the plot.  Let z be the data values in the grid. 
 Define CDF(Z) = (# of z < Z) / (# of z in grid).  (NaNs are ignored).
 These z-values are then normalized to the master cpt file and colors are
 sampled at the desired intervals.
 .br
 The color palette includes three additional colors beyond the range of z-values. These are
-the background color (B) assigned to values lower than the lowest \fIz\fP-value,
-the foreground color (F) assigned to values higher than the highest \fIz\fP-value,
+the background color (B) assigned to values lower than the lowest IT(z)-value,
+the foreground color (F) assigned to values higher than the highest IT(z)-value,
 and the NaN color (N) painted whereever values are undefined.
 .br
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
-If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
-the \.gmtdefaults4 file or the command line will be used. This default behavior can be overruled
+If not, the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) from
+the BD(gmt.conf) file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
 .br
-The color model (RGB, HSV or CMYK) of the palette created by \fBmakecpt\fP will be the same as
-specified in the header of the master cpt file. When there is no \fBCOLOR_MODEL\fP entry in the
-master cpt file, the \fBCOLOR_MODEL\fP specified in the \.gmtdefaults4 file or on the command line
+The color model (RGB, HSV or CMYK) of the palette created by BD(makecpt) will be the same as
+specified in the header of the master cpt file. When there is no BD(COLOR_MODEL) entry in the
+master cpt file, the BD(COLOR_MODEL) specified in the BD(gmt.conf) file or on the command line
 will be used.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgrdfiles\fP
+IT(grdfiles)
 Names of one or more 2-D binary grid files used to derive the color palette table.
 All grids need to have the same size and dimensions.
 (See GRID FILE FORMATS below).
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(C)
+OPT(A)[BD(+)]IT(transparency)
+Sets a constant level of transparency (0\-100) for all color slices.  Prepend BD(+) to also
+affect the fore-, back-, and nan-colors [Default is no transparency, i.e. 0 (opaque)].
+.TP
+OPT(C)IT(cptmaster)
 Selects the master color table to use in the interpolation.  Choose among
-the built-in tables (type \fBgrd2cpt\fP to see the list) or give the
+the built-in tables (type BD(grd2cpt) to see the list) or give the
 name of an existing cpt file [Default gives a rainbow cpt file].
 .TP
-OPT(D)
-Select the colors for lowest and highest \fIz\fP-values in the output cpt file
-as the back- and foreground colors that will be written to the cpt file [Default uses
-the colors specified in the master file, or those defined by 
-the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP].
+OPT(D)[BD(i)|BD(o)]
+Select the back- and foreground colors to match the colors for lowest and highest IT(z)-values
+in the output cpt file [Default uses the colors specified in the master file, or those defined by 
+the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN)].
+Append BD(i) to match the colors for the lowest and highest values in the input (instead of the output) cpt file.
 .TP
-OPT(E)
-Create a linear color table by dividing the grid z-range into \fInlevels\fP equidistant slices.
+OPT(E)IT(nlevels)
+Create a linear color table by dividing the grid z-range into IT(nlevels) equidistant slices.
+.TP
+OPT(F)[BD(R)|BD(r)|BD(h)|BD(c)]
+Force output cpt file to written with r/g/b codes, gray-scale values or color name (BD(R), default)
+or r/g/b codes only (BD(r)), or h-s-v codes (BD(h)), or c/m/y/k codes (BD(c)).
 .TP
 OPT(I)
 Reverses the sense of color progression in the master cpt file.
 Also exchanges the foreground and background colors, including those specified by
-the parameters \fBCOLOR_BACKGROUND\fP and \fBCOLOR_FOREGROUND\fP.
+the parameters BD(COLOR_BACKGROUND) and BD(COLOR_FOREGROUND).
 .TP
-OPT(L)
-Limit range of cpt file to \fIminlimit/maxlimit\fP, and don't count data\"'
+OPT(L)IT(minlimit/maxlimit)
+Limit range of cpt file to IT(minlimit/maxlimit), and don't count data\"'
 outside range when estimating CDF(Z).  [Default uses min and max of data.] 
 .TP
 OPT(M)
 Overrule background, foreground, and NaN colors specified in the master cpt file with the values of
-the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP specified in
-the \.gmtdefaults4 file or on the command line.
-When combined with OPT(D), only \fBCOLOR_NAN\fP is considered.
+the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) specified in
+the BD(gmt.conf) file or on the command line.
+When combined with OPT(D), only BD(COLOR_NAN) is considered.
 .TP
 OPT(N)
 Do not write out the background, foreground, and NaN-color fields [Default will write them].
 .TP
-OPT(Q)
+OPT(Q)[BD(i)|BD(o)]
 Selects a logarithmic interpolation scheme [Default is linear].  OPT(Qi) expects input z-values to be log10(z), assigns colors, and writes out z [Default].
 OPT(Qo) takes log10(z) first, assigns colors, and writes out z.
 #include "explain_-R.txt"
 .TP
-OPT(S)
-Set steps in cpt file.  Calculate entries in cpt file from \fIzstart\fP to \fIzstop\fP
-in steps of (\fIzinc\fP).  [Default chooses arbitrary values by a crazy scheme.]
+OPT(S)IT(zstart/zstop/zinc)
+Set steps in cpt file.  Calculate entries in cpt file from IT(zstart) to IT(zstop)
+in steps of (IT(zinc)).  [Default chooses arbitrary values by a crazy scheme.]
 .TP
-OPT(T)
+OPT(T)BD(-)|BD(+)|BD(_)|BD(=)
 Force the color table to be symmetric about zero (from -R to +R). Append flag to set the range R:
-\fB-\fP for R =|zmin|, \fB+\fP for R = |zmax|, \fB_\fP for R = min(|zmin|, |zmax|), or
-\fB=\fP for R = max(|zmin|, |zmax|).
+BD(-) for R =|zmin|, BD(+) for R = |zmax|, BD(_) for R = min(|zmin|, |zmax|), or
+BD(=) for R = max(|zmin|, |zmax|).
 .TP
 OPT(V)
 Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is silent.] 
 .TP
+OPT(W)
+Do not interpolate the input color table but pick the output colors starting at the beginning of the map.
+This is particularly useful in combination with a categorical color table. Cannot be used in combination with OPT(Z).
+.TP
 OPT(Z)
 Will create a continuous color palette.
 [Default is discontinuous, i.e., constant color intervals]
+#include "explain_help.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
 Sometimes you don't want to make a cpt file (yet) but would find it helpful\"'
 to know that 90% of your data lie between z1 and z2, something you cannot
-learn from \fBgrdinfo\fP.  So you can do this to see some points on the
+learn from BD(grdinfo).  So you can do this to see some points on the
 CDF(Z) curve (use OPT(V) option to see more):
 .br
 .sp
-\fBgrd2cpt\fP mydata.grd OPT(V) > /dev/null
+BD(grd2cpt) mydata.nc OPT(V) > /dev/null
 .br
 .sp
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
@@ -107,10 +124,10 @@ data below zero in computing CDF(Z), and use the built-in master cpt file
 relief, run
 .br
 .sp
-\fBgrd2cpt\fP mydata.grd OPT(C)\fIrelief\fP \fB-L\fP0/10000 \fB-S\fP0/200/20 > mydata.cpt
+BD(grd2cpt) mydata.nc OPT(C)IT(relief) BD(-L)0/10000 BD(-S)0/200/20 > mydata.cpt
 .SH "SEE ALSO"
-.IR gmtdefaults (1),
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR grdhisteq (1),
 .IR grdinfo (1),
 .IR makecpt (1)

@@ -1,4 +1,4 @@
-#	$Id: grdraster.info,v 1.5 2010-10-28 21:48:43 guru Exp $
+#	$Id: grdraster.info,v 1.6 2011-03-15 02:06:31 guru Exp $
 #
 # This file contains information on rasterfiles which are readable with grdraster.
 # This file must be named grdraster.info.  At run time, grdraster will look for
@@ -21,7 +21,7 @@
 # -R<w>/<e>/<s>/<n> describes the range of the raster in the usual GMT -R manner.
 # -I<x_inc>/<y_inc> describes the sampling interval in the usual GMT -I manner.
 # GorP is either G or P, indicating Grid or Pixel registration.  Optionally, you
-#	can append G (Geographic) or C (Cartesian) to explicitly set this attribute
+#	can append G (Geographic) or C (Cartesian) to explicity set this attribute
 #	which would otherwise be guessed based on the x/y range
 # type is one of the following, indicating the kind of data stored in the raster:
 #	b	bit data, either 0 or 1, one bit per data value.
@@ -35,8 +35,8 @@
 # NaNflag is a number which is written in the raster to represent NaN.
 #	If all values in the raster represent data, NaNflag is none.
 # filename is the name the raster file.  If filename begins with a "/", then
-#	it will be treated as a complete name.  If not, the complete name will
-#	be formed as $(GMT_GRIDDIR)/filename.
+#	it will be treated as a complete name.  If not, we will look for the
+#	file in the directories pointed to by $GMT_DATADIR.
 #
 # BYTE-ORDER:
 #
@@ -59,3 +59,6 @@
 5 "Sea floor age from Cande"	"Ma"	-R0/360/-90/90		-I5m		PG i 0.1	0	-30000	cande5m_ages.i2
 6 "Sea floor age from Muller"	"Ma"	-R0/360/-72/72		-I6m		GG i 0.01	0	32767	scripps6m_ages.i2
 7 "1=land, 0=sea bitmask"	"T/F"	-R0/360/-90/90		-I5m		PG b 1		0	none	landsea.bits
+#8 "Seasat geoid from J. Marsh"	"m"	-R0/359.875/-60/70	-I0.125		GG i 0.01	0	32765	marsh.geo
+#9 "Geosat gravity from Marks"	"mGal"	-R0/360/-72/-30		-I0.05/0.04	GG i 0.01	0	32767	geosat30.bin
+#10 "Seasat gravity from Haxby"	"mGal"	-R0:05/360/-71:55/72	-I5m		GG i 0.1	0	none	haxby.bin

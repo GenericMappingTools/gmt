@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.23 2010-07-22 20:46:43 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.24 2011-03-15 02:06:37 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -42,9 +42,6 @@ int main (int argc, char **argv)
 		gshhs_header.ancestor	= h.ancestor;
 		if ((gshhs_header.east - gshhs_header.west) == M360) gshhs_header.n--;	/* Antarctica, drop the duplicated point for GSHHS */
 		np = gshhs_header.n;
-		if (h.id == 187091) {
-			k = 1;
-		}
 #if WORDS_BIGENDIAN == 0
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.west	= swabi4 ((unsigned int)gshhs_header.west);

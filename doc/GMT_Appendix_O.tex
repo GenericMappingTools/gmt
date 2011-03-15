@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.28 2011-02-28 16:05:16 remko Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.29 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Annotation of Contours and ``Quoted Lines''}
@@ -36,9 +36,9 @@ upper and lower case; they share the same algorithm but differ in some other way
 In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
 to be labeled.  The codes are:
 \begin{description}
-\item [d:] Full syntax is {\bf d}{\it dist}[{\bf c$|$i$|$m$|$p}][/{\it frac}].
+\item [d:] Full syntax is {\bf d}{\it dist}[{\bf c$|$i$|$p}][/{\it frac}].
 Place labels according to the distance measured along the projected line on the map.  Append the
-unit you want to measure distances in [Default is taken from {\bf MEASURE\_UNIT}].
+unit you want to measure distances in [Default is taken from \textbf{PROJ\_LENGTH\_UNIT}].
 Starting at the beginning of a line, place labels every {\it dist} increment of
 distance along the line.  To ensure that closed lines whose total length is less
 than {\it dist} get annotated, we may append {\it frac} which will place the first
@@ -48,12 +48,12 @@ line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.
 This option is similar to {\bf d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
 planet we are dealing with.} surface distances along the lines are considered.  Append the
-unit you want to measure distances in; choose among {\bf d}egree, m{\bf e}ter [Default],
-{\bf k}ilometer, statute {\bf m}iles, or {\bf n}autical miles.  Other aspects are similar to code {\bf d}.
-\item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it slop}[{\bf c$|$i$|$m$|$p}]].  Here, an ASCII file {\it fix.d} is
+unit you want to measure distances in; choose among arc {\bf d}egree, {\bf m}minute, and {\bf s}second,
+or m{\bf e}ter [Default], {\bf f}eet, {\bf k}ilometer, statute {\bf M}iles, or {\bf n}autical miles.  Other aspects are similar to code {\bf d}.
+\item [f:] Full syntax is {\bf f}{\it fix.d}[/{\it slop}[{\bf c$|$i$|$p}]].  Here, an ASCII file {\it fix.d} is
 given which must contain records whose first two columns hold the coordinates of points along
 the lines at which locations the labels should be placed.  Labels will only be placed if the coordinates
-match the line coordinates to within a distance of {\it slop} (append unit or we use {\bf MEASURE\_UNIT}).
+match the line coordinates to within a distance of {\it slop} (append unit or we use \textbf{PROJ\_LENGTH\_UNIT}).
 The default {\it slop} is zero, meaning only exact coordinate matches will do.
 \item [l:] Full syntax is {\bf l}{\it line1}[,{\it line2}[, ...]].  One or more straight line segments
 are specified separated by commas, and labels will be placed at the intersections between these lines and
@@ -68,11 +68,11 @@ upper left to the lower right map corner, while {\bf Z-}/135W/15S is a line from
 (135\DS W, 15\DS S).
 \item [L:] Same as {\bf l} except we will treat the lines given as great circle start/stop coordinates and fill in
 the points between before looking for intersections.
-\item [n:] Full syntax is {\bf n}{\it number}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Place
+\item [n:] Full syntax is {\bf n}{\it number}[/{\it minlength}[{\bf c$|$i$|$p}]].  Place
 {\it number} of labels along each line regardless of total line length.  The line is divided into {\it number}
 segments and the labels are placed at the centers of these segments.  Optionally, you may give a {\it minlength}
 distance to ensure that no labels are placed closer than this distance to its neighbors.
-\item [N:] Full syntax is {\bf N}{\it number}[/{\it minlength}[{\bf c$|$i$|$m$|$p}]].  Similar to
+\item [N:] Full syntax is {\bf N}{\it number}[/{\it minlength}[{\bf c$|$i$|$p}]].  Similar to
 code {\bf n} but here labels are placed at the ends of each segment (for {\it number} $\geq 2$).  A special
 case arises for {\it number} $= 1$ when a single label will be placed according to the sign of {\it number}:
 $-1$ places one label justified at the start of the line, while $+1$ places one label justified at the end of the line.
@@ -108,22 +108,22 @@ fixed percentage of the label font size in use.  The default is 15\%.
 \item [+d:] Debug mode.  This is useful when testing contour placement as it will draw the normally
 invisible helper lines and points in the label placement algorithms above.
 \item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
-default font is given by {\bf ANNOT\_FONT\_PRIMARY}.
-\item [+g:] Selects opaque rather than the default transparent textboxes.  You may optionally append
-the color you want to fill the label boxes; the default is the same as {\bf PAGE\_COLOR}.
+default font is given by \textbf{FONT\_ANNOT\_PRIMARY}.
+\item [+g:] Selects opaque rather than the default transparent text boxes.  You may optionally append
+the color you want to fill the label boxes; the default is the same as \textbf{PS\_PAGE\_COLOR}.
 \item [+j:] Selects the justification of the label relative to the placement points determined
 above.  Normally this is center/mid justified ({\bf CM} in \GMTprog{pstext} justification parlance) and
 this is indeed the default setting.  Override by using this option and append another justification
 key code from [{\bf L$|$C$|$R}][{\bf B$|$M$|$T}].  Note for curved text ({\bf +v}) only vertical
 justification will be affected.
-\item [+k:] Sets the color of the text labels, which otherwise defaults to that given by {\bf COLOR\_BACKGROUND}.
+\item [+k:] Sets the color of the text labels, which otherwise defaults to that given by \textbf{COLOR\_BACKGROUND}.
 \item [+o:] Request a rounded, rectangular label box shape; the default is rectangular.  This is only
 manifested if the box is filled or outlined, neither of which is implied by this option alone (see {\bf +g}
 and {\bf +p}).  As this option only applies to straight text, it is ignored if {\bf +v} is given.
 \item [+p:] Selects the drawing of the label box outline; append your preferred {\it pen} unless you
 want the default \GMT\ pen [0.25p,black].
 \item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
-the given threshold value.  Append the radius unit of your choice ({\bf c$|$i$|$m$|$p}) [Default is 0].
+the given threshold value.  Append the radius unit of your choice ({\bf c$|$i$|$p}) [Default is 0].
 \item [+s:] Change the font size of the labels, which by default is 9 points.
 \item [+u:] Append the chosen {\it unit} to the label.  Normally a space will separate the label
 and the unit.  If you want to close this gap, append a {\it unit} that begins with a hyphen (--).
@@ -148,12 +148,12 @@ spaces you must place it inside matching quotes.
 input line segments are given in the multi-segment file format; if not we pick the single label
 from the file's header record).  We first scan the header for an embedded
 \Opt{L}{\it label} option; if none is found we instead use the first word following the segment marker [$>$].
-\item [+Ld:] Take the Cartesian plot distances along the line as the label; append {\bf c$|$i$|$m$|$p}
-as the unit [Default is {\bf MEASURE\_UNIT}].  The label will be formatted according to the {\bf D\_FORMAT}
+\item [+Ld:] Take the Cartesian plot distances along the line as the label; append {\bf c$|$i$|$p}
+as the unit [Default is \textbf{PROJ\_LENGTH\_UNIT}].  The label will be formatted according to the \textbf{FORMAT\_FLOAT\_OUT}
 string, \emph{unless} label placement was determined from map distances along the segment lines, in which
 case we determine the appropriate format from the distance value itself. 
 \item [+LD:]  Calculate actual Earth surface distances and use the distance at the label placement point as
-the label; append {\bf d$|$e$|$k$|$m$|$n} to specify the unit [If not given we default to {\bf d}egrees,
+the label; append {\bf d$|$e$|$f$|$k$|$m$|$M$|$n$|$s} to specify the unit [If not given we default to {\bf d}egrees,
 \emph{unless} label placement was determined from map distances along the segment lines, in which case we
 use the same unit specified for that algorithm].  Requires a map projection to be used.
 \item [+Lf:]  Use all text after the 2nd column in the fixed label location file {\it fix.d} as labels.
@@ -263,7 +263,7 @@ we have sampled the ETOPO5 relief data set.  The file \filename{transect.d} thus
 \subsection{Label placement by along-track distances, 1}
 
 This example will change the orientation of labels from along-track to across-track, and
-surrounds the labels with an opaque, outlined textbox so that the label is more readable.  We choose
+surrounds the labels with an opaque, outlined text box so that the label is more readable.  We choose
 the place the labels every 1000 km along the line and use that distance as the label.  The
 labels are placed normal to the line:
 
@@ -281,7 +281,7 @@ not the locations of the (local or global) extrema.
 
 A small variation on this theme is to place the labels parallel to the line, use
 spherical degrees for placement, append the degree symbol as a unit for the
-labels, choose a rounded rectangular textbox, and inverse-video the label:
+labels, choose a rounded rectangular text box, and inverse-video the label:
 
 \script{GMT_App_O_7}
 

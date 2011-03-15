@@ -1,20 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.26 2010-03-02 20:21:17 guru Exp $
- *
- * polygon_findlevel reads a binary file with polygons and will determine the
- * hierarchical level of all polygons (i.e., 1 is continent/island, 2 is lake, ...).
- * In doing so, it also determines the ID of the polygon that a smaller polygon is
- * contained inside.  It writes out an updated binary polygon file.  Note that for
- * the full resolution we also reset the polygon areas.  Also note that the
- * polygon IDs are NOT reset here.  This is only done by polygon_sort which will
- * rearrange polygons according to area.
- * 
- * Other (ASCII) output files:
- * Full resolution only: we recalculate areas and write them to file areas.lis.
- * levels.lis: Summary of which polygons had their levels changed (and possibly reversed).
- * parents.lis: Lists the parent polygon ID for all polygons that have a parent.
- * hierarchy.lis: Lists the hierarcical nesting of all polygons.
- * still_bad.lis: Lists of polygons that had trouble (and what it was).
+ *	$Id: polygon_findlevel.c,v 1.27 2011-03-15 02:06:37 guru Exp $
  */
 #include "wvs.h"
 
@@ -26,24 +11,26 @@ struct BLOB {
 	int x0, y0;
 } blob[N_POLY];
 
-int *lon = NULL, *lat = NULL;
-double *flon = NULL, *flat = NULL;
+int *lon, *lat;
+double *flon, *flat;
 struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, c, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, cont_no_1, cont_no_2, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, full = 0, eur_id = 0, parent, *id2k = NULL;
+	int n_reset = 0, old, bad = 0, ix0, set, force, full = 0, eur_id = 0, parent, *id2k;
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double size, f, x_shift;
-	FILE *fp = NULL, *fp2 = NULL, *fpx = NULL, *fpr = NULL;
+	FILE *fp, *fp2 = NULL, *fpx, *fpr;
 	struct LONGPAIR p;
 	char olds[32], news[32];
 	
-	if (argc != 3) {
-		fprintf (stderr, "polygon_findlevel - Recompute hierarchical levels and parent polygon IDs\n");
-		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b\n");
+	if (argc == 1) {
+		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-f]\n");
+		fprintf (stderr, "  -f will force calculation of areas.  Otherwise we will only\n");
+		fprintf (stderr, "     recalculate areas if areas.lis does not exists\n");
 		exit (EXIT_FAILURE);
 	}
+	force = (argc == 4);
 	fpx = fopen ("still_bad.lis", "w");
 	
 	for (i = 0; i < 6; i++) n_of_this[i] = 0;
@@ -57,14 +44,14 @@ int main (int argc, char **argv) {
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		cont_no_1 = (blob[n_id].h.continent);		/* Get continent number 1-6 (0 if not a continent) */
+		cont_no_1 = (blob[n_id].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 		if (cont_no_1 == EURASIA) eur_id = n_id;	/* blob with Eurasia */
 
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
 			fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
-			exit (-1);
+			exit(-1);
 		}
 		if (p.x < 0) {
 			fprintf (stderr, "x0 is actually neg %d. Stop; fix the problem\n", n_id);
@@ -76,15 +63,11 @@ int main (int argc, char **argv) {
 		blob[n_id].n_inside = blob[n_id].reverse = 0;
 		fseek (fp, (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
 		pos += blob[n_id].h.n * sizeof(struct LONGPAIR);
-		if (blob[n_id].h.n <= 3) blob[n_id].h.source = -1;	/* Remove polygons with 3 or fewer points (first and last are duplicates so this is no-area polygons) */
+		if (blob[n_id].h.n < 3) blob[n_id].h.source = -1;
 		n_id++;
 	}
 	full = (blob[eur_id].h.n > 1000000);	/* Only the full resolution has more than 1 mill points for EURASIA polygon */
 	fprintf (stderr, "\n\nFind area and direction of polygons\n");
-	if (full)
-		fprintf (stderr, "Since this is a full resolution data set we will reset the polygon areas.\n");
-	else
-		fprintf (stderr, "Since this is a lower resolution data set we will NOT reset the polygon areas.\n");
 
 	area_init ();
 
@@ -101,8 +84,8 @@ int main (int argc, char **argv) {
 		fseek (fp, (long)blob[id].start, 0);
 		for (k = 0; k < blob[id].h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findlevel:  ERROR reading file.\n");
-				exit (-1);
+				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+				exit(-1);
 			}
 			if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
 			flon[k] = p.x * 1.0e-6;
@@ -142,7 +125,7 @@ int main (int argc, char **argv) {
 #ifdef TEST
 		if (blob[id1].h.id != 0) continue;	/* Looking for 0 */
 #endif
-		cont_no_1 = (blob[id1].h.continent);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		cont_no_1 = (blob[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
 		if (cont_no_1 == ANTARCTICA) continue;	/* But skip Antarctica since there are no lakes in the data set */
 		
 		if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1);
@@ -166,7 +149,7 @@ int main (int argc, char **argv) {
 			if (blob[id2].h.id != 799) continue;	/* Looking for 799 */
 #endif
 			if (blob[id2].h.source == -1) continue;		/* Marked for deletion */
-			cont_no_2 = (blob[id2].h.continent);		/* Get continent number 1-6 (0 if not a continent) */
+			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
 			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
 			if (blob[id1].h.id == blob[id2].h.id) continue;	/* Skip self testing */
 			

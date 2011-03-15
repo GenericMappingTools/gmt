@@ -1,10 +1,10 @@
-#	$Id: meca.def,v 1.1 2004-01-12 18:57:37 pwessel Exp $
+#	$Id: meca.def,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 #	Definition file for meca symbol.  Use in psxy
 #	as -Skmeca/size.  Shows a focal mechanism beachball
 #	Color will be taken from commandline -G
 #
-0	0	1.0	C	-G255
+0	0	1.0	c	-G255
 0	0	M
 0	0.5	D
 0	0	1.0	90	180	A

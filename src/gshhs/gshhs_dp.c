@@ -1,6 +1,6 @@
-/*	$Id: gshhs_dp.c,v 1.26 2011-03-05 21:24:28 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.27 2011-03-15 02:06:37 guru Exp $
  *
- *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
@@ -24,7 +24,7 @@
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,9 +48,8 @@ int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out;
 	int	n_id, n_out, n, k, verbose = FALSE, *index;
-	int	n_tot_in, n_tot_out, n_use, flip, level, version, greenwich, src;
+	int	n_tot_in, n_tot_out, n_use, n_read, flip, level, version, greenwich, src;
 	int *x, *y;
-	size_t n_read;
 	double	redux, redux2, tolerance = 0.0;
 	struct	GSHHS h;
 	struct	POINT p;

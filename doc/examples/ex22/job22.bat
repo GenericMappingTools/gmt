@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.13 2011-03-01 01:34:48 remko Exp $
+REM             $Id: job22.bat,v 1.14 2011-03-15 02:06:31 guru Exp $
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM
@@ -9,11 +9,9 @@ REM GMT progs:  gmtset, pscoast, psxy, pslegend
 REM DOS calls:  del, sed, awk, wget|curl
 REM
 echo GMT EXAMPLE 22
-set master=y
-if exist job22.bat set master=n
-if %master%==y cd ex22
+set ps=..\example_22.ps
 
-gmtset ANNOT_FONT_SIZE_PRIMARY 10p HEADER_FONT_SIZE 18p PLOT_DEGREE_FORMAT ddd:mm:ssF
+gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 REM Get the data (-q quietly) from USGS using the wget (comment out in case
 REM your system does not have wget or curl)
@@ -48,8 +46,8 @@ echo 300	blue	10000	blue >> neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > ..\example_22.ps
-gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> ..\example_22.ps
+pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > %ps%
+gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> %ps%
 
 REM Create legend input file for NEIS quake plot
 
@@ -76,7 +74,7 @@ echo D 0 1p >> neis.legend
 echo N 1 >> neis.legend
 
 REM Put together a reasonable legend text, and add logo and user's name:
-echo ^> >> neis.legend
+echo P >> neis.legend
 echo T USGS/NEIS most recent earthquakes for the last seven days.  The data were >> neis.legend
 echo T obtained automatically from the USGS Earthquake Hazards Program page at >> neis.legend
 echo T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts >> neis.legend
@@ -90,14 +88,9 @@ echo L 12 6 LB %me% >> neis.legend
 REM OK, now we can actually run pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
-if %master%==n echo off
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -J -R -O -F neis.legend -Glightyellow -Slegend.bat
-call legend.bat >> ..\example_22.ps
-if %master%==n echo on
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F neis.legend -Glightyellow >> %ps%
 
 REM Clean up after ourselves:
 
-REM del neis.*
+del neis.*
 del .gmt*
-REM del legend.bat
-if %master%==y cd ..

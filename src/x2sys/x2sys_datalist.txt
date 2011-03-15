@@ -3,92 +3,94 @@
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
-\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(A) ] [ OPT(F)\fIname1,name2,...\fP ] 
-[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
+BD(x2sys_datalist) IT(track(s)) OPT(T)IT(TAG) [ OPT(A) ] [ OPT(F)IT(name1),IT(name2),...) ] 
+[ OPT(L)[IT(corrtable)] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_h_OPT ]
 .SH DESCRIPTION
-\fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
+BD(x2sys_datalist) reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
 OPT(T) option.  You may limit the output to a geographic region, and insist
 that the output from several files be separated by a multiple segment header.
 Only the named data fields will be output [Default selects all columns].
+.SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight.
 These (dist, adjustment) spline knots files for each track and data column
-are called \fItrack.column\fP.adj and are expected to be in the \fB$X2SYS_HOME\fP/\fITAG\fP directory.
+are called IT(track.column).adj and are expected to be in the BD($X2SYS_HOME)/IT(TAG) directory.
 The adjustments are only applied if the corresponding adjust file can be found [No residual adjustments]
 .TP
-OPT(F)
+OPT(F)IT(name1),IT(name2),...)
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
-#include "explain_-h.txt"
 .TP
-OPT(L)
+OPT(L)[IT(corrtable)]
 Apply optimal corrections to columns where such corrections are available.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
-in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
+table to use [Default uses the correction table IT(TAG)_corrections.txt which is expected to reside
+in the BD($X2SYS_HOME)/IT(TAG) directory].
 For the format of this file, see CORRECTIONS below.
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
 OPT(S)
 Suppress output records where all the data columns are NaN [Default will output all records].
 #include "explain_-V.txt"
 #include "explain_-bo.txt"
+#include "explain_-h.txt"
 .TP
 OPT(m)
-Output a multisegment header between data from each track.  Note this option does not
+Output a segment header between data from each track.  Note this option does not
 imply anything about the input file; that information is conveyed via the system tag (OPT(T)).
+#include "explain_help.txt"
 .SH EXAMPLES
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag GMT:
 .br
 .sp
-\fBx2sys_datalist\fP c2104.gmt OPT(T)GMT > myfile
+BD(x2sys_datalist) c2104.gmt OPT(T)GMT > myfile
 .br
 .sp
-To make lon,lat, and depth input for \fBblockmean\fP and \fBsurface\fP using all the files
+To make lon,lat, and depth input for BD(blockmean) and BD(surface) using all the files
 listed in the file tracks.lis and define by the tag TRK, but only the data that are inside the specified
 area, and make output binary, run
 .br
 .sp
-\fBx2sys_datalist\fP =tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
+BD(x2sys_datalist) =tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
-This table is usually produced by \fBx2sys_solve\fP.
+This table is usually produced by BD(x2sys_solve).
 Comment records beginning with # are allowed.  All correction records are of the form
 .br
 .sp
-\fItrackID observation correction\fP
+IT(trackID observation correction)
 .br
 .sp
-where \fItrackID\fP is the track name, \fIobservation\fP is one of the abbreviations for an observed field
-contained in files under this TAG, and \fIcorrection\fP consists of one or more white-space-separated \fIterm\fPs that will be
-\fBsubtracted\fP from the observation before output.  Each \fIterm\fP must have this exact syntax:
+where IT(trackID) is the track name, IT(observation) is one of the abbreviations for an observed field
+contained in files under this TAG, and IT(correction) consists of one or more white-space-separated IT(term)s that will be
+BD(subtracted) from the observation before output.  Each IT(term) must have this exact syntax:
 .br
 .sp
-\fIfactor\fP[*[\fIfunction\fP]([\fIscale\fP](\fIabbrev\fP[-\fIorigin\fP]))[^\fIpower\fP]]
+IT(factor)[*[IT(function)]([IT(scale)](IT(abbrev)[-IT(origin)]))[^IT(power)]]
 .br
 .sp
 where terms in brackets are optional (the brackets themselves are not used but regular parentheses must
-be used exactly as indicated).  No spaces are allowed except between \fIterm\fPs. The \fIfactor\fP is the amplitude
-of the basis function, while the optional \fIfunction\fP can be one of sin, cos, or exp. The
-optional \fIscale\fP and \fIorigin\fP can be used to translate the argument (before giving it to the optional
-function).  The argument \fIabbrev\fP is one of the abbreviations for columns known to this TAG.
-However, it can also be one of the three auxiliary terms \fBdist\fP (for along-track distances), \fBazim\fP for
-along-track azimuths, and \fBvel\fP (for along-track speed); these are all sensitive to the OPT(C) and OPT(N)
-settings used when defining the TAB; futhermore, \fBvel\fP requires \fBtime\fP to be present in the data.  If \fIorigin\fP is
-given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
-first record in the file (this is usually only done for \fItime\fP).  If the first data record entry is
-NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
-before multiplying by \fIfactor\fP.  The following is an example of fictitious corrections to the
-track ABC, implying the \fBz\fP column should have a linear
-trend removed, the field \fBobs\fP should be corrected by a strange dependency on latitude,
-\fBweight\fP needs to have 1 added (hence correction is given as -1), and \fBfuel\fP should be
+be used exactly as indicated).  No spaces are allowed except between IT(term)s. The IT(factor) is the amplitude
+of the basis function, while the optional IT(function) can be one of sin, cos, or exp. The
+optional IT(scale) and IT(origin) can be used to translate the argument (before giving it to the optional
+function).  The argument IT(abbrev) is one of the abbreviations for columns known to this TAG.
+However, it can also be one of the three auxiliary terms BD(dist) (for along-track distances), BD(azim) for
+along-track azimuths, and BD(vel) (for along-track speed); these are all sensitive to the OPT(C) and OPT(N)
+settings used when defining the TAB; futhermore, BD(vel) requires BD(time) to be present in the data.  If IT(origin) is
+given as BD(T) it means that we should replace it with the value of IT(abbrev) for the very
+first record in the file (this is usually only done for IT(time)).  If the first data record entry is
+NaN we revert IT(origin) to zero.  Optionally, raise the entire expression to the given IT(power),
+before multiplying by IT(factor).  The following is an example of fictitious corrections to the
+track ABC, implying the BD(z) column should have a linear
+trend removed, the field BD(obs) should be corrected by a strange dependency on latitude,
+BD(weight) needs to have 1 added (hence correction is given as -1), and BD(fuel) should be
 reduced by a linear distance term:
 .br
 .sp

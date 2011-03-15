@@ -1,11 +1,11 @@
-#	$Id: Makefile,v 1.86 2011-03-03 21:02:49 guru Exp $
+#	$Id: Makefile,v 1.87 2011-03-15 02:06:28 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+#	the Free Software Foundation; version 2 of the License.
 #
 #	This program is distributed in the hope that it will be useful,
 #	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,7 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#		Makefile for GMT Version 4.x
+#		Makefile for GMT Version 5.x
 #		GNU, Sys V, and BSD Compatible
 #
 #	Follow the instructions in this makefile to customize your setup.
@@ -55,7 +55,7 @@
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #			The GMT Team
 #
-#	Date:		15-JAN-2010
+#	Date:		20-SEPT-2009
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
@@ -152,10 +152,8 @@ install-man uninstall-man:
 install-doc::
 		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
 			mkdir -p $(docdir); \
-			cd $(rootdir)/share/doc/gmt; \
-			cp -pr html pdf examples tutorial $(docdir); \
-			cd $(docdir); \
-			rm -rf */CVS */orig */*/CVS */*/.gmt* */*/*.ps */*/.cvs*; \
+			cp -pr $(rootdir)/share/doc/gmt/{html,pdf,examples,tutorial} $(docdir); \
+			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
 		fi
@@ -184,6 +182,7 @@ spotless::
 		\rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ $(SUPPL)
 		cd src ; $(MAKE) $@
+		cd share/doc/gmt/examples ; $(MAKE) $@
 
 distclean:	spotless
 

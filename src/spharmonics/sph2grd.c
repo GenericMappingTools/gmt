@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.16 2011-03-03 21:02:51 guru Exp $
+ *    $Id: sph2grd.c,v 1.17 2011-03-15 02:06:37 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,9 +33,6 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 	struct E {	/* -E */
 		GMT_LONG active;
 	} E;
-	struct F {	/* -F */
-		GMT_LONG active;
-	} F;
 	struct G {	/* -G<grdfile> */
 		GMT_LONG active;
 		char *file;
@@ -99,9 +96,6 @@ int main (int argc, char **argv)
 				case 'E':	/* Evaluate on ellipsoid */
 					Ctrl->E.active = TRUE;
 					break;
-				case 'F':
-					Ctrl->F.active = TRUE;
-					break;
 				case 'G':
 					Ctrl->G.active = TRUE;
 					Ctrl->G.file = strdup (&argv[i][2]);
@@ -136,13 +130,13 @@ int main (int argc, char **argv)
 		}
 	}
 		
-	if (argc == 1 || GMT_give_synopsis_and_exit) {
+	if (argc == 1 || GMT->common.synopsis.active) {
 		fprintf (stderr, "sph2grd %s - Evaluate spherical harmonic models on a grid\n\n", GMT_VERSION);
 		fprintf (stderr, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 		fprintf (stderr, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [-V] [%s]\n\n", GMT_bi_OPT);
-		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
+		if (GMT->common.synopsis.active) exit (EXIT_FAILURE);
 		fprintf (stderr, "	coeff_file (or stdin) contains records of degree, order, cos, sin\n");
-		GMT_explain_option ('R');
+		GMT_explain_options ("R");
 		GMT_inc_syntax ('I', 0);
 		fprintf (stderr, "\n\tOPTIONS:\n");
 		fprintf (stderr, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
@@ -163,78 +157,74 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 		fprintf (stderr, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 		fprintf (stderr, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-		GMT_explain_option ('V');
-		GMT_explain_option ('i');
-		GMT_explain_option ('n');
-		fprintf(stderr, "\t   Default is 4 columns\n");
-		GMT_explain_option ('.');
+		GMT_explain_options ("VC4.");
 
 		exit (EXIT_FAILURE);
 	}
 	
-	GMT_check_lattice (&Ctrl->I.xinc, &Ctrl->I.yinc, &Ctrl->F.active, &Ctrl->I.active);
+	GMT_check_lattice (&Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (n_files > 1) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input coefficient file\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input coefficient file\n", GMT->init.progname);
 		error++;
 	}
-	if (!project_info.region_supplied) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify -R option\n", GMT_program);
+	if (!GMT->common.R.active) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify -R option\n", GMT->init.progname);
 		error++;
 	}
 	if (!Ctrl->G.file) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR option -G:  Must specify output file\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR option -G:  Must specify output file\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->D.active && !(Ctrl->D.mode == 'g' || Ctrl->D.mode == 'n')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR option -D:  Must append g or n\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR option -D:  Must append g or n\n", GMT->init.progname);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n", GMT->init.progname);
 		error++;
 	}
 
 	if (error) exit (EXIT_FAILURE);
 
-	if (n_files == 1 && (fp = GMT_fopen (argv[f_arg], GMT_io.r_mode)) == NULL) {
-		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, argv[f_arg]);
+	if (n_files == 1 && (fp = GMT_fopen (argv[f_arg], GMT->current.io.info.r_mode)) == NULL) {
+		fprintf (stderr, "%s: Cannot open file %s\n", GMT->init.progname, argv[f_arg]);
 		exit (EXIT_FAILURE);
 	}
 	else {
-		fp = GMT_stdin;
+		fp = GMT->session.stdin;
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT_IN);
+		GMT_setmode (GMT, GMT_IN);
 #endif
 	}
-	n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : 4;
-	while ((n_fields = GMT_input (fp, &n_expected_fields, &in)) >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+	n_expected_fields = (GMT->current.io.info.binary[GMT_IN]) ? GMT->current.io.info.ncol[GMT_IN] : 4;
+	while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.info.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		n_read++;
-		if (GMT_io.status & GMT_IO_MISMATCH) {
-			fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", GMT_program, n_fields, n_expected_fields, n_read);
+		if (GMT->current.io.info.status & GMT_IO_MISMATCH) {
+			fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", GMT->init.progname, n_fields, n_expected_fields, n_read);
 			exit (EXIT_FAILURE);
 		}
 		/* Store coefficients somewhere */
 	}
-	if (fp != GMT_stdin) GMT_fclose (fp);
+	GMT_fclose (fp);
 	
 	header.x_inc = Ctrl->I.xinc;
 	header.y_inc = Ctrl->I.yinc;
-	header.node_offset = Ctrl->F.active;
+	header.registration = GMT->common.r.active;
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 
-	grd = (float *) GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT_program);
-	lon = (double *) GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT_program);
-	for (i = 0; i < header.nx; i++) lon[i] = GMT_i_to_x (i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
+	grd = (float *) GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.progname);
+	lon = (double *) GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.progname);
+	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
 		
 	for (j = ij = 0; j < header.ny; j++) {
-		lat = GMT_j_to_y (j, header.y_min, header.y_max, header.y_inc, header.xy_off, header.ny);
-		if (gmtdefs.verbose) {
+		lat = GMT_row_to_y (j, header.y_min, header.y_max, header.y_inc, header.xy_off, header.ny);
+		if (GMT->current.setting.verbose) {
 			fprintf (stderr, "Working on latitude: ");
 			GMT_ascii_output_one (stderr, lat, 1);
 			fprintf (stderr, "\r");
@@ -245,7 +235,7 @@ int main (int argc, char **argv)
 		for (i = 0; i < header.nx; i++, ij++) grd[ij] = 0.0;
 	}
 	
-	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), Ctrl->G.file);
+	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), Ctrl->G.file);
 	
 	GMT_free ((void *)grd);
 	GMT_free ((void *)lon);

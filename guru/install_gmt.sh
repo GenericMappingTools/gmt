@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.169 2011-03-08 19:20:16 guru Exp $
+#	$Id: install_gmt.sh,v 1.170 2011-03-15 02:06:31 guru Exp $
 #
-#	Automatic installation of GMT
+#	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	10-Mar-2011
+#	3-Aug-2010
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=4.5.6
-GSHHS=2.1.1
+VERSION=5.0.0
+GSHHS=2.1.0
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -79,10 +79,10 @@ cat << EOF > gmt_install.ftp_site
 EOF
 # Order (1-7) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:doc
 cat << EOF > gmt_install.ftp_bzsizes
-1.1
+1.0
 0.04
-4.1
-9.3
+4.2
+9.4
 29.0
 3.9
 24.0
@@ -204,6 +204,7 @@ else
 	gdal_path=
 fi
 
+GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
@@ -401,23 +402,7 @@ otherwise just hit return to use the default compiler.
 
 EOF
 GMT_cc=`get_answer "Enter name of C compiler (include path if not in search path)"`
-cat << EOF >&2
-
-GMT can be built as 32-bit or 64-bit.  We do not recommend to
-explicitly choose 32-bit or 64-bit, as the netCDF install is
-not set up to honor either of these settings. The default is
-to compile without sending any 32-bit or 64-bit options to the
-compiler, which generally create 32-bit versions on older systems,
-and 64-bit versions on newer systems, like OS X Snow Leopard.
-
-EOF
-
-answer=`get_def_answer "Explicitly select 32- or 64-bit executables? (y/n)" "n"`
-if [ $answer = y ]; then
-	GMT_64=`get_def_answer "Force 64-bit? (y/n) " "y"`
-else
-	GMT_64=
-fi
+GMT_64=`get_def_answer "Produce 64-bit executables? (y/n)" "n"`
 GMT_univ=`get_def_answer "Produce universal executables (OS X)? (y/n)" "n"`
 
 cat << EOF >&2
@@ -473,13 +458,11 @@ GMT_suppl_imgsrc=d
 GMT_suppl_meca=d
 GMT_suppl_mex=d
 GMT_suppl_mgd77=d
-GMT_suppl_mgg=d
 GMT_suppl_misc=d
 GMT_suppl_segyprogs=d
 GMT_suppl_sph=d
 GMT_suppl_spotter=d
 GMT_suppl_x2sys=d
-GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
 if [ ! "X$MATLAB" = "X" ]; then
 	MATDIR=$MATLAB
@@ -508,13 +491,11 @@ imgsrc:    Extracting grids from global altimeter files (Sandwell/Smith)
 meca:      Plotting special symbols in seismology and geodesy
 mex:       Interface for reading/writing GMT grdfiles (REQUIRES MATLAB or OCTAVE)
 mgd77:     Programs for handling MGD77 data files
-mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
 segyprogs: Plot SEGY seismic data files
 sph:       Spherical triangulation, Voronoi construction and interpolation
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
-x_system:  Old (MGG-specific) Track intersection (crossover) tools
 xgrid:     An X11-based graphical editor for netCDF-based .nc files
 ------------------------------------------------------------------------------
 
@@ -532,13 +513,11 @@ EOF
 		GMT_suppl_meca=$y_or_n
 		GMT_suppl_mex=$y_or_n
 		GMT_suppl_mgd77=$y_or_n
-		GMT_suppl_mgg=$y_or_n
 		GMT_suppl_misc=$y_or_n
 		GMT_suppl_segyprogs=$y_or_n
 		GMT_suppl_sph=$y_or_n
 		GMT_suppl_spotter=$y_or_n
 		GMT_suppl_x2sys=$y_or_n
-		GMT_suppl_x_system=$y_or_n
 		GMT_suppl_xgrid=$y_or_n
 	elif [ "$answer" = "y" ]; then
 		GMT_suppl_dbase=`get_def_answer "Install the dbase supplemental package? (y/n)?" "y"`
@@ -547,13 +526,11 @@ EOF
 		GMT_suppl_meca=`get_def_answer "Install the meca supplemental package? (y/n)?" "y"`
 		GMT_suppl_mex=`get_def_answer "Install the mex supplemental package? (y/n)?" "y"`
 		GMT_suppl_mgd77=`get_def_answer "Install the mgd77 supplemental package? (y/n)?" "y"`
-		GMT_suppl_mgg=`get_def_answer "Install the mgg supplemental package? (y/n)?" "y"`
 		GMT_suppl_misc=`get_def_answer "Install the misc supplemental package? (y/n)?" "y"`
 		GMT_suppl_segyprogs=`get_def_answer "Install the segyprogs supplemental package? (y/n)?" "y"`
 		GMT_suppl_sph=`get_def_answer "Install the sph supplemental package? (y/n)?" "y"`
 		GMT_suppl_spotter=`get_def_answer "Install the spotter supplemental package? (y/n)?" "y"`
 		GMT_suppl_x2sys=`get_def_answer "Install the x2sys supplemental package? (y/n)?" "y"`
-		GMT_suppl_x_system=`get_def_answer "Install the x_system supplemental package? (y/n)?" "y"`
 		GMT_suppl_xgrid=`get_def_answer "Install the xgrid supplemental package? (y/n)?" "y"`
 	fi
 	if [ "$GMT_suppl_mex" = "y" ]; then
@@ -638,13 +615,11 @@ GMT_suppl_meca=$GMT_suppl_meca
 GMT_suppl_mex=$GMT_suppl_mex
 GMT_mex_type=$GMT_mex_type
 GMT_suppl_mgd77=$GMT_suppl_mgd77
-GMT_suppl_mgg=$GMT_suppl_mgg
 GMT_suppl_misc=$GMT_suppl_misc
 GMT_suppl_segyprogs=$GMT_suppl_segyprogs
 GMT_suppl_sph=$GMT_suppl_sph
 GMT_suppl_spotter=$GMT_suppl_spotter
 GMT_suppl_x2sys=$GMT_suppl_x2sys
-GMT_suppl_x_system=$GMT_suppl_x_system
 GMT_suppl_xgrid=$GMT_suppl_xgrid
 #---------------------------------------------
 #       GMT ENVIRONMENT SECTION
@@ -1198,10 +1173,8 @@ fi
 
 if [ "$GMT_64" = "y" ]; then
 	enable_64=--enable-64
-elif [ "$GMT_64" = "n" ]; then
-	enable_64=--disable-64
 else
-	enable_64=
+	enable_64=--disable-64
 fi
 if [ "$GMT_univ" = "y" ]; then
 	enable_univ=--enable-universal
@@ -1323,7 +1296,7 @@ fi
 if [ $write_doc -eq 1 ]; then
 	if [ -d share/doc ]; then
 		$GMT_make install-doc || exit
-		echo "All users should add $GMT_doc/gmt/html/gmt_services.html to their browser bookmarks" >&2
+		echo "All users should add $GMT_doc/gmt/gmt_services.html to their browser bookmarks" >&2
 	fi
 else
 	echo "You do not have write permission to create $GMT_doc" >&2
@@ -1386,10 +1359,6 @@ cat << EOF >&2
 For sh or bash users:
 export NETCDFHOME=$NETCDFHOME
 export PATH=$GMT_bin:\$PATH
-
-Note: if you installed netCDF as a shared library you may have to add
-the path to this library to LD_LIBRARY_PATH or place the library in a
-standard system path [see information on shared library for your OS].
 EOF
 if [ "$GMT_sharedir" != "$GMT_share" ]; then
 	echo export GMT_SHAREDIR=$GMT_sharedir >&2

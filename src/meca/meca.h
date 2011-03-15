@@ -1,4 +1,4 @@
-/*	$Id: meca.h,v 1.10 2011-01-02 20:09:36 guru Exp $
+/*	$Id: meca.h,v 1.11 2011-03-15 02:06:37 guru Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -26,40 +26,40 @@
 #define squared(x) ((x) * (x))
 
 struct AXIS {
-    double str;
-    double dip;
-    double val;
-    GMT_LONG e;
+	double str;
+	double dip;
+	double val;
+	GMT_LONG e;
 };
 /* val in 10**e dynes-cm */
 
 struct MOMENT {
-    double mant;
-    GMT_LONG exponent;
+	double mant;
+	GMT_LONG exponent;
 };
 
 struct nodal_plane {
-    double str;
-    double dip;
-    double rake;
+	double str;
+	double dip;
+	double rake;
 }; 
 
 struct MECHANISM {
-    struct nodal_plane NP1;
-    struct nodal_plane NP2;
-    struct MOMENT moment;
-    double magms;
+	struct nodal_plane NP1;
+	struct nodal_plane NP2;
+	struct MOMENT moment;
+	double magms;
 };
 
 struct M_TENSOR {
-    GMT_LONG expo;
-    double f[6];
+	GMT_LONG expo;
+	double f[6];
 };
 /* mrr mtt mff mrt mrf mtf in 10**expo dynes-cm */
 
 typedef struct MOMENT st_mo;
 typedef struct MECHANISM st_me;
 
-double datan2(double y,double x);
-double zero_360(double str);
+double datan2 (double y,double x);
+double zero_360  (double str);
 void dc_to_axe(st_me meca,struct AXIS *T,struct AXIS *N,struct AXIS *P);

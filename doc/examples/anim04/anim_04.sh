@@ -1,8 +1,8 @@
 #!/bin/bash
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.7 2011-02-28 00:58:03 remko Exp $
+#               $Id: anim_04.sh,v 1.8 2011-03-15 02:06:31 guru Exp $
 #
-# Purpose:      Make DVD-res MP4 movie of NY to Miami flight
+# Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
 # Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 #
@@ -20,7 +20,7 @@ Height=34.0
 px=7.2
 py=4.8
 dpi=100
-name=../`basename $0 '.sh'`
+name=`basename $0 '.sh'`
 
 # Set up flight path
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
@@ -33,11 +33,11 @@ while read lon lat dist; do
 	ID=`echo $frame | awk '{printf "%4.4d\n", $1}'`
 	grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
 		$REGION -P -Y0.1i -X0.1i USEast_Coast.nc -I$$_int.nc -C$$.cpt \
-		--PAPER_MEDIA=Custom_${px}ix${py}i -K > $$.ps
+		--PS_MEDIA=${px}ix${py}i -K > $$.ps
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
-	echo 0 4.6 14 0 1 TL $ID | pstext -R0/$px/0/$py -Jx1i -O >> $$.ps
+	pstext -R0/$px/0/$py -Jx1i -F+f14p,Helvetica-Bold+jTL -O >> $$.ps <<< "0 4.6 $ID"
 	if [ $# -eq 0 ]; then
-		mv $$.ps $name.ps
+		mv $$.ps ../$name.ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi
@@ -48,8 +48,7 @@ while read lon lat dist; do
 done < $$.path.d
 if [ $# -eq 1 ]; then
 	echo "anim_04.sh: Made $frame frames at 480x720 pixels placed in subdirectory frames"
-	convert $$/anim_0_123456.tiff ${name}_movie.m4v
+#	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
 fi
 # 4. Clean up temporary files
-gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt

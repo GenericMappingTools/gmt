@@ -1,6 +1,6 @@
-/* $Id: gmt_imgsubs.h,v 1.12 2011-01-02 20:09:36 guru Exp $
+/* $Id: gmt_imgsubs.h,v 1.13 2011-03-15 02:06:37 guru Exp $
  *
- * Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gmt_imgsubs.h -- header file supporting the GMT supplement imgsrc,
@@ -76,4 +76,4 @@ double	GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord);
 double	GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord);
 
 /* Function to set up the GMT_IMG_COORD based on GMT_IMG_RANGE */
-GMT_LONG     GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);
+GMT_LONG     GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);

@@ -1,6 +1,6 @@
 echo OFF
 REM
-REM	$Id: spotter.bat,v 1.2 2007-10-19 23:40:20 guru Exp $
+REM	$Id: spotter.bat,v 1.3 2011-03-15 02:06:37 guru Exp $
 REM
 REM	Examples of how to use the SPOTTER package
 REM	DOS version
@@ -57,7 +57,7 @@ set dx=10m
 REM Our Pacific region:
 set region=130/260/-66/60
 
-hotspotter %DATA% -H -I%dx% -R%region% -E%POLES% -Gexample_1.grd -V -T -N%tmax%
+hotspotter %DATA% -h -I%dx% -R%region% -E%POLES% -Gexample_1.grd -V -T -N%tmax%
 
 REM Make a suitable color table
 
@@ -88,7 +88,7 @@ set dx=10m
 REM Number of likely hotspots per seamount to return:
 set N=2
 
-originator %DATA% -S%N% -H -D%dx% -E%POLES% -F%HS% -V > example_3.d
+originator %DATA% -S%N% -h -D%dx% -E%POLES% -F%HS% -V > example_3.d
 
 echo Done.  Inspect example_3.d data file
 

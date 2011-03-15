@@ -1,9 +1,9 @@
-#!/bin/sh
-#	$Id: etest.sh,v 1.7 2007-11-15 04:20:41 remko Exp $
+#!/bin/bash
+#	$Id: etest.sh,v 1.8 2011-03-15 02:06:38 guru Exp $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
-# in a -R0/2/0/2 -I2 -F situation (2x2 blocks)
+# in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
 
 . ../functions.sh
@@ -33,17 +33,17 @@ cat << EOF > data.d
 EOF
 echo "All the mean/median/mode values should be 5" > $log
 echo "Plain means" >> $log
-blockmean -R0/2/0/2 -I1 -F data.d >> $log
+blockmean -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended means" >> $log
-blockmean -R0/2/0/2 -I1 -F -E data.d >> $log
+blockmean -R0/2/0/2 -I1 -r -E data.d >> $log
 echo "Plain medians" >> $log
-blockmedian -R0/2/0/2 -I1 -F data.d >> $log
+blockmedian -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended medians" >> $log
-blockmedian -R0/2/0/2 -I1 -F -E data.d >> $log
+blockmedian -R0/2/0/2 -I1 -r -E data.d >> $log
 echo "Plain modes" >> $log
-blockmode -R0/2/0/2 -I1 -F data.d >> $log
+blockmode -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended modes" >> $log
-blockmode -R0/2/0/2 -I1 -F -E data.d >> $log
+blockmode -R0/2/0/2 -I1 -r -E data.d >> $log
 awk '{if (NF == 6 && $3 != 5) print $0}' $log > fail
 
 rm -f data.d

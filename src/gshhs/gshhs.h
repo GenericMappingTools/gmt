@@ -1,15 +1,15 @@
-/*	$Id: gshhs.h,v 1.33 2011-03-03 21:02:51 guru Exp $
+/*	$Id: gshhs.h,v 1.34 2011-03-15 02:06:37 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
  * Paul Wessel, SOEST
  *
- *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,6 @@
  *			  an ancestor ID, and area of the reduced polygon. Works on
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
- *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
  */
 
 #ifndef _GSHHS
@@ -56,8 +55,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_RELEASE	8	/* For v2.1.0 data set */
-#define GSHHS_DATA_VERSION	"2.1.0"	/* For v2.1.0 data set */
+#define GSHHS_DATA_RELEASE	7	/* For v2.0 data set */
+#define GSHHS_DATA_VERSION	"2.0"	/* For v2.0 data set */
 #define GSHHS_PROG_VERSION	"1.12"
 
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */

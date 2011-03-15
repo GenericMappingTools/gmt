@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.3 2009-10-17 22:10:49 remko Exp $
+#  $Id: GNUmakefile,v 1.4 2011-03-15 02:06:37 guru Exp $
 #
-#	Guru Makefile for GMT Version 4.x gshhs directory
+#	Guru Makefile for GMT Version 5 gshhs directory
 #	
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
@@ -11,8 +11,8 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		24-SEP-2007
+#	Date:		2-JUN-2010
 #-------------------------------------------------------------------------------
 
 include Makefile
-include ../manpages.mk
+include $(GMTSRCDIR)manpages.mk

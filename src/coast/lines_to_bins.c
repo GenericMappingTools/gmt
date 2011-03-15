@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.18 2010-03-22 18:55:46 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.19 2011-03-15 02:06:37 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 	for (i = 0; i < 16; i++) count[i] = 0;
 	
 #ifdef DEBUG
-	GMT_memtrack_off (GMT_mem_keeper);
+	GMT_memtrack_off (GMT->dbg.mem_keeper);
 #endif
 	/* Allocate bin array  */
 	
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 					}
 				}
 			}
-			else if (abs (dy) > B_WIDTH) {	/* Must add intermediate points */
+			else if (abs (dy) > B_WIDTH) {	/* Must add intermediate poitns*/
 				nx = (abs(dx) / B_WIDTH) + 1;
 				ny = (abs(dy) / B_WIDTH) + 1;
 				n = MAX (nx, ny);
@@ -560,7 +560,7 @@ int main (int argc, char **argv)
 		if (count[i]) fprintf (stderr, "lines_to_bins: Level %2d: %d items\n", i, count[i]);
 	}
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	GMT_memtrack_on (GMT->dbg.mem_keeper);
 #endif
 	exit (EXIT_SUCCESS);
 }

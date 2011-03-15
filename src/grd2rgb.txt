@@ -1,0 +1,60 @@
+#include "common_options.txt"
+.TH GRD2RGB 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grd2rgb \- Converting a grid file, a raw, or a Sun raster file to r/g/b grids
+.SH SYNOPSIS
+BD(grd2rgb) IT(infile) OPT(G)IT(template) [ OPT(C)IT(cptfile) ] 
+[ GMT_Id_OPT ] [ OPT(L)IT(layer) ] [ GMT_Rx_OPT ] [ GMT_V_OPT ] 
+[ OPT(W)IT(width)/IT(height)[/IT(n_bytes)] ] [ GMT_r_OPT ]
+.SH DESCRIPTION
+BD(grd2rgb) reads one of three types of input files: (1) A Sun 8-, 24-, or 32-bit raster file; we the
+write out the red, green, and blue components (0-255 range) to separate grid files.  Since the raster file
+header is limited you may use the OPT(R), OPT(I), GMT_r_OPT options to set a complete header record [Default is
+simply based on the number of rows and columns]. (2) A binary 2-D grid file; we then convert the z-values
+to red, green, blue via the provided cpt file.  Optionally, only write out one of the r, g, b, layers.
+(3) A RGB or RGBA raw raster file.  Since raw rasterfiles have no header, you have to give the image
+dimensions via the OPT(W) option.
+.SH REQUIRED ARGUMENTS
+.TP
+IT(infile)
+The (1) Sun raster file, (2) 2-D binary grid file, or (3) raw raster file to be converted.
+.TP
+OPT(G)IT(template)
+Provide an output name template for the three output grids.  The template should be a regular grid file name
+except it must contain the string %c which on output will be replaced by r, g, or b.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(C)IT(cptfile)
+name of the color palette table (for 2-D binary input grid only).
+#include "explain_-I.txt"
+.TP
+OPT(L)IT(layer)
+Output only the specified layer (r, g, or b).  [Default outputs all 3 layers].
+#include "explain_-R.txt"
+#include "explain_-V.txt"
+.TP
+OPT(W)IT(width)/IT(height)[/IT(n_bytes)]
+Sets the size of the raw raster file.  By default an RGB file (which has 3 bytes/pixel) is assumed.
+For RGBA files use IT(n_bytes) = 4.  Use OPT(W) for guessing the image size of a RGB raw file,
+and OPT(W)IT(=/=/4) if the raw image is of the RGBA type.  Notice that this might be a bit slow
+because the guessing algorithm makes uses of FFTs.
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.nc file, use
+.br
+.sp
+BD(grd2rgb) hawaii_grv.nc OPT(C)topo.cpt OPT(G)hawaii_grv_%c.nc
+.br
+.sp
+To output the red component from the Sun raster radiation.ras file, use
+.br
+.sp
+BD(grd2rgb) radiation.ras OPT(L)r OPT(G)comp_%c.nc
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR gmt.conf (5),
+.IR grdedit (1),
+.IR grdimage (1),
+.IR grdmath (1),
+.IR grdview (1)

@@ -3,19 +3,19 @@
 .SH NAME
 grdtrend \- Fit and/or remove a polynomial trend in a grid file
 .SH SYNOPSIS
-\fBgrdtrend\fP \fIgrdfile\fP OPT(N)\fIn_model\fP[\fBr\fP] 
-[ OPT(D)\fIdiff.grd\fP ] [ OPT(T)\fItrend.grd\fP ] [ GMT_V_OPT ] 
-[ OPT(W)\fIweight.grd\fP ]
+BD(grdtrend) IT(grdfile) OPT(N)IT(n_model)[BD(r)] 
+[ OPT(D)IT(diff.nc) ] [ GMT_Rgeo_OPT ] [ OPT(T)IT(trend.nc) ] [ GMT_V_OPT ] 
+[ OPT(W)IT(weight.nc) ]
 .SH DESCRIPTION
-\fBgrdtrend\fP reads a 2-D grid file and fits a low-order polynomial
+BD(grdtrend) reads a 2-D grid file and fits a low-order polynomial
 trend to these data by [optionally weighted] least-squares.  The trend surface is 
 defined by:
 .sp
 m1 + m2*x + m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x + m8*x*x*y + m9*x*y*y + m10*y*y*y.
 .sp
-The user must specify OPT(N)\fIn_model\fP, the number of model parameters to use; 
-thus, OPT(N)\fI4\fP fits a bilinear trend, OPT(N)\fI6\fP a quadratic surface, 
-and so on.  Optionally, append \fBr\fP to the OPT(N) option to perform a 
+The user must specify OPT(N)IT(n_model), the number of model parameters to use; 
+thus, OPT(N)IT(4) fits a bilinear trend, OPT(N)IT(6) a quadratic surface, 
+and so on.  Optionally, append BD(r) to the OPT(N) option to perform a 
 robust fit.  In this case, the program will iteratively reweight the data based on 
 a robust scale estimate, in order to converge to a solution insensitive to outliers.  
 This may be handy when separating a "regional" field from a "residual" which should 
@@ -25,48 +25,53 @@ If data file has values set to NaN, these will be ignored during fitting; if out
 files are written, these will also have NaN in the same locations.
 .sp
 No space between the option flag and the associated arguments.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgrdfile\fP
+IT(grdfile)
 The name of a 2-D binary grid file.
 .TP
-OPT(N)
-[\fBr\fP]\fIn_model\fP sets the number of model parameters to fit.  Append \fBr\fP for robust fit.
-.SH OPTIONS
+OPT(N)IT(n_model)[BD(r)]
+[BD(r)]IT(n_model) sets the number of model parameters to fit.  Append BD(r) for robust fit.
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(D)
-Write the difference (input data - trend) to the file \fIdiff.grd\fP.
+OPT(D)IT(diff.nc)
+Write the difference (input data - trend) to the file IT(diff.nc).
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of the input grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
 .TP
-OPT(T)
-Write the fitted trend to the file \fItrend.grd\fP.
+OPT(T)IT(trend.nc)
+Write the fitted trend to the file IT(trend.nc).
 #include "explain_-V.txt"
 .TP
-OPT(W)
-If \fIweight.grd\fP exists, it will be read and used to solve a weighted 
+OPT(W)IT(weight.nc)
+If IT(weight.nc) exists, it will be read and used to solve a weighted 
 least-squares problem.  [Default:  Ordinary least-squares fit.]  If the robust 
 option has been selected, the weights used in the robust fit will be written to 
-\fIweight.grd\fP.
+IT(weight.nc).
+#include "explain_help.txt"
 .SH REMARKS
 The domain of x and y will be shifted and scaled to [-1, 1] and the basis functions are built from 
 Legendre polynomials.  These have a numerical advantage in the form of the matrix which must be 
 inverted and allow more accurate solutions.  NOTE: The model parameters listed with OPT(V) are 
 Legendre polynomial coefficients; they are not numerically equivalent to the m#s in the equation 
 described above.  The description above is to allow the user to match OPT(N) with the order of the 
-polynomial surface.  See \fBgrdmath\fP if you need to evaluate the trend using the reported coefficients. 
+polynomial surface.  See BD(grdmath) if you need to evaluate the trend using the reported coefficients. 
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
-To remove a planar trend from hawaii_topo.grd and write result in hawaii_residual.grd:
+To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:
 .br
 .sp
-\fBgrdtrend\fP hawaii_topo.grd OPT(N)3 OPT(D)hawaii_residual.grd
+BD(grdtrend) hawaii_topo.nc OPT(N)3 OPT(D)hawaii_residual.nc
 .br
 .sp
-To do a robust fit of a bicubic surface to hawaii_topo.grd, writing the result in 
-hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the progress:
+To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the result in 
+hawaii_trend.nc and the weights used in hawaii_weight.nc, and reporting the progress:
 .br
 .sp
-\fBgrdtrend\fP hawaii_topo.grd OPT(N)10\fBr\fP OPT(T)hawaii_trend.grd OPT(W)hawaii_weight.grd OPT(V)
+BD(grdtrend) hawaii_topo.nc OPT(N)10BD(r) OPT(T)hawaii_trend.nc OPT(W)hawaii_weight.nc OPT(V)
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdfft (1),
 .IR grdfilter (1)

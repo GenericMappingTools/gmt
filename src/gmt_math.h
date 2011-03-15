@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.32 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_math.h,v 1.33 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@
  * If you must do a manual edit, you should do so in gmt_notposix.h.
  * For non-UNIX platforms you should also look in gmt_notunix.h
  *
- * Version:	4
+ * Version:	5 API
  */
 
 #ifndef _GMT_MATH_H
@@ -38,6 +38,7 @@
 
 #ifdef GMT_QSORT
 /* Must replace the system qsort with ours which is 64-bit compliant */
+EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
 #define qsort GMT_qsort
 #endif
 
@@ -66,13 +67,15 @@ extern double hypot(double x, double y);
 #endif
 
 #if HAVE_ACOSH == 0
-#define acosh(x) d_log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
+/* #define acosh(x) d_log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0))) */
+#define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
 #else
 extern double acosh(double x);
 #endif
 
 #if HAVE_ASINH == 0
-#define asinh(x) d_log((x) + (hypot((x), 1.0)))
+/* #define asinh(x) d_log((x) + (hypot((x), 1.0))) */
+#define asinh(x) log((x) + (hypot((x), 1.0)))
 #else
 extern double asinh(double x);
 #endif
@@ -188,11 +191,15 @@ extern char *strdup(const char *s);
 #define strtod(p, e) GMT_strtod(p, e)
 EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
 #else
+#if defined(WIN32) && !defined(__MINGW32__)
+#pragma warning( disable : 4273 )	/* The annoying inconsistent dll linkage */
+#pragma warning( disable : 4706 )	/* assignment within conditional expression */
+#endif
 extern double strtod(const char *nptr, char **endptr);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
- * Assembly wrapper provided by Lloyd Parkes (lloyd@geo.vuw.ac.nz)
+ * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
  * can be used instead.
  */
  

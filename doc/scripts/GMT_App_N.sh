@@ -1,13 +1,11 @@
 #!/bin/bash
-#	$Id: GMT_App_N.sh,v 1.13 2011-02-28 00:58:03 remko Exp $
+#	$Id: GMT_App_N.sh,v 1.14 2011-03-15 02:06:29 guru Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #
 . functions.sh
-
-trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 grep -v '^#' ../../share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
 n=`cat $$.lis | wc -l`
@@ -71,14 +69,13 @@ EOF
 			symbol=`sed -n ${s}p $$.lis`
 			echo "$x $ys k${symbol}" >> $$.symbols
 			name=`echo $symbol | tr 'a-z' 'A-Z'`
-			echo "$x $yt $fs 0 0 CM $name" >> $$.text
+			echo "$x $yt $name" >> $$.text
 			echo "$x $yt $width $dy" >> $$.bars
 		done
 	done
-	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K -m $$.lines -Wthick -B0 > GMT_App_N_$p.ps
+	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K $$.lines -Wthick -B0 > GMT_App_N_$p.ps
 	psxy -R -J -O -K -S${width}i -Wthinnest $$.symbols >> GMT_App_N_$p.ps
 	psxy -R -J -O -K -Sr -Gblack $$.bars >> GMT_App_N_$p.ps
-	pstext -R -J -O $$.text -Gwhite >> GMT_App_N_$p.ps
+	pstext -R -J -O $$.text -F+f${fs}p,white >> GMT_App_N_$p.ps
 	rm -f $$.lines $$.symbols $$.text $$.bars
 done
-rm -f $$.*

@@ -3,22 +3,23 @@
 .SH NAME
 gshhs_dp \- Line reduction using the Douglas-Peucker algorithm
 .SH SYNOPSIS
-\fBgshhs_dp\fP \fIinput.b tolerance output.b\fP [OPT(v)]
+BD(gshhs_dp) IT(input.b tolerance output.b) [ OPT(v) ]
 .SH DESCRIPTION
-\fBgshhs_dp\fP reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
+BD(gshhs_dp) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
 and reduces the complexity of the line by applying the Douglas-Peucker algorithm.  It automatically
 handles byte-swabbing between different architectures.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinput.b\fP
+IT(input.b)
 GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
 5 standard resolutions (full, high, intermediate, low, crude) can be used.
 .TP
-\fItolerance\fP
+IT(tolerance)
 tolerance is maximum mismatch in km.  The larger the value the more reduction will take place.
 .TP
-\fIoutput.b\fP
+IT(output.b)
 The reducted data set.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
 OPT(v)
 Reports progress and statistics while running.
@@ -26,11 +27,11 @@ Reports progress and statistics while running.
 .sp
 To simplify the full GSHHS data set with a custom tolerance of 2 km, try
 .sp
-\fBgshhs_dp\fP \fIgshhs_f.b 2 gshhs_2km.b\fP
+BD(gshhs_dp) IT(gshhs_f.b 2 gshhs_2km.b)
 .SH REFERENCES
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
 of the number of points required to represent a digitized line
-of its caricature, \fICan. Cartogr., 10\fP, 112-122, 1973.
+of its caricature, IT(Can. Cartogr.), BD(10), 112-122, 1973.
 .SH AUTHOR
 This implementation of the D-P algorithm has been kindly provided by
 Dr. Gary J. Robinson, Environmental Systems Science Centre,

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.17 2010-03-22 18:55:46 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.18 2011-03-15 02:06:37 guru Exp $
  */
 #include "wvs.h"
 #include "shore.h"
@@ -27,27 +27,26 @@ int main (int argc, char **argv) {
 	GMT_LONG first, crossed_x, crossed_y;
 	
 	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b;
-	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, n_nodes;
+	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod;
 	int x_x_c = 0, x_y_c = 0, y_x_c = 0, y_y_c = 0, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
 	int noise, se, ne, nw, zero, one, two, three, ij, n, comp_segments(), skip = 0, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_id = 0,  n_corner = 0, jump = 0, add = 0, n_seg = 0, ns, nclose = 0, n_x_exact = 0, n_y_exact = 0;
-	int *GSHHS_node, *GSHHS_area, *GSHHS_area_fraction;
 	
-	char *nodelevel_file = NULL, *nodeid_file = NULL, file[512];
+	char *node_file = 0, file[512];
 	
 	float *node;
 	
 	double rx, ry, SHORT_FACTOR;
 	
-	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg, *fp_par, *fp_ndid;
+	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg, *fp_par;
 	
 	struct SEGMENT *s, **ss;
 	struct	LONGPAIR p;
 	struct GRD_HEADER n_head;
 	
-	/* Creates binned_prefix.{bin,seg,pt,pol,ndid} files */
-	if (argc != 6) {
-		fprintf (stderr, "usage: polygon_to_bins coast.base bsize nodes.grd nodes.bin binned_prefix\n");
+		
+	if (argc != 5) {
+		fprintf (stderr, "usage: polygon_to_bins coast.base bsize nodes.grd binned_prefix\n");
 		fprintf (stderr, "bsize must be 1, 2, 5, 10, or 20 degrees\n");
 		exit (-1);
 	}
@@ -68,20 +67,17 @@ int main (int argc, char **argv) {
 	
 	fp_in = fopen (argv[1], "r");
 	
-	nodelevel_file = argv[3];
-	nodeid_file = argv[4];
+	node_file = argv[3];
 
 	nbins = BIN_NX * BIN_NY;
 	
 	/* Allocate bin array  */
 	
 #ifdef DEBUG
-	GMT_memtrack_off (GMT_mem_keeper);
+	GMT_memtrack_off (GMT->dbg.mem_keeper);
 #endif
-	bin = (struct BIN *) GMT_memory (VNULL, nbins, sizeof(struct BIN), "polygon_to_bins");
-	GSHHS_parent = (int *) GMT_memory (VNULL, N_POLY, sizeof(int), "polygon_to_bins");
-	GSHHS_area = (int *) GMT_memory (VNULL, N_POLY, sizeof(int), "polygon_to_bins");
-	GSHHS_area_fraction = (int *) GMT_memory (VNULL, N_POLY, sizeof(int), "polygon_to_bins");
+	bin = (struct BIN *) GMT_memory(VNULL, nbins, sizeof(struct BIN), "polygon_to_bins");
+	GSHHS_parent = (int *) GMT_memory(VNULL, N_POLY, sizeof(int), "polygon_to_bins");
 	for (i = 0; i < N_POLY; i++) GSHHS_parent[i] = -2;	/* Fill with bad value so we can check later that it got overwritten */
 	last_x_bin = BIN_NX - 1;
 	
@@ -90,10 +86,6 @@ int main (int argc, char **argv) {
 		n_id++;
 		n_init += h.n;
 		GSHHS_parent[h.id] = h.parent;
-		GSHHS_area[h.id] = rint (h.area * 10.0);			/* Store area in 1/10 of 1 km^2 */
-		if (h.river & 1) GSHHS_area[h.id] = -GSHHS_area[h.id];		/* River-lakes are marked by negative area */
-		GSHHS_area_fraction[h.id] = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
-
 		/*if (h.id%100 == 0) { */
 		if (h.id%1 == 0) {
 			fprintf (stderr,"polygon_to_bins:  Binning polygon %d\r", h.id);
@@ -311,11 +303,14 @@ int main (int argc, char **argv) {
 			
 			/* Put level, nps, etc. into this header:  */
 			
-			s->GSHHS_ID = h.id;	/* The GSHHS polygon ID that this segment comes from */
-			s->level = h.level;	/* The level of this GSHHS polygon */
-			s->n = nn;		/* Number of point in this segment */
-			s->entry = 4;		/* No entry */
-			s->exit = 4;		/* No exit */
+			s->GSHHS_ID = h.id;
+			s->level = h.level;
+			s->n = nn;
+			s->entry = 4;
+			s->exit = 4;
+			s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
+			if (h.river & 1) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+			s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, s->n, sizeof(struct SHORT_PAIR), "polygon_to_bins");
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
@@ -392,6 +387,9 @@ int main (int argc, char **argv) {
 					s->exit = (i_x_2 == i_x_3) ? 3 : 1;
 				else
 					s->exit = (i_y_2 == i_y_3) ? 0 : 2;
+				s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
+				if (h.river & 1) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+				s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 
 				/* Write from last_i through i, inclusive, into this bin:  */
 				
@@ -478,55 +476,24 @@ int main (int argc, char **argv) {
 
 	/* Write out */
 	
-	sprintf (file, "%s.pol", argv[5]);
+	sprintf (file, "%s.par", argv[4]);
 	fp_par = fopen (file, "w");
 	if (fwrite ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
 	if (fwrite ((void *)GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
-		fprintf (stderr, "polygon_to_bins: Error writing GSHHS parent\n");
-		exit (EXIT_FAILURE);
-	}
-	if (fwrite ((void *)GSHHS_area, sizeof (int), n_id, fp_par) != n_id) {
-		fprintf (stderr, "polygon_to_bins: Error writing GSHHS area\n");
-		exit (EXIT_FAILURE);
-	}
-	if (fwrite ((void *)GSHHS_area_fraction, sizeof (int), n_id, fp_par) != n_id) {
-		fprintf (stderr, "polygon_to_bins: Error writing GSHHS area_fraction\n");
+		fprintf (stderr, "polygon_to_bins: Error writing GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
 	fclose (fp_par);
-	sprintf (file, "%s.ndid", argv[5]);
-	fp_ndid = fopen (file, "wb");
-	fp_in = fopen (nodeid_file, "rb");
-	if (fread ((void *)&n_nodes, sizeof (int), 1, fp_in) != 1) {
-		fprintf (stderr, "polygon_to_bins: Error reading # of GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	if (fwrite ((void *)&n_nodes, sizeof (int), 1, fp_ndid) != 1) {
-		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	GSHHS_node = (int *) GMT_memory (VNULL, n_nodes, sizeof(int), "polygon_to_bins");
-	if (fread ((void *)GSHHS_node, sizeof (int), n_nodes, fp_in) != n_nodes) {
-		fprintf (stderr, "polygon_to_bins: Error reading GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	if (fwrite ((void *)GSHHS_node, sizeof (int), n_nodes, fp_ndid) != n_nodes) {
-		fprintf (stderr, "polygon_to_bins: Error writing GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	fclose (fp_ndid);
-	fclose (fp_in);
-	GMT_free ((void *)GSHHS_node);
 
 	bin_head = (struct GMT3_BIN_HEADER *) GMT_memory (VNULL, nbins, sizeof (struct GMT3_BIN_HEADER), "polygon_to_bins");
 	
 	GMT_grd_init (&n_head, argc, argv, FALSE);
-	GMT_err_fail (GMT_read_grd_info (nodelevel_file, &n_head), nodelevel_file);
+	GMT_err_fail (GMT_read_grd_info (node_file, &n_head), node_file);
 	node = (float *) GMT_memory (VNULL, n_head.nx * n_head.ny, sizeof (float), "polygon_to_bins");
-	GMT_err_fail (GMT_read_grd (nodelevel_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), nodelevel_file);
+	GMT_err_fail (GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), node_file);
 	se = 1;	ne = 1 - n_head.nx;	nw = -n_head.nx;
 	
 	for (b = file_head.n_segments = 0; b < nbins; b++) {
@@ -549,7 +516,7 @@ int main (int argc, char **argv) {
 	}
 	free ((void *) node);
 	
-	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[5]);
+	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[4]);
 
 	file_head.n_bins = nbins;
 	file_head.n_points = n_final + add - 2*skip;
@@ -557,11 +524,11 @@ int main (int argc, char **argv) {
 	file_head.nx_bins = BIN_NX;
 	file_head.ny_bins = BIN_NY;
 	
-	sprintf (file, "%s.bin", argv[5]);
+	sprintf (file, "%s.bin", argv[4]);
 	fp_bin = fopen (file, "w");
-	sprintf (file, "%s.seg", argv[5]);
+	sprintf (file, "%s.seg", argv[4]);
 	fp_seg = fopen (file, "w");
-	sprintf (file, "%s.pt", argv[5]);
+	sprintf (file, "%s.pt", argv[4]);
 	fp_pt = fopen (file, "w");
 	
 	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {
@@ -596,6 +563,8 @@ int main (int argc, char **argv) {
 		for (i = 0; i < n; i++) {
 			seg_head.GSHHS_ID = ss[i]->GSHHS_ID;
 			seg_head.first_p = np;
+			seg_head.p_area = ss[i]->p_area;
+			seg_head.p_area_fraction = ss[i]->p_area_fraction;
 			seg_head.info = (ss[i]->n << 9) + (ss[i]->level << 6) + (ss[i]->entry << 3) + ss[i]->exit;
 			if (fwrite ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
 				fprintf (stderr, "polygon_to_bins: Error writing a string header for bin # %d\n", b);
@@ -628,7 +597,7 @@ int main (int argc, char **argv) {
 	if (skip) fprintf (stderr, "polygon_to_bins: %d polygons with 2 points only on same side removed\n", skip);
 		
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	GMT_memtrack_on (GMT->dbg.mem_keeper);
 #endif
 	exit (0);
 }

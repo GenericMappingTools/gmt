@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_L.tex,v 1.26 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_L.tex,v 1.27 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{\gmt\ on non-\UNIX\ platforms}
@@ -24,7 +24,7 @@ or Mac OS X.  If abandoning your non-\UNIX\ operating system
 is not an option, consider one of these solutions:
 
 \begin{description}
-\item [WINDOWS:] Choose among these four possibilities:
+\item [WINDOWS:] Choose among these three possibilities:
 
 \begin{enumerate}
 
@@ -33,10 +33,8 @@ is not an option, consider one of these solutions:
 \item Install \GMT\ under SFU (Windows Services for \UNIX); a free download from
 Microsoft\footnote{Microsoft Services for \UNIX\ is formerly known as Interix, in the distant past known as OpenNT.}.
 
-\item Install \GMT\ under DJGPP (another GNU port to Windows/DOS).
-
 \item Install \GMT\ in Windows using Microsoft C/C++ or other
-compilers.  Unlike the first three, this option will not provide you with any
+compilers.  Unlike the first two, this option will not provide you with any
 \UNIX\ tools so you will be limited to what you can do with
 DOS batch files.
 
@@ -64,7 +62,7 @@ to install the package; note you must explicitly add all the development tool
 packages (e.g., \progname{gcc} etc) as the basic installation does not include them by default.
 Once you are up and running under Cygwin, you may install \GMT\ 
 the same way you do under any other \UNIX\ platform by either
-running the automated install via \progname{install\_gmt.sh} or manually
+running the automated install via \progname{install\_gmt} or manually
 running configure first, then type make all.  If you install via the
 web form, make sure you save the parameter file without DOS CR/LF
 endings.  Use \progname{dos2unix} to get rid of those if need be.
@@ -73,7 +71,7 @@ Finally, from Cygwin's User Guide: By default, no Cygwin program
 can allocate more than 384 MB of memory (program and data).
 You should not need to change this default in most circumstances. However, if you need
 to use more real or virtual memory in your machine you may add an entry in either the
-{\bf HKEY\_LOCAL\_MACHINE} (to change the limit for all users) or {\bf HKEY\_CURRENT\_USER} (for just
+\textbf{HKEY\_LOCAL\_MACHINE} (to change the limit for all users) or \textbf{HKEY\_CURRENT\_USER} (for just
 the current user) section of the registry.  Add the DWORD value {\bf heap\_chunk\_in\_mb} and set
 it to the desired memory limit in decimal Mb.  It is preferred to do this in Cygwin
 using the \progname{regtool} program included in the Cygwin package. (For more information about
@@ -96,32 +94,20 @@ For more installation details see the general README file.
 
 SFU\footnote{See www.microsoft.com/technet/interopmigration/unix/sfu for details.} is also similar to Cygwin
 in that it provides precompiled \UNIX\ tools for DOS/WIN32,
-including the \progname{sh} and \progname{csh} shells.
+including the \progname{sh} and \progname{csh} shells.  However, our experience has been negative in that
+extra tools need to be installed and it is a painful and error-prone process; we cannot recommend it.
 \index{GMT@\GMT!under SFU|)}
 \index{SFU (Windows Services for \UNIX)|)}
 
-\section{DJGPP and \gmt}
-\index{GMT@\GMT!under DJGPP|(}
-\index{DJGPP|(}
-
-DJGPP\footnote{See www.gnu.org for details.} is similar to Cygwin
-in that it provides precompiled \UNIX\ tools for DOS/WIN32,
-including the \progname{bash} shell.  At the time of this writing we
-have not been successful in compiling netCDF in this
-environment.  This is fully due to our limited understanding
-of the innards of the netCDF installation whose configure
-script did not work for us.  As soon as this problem is
-overcome we expect a smooth install similar to that of Cygwin.
-\index{GMT@\GMT!under DJGPP|)}
-\index{DJGPP|)}
-
-\section{WIN32 and \gmt}
+\section{WIN32/64 and \gmt}
 \index{GMT@\GMT!under Win32|(}
+\index{GMT@\GMT!under Win64|(}
 \index{Win32 and \GMT|(}
+\index{Win64 and \GMT|(}
 
 \GMT\ will compile and install using the Microsoft Visual C/C++
-compiler.  We expect other WIN32 C compilers to give similar
-results.  Since \progname{configure} cannot be run you
+compiler.  We expect other WIN32/64 C compilers to give similar
+results (e.g., the Intel compiler).  Since \progname{configure} cannot be run you
 must manually rename \filename{gmt\_notposix.h.in} to
 \filename{gmt\_notposix.h}.  The netCDF home page gives full
 information on how to compile and install netCDF; precompiled
@@ -132,23 +118,12 @@ supplemental programs.  If you just need to run \GMT\ and do not want to mess wi
 get the precompiled binaries from the \GMT\ ftp sites.
 
 \index{GMT@\GMT!under Win32|)}
+\index{GMT@\GMT!under Win64|)}
 \index{Win32 and \GMT|)}
-
-\section{OS/2 and \gmt}
-\index{GMT@\GMT!under O/S2}
-\index{O/S2 and \GMT}
-
-\GMT\ has been ported to OS/2 by \htmladdnormallinkfoot{Allen Cogbill}{mailto:ahc@lanl.gov},
-Los Alamos National Laboratory.
-One must have \htmladdnormallinkfoot{EMX}{ftp://ftp.geophysics.lanl.gov/pub/EES3/pub/gmt/emxrt.zip}
-installed in order to use the executables.  All features 
-that are present in the \UNIX\ version of \GMT\ are available in the OS/2 version.
-All executables may be obtained using links in the following
-\htmladdnormallinkfoot{document}{ftp://ees.lanl.gov/pub/EES3/pub/gmt/gmt4os2.html},
-which provides more detail on the port.
+\index{Win64 and \GMT|)}
 
 \section{Mac OS and \gmt}
 \index{GMT@\GMT!under Mac OS}
 \index{Mac OS and \GMT}
 
-\GMT\ will install directly under Mac OS X since it is fully Unix compliant.
+\GMT\ will install directly under Mac OS X which is Unix-compliant.

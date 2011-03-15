@@ -1,11 +1,10 @@
 .TP
-OPT(A)
-Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level
-that is lower than \fImin_level\fP or higher than \fImax_level\fP
+GMT_A_OPT
+Features with an area smaller than IT(min_area) in km^2 or of hierarchical level
+that is lower than IT(min_level) or higher than IT(max_level)
 will not be plotted [Default is 0/0/4 (all features)].  Level 2 (lakes) contains
 regular lakes and wide river bodies which we normally include as lakes;
-append \fB+r\fP to just get river-lakes or \fB+l\fP to just get regular lakes
-(requires GSHHS 2.0.1 or higher).  Finally, append \fB+p\fP\fIpercent\fP to exclude
-polygons whose percentage area of the corresponding full-resolution feature is less
-than \fIpercent\fP (requires GSHHS 2.0 or higher).
+append BD(+r) to just get river-lakes or BD(+l) to just get regular lakes.
+Finally, append BD(+p)IT(percent) to exclude polygons whose percentage area of
+the corresponding full-resolution feature is less than IT(percent).
 See GSHHS INFORMATION below for more details.

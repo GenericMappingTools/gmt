@@ -1,6 +1,6 @@
-#	$Id: common.mk,v 1.5 2011-01-02 20:09:35 guru Exp $
+#	$Id: common.mk,v 1.6 2011-03-15 02:06:35 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -38,34 +38,55 @@ GMT_H	= $(GMTSRCDIR)gmt.h \
 	  $(GMTSRCDIR)gmt_calclock.h \
 	  $(GMTSRCDIR)gmt_colors.h \
 	  $(GMTSRCDIR)gmt_common.h \
+	  $(GMTSRCDIR)gmt_constants.h \
 	  $(GMTSRCDIR)gmt_contour.h \
+	  $(GMTSRCDIR)gmt_crossing.h \
 	  $(GMTSRCDIR)gmt_customio.h \
+	  $(GMTSRCDIR)gmt_defaults.h \
 	  $(GMTSRCDIR)gmt_dimensions.h \
 	  $(GMTSRCDIR)gmt_error.h \
 	  $(GMTSRCDIR)gmt_grd.h \
 	  $(GMTSRCDIR)gmt_grdio.h \
+	  $(GMTSRCDIR)gmt_hash.h \
 	  $(GMTSRCDIR)gmt_init.h \
 	  $(GMTSRCDIR)gmt_io.h \
+	  $(GMTSRCDIR)gmt_macros.h \
 	  $(GMTSRCDIR)gmt_map.h \
 	  $(GMTSRCDIR)gmt_math.h \
 	  $(GMTSRCDIR)gmt_mgg_header2.h \
+	  $(GMTSRCDIR)gmt_modules.h \
 	  $(GMTSRCDIR)gmt_nan.h \
 	  $(GMTSRCDIR)gmt_notposix.h \
 	  $(GMTSRCDIR)gmt_notunix.h \
 	  $(GMTSRCDIR)gmt_plot.h \
+	  $(GMTSRCDIR)gmt_proj.h \
 	  $(GMTSRCDIR)gmt_project.h \
+	  $(GMTSRCDIR)gmt_prototypes.h \
+	  $(GMTSRCDIR)gmt_ps.h \
 	  $(GMTSRCDIR)gmt_shore.h \
 	  $(GMTSRCDIR)gmt_stat.h \
 	  $(GMTSRCDIR)gmt_support.h \
 	  $(GMTSRCDIR)gmt_symbol.h \
 	  $(GMTSRCDIR)gmt_synopsis.h \
+	  $(GMTSRCDIR)gmt_texture.h \
+	  $(GMTSRCDIR)gmt_time.h \
+	  $(GMTSRCDIR)gmt_types.h \
 	  $(GMTSRCDIR)gmt_vector.h \
-	  $(GMTSRCDIR)gmt_version.h
+	  $(GMTSRCDIR)gmt_version.h \
+	  $(GMTSRCDIR)gmtapi.h \
+	  $(GMTSRCDIR)gmtapi_define.h \
+	  $(GMTSRCDIR)gmtapi_errno.h
 
 PS_H	= $(GMTSRCDIR)pslib.h
 
-LIBGMT	= $(GMTSRCDIR)libgmt.$(LIBEXT)
-LIBGMTPS= $(LIBGMT) $(GMTSRCDIR)libgmtps.$(LIBEXT) $(GMTSRCDIR)libpsl.$(LIBEXT)
+LIBGMT	= $(GMTSRCDIR)libpsl.$(LIBEXT) $(GMTSRCDIR)libgmt.$(LIBEXT)
 
-GMT_LIB	= -L$(GMTSRCDIR). -lgmt
-GMTPS_LIB	= -L$(GMTSRCDIR). -lgmtps -lgmt -lpsl
+GMT_LIB	= -L$(GMTSRCDIR). -lgmt -lpsl
+
+# Header files for API
+API_H	= $(API_O:.o=.h)
+API_C	= $(API_O:.o=.c)
+
+# Define executables to be created from objects
+PROGS	= $(PROGS_O:.o=$(EXE))
+PROGSPS	= $(PROGSPS_O:.o=$(EXE))

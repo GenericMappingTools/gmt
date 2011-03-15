@@ -1,5 +1,5 @@
 <HTML>
-<!-- $Id: gmt_man.html,v 1.8 2010-11-02 18:04:01 guru Exp $ -->
+<!-- $Id: gmt_man.html,v 1.9 2011-03-15 02:06:35 guru Exp $ -->
 <TITLE>GMT Online Man Pages</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT Online Man Pages</H2></CENTER><P>
@@ -55,6 +55,7 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 </UL>
 <H3>PROJECTION AND MAP-TRANSFORMATION:</H3>
 <UL>
+<LI><A HREF="man/gmtvector.html"> gmtvector</A> Basic manipulation of 2-D and 3-D vectors
 <LI><A HREF="man/grdproject.html"> grdproject</A> Project gridded data onto new coordinate system
 <LI><A HREF="man/mapproject.html"> mapproject</A> Transformation of coordinate systems
 <LI><A HREF="man/project.html"> project</A> Project data onto lines/great circles
@@ -69,14 +70,19 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 </UL>
 <H3>CONVERT OR EXTRACT SUBSETS OF DATA:</H3>
 <UL>
-<LI><A HREF="man/gmt2rgb.html"> gmt2rgb</A> Convert Sun raster or grdfile to red, green, blue component grids
+<LI><A HREF="man/gmt2kml.html"> gmt2kml</A> Convert GMT data tables to KML files for Google Earth
 <LI><A HREF="man/gmtconvert.html"> gmtconvert</A> Convert table data from one format to another
+<LI><A HREF="man/gmtdp.html"> gmtdp</A> Line reduction using the Douglas-Peucker algorithm
 <LI><A HREF="man/gmtmath.html"> gmtmath</A> Reverse Polish calculator for table data
 <LI><A HREF="man/gmtselect.html"> gmtselect</A> Select table subsets based on multiple spatial criteria
+<LI><A HREF="man/gmtspatial.html"> gmtspatial</A> Geospatial operations on lines and polygons
+<LI><A HREF="man/gmtstitch.html"> gmtstitch</A> Combine line segments that share end-points
+<LI><A HREF="man/grd2rgb.html"> grd2rgb</A> Convert Sun raster or grdfile to red, green, blue component grids
 <LI><A HREF="man/grd2xyz.html"> grd2xyz</A> Convert 2-D gridded data to table
 <LI><A HREF="man/grdcut.html"> grdcut</A> Cut a sub-region from a grd file
 <LI><A HREF="man/grdpaste.html"> grdpaste</A> Paste together grdfiles along common edge
 <LI><A HREF="man/grdreformat.html"> grdreformat</A> Convert from one grdformat to another
+<LI><A HREF="man/kml2gmt.html"> kml2gmt</A> Extract GMT data from a Google Earth KML file
 <LI><A HREF="man/splitxyz.html"> splitxyz</A> Split xyz files into several segments
 <LI><A HREF="man/xyz2grd.html"> xyz2grd</A> Convert table to 2-D grd file
 </UL>
@@ -122,7 +128,6 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 <LI><A HREF="man/gmtget.html"> gmtget</A> Get present value of a GMT defaults parameter
 <LI><A HREF="man/gmtlogo.html"> gmtlogo</A> Plot a GMT logo as an overlay
 <LI><A HREF="man/isogmt.html"> isogmt</A> Run GMT command or script in isolation mode
-<LI><A HREF="man/psbbox.html"> psbbox</A> Replace BoundingBox line in PostScript files
 </UL>
 
 <HR>
@@ -135,16 +140,20 @@ For a thematic listing, click <A HREF="#anchor_theme">here</A>.
 <LI><A HREF="man/filter1d.html"> filter1d</A> Filter 1-D data (time series)
 <LI><A HREF="man/fitcircle.html"> fitcircle</A> Finds best-fitting great or small circles
 <LI><A HREF="man/gmt_shell_functions.html"> gmt_shell_functions</A> Simplifying GMT bash scripting
-<LI><A HREF="man/gmt2rgb.html"> gmt2rgb</A> Convert Sun raster or grdfile to red, green, blue component grids
 <LI><A HREF="man/gmtcolors.html"> gmtcolors</A> Information on how to specify colors in GMT
 <LI><A HREF="man/gmtconvert.html"> gmtconvert</A> Convert table data from one format to another
 <LI><A HREF="man/gmtdefaults.html"> gmtdefaults</A> List the current default settings
+<LI><A HREF="man/gmtdp.html"> gmtdp</A> Line reduction using the Douglas-Peucker algorithm
 <LI><A HREF="man/gmtget.html"> gmtget</A> Get present value of a GMT defaults parameter
 <LI><A HREF="man/gmtlogo.html"> gmtlogo</A> Plot a GMT logo as an overlay
 <LI><A HREF="man/gmtmath.html"> gmtmath</A> Reverse Polish calculator for table data
 <LI><A HREF="man/gmtselect.html"> gmtselect</A> Select table subsets based on multiple spatial criteria
 <LI><A HREF="man/gmtset.html"> gmtset</A> Edit parameters in the .gmtdefaults file
+<LI><A HREF="man/gmtspatial.html"> gmtspatial</A> Geospatial operations on lines and polygons
+<LI><A HREF="man/gmtstitch.html"> gmtstitch</A> Combine line segments that share end-points
+<LI><A HREF="man/gmtvector.html"> gmtvector</A> Basic manipulation of 2-D and 3-D vectors
 <LI><A HREF="man/grd2cpt.html"> grd2cpt</A> Make color palette table from grdfile
+<LI><A HREF="man/grd2rgb.html"> grd2rgb</A> Convert Sun raster or grdfile to red, green, blue component grids
 <LI><A HREF="man/grd2xyz.html"> grd2xyz</A> Convert 2-D gridded data to table
 <LI><A HREF="man/grdblend.html"> grdblend</A> Blend several gridded data sets into one
 <LI><A HREF="man/grdclip.html"> grdclip</A> Limit the z-range in gridded data sets
@@ -178,7 +187,6 @@ For a thematic listing, click <A HREF="#anchor_theme">here</A>.
 <LI><A HREF="man/project.html"> project</A> Project data onto lines/great circles
 <LI><A HREF="man/ps2raster.html"> ps2raster</A> Crop and convert PostScript to raster image, EPS and PDF
 <LI><A HREF="man/psbasemap.html"> psbasemap</A> Create a basemap frame
-<LI><A HREF="man/psbbox.html"> psbbox</A> Replace BoundingBox line in PostScript files
 <LI><A HREF="man/psclip.html"> psclip</A> Use polygon files as clipping paths
 <LI><A HREF="man/pscoast.html"> pscoast</A> Plot coastlines, filled continents, rivers, and political borders
 <LI><A HREF="man/pscontour.html"> pscontour</A> Direct contouring or imaging of xyz-data by triangulation

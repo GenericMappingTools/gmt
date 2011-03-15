@@ -1,5 +1,5 @@
 .TP
-\fINGDC-ids\fP
+IT(NGDC-ids)
 Can be one or more of five kinds of specifiers:
 .br
 1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
@@ -15,6 +15,6 @@ Can be one or more of five kinds of specifiers:
 (See mgd77info OPT(L) for agency and vessel codes).
 The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use OPT(I)
 to ignore certain file types).  Cruise files will be looked for first in the current directory
-and second in all directories listed in \fB$MGD77_HOME\fP/mgd77_paths.txt [If \fB$MGD77_HOME\fP
-is not set it will default to \fB$GMT_SHAREDIR\fP/mgd77].
+and second in all directories listed in BD($MGD77_HOME)/mgd77_paths.txt [If BD($MGD77_HOME)
+is not set it will default to BD($GMT_SHAREDIR)/mgd77].
 .br

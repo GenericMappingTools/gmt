@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: plot_errbars.sh,v 1.3 2007-11-15 04:20:42 remko Exp $
+#!/bin/bash
+#	$Id: plot_errbars.sh,v 1.4 2011-03-15 02:06:46 guru Exp $
 #
 # Plot error bars and test [+|-]<epen>
 
@@ -7,7 +7,7 @@
 header "Test psxy error bar colors"
 
 ps=plot_errbars.ps
-cat << EOF > $$
+cat << EOF > $$.d
 1	1	1	1
 2	2	2	1
 3	3	3	1
@@ -15,11 +15,11 @@ cat << EOF > $$
 5	5	5	1
 EOF
 makecpt -Crainbow -T0/6/1 > $$.cpt
-psxy -R0/6/0/6 -JX3i -P -B0 -Sc0.2i -C$$.cpt -W0.25p -X1i -Y2i $$ -Ex/2p,red -K > $ps
-psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p -X3.25i $$ -Ey/-1p -K >> $ps
-psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W+5p -X-3.25i -Y3.5i $$ -Ey/+1p -K >> $ps
-psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p,red -X3.25i $$ -Ex/-1p >> $ps
+psxy -R0/6/0/6 -JX3i -P -B0 -Sc0.2i -C$$.cpt -W0.25p -X1i -Y2i $$.d -Ex/2p,red -K > $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p -X3.25i $$.d -Ey/-1p -K >> $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W+5p -X-3.25i -Y3.5i $$.d -Ey/+1p -K >> $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p,red -X3.25i $$.d -Ex/-1p >> $ps
 
-rm -f $$*
+rm -f $$.d $$.cpt
 
 pscmp

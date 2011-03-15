@@ -1,11 +1,11 @@
 .TP
-OPT(L)
-Draws a simple map scale centered on \fIlon0/lat0\fP.  Use OPT(Lx) to specify x/y position instead.
-Scale is calculated at latitude \fIslat\fP (optionally supply longitude \fIslon\fP for oblique projections
-[Default is central meridian]), \fIlength\fP is in km [miles if \fBm\fP is appended; nautical miles
-if \fBn\fP is appended]. Use OPT(Lf) to get a "fancy" scale [Default is plain]. Append \fB+l\fP to
-select the default label which equals the distance unit (km, miles, nautical miles) and is justified on top of the scale [t].
-Change this by giving your own label (append \fB+l\fP\fIlabel\fP).  Change label justification with \fB+j\fP\fIjustification\fP
-(choose among l(eft), r(ight), t(op), and b(ottom)).  Apply \fB+u\fP to append the unit to all distance annotations along the scale. 
-If you want to place a rectangle behind the scale, specify suitable \fB+p\fP\fIpen\fP and/or \fB+f\fP\fIfill\fP parameters.
+GMT_SCALE
+Draws a simple map scale centered on IT(lon0/lat0).  Use OPT(Lx) to specify x/y position instead.
+Scale is calculated at latitude IT(slat) (optionally supply longitude IT(slon) for oblique projections
+[Default is central meridian]), IT(length) is in km, or append unit from BD(e)|BD(f)|BD(k)|BD(M)|BD(n).
+Use OPT(Lf) to get a "fancy" scale [Default is plain]. Append BD(+l) to
+select the default label which equals the distance unit (meter, feet, km, miles, nautical miles) and is justified on top of the scale [t].
+Change this by giving your own label (append BD(+l)IT(label)).  Change label justification with BD(+j)IT(justification)
+(choose among l(eft), r(ight), t(op), and b(ottom)).  Apply BD(+u) to append the unit to all distance annotations along the scale. 
+If you want to place a rectangle behind the scale, specify suitable BD(+p)IT(pen) and/or BD(+f)IT(fill) parameters.
 (See SPECIFYING PENS and SPECIFYING FILL below).

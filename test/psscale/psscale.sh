@@ -1,11 +1,11 @@
-#!/bin/sh
-#	$Id: psscale.sh,v 1.2 2009-07-10 22:21:19 remko Exp $
+#!/bin/bash
+#	$Id: psscale.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
 #
 . ../functions.sh
 
 header "Test horizontal/vertical color bar with/without flipping"
 
-gmtset ANNOT_FONT_SIZE 10 LABEL_FONT_SIZE 14 MEASURE_UNIT cm
+gmtset FONT_ANNOT_PRIMARY 10p FONT_LABEL 14p PROJ_LENGTH_UNIT cm
 
 makecpt -T-6/6/1 -Cseis -D > tmp.cpt
 
@@ -26,6 +26,6 @@ plot -Y2 -K > $ps
 psscale="psscale -E -Ctmp.cpt -Ac -B1:Range:/:m:"
 plot "-Y9 -O" >> $ps
 
-rm -f tmp.cpt .gmtcommands4
+rm -f tmp.cpt
 
 pscmp psscale

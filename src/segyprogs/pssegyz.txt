@@ -3,66 +3,64 @@
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
-\fBpssegyz\fP \fISEGYfile\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT OPT(D)\fIdeviation\fP 
-OPT(F)[\fIrgb\fP|\fIgray\fP]|OPT(W) 
-[ OPT(B)\fIbias\fP ] [ OPT(C)\fIclip\fP ] [ GMT_E_OPT ] 
-[ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)\fInsamp\fP ] [ OPT(M)\fIntrace\fP ] [ OPT(N) ] 
-[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)\fIheader_x\fP/\fIheader_y\fP ] [ OPT(U)\fIredvel\fP ] 
-[ GMT_V_OPT ] [ OPT(X)\fIscale\fP ] [ OPT(Y)\fIsample_int\fP ] [ OPT(Z) ]
+BD(pssegyz) IT(SEGYfile) GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT OPT(D)IT(deviation) 
+OPT(F)[IT(rgb)|IT(gray)] OPT(W) 
+[ OPT(B)IT(bias) ] [ OPT(C)IT(clip) ]
+[ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)IT(nsamp) ] [ OPT(M)IT(ntrace) ] [ OPT(N) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)IT(header_x)/IT(header_y) ] [ OPT(U)IT(redvel) ] 
+[ GMT_V_OPT ] [ OPT(X)IT(scale) ] [ OPT(Y)IT(sample_int) ] [ OPT(Z) ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBpssegyz\fP reads a native (IEEE) format SEGY file and produces a
-\fIPostScript\fP image of the seismic data. The \fIimagemask\fP
+BD(pssegyz) reads a native (IEEE) format SEGY file and produces a
+IT(PostScript) image of the seismic data. The IT(imagemask)
 operator is used so that the seismic data are plotted as a 1-bit
 deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background.
-The bitmap resolution is taken from the current \fBGMT\fP defaults.
+The bitmap resolution is taken from the current BD(GMT) defaults.
 The seismic traces may be plotted at their true locations using information
 in the trace headers (in which case order of the
 traces in the file is not significant).
-Standard \fBGMT\fP geometry routines are used so that
+Standard BD(GMT) geometry routines are used so that
 in principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware also
 that some parameters have non-standard meanings, and a couple of
-the options for \fBpssegy\fP are not available in \fBpssegyz\fP.
+the options for BD(pssegy) are not available in BD(pssegyz).
 
 Note that the order of operations before the seismic data are plotted is
 deviation*[clip]([bias]+[normalize](sample value)). Deviation determines
-how far \fIin the plot coordinates\fP a [normalized][biased][clipped] sample
+how far IT(in the plot coordinates) a [normalized][biased][clipped] sample
 value of 1 plots from the trace location.
 
 The SEGY file should be a disk image of the tape format (ie 3200 byte
 text header, which is ignored, 400 byte binary reel header, and
 240 byte header for each trace) with samples as native real*4 (IEEE real
 on all the platforms to which I have access)
+.SH REQUIRED ARGUMENTS
 .TP
-\fISEGYfile\fP
+IT(SEGYfile)
 Seismic data set to be imaged
-#include "explain_-J_short.txt"
+#include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
-.br
 .TP
-OPT(D)
+OPT(D)IT(deviation)
 gives the deviation in X units of the plot for 1.0 on the scaled trace,
 This may
 be a single number (applied equally in X and Y directions) or devX/devY
-.br 
-#include "explain_-E.txt"
 .TP
-OPT(F)[\fIrgb\fP|\fIgray\fP]
+OPT(F)[IT(rgb)|IT(gray)]
 Fill trace (variable area, defaults to filling positive). rgb or gray gives
 the color with which the imagemask is filled.
 .TP
 OPT(W)
 Draw wiggle trace.
 .TP
-You \fImust\fP specify at least one of OPT(W) and OPT(F).
-.SH OPTIONS
+You IT(must) specify at least one of OPT(W) and OPT(F).
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(B)
+OPT(B)IT(bias)
 Bias to apply to data (added to sample values).
 .TP
-OPT(C)
+OPT(C)IT(clip)
 Sample value at which to clip data (clipping is applied to both positive and
 negative values).
 .TP
@@ -70,12 +68,12 @@ OPT(I)
 Fill negative rather than positive excursions.
 #include "explain_-K.txt"
 .TP
-OPT(L)
+OPT(L)IT(nsamp)
 Override number of samples per trace in reel header (program attempts to
 determine number of samples from each trace header if possible to
 allow for variable length traces).
 .TP
-OPT(M)
+OPT(M)IT(ntrace)
 Override number of traces specified in reel header. Program detects
 end of file (relatively) gracefully, but this parameter limits number
 of traces that the program attempts to read.
@@ -85,27 +83,30 @@ Normalize trace by dividing by rms amplitude over full trace length.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(S)
+OPT(S)IT(header_x)/IT(header_y)
 Read trace locations from trace headers: header is either c for CDP,
 o for offset, b<num> to read a long starting at byte <num> in the
 header (first byte corresponds to num=0), or a number to fix the location.
  First parameter for x, second for y. Default has X and Y given by trace
 number.
 .TP
-OPT(U)
-Apply reduction velocity by shifting traces \fIupwards\fP by redvel/|offset|.
+OPT(U)IT(redvel)
+Apply reduction velocity by shifting traces IT(upwards) by redvel/|offset|.
 Negative velocity removes existing reduction. Units should be consistent with
 offset in trace header and sample interval.
 #include "explain_-V.txt"
 .TP
-OPT(X)
+OPT(X)IT(scale)
 Multiply trace locations by scale before plotting.
 .TP
-OPT(Y)
+OPT(Y)IT(sample_int)
 Override sample interval in reel header.
 .TP
 OPT(Z)
 Do not plot traces with zero rms amplitude.
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 .br
 .sp
 .SH EXAMPLES
@@ -114,11 +115,11 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-\fBpssegyz\fP wa1.segy OPT(JX)5/\-5 OPT(D)1 OPT(Jz)0.05 OPT(E)180/5 OPT(R)0/100/0/10/0/10 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
+BD(pssegyz) wa1.segy OPT(JX)5/\-5 OPT(D)1 OPT(Jz)0.05 OPT(E)180/5 OPT(R)0/100/0/10/0/10 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
 .br
 .SH BUGS
 Variable area involves filling four-sided figures of distressing generality.
-I \fIknow\fP that some of the more complex degenerate cases are not
+I IT(know) that some of the more complex degenerate cases are not
 dealt with correctly or at all; the incidence of such cases increases
 as viewing angles become more oblique, and particularly as the
 viewing elevation increases. Wiggle-trace plotting is not affected.

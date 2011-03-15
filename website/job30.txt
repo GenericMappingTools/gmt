@@ -1,3 +1,0 @@
-$Id: job30.txt,v 1.1 2010-01-05 03:49:47 guru Exp $
-Example 30.  Simple graphing of mathematical functions can be done by using
-the graph mode; note how the mathangle symbol is used to show a particular angle.

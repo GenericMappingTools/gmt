@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.14 2011-03-03 21:02:51 guru Exp $
+ *	$Id: grd2sph.c,v 1.15 2011-03-15 02:06:37 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,11 +96,11 @@ int main (int argc, char **argv)
 		}
 	}
 
-	if (argc == 1 || GMT_give_synopsis_and_exit) {
+	if (argc == 1 || GMT->common.synopsis.active) {
 		fprintf (stderr, "grd2sph %s - Convert a global grid file to a table of spherical harmonic coefficients\n\n", GMT_VERSION);
-		fprintf( stderr, "usage: grd2sph <grdfile> -D<degree> [%s] [-N<norm>] [-Q] [-V] [%s] > coeff_file\n\n", GMT_Ho_OPT, GMT_bo_OPT);
+		fprintf( stderr, "usage: grd2sph <grdfile> -D<degree> [-N<norm>] [-Q] [-V] [%s] [%s] > coeff_file\n\n", GMT_bo_OPT, GMT_h_OPT);
 
-		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
+		if (GMT->common.synopsis.active) exit (EXIT_FAILURE);
 
 		fprintf (stderr, "\n\t<grdfile> is the global grid file to convert\n");
 		fprintf (stderr, "\t-D The highest degree term to include in the conversion\n");
@@ -111,61 +111,57 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 		fprintf (stderr, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 		fprintf (stderr, "\t-Q Use phase convention from physics, i.e., include (-1)^m factor\n");
-		GMT_explain_option ('V');
-		GMT_explain_option ('o');
-		GMT_explain_option ('n');
-		fprintf (stderr, "\t  [Default is 4]\n");
-		GMT_explain_option ('.');
+		GMT_explain_options ("VD4o.");
 		exit (EXIT_FAILURE);
 	}
 
 	if (n_files == 0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify at least one input grid\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify at least one input grid\n", GMT->init.progname);
 		error++;
 	}
 	if (n_files > 1) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input grid\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input grid\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->D.max_degree <= 0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -D maximum degree must be positive\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -D maximum degree must be positive\n", GMT->init.progname);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT_program);
+		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
 		error++;
 	}
-	if (GMT_io.binary[GMT_OUT] && GMT_io.io_header[GMT_OUT]) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR.  Binary output data cannot have header -H\n", GMT_program);
+	if (GMT->current.io.info.binary[GMT_OUT] && GMT->current.io.info.io_header[GMT_OUT]) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR.  Binary output data cannot have header -H\n", GMT->init.progname);
 		error++;
 	}
 
 	if (error) exit (EXIT_FAILURE);
 
 #ifdef SET_IO_MODE
-	GMT_setmode (GMT_OUT);
+	GMT_setmode (GMT, GMT_OUT);
 #endif
 
 	GMT_grd_init (&header, 0, NULL, FALSE);
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (!(GMT_360_RANGE (header.x_min, header.x_max) && GMT_180_RANGE (header.y_min, header.y_max))) {
-		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT_program, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
+		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT->init.progname, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
 		exit (EXIT_FAILURE);
 	}
 	
-	if (gmtdefs.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT_program, argv[f_arg]);
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT->init.progname, argv[f_arg]);
 
 	nm = header.nx * header.ny;
 
-	grd = (float *) GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT_program);
+	grd = (float *) GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
 
-	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), argv[f_arg]);
+	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
 	
 	/* Write out coefficients in the form degree order cos sin */
 	
-	if (GMT_io.io_header[GMT_OUT]) printf ("#degree\torder\tcos\tsin\n");
+	if (GMT->current.io.info.io_header[GMT_OUT]) printf ("#degree\torder\tcos\tsin\n");
 	out[2] = out[3] = 0.0;
 	for (d = 0; d <= Ctrl->D.max_degree; d++) {
 		out[0] = (double)d;
@@ -173,14 +169,14 @@ int main (int argc, char **argv)
 			out[1] = (double)o;
 			/* out[2] = cos_do;
 			out[3] = sin_do; */
-			GMT_output (GMT_stdout, 4, out);
+			GMT->current.io.output (GMT, GMT->session.stdout, 4, out);
 		}
 
 	}
 
 	GMT_free ((void *)grd);
 	
-	if (gmtdefs.verbose) fprintf (stderr, "%s: Completed\n", GMT_program);
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", GMT->init.progname);
 
 	Free_grd2sph_Ctrl (Ctrl);	/* Deallocate control structure */
 

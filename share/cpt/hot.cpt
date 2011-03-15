@@ -1,7 +1,7 @@
-#	$Id: hot.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#	$Id: hot.cpt,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 # Simulates the HOT colormap in Matlab
-# COLOR_MODEL = RGB
-0	0	0	0	0.375	255	0	0
-0.375	255	0	0	0.75	255	255	0
-0.75	255	255	0	1.00	255	255	255
+#
+0	black	0.375	red
+0.375	red	0.75	yellow
+0.75	yellow	1	white

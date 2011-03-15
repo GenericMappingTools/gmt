@@ -1,0 +1,97 @@
+#	$Id: Makefile,v 1.2 2011-03-15 02:06:37 guru Exp $
+#
+#	makefile for potential directory
+#
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
+
+INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
+
+API_O		= gmt_potential.o
+API_H		= $(API_O:.o=.h)
+FUNCS_O		= redpol_func.o xyzokb_func.o
+
+PROGS_O		= $(FUNCS_O:_func.o=.o)
+MAN1		= $(PROGS_O:.o=.1)
+
+#-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:		$(PROGS)
+
+install:	all
+		$(INSTALL) $(PROGS) $(bindir)
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(libdir) ; \
+			$(INSTALL) -m 644 $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBAPI) $(libdir); fi \
+		fi
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(includedir)/gmt; \
+			$(INSTALL) -m 644 $(API_H) $(includedir)/gmt; \
+		fi
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
+			cd $(libdir) ; \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).$(SL) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION); \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION) $(LIBAPI:.$(LIBEXT)=).$(SL); \
+		fi
+
+uninstall:
+		cd $(bindir); \rm -f $(PROGS)
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			cd $(includedir)/gmt; \rm -f $(API_H);\
+		fi
+
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
+
+spotless::	clean
+
+clean:	
+		\rm -f *.o *.a *.$(SL) *% $(PROGS)
+
+#-------------------------------------------------------------------------------
+#	libraries
+#-------------------------------------------------------------------------------
+
+.SUFFIXES:	.$(SL)
+
+LIBAPI		= libgmt_potential.$(LIBEXT)
+
+libs:		libgmt_potential.a
+
+libgmt_potential.a:	$(FUNCS_O) $(API_O)
+		$(AR) cvur $@ $?
+		$(RANLIB) $@
+
+libgmt_potential.$(SL):	libgmt_potential.a
+		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(LIBS) -o $@
+
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(FUNCS_O) $(PROGS_O):	$(GMT_H) $(PS_H) $(API_H)
+
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
+redpol$(EXE):	redpol.o
+xyzokb$(EXE):	xyzokb.o
+
+$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBAPI) -o $@
+		$(COMPRESS) $@
+
+$(PROGS_O):	../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

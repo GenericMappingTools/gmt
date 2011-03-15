@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.20 2009-10-17 22:10:49 remko Exp $
+#  $Id: GNUmakefile,v 1.21 2011-03-15 02:06:37 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	

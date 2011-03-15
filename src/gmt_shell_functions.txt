@@ -3,59 +3,57 @@
 .SH NAME
 gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scripts
 .SH SYNOPSIS
-\fBgmt_init_tmpdir\fP
+BD(gmt_init_tmpdir)
 .br
-\fBgmt_remove_tmpdir\fP
+BD(gmt_remove_tmpdir)
 .br
-\fBgmt_clean_up\fP [\fIprefix\fP]
+BD(gmt_clean_up) [IT(prefix)]
 .br
-\fBgmt_message\fP \fImessage\fP
+BD(gmt_message) IT(message)
 .br
-\fBgmt_abort\fP \fImessage\fP
+BD(gmt_abort) IT(message)
 .br
-\fBgmt_nrecords\fP \fIfile(s)\fP
+BD(gmt_nrecords) IT(file(s))
 .br
-\fBgmt_nfields\fP \fIstring\fP
+BD(gmt_nfields) IT(string)
 .br
-\fBgmt_get_field\fP \fIstring\fP
+BD(gmt_get_field) IT(string)
 .br
-\fBgmt_get_region\fP \fIfile(s)\fP [\fIoptions\fP]
+BD(gmt_get_region) IT(file(s)) [IT(options)]
 .br
-\fBgmt_get_gridregion\fP \fIfile\fP [\fIoptions\fP]
+BD(gmt_get_gridregion) IT(file) [IT(options)]
 .br
-\fBgmt_get_map_width\fP OPT(R) OPT(J)
+BD(gmt_get_map_width) OPT(R) OPT(J)
 .br
-\fBgmt_get_map_height\fP OPT(R) OPT(J)
+BD(gmt_get_map_height) OPT(R) OPT(J)
 .br
-\fBgmt_set_psfile\fP \fIfile\fP
+BD(gmt_set_psfile) IT(file)
 .br
-\fBgmt_set_framename\fP \fIprefix framenumber\fP
+BD(gmt_set_framename) IT(prefix framenumber)
 .br
-\fBgmt_set_framenext\fP \fIframenumber\fP
+BD(gmt_set_framenext) IT(framenumber)
 .SH DESCRIPTION
-\fBgmt_shell_functions.sh\fP provides a set of functions to Bourne (again) shell scripts in support
-of \fBGMT\fP.
+BD(gmt_shell_functions.sh) provides a set of functions to Bourne (again) shell scripts in support
+of BD(GMT).
 The calling shell script should include the following line, before the functions can be used:
 .br
-.sp
-\fB. gmt_shell_functions.sh\fP
+BD(. gmt_shell_functions.sh)
 .br
-.sp
-Once included in a shell script, \fBgmt_shell_functions.sh\fP allows \fBGMT\fP users to
+Once included in a shell script, BD(gmt_shell_functions.sh) allows BD(GMT) users to
 do some scripting more easily than otherwise. The functions made available are:
 .TP
 .B gmt_init_tmpdir
-Creates a temporary directory in \fB/tmp\fP or (when defined) in the directory specified by the
-environment variable \fBTMPDIR\fP. The name of the temporary directory is returned as environment
-variable \fBGMT_TMPDIR\fP. This function also causes \fBGMT\fP to run in `isolation mode', i.e. all
-temporary files will be created in \fBGMT_TMPDIR\fP and the \.gmtdefaults file will not be adjusted.
+Creates a temporary directory in BD(/tmp) or (when defined) in the directory specified by the
+environment variable BD(TMPDIR). The name of the temporary directory is returned as environment
+variable BD(GMT_TMPDIR). This function also causes BD(GMT) to run in `isolation mode', i.e. all
+temporary files will be created in BD(GMT_TMPDIR) and the BD(gmt.conf) file will not be adjusted.
 .TP
 .B gmt_remove_tmpdir
-Removes the temporary directory and unsets the \fBGMT_TMPDIR\fP environment variable.
+Removes the temporary directory and unsets the BD(GMT_TMPDIR) environment variable.
 .TP
 .B gmt_cleanup
 Remove all files and directories in which the current process number is part of the file name.
-If the optional \fIprefix\fP is given then we also delete all files and directories that begins
+If the optional IT(prefix) is given then we also delete all files and directories that begins
 with the given prefix.
 .TP
 .B gmt_message
@@ -65,34 +63,34 @@ Send a message to standard error.
 Send a message to standard error and exit the shell.
 .TP
 .B gmt_nrecords
-Returns the total number of lines in \fIfile(s)\fP
+Returns the total number of lines in IT(file(s))
 .TP
 .B gmt_nfields
-Returns the number of fields or words in \fIstring\fP
+Returns the number of fields or words in IT(string)
 .TP
 .B gmt_get_field
-Returns the given \fIfield\fP in a \fIstring\fP. Must pass \fIstring\fP between double quotes to
+Returns the given IT(field) in a IT(string). Must pass IT(string) between double quotes to
 preserve it as one item.
 .TP
 .B gmt_get_region
-Returns the region in the form w/e/s/n based on the data in table \fIfile(s)\fP. Optionally add
--I\fIdx\fP/\fIdy\fP to round off the answer.
+Returns the region in the form w/e/s/n based on the data in table IT(file(s)). Optionally add
+-IIT(dx)/IT(dy) to round off the answer.
 .TP
 .B gmt_get_gridregion
-Returns the region in the form w/e/s/n based on the header of a grid \fIfile\fP. Optionally add
--I\fIdx\fP/\fIdy\fP to round off the answer.
+Returns the region in the form w/e/s/n based on the header of a grid IT(file). Optionally add
+-IIT(dx)/IT(dy) to round off the answer.
 .TP
 .B gmt_map_width
-Expects the user to give the desired \fB-R \-J\fP settings and returns the map width in
+Expects the user to give the desired OPT(R) OPT(J) settings and returns the map width in
 the current measurement unit.
 .TP
 .B gmt_map_height
-Expects the user to give the desired \fB-R \-J\fP settings and returns the map height in
+Expects the user to give the desired OPT(R) OPT(J) settings and returns the map height in
 the current measurement unit.
 .TP
 .B gmt_set_psfile
-Create the output \fIPostScript\fP file name based on the base name of a given file (usually the script name
-\fB$0\fP).
+Create the output IT(PostScript) file name based on the base name of a given file (usually the script name
+BD($0)).
 .TP
 .B gmt_set_framename
 Returns a lexically ordered filename stem (i.e., no extension) given the file prefix and the current frame number,
@@ -103,16 +101,17 @@ creating animations and lexically sorted filenames are required.
 Accepts the current frame integer counter and returns the next integer counter.
 .SH NOTES
 .br
-1. These functions only work in the bourne shell (\fBsh\fP) and their derivatives (like \fBash\fP,
-\fBbash\fP, \fBksh\fP and \fBzsh\fP).
-These functions do not work in the C shell (\fBcsh\fP) or their derivatives (like \fBtcsh\fP), and
+1. These functions only work in the bourne shell (BD(sh)) and their derivatives (like BD(ash),
+BD(bash), BD(ksh) and BD(zsh)).
+These functions do not work in the C shell (BD(csh)) or their derivatives (like BD(tcsh)), and
 cannot be used in DOS batch scripts either.
 .br
-2. \fBgmt_shell_functions.sh\fP were first introduced in \fBGMT\fP version 4.2.2 and have since been
+2. BD(gmt_shell_functions.sh) were first introduced in BD(GMT) version 4.2.2 and have since been
 regularly expanded with other practical scripting short-cuts. If you want to suggest other functions,
 please do so by mailing to the GMT mailing list: gmt-help@lists.hawaii.edu.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR sh (1),
 .IR bash (1),
 .IR minmax (1),

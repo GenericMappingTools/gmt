@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.79 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_project.h,v 1.80 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,14 +20,18 @@
  * that most programs will include this by including gmt.h
  *
  * Author:	Paul Wessel
- * Date:	26-FEB-1990
- * Revised:	24-MAR-2000
- * Revised:	18-DEC-2007
- * Version:	4.2.2
+ * Date:	1-JAN-2010
+ * Version:	5 API
  *
  */
 #ifndef _GMT_PROJECT_H
 #define _GMT_PROJECT_H
+
+/* Macros returns TRUE if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
+#define GMT_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
+#define GMT_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)
+#define GMT_is_geographic(C,way) (GMT_x_is_lon(C,way) && GMT_y_is_lat(C,way))
+#define GMT_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
 
 #define GMT_N_PROJECTIONS	29	/* Total number of projections in GMT */
 
@@ -37,15 +41,18 @@
 #define GMT_NO_PROJ		-1	/* Projection not specified (initial value) */
 
 /* Linear projections tagged 0-99 */
-#define GMT_IS_LINEAR (project_info.projection / 100 == 0)
+#define GMT_IS_LINEAR(C) (C->current.proj.projection / 100 == 0)
 #define GMT_LINEAR		0
-#define GMT_LOG10		1	/* These numbers are only used for project_info.xyz_projection[3], */
-#define GMT_POW			2	/* while project_info.projection = 0 */
+#define GMT_LOG10		1	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
+#define GMT_POW			2	/* while GMT->current.proj.projection = 0 */
 #define GMT_TIME		3
+#define GMT_ANNOT_CPT		4
+#define GMT_CUSTOM		5
+
 #define GMT_ZAXIS		50
 
 /* Cylindrical projections tagged 100-199 */
-#define GMT_IS_CYLINDRICAL (project_info.projection / 100 == 1)
+#define GMT_IS_CYLINDRICAL(C) (C->current.proj.projection / 100 == 1)
 #define GMT_MERCATOR		100
 #define	GMT_CYL_EQ		101
 #define	GMT_CYL_EQDIST		102
@@ -58,14 +65,14 @@
 #define GMT_OBLIQUE_MERC_POLE	151
 
 /* Conic projections tagged 200-299 */
-#define GMT_IS_CONICAL (project_info.projection / 100 == 2)
+#define GMT_IS_CONICAL(C) (C->current.proj.projection / 100 == 2)
 #define GMT_ALBERS		200
 #define GMT_ECONIC		201
 #define GMT_POLYCONIC		202
 #define GMT_LAMBERT		250
 
 /* Azimuthal projections tagged 300-399 */
-#define GMT_IS_AZIMUTHAL (project_info.projection / 100 == 3)
+#define GMT_IS_AZIMUTHAL(C) (C->current.proj.projection / 100 == 3)
 #define GMT_STEREO		300
 #define GMT_LAMB_AZ_EQ		301
 #define GMT_ORTHO		302
@@ -75,7 +82,7 @@
 #define GMT_POLAR		350
 
 /* Misc projections tagged 400-499 */
-#define GMT_IS_MISC (project_info.projection / 100 == 4)
+#define GMT_IS_MISC(C) (C->current.proj.projection / 100 == 4)
 #define GMT_MOLLWEIDE		400
 #define GMT_HAMMER		401
 #define GMT_SINUSOIDAL		402
@@ -85,12 +92,21 @@
 #define GMT_ECKERT6		406
 #define GMT_WINKEL		407
 
-#define GMT_IS_RECT_GRATICULE (project_info.projection <= GMT_MILLER)
+/* GMT_IS_RECT_GRATICULE means parallels and meridians are orthogonal, but does not imply linear spacing */
+#define GMT_IS_RECT_GRATICULE(C) (C->current.proj.projection <= GMT_MILLER)
 
-#define GMT_POLE_IS_POINT (project_info.projection >= GMT_LAMBERT && project_info.projection <= GMT_VANGRINTEN)
+/* GMT_IS_NONLINEAR_GRATICULE means parallels and meridians are not orthogonal or have nonlinear spacing */
+#define GMT_IS_NONLINEAR_GRATICULE(C)	(!(C->current.proj.projection == GMT_CYL_EQDIST || C->current.proj.projection == GMT_LINEAR) || \
+	C->current.proj.xyz_projection[GMT_X] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_X] == GMT_POW || \
+	C->current.proj.xyz_projection[GMT_Y] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
 
-#define GMT_IS_MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
-#define GMT_IS_SPHERICAL (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening < 1.0e-10)
+#define GMT_POLE_IS_POINT(C) (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN)
+
+#define GMT_IS_SPHERICAL(C) (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening < 1.0e-10)
+#define GMT_IS_FLATEARTH(C) (!strcmp (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].name, "FlatEarth"))
+
+/* Return 0 for Flat Earth, 1 for Great-circles, and 2 for geodesics */
+#define GMT_sph_mode(C) (GMT_IS_FLATEARTH (C) ? 0 : (GMT_IS_SPHERICAL (C) ? 1 : 2))
 
 #define GMT_360_RANGE(w,e) (fabs (fabs((e) - (w)) - 360.0) < GMT_CONV_LIMIT)
 #define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
@@ -121,7 +137,51 @@ struct GMT_LATSWAP_CONSTS {
 	GMT_LONG spherical;		/* True if no conversions need to be done.  */
 };
 
-struct GMT_MAP_PROJECTIONS {
+struct GMT_THREE_D {
+	double view_azimuth, view_elevation;
+	double cos_az, sin_az, cos_el, sin_el;
+	double corner_x[4], corner_y[4];
+	double xmin, xmax, ymin, ymax;
+	double world_x, world_y, world_z;	/* Users coordinates of fixed point */
+	double view_x, view_y;			/* Desired projected 2-D coordinates of fixed point */
+	double x_off, y_off;			/* Offsets to the final projected coordinates */
+	double sign[4];		/* Used to determine direction of tickmarks etc */
+	double level;		/* Indicates the last level of the perspective plane (if any) */
+	GMT_LONG view_plane;	/* Determines on which plane needs to be projected */
+	GMT_LONG plane;		/* Indicates which last plane was plotted in perspective (-1 = none) */
+	GMT_LONG quadrant;	/* quadrant we're looking from */
+	GMT_LONG z_axis;	/* Which z-axis to draw. */
+	GMT_LONG face[3];	/* Tells if this facet has normal in pos direction */
+	GMT_LONG draw[4];	/* axes to draw */
+	GMT_LONG fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
+	GMT_LONG world_given;	/* TRUE if a fixed world point was given in -E ..+glon/lat/z */
+	GMT_LONG view_given;	/* TRUE if a fixed projected point was given in -E ..+cx0/y0 */
+};
+
+struct GMT_DATUM {	/* Main parameter for a particular datum */
+	double a, b, f, e_squared, ep_squared;
+	double xyz[3];
+	GMT_LONG ellipsoid_id;	/* Ellipsoid GMT ID number */
+};
+
+struct GMT_DATUM_CONV {
+	GMT_LONG h_given;	/* TRUE if we have incoming height data [h = 0] */
+	double da;		/* Major semi-axis in meters */
+	double df;		/* Flattening */
+	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
+	double one_minus_f;	/* 1 - f */
+	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
+	struct GMT_DATUM from, to;	/* The old and new datums */
+};
+
+struct GMT_PROJ {
+
+	struct GMT_THREE_D z_project;
+	struct GMT_DATUM_CONV datum;	/* For datum conversions */
+	PFL fwd, inv;			/* Pointers to the selected mapping functions */
+	PFL fwd_x, inv_x;		/* Pointers to the selected linear functions */
+	PFL fwd_y, inv_y;		/* Pointers to the selected linear functions */
+	PFL fwd_z, inv_z;		/* Pointers to the selected linear functions */
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
@@ -132,9 +192,7 @@ struct GMT_MAP_PROJECTIONS {
 
 	GMT_LONG x_off_supplied;		/* Used to set xorigin/yorigin for overlay/final plots */
 	GMT_LONG y_off_supplied;
-	GMT_LONG region_supplied;	/* TRUE when -R option has been given */
 	GMT_LONG units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
-	GMT_LONG region;			/* TRUE if -R gives lon/lat boundaries, FALSE if it gives lower/left upper right corners */
 	GMT_LONG north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	GMT_LONG edge[4];		/* TRUE if the edge is a map boundary */
 	GMT_LONG three_D;		/* Parameters for 3-D projections */
@@ -142,14 +200,10 @@ struct GMT_MAP_PROJECTIONS {
 	GMT_LONG GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
-	double x0, y0, z0;		/* Projected values of the logical origin for the projection */
-	double xmin, xmax, ymin, ymax, zmin, zmax;	/* Extreme projected values */
-	double w, e, s, n;		/* Bounding geographical region, if applicable */
-	double z_bottom, z_top;		/* Bounds in z direction */
-	double x_scale, y_scale;	/* Scaling for meters to map-distance (typically inch) conversion */
-	double z_scale;			/* Scale for z projection (user-units to map-units (typically inch) */
-	double i_x_scale, i_y_scale;	/* Inverse Scaling for meters to map-distance (typically inch) conversion */
-	double i_z_scale;		/* Inverse Scale for z projection (user-units to map-units (typically inch) */
+	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
+	double rect[4], zmin, zmax;	/* Extreme projected values */
+	double scale[3];		/* Scaling for meters to map-distance (typically inch) conversion (x, y, z) */
+	double i_scale[3];		/* Inverse Scaling for meters to map-distance (typically inch) conversion (x, y, z) */
 	double z_level;			/* Level at which to draw basemap [0] */
 	double unit;			/* Gives meters pr plot unit (0.01 or 0.0254) */
 	double central_meridian;	/* Central meridian for projection */
@@ -157,6 +211,8 @@ struct GMT_MAP_PROJECTIONS {
 	double EQ_RAD, i_EQ_RAD;	/* Current ellipsoid parameters */
 	double ECC, ECC2, ECC4, ECC6;	/* Powers of eccentricity */
 	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */
+	double DIST_M_PR_DEG;		/* Current spherical approximations to convert degrees to m even if -J was not set */
+	double DIST_KM_PR_DEG;		/* Current spherical approximations to convert degrees to km even if -J was not set */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
 	GMT_LONG gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
@@ -168,7 +224,6 @@ struct GMT_MAP_PROJECTIONS {
 	GMT_LONG xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
 	GMT_LONG xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
 	GMT_LONG compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
-	GMT_LONG degree[3];		/* TRUE if we have linear projection with geographical data */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
 
@@ -195,7 +250,7 @@ struct GMT_MAP_PROJECTIONS {
 	double t_e2, t_M0;
 	double t_c1, t_c2, t_c3, t_c4;
 	double t_i1, t_i2, t_i3, t_i4, t_i5;
-	double t_r, t_ir;		/* Short for project_info.EQ_RAD * gmtdefs.map_scale_factor and its inverse */
+	double t_r, t_ir;		/* Short for GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor and its inverse */
 	GMT_LONG utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
 	GMT_LONG utm_zonex;		/* The longitude component 1-60 */
 	GMT_LONG utm_zoney;		/* The latitude component A-Z */
@@ -225,7 +280,7 @@ struct GMT_MAP_PROJECTIONS {
 	double n_cx, n_cy;	/* = = 0.8487R, 1.3523R */
 	double n_i_cy;
 	double n_phi[GMT_N_ROBINSON], n_X[GMT_N_ROBINSON], n_Y[GMT_N_ROBINSON];
-	double *n_x_coeff, *n_y_coeff, *n_iy_coeff;
+	double n_x_coeff[3*GMT_N_ROBINSON], n_y_coeff[3*GMT_N_ROBINSON], n_iy_coeff[3*GMT_N_ROBINSON];
 
 	/* Eckert IV Projection */
 
@@ -296,12 +351,12 @@ struct GMT_MAP_PROJECTIONS {
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 
-#define GMT_ANNOT_UPPER		0	/* Tick annotations closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_ANNOT_UPPER		0	/* Tick annotations closest to the axis */
 #define GMT_ANNOT_LOWER		1	/* Tick annotations farthest from the axis*/
 #define GMT_INTV_UPPER		2	/* Interval annotations closest to the axis */
 #define GMT_INTV_LOWER		3	/* Interval annotations farthest from the axis */
-#define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
-#define GMT_TICK_LOWER		5	/* Frame tick marks closest to the axis (the only kind in GMT3.4 or earlier) */
+#define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis */
+#define GMT_TICK_LOWER		5	/* Frame tick marks closest to the axis */
 #define GMT_GRID_UPPER		6	/* Gridline spacing */
 #define GMT_GRID_LOWER		7	/* Gridline spacing */
 
@@ -309,15 +364,36 @@ struct GMT_MAP_PROJECTIONS {
 
 #define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval annotations */
 #define GMT_lower_axis_item(k) (((k) == GMT_ANNOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
-#define GMT_upper_and_lower_items(j) (((frame_info.axis[j].item[GMT_ANNOT_UPPER].active || frame_info.axis[j].item[GMT_INTV_UPPER].active) && \
-	(frame_info.axis[j].item[GMT_ANNOT_LOWER].active || frame_info.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
-#define GMT_two_annot_items(j) ((frame_info.axis[j].item[GMT_ANNOT_UPPER].active && frame_info.axis[j].item[GMT_ANNOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
+#define GMT_upper_and_lower_items(C,j) (((C->current.map.frame.axis[j].item[GMT_ANNOT_UPPER].active || C->current.map.frame.axis[j].item[GMT_INTV_UPPER].active) && \
+	(C->current.map.frame.axis[j].item[GMT_ANNOT_LOWER].active || C->current.map.frame.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
+#define GMT_two_annot_items(C,j) ((C->current.map.frame.axis[j].item[GMT_ANNOT_UPPER].active && C->current.map.frame.axis[j].item[GMT_ANNOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
+
+/* The array side in GMT_PLOT_FRAME follows the order south, east, north, west (CCW loop) + z.
+ * Ro avoid using confusing indices 0-4 we define very brief constants S_SIDE, E_SIDE, N_SIDE
+ * W_SIDE and Z_SIDE that should be used instead. */
+
+#ifndef S_SIDE
+#define S_SIDE 0
+#endif
+#ifndef E_SIDE
+#define E_SIDE 1
+#endif
+#ifndef N_SIDE
+#define N_SIDE 2
+#endif
+#ifndef W_SIDE
+#define W_SIDE 3
+#endif
+#ifndef Z_SIDE
+#define Z_SIDE 4
+#endif
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	GMT_LONG parent;		/* Id of axis this item belongs to (0,1,2) */
 	GMT_LONG id;			/* Id of this item (0-7) */
-	GMT_LONG active;			/* TRUE if we want to use this item */
+	GMT_LONG active;		/* TRUE if we want to use this item */
+	GMT_LONG special;		/* TRUE if custom interval annotations */
 	double interval;		/* Distance between ticks in user units */
 	GMT_LONG flavor;		/* Index into month/day name abbreviation array (0-2) */
 	GMT_LONG upper_case;		/* TRUE if we want upper case text (used with flavor) */
@@ -328,11 +404,13 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	int id;			/* 0 (x), 1(y), or 2(z) */
 	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
-	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, or GMT_TIME */
+	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
+	GMT_LONG special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LONG_TEXT];	/* Label of the axis */
 	char unit[GMT_TEXT_LEN];	/* Axis unit appended to annotations */
 	char prefix[GMT_TEXT_LEN];	/* Axis prefix starting all annotations */
+	char *file_custom;		/* File with custom annotations */
 };
 
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
@@ -343,47 +421,8 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	GMT_LONG draw_box;		/* TRUE is a 3-D Z-box is desired */
 	GMT_LONG check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
 	GMT_LONG horizontal;		/* TRUE is S/N annotations should be parallel to axes */
-	GMT_LONG side[5];		/* Which sides to plot. 2 is annot/draw, 1 is draw, 0 is not */
-};
-
-
-struct GMT_THREE_D {
-	double view_azimuth, view_elevation;
-	double cos_az, sin_az, cos_el, sin_el;
-	double corner_x[4], corner_y[4];
-	double xmin, xmax, ymin, ymax;
-	double world_x, world_y, world_z;	/* Users coordinates of fixed point */
-	double view_x, view_y;			/* Desired projected 2-D coordinates of fixed point */
-	double x_off, y_off;			/* Offsets to the final projected coordinates */
-	double phi[3];		/* Angle each axis makes with horizontal */
-	double xshrink[3];	/* Shrinkage in x-dir due to projection */
-	double yshrink[3];	/* Same for y-dir */
-	double tilt[3];		/* Slant of characters due to projection */
-	double sign[4];		/* Used to determine direction of tickmarks etc */
-	GMT_LONG quadrant;	/* quadrant we're looking from */
-	GMT_LONG z_axis;	/* Which z-axis to draw. */
-	GMT_LONG k;		/* For drawing-axis. 0 = plot in x dir, 1 in y */
-	GMT_LONG face[3];	/* Tells if this facet has normal in pos direction */
-	GMT_LONG draw[4];	/* axes to draw */
-	GMT_LONG fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
-	GMT_LONG world_given;	/* TRUE if a fixed world point was given in -E ..+glon/lat/z */
-	GMT_LONG view_given;	/* TRUE if a fixed projected point was given in -E ..+cx0/y0 */
-};
-
-struct GMT_DATUM {	/* Main parameter for a particular datum */
-	double a, b, f, e_squared, ep_squared;
-	double xyz[3];
-	GMT_LONG ellipsoid_id;	/* Ellipsoid GMT ID number */
-};
-
-struct GMT_DATUM_CONV {
-	GMT_LONG h_given;	/* TRUE if we have incoming height data [h = 0] */
-	double da;		/* Major semi-axis in meters */
-	double df;		/* Flattening */
-	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
-	double one_minus_f;	/* 1 - f */
-	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
-	struct GMT_DATUM from, to;	/* The old and new datums */
+	GMT_LONG primary;		/* TRUE if current axis is primary, FALSE if secondary */
+	GMT_LONG side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };
 
 #endif /* _GMT_PROJECT_H */

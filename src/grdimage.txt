@@ -1,26 +1,27 @@
 #include "common_options.txt"
 .TH GRDIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_L   1.5
-#define SCALE1	OPT(Jl)18/24/1.5\fBc\fP
+#define SCALE1	OPT(Jl)18/24/1.5BD(c)
 #define LEN_X   10
-#define SCALE2	OPT(Jx)10\fBi\fP
+#define SCALE2	OPT(Jx)10BD(i)
 .SH NAME
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
-\fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP [ OPT(D)[\fBr\fP] ] GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP ] 
-[ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
-[ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
+BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
+[ GMT_B_OPT ] [ OPT(Ei)|IT(dpi) ]
+[ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] [ GMT_Jz_OPT ]
+[ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] 
+[ OPT(S)[BD(-)]BD(b)|BD(c)|BD(l)|BD(n)[BD(/)IT(threshold)] ]
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ OPT(r) ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_p_OPT ] [ OPT(tr) ]
 .SH DESCRIPTION
-\fBgrdimage\fP reads one 2-D grid file and produces a gray-shaded (or colored) map by plotting
+BD(grdimage) reads one 2-D grid file and produces a gray-shaded (or colored) map by plotting
 rectangles centered on each grid node and assigning them a gray-shade (or color) based on the z-value.
-Alternatively, \fBgrdimage\fP reads three 2-D grid files with the red, green, and blue components
+Alternatively, BD(grdimage) reads three 2-D grid files with the red, green, and blue components
 directly (all must be in the 0-255 range). Optionally, illumination may be added by providing
 a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
 Such intensity files can be created from the
-grid using \fBgrdgradient\fP and, optionally, modified by \fBgrdmath\fP or \fBgrdhisteq\fP.
+grid using BD(grdgradient) and, optionally, modified by BD(grdmath) or BD(grdhisteq).
 .br
 When using map projections, the grid is first resampled on a new rectangular grid with the same
 dimensions. Higher resolution images can be obtained by using the OPT(E) option.
@@ -34,46 +35,48 @@ value. Interpolation and aliasing is controlled with the OPT(S) option.
 The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid.
 .br
-A (color) \fIPostScript\fP file is output.
+A (color) IT(PostScript) file is output.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP
+IT(grd_z) | IT(grd_r grd_g grd_b)
 2-D gridded data set (or red, green, blue grids) to be imaged
 (See GRID FILE FORMATS below.)
 .TP
-OPT(C)
-name of the color palette table (for \fIgrd_z\fP only).
-#include "explain_-J_short.txt"
-.SH OPTIONS
+OPT(C)IT(cptfile)
+name of the color palette table (for IT(grd_z) only).
+#include "explain_-J.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(D)
-Specifies that the grid supplied is an image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
+OPT(D)[BD(r)]
+Specifies that the grid supplied is an image file to be read via GDAL. Obviously this option will work only with BD(GMT)
 versions built with GDAL support. The image can be indexed or true color (RGB) and can
 be an URL of a remotely located file. That is OPT(D) http://www.somewhere.com/image.jpg is a valid file syntax.
 Note, however, that to use it this way you must not be blocked by a proxy. If you are, chances 
 are good that it can work by setting the environmental variable http_proxy with the value 'your_proxy:port'
-Append \fBr\fP to use the region specified by OPT(R) to apply to the image.
+Append BD(r) to use the region specified by OPT(R) to apply to the image.
 For example, if you have used OPT(Rd) then the image will be assigned the limits of a global
 domain. The interest of this mode is that you can project a raw image (an image without 
 referencing coordinates).
 .TP
-OPT(E)
+OPT(Ei)|IT(dpi)
 Sets the resolution of the projected grid that will be created if
 a map projection other than Linear or Mercator was selected.  By default,
 the projected grid will be of the same size (rows and columns) as the
-input file.  Specify \fBi\fP to use the \fIPostScript\fP
+input file.  Specify BD(i) to use the IT(PostScript)
 image operator to interpolate the image at the device resolution.
 .TP
-OPT(G)
+OPT(G)[BD(f)|BD(b)]IT(color)
 This option only applies when the resulting image otherwise would consist
 of only two colors: black (0) and white (255).  If so, this option will
 instead use the image as a transparent mask and paint the mask (or its
 inverse, with OPT(Gb)) with the given color combination.
 (See SPECIFYING COLOR below).
 .TP
-OPT(I)
+OPT(I)IT(intensfile)
 Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 OPT(M)
@@ -85,62 +88,60 @@ Do not clip the image at the map boundary (only relevant for non-rectangular map
 #include "explain_-P.txt"
 .TP
 OPT(Q)
-Make grid nodes with z = NaN transparent, using the colormasking feature in \fIPostScript\fP Level 3
+Make grid nodes with z = NaN transparent, using the colormasking feature in IT(PostScript) Level 3
 (the PS device must support PS Level 3).
 #include "explain_-R.txt"
-You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
+#include "explain_-Rz.txt"
+You may ask for a larger IT(w/e/s/n) region to have more room between the image and the axes.
 A smaller region than specified in the grid file will result in a subset of the grid
 [Default is the region given by the grid file].
 #include "explain_-Sint.txt"
-.TP
-OPT(T)
-This option has become OBSOLETE. Use \fBgrdview\fP OPT(T) instead.
-Use OPT(Sn) to plot near-neighbor values only (use OPT(E) to increase the resolution).
-Use OPT(Sn) OPT(Q) to obtain something similar to the old option OPT(Ts).
-The option OPT(To) is no longer supported.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_grd_input.txt"
 .SH IMAGING GRIDS WITH NANS
 Be aware that if your input grid contains patches of NaNs, these patches can become larger
 as a consequence of the resampling that must take place with most map projections.  Because
-\fBgrdimage\fP uses the \fIPostScript\fP colorimage operator, for most non-linear projections
+BD(grdimage) uses the IT(PostScript) colorimage operator, for most non-linear projections
 we must resample your grid onto an equidistant rectangular lattice.  If you find that the NaN
 areas are not treated adequately, consider (a) use a linear projection, or (b) use
-\fBgrdview \-Ts\fP instead.
+BD(grdview) OPT(Ts) instead.
 .SH EXAMPLES
-To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
+To gray-shade the file hawaii_grav.nc with shades given in shades.cpt on a Lambert map
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
 .br
 .sp
-\fBgrdimage\fP hawaii_grav.grd SCALE1 OPT(C)shades.cpt OPT(B)1 > hawaii_grav_image.ps
+BD(grdimage) hawaii_grav.nc SCALE1 OPT(C)shades.cpt OPT(B)1 > hawaii_grav_image.ps
 .br
 .sp
-To create an illuminated color \fIPostScript\fP plot of the gridded data set image.grd, using the
-intensities provided by the file intens.grd, and color
+To create an illuminated color IT(PostScript) plot of the gridded data set image.nc, using the
+intensities provided by the file intens.nc, and color
 levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-\fBgrdimage\fP image.grd SCALE2 OPT(C)colors.cpt OPT(I)intens.grd OPT(B)5 > image.ps
+BD(grdimage) image.nc SCALE2 OPT(C)colors.cpt OPT(I)intens.nc OPT(B)5 > image.ps
 .br
 .sp
-To create an false color \fIPostScript\fP plot from the three grid files red.grd, green.grd, and blue.grd,
+To create an false color IT(PostScript) plot from the three grid files red.nc, green.nc, and blue.nc,
 with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-\fBgrdimage\fP red.grd green.grd blue.grd SCALE2 OPT(B)5 > rgbimage.ps
+BD(grdimage) red.nc green.nc blue.nc SCALE2 OPT(B)5 > rgbimage.ps
 .br
 .sp
 When GDAL support is built in: To create a sinusoidal projection of a remotely located Jessica Rabbit
 .br
 .sp
-\fBgrdimage\fP -JI15c -Rd -Dr http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
+BD(grdimage) -JI15c -Rd -Dr http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
 .SH "SEE ALSO"
-.IR GMT (1),
-.IR gmt2rgb (1),
+.IR gmt (1),
+.IR grd2rgb (1),
 .IR grdcontour (1),
 .IR grdview (1),
 .IR grdgradient (1),

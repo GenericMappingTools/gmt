@@ -1,10 +1,2 @@
 .TP
-OPT(X) OPT(Y)
-Shift plot origin relative to the current origin by (\fIx-shift,y-shift\fP) and
-optionally append the length unit (\fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP).
-You can prepend \fBa\fP to shift the origin back to the original position after plotting,
-or prepend  \fBr\fP [Default] to reset the current origin to the new location.
-If OPT(O) is used then the default (\fIx-shift,y-shift\fP) is (0,0), otherwise it is
-(r1i, r1i) or (r2.5c, r2.5c).
-Alternatively, give \fBc\fP to align the center coordinate (x or y) of the plot with the center of the page
-based on current page size.
+GMT_X_OPT GMT_Y_OPT Shift plot origin.

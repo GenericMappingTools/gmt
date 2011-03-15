@@ -3,40 +3,43 @@
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grid file
 .SH SYNOPSIS
-\fBgrdinfo\fP \fIgrdfiles\fP [ OPT(C) ] [ OPT(F) ] 
-[ OPT(I)[\fIdx\fP[/\fIdy\fP]] ][ OPT(L)[\fB0\fP|\fB1\fP|\fP2\fP] ] 
-[ OPT(M) ] [ OPT(T)\fIdz\fP ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
+[ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|)2)] ] 
+[ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdinfo\fP reads a 2-D binary grid file and reports various statistics for
-the (\fIx,y,z\fP) data in the grid file(s).  The output information contains the
-minimum/maximum values for \fIx\fP, \fIy\fP, and \fIz\fP, where the min/max of \fIz\fP occur, the
-\fIx\fP- and \fIy\fP-increments, and the number of \fIx\fP and \fIy\fP nodes, and [optionally] the
-mean, standard deviation, and/or the median, L1 scale of \fIz\fP, and number of
+BD(grdinfo) reads a 2-D binary grid file and reports various statistics for
+the (IT(x),IT(y),IT(z)) data in the grid file(s).  The output information contains the
+minimum/maximum values for IT(x), IT(y), and IT(z), where the min/max of IT(z) occur, the
+IT(x)- and IT(y)-increments, and the number of IT(x) and IT(y) nodes, and [optionally] the
+mean, standard deviation, and/or the median, L1 scale of IT(z), and number of
 nodes set to NaN.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgrdfile\fP
+IT(grdfile)
 The name of one or several 2-D grid files.
 (See GRID FILE FORMATS below.)
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 OPT(C)
 Formats the report using tab-separated fields on a single line.  The output is
-\fIw e s n z0 z1 dx dy nx ny \fP[ \fIx0 y0 x1 y1\fP ] [ \fImed scale\fP ] [\fI mean std rms\fP] [\fIn_nan\fP].
+IT(w e s n z0 z1 dx dy nx ny )[ IT(x0 y0 x1 y1) ] [ IT(med scale) ] [IT( mean std rms)] [IT(n_nan)].
 The data in brackets are output only if the corresponding options
 OPT(M), OPT(L1), OPT(L2), and OPT(M) are used, respectively.
 If the OPT(I) option is used, the output format is instead
-\fINF w e s n z0 z1\fP, where \fINF\fP is the total number of grids read and \fIw e s n\fP are rounded off (see OPT(I)).
+IT(NF w e s n z0 z1), where IT(NF) is the total number of grids read and IT(w e s n) are rounded off (see OPT(I)).
 .TP
 OPT(F)
 Report grid domain and x/y-increments in world mapping format [Default is generic].
 Does not apply to the OPT(C) option.
 .TP
-OPT(I)
-Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\fP,
-and output this in the form OPT(R)\fIw/e/s/n\fP (unless OPT(C) is set).
+OPT(I)[IT(dx)[/IT(dy)]]
+Report the min/max of the region to the nearest multiple of IT(dx) and IT(dy),
+and output this in the form OPT(R)IT(w/e/s/n) (unless OPT(C) is set).
 To report the actual grid region, select OPT(I-).  If no argument is given
-then we report the grid increment in the form OPT(I)\fIxinc/yinc\fP.
+then we report the grid increment in the form OPT(I)IT(xinc/yinc).
+.TP
+OPT(L)[BD(0)|BD(1)|)2)]
 .TP
 OPT(L0)
 Report range of z after actually scanning the data, not just reporting what the header says.
@@ -50,20 +53,24 @@ Report mean, standard deviation, and rms of z.
 OPT(M)
 Find and report the location of min/max z-values, and count and report the number of nodes
 set to NaN, if any.
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of the input grid(s). If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
 .TP
-OPT(T)
-Determine min and max z-value, round off to multiples of \fIdz\fP, and report as the text string
-OPT(T)\fIzmin/zmax/dz\fP for use by \fBmakecpt\fP.
+OPT(T)IT(dz)
+Determine min and max z-value, round off to multiples of IT(dz), and report as the text string
+OPT(T)IT(zmin/zmax/dz) for use by BD(makecpt).
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
+#include "explain_help.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
-To obtain all the information about the data set in file hawaii_topo.grd:
+To obtain all the information about the data set in file hawaii_topo.nc:
 .br
 .sp
-\fBgrdinfo\fP OPT(L1) OPT(L2) OPT(M) hawaii_topo.grd
+BD(grdinfo) OPT(L1) OPT(L2) OPT(M) hawaii_topo.nc
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grd2cpt (1),
 .IR grd2xyz (1),
 .IR grdedit (1)

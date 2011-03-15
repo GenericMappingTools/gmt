@@ -1,20 +1,20 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.106 2011-03-09 01:41:25 guru Exp $
-dnl     Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
-dnl     See LICENSE.TXT file for copying and redistribution conditions.
-dnl
-dnl     This program is free software; you can redistribute it and/or modify
-dnl     it under the terms of the GNU General Public License as published by
-dnl     the Free Software Foundation; version 2 of the License.
-dnl
-dnl     This program is distributed in the hope that it will be useful,
-dnl     but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl     GNU General Public License for more details.
-dnl
-dnl     Contact info: gmt.soest.hawaii.edu
-dnl ----------------------------------------------------------------------------
-AC_REVISION($Revision: 1.106 $)
+dnl $Id: configure.ac,v 1.107 2011-03-15 02:06:28 guru Exp $
+dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+dnl 	See LICENSE.TXT file for copying and redistribution conditions.
+dnl 
+dnl 	This program is free software; you can redistribute it and/or modify
+dnl 	it under the terms of the GNU General Public License as published by
+dnl 	the Free Software Foundation; version 2 of the License.
+dnl 
+dnl 	This program is distributed in the hope that it will be useful,
+dnl 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl 	GNU General Public License for more details.
+dnl 
+dnl 	Contact info: gmt.soest.hawaii.edu
+dnl -------------------------------------------------------------------------------
+AC_REVISION($Revision: 1.107 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -27,18 +27,18 @@ dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
-AC_INIT(GMT, 4.5.6, gmt-help@lists-hawaii.edu)
-MANDATE="10 Mar 2011"
-DOCDATE="Mar 2011"
+AC_INIT(GMT, 5.0.0a, gmt-help@lists.hawaii.edu)
+MANDATE="1 Mar 2011"
+DOCDATE="March 2011"
 DOCYEAR="2011"
 GSHHS_VERSION=2.1.1
-CVS_VERSION=0
+CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
 dnl -----------------------------------------------------------------
 dnl
-SUPPL="dbase gshhs imgsrc meca mgd77 mgg misc segyprogs sph spotter x2sys x_system"
+SUPPL="dbase gshhs imgsrc meca mgd77 misc potential segyprogs sph spotter x2sys"
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
@@ -46,6 +46,7 @@ dnl -----------------------------------------------------------------
 dnl
 AC_CONFIG_SRCDIR(src/gmt.h)
 AC_CONFIG_HEADER(src/gmt_notposix.h)
+AC_CONFIG_HEADER(src/pslconfig.h)
 AC_CONFIG_AUX_DIR(`pwd`)
 AC_CYGWIN
 AC_CANONICAL_SYSTEM
@@ -72,6 +73,7 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
+AC_SUBST(DSYMUTIL)
 AC_SUBST(NETCDF_LIB)
 AC_SUBST(NETCDF_INC)
 AC_SUBST(GDAL_LIB)
@@ -85,6 +87,8 @@ AC_SUBST(CVS_VERSION)
 AC_SUBST(GMT_MAJOR_VERSION)
 AC_SUBST(GMT_MINOR_VERSION)
 AC_SUBST(GMT_RELEASE_VERSION)
+AC_SUBST(GMT_VERSION_YEAR)
+AC_SUBST(GMT_COMPAT)
 AC_SUBST(LIBEXT)
 AC_SUBST(SL)
 AC_SUBST(SL_VERSION)
@@ -110,6 +114,8 @@ AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
+AC_ARG_ENABLE(compat,   [  --enable-compat         Attempt backward compatibility with GMT4])
+AC_ARG_ENABLE(openmp,   [  --enable-openmp         Enable parallel calculations via OpenMP multi-processing])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
 AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
@@ -118,11 +124,10 @@ AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS 
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
 AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL [[default=no]]], [], [enable_gdal=no])
-AC_ARG_WITH(gdal_config,[  --with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
+AC_ARG_WITH(gdal_config,[  -–with-gdal-config=     Full path to gdal-config [[auto]]], [], [with_gdal_config=no])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
-AC_ARG_ENABLE(cygloc,   [  --enable-cygloc         Hardwire in LC_LANG=C for Cygwin])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
@@ -181,13 +186,10 @@ dnl Versioning information
 dnl -----------------------------------------------------------------
 dnl
 rootdir=`pwd`
-LIB_VERSION=`echo $PACKAGE_VERSION | cut -d' ' -f1`
-LIB_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c-1`
 GMT_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c1`
 GMT_MINOR_VERSION=`echo $PACKAGE_VERSION | cut -c3`
 GMT_RELEASE_VERSION=`echo $PACKAGE_VERSION | cut -c5`
-#if test -d "CVS" ; then
-#	PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
+GMT_VERSION_YEAR=`date +%Y`
 #fi
 dnl
 dnl -----------------------------------------------------------------
@@ -263,6 +265,8 @@ AC_CHECK_FUNC(erf, AC_DEFINE(HAVE_ERF), )
 AC_CHECK_FUNC(erfc, AC_DEFINE(HAVE_ERFC), )
 AC_CHECK_FUNC(strdup, AC_DEFINE(HAVE_STRDUP), )
 AC_CHECK_FUNC(strtod, AC_DEFINE(HAVE_STRTOD), )
+AC_CHECK_FUNC(strtok_r, AC_DEFINE(HAVE_STRTOK_R), )
+AC_CHECK_FUNC(qsort_r, AC_DEFINE(HAVE_QSORT_R), )
 AC_CHECK_FUNCS([floor getcwd gettimeofday memset modf pow rint sqrt strchr strdup strpbrk strrchr strstr strtol])
 dnl -----------------------------------------------------------------
 dnl Find out about byte order and if default compilation is 64-bit
@@ -431,13 +435,12 @@ elif test ! "X$enable_matlab" = "X"; then
 	elif test "$os" = "ULTRIX" ; then	# Dec Ultrix
 		MEX_EXT='mexvx'
 	elif test "$os" = "Darwin" ; then	# Mac OS X
-		dir=`ls -t /Applications | grep MATLAB | head -n 1`
+		dir=`ls /Applications | grep MATLAB | head -n 1`
 		if test "X$dir" = "X" ; then
 			MATLAB=NONE
 		else
 			MATLAB=/Applications/$dir
 		fi
-		MEX_BLD="$MATLAB/bin/mex -DGMT_MATLAB"
 		if test "$chip" = "i386" ; then		#Intel Mac
 			if test "$ac_cv_sizeof_long" = "8" ; then
 				MEX_EXT='mexmaci64'
@@ -507,7 +510,7 @@ dnl Use nc-config if possible
 dnl -----------------------------------------------------------------
 dnl
 if test "X$with_nc_config" != "Xno" ; then
-	AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
+        AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
 fi
 if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" ; then
 	AC_MSG_CHECKING(for netCDF includes)
@@ -633,22 +636,17 @@ AC_MSG_CHECKING(if we should compile with debugging switch -g)
 CFLAGS=$ac_save_CFLAGS
 if test "X$enable_debug" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
-	CFLAGS="$CFLAGS -g"
+	CFLAGS="-g $CFLAGS"
+	if test "$os" = "Darwin"; then
+		DSYMUTIL="dsymutil"
+	fi
 else
-	CFLAGS=`echo $CFLAGS | sed 's/-g//'`
-	if test "$os" = "Darwin" ; then
-		LDFLAGS="$LDFLAGS -Wl,-x"
-	else
-		LDFLAGS="$LDFLAGS -s"
-	fi
-	if test "$GCC" = "yes" || test "$os" = "Linux" || test "$os" = "AIX"; then
-		CFLAGS="$CFLAGS -O2"
-	elif test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HP-UX"; then
-		CFLAGS="$CFLAGS"
-	else
-		CFLAGS="$CFLAGS -O"
-	fi
 	AC_MSG_RESULT(no)
+	if test "$GCC" = "yes" || test "$os" = "Linux" || test "$os" = "AIX"; then
+		CFLAGS="-O2 $CFLAGS"
+	elif ! ( test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HP-UX" ); then
+		CFLAGS="-O $CFLAGS"
+	fi
 fi
 dnl -----------------------------------------------------------------
 dnl Allow developers to set --enable-devdebug to pass -DDEBUG
@@ -657,13 +655,15 @@ dnl
 if test "X$enable_devdebug" = "Xyes" ; then
 	CPPFLAGS="$CPPFLAGS -DDEBUG"
 fi
-dnl
 dnl -----------------------------------------------------------------
-dnl Allow Cygwin users to set --enable-cygloc to pass -DCYGWIN_LOCALE_TROUBLE
+dnl Allow developers to set --enable-compat to pass -DGMT_COMPAT
 dnl -----------------------------------------------------------------
 dnl
-if test "X$enable_cygloc" = "Xyes" ; then
-	CPPFLAGS="$CPPFLAGS -DCYGWIN_LOCALE_TROUBLE"
+if test "X$enable_compat" = "Xyes" ; then
+	CPPFLAGS="$CPPFLAGS -DGMT_COMPAT"
+	GMT_COMPAT=""
+else
+	GMT_COMPAT="#"
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -685,10 +685,10 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for default PostScript format)
 if test "X$enable_eps" = "Xyes" ; then
-	EPS=+
+	EPS=true
 	AC_MSG_RESULT(EPS)
 else
-	EPS=
+	EPS=false
 	AC_MSG_RESULT(PS)
 fi
 dnl
@@ -713,7 +713,6 @@ EXE=
 COMPRESS="@:"
 if test "X$CYGWIN" = "Xyes" ; then
 	EXE=".exe"
-	CPPFLAGS="$CPPFLAGS -D_WIN32"
 	if test ! -d /tmp ; then
 		AC_MSG_WARN(Cygwin: /tmp not found - created)
 		mkdir /tmp
@@ -740,55 +739,65 @@ LD=ld
 SL=so
 LIBEXT='$(SL)'
 SL_VERSION='$(SL)'
-if test "$enable_shared" = "yes" ; then
-	AC_MSG_CHECKING(how to make a shared object)
-	if test "X$CYGWIN" = "Xyes" ; then
-		SL=dll.a
-		SL_VERSION=$LIB_MAJOR_VERSION.$SL
-		LD='$(CC)'
-		LD_OPT="-shared"
-	elif test "$os" = "SunOS" ; then
-		if test "$Sun_rev" = "" ; then	# SunOS
-			LD_OPT="-Bdynamic"
-		else				# Solaris
-			LD_OPT="-G"
-		fi
-	elif test "$os" = "Linux" ; then	# Need optimization when doing shared
-		LD='$(CC)'
-		SL_VERSION=$SL.$LIB_MAJOR_VERSION
-		LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
-	elif test "$os" = "FreeBSD" || test "$os" = "NetBSD" ; then
-		SL_VERSION=$SL.$LIB_MAJOR_VERSION
-		LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
-	elif test "$os" = "OSF1" ; then
-		LD_OPT='-shared -expect_unresolved "*"'
-	elif test "$os" = "IRIX64" ; then
-		LD_OPT="-shared"
-		# Need to remove -L/usr/lib to avoid mixing o32 and n32
-		X_LIBS=
-	elif test "$os" = "Darwin" ; then	# MacOS X
-		SL=dylib
-		SL_VERSION=$LIB_MAJOR_VERSION.$SL
-		LD='$(CC)'
-		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib '$OSX_L
-		if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
-			CFLAGS="$CFLAGS -fno-common"
-		fi
-	elif test "$os" = "HP-UX" ; then
-		LD_OPT="-b"
-		SL=sl
-	else	# Not yet implemented
-		AC_MSG_RESULT(not supported for GMT under $os - building static libs instead)
-		enable_shared=no
-		shared_unknown=yes
+AC_MSG_CHECKING(how to make a shared object)
+if test "X$CYGWIN" = "Xyes" ; then
+	SL=dll.a
+	SL_VERSION=$GMT_MAJOR_VERSION.$SL
+	LD='$(CC)'
+	LD_OPT="-shared"
+elif test "$os" = "SunOS" ; then
+	if test "$Sun_rev" = "" ; then	# SunOS
+		LD_OPT="-Bdynamic"
+	else				# Solaris
+		LD_OPT="-G"
 	fi
+elif test "$os" = "Linux" ; then	# Need optimization when doing shared
+	LD='$(CC)'
+	SL_VERSION=$SL.$GMT_MAJOR_VERSION
+	LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
+elif test "$os" = "FreeBSD" || test "$os" = "NetBSD" ; then
+	SL_VERSION=$SL.$GMT_MAJOR_VERSION
+	LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
+elif test "$os" = "OSF1" ; then
+	LD_OPT='-shared -expect_unresolved "*"'
+elif test "$os" = "IRIX64" ; then
+	LD_OPT="-shared"
+	# Need to remove -L/usr/lib to avoid mixing o32 and n32
+	X_LIBS=
+elif test "$os" = "Darwin" ; then	# MacOS X
+	SL=dylib
+	SL_VERSION=$GMT_MAJOR_VERSION.$SL
+	LD='$(CC)'
+	LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version '$GMT_MAJOR_VERSION'.0.0 -current_version '$GMT_MAJOR_VERSION.$GMT_MINOR_VERSION.$GMT_RELEASE_VERSION' -dynamiclib '$OSX_L
+	if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
+		CFLAGS="$CFLAGS -fno-common"
+	fi
+elif test "$os" = "HP-UX" ; then
+	LD_OPT="-b"
+	SL=sl
+elif test "$os" = "Interix" ; then
+	LD='$(CC)'
+	SL_VERSION=$SL.$GMT_MAJOR_VERSION
+	LD_OPT="-shared"
+else	# Not yet implemented
+	enable_shared=no
+	shared_unknown=yes
 fi
-if test "$enable_shared" = "yes" ; then
-	rpath="$rpath"':$(libdir)'
-	AC_MSG_RESULT($LD $LD_OPT)
-	AC_MSG_CHECKING(the file extension for shared libraries)
-	AC_MSG_RESULT($SL)
+if test "X$shared_unknown" = "Xyes" ; then
+	AC_MSG_RESULT(not supported for GMT under $os - building static libs instead)
 else
+	AC_MSG_RESULT($LD $LD_OPT)
+	AC_MSG_CHECKING(for file extension of shared libraries)
+	AC_MSG_RESULT($SL)
+	AC_MSG_CHECKING(for file extension of versioned shared libraries)
+	AC_MSG_RESULT($SL_VERSION)
+fi
+AC_MSG_CHECKING(if shared libraries are requested)
+if test "$enable_shared" = "yes" ; then
+	AC_MSG_RESULT(yes)
+	rpath="$rpath"':$(libdir)'
+else
+	AC_MSG_RESULT(no)
 	LIBEXT='a'
 fi
 dnl
@@ -866,6 +875,20 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-openmp for turning on parallel computing with GCC
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(for openMP)
+if test "X$enable_openmp" = "Xyes" ; then
+	CFLAGS="$CFLAGS -fopenmp"
+	LDFLAGS="$LDFLAGS -fopenmp"
+	if test ! "X$MEX_BLD" = "X" ; then
+		MEX_BLD="$MEX_BLD -fopenmp"
+	fi
+fi
+AC_MSG_RESULT($enable_openmp)
+dnl
+dnl -----------------------------------------------------------------
 dnl Update the GMT macros
 dnl -----------------------------------------------------------------
 dnl
@@ -873,7 +896,22 @@ morefiles=
 if test -f doc/GMT_version.tex.in ; then
 	morefiles=doc/GMT_version.tex
 fi
-AC_OUTPUT(src/config.mk src/GMT src/gmt_version.h src/isogmt share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US $morefiles)
+AC_OUTPUT(src/config.mk src/gmt_version.h src/isogmt $morefiles)
+sed -e s/@UNITS@/Template\ SI/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
+	-e s/@PS_EPS@/false/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	share/conf/gmt.conf.in > share/conf/gmt_SI.conf
+sed -e s/@UNITS@/Template\ US/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
+	-e s/@PS_EPS@/false/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	share/conf/gmt.conf.in > share/conf/gmt_US.conf
+if test "$UNITS" = "SI" ; then
+	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
+	-e s/@PS_EPS@/$EPS/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	share/conf/gmt.conf.in > share/conf/gmt.conf
+else
+	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
+	-e s/@PS_EPS@/$EPS/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	share/conf/gmt.conf.in > share/conf/gmt.conf
+fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Remove and, if trouble, write the .gmtconfigure file

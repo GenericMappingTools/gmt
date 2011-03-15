@@ -1,11 +1,11 @@
-#	$Id: nighttime.cpt,v 1.1 2010-07-14 13:37:12 remko Exp $
+#	$Id: nighttime.cpt,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 # Colortable for DMSP-OLS Nighttime Lights Time Series
 # Designed by Andreas Trawoeger.
-# COLOR_MODEL = HSV
 #
-0.0	260	1.00	0.10	0.5	195	0.55	0.55
-0.5	065	0.55	0.55	1.0	000	0.10	1.00
-B	260	1.00	0.10
-F	000	0.10	1.00
-N	000	0.10	1.00
+# COLOR_MODEL = hsv
+0	260-1-0.1	0.5	195-0.55-0.55
+0.5	65-0.55-0.55	1	0-0.1-1
+B	260-1-0.1
+F	0-0.1-1
+N	0-0.1-1

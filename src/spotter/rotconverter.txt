@@ -1,47 +1,50 @@
 #include "common_options.txt"
 .TH ROTCONVERTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-rotconverter \- Manipulate finite and stage rotations 
+rotconverter \- Manipulate total reconstruction and stage rotations 
 .SH SYNOPSIS
-\fBrotconverter\fP [ \fB+\fP|\fB-\fP ] \fIrotA\fP [ \fB+\fP|\fB-\fP \fIrotB\fP ] [ \fB+\fP|\fB-\fP \fIrotC\fP ] ... 
-[ OPT(C)[\fBa\fP|\fBt\fP]] [ OPT(D) ] [ OPT(E)[\fIfact\fP] ] [ OPT(F)\fIin\fP/\fPout\fP ] [ OPT(N) ] [ OPT(S) ] 
-[ OPT(T) ] [ GMT_V_OPT ]
+BD(rotconverter) [ BD(+)|BD(-) ] IT(rotA) [ BD(+)|BD(-) IT(rotB) ] [ BD(+)|BD(-) IT(rotC) ] ... 
+[ OPT(A) ] [ OPT(D) ] [ OPT(E)[IT(fact)] ] [ OPT(F)IT(out) ] [ OPT(G) ] [ OPT(N) ] [ OPT(S) ] 
+[ OPT(T) ] [ GMT_V_OPT ] [ GMT_h_OPT ]
 .SH DESCRIPTION
-\fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
+BD(rotconverter) reads one or more plate motion models (stage or total reconstruction rotations) stored in the
 given files.  If more than one plate motion model is given we will add or subtract
 them in the order they were listed.  The minus sign means we should first transpose the
-rotation and then add it to the previous rotation.  The input files must all be of the
-same type (stage poles or finite rotations) which may differ from the desired output
-format; see OPT(F).  If a file cannot be opened we will attempt to decode the file name
+rotation and then add it to the previous rotation.  If a file cannot be opened we will attempt to decode the file name
 as a single rotation whose parameters are separated by slashes.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIrotX\fP
+IT(rotX)
 Name of a file with a plate motion model.  Separate several files with desired operator
-(+ or -).  The very first file may also have a leading minus to imply a transpose.
+(+ or -).  The very first file may also have a leading minus operator to imply a transpose.
+We also recognize filenames of the form A-B, where both A and B are uppercase plate abbreviations
+as used by GPlates, to indicate we should look up the rotation between the two plates
+in the GPlates rotation file (e.g., PAC-MBL).
 If any of the specified rotation models cannot be opened as a file, we will try to decode
-the file name as \fIlon/lat/tstart\fP[\fI/tstop\fP]/\fIangle\fP for a single rotation given
-on the command line.  The \fItstop\fP argument is required for stage poles only.  For a
-single finite rotation without any time information, give \fIlon/lat/angle\fP only.
-.SH OPTIONS
+the file name as IT(lon/lat/tstart)[IT(/tstop)]/IT(angle) for a single rotation given
+on the command line.  The IT(tstop) argument is required for stage poles only.  For a
+single total reconstruction rotation without any time information, give IT(lon/lat/angle) only.
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(C)
-Write out a column header record identifying the various columns [Default is no header record].
-Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates [Default].
+OPT(A)
+Indicate that times are actually just opening angles [times in Myr].
 .TP
 OPT(D)
 Report longitudes use the -180/+180 range [Default is 0/360].
 .TP
-OPT(E)
-Scale opening angles by \fIfact\fP on output.  Requires stage pole output (see OPT(F)).
+OPT(E)[IT(fact)]
+Scale opening angles by IT(fact) on output.  Requires stage pole output (see OPT(F)).
 .TP
-OPT(F)
-Specify both the input and output format for rotations.  The \fIin\fP and \fIout\fP flags
-must be either \fBf\fP or \fBs\fP for finite or stage rotations, respectively.  Note that
-both must be specified if OPT(F) is set [Default is OPT(Fff) (both input and output
-are finite rotations)].
+OPT(F)IT(out)
+Specify the output format for rotations.  The IT(out) flag
+must be either BD(t) or BD(s) for total reconstruction or stage rotations, respectively.
+[Default is OPT(Ft) (output contains total reconstruction rotations)].
+.TP
+OPT(G)
+Output final rotations in the Plates4 format used by GPlates [Default is spotter format].
 .TP
 OPT(N)
 Place all output poles in the northern hemisphere [Default reports positive rotation angles].
@@ -53,25 +56,26 @@ OPT(T)
 Transpose the final result, i.e., change the sign of the rotation angles.
 #include "explain_-V.txt"
 Report statistics of extracted rotations.
+#include "explain_help.txt"
 .SH EXAMPLES
-To convert the finite rotations in the file model_finite.APM to stage poles, run
+To convert the total reconstruction rotations in the file model_total_reconstruction.APM to stage poles, run
 .br
 .sp
-\fBrotconverter\fP model_finite.APM OPT(Ffs) > model_stages.APM
+BD(rotconverter) model_total_reconstruction.APM OPT(Fs) > model_stages.APM
 .br
 .sp
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference model DC85_stages.d,
-and report the result as finite reconstruction poles in the northern hemisphere, try
+and report the result as total reconstruction reconstruction poles in the northern hemisphere, try
 .br
 .sp
-\fBrotconverter\fP DC85_stages.APM + Pac_Naz_stages.RPM OPT(N) OPT(Fsf) > Naz_HS_finite.APM
+BD(rotconverter) DC85_stages.APM + Pac_Naz_stages.RPM OPT(N) OPT(Ft) > Naz_HS_total reconstruction.APM
 .br
 .sp
 To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4),  try
 .br
 .sp
-\fBrotconverter\fP 150.1/70.5/-20.3 + 145/40/11.4
+BD(rotconverter) 150.1/70.5/-20.3 + 145/40/11.4
 .sp
 .br
 which prints out 157.32, -80.44, 11.97.
@@ -81,9 +85,17 @@ To make stage rotations suitable for generating flowlines (fracture zones) from 
 of relative plate motions PL1-PL2.RPM, assuming symmetric spreading,, try
 .br
 .sp
-\fBrotconverter\fP PL1-PL2.RPM OPT(E) OPT(Ffs) > PL1-PL2_half.RPM
+BD(rotconverter) PL1-PL2.RPM OPT(E) OPT(Fs) > PL1-PL2_half.RPM
 .br
-\fBrotconverter\fP - PL1-PL2.RPM OPT(E) OPT(Ffs) > PL2-PL1_half.RPM
+BD(rotconverter) - PL1-PL2.RPM OPT(E) OPT(Fs) > PL2-PL1_half.RPM
+.br
+.sp
+To compute rotations for India relative to a fixed Africa using the plate circuit
+India-Central Indian Basin-Antarctica-Africa, based on the GPlates rotations database,
+try
+.br
+.sp
+BD(rotconverter) IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
 .SH "SEE ALSO"
 .IR backtracker (1),
 .IR grdrotater (1),

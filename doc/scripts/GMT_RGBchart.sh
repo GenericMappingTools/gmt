@@ -1,12 +1,12 @@
 #!/bin/bash
-#	$Id: GMT_RGBchart.sh,v 1.7 2011-02-28 00:58:00 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.8 2011-03-15 02:06:29 guru Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
-. functions.sh
 
+. functions.sh
 . gmt_shell_functions.sh
 
 gmt_init_tmpdir
@@ -29,7 +29,7 @@ else
 fi
 
 ps=$PWD/GMT_RGBchart_$SIZE.ps
-gmtset DOTS_PR_INCH 600 PAPER_MEDIA $SIZE PAGE_ORIENTATION landscape
+gmtset PS_DPI 600 PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
 W=`gmtmath -Q $WIDTH $COL DIV 0.95 MUL =`
@@ -48,15 +48,15 @@ egrep -v "^#|grey" $GMTHOME/src/Colors.txt | awk -v COL=$COL -v ROW=$ROW \
 # Produce temp files from allinfo.tmp
 awk '{printf "%g %s %g %s\n", NR-0.5, $1, NR+0.5, $1}' allinfo.tmp > lookup.cpt
 awk -v h=$rectheight -v W=$W -v H=$H  '{printf "%g %g %g %g %g\n",$4+0.5,$5+1-0.5*h,NR,W,H}' allinfo.tmp > rects.tmp
-awk -v h=$rectheight -v fs=$fontsize  '{if ($2 <= 127) printf "%g %g %g 0 1 CM %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' allinfo.tmp > whitetags.tmp
-awk -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %g 0 1 CM %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' allinfo.tmp > blacktags.tmp
-awk -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %g 0 1 CM @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' allinfo.tmp > labels.tmp
+awk -v h=$rectheight -v fs=$fontsize  '{if ($2 <= 127) printf "%g %g %gp,1 %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' allinfo.tmp > whitetags.tmp
+awk -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' allinfo.tmp > blacktags.tmp
+awk -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' allinfo.tmp > labels.tmp
 
 # Plot all tiles and texts
-psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -Clookup.cpt -Sr -W0.25p rects.tmp -K > $ps
-pstext -R -J -O -K labels.tmp -Gblack >> $ps
-pstext -R -J -O -K blacktags.tmp -Gblack >> $ps
-pstext -R -J -O -K whitetags.tmp -Gwhite >> $ps
+psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -Clookup.cpt -Sr -W rects.tmp -K > $ps
+pstext -R -J -O -K labels.tmp -F+f --FONT=black >> $ps
+pstext -R -J -O -K blacktags.tmp -F+f --FONT=black >> $ps
+pstext -R -J -O -K whitetags.tmp -F+f --FONT=white >> $ps
 
 # Put logo in top left corner
 scale=`gmtmath -Q $WIDTH $COL DIV 0.95 MUL 2 DIV =`

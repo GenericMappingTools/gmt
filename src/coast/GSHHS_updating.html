@@ -1,4 +1,4 @@
-<!--  $Id: GSHHS_updating.html,v 1.3 2010-03-01 22:05:11 guru Exp $  -->
+<!--  $Id: GSHHS_updating.html,v 1.4 2011-03-15 02:06:37 guru Exp $  -->
 <HEAD>
 <TITLE>Updating the GSHHS data set</TITLE>
 </HEAD>
@@ -126,29 +126,7 @@ takes many hours for the full data set.  If crossings are found you must examine
 pairs of polygons and manually determine how to modify coordinates to eliminate the
 crossing.  Update the database using <U>polygon_update</U> and test again.
 </OL>
-<H2>5. Reordering and resetting polygon IDs, ancestor and parent IDs</H2>
-After we modify the polygon files we need to go through several steps to
-assure that the 5 resolutions are synced.  The steps are:
-<OL>
-	<LI><U>polygon_sort</U> is used to reorder the polygons so that they
-		are sorted according to polygon area.  Depending on what changes
-		you have made, this step will shuffle the ordering and renumber
-		the polygons, including reassigning IDs if any polygons were removed.
-		Run this step for all resolutions.
-	<LI><U>polygon_findlevel</U> will recalculate the hierarchical levels of all
-		polygons and reverse any, if needed, so that the handedness is maintained.
-		Run this step for all resolutions.
-	<LI><U>polygon_hierarchy</U> takes as argument the full resolution binary file
-		and checks all other resolution files and determines which IDs a feature
-		has in the various hierarchical levels.  It can then assign ancestor ID
-		and check that everything is internally consistent.
-	<LI><U>polygon_sync</U> will read the GSHHS-hierarchy.txt file produced by the
-		previous step and update all the binary files.
-	<LI></U>binary_to_ascii</U> will now need to be run for all affected resolutions
-		to rewrite the ASCII versions of the data (since it is these that are under
-		CVS control).
-</OL>
-<H2>6. Regenerating new GSHHS and GMT coastline files</H2>
+<H2>5. Regenerating new GSHHS and GMT coastline files</H2>
 Once your new database files have been created and finalized in the res_? directories
 and you have updated the VERSION definition in the makefile, you can reformat the data
 into GSHHS and GMT netCDF files:

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.48 2011-03-04 06:28:49 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.49 2011-03-15 02:06:46 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -52,7 +52,7 @@ $use_triangle	= $gmt_form{'radio_triangle'};
 $libtype	= $gmt_form{'radio_link'};
 $cc		= $gmt_form{'cc'};
 $custom_cc	= $gmt_form{'custom_cc'};
-$gmt_64		= $gmt_form{'radio_64'};
+$gmt_64		= $gmt_form{'checkbox_64'};
 $gmt_univ	= $gmt_form{'checkbox_univ'};
 $make		= $gmt_form{'make'};
 $custom_make	= $gmt_form{'custom_make'};
@@ -73,7 +73,6 @@ $get_gshhs	= $gmt_form{'checkbox_gshhs'};
 $get_imgsrc	= $gmt_form{'checkbox_imgsrc'};
 $get_meca	= $gmt_form{'checkbox_meca'};
 $get_mgd77	= $gmt_form{'checkbox_mgd77'};
-$get_mgg	= $gmt_form{'checkbox_mgg'};
 $get_mex	= $gmt_form{'checkbox_mex'};
 $mex_type	= $gmt_form{'radio_mex'};
 $get_misc	= $gmt_form{'checkbox_misc'};
@@ -81,7 +80,6 @@ $get_segyprogs	= $gmt_form{'checkbox_segyprogs'};
 $get_sph	= $gmt_form{'checkbox_sph'};
 $get_spotter	= $gmt_form{'checkbox_spotter'};
 $get_x2sys	= $gmt_form{'checkbox_x2sys'};
-$get_x_system	= $gmt_form{'checkbox_x_system'};
 $get_xgrid	= $gmt_form{'checkbox_xgrid'};
 $matlab_dir	= $gmt_form{'matlab_dir'};
 $mex_mdir	= $gmt_form{'mex_mdir'};
@@ -98,14 +96,14 @@ chop($now);
 open (FILE, ">" . $OUT) || die "Sorry, cound not create tmp file\n";
 print FILE <<EOF;
 # This file contains parameters needed by the install script
-# install_gmt for GMT Version 4.5.6.  Give this file
+# install_gmt for GMT Version 4.5.0.  Give this file
 # as the argument to the install_gmt script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.48 $, on
+# Processed by install_gmt_form.pl $Revision: 1.49 $, on
 #
 #	$now
 #
@@ -274,13 +272,6 @@ if ($get_mgd77 eq "on") {
 else {
 	print FILE "n\n";
 }
-print FILE "GMT_suppl_mgg=";
-if ($get_mgg eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
 print FILE "GMT_suppl_misc=";
 if ($get_misc eq "on") {
 	print FILE "y\n";
@@ -311,13 +302,6 @@ else {
 }
 print FILE "GMT_suppl_x2sys=";
 if ($get_x2sys eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_suppl_x_system=";
-if ($get_x_system eq "on") {
 	print FILE "y\n";
 }
 else {
@@ -395,7 +379,13 @@ elsif ($k[0] eq "2.") {
 else {
 	print FILE "GMT_cc=", $custom_cc, "\n";
 }
-print FILE "GMT_64=", $gmt_64, "\n";
+print FILE "GMT_64=";
+if ($gmt_64 eq "on") {
+	print FILE "y\n";
+}
+else {
+	print FILE "n\n";
+}
 print FILE "GMT_UNIV=";
 if ($gmt_univ eq "on") {
 	print FILE "y\n";

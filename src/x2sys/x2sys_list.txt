@@ -3,103 +3,103 @@
 .SH NAME
 x2sys_list \- Output a subset of crossovers from data base
 .SH SYNOPSIS
-\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] 
-[ OPT(F)\fIacdhiInNtTvxyz\fP ] [ OPT(I)[\fIlist\fP] ] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] 
-[ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ OPT(W)[\fIlist\fP] ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
+BD(x2sys_list) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A)IT(asymm_max) ] 
+[ OPT(F)IT(acdhiInNtTvxyz) ] [ OPT(I)[IT(list)] ] [ OPT(L)[IT(corrtable)] ] [ OPT(N)IT(nx_min) ] 
+[ OPT(Qe)|BD(i) ] [ GMT_Rgeo_OPT ] [ OPT(S)IT(track) ] [ GMT_V_OPT ] [ OPT(W)[IT(list)] ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBx2sys_list\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
+BD(x2sys_list) will read the crossover ASCII data base IT(coedbase.txt) (or IT(stdin))
 and extract a subset of the crossovers based on the other arguments.  The output may be
 ASCII or binary.
+.SH REQUIRED ARGUMENTS
 .TP
-OPT(C)
+OPT(C)IT(column)
 Specify which data column you want to process.  Crossovers related to this column name must be
 present in the crossover data base.
 #include "explain_tag.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 .I coedbase.txt
-The name of the input ASCII crossover error data base as produced by \fBx2sys_cross\fP.
+The name of the input ASCII crossover error data base as produced by BD(x2sys_cross).
 If not given we read standard input instead.
 .TP
-OPT(A)
+OPT(A)IT(asymm_max)
 Specifies maximum asymmetry in the distribution of crossovers relative to the mid point in time (or distance, if
 not time is available).  Asymmetry is computed as (n_right - n_left)/(n_right + n_left), referring the the number
 of crossovers that falls in the left or right half of the range.  Symmetric distributions will have values close
 to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cutoff in absolute value [1, i.e., include all].
 .TP
-OPT(F)
-Specify your desired output using any combination of \fIacdhiInNtTvwxyz\fP, in any order.  Do not use space between
+OPT(F)IT(acdhiInNtTvxyz)
+Specify your desired output using any combination of IT(acdhiInNtTvwxyz), in any order.  Do not use space between
 the letters, and note your selection is case-sensitive.  The output will be ASCII (or binary, see OPT(bo)) columns of values.
-Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks,
-\fBc\fP is crossover value of chosen observation (see OPT(C)),
-\fBd\fP is distance along track,
-\fBh\fP is heading along track,
-\fBi\fP is the signed time interval between the visit at the crossover of the two tracks involved,
-\fBI\fP is same as \fBi\fP but is unsigned,
-\fBn\fP is the names of the two tracks,
-\fBN\fP is the id numbers of the two tracks,
-\fBt\fP is time along track in \fIdate\fP\fBT\fP\fIclock\fP format (NaN if not available),
-\fBT\fP is elapsed time since start of track along track (NaN if not available),
-\fBv\fP is speed along track,
-\fBw\fP is the composite weight,
-\fBx\fP is \fIx\fP-coordinate (or longitude),
-\fBy\fP is \fIy\fP-coordinate (or latitude), and
-\fBz\fP is observed value (see OPT(C)) along track.
-If OPT(S) is not specified then \fBd,h,n,N,t,T,v\fP results in two output columns each: first
+Description of codes: BD(a) is the angle (< 90) defined by the crossing tracks,
+BD(c) is crossover value of chosen observation (see OPT(C)),
+BD(d) is distance along track,
+BD(h) is heading along track,
+BD(i) is the signed time interval between the visit at the crossover of the two tracks involved,
+BD(I) is same as BD(i) but is unsigned,
+BD(n) is the names of the two tracks,
+BD(N) is the id numbers of the two tracks,
+BD(t) is time along track in IT(date)BD(T)IT(clock) format (NaN if not available),
+BD(T) is elapsed time since start of track along track (NaN if not available),
+BD(v) is speed along track,
+BD(w) is the composite weight,
+BD(x) is IT(x)-coordinate (or longitude),
+BD(y) is IT(y)-coordinate (or latitude), and
+BD(z) is observed value (see OPT(C)) along track.
+If OPT(S) is not specified then BD(d),BD(h),BD(n),BD(N),BD(t),BD(T),BD(v) results in two output columns each: first
 for track one and next for track two (in lexical order of track names); otherwise, they refer to the
-specified track only (except for \fBn,N\fP which then refers to the other track).
-The sign convention for \fBc,i\fP is track one minus track two (lexically sorted).  Time intervals
-will be returned according to the \fBTIME_UNIT\fP GMT defaults setting.
+specified track only (except for BD(n),BD(N) which then refers to the other track).
+The sign convention for BD(c),BD(i) is track one minus track two (lexically sorted).  Time intervals
+will be returned according to the BD(TIME_UNIT) GMT defaults setting.
 .TP
-OPT(I)
+OPT(I)[IT(list)]
 Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
 [Default includes all tracks].
 .TP
-OPT(L)
+OPT(L)[IT(corrtable)]
 Apply optimal corrections to the chosen observable.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
-in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
-For the format of this file, see \fBx2sys_solve\fP.
+table to use [Default uses the correction table IT(TAG)_corrections.txt which is expected to reside
+in the BD($X2SYS_HOME)/IT(TAG) directory].
+For the format of this file, see BD(x2sys_solve).
 .TP
-OPT(N)
-Only report data from pairs that generated at least \fInx_min\fP crossovers between them [use all pairs].
+OPT(N)IT(nx_min)
+Only report data from pairs that generated at least IT(nx_min) crossovers between them [use all pairs].
 .TP
-OPT(Q)
-Append \fBe\fP for external crossovers or \fBi\fP for internal crossovers only [Default is all crossovers].
+OPT(Qe)|BD(i)
+Append BD(e) for external crossovers or BD(i) for internal crossovers only [Default is all crossovers].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
-OPT(S)
-Name of a single track. If given we restrict output to those crossovers involving this track [Default
+OPT(S)IT(track)
+Name of a single track.  If given we restrict output to those crossovers involving this track [Default
 output is crossovers involving any track pair].
-Prepend a '+' to make it print info relative to both tracks [Default is selected track]. This applies only
-to comon information such as distance, time, heading.
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)[IT(list)]
 Name of ASCII file with a list of track names and their relative weights (one track per record) that should be
-used to calculate the composite crossover weight (output code \fBw\fP above).
+used to calculate the composite crossover weight (output code BD(w) above).
 [Default sets weights to 1].
 #include "explain_-bo.txt"
 .TP
 OPT(m)
 Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
-record whose first character is \fIflag\fP and contains the two track names. [Default is '>'].
+record whose first character is IT(flag) and contains the two track names. [Default is '>'].
+#include "explain_help.txt"
 .SH EXAMPLES
 To find all the magnetic crossovers associated with the tag MGD77 from the file COE_data.txt, restricted to occupy
 a certain region in the south Pacific, and return location, time, and crossover value, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag OPT(F)xytz > mag_coe.txt
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag OPT(F)xytz > mag_coe.txt
 .br
 .sp
 To find all the faa crossovers globally that involves track 12345678 and output time since start of the year,
 using a binary double precision format, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(S)12345678 OPT(F)Tz OPT(bod) > faa_coe.b
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(S)12345678 OPT(F)Tz OPT(bod) > faa_coe.b
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),
 .IR x2sys_cross (1),

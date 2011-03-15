@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_C.tex,v 1.30 2011-02-28 00:58:03 remko Exp $
+%	$Id: GMT_Appendix_C.tex,v 1.31 2011-03-15 02:06:28 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 
@@ -27,7 +27,9 @@ This Chapter will show how to include \GMT\ graphics into documents and how to a
 \index{PostScript@\PS!BoundingBox}
 \index{EPS file}
 
-\GMT\ can produce both freeform \PS\ files and the more restricted Encapsulated \PS\ files (EPS).  The former is intended to be sent to a printer or \PS\ previewer, while the latter is intended to be included in another document (but should also be able to print and preview).  You control what kind of \PS\ that \GMT\ produces by manipulating the {\bf PAPER\_MEDIA} parameter (see the \GMTprog{gmtdefaults} man page for how this is accomplished).  Note that a freeform \PS\ file may contain special operators (such as \texttt{Setpagedevice}) that is specific to printers (e.g., selection of paper tray). Some previewers (among them, Sun's \progname{pageview}) do not understand these valid instructions and may fail to image the file. Also, embedding freeform \PS\ with such instructions in it into a larger document can create printing to fail. While you could choose another viewer (we recommend \progname {ghostview}) to view single plots prepared by \GMT, it is generally wiser anyhow to select EPS output when you are creating a plot intended for inclusion into a larger document. Some programs (and some publishers as well) do not allow the use of instructions like \texttt{Setpagedevice} as part of embedded graphics.
+\GMT\ can produce both freeform \PS\ files and the more restricted Encapsulated \PS\ files (EPS).  The former is intended to be sent to a printer or \PS\ previewer,
+while the latter is intended to be included in another document (but should also be able to print and preview).  You control what kind of \PS\ that \GMT\ produces by
+manipulating the \textbf{PS\_MEDIA} parameter (see the \GMTprog{gmt.conf} man page for how this is accomplished).  Note that a freeform \PS\ file may contain special operators (such as \texttt{Setpagedevice}) that is specific to printers (e.g., selection of paper tray). Some previewers (among them, Sun's \progname{pageview}) do not understand these valid instructions and may fail to image the file. Also, embedding freeform \PS\ with such instructions in it into a larger document can create printing to fail. While you could choose another viewer (we recommend \progname {ghostview}) to view single plots prepared by \GMT, it is generally wiser anyhow to select EPS output when you are creating a plot intended for inclusion into a larger document. Some programs (and some publishers as well) do not allow the use of instructions like \texttt{Setpagedevice} as part of embedded graphics.
 
 An EPS file that is to be placed into another document needs to have correct bounding box parameters.  These are found in the \PS\ Document Comment \%\%BoundingBox.  Applications that generate EPS files should set these parameters correctly.  Because \GMT\
 makes the \PS\ files on the fly, often with several overlays, it is not possible to do so accurately.  However, \GMT\ does make an effort to ensure that the BoundingBox is large enough to contain the entire composite plot\footnote{In contrast, regular \GMT\ \PS\ files simply have a \%\%BoundingBox that equal the size of the chosen paper.}. Therefore, if you need a ``tight'' BoundingBox you need to post-process your \PS\ file.  There are several ways in which this can be accomplished.
@@ -146,13 +148,13 @@ will rotate the image 90\DS\ clockwise and scale it such that its width (after r
 
 \subsection{\gmt\ graphics in \protect\progname{PowerPoint}}
 \begin{figure}[b]
-   \includegraphics[width=\textwidth,bb=0 0 720 540]{ppt/rendering.png}
+   \includegraphics[width=\textwidth,bb=0 0 720 540]{rendering.png}
    \caption{Examples of rendered images in a \protect\progname{PowerPoint} presentation.}
    \label{fig:rendering}
 \end{figure}
 \begin{figure}[b]
    \centering
-   \includegraphics[width=0.6\textwidth,bb=0 0 545 516]{ppt/formatpicture.png}
+   \includegraphics[width=0.6\textwidth,bb=0 0 545 516]{formatpicture.png}
    \caption{\protect\progname{PowerPoint}'s ``Format Picture'' dialogue to set scale and rotation.}
    \label{fig:formatpicture}
 \end{figure}

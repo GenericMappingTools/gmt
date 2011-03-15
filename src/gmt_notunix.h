@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.35 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.36 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,8 +33,8 @@
  *		| true.
  *
  * Author:	Paul Wessel
- * Date:	09-NOV-1999
- * Version:	4.1.x
+ * Date:	1-JAN-2010
+ * Version:	5 API
  *
  */
 
@@ -48,24 +48,25 @@
  * activate -DFLOCK.
  */
 
-
 /*--------------------------------------------------------------------
  *
- *	   W I N D O W S   1 9 9 5,  1 9 9 8,  2 0 0 0,  N T
+ *	   W I N D O W S
  *
- *	 This section applies to Microsoft Windows 95, 98, NT
+ *	 This section applies to all versions of Microsoft Windows
  *
  *--------------------------------------------------------------------*/
 
-#ifdef WIN32	/* Start of Windows setup */
+#if defined(WIN32) && !defined(__MINGW32__)	/* Start of Windows setup */
 
 /* This section will override those in gmt_notposix.h which cannot
  * automatically be generated under Windows.
  */
 
-/* Turn off some annoying "security" warnings in Vis Studio */
+/* Turn off some annoying "security" warnings in Visual C/C++ Studio */
 
 #pragma warning( disable : 4996 )
+#pragma warning( disable : 4005 )
+#pragma warning( disable : 4018)	/* '<' : signed/unsigned mismatch */
 
 #define SET_IN_NOTUNIX	/* This forces the following not to be reset in gmt_notposix.h */
 
@@ -94,6 +95,8 @@
 #define HAVE_STRTOD 1
 #ifdef __INTEL_COMPILER 
 #define HAVE_SINCOS 1
+#undef HAVE_STRTOK_R
+#define HAVE_STRTOK_R 0
 #else
 #define HAVE_SINCOS 0
 #endif
@@ -113,6 +116,9 @@
 #define yn(n,x) _yn(n,x)
 #define strdup(s) _strdup(s)
 #define STAT _stat
+#if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in uix */
+#define strtok_r strtok_s
+#endif
 
 typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
 
@@ -135,7 +141,7 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 #endif
 
 #define DIR_DELIM '\\'		/* Backslash as directory delimiter */
-#define PATH_DELIM ';'		/* Win uses ;, Unix uses : */
+#define PATH_DELIM ';'		/* Backslash as directory delimiter */
 #define PATH_SEPARATOR ";"	/* Win uses ;, Unix uses : */
 
 #include <io.h>
@@ -198,7 +204,8 @@ EXTERN_MSC int getuid (void);
 
 #define setmode(fd,mode) _setmode(fd,mode)
 
-EXTERN_MSC void GMT_setmode (int i_or_o);
+#pragma warning( disable : 4115 )	/* Shut up this warning: 'GMT_CTRL' :named type definition in parentheses */
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 
 #endif		/* End of Windows setup */
 
@@ -256,7 +263,7 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 #define NO_FCNTL	/* fcntl.h does not exist here */
 #define STAT _stat
 
-EXTERN_MSC void GMT_setmode (int i_or_o);
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 
 #endif		/* End of OS/2 with EMX support */
 
@@ -269,15 +276,37 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
  *
  *--------------------------------------------------------------------*/
  
-#ifdef _WIN32	/* Start of NON-UNIX */
+#if defined(_WIN32) && !defined(__MINGW32__)	/* Start of NON_UNIX */
 
 #undef FLOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 
-EXTERN_MSC void GMT_setmode (int i_or_o);
+#include <io.h>
+
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 
 #endif		/* End of NON-UNIX */
 
+#ifdef __MINGW32__ 
+
+/* This structure is normally taken from pwd.h */
+
+struct passwd {
+	char	*pw_name;
+	int	pw_uid;
+	int	pw_gid;
+	char	*pw_dir;
+	char	*pw_shell;
+};
+
+/* These two functions prototypes are normally in pwd.h & unistd.h;
+ * Here, they are defined as dummies at the bottom of gmt_init.c
+ * since there are no equivalents under Windows. */
+
+EXTERN_MSC struct passwd *getpwuid (const int uid);
+EXTERN_MSC int getuid (void);
+
+#endif
 /*===================================================================
  *		      U N I X   C L E AN - U P
  *===================================================================*/
@@ -290,8 +319,9 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 #endif
 
 #ifndef PATH_DELIM
-#define PATH_DELIM ':'		/* Win uses ;, Unix uses : */
+#define PATH_DELIM ':'	/* Win uses ;, Unix uses : */
 #endif
+
 #ifndef PATH_SEPARATOR
 #define PATH_SEPARATOR ":"	/* Win uses ;, Unix uses : */
 #endif

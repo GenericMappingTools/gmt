@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 03
-#		$Id: job03.sh,v 1.20 2011-02-28 00:58:03 remko Exp $
+#		$Id: job03.sh,v 1.21 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, minmax, project, sample1d
@@ -43,8 +43,8 @@ project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
 # We use this information first with a large -I value to find the appropriate -R
 # to use to plot the .pg data. 
 #
-plotr=`cat sat.pg ship.pg | minmax -I100/25`
-psxy $plotr -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
+R=`cat sat.pg ship.pg | minmax -I100/25`
+psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
 	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
 psxy -R -JX -O -Sp0.03i ship.pg >> ../example_03a.ps
@@ -100,7 +100,7 @@ filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
 #
 # Now we plot them again to see if we have done the right thing:
 #
-psxy $plotr -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
+psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
 	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
 	-U/-1.75i/-1.25i/"Example 3c in Cookbook" > ../example_03c.ps
 psxy -R -JX -O -Sp0.03i samp_ship.pg >> ../example_03c.ps
@@ -118,7 +118,7 @@ paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev/n
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
 	-R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
 	-Ey/0.5p -Y1.5i > $ps
-echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -O -K >> $ps
+echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
 cat > box.d << END
 2.375	3.75
 2.375	3.25
@@ -128,7 +128,7 @@ psxy -R -Jx -O -K -Wthicker box.d >> $ps
 psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
 	-Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
-echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> $ps
+echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
 psxy -R -Jx -O -K -Wthicker box.d >> $ps
 psxy -R -Jx -O -K -Glightgray -L -Wthicker >> $ps << END
 0.25	0.25
@@ -137,9 +137,9 @@ psxy -R -Jx -O -K -Glightgray -L -Wthicker >> $ps << END
 0.25	0.9
 END
 echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> $ps
-echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> $ps
+echo "0.5 0.7 Ship" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> $ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> $ps
-echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> $ps
+echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $ps
 #
 # Now we wonder if removing that large feature at 250 km would make any difference.
 # We could throw away a section of data with $AWK or sed or head and tail, but we
@@ -149,11 +149,11 @@ echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> $ps
 # look:
 #
 trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
-psxy $plotr -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
+psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
 	-U/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > ../example_03d.ps
-plotr=`minmax samp_ship.xw -I100/1.1`
-psxy $plotr -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
+R=`minmax samp_ship.xw -I100/1.1`
+psxy $R -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
 	>> ../example_03d.ps
 #
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
@@ -166,8 +166,8 @@ trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 #
 # We plot these to see how they look:
 #
-plotr=`cat samp2_sat.pg samp2_ship.pg | minmax -I100/25`
-psxy $plotr -JX8i/5i -X2i -Y1.5i -K -Wthick \
+R=`cat samp2_sat.pg samp2_ship.pg | minmax -I100/25`
+psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
 	-Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn \
 	-U/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > ../example_03e.ps
 psxy -R -JX -O -Sp0.03i samp2_ship.pg >> ../example_03e.ps
@@ -181,7 +181,8 @@ paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
 	-R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
 	-Ey/0.5p -Y1.5i > ../example_03f.ps
-echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> ../example_03f.ps
+echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
+	-K >> ../example_03f.ps
 cat > box.d << END
 2.375	3.75
 2.375	3.25
@@ -191,7 +192,8 @@ psxy -R -Jx -O -K -Wthicker box.d >> ../example_03f.ps
 psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
 	-ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> ../example_03f.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> ../example_03f.ps
-echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> ../example_03f.ps
+echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
+	-K >> ../example_03f.ps
 psxy -R -Jx -O -K -Wthicker box.d >> ../example_03f.ps
 psxy -R -Jx -O -K -Glightgray -L -Wthicker >> ../example_03f.ps << END
 0.25	0.25
@@ -200,8 +202,8 @@ psxy -R -Jx -O -K -Glightgray -L -Wthicker >> ../example_03f.ps << END
 0.25	0.9
 END
 echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> ../example_03f.ps
-echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> ../example_03f.ps
+echo "0.5 0.7 Ship" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> ../example_03f.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> ../example_03f.ps
-echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> ../example_03f.ps
+echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> ../example_03f.ps
 #
-rm -f box.d report samp* *.pg *.extr spectrum.* .gmt*
+rm -f box.d report samp* *.pg *.extr spectrum.*

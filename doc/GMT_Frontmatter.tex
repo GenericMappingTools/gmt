@@ -1,9 +1,9 @@
 %------------------------------------------
-%       $Id: GMT_Frontmatter.tex,v 1.54 2011-02-28 00:58:03 remko Exp $
+%       $Id: GMT_Frontmatter.tex,v 1.55 2011-03-15 02:06:29 guru Exp $
 %
 %       The GMT Documentation Project
-%       Copyright 2000-2011.
-%       Paul Wessel, Walter H. F. Smith, Remko Scharroo, and Joaquim Luis
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 
@@ -27,8 +27,8 @@ gratefully acknowledges the generous support of the C. H. and I. M.
 Green Foundation for Earth Sciences at the Institute of Geophysics
 and Planetary Physics, Scripps Institution of Oceanography, University
 of California at San Diego.
-\GMT\ versions 3.0--3.4, 4.0--4.5.x, and 5.0.0--\GMTDOCVERSION\ owe their existence to grants
-EAR-93-02272, OCE-95-29431, OCE-00-82552, and OCE-04-52126
+\GMT\ series 3.x, 4.x, and 5. owe their existence to grants
+EAR-93-02272, OCE-95-29431, OCE-00-82552, OCE-04-52126, and OCE-1029874
 from the National Science Foundation, which we gratefully acknowledge.
 
 We would also like to acknowledge the feedback we have received from many
@@ -67,17 +67,17 @@ The SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided valua
 on Linux, web, and CGI script issues.
 
 \begin{flushright}
-Honolulu, HI, Silver Spring, MD, \GMTDOCDATE
+Honolulu, HI, Silver Spring, MD, Cornish, NH, and Faro, Portugal, \GMTDOCDATE
 \end{flushright}
 \vspace{\baselineskip}
 
 
 \begin{center}\small
 \begin{tabular}{l@{\hspace{1cm}}r}
-\includegraphics[height=4cm,bb=0 0 172 138]{fig/Wessel.png} &
-\includegraphics[height=4cm,bb=0 0 538 396]{fig/Smith.png} \\
+\includegraphics[height=4cm,bb=0 0 172 138]{Wessel.png} &
+\includegraphics[height=4cm,bb=0 0 538 396]{Smith.png} \\
 \normalsize \htmladdnormallink{\textbf{Dr. P\aa{}l (Paul) Wessel}}{http://www.soest.hawaii.edu/pwessel} &
-\normalsize \htmladdnormallink{\textbf{Dr. Walter H. F. Smith}}{http://ibis.grdl.noaa.gov/SAT/people/walter.html} \\
+\normalsize \htmladdnormallink{\textbf{Dr. Walter H. F. Smith}}{mailto:walter.hf.smith@noaa.gov} \\
 Professor & Geophysicist \\
 \htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} &
 \htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
@@ -85,6 +85,15 @@ Professor & Geophysicist \\
 \htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
 \htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} & \htmladdnormallink{National Oceanic and
 Atmospheric Administration}{http://www.noaa.gov} \\
+& \\
+\includegraphics[height=4cm,bb=0 0 533 400]{Scharroo.png} &
+\includegraphics[height=4cm,bb=0 0 540 388]{JLuis.png} \\
+\normalsize \htmladdnormallink{\textbf{Dr. Remko Scharroo}}{http://www.altimetrics.com} &
+\normalsize \htmladdnormallink{\textbf{Dr. Joaquim Luis}}{http://w3.ualg.pt/~jluis/} \\
+Aerospace Engineer & Geophysicist \\
+\htmladdnormallink{Altimetrics LLC}{http://www.altimetrics.com} &
+\htmladdnormallink{Universidade do Algarve}{http://www.ualg.pt} \\
+Cornish, New Hampshire & Faro, Portugal \\
 \end{tabular}
 \end{center}
 
@@ -124,7 +133,7 @@ CVS control, is automated by a makefile.
 
 Please send email to
 \htmladdnormallink{the GMT help list}{mailto:gmt-help@lists.hawaii.edu}
-if you find errors or inconsistencies in the documentation.
+(subscription required; see Appendix D) if you find errors or inconsistencies in the documentation.
 %--------------------------------REMINDER------------------------------------
 
 \chapter*{A Reminder}
@@ -134,7 +143,7 @@ If you feel it is appropriate, you may consider paying us back by
 citing our {\it EOS} articles on \GMT\ (and perhaps also our Geophysics
 article on the \GMT\ program \GMTprog{surface}) when you publish papers
 containing results or illustrations obtained using \GMT.  The EOS
-articles on \GMT\ are \\
+articles on \GMT\ are
 \index{EOS article}%
 \index{Article!in EOS}%
 
@@ -158,19 +167,34 @@ display data, {\it EOS Trans. Amer. Geophys. U.}, vol. 72 (41),
 pp. 441, 445-446, 1991.}
 
 \end{itemize}
+\noindent
+Some \GMT\ programs are based on algorithms we have developed and
+published, such as
 
-The article in {\it Geophysics} on surface is
-\index{Geophysics article}%
-\index{Article!in Geophysics}%
 \begin{itemize}
 
-\item{Smith, W. H. F., and P. Wessel, Gridding with continuous
-curvature splines in tension, {\it Geophysics}, vol. 55 (3), pp.
-293-305, 1990.}
+\item Kim, S.-S., and P. Wessel, Directional Median Filtering for Regional-Residual
+Separation of Bathymetry, {\it Geochem. Geophys. Geosyst., 9(Q03005)}, doi:10.1029/2007GC001850.
+[\GMTprog{dimfilter.c} in \GMTprog{misc} supplement].
+
+\item Smith, W. H. F., and P. Wessel, Gridding with Continuous
+Curvature Splines in Tension, {\it Geophysics}, vol. 55 (3), pp.
+293--305, 1990 [\GMTprog{surface.c}].
+
+\item Wessel, P., A General-purpose Green's Function-based Interpolator,
+{\it Computers \& Geosciences}, vol. 35, pp. 1247--1254, 2009  [\GMTprog{greenspline.c}].
+
+\item  Wessel, P., Tools for Analyzing Intersecting Tracks: the x2sys package,
+{\it Computers \& Geosciences}, vol. 36, 348--354, 2010  [\GMTprog{x2sys} supplement].
+
+\item Wessel, P. and J. M. Becker, Interpolation using a Generalized
+Green's Function for a Spherical Surface Spline in Tension,
+{\it Geophys. J. Int.}, vol. 174, pp. 21--28, 2008  [\GMTprog{greenspline.c}].
 
 \end{itemize}
 
-\GMT\ includes some code supplied by others, in particular the Triangle code
+\noindent
+Finally, \GMT\ includes some code supplied by others, in particular the Triangle code
 used for Delaunay triangulation.  Its author, Jonathan Shewchuk, says
 \begin{quote}
 ``If you use Triangle, and especially if you use it to accomplish real
@@ -196,7 +220,7 @@ such decisions by supporting the \GMT\ project.
 \addcontentsline{toc}{chapter}{Copyright and Caveat Emptor!}
 
 \begin{center}
-Copyright \copyright 1991 -- \GMTDOCYEAR\ by Paul Wessel and Walter H. F. Smith
+Copyright \copyright 1991 -- \GMTDOCYEAR\ by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 \end{center}
 
 \vspace{\baselineskip}

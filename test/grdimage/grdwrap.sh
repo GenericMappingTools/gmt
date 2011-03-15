@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: grdwrap.sh,v 1.6 2010-06-21 23:55:22 guru Exp $
+#	$Id: grdwrap.sh,v 1.7 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for wrapping of global grid"
@@ -12,6 +12,6 @@ makecpt -Cpolar -T-1/1/0.01 > t.cpt
 grdimage t.nc -Ct.cpt -JQ-147/6i -Ct.cpt -B30 -K > $ps
 grdimage t.nc -Ct.cpt -JQ-147.533/6i -Ct.cpt -B30 -O -Y3.75i >> $ps
 
-rm -f t.nc t.cpt .gmtcommands4
+rm -f t.nc t.cpt
 
 pscmp

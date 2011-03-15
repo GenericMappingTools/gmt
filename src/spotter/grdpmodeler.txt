@@ -1,0 +1,82 @@
+#include "common_options.txt"
+.TH GRDPMODELER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdpmodeler \- Evaluate plate motion parameters on a grid
+.SH SYNOPSIS
+BD(grdpmodeler) IT(agegrdfile) OPT(E)IT(rot_file)
+OPT(G)IT(outgrdfile) OPT(S)BD(a)|BD(d)|BD(r)|BD(w)|BD(x)|BD(y)|BD(X)|BD(Y) [ OPT(F)IT(polygonfile) ] 
+[ OPT(T)IT(age) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(grdpmodeler) reads a geographical age grid and a plate motion model
+and evaluates one of several model predictions.  Optionally, the user may supply a clipping polygon
+in multiple-segment format; then, only the part of the grid inside the polygon is used
+to determine the model prediction.
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrdfile)
+Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+#include "euler.txt"
+.TP
+OPT(G)IT(outgrdfile)
+Name of output grid.  This is the grid with the model predictions given the specified
+rotations.
+.TP
+OPT(S)BD(a)|BD(d)|BD(r)|BD(w)|BD(x)|BD(y)|BD(X)|BD(Y)
+Type of model prediction.  Choose from BD(a) for plate motion azimuth, BD(d) for distance between
+current locations and their origin at the ridge (in km), BD(r) for plate motion rate (in mm/yr),
+BD(w) for plate rotation rate (degree/Myr), BD(x) change in longitude relative to location of crust formation,
+BD(y) change in latitude relative to location of crust formation, BD(X) longitude of crust formation, and
+BD(Y) latitude of crust formation.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(F)IT(polygonfile)
+Specify a multisegment closed polygon file that describes the inside area of the grid
+where the model should be evaluated; the outside will be set to NaN [Default evaluates model on the entire grid].
+.TP
+OPT(T)IT(age)
+Use a fixed age for model evaluation (i.e., override the ages in the age grid).  This lets you
+evaluate the model at a snapshot in time.
+#include "explain_-V.txt"
+.TP
+OPT(:)
+Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
+#include "explain_-bi.txt"
+[Default is 2 input columns].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+We will use a grid with Pacific crust ages (pac_age.nc), a plate motion model (Pac_APM.d),
+and a polygon that contains the outline of the present Pacific plate (pac_clip_path.d).
+To evaluate the plate motion azimuths at the present time for the Pacific, try
+.br
+.sp
+BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dir_0.nc OPT(Sa) OPT(T)0
+.br
+.sp
+To determine the changes in latitude since crust formation for the entire Pacific, try
+.br
+.sp
+BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dlat.nc OPT(Sy)
+.br
+.sp
+To determine the plate motion rates in effect when the Pacific crust was formed, try
+.br
+.sp
+BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_vel.nc OPT(Sr)
+.br
+.sp
+To determine how far the crust has moved since formation, try
+.br
+.sp
+BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dist.nc OPT(Sd)
+.SH "SEE ALSO"
+.IR backtracker (1),
+.IR grdrotater (1),
+.IR grdspotter (1),
+.IR hotspotter (1),
+.IR originator (1)
+.IR rotconverter (1)

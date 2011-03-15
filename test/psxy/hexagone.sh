@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: hexagone.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
+#!/bin/bash
+#	$Id: hexagone.sh,v 1.11 2011-03-15 02:06:46 guru Exp $
 #
 # Check wrapping around Greenwich
 
@@ -18,17 +18,17 @@ cat > hexagone.dat <<%
 %
 
 psxy hexagone.dat -R-5/9/42/52 -JM3i -P -L -Gpurple -K > $ps
-pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K --FORMAT_GEO_MAP=D >> $ps
 
 psxy hexagone.dat -R-8.5/-0.5/47/52 -JM3i -Y4i -L -Gpurple -O -K >> $ps
-pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --FORMAT_GEO_MAP=D >> $ps
 
 psxy hexagone.dat -R1/9/47/52 -JM3i -X4i -L -Gpurple -O -K >> $ps
-pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --FORMAT_GEO_MAP=D >> $ps
 
 psxy hexagone.dat -R-4/6/42/49.5 -JM3i -Y-4i -L -Gpurple -O -K >> $ps
-pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --PLOT_DEGREE_FORMAT=D >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --FORMAT_GEO_MAP=D >> $ps
 
-rm -f hexagone.dat .gmtcommands4
+rm -f hexagone.dat
 
 pscmp

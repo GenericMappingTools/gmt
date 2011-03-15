@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.11 2009-11-10 04:28:49 guru Exp $
+#	$Id: test_x2sys.sh,v 1.12 2011-03-15 02:06:37 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -62,7 +62,7 @@ grdview hat.nc -Chat.cpt -JX6i -P -B1g1WSne -Qs -Wc1p -K -X1.25i > $PS
 psxy -R -J -O -K trackA.xydz -W2p,red >> $PS
 psxy -R -J -O -K trackB.xydz -W2p,blue >> $PS
 psxy -R -J -O -K trackC.xydz -W2p,black >> $PS
-psxy -R -J -O -K -m fake_COE_orig.txt -Sc0.15 -W0.5p >> $PS
+psxy -R -J -O -K -M fake_COE_orig.txt -Sc0.15 -W0.5p >> $PS
 head -1 trackA.xydz | psxy -R -J -O -K -Sc0.1i -Gred >> $PS
 head -1 trackB.xydz | psxy -R -J -O -K -Sc0.1i -Gblue >> $PS
 head -1 trackC.xydz | psxy -R -J -O -K -Sc0.1i -Gblack >> $PS
@@ -105,9 +105,9 @@ gv $PS &
 
 # Solve for constants
 x2sys_solve COE.txt -TFAKE -Cz -Ec -V > $X2SYS_HOME/FAKE/corr_const.lis
-A=`grep trackA $X2SYS_HOME/FAKE/corr_const.lis | cut -f3`
-B=`grep trackB $X2SYS_HOME/FAKE/corr_const.lis | cut -f3`
-C=`grep trackC $X2SYS_HOME/FAKE/corr_const.lis | cut -f3`
+A=`grep trackA corr.lis | cut -f3`
+B=`grep trackB corr.lis | cut -f3`
+C=`grep trackC corr.lis | cut -f3`
 
 # Correct tracks
 x2sys_datalist -TFAKE -Lcorr_const.lis trackAc.xydz > trackAcc.xydz

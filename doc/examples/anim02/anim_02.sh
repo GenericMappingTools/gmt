@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 02
-#               $Id: anim_02.sh,v 1.4 2011-02-28 00:58:03 remko Exp $
+#               $Id: anim_02.sh,v 1.5 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
 # GMT progs:    gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, ps2raster
@@ -15,12 +15,11 @@ height=4.15i
 dpi=72
 n_frames=36
 TDIR=../../tutorial
-name=../`basename $0 '.sh'`
+name=`basename $0 '.sh'`
 # 1b) setup
 del_angle=`gmtmath -Q 360 $n_frames DIV =`
-makecpt -Crainbow -T500/4500/500 -Z > $$.cpt
-gmtset DOTS_PR_INCH $dpi
-R=`gmt_get_gridregion $TDIR/us.nc`
+makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
+gmtset PS_DPI $dpi
 # 2. Main loop
 mkdir -p $$
 frame=0
@@ -29,13 +28,13 @@ while [ $frame -lt $n_frames ]; do
 	file=`gmt_set_framename $name $frame`
 	angle=`gmtmath -Q $frame $del_angle MUL =`
 	dir=`gmtmath -Q $angle 180 ADD =`
-	grdgradient $TDIR/us.nc -A$angle -Nt2 -M -G$$.us_int.nc
+	grdgradient $TDIR/us.nc -A$angle -Nt2 -fg -G$$.us_int.nc
 	grdimage $TDIR/us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
-	--PAPER_MEDIA=Custom_${width}x${height} --ANNOT_FONT_SIZE=+9p > $$.ps
-	echo 256.25 35.6 | psxy -R$R -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps
-	echo 256.25 35.6 $dir 0.37 | psxy -R$R -J -O -Sv0.02i/0.05i/0.05i -Gred -Wthin >> $$.ps
+	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
+	psxy -R$TDIR/us.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
+	psxy -R$TDIR/us.nc -J -O -Sv0.02i/0.05i/0.05i -Gred -Wthin >> $$.ps <<< "256.25 35.6 $dir 0.37"
 	if [ $# -eq 0 ]; then
-		mv $$.ps $name.ps
+		mv $$.ps ../$name.ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi
@@ -69,5 +68,4 @@ with a 0.1 second pause between the 36 frames.
 </HTML>
 END
 # 4. Clean up temporary files
-gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt

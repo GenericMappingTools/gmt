@@ -3,14 +3,6 @@
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
-Version Jan 1, 2011
-No source code changes but expected to work with the latest GSHHS
-data set version 2.1.1
-
-Version July 1, 2010
-No source code changes but expected to work with the latest GSHHS
-data set version 2.1.0
-
 Version July 1, 2009
 This version include a revised GSHHS data format in which the
 polygon ID of the parent (that contains this polygon) is given

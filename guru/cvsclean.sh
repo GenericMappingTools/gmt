@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: cvsclean.sh,v 1.9 2011-01-07 21:40:22 guru Exp $
+#	$Id: cvsclean.sh,v 1.10 2011-03-15 02:06:31 guru Exp $
 
 # BSD and Solaris commands are incompatible, use GNU versions if available
 RM=$(which grm || which rm)

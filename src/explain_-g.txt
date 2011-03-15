@@ -1,14 +1,2 @@
 .TP
-OPT(g)
-Examine the spacing between consecutive data points in order to impose breaks in the line.
-Append \fBx\fP|\fBX\fP or \fBy\fP|\fBY\fP to define a gap when there is a large enough change in the x or y coordinates, respectively,
-or \fBd\fP|\fBD\fP for distance gaps; use upper case to calculate gaps from projected coordinates.  For gap-testing on other columns
-use [\fIcol\fP]\fBz\fP; if \fIcol\fP is not prepended the it defaults to 2 (i.e., 3rd column).
-Append [+|-]\fIgap\fP and optionally a unit \fBu\fP.  Regarding optional signs: -ve means previous minus current column value must exceed
-|\fIgap\fP to be a gap, +ve means current minus previous column value must exceed \fIgap\fP, and no sign means the absolute value of the
-difference must exceed \fIgap\fP.
-For geographic data (\fBx\fP|\fBy\fP|\fBd\fP), the unit \fBu\fP may be m\fBe\fPter [Default], \fBk\fPilometer, \fBm\fPiles, or \fBn\fPautical miles.
-For projected data (\fBX\fP|\fBY\fP|\fBD\fP), choose from \fBi\fPnch, \fBc\fPentimeter, \fBm\fPeter, or \fBp\fPoints [Default unit set by MEASURE_UNIT].
-Note: For \fBx\fP|\fBy\fP|\fBz\fP with time data the unit is instead controlled by TIME_UNIT.
-Repeat the option to specify multiple criteria, of which any can be met to produce a line break.
-Issue an additional OPT(ga) to indicate that all criteria must be met instead.
+GMT_g_OPT Determine data gaps/line breaks.

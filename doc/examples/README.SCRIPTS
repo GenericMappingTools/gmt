@@ -1,20 +1,11 @@
-	$Id: README.SCRIPTS,v 1.9 2009-02-13 20:44:29 remko Exp $
+	$Id: README.SCRIPTS,v 1.10 2011-03-15 02:06:31 guru Exp $
 
 	README file for GMT Examples directory
 
-There are cshell (csh), bourne shell (sh) and DOS (bat)
-versions of all example scripts.  Simply run the appropriate
-do_examples script.
-
-The UNIX scripts will access your awk-like program via the
-environmental variable $AWK.  This will be automatically
-set by do_examples.  If you plan on running one of the
-example scripts manually, first define AWK to be nawk,
-gawk, or awk (in that order, depending on your installation).
-
-All csh scripts use the >! notation to initialize new files.
-If your system does not support this notation you must
-take out all the exclamation points prior to running jobs.
+There are born-again shell (bash) and DOS (bat)
+versions of all example scripts.  To run all bash scripts,
+you can execute "make examples".
+To run all bat scripts, run do_examples.bat instead.
 
 Examples 2 and 17 show usage of grdraster.  However, because
 the user may not have these databases the grdraster calls are
@@ -27,7 +18,7 @@ out and the extracted img grid is supplied.
 It is possible that the output you may generate with these
 script will differ in subtle ways from the figures shown
 in the GMT documentation.  This is most likely caused by
-different settings in the .gmtdefaults4 file that we used
+different settings in the gmt.conf file that we used
 to generate the plots.
 
 The DOS versions may differ in subtle ways from the UNIX

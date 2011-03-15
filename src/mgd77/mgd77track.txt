@@ -10,86 +10,90 @@
 .SH NAME
 mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
-\fBmgd77track\fP \fINGDC-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
-[ OPT(A)[\fBc\fP][\fIsize\fP][,\fIspacing\fP] ]  [ GMT_B_OPT ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] 
-[ OPT(Db)\fIstopdate\fP ] [ OPT(F) ] [ OPT(G)\fBd\fP|\fBt\fP\fIgap\fP ] 
-[ OPT(I)\fIignore\fP ] [ GMT_K_OPT ] [ OPT(L)\fItrackticks\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Sa)\fIstartdist\fP[\fBu\fP] ] 
-[ OPT(Sb)\fIstopdist\fP[\fBu\fP] ] [ OPT(TT)|\fBt\fP|\fBd\fP\fIms,mc,mfs,mf,mfc\fP ] [ GMT_U_OPT ] 
-[ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
+BD(mgd77track) IT(NGDC-ids) GMT_Rgeo_OPT GMT_J_OPT 
+[ OPT(A)[BD(c)][IT(size)][,IT(spacing)] ]  [ GMT_B_OPT ] [ OPT(C)BD(f)|BD(g)|BD(e) ] [ OPT(Da)IT(startdate) ] 
+[ OPT(Db)IT(stopdate) ] [ OPT(F) ] [ OPT(G)BD(d)|BD(t)IT(gap) ] 
+[ OPT(I)IT(ignore) ] [ GMT_K_OPT ] [ OPT(L)IT(trackticks) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Sa)IT(startdist)[BD(u)] ] 
+[ OPT(Sb)IT(stopdist)[BD(u)] ] [ OPT(TT)|BD(t)|BD(d)IT(ms),IT(mc),IT(mfs),IT(mf),IT(mfc) ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBmgd77track\fP reads NGDC MGD77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
-map using the specified projection.  The \fIPostScript\fP code is written to standard output.
+BD(mgd77track) reads NGDC MGD77 cruises and creates IT(PostScript) code that will plot one or more ship tracks on a
+map using the specified projection.  The IT(PostScript) code is written to standard output.
+.SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
-#include "explain_-J_short.txt"
+#include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-Append \fBc\fP to annotate using the MGD77 cruise ID [Default uses the filename prefix].
-Optional \fIsize\fP is the font size in points.  The leg annotation font is controlled by \fBLABEL_FONT\fP.
-By default, each leg is annotated every time it enters the map region. Alternatively, append ,\fIspacing\fP to place
-this label every \fIspacing\fP units apart along the track.  Append one of the units \fBk\fP (km), \fBn\fP (nautical mile),
-\fBd\fP (day), or \fBh\fP (hour).
-#include "explain_-B_short.txt"
+OPT(A)[BD(c)][IT(size)][,IT(spacing)]
+Append BD(c) to annotate using the MGD77 cruise ID [Default uses the filename prefix].
+Optional IT(size) is the font size in points.  The leg annotation font is controlled by BD(FONT_LABEL).
+By default, each leg is annotated every time it enters the map region. Alternatively, append ,IT(spacing) to place
+this label every IT(spacing) units apart along the track.  Append one of the units BD(k) (km), BD(n) (nautical mile),
+BD(d) (day), or BD(h) (hour).
+#include "explain_-B.txt"
 .TP
-OPT(C)
+OPT(C)BD(f)|BD(g)|BD(e)
 Select procedure for along-track distance calculation:
 .br
-	\fBf\fP Flat Earth distances.
+	BD(f) Flat Earth distances.
 .br
-	\fBg\fP Great circle distances [Default].
+	BD(g) Great circle distances [Default].
 .br
-	\fBe\fP Geodesic distances on current GMT ellipsoid.
+	BD(e) Geodesic distances on current GMT ellipsoid.
 .TP
-OPT(Da)
-Do not plot data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is first day].
+OPT(Da)IT(startdate)
+Do not plot data collected before IT(startdate) (yyyy-mm-ddBD(T)[hh:mm:ss])  [Default is first day].
 .TP
-OPT(Db)
-Do not plot data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is last day].
+OPT(Db)IT(stopdate)
+Do not plot data collected after IT(stopdate) (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is last day].
 .TP
 OPT(F)
 Do not apply the error bit flags if present in a MGD77+ file [Default will apply these flags upon reading the data].
 .TP
-OPT(G)
-Let successive point separations exceeding \fBd\fP\fIgap\fP (km) or \fBt\fP\fIgap\fP (minutes) indicate a break
+OPT(G)BD(d)|BD(t)IT(gap)
+Let successive point separations exceeding BD(d)IT(gap) (km) or BD(t)IT(gap) (minutes) indicate a break
 in the track where we should not draw a line [no gaps recognized].  Repeat to use both types of gap checking.
 .TP
-OPT(I)
-Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
+OPT(I)IT(ignore)
+Ignore certain data file formats from consideration. Append BD(a|c|t) to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
 #include "explain_-K.txt"
 .TP
-OPT(L)
-To put time/distance log-marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
-every 500 km (\fBk\fP) and 24 \fBh\fP(ours), with (\fBt\fP)ickmarks every 500 km and 6 hours.
-Alternatively you may use the modifiers \fBd\fP (days) and \fBn\fP (nautical miles).
+OPT(L)IT(trackticks)
+To put time/distance log-marks on the track. E.g. BD(a)500BD(ka)24BD(ht)6BD(h) means (BD(a))nnotate
+every 500 km (BD(k)) and 24 BD(h)(ours), with (BD(t))ickmarks every 500 km and 6 hours.
+Alternatively you may use the modifiers BD(d) (days) and BD(n) (nautical miles).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(Sa)
-Do not plot data that are less than \fIstartdist\fP meter along track from port of departure.
-Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
+OPT(Sa)IT(startdist)[BD(u)]
+Do not plot data that are less than IT(startdist) meter along track from port of departure.
+Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is 0 meters].
 .TP
-OPT(Sb)
-Do not plot data that are more than \fIstopdist\fP meter along track from port of departure.
-Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
+OPT(Sb)IT(stopdist)[BD(u)]
+Do not plot data that are more than IT(stopdist) meter along track from port of departure.
+Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is end of track].
 .TP
-OPT(T)
-Controls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
-day, \fBt\fP for additional time markers in the same day, and \fBd\fP for distance markers).  For each
-of these you can specify the 5 comma-separated attributes \fImarkersize\fP, \fImarkercolor\fP,
-\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerfontcolor\fP.  Repeat the OPT(T) option for
+OPT(TT)|BD(t)|BD(d)IT(ms),IT(mc),IT(mfs),IT(mf),IT(mfc)
+Controls the attributes of the three kinds of markers (BD(T) for the first time marker in a new
+day, BD(t) for additional time markers in the same day, and BD(d) for distance markers).  For each
+of these you can specify the 5 comma-separated attributes IT(markersize), IT(markercolor),
+IT(markerfontsize), IT(markerfont), and IT(markerfontcolor).  Repeat the OPT(T) option for
 each marker type.
 #include "explain_-U.txt"
 .TP
-OPT(W)
-Append \fIpen\fP used for the trackline. [Default is 0.25p,black]. 
+OPT(W)IT(pen)
+Append IT(pen) used for the trackline. [Default is 0.25p,black]. 
 [Default is solid].
 #include "explain_-XY.txt"
 #include "explain_-V.txt"
 #include "explain_-c.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To generate a Mercator plot of the track of the cruise 01010007 in the area 70W to
 20E, 40S to 20N, using a Mercator scale of SCALE1, label the tracks with 10 points characters, annotate
@@ -98,12 +102,11 @@ with ticks every 6 hours and 250 km, and send the plot to the default printer,
 enter the following command:
 .br
 .sp
-\fBmgd77track\fP 01010007 OPT(R)70W/20E/40S/20N SCALE2 OPT(B)10\fBg\fP5 OPT(A)10 OPT(L)a1da1000kf6hf250k | lpr
+BD(mgd77track) 01010007 OPT(R)70W/20E/40S/20N SCALE2 OPT(B)10BD(g)5 OPT(A)10 OPT(L)a1da1000kf6hf250k | lpr
 .SH "SEE ALSO"
 .IR mgd77info (1),
 .IR psbasemap (1)
 .IR mgd77list (1)
 #include "refs.i"
-The Marine Geophysical Data Exchange Format - "MGD77", see
-\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
-.br
+The Marine Geophysical Data Exchange Format - MGD77, see
+IT(http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt)

@@ -3,151 +3,155 @@
 .SH NAME
 grdcontour \- Contouring of 2-D gridded data sets
 .SH SYNOPSIS
-\fBgrdcontour\fP \fIgrdfile\fP OPT(C)\fIcont_int\fP GMT_J_OPT 
-[ OPT(A)[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
-[ GMT_B_OPT ] [ OPT(D)\fIdumpfile\fP ] [ OPT(E)\fIazimuth/elevation\fP ] [ OPT(F)[\fBl\fP|\fBr\fP] ] 
-[ GMT_CONTG ] [ GMT_K_OPT ] [ OPT(L)\fIlow/high\fP ] 
-[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)\fIcut\fP ] [ GMT_Rgeo_OPT ] 
-[ OPT(S)\fIsmoothfactor\fP ] [ OPT(T)[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fB+\fP][\fItype\fP]\fIpen\fP ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] 
-[ GMT_c_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
+BD(grdcontour) IT(grdfile) OPT(C)IT(cont_int) GMT_J_OPT 
+[ OPT(A)[BD(-)|IT(annot_int)][IT(labelinfo)] ] 
+[ GMT_B_OPT ] [ OPT(D)IT(template) ] [ OPT(F)[BD(l)|BD(r)] ] 
+[ GMT_CONTG ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)IT(low/high) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(cut) ] [ GMT_Rgeoz_OPT ] 
+[ OPT(S)IT(smoothfactor) ] [ OPT(T)[BD(+|-)][IT(gap/length)][BD(:)[IT(labels)]] ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[BD(+)][IT(type)]IT(pen) ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[IT(factor)[/IT(shift)]][BD(p)] ] 
+[ GMT_bo_OPT ] [ GMT_c_OPT ] [ GMT_ho_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBgrdcontour\fP reads a 2-D grid file and produces a contour map by tracing
-each contour through the grid.  As an option, the x/y/z positions of the contour lines may be dumped to
-a single multisegment file or many separate files.  \fIPostScript\fP code is generated and sent to standard output.  Various options
-that affect the plotting are available.
+BD(grdcontour) reads a 2-D grid file and produces a contour map by tracing
+each contour through the grid.  IT(PostScript) code is generated and sent to standard output.  Various options
+that affect the plotting are available.  Alternatively, the x/y/z positions of the contour lines may be saved to
+one or more output files (or stdout) and no plot is produced.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgrdfile\fP
+IT(grdfile)
 2-D gridded data set to be contoured.
 (See GRID FILE FORMATS below).
 .TP
-OPT(C)
+OPT(C)IT(cont_int)
 The contours to be drawn may be specified in one of three possible ways:
 .br
-(1) If \fIcont_int\fP has the suffix ".cpt" and can be opened as a file, it is assumed
+(1) If IT(cont_int) has the suffix ".cpt" and can be opened as a file, it is assumed
 to be a color palette table.  The color boundaries are then used as contour levels.
 If the cpt-file has annotation flags in the last column then those contours will be
 annotated.  By default all contours are labeled; use OPT(A\-) to disable all annotations.
 .br
-(2) If \fIcont_int\fP is a file but not a cpt-file, it is expected to contain contour levels
+(2) If IT(cont_int) is a file but not a cpt-file, it is expected to contain contour levels
 in column 1 and a C(ontour) OR A(nnotate) in col 2. The levels marked C (or c) are contoured,
 the levels marked A (or a) are contoured and annotated.  Optionally, a third column may be
 present and contain the fixed annotation angle for this contour level.
 .br
-(3) If no file is found, then \fIcont_int\fP is
+(3) If no file is found, then IT(cont_int) is
 interpreted as a constant contour interval.  If OPT(A) is set and OPT(C) is not, then
 the contour interval is set equal to the specified annotation interval.
 .br
 If a file is given and OPT(T) is set, 
 then only contours marked with upper case C or A will have tickmarks.  In all cases the contour
 values have the same units as the grid.
-#include "explain_-J_short.txt"
-.SH OPTIONS
+#include "explain_-J.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-\fIannot_int\fP is annotation interval in data units; it is ignored if contour levels are given in a file.
-[Default is no annotations].   Append \fB-\fP to disable all annotations implied by OPT(C).
-The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
+OPT(A)[BD(-)|IT(annot_int)][IT(labelinfo)]
+IT(annot_int) is annotation interval in data units; it is ignored if contour levels are given in a file.
+[Default is no annotations].   Append BD(-) to disable all annotations implied by OPT(C).
+The optional IT(labelinfo) controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
 .br
 #define CONTOUR
 #define GRID
 #include "explain_labelinfo.txt"
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(D)
-Dump the (x,y,z) coordinates of each contour to separate files, one for each contour segment. The
-files will be named \fIdumpfile_cont_segment[_i]\fP.xyz (or \fI.b\fP is OPT(b) is selected), where \fIcont\fP is the contour value and
-\fIsegment\fP is a running segment number for each contour interval (for closed contours we append _i.)  If the prefix is given as '-'
-the file names are instead \fIC#_i\fP (interior) or \fIC#_e\fP (external) plus extension, and # is just a running number.  This allows us to
-make short file names that will work with GNU utilities under DOS.
-However, when OPT(m)
-is used in conjunction with OPT(D) a single multisegment file is created instead.
-#include "explain_-E.txt"
+OPT(D)IT(template)
+#include "explain_contdump.txt"
 .TP
-OPT(F)
+OPT(F)[BD(l)|BD(r)]
 Force dumped contours to be oriented so that higher z-values are to the left (OPT(Fl) [Default])
-or right (\fB-Fr\fP) as we move along the contour [Default is arbitrary orientation].  Requires OPT(D).
+or right (BD(-Fr)) as we move along the contour [Default is arbitrary orientation].  Requires OPT(D).
 .TP
 OPT(G)
 #include "explain_contlabel.txt"
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
-OPT(L)
-Limit range: Do not draw contours for data values below \fIlow\fP or above \fIhigh\fP.
+OPT(L)IT(low/high)
+Limit range: Do not draw contours for data values below IT(low) or above IT(high).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(Q)
-Do not draw contours with less than \fIcut\fP number of points [Draw all contours].
+OPT(Q)IT(cut)
+Do not draw contours with less than IT(cut) number of points [Draw all contours].
 #include "explain_-R.txt"
+#include "explain_-Rz.txt"
 [Default is region defined in the grid file].
 .TP
-OPT(S)
-Used to resample the contour lines at roughly every (gridbox_size/\fIsmoothfactor\fP) interval.
+OPT(S)IT(smoothfactor)
+Used to resample the contour lines at roughly every (gridbox_size/IT(smoothfactor)) interval.
 .TP
-OPT(T)
-Will draw tickmarks pointing in the downward direction every \fIgap\fP along the innermost closed contours.
-Append \fIgap\fP and tickmark length or use defaults [0.5\fBc\fP/0.1c or 0.2\fBi\fP/0.04i].
+OPT(T)[BD(+|-)][IT(gap/length)][BD(:)[IT(labels)]]
+Will draw tickmarks pointing in the downward direction every IT(gap) along the innermost closed contours.
+Append IT(gap) and tickmark length (append units as BD(c), BD(i), or BD(p)) or use defaults [15BD(p)/3BD(p)].
 User may choose to tick only local highs or local lows by specifying OPT(T+) or OPT(T\-), respectively.
-Appending \fB:LH\fP will plot the characters L and H at the center of closed
-innermost contours (local lows and highs).  L and H can be any single character (e.g., LH, -+, etc.)
+Append BD(:)IT(labels) to annotate the centers of closed innermost contours (i.e, the local lows and highs).
+If no IT(labels) is appended we use - and + as the labels.
+Appending two characters, BD(:LH), will plot the two characters (here, L and H) as labels.  For more
+elaborate labels, separate the two label strings by a comma (e.g., BD(:)IT(lo),IT(hi)).
 If a file is given by OPT(C) and OPT(T) is set, 
 then only contours marked with upper case C or A will have tickmarks [and annotation].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
-\fItype\fP, if present, can be \fBa\fP for annotated contours or \fBc\fP for regular contours [Default].
-\fIpen\fP sets the attributes for the particular line.  Default values for annotated contours:
-width = 0.75p, color = black, texture = solid.  Regular contours have default width = 0.25p.
+OPT(W)[BD(+)][IT(type)]IT(pen)
+IT(type), if present, can be BD(a) for annotated contours or BD(c) for regular contours [Default].
+IT(pen) sets the attributes for the particular line.  Default pen for annotated contours:
+0.75p,black.  Regular contours use pen 0.25p,black.
 (See SPECIFYING PENS below).
-If the
-\fB+\fP flag is specified then the color of the contour lines are taken from the cpt file (see OPT(C)).
+If the BD(+) flag is prepended then the color of the contour lines are taken from the cpt file (see OPT(C)).
+If the BD(-) flag is prepended then the color from the cpt file is applied both to the contours and the contour annotations.
 #include "explain_-XY.txt"
 .TP
-OPT(Z)
-Use to subtract \fIshift\fP from the data and multiply the results by \fIfactor\fP before contouring starts [1/0].
+OPT(Z)[IT(factor)[/IT(shift)]][BD(p)]
+Use to subtract IT(shift) from the data and multiply the results by IT(factor) before contouring starts [1/0].
 (Numbers in OPT(A), OPT(C), OPT(L) refer to values after this scaling has occurred.)
-Append \fBp\fP to indicate
+Append BD(p) to indicate
 that this grid file contains z-values that are periodic in 360 degrees (e.g.,
 phase data, angular distributions) and that
 special precautions must be taken when determining 0-contours.
 #include "explain_-bo.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
-.TP
-OPT(m)
-When used in conjunction with OPT(D) a single multisegment file is created, and
-each contour section is preceded by a header record whose first column is \fIflag\fP
-followed by the contour level.
+#include "explain_-h.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
+#include "explain_font.txt"
 #include "explain_color.txt"
 #include "explain_precision.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
-To contour the file hawaii_grav.grd every 25 mGal on a Mercator map at 0.5 inch/degree, annotate
-every 50 mGal (using fontsize = 10), using 1 degree tickmarks, and draw 30 minute gridlines:
+To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at 0.5 inch/degree, annotate
+every 50 mGal (using fontsize = 10p), using 1 degree tickmarks, and draw 30 minute gridlines:
 .br
 .sp
-\fBgrdcontour\fP hawaii_grav.grd OPT(Jm)0.5\fBi\fP OPT(C)25 OPT(A)50\fB+f\fP10 OPT(B)1\fBg\fP30\fBm\fP > hawaii_grav.ps
+BD(grdcontour) hawaii_grav.nc OPT(Jm)0.5BD(i) OPT(C)25 OPT(A)50BD(+f)10BD(p) OPT(B)1BD(g)30BD(m) > hawaii_grav.ps
 .br
 .sp
-To contour the file image.grd using the levels in the file cont.d on a linear projection at 0.1 cm/x-unit
+To contour the file image.nc using the levels in the file cont.d on a linear projection at 0.1 cm/x-unit
 and 50 cm/y-unit, using 20 (x) and 0.1 (y) tickmarks, smooth the contours a bit, use "RMS Misfit" as
 plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue pen for the rest, and send the output to the default printer:
 .br
 .sp
-\fBgrdcontour\fP image.grd OPT(Jx)0.1\fBc\fP/50.0\fBc\fP OPT(C)cont.d OPT(S)4 OPT(B)20/0.1:."RMS Misfit":
+BD(grdcontour) image.nc OPT(Jx)0.1BD(c)/50.0BD(c) OPT(C)cont.d OPT(S)4 OPT(B)20/0.1:."RMS Misfit":
 OPT(Wa)thick,red OPT(Wc)thinnest,blue,- | lp
 .sp
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
+.br
+To save the smoothed 100-m contour lines in topo.nc and separate them into two multisegment files:
+contours_C.txt for closed and contours_O.txt for open contours, try 
+.br
+.sp
+BD(grdcontour) topo.nc OPT(C)100 OPT(S)4 OPT(D)contours_%c.txt
 .SH "SEE ALSO"
-.IR GMT (1),
-.IR gmtdefaults (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR gmtcolors (5),
 .IR psbasemap (1),
 .IR grdimage (1),

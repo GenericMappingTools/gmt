@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.14 2009-10-17 22:10:49 remko Exp $
+#  $Id: GNUmakefile,v 1.15 2011-03-15 02:06:37 guru Exp $
 #
-#	Guru Makefile for GMT Version 4.x mgd77 directory
+#	Guru Makefile for GMT Version 5.x misc directory
 #	
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
@@ -11,19 +11,14 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		07-MAY-2007
+#	Date:		30-SEP-2010
 #-------------------------------------------------------------------------------
 
 include Makefile
-include ../manpages.mk
+include $(GMTSRCDIR)manpages.mk
 
-mgd77_functions.h mgd77_functions.c:	mgd77netcdfhelper.sh mgd77_header.txt
-		$(SHELL) mgd77netcdfhelper.sh
+mgd77_functions.h mgd77_functions.c:	mgd77netcdfhelper.sh
+	$(SHELL) mgd77netcdfhelper.sh
 
-mgd77_codes.h mgd77_codes.txt:		mgd77_codes.sh
-		$(SHELL) mgd77_codes.sh
-
-CM4:
-	wget http://core2.gsfc.nasa.gov/CM/umdl.CM4
-	wget http://core2.gsfc.nasa.gov/CM/NEW/Dst_all.wdc
-	wget http://core2.gsfc.nasa.gov/CM/NEW/F107_mon.plt
+mgd77_codes.h mgd77_codes.txt:	mgd77_codes.sh
+	$(SHELL) mgd77_codes.sh

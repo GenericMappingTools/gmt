@@ -1,4 +1,4 @@
-%-	$Id: PSL_text.ps,v 1.10 2008-04-17 18:07:45 remko Exp $
+%-	$Id: PSL_text.ps,v 1.11 2011-03-15 02:06:35 guru Exp $
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
 %-	Text justification for paragraphs.
@@ -11,12 +11,12 @@
 /PSL_setfont {	% Set Font, size, and color if needed
   /f exch def % Gets word flag from stack
   /k1 exch def % Gets word index from stack
-  /fs PSL_size k1 get def	% Get font size
+  /fz PSL_size k1 get def	% Get font size
   /fn PSL_fnt k1 get def	% Get font
-  fn PSL_lastfn eq fs PSL_lastfs eq and not {
-    fs PSL_fontname fn get Y	% Set font and size
+  fn PSL_lastfn eq fz PSL_lastfz eq and not {
+    fz PSL_fontname fn get Y	% Set font and size
     /PSL_lastfn fn def
-    /PSL_lastfs fs def
+    /PSL_lastfz fz def
   } if
   /fc PSL_color k1 get def
   fc PSL_lastfc ne {
@@ -25,8 +25,8 @@
     /PSL_lastfc fc def
   } if
   f 32 and 32 eq { % Underline
-    /PSL_UL fs 0.075 mul def
-    fs 0.025 mul W
+    /PSL_UL fz 0.075 mul def
+    fz 0.025 mul W
     /PSL_show {PSL_ushow} def
   }
   {
@@ -37,17 +37,17 @@
 /PSL_setfont2 {	% Only set font and size
   /f exch def % Gets word flag from stack
   /k1 exch def % Gets word index from stack
-  /fs PSL_size k1 get def	% Get font size
+  /fz PSL_size k1 get def	% Get font size
   /fn PSL_fnt k1 get def	% Get font
-  fn PSL_lastfn eq fs PSL_lastfs eq and not {
-    fs PSL_fontname fn get Y	% Set font and size
+  fn PSL_lastfn eq fz PSL_lastfz eq and not {
+    fz PSL_fontname fn get Y	% Set font and size
     /PSL_lastfn fn def
-    /PSL_lastfs fs def
+    /PSL_lastfz fz def
   } if
 }!
 
 /PSL_wordheight {	% Gets word from stack, and calculates any adjustment to box height
-  0 0 m false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
+  0 0 M false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
   down PSL_ymin lt {/PSL_ymin down def} if
   up PSL_ymax gt {/PSL_ymax up def} if
 }!
@@ -56,8 +56,8 @@
   currentpoint /y0 exch def /x0 exch def
   ashow
   currentpoint pop /x1 exch def
-  x0 y0 PSL_UL sub m x1 y0 PSL_UL sub L S
-  x1 y0 m
+  x0 y0 PSL_UL sub M x1 y0 PSL_UL sub L S
+  x1 y0 M
 }!
 
 % Set font, size, and color.  Adjust baseline if needed. Place space and word
@@ -79,7 +79,7 @@
     f 32 and 32 eq flag 32 and 32 eq and {/sshow {PSL_ushow} def} if
   } ifelse
   /thisword_bshift PSL_bshift k get def	% The baseline shift
-  thisword_bshift 0.0 ne { 0 thisword_bshift G } if	% Shift baseline
+  thisword_bshift 0.0 ne {0 thisword_bshift G} if	% Shift baseline
   flag 8 and 8 eq {	% First composite char
     pr_char 0 PSL_spaces PSL_t get sshow
     k PSL_composite
@@ -88,7 +88,7 @@
     pr_char 0 PSL_spaces PSL_t get sshow pr_char 0 PSL_word k get PSL_show
     PSL_width k get 0 gt {/PSL_col PSL_col 1 add def} if
   } if
-  thisword_bshift 0.0 ne { 0 thisword_bshift neg G } if	% Shift baseline
+  thisword_bshift 0.0 ne {0 thisword_bshift neg G} if	% Shift baseline
 }!
 
 /PSL_composite {	% Place a composite character
@@ -107,7 +107,7 @@
     /dx2 0 def
   } ifelse
   dx1 0 G currentpoint
-  pr_char 0 char1 PSL_show m
+  pr_char 0 char1 PSL_show M
   delta 0 G
   pr_char 0 char2 ashow
   dx2 0 G
@@ -194,20 +194,20 @@
         start PSL_expand
 	start PSL_placeword
       }
-      { PSL_word start get PSL_wordheight
+      {PSL_word start get PSL_wordheight
       } ifelse
       /last stop 1 sub def
       /start start 1 add def
       1 PSL_mode eq {		% Write out the remaining words on this line
         start 1 last {PSL_placeword} for
       }
-      { start 1 last {PSL_word exch get PSL_wordheight} for
-        line 0 eq { /PSL_top PSL_ymax def } if	% First outputline
+      {start 1 last {PSL_word exch get PSL_wordheight} for
+        line 0 eq { /PSL_top PSL_ymax def} if	% First outputline
       } ifelse
 
       /start stop def
       /PSL_ybase PSL_ybase PSL_linespace sub def
-      1 PSL_mode eq {0 PSL_ybase m} if	% CR/LF
+      1 PSL_mode eq {0 PSL_ybase M} if	% CR/LF
       /stop stop 1 add def				% Include this word
       /previous_linewidth thisword_width def
       /lsum ccount def

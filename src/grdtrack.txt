@@ -1,40 +1,69 @@
 #include "common_options.txt"
 .TH GRDTRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdtrack \- Sampling of a 2-D grid file along 1-D trackline (a sequence of x,y points)
+grdtrack \- Sampling of 2-D grided data set(s) along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] 
-[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
-[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
+BD(grdtrack) IT(xyfile) OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
+[ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] 
+[ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
+[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBgrdtrack\fP reads a grid file (or a Sandwell/Smith IMG file) and a table (from file or standard input) with (x,y) positions 
-in the first two columns (more columns may be present). It interpolates the grid at the positions 
-in the table and writes out the table with the interpolated values added as a new column.  A bicubic 
+BD(grdtrack) reads one or more grid files (or a Sandwell/Smith IMG files) and a table (from file or
+standard input) with (x,y) [or (lon,lat)] positions 
+in the first two columns (more columns may be present). It interpolates the grid(s) at the positions 
+in the table and writes out the table with the interpolated values added as (one or more) new columns.
+Alternatively (OPT(C)), the input is considered to be line-segments and we create orthogonal cross-profiles
+at each data point or with an equidistant separation and sample the grid(s) along these profiles.
+A bicubic 
 [Default], bilinear, B-spline or nearest-neighbor (see OPT(Q)) interpolation is used, requiring boundary conditions at the limits 
 of the region (see OPT(L)).
+.SH REQUIRED ARGUMENTS
 .TP
-\fIxyfile\fP
+IT(xyfile)
 This is an ASCII (or binary, see OPT(b)) file where the first 2 columns hold the (x,y) positions where the user wants to sample
 the 2-D data set.
 .TP
-OPT(G)
-\fIgrdfile\fP is a 2-D binary grid file with the function f(x,y).
+OPT(G)IT(gridfile)
+IT(grdfile) is a 2-D binary grid file with the function f(x,y).
 If the specified grid is in Sandwell/Smith Mercator format you must append a comma-separated list of
 arguments that includes a scale to multiply the data (usually 1 or 0.1), the mode which stand for the following:
 (0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
 and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere,
-and optionally the max latitude in the IMG file [80.738].
+and optionally the max latitude in the IMG file [80.738].  You may repeat OPT(G) as many times as you
+have grids you wish to sample.  The grids are sampled and results are output in the order given.
 (See GRID FILE FORMAT below.)
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
-#include "explain_-h.txt"
 .TP
-OPT(L)
-Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
-x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+OPT(A)BD(m)|BD(p)
+For spherical surface resampling we resample along great circle arcs.
+Alternatively, use OPT(Am) to resample by first following a meridian,
+then a parallel. Or use OPT(Ap) to start following a parallel, then a meridian.
+(This can be practical for resampling lines along parallels, for example).
+Ignored unless OPT(C) is used.
+.TP
+OPT(C)IT(length)/IT(ds)[IT(spacing)]
+Use input line segments to create an equidistant and (optionally) equally-spaced set of crossing profiles along which
+we sample the grid(s) [Default simply samples the grid(s) at the input locations].
+Specify two length scales that control how the sampling is done:
+\fIlength\fP sets the full length of each cross-profile, while
+\fIds\fP is the distance increment along each cross-profile.
+Optionally, append /\fIspacing\fP for an equidistant spacing between cross-profiles [Default erects cross-profiles at the input coordinates].
+Append suitable units for each length scale (See UNITS below).
+The output columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
+.TP
+OPT(D)IT(dfile)
+In concert with OPT(C) we can save the (possibly resampled) original lines to the
+file IT(dfile) [Default only saves the cross-profiles].
+The columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
+.TP
+OPT(L)IT(flag)
+Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of 
+x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
-the grid is automatically recognised as periodic.]
+the grid is automatically recognized as periodic.]
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
@@ -52,7 +81,12 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-bo.txt"
 [Default is one more than input].
 #include "explain_-f.txt"
-#include "explain_-m.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_help.txt"
+#include "explain_distunits.txt"
 #include "explain_precision.txt"
 #include "explain_grd_input.txt"
 .SH HINTS
@@ -60,21 +94,29 @@ If an interpolation point is not on a node of the input grid, then a NaN at any 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
 first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [OPT(Q)] 
 uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
-important.  Use bilinear to minimize the propagation of NaNs, or lower \fIthreshold\fP.
+important.  Use bilinear to minimize the propagation of NaNs, or lower IT(threshold).
 .SH EXAMPLES
-To sample the file hawaii_topo.grd along the SEASAT track track_4.xyg (An ASCII
+To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg (An ASCII
 table containing longitude, latitude, and SEASAT-derived gravity, preceded by one header record):
 .br
 .sp
-\fBgrdtrack\fP track_4.xyg OPT(G)hawaii_topo.grd OPT(H) > track_4.xygt
+BD(grdtrack) track_4.xyg OPT(G)hawaii_topo.nc OPT(H) > track_4.xygt
 .br
 .sp
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute predicted bathymetry on a Mercator
-grid) along the lon,lat coordinates given in the file cruise_track.xy, try
+grid) and the Muller et al age grid age.3.2.nc along the lon,lat coordinates given in the file cruise_track.xy, try
 .br
 .sp
-\fBgrdtrack\fP cruise_track.xy OPT(G)topo.8.2.img,1,1 > obs_and_predicted.d
+BD(grdtrack) cruise_track.xy OPT(G)topo.8.2.img,1,1 OPT(G)age.3.2.nc > depths-age.d
+.br
+.sp
+To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute free-air anomalies on a Mercator
+grid) along 100-km-long cross-profiles that are orthogonal to the line segment given in the file track.xy,
+erecting cross-profiles every 25 km and sampling the grid every 3 km, try
+.br
+.sp
+BD(grdtrack) track.xy OPT(G)grav.18.1.img,0.1,1 OPT(C)100k/3k/25k > xprofiles.d
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR surface (1),
 .IR sample1d (1)

@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.11 2010-03-22 18:55:44 guru Exp $
+/*	$Id: gmt_mgg_header2.h,v 1.12 2011-03-15 02:06:36 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -7,7 +7,7 @@
 #define _H_MGG_HEADER_2
 
 #define MGG_MAGIC_NUM	1000000000
-#define MGG_VERSION			1
+#define MGG_VERSION	1
 #define MGG_NAN_VALUE	999999
 #define DEFAULT_PREC	10
 #define GRD98_N_UNUSED	10
@@ -37,10 +37,5 @@ typedef struct {
 	int	cellRegistration;	/* 1 for pixel (cell centered), 0 for gridline */
 	int    unused[GRD98_N_UNUSED];	/* Unused 4byte ints */
 } MGG_GRID_HEADER_2;
-
-GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header);
-GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header);
-GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex);
-GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex);
 
 #endif

@@ -1,9 +1,10 @@
 .SS SPECIFYING PENS
 .TP
-\fIpen\fP
-The attributes of lines and symbol outlines as defined by \fIpen\fP is a comma delimetered list of
-\fIwidth\fP, \fIcolor\fP and \fItexture\fP, each of which is optional.
-\fIwidth\fP can be indicated as a measure (points, centimeters, inches) or as \fBfaint\fP, \fBthin\fP[\fBner\fP|\fBnest\fP],
-\fBthick\fP[\fBer\fP|\fBest\fP], \fBfat\fP[\fBter\fP|\fBtest\fP], or \fBobese\fP.
-\fIcolor\fP specifies a gray shade or color (see SPECIFYING COLOR below).
-\fItexture\fP is a combination of dashes `-' and dots `.'.
+IT(pen)
+The attributes of lines and symbol outlines as defined by IT(pen) is a comma-delimited list of
+IT(width), IT(color) and IT(style), each of which is optional.
+IT(width) can be indicated as a measure (in BD(p)oints (this is the default), BD(c)entimeters, or BD(i)nches)
+or as BD(faint), BD(default), BD(thin)[BD(ner)|BD(nest)], BD(thick)[BD(er)|BD(est)], BD(fat)[BD(ter)|BD(test)], or BD(obese).
+IT(color) specifies a gray shade or color (see SPECIFYING COLOR below).
+IT(style) is a combination of dashes `-' and dots `.'.
+If any of the attributes is omitted their default or previous setting will be retained.

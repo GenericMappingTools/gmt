@@ -1,0 +1,25 @@
+.TP
+GMT_a_OPT
+Control how aspatial data are handled in GMT during input and output.
+.br
+Reading OGR/GMT-formatted files.
+To assign certain aspatial data items to GMT data columns,
+give one or more comma-separated associations IT(col)=IT(name), where
+IT(name) is the name of an aspatial attribute field in a OGR/GMT file
+and whose value we wish to as data input for column IT(col).  In addition,
+to assign an aspatial value to non-column data, you may specify IT(col) as
+BD(D) for IT(distance), BD(G) for IT(fill), BD(L) for IT(label), BD(T)
+for IT(text), BD(W) for IT(pen), and BD(Z) for IT(value)
+[e.g., used to look-up color via a CPT].
+.br
+Write OGR/GMT-formatted files.
+Give one or more comma-separated associations IT(col)=IT(name)[:IT(type)],
+To write OGR/GMT-formatted files, give one or more comma-separated associations IT(col)=IT(name)[:IT(type)],
+with an optional data type from DOUBLE, FLOAT, INTEGER, CHAR, STRING, DATETIME, or LOGICAL [DOUBLE].
+To extract information from GMT multisegment headers encoded in the OPT(D)IT(distance), OPT(G)IT(fill),
+OPT(L)IT(label), OPT(T)IT(text), OPT(W)IT(pen), or OPT(Z)IT(value)
+settings, specify IT(COL) as BD(D), BD(G), BD(L), BD(T), BD(W) or BD(Z), respectively; type will be set automatically.
+Finally, you IT(must) append BD(+g)IT(geometry), where IT(geometry) is either POINT, LINE,
+or POLY.  Optionally, prepend BD(M) for multi-versions of these geometries.  To force the clipping
+of features crossing the Dateline, use upper-case BD(+G) instead.
+See GMT Appendix Q for details of the OGR/GMT file format.

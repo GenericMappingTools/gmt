@@ -1,4 +1,4 @@
-/*	$Id: nrutil.c,v 1.5 2009-05-13 21:06:43 guru Exp $
+/*	$Id: nrutil.c,v 1.6 2011-03-15 02:06:37 guru Exp $
  *    Public Domain NR stuff.
  */
  
@@ -10,20 +10,20 @@
 #define NR_END 1
 #define FREE_ARG char*
 #ifndef _WIN64
-typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
-typedef unsigned long GMT_ULONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef long GMT_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef unsigned long GMT_ULONG;	/* A signed 4 (or 8-byte for 64-bit) integer */
 #else
 typedef __int64 GMT_LONG;
-typedef unsigned __int64 GMT_ULONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef unsigned __int64 GMT_ULONG;	/* A signed 4 (or 8-byte for 64-bit) integer */
 #endif
 
-void nrerror(char error_text[])
+void nrerror (char error_text[])
 /* Numerical Recipes standard error handler */
 {
 	fprintf(stderr,"Numerical Recipes run-time error...\n");
 	fprintf(stderr,"%s\n",error_text);
 	fprintf(stderr,"...now exiting to system...\n");
-	exit(EXIT_FAILURE);
+	exit (EXIT_FAILURE);
 }
 
 float *vector(GMT_LONG nl, GMT_LONG nh)
@@ -149,7 +149,7 @@ GMT_LONG **imatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	return m;
 }
 
-float **submatrix(float **a, GMT_LONG oldrl, GMT_LONG oldrh, GMT_LONG oldcl, GMT_LONG oldch,
+float **submatrix(float **a, GMT_LONG oldrl, GMT_LONG oldrh, GMT_LONG oldcl,
 	GMT_LONG newrl, GMT_LONG newcl)
 /* point a submatrix [newrl..][newcl..] to a[oldrl..oldrh][oldcl..oldch] */
 {
@@ -226,71 +226,70 @@ float ***f3tensor(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch, GMT_LO
 	return t;
 }
 
-void free_vector(float *v, GMT_LONG nl, GMT_LONG nh)
+void free_vector(float *v, GMT_LONG nl)
 /* free a float vector allocated with vector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_ivector(GMT_LONG *v, GMT_LONG nl, GMT_LONG nh)
+void free_ivector(GMT_LONG *v, GMT_LONG nl)
 /* free an GMT_LONG vector allocated with ivector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_cvector(unsigned char *v, GMT_LONG nl, GMT_LONG nh)
+void free_cvector(unsigned char *v, GMT_LONG nl)
 /* free an unsigned char vector allocated with cvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_lvector(GMT_ULONG *v, GMT_LONG nl, GMT_LONG nh)
+void free_lvector(GMT_ULONG *v, GMT_LONG nl)
 /* free an GMT_ULONG vector allocated with lvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_dvector(double *v, GMT_LONG nl, GMT_LONG nh)
+void free_dvector(double *v, GMT_LONG nl)
 /* free a double vector allocated with dvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_matrix(float **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+void free_matrix(float **m, GMT_LONG nrl, GMT_LONG ncl)
 /* free a float matrix allocated by matrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_dmatrix(double **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+void free_dmatrix(double **m, GMT_LONG nrl, GMT_LONG ncl)
 /* free a double matrix allocated by dmatrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_imatrix(GMT_LONG **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+void free_imatrix(GMT_LONG **m, GMT_LONG nrl, GMT_LONG ncl)
 /* free an GMT_LONG matrix allocated by imatrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_submatrix(float **b, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+void free_submatrix(float **b, GMT_LONG nrl)
 /* free a submatrix allocated by submatrix() */
 {
 	free((FREE_ARG) (b+nrl-NR_END));
 }
 
-void free_convert_matrix(float **b, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+void free_convert_matrix(float **b, GMT_LONG nrl)
 /* free a matrix allocated by convert_matrix() */
 {
 	free((FREE_ARG) (b+nrl-NR_END));
 }
 
-void free_f3tensor(float ***t, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch,
-	GMT_LONG ndl, GMT_LONG ndh)
+void free_f3tensor(float ***t, GMT_LONG nrl, GMT_LONG ncl, GMT_LONG ndl)
 /* free a float f3tensor allocated by f3tensor() */
 {
 	free((FREE_ARG) (t[nrl][ncl]+ndl-NR_END));

@@ -1,3 +1,2 @@
 .TP
-OPT(O)
-Selects Overlay plot mode [Default initializes a new plot system].
+OPT(O) Append to existing plot.

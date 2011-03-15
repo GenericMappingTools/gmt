@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: generate.sh,v 1.9 2007-11-15 04:32:58 remko Exp $
+#!/bin/bash
+#	$Id: generate.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
 #
 # Tests project in generating lines
 
@@ -12,12 +12,12 @@ ps=generate.ps
 # E-W line
 project -C10/10 -A90 -G1 -L-9/11 -N > $$.xy
 psxy -R0/25/0/25 -JX4i -P -K -X2i $$.xy -W2p,red > $ps
-echo 21 11 12 0 1 LB E-W | pstext -R -J -O -K -Gred >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "21 11 E-W"
 
 # 30 degrees azimuth
 project -C5/5 -A30 -G1 -L-3/12 -N > $$.xy
 psxy -R -J -O -K $$.xy -W2p,green >> $ps
-echo 3 2 12 0 1 RT -A30 | pstext -R -J -O -K -Ggreen >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "3 2 -A30"
 
 # Between two given points
 project -C15/5 -E2/20 -G1 -N > $$.xy
@@ -32,11 +32,11 @@ EOF
 # E-W line
 project -C10/10 -A90 -G10 -L-5/15 > $$.xy
 psxy -Rg -JA0/0/4i -O -K -Y4.5i $$.xy -W2p,red >> $ps
-echo 27 11 12 0 1 LB E-W | pstext -R -J -O -K -Gred >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "27 11 E-W"
 # 30 degrees azimuth
 project -C5/5 -A30 -G10 -L-10/10 > $$.xy
 psxy -R -J -O -K $$.xy -W2p,green >> $ps
-echo -2 -3 12 0 1 RT -A30 | pstext -R -J -O -K -Ggreen >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "-2 -3 -A30"
 
 # Between two given points
 project -C15/5 -E-12/-30 -G10 > $$.xy

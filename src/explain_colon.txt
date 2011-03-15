@@ -1,0 +1,2 @@
+.TP
+GMT_colon_OPT Expect (\fIlat,lon\fP) instead of (\fIlon,lat\fP).

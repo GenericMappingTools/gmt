@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_6.tex,v 1.24 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Chapter_6.tex,v 1.25 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{\gmt\ Map Projections}
@@ -286,7 +286,7 @@ width (\Opt{JS}).
 \end{itemize}
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with {\bf MAP\_SCALE\_FACTOR}).
+(although you may change this with \textbf{PROJ\_SCALE\_FACTOR}).
 However, the setting is ignored when a standard
 parallel has been specified since the scale is then implicitly given.
 We will look at two different types of maps.
@@ -591,7 +591,7 @@ by specifying:
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via
-the {\bf MAP\_SCALE\_FACTOR} parameter.
+the \textbf{PROJ\_SCALE\_FACTOR} parameter.
 Our example shows a transverse Mercator map of south-east
 Europe and the Middle East with 35\DS E as the central
 meridian:
@@ -638,7 +638,7 @@ most cases.  See Figure~\ref{fig:GMT_utm_zones} for all
 zone designations.
 
 \begin{figure}[htb]
-   \includegraphics[width=\textwidth]{scripts/GMT_utm_zones}
+   \includegraphics[width=\textwidth]{GMT_utm_zones}
    \caption{Universal Transverse Mercator zone layout.}
    \label{fig:GMT_utm_zones}
 \end{figure}
@@ -654,7 +654,7 @@ or append the latitude modifiers C--H, J--N, P--X) to specify an exact UTM grid 
 
 In order to minimize the distortion in any given zone,
 a scale factor of 0.9996 has been factored into the formulae.
-(although a standard, you can change this with {\bf MAP\_SCALE\_FACTOR}).
+(although a standard, you can change this with \textbf{PROJ\_SCALE\_FACTOR}).
 This makes the UTM projection a \emph{secant} projection and not
 a \emph{tangent} projection like the transverse Mercator above.
 The scale only varies by 1 part in 1,000 from true scale at
@@ -1073,8 +1073,8 @@ world map ``look'' right\footnote{Robinson provided a table of
 $y$-coordinates for latitudes every 5\DS .  To project values
 for intermediate latitudes one must interpolate the table.
 Different interpolants may result in slightly different maps.
-\gmt\ uses the interpolant selected by the parameter {\bf INTERPOLANT}
-in the \filename{.gmtdefaults4} file.}.  The scale is true
+\gmt\ uses the interpolant selected by the parameter \textbf{GMT\_INTERPOLANT}
+in the \filename{gmt.conf} file.}.  The scale is true
 along latitudes \PM 38\DS.  The projection was originally
 developed for use by Rand McNally and is currently used by
 the National Geographic Society.  To use it you must enter 

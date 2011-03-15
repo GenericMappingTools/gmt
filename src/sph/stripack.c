@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.7 2009-07-09 00:35:29 guru Exp $
+/* $Id: stripack.c,v 1.8 2011-03-15 02:06:37 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -11,7 +11,1312 @@ struct {
 
 #define stcom_1 stcom_
 
-/* Subroutine */ int addnod_(integer *nst, integer *k, doublereal *x, 
+doublereal store_(doublereal *x)
+{
+    /* System generated locals */
+    doublereal ret_val;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   05/09/92 */
+
+/*   This function forces its argument X to be stored in a */
+/* memory location, thus providing a means of determining */
+/* floating point number characteristics (such as the machine */
+/* precision) when it is necessary to avoid computation in */
+/* high precision registers. */
+
+
+/* On input: */
+
+/*       X = Value to be stored. */
+
+/* X is not altered by this function. */
+
+/* On output: */
+
+/*       STORE = Value of X after it has been stored and */
+/*               possibly truncated or rounded to the single */
+/*               precision word length. */
+
+/* Modules required by STORE:  None */
+
+/* *********************************************************** */
+
+    stcom_1.y = *x;
+    ret_val = stcom_1.y;
+    return ret_val;
+} /* store_ */
+
+integer jrand_(integer *n, integer *ix, integer *iy, integer *iz)
+{
+    /* System generated locals */
+    integer ret_val;
+
+    /* Local variables */
+    static doublereal u, x;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/28/98 */
+
+/*   This function returns a uniformly distributed pseudo- */
+/* random integer in the range 1 to N. */
+
+
+/* On input: */
+
+/*       N = Maximum value to be returned. */
+
+/* N is not altered by this function. */
+
+/*       IX,IY,IZ = Integer seeds initialized to values in */
+/*                  the range 1 to 30,000 before the first */
+/*                  call to JRAND, and not altered between */
+/*                  subsequent calls (unless a sequence of */
+/*                  random numbers is to be repeated by */
+/*                  reinitializing the seeds). */
+
+/* On output: */
+
+/*       IX,IY,IZ = Updated integer seeds. */
+
+/*       JRAND = Random integer in the range 1 to N. */
+
+/* Reference:  B. A. Wichmann and I. D. Hill, "An Efficient */
+/*             and Portable Pseudo-random Number Generator", */
+/*             Applied Statistics, Vol. 31, No. 2, 1982, */
+/*             pp. 188-190. */
+
+/* Modules required by JRAND:  None */
+
+/* Intrinsic functions called by JRAND:  INT, MOD, REAL */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* U = Pseudo-random number uniformly distributed in the */
+/*     interval (0,1). */
+/* X = Pseudo-random number in the range 0 to 3 whose frac- */
+/*       tional part is U. */
+
+    *ix = *ix * 171 % 30269;
+    *iy = *iy * 172 % 30307;
+    *iz = *iz * 170 % 30323;
+    x = (doublereal) (*ix) / 30269. + (doublereal) (*iy) / 30307. + (
+	    doublereal) (*iz) / 30323.;
+    u = x - (integer) x;
+    ret_val = (integer) ((doublereal) (*n) * u + 1.);
+    return ret_val;
+} /* jrand_ */
+
+integer lstptr_(integer *lpl, integer *nb, integer *list, integer *lptr)
+{
+    /* System generated locals */
+    integer ret_val;
+
+    /* Local variables */
+    static integer nd, lp;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/15/96 */
+
+/*   This function returns the index (LIST pointer) of NB in */
+/* the adjacency list for N0, where LPL = LEND(N0). */
+
+/*   This function is identical to the similarly named */
+/* function in TRIPACK. */
+
+
+/* On input: */
+
+/*       LPL = LEND(N0) */
+
+/*       NB = Index of the node whose pointer is to be re- */
+/*            turned.  NB must be connected to N0. */
+
+/*       LIST,LPTR = Data structure defining the triangula- */
+/*                   tion.  Refer to Subroutine TRMESH. */
+
+/* Input parameters are not altered by this function. */
+
+/* On output: */
+
+/*       LSTPTR = Pointer such that LIST(LSTPTR) = NB or */
+/*                LIST(LSTPTR) = -NB, unless NB is not a */
+/*                neighbor of N0, in which case LSTPTR = LPL. */
+
+/* Modules required by LSTPTR:  None */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* LP = LIST pointer */
+/* ND = Nodal index */
+
+    /* Parameter adjustments */
+    --lptr;
+    --list;
+
+    /* Function Body */
+    lp = lptr[*lpl];
+L1:
+    nd = list[lp];
+    if (nd == *nb) {
+	goto L2;
+    }
+    lp = lptr[lp];
+    if (lp != *lpl) {
+	goto L1;
+    }
+
+L2:
+    ret_val = lp;
+    return ret_val;
+} /* lstptr_ */
+
+/* Subroutine */ int swap_(integer *in1, integer *in2, integer *io1, integer *
+	io2, integer *list, integer *lptr, integer *lend, integer *lp21)
+{
+    /* System generated locals */
+    integer i__1;
+
+    /* Local variables */
+    static integer lp, lph, lpsav;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   06/22/98 */
+
+/*   Given a triangulation of a set of points on the unit */
+/* sphere, this subroutine replaces a diagonal arc in a */
+/* strictly convex quadrilateral (defined by a pair of adja- */
+/* cent triangles) with the other diagonal.  Equivalently, a */
+/* pair of adjacent triangles is replaced by another pair */
+/* having the same union. */
+
+
+/* On input: */
+
+/*       IN1,IN2,IO1,IO2 = Nodal indexes of the vertices of */
+/*                         the quadrilateral.  IO1-IO2 is re- */
+/*                         placed by IN1-IN2.  (IO1,IO2,IN1) */
+/*                         and (IO2,IO1,IN2) must be trian- */
+/*                         gles on input. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND = Data structure defining the trian- */
+/*                        gulation.  Refer to Subroutine */
+/*                        TRMESH. */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND = Data structure updated with the */
+/*                        swap -- triangles (IO1,IO2,IN1) and */
+/*                        (IO2,IO1,IN2) are replaced by */
+/*                        (IN1,IN2,IO2) and (IN2,IN1,IO1) */
+/*                        unless LP21 = 0. */
+
+/*       LP21 = Index of IN1 as a neighbor of IN2 after the */
+/*              swap is performed unless IN1 and IN2 are */
+/*              adjacent on input, in which case LP21 = 0. */
+
+/* Module required by SWAP:  LSTPTR */
+
+/* Intrinsic function called by SWAP:  ABS */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* LP,LPH,LPSAV = LIST pointers */
+
+
+/* Test for IN1 and IN2 adjacent. */
+
+    /* Parameter adjustments */
+    --lend;
+    --lptr;
+    --list;
+
+    /* Function Body */
+    lp = lstptr_(&lend[*in1], in2, &list[1], &lptr[1]);
+    if ((i__1 = list[lp], abs(i__1)) == *in2) {
+	*lp21 = 0;
+	return 0;
+    }
+
+/* Delete IO2 as a neighbor of IO1. */
+
+    lp = lstptr_(&lend[*io1], in2, &list[1], &lptr[1]);
+    lph = lptr[lp];
+    lptr[lp] = lptr[lph];
+
+/* If IO2 is the last neighbor of IO1, make IN2 the */
+/*   last neighbor. */
+
+    if (lend[*io1] == lph) {
+	lend[*io1] = lp;
+    }
+
+/* Insert IN2 as a neighbor of IN1 following IO1 */
+/*   using the hole created above. */
+
+    lp = lstptr_(&lend[*in1], io1, &list[1], &lptr[1]);
+    lpsav = lptr[lp];
+    lptr[lp] = lph;
+    list[lph] = *in2;
+    lptr[lph] = lpsav;
+
+/* Delete IO1 as a neighbor of IO2. */
+
+    lp = lstptr_(&lend[*io2], in1, &list[1], &lptr[1]);
+    lph = lptr[lp];
+    lptr[lp] = lptr[lph];
+
+/* If IO1 is the last neighbor of IO2, make IN1 the */
+/*   last neighbor. */
+
+    if (lend[*io2] == lph) {
+	lend[*io2] = lp;
+    }
+
+/* Insert IN1 as a neighbor of IN2 following IO2. */
+
+    lp = lstptr_(&lend[*in2], io2, &list[1], &lptr[1]);
+    lpsav = lptr[lp];
+    lptr[lp] = lph;
+    list[lph] = *in1;
+    lptr[lph] = lpsav;
+    *lp21 = lph;
+    return 0;
+} /* swap_ */
+
+/* Subroutine */ int insert_(integer *k, integer *lp, integer *list, integer *
+	lptr, integer *lnew)
+{
+    static integer lsav;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/17/96 */
+
+/*   This subroutine inserts K as a neighbor of N1 following */
+/* N2, where LP is the LIST pointer of N2 as a neighbor of */
+/* N1.  Note that, if N2 is the last neighbor of N1, K will */
+/* become the first neighbor (even if N1 is a boundary node). */
+
+/*   This routine is identical to the similarly named routine */
+/* in TRIPACK. */
+
+
+/* On input: */
+
+/*       K = Index of the node to be inserted. */
+
+/*       LP = LIST pointer of N2 as a neighbor of N1. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LNEW = Data structure defining the trian- */
+/*                        gulation.  Refer to Subroutine */
+/*                        TRMESH. */
+
+/* On output: */
+
+/*       LIST,LPTR,LNEW = Data structure updated with the */
+/*                        addition of node K. */
+
+/* Modules required by INSERT:  None */
+
+/* *********************************************************** */
+
+
+    /* Parameter adjustments */
+    --lptr;
+    --list;
+
+    /* Function Body */
+    lsav = lptr[*lp];
+    lptr[*lp] = *lnew;
+    list[*lnew] = *k;
+    lptr[*lnew] = lsav;
+    ++(*lnew);
+    return 0;
+} /* insert_ */
+
+/* Subroutine */ int bdyadd_(integer *kk, integer *i1, integer *i2, integer *
+	list, integer *lptr, integer *lend, integer *lnew)
+{
+    static integer k, n1, n2, lp, lsav, nsav, next;
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/11/96 */
+
+/*   This subroutine adds a boundary node to a triangulation */
+/* of a set of KK-1 points on the unit sphere.  The data */
+/* structure is updated with the insertion of node KK, but no */
+/* optimization is performed. */
+
+/*   This routine is identical to the similarly named routine */
+/* in TRIPACK. */
+
+
+/* On input: */
+
+/*       KK = Index of a node to be connected to the sequence */
+/*            of all visible boundary nodes.  KK .GE. 1 and */
+/*            KK must not be equal to I1 or I2. */
+
+/*       I1 = First (rightmost as viewed from KK) boundary */
+/*            node in the triangulation that is visible from */
+/*            node KK (the line segment KK-I1 intersects no */
+/*            arcs. */
+
+/*       I2 = Last (leftmost) boundary node that is visible */
+/*            from node KK.  I1 and I2 may be determined by */
+/*            Subroutine TRFIND. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
+/*                             created by Subroutine TRMESH. */
+/*                             Nodes I1 and I2 must be in- */
+/*                             cluded in the triangulation. */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
+/*                             the addition of node KK.  Node */
+/*                             KK is connected to I1, I2, and */
+/*                             all boundary nodes in between. */
+
+/* Module required by BDYADD:  INSERT */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* K =     Local copy of KK */
+/* LP =    LIST pointer */
+/* LSAV =  LIST pointer */
+/* N1,N2 = Local copies of I1 and I2, respectively */
+/* NEXT =  Boundary node visible from K */
+/* NSAV =  Boundary node visible from K */
+
+    /* Parameter adjustments */
+    --lend;
+    --lptr;
+    --list;
+
+    /* Function Body */
+    k = *kk;
+    n1 = *i1;
+    n2 = *i2;
+
+/* Add K as the last neighbor of N1. */
+
+    lp = lend[n1];
+    lsav = lptr[lp];
+    lptr[lp] = *lnew;
+    list[*lnew] = -k;
+    lptr[*lnew] = lsav;
+    lend[n1] = *lnew;
+    ++(*lnew);
+    next = -list[lp];
+    list[lp] = next;
+    nsav = next;
+
+/* Loop on the remaining boundary nodes between N1 and N2, */
+/*   adding K as the first neighbor. */
+
+L1:
+    lp = lend[next];
+    insert_(&k, &lp, &list[1], &lptr[1], lnew);
+    if (next == n2) {
+	goto L2;
+    }
+    next = -list[lp];
+    list[lp] = next;
+    goto L1;
+
+/* Add the boundary nodes between N1 and N2 as neighbors */
+/*   of node K. */
+
+L2:
+    lsav = *lnew;
+    list[*lnew] = n1;
+    lptr[*lnew] = *lnew + 1;
+    ++(*lnew);
+    next = nsav;
+
+L3:
+    if (next == n2) {
+	goto L4;
+    }
+    list[*lnew] = next;
+    lptr[*lnew] = *lnew + 1;
+    ++(*lnew);
+    lp = lend[next];
+    next = list[lp];
+    goto L3;
+
+L4:
+    list[*lnew] = -n2;
+    lptr[*lnew] = lsav;
+    lend[k] = *lnew;
+    ++(*lnew);
+    return 0;
+} /* bdyadd_ */
+
+/* Subroutine */ int intadd_(integer *kk, integer *i1, integer *i2, integer *
+	i3, integer *list, integer *lptr, integer *lend, integer *lnew)
+{
+    static integer k, n1, n2, n3, lp;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/17/96 */
+
+/*   This subroutine adds an interior node to a triangulation */
+/* of a set of points on the unit sphere.  The data structure */
+/* is updated with the insertion of node KK into the triangle */
+/* whose vertices are I1, I2, and I3.  No optimization of the */
+/* triangulation is performed. */
+
+/*   This routine is identical to the similarly named routine */
+/* in TRIPACK. */
+
+
+/* On input: */
+
+/*       KK = Index of the node to be inserted.  KK .GE. 1 */
+/*            and KK must not be equal to I1, I2, or I3. */
+
+/*       I1,I2,I3 = Indexes of the counterclockwise-ordered */
+/*                  sequence of vertices of a triangle which */
+/*                  contains node KK. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND,LNEW = Data structure defining the */
+/*                             triangulation.  Refer to Sub- */
+/*                             routine TRMESH.  Triangle */
+/*                             (I1,I2,I3) must be included */
+/*                             in the triangulation. */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
+/*                             the addition of node KK.  KK */
+/*                             will be connected to nodes I1, */
+/*                             I2, and I3. */
+
+/* Modules required by INTADD:  INSERT, LSTPTR */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* K =        Local copy of KK */
+/* LP =       LIST pointer */
+/* N1,N2,N3 = Local copies of I1, I2, and I3 */
+
+    /* Parameter adjustments */
+    --lend;
+    --lptr;
+    --list;
+
+    /* Function Body */
+    k = *kk;
+
+/* Initialization. */
+
+    n1 = *i1;
+    n2 = *i2;
+    n3 = *i3;
+
+/* Add K as a neighbor of I1, I2, and I3. */
+
+    lp = lstptr_(&lend[n1], &n2, &list[1], &lptr[1]);
+    insert_(&k, &lp, &list[1], &lptr[1], lnew);
+    lp = lstptr_(&lend[n2], &n3, &list[1], &lptr[1]);
+    insert_(&k, &lp, &list[1], &lptr[1], lnew);
+    lp = lstptr_(&lend[n3], &n1, &list[1], &lptr[1]);
+    insert_(&k, &lp, &list[1], &lptr[1], lnew);
+
+/* Add I1, I2, and I3 as neighbors of K. */
+
+    list[*lnew] = n1;
+    list[*lnew + 1] = n2;
+    list[*lnew + 2] = n3;
+    lptr[*lnew] = *lnew + 1;
+    lptr[*lnew + 1] = *lnew + 2;
+    lptr[*lnew + 2] = *lnew;
+    lend[k] = *lnew + 2;
+    *lnew += 3;
+    return 0;
+} /* intadd_ */
+
+/* Subroutine */ int trfind_(integer *nst, doublereal *p, integer *n, 
+	doublereal *x, doublereal *y, doublereal *z__, integer *list, integer 
+	*lptr, integer *lend, doublereal *b1, doublereal *b2, doublereal *b3, 
+	integer *i1, integer *i2, integer *i3)
+{
+    /* Initialized data */
+
+    static integer ix = 1;
+    static integer iy = 2;
+    static integer iz = 3;
+
+    /* System generated locals */
+    integer i__1;
+    doublereal d__1, d__2;
+
+    /* Local variables */
+    static doublereal q[3];
+    static integer n0, n1, n2, n3, n4, nf;
+    static doublereal s12;
+    static integer nl, lp;
+    static doublereal xp, yp, zp;
+    static integer n1s, n2s;
+    static doublereal eps, tol, ptn1, ptn2;
+    static integer next;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   11/30/99 */
+
+/*   This subroutine locates a point P relative to a triangu- */
+/* lation created by Subroutine TRMESH.  If P is contained in */
+/* a triangle, the three vertex indexes and barycentric coor- */
+/* dinates are returned.  Otherwise, the indexes of the */
+/* visible boundary nodes are returned. */
+
+
+/* On input: */
+
+/*       NST = Index of a node at which TRFIND begins its */
+/*             search.  Search time depends on the proximity */
+/*             of this node to P. */
+
+/*       P = Array of length 3 containing the x, y, and z */
+/*           coordinates (in that order) of the point P to be */
+/*           located. */
+
+/*       N = Number of nodes in the triangulation.  N .GE. 3. */
+
+/*       X,Y,Z = Arrays of length N containing the Cartesian */
+/*               coordinates of the triangulation nodes (unit */
+/*               vectors).  (X(I),Y(I),Z(I)) defines node I */
+/*               for I = 1 to N. */
+
+/*       LIST,LPTR,LEND = Data structure defining the trian- */
+/*                        gulation.  Refer to Subroutine */
+/*                        TRMESH. */
+
+/* Input parameters are not altered by this routine. */
+
+/* On output: */
+
+/*       B1,B2,B3 = Unnormalized barycentric coordinates of */
+/*                  the central projection of P onto the un- */
+/*                  derlying planar triangle if P is in the */
+/*                  convex hull of the nodes.  These parame- */
+/*                  ters are not altered if I1 = 0. */
+
+/*       I1,I2,I3 = Counterclockwise-ordered vertex indexes */
+/*                  of a triangle containing P if P is con- */
+/*                  tained in a triangle.  If P is not in the */
+/*                  convex hull of the nodes, I1 and I2 are */
+/*                  the rightmost and leftmost (boundary) */
+/*                  nodes that are visible from P, and */
+/*                  I3 = 0.  (If all boundary nodes are vis- */
+/*                  ible from P, then I1 and I2 coincide.) */
+/*                  I1 = I2 = I3 = 0 if P and all of the */
+/*                  nodes are coplanar (lie on a common great */
+/*                  circle. */
+
+/* Modules required by TRFIND:  JRAND, LSTPTR, STORE */
+
+/* Intrinsic function called by TRFIND:  ABS */
+
+/* *********************************************************** */
+
+
+    /* Parameter adjustments */
+    --p;
+    --lend;
+    --z__;
+    --y;
+    --x;
+    --list;
+    --lptr;
+
+    /* Function Body */
+
+/* Local parameters: */
+
+/* EPS =      Machine precision */
+/* IX,IY,IZ = Integer seeds for JRAND */
+/* LP =       LIST pointer */
+/* N0,N1,N2 = Nodes in counterclockwise order defining a */
+/*              cone (with vertex N0) containing P, or end- */
+/*              points of a boundary edge such that P Right */
+/*              N1->N2 */
+/* N1S,N2S =  Initially-determined values of N1 and N2 */
+/* N3,N4 =    Nodes opposite N1->N2 and N2->N1, respectively */
+/* NEXT =     Candidate for I1 or I2 when P is exterior */
+/* NF,NL =    First and last neighbors of N0, or first */
+/*              (rightmost) and last (leftmost) nodes */
+/*              visible from P when P is exterior to the */
+/*              triangulation */
+/* PTN1 =     Scalar product <P,N1> */
+/* PTN2 =     Scalar product <P,N2> */
+/* Q =        (N2 X N1) X N2  or  N1 X (N2 X N1) -- used in */
+/*              the boundary traversal when P is exterior */
+/* S12 =      Scalar product <N1,N2> */
+/* TOL =      Tolerance (multiple of EPS) defining an upper */
+/*              bound on the magnitude of a negative bary- */
+/*              centric coordinate (B1 or B2) for P in a */
+/*              triangle -- used to avoid an infinite number */
+/*              of restarts with 0 <= B3 < EPS and B1 < 0 or */
+/*              B2 < 0 but small in magnitude */
+/* XP,YP,ZP = Local variables containing P(1), P(2), and P(3) */
+/* X0,Y0,Z0 = Dummy arguments for DET */
+/* X1,Y1,Z1 = Dummy arguments for DET */
+/* X2,Y2,Z2 = Dummy arguments for DET */
+
+/* Statement function: */
+
+/* DET(X1,...,Z0) .GE. 0 if and only if (X0,Y0,Z0) is in the */
+/*                       (closed) left hemisphere defined by */
+/*                       the plane containing (0,0,0), */
+/*                       (X1,Y1,Z1), and (X2,Y2,Z2), where */
+/*                       left is defined relative to an ob- */
+/*                       server at (X1,Y1,Z1) facing */
+/*                       (X2,Y2,Z2). */
+
+
+/* Initialize variables. */
+
+    xp = p[1];
+    yp = p[2];
+    zp = p[3];
+    n0 = *nst;
+    if (n0 < 1 || n0 > *n) {
+	n0 = jrand_(n, &ix, &iy, &iz);
+    }
+
+/* Compute the relative machine precision EPS and TOL. */
+
+    eps = 1.;
+L1:
+    eps /= 2.;
+    d__1 = eps + 1.;
+    if (store_(&d__1) > 1.) {
+	goto L1;
+    }
+    eps *= 2.;
+    tol = eps * 100.;
+
+/* Set NF and NL to the first and last neighbors of N0, and */
+/*   initialize N1 = NF. */
+
+L2:
+    lp = lend[n0];
+    nl = list[lp];
+    lp = lptr[lp];
+    nf = list[lp];
+    n1 = nf;
+
+/* Find a pair of adjacent neighbors N1,N2 of N0 that define */
+/*   a wedge containing P:  P LEFT N0->N1 and P RIGHT N0->N2. */
+
+    if (nl > 0) {
+
+/*   N0 is an interior node.  Find N1. */
+
+L3:
+	if (xp * (y[n0] * z__[n1] - y[n1] * z__[n0]) - yp * (x[n0] * z__[n1] 
+		- x[n1] * z__[n0]) + zp * (x[n0] * y[n1] - x[n1] * y[n0]) < 
+		0.) {
+	    lp = lptr[lp];
+	    n1 = list[lp];
+	    if (n1 == nl) {
+		goto L6;
+	    }
+	    goto L3;
+	}
+    } else {
+
+/*   N0 is a boundary node.  Test for P exterior. */
+
+	nl = -nl;
+	if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf] 
+		- x[nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) < 
+		0.) {
+
+/*   P is to the right of the boundary edge N0->NF. */
+
+	    n1 = n0;
+	    n2 = nf;
+	    goto L9;
+	}
+	if (xp * (y[nl] * z__[n0] - y[n0] * z__[nl]) - yp * (x[nl] * z__[n0] 
+		- x[n0] * z__[nl]) + zp * (x[nl] * y[n0] - x[n0] * y[nl]) < 
+		0.) {
+
+/*   P is to the right of the boundary edge NL->N0. */
+
+	    n1 = nl;
+	    n2 = n0;
+	    goto L9;
+	}
+    }
+
+/* P is to the left of arcs N0->N1 and NL->N0.  Set N2 to the */
+/*   next neighbor of N0 (following N1). */
+
+L4:
+    lp = lptr[lp];
+    n2 = (i__1 = list[lp], abs(i__1));
+    if (xp * (y[n0] * z__[n2] - y[n2] * z__[n0]) - yp * (x[n0] * z__[n2] - x[
+	    n2] * z__[n0]) + zp * (x[n0] * y[n2] - x[n2] * y[n0]) < 0.) {
+	goto L7;
+    }
+    n1 = n2;
+    if (n1 != nl) {
+	goto L4;
+    }
+    if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf] - x[
+	    nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) < 0.) {
+	goto L6;
+    }
+
+/* P is left of or on arcs N0->NB for all neighbors NB */
+/*   of N0.  Test for P = +/-N0. */
+
+    d__2 = (d__1 = x[n0] * xp + y[n0] * yp + z__[n0] * zp, fabs(d__1));
+    if (store_(&d__2) < 1. - eps * 4.) {
+
+/*   All points are collinear iff P Left NB->N0 for all */
+/*     neighbors NB of N0.  Search the neighbors of N0. */
+/*     Note:  N1 = NL and LP points to NL. */
+
+L5:
+	if (xp * (y[n1] * z__[n0] - y[n0] * z__[n1]) - yp * (x[n1] * z__[n0] 
+		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >= 
+		0.) {
+	    lp = lptr[lp];
+	    n1 = (i__1 = list[lp], abs(i__1));
+	    if (n1 == nl) {
+		goto L14;
+	    }
+	    goto L5;
+	}
+    }
+
+/* P is to the right of N1->N0, or P = +/-N0.  Set N0 to N1 */
+/*   and start over. */
+
+    n0 = n1;
+    goto L2;
+
+/* P is between arcs N0->N1 and N0->NF. */
+
+L6:
+    n2 = nf;
+
+/* P is contained in a wedge defined by geodesics N0-N1 and */
+/*   N0-N2, where N1 is adjacent to N2.  Save N1 and N2 to */
+/*   test for cycling. */
+
+L7:
+    n3 = n0;
+    n1s = n1;
+    n2s = n2;
+
+/* Top of edge-hopping loop: */
+
+L8:
+    *b3 = xp * (y[n1] * z__[n2] - y[n2] * z__[n1]) - yp * (x[n1] * z__[n2] - 
+	    x[n2] * z__[n1]) + zp * (x[n1] * y[n2] - x[n2] * y[n1]);
+    if (*b3 < 0.) {
+
+/*   Set N4 to the first neighbor of N2 following N1 (the */
+/*     node opposite N2->N1) unless N1->N2 is a boundary arc. */
+
+	lp = lstptr_(&lend[n2], &n1, &list[1], &lptr[1]);
+	if (list[lp] < 0) {
+	    goto L9;
+	}
+	lp = lptr[lp];
+	n4 = (i__1 = list[lp], abs(i__1));
+
+/*   Define a new arc N1->N2 which intersects the geodesic */
+/*     N0-P. */
+
+	if (xp * (y[n0] * z__[n4] - y[n4] * z__[n0]) - yp * (x[n0] * z__[n4] 
+		- x[n4] * z__[n0]) + zp * (x[n0] * y[n4] - x[n4] * y[n0]) < 
+		0.) {
+	    n3 = n2;
+	    n2 = n4;
+	    n1s = n1;
+	    if (n2 != n2s && n2 != n0) {
+		goto L8;
+	    }
+	} else {
+	    n3 = n1;
+	    n1 = n4;
+	    n2s = n2;
+	    if (n1 != n1s && n1 != n0) {
+		goto L8;
+	    }
+	}
+
+/*   The starting node N0 or edge N1-N2 was encountered */
+/*     again, implying a cycle (infinite loop).  Restart */
+/*     with N0 randomly selected. */
+
+	n0 = jrand_(n, &ix, &iy, &iz);
+	goto L2;
+    }
+
+/* P is in (N1,N2,N3) unless N0, N1, N2, and P are collinear */
+/*   or P is close to -N0. */
+
+    if (*b3 >= eps) {
+
+/*   B3 .NE. 0. */
+
+	*b1 = xp * (y[n2] * z__[n3] - y[n3] * z__[n2]) - yp * (x[n2] * z__[n3]
+		 - x[n3] * z__[n2]) + zp * (x[n2] * y[n3] - x[n3] * y[n2]);
+	*b2 = xp * (y[n3] * z__[n1] - y[n1] * z__[n3]) - yp * (x[n3] * z__[n1]
+		 - x[n1] * z__[n3]) + zp * (x[n3] * y[n1] - x[n1] * y[n3]);
+	if (*b1 < -tol || *b2 < -tol) {
+
+/*   Restart with N0 randomly selected. */
+
+	    n0 = jrand_(n, &ix, &iy, &iz);
+	    goto L2;
+	}
+    } else {
+
+/*   B3 = 0 and thus P lies on N1->N2. Compute */
+/*     B1 = Det(P,N2 X N1,N2) and B2 = Det(P,N1,N2 X N1). */
+
+	*b3 = 0.;
+	s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
+	ptn1 = xp * x[n1] + yp * y[n1] + zp * z__[n1];
+	ptn2 = xp * x[n2] + yp * y[n2] + zp * z__[n2];
+	*b1 = ptn1 - s12 * ptn2;
+	*b2 = ptn2 - s12 * ptn1;
+	if (*b1 < -tol || *b2 < -tol) {
+
+/*   Restart with N0 randomly selected. */
+
+	    n0 = jrand_(n, &ix, &iy, &iz);
+	    goto L2;
+	}
+    }
+
+/* P is in (N1,N2,N3). */
+
+    *i1 = n1;
+    *i2 = n2;
+    *i3 = n3;
+    if (*b1 < 0.) {
+	*b1 = 0.;
+    }
+    if (*b2 < 0.) {
+	*b2 = 0.;
+    }
+    return 0;
+
+/* P Right N1->N2, where N1->N2 is a boundary edge. */
+/*   Save N1 and N2, and set NL = 0 to indicate that */
+/*   NL has not yet been found. */
+
+L9:
+    n1s = n1;
+    n2s = n2;
+    nl = 0;
+
+/*           Counterclockwise Boundary Traversal: */
+
+L10:
+    lp = lend[n2];
+    lp = lptr[lp];
+    next = list[lp];
+    if (xp * (y[n2] * z__[next] - y[next] * z__[n2]) - yp * (x[n2] * z__[next]
+	     - x[next] * z__[n2]) + zp * (x[n2] * y[next] - x[next] * y[n2]) 
+	    >= 0.) {
+
+/*   N2 is the rightmost visible node if P Forward N2->N1 */
+/*     or NEXT Forward N2->N1.  Set Q to (N2 X N1) X N2. */
+
+	s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
+	q[0] = x[n1] - s12 * x[n2];
+	q[1] = y[n1] - s12 * y[n2];
+	q[2] = z__[n1] - s12 * z__[n2];
+	if (xp * q[0] + yp * q[1] + zp * q[2] >= 0.) {
+	    goto L11;
+	}
+	if (x[next] * q[0] + y[next] * q[1] + z__[next] * q[2] >= 0.) {
+	    goto L11;
+	}
+
+/*   N1, N2, NEXT, and P are nearly collinear, and N2 is */
+/*     the leftmost visible node. */
+
+	nl = n2;
+    }
+
+/* Bottom of counterclockwise loop: */
+
+    n1 = n2;
+    n2 = next;
+    if (n2 != n1s) {
+	goto L10;
+    }
+
+/* All boundary nodes are visible from P. */
+
+    *i1 = n1s;
+    *i2 = n1s;
+    *i3 = 0;
+    return 0;
+
+/* N2 is the rightmost visible node. */
+
+L11:
+    nf = n2;
+    if (nl == 0) {
+
+/* Restore initial values of N1 and N2, and begin the search */
+/*   for the leftmost visible node. */
+
+	n2 = n2s;
+	n1 = n1s;
+
+/*           Clockwise Boundary Traversal: */
+
+L12:
+	lp = lend[n1];
+	next = -list[lp];
+	if (xp * (y[next] * z__[n1] - y[n1] * z__[next]) - yp * (x[next] * 
+		z__[n1] - x[n1] * z__[next]) + zp * (x[next] * y[n1] - x[n1] *
+		 y[next]) >= 0.) {
+
+/*   N1 is the leftmost visible node if P or NEXT is */
+/*     forward of N1->N2.  Compute Q = N1 X (N2 X N1). */
+
+	    s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
+	    q[0] = x[n2] - s12 * x[n1];
+	    q[1] = y[n2] - s12 * y[n1];
+	    q[2] = z__[n2] - s12 * z__[n1];
+	    if (xp * q[0] + yp * q[1] + zp * q[2] >= 0.) {
+		goto L13;
+	    }
+	    if (x[next] * q[0] + y[next] * q[1] + z__[next] * q[2] >= 0.) {
+		goto L13;
+	    }
+
+/*   P, NEXT, N1, and N2 are nearly collinear and N1 is the */
+/*     rightmost visible node. */
+
+	    nf = n1;
+	}
+
+/* Bottom of clockwise loop: */
+
+	n2 = n1;
+	n1 = next;
+	if (n1 != n1s) {
+	    goto L12;
+	}
+
+/* All boundary nodes are visible from P. */
+
+	*i1 = n1;
+	*i2 = n1;
+	*i3 = 0;
+	return 0;
+
+/* N1 is the leftmost visible node. */
+
+L13:
+	nl = n1;
+    }
+
+/* NF and NL have been found. */
+
+    *i1 = nf;
+    *i2 = nl;
+    *i3 = 0;
+    return 0;
+
+/* All points are collinear (coplanar). */
+
+L14:
+    *i1 = 0;
+    *i2 = 0;
+    *i3 = 0;
+    return 0;
+} /* trfind_ */
+
+/* Subroutine */ int covsph_(integer *kk, integer *n0, integer *list, integer 
+	*lptr, integer *lend, integer *lnew)
+{
+    static integer k, lp, nst, lsav, next;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/17/96 */
+
+/*   This subroutine connects an exterior node KK to all */
+/* boundary nodes of a triangulation of KK-1 points on the */
+/* unit sphere, producing a triangulation that covers the */
+/* sphere.  The data structure is updated with the addition */
+/* of node KK, but no optimization is performed.  All boun- */
+/* dary nodes must be visible from node KK. */
+
+
+/* On input: */
+
+/*       KK = Index of the node to be connected to the set of */
+/*            all boundary nodes.  KK .GE. 4. */
+
+/*       N0 = Index of a boundary node (in the range 1 to */
+/*            KK-1).  N0 may be determined by Subroutine */
+/*            TRFIND. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
+/*                             created by Subroutine TRMESH. */
+/*                             Node N0 must be included in */
+/*                             the triangulation. */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
+/*                             the addition of node KK as the */
+/*                             last entry.  The updated */
+/*                             triangulation contains no */
+/*                             boundary nodes. */
+
+/* Module required by COVSPH:  INSERT */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* K =     Local copy of KK */
+/* LP =    LIST pointer */
+/* LSAV =  LIST pointer */
+/* NEXT =  Boundary node visible from K */
+/* NST =   Local copy of N0 */
+
+    /* Parameter adjustments */
+    --lend;
+    --lptr;
+    --list;
+
+    /* Function Body */
+    k = *kk;
+    nst = *n0;
+
+/* Traverse the boundary in clockwise order, inserting K as */
+/*   the first neighbor of each boundary node, and converting */
+/*   the boundary node to an interior node. */
+
+    next = nst;
+L1:
+    lp = lend[next];
+    insert_(&k, &lp, &list[1], &lptr[1], lnew);
+    next = -list[lp];
+    list[lp] = next;
+    if (next != nst) {
+	goto L1;
+    }
+
+/* Traverse the boundary again, adding each node to K's */
+/*   adjacency list. */
+
+    lsav = *lnew;
+L2:
+    lp = lend[next];
+    list[*lnew] = next;
+    lptr[*lnew] = *lnew + 1;
+    ++(*lnew);
+    next = list[lp];
+    if (next != nst) {
+	goto L2;
+    }
+
+    lptr[*lnew - 1] = lsav;
+    lend[k] = *lnew - 1;
+    return 0;
+} /* covsph_ */
+
+logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4, 
+	doublereal *x, doublereal *y, doublereal *z__)
+{
+    /* System generated locals */
+    logical ret_val;
+
+    /* Local variables */
+    static doublereal x4, y4, z4, dx1, dx2, dx3, dy1, dy2, dy3, dz1, dz2, dz3;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   03/29/91 */
+
+/*   This function decides whether or not to replace a */
+/* diagonal arc in a quadrilateral with the other diagonal. */
+/* The decision will be to swap (SWPTST = TRUE) if and only */
+/* if N4 lies above the plane (in the half-space not contain- */
+/* ing the origin) defined by (N1,N2,N3), or equivalently, if */
+/* the projection of N4 onto this plane is interior to the */
+/* circumcircle of (N1,N2,N3).  The decision will be for no */
+/* swap if the quadrilateral is not strictly convex. */
+
+
+/* On input: */
+
+/*       N1,N2,N3,N4 = Indexes of the four nodes defining the */
+/*                     quadrilateral with N1 adjacent to N2, */
+/*                     and (N1,N2,N3) in counterclockwise */
+/*                     order.  The arc connecting N1 to N2 */
+/*                     should be replaced by an arc connec- */
+/*                     ting N3 to N4 if SWPTST = TRUE.  Refer */
+/*                     to Subroutine SWAP. */
+
+/*       X,Y,Z = Arrays of length N containing the Cartesian */
+/*               coordinates of the nodes.  (X(I),Y(I),Z(I)) */
+/*               define node I for I = N1, N2, N3, and N4. */
+
+/* Input parameters are not altered by this routine. */
+
+/* On output: */
+
+/*       SWPTST = TRUE if and only if the arc connecting N1 */
+/*                and N2 should be swapped for an arc con- */
+/*                necting N3 and N4. */
+
+/* Modules required by SWPTST:  None */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* DX1,DY1,DZ1 = Coordinates of N4->N1 */
+/* DX2,DY2,DZ2 = Coordinates of N4->N2 */
+/* DX3,DY3,DZ3 = Coordinates of N4->N3 */
+/* X4,Y4,Z4 =    Coordinates of N4 */
+
+    /* Parameter adjustments */
+    --z__;
+    --y;
+    --x;
+
+    /* Function Body */
+    x4 = x[*n4];
+    y4 = y[*n4];
+    z4 = z__[*n4];
+    dx1 = x[*n1] - x4;
+    dx2 = x[*n2] - x4;
+    dx3 = x[*n3] - x4;
+    dy1 = y[*n1] - y4;
+    dy2 = y[*n2] - y4;
+    dy3 = y[*n3] - y4;
+    dz1 = z__[*n1] - z4;
+    dz2 = z__[*n2] - z4;
+    dz3 = z__[*n3] - z4;
+
+/* N4 lies above the plane of (N1,N2,N3) iff N3 lies above */
+/*   the plane of (N2,N1,N4) iff Det(N3-N4,N2-N4,N1-N4) = */
+/*   (N3-N4,N2-N4 X N1-N4) > 0. */
+
+    ret_val = dx3 * (dy2 * dz1 - dy1 * dz2) - dy3 * (dx2 * dz1 - dx1 * dz2) + 
+	    dz3 * (dx2 * dy1 - dx1 * dy2) > 0.;
+    return ret_val;
+} /* swptst_ */
+
+int addnod_(integer *nst, integer *k, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lptr, integer 
 	*lend, integer *lnew, integer *ier)
 {
@@ -22,20 +1327,7 @@ struct {
     static integer l;
     static doublereal p[3], b1, b2, b3;
     static integer i1, i2, i3, kk, lp, in1, io1, io2, km1, lpf, ist, lpo1;
-    extern /* Subroutine */ int swap_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *, integer *);
     static integer lpo1s;
-    extern /* Subroutine */ int bdyadd_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *), intadd_(integer *, 
-	    integer *, integer *, integer *, integer *, integer *, integer *, 
-	    integer *), trfind_(integer *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    integer *, integer *), covsph_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-    extern logical swptst_(integer *, integer *, integer *, integer *, 
-	    doublereal *, doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -423,140 +1715,6 @@ doublereal areas_(doublereal *v1, doublereal *v2, doublereal *v3)
     return ret_val;
 } /* areas_ */
 
-/* Subroutine */ int bdyadd_(integer *kk, integer *i1, integer *i2, integer *
-	list, integer *lptr, integer *lend, integer *lnew)
-{
-    static integer k, n1, n2, lp, lsav, nsav, next;
-    extern /* Subroutine */ int insert_(integer *, integer *, integer *, 
-	    integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/11/96 */
-
-/*   This subroutine adds a boundary node to a triangulation */
-/* of a set of KK-1 points on the unit sphere.  The data */
-/* structure is updated with the insertion of node KK, but no */
-/* optimization is performed. */
-
-/*   This routine is identical to the similarly named routine */
-/* in TRIPACK. */
-
-
-/* On input: */
-
-/*       KK = Index of a node to be connected to the sequence */
-/*            of all visible boundary nodes.  KK .GE. 1 and */
-/*            KK must not be equal to I1 or I2. */
-
-/*       I1 = First (rightmost as viewed from KK) boundary */
-/*            node in the triangulation that is visible from */
-/*            node KK (the line segment KK-I1 intersects no */
-/*            arcs. */
-
-/*       I2 = Last (leftmost) boundary node that is visible */
-/*            from node KK.  I1 and I2 may be determined by */
-/*            Subroutine TRFIND. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
-/*                             created by Subroutine TRMESH. */
-/*                             Nodes I1 and I2 must be in- */
-/*                             cluded in the triangulation. */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
-/*                             the addition of node KK.  Node */
-/*                             KK is connected to I1, I2, and */
-/*                             all boundary nodes in between. */
-
-/* Module required by BDYADD:  INSERT */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* K =     Local copy of KK */
-/* LP =    LIST pointer */
-/* LSAV =  LIST pointer */
-/* N1,N2 = Local copies of I1 and I2, respectively */
-/* NEXT =  Boundary node visible from K */
-/* NSAV =  Boundary node visible from K */
-
-    /* Parameter adjustments */
-    --lend;
-    --lptr;
-    --list;
-
-    /* Function Body */
-    k = *kk;
-    n1 = *i1;
-    n2 = *i2;
-
-/* Add K as the last neighbor of N1. */
-
-    lp = lend[n1];
-    lsav = lptr[lp];
-    lptr[lp] = *lnew;
-    list[*lnew] = -k;
-    lptr[*lnew] = lsav;
-    lend[n1] = *lnew;
-    ++(*lnew);
-    next = -list[lp];
-    list[lp] = next;
-    nsav = next;
-
-/* Loop on the remaining boundary nodes between N1 and N2, */
-/*   adding K as the first neighbor. */
-
-L1:
-    lp = lend[next];
-    insert_(&k, &lp, &list[1], &lptr[1], lnew);
-    if (next == n2) {
-	goto L2;
-    }
-    next = -list[lp];
-    list[lp] = next;
-    goto L1;
-
-/* Add the boundary nodes between N1 and N2 as neighbors */
-/*   of node K. */
-
-L2:
-    lsav = *lnew;
-    list[*lnew] = n1;
-    lptr[*lnew] = *lnew + 1;
-    ++(*lnew);
-    next = nsav;
-
-L3:
-    if (next == n2) {
-	goto L4;
-    }
-    list[*lnew] = next;
-    lptr[*lnew] = *lnew + 1;
-    ++(*lnew);
-    lp = lend[next];
-    next = list[lp];
-    goto L3;
-
-L4:
-    list[*lnew] = -n2;
-    lptr[*lnew] = lsav;
-    lend[k] = *lnew;
-    ++(*lnew);
-    return 0;
-} /* bdyadd_ */
-
 /* Subroutine */ int bnodes_(integer *n, integer *list, integer *lptr, 
 	integer *lend, integer *nodes, integer *nb, integer *na, integer *nt)
 {
@@ -787,110 +1945,6 @@ L4:
     return 0;
 } /* circum_ */
 
-/* Subroutine */ int covsph_(integer *kk, integer *n0, integer *list, integer 
-	*lptr, integer *lend, integer *lnew)
-{
-    static integer k, lp, nst, lsav, next;
-    extern /* Subroutine */ int insert_(integer *, integer *, integer *, 
-	    integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/17/96 */
-
-/*   This subroutine connects an exterior node KK to all */
-/* boundary nodes of a triangulation of KK-1 points on the */
-/* unit sphere, producing a triangulation that covers the */
-/* sphere.  The data structure is updated with the addition */
-/* of node KK, but no optimization is performed.  All boun- */
-/* dary nodes must be visible from node KK. */
-
-
-/* On input: */
-
-/*       KK = Index of the node to be connected to the set of */
-/*            all boundary nodes.  KK .GE. 4. */
-
-/*       N0 = Index of a boundary node (in the range 1 to */
-/*            KK-1).  N0 may be determined by Subroutine */
-/*            TRFIND. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
-/*                             created by Subroutine TRMESH. */
-/*                             Node N0 must be included in */
-/*                             the triangulation. */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
-/*                             the addition of node KK as the */
-/*                             last entry.  The updated */
-/*                             triangulation contains no */
-/*                             boundary nodes. */
-
-/* Module required by COVSPH:  INSERT */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* K =     Local copy of KK */
-/* LP =    LIST pointer */
-/* LSAV =  LIST pointer */
-/* NEXT =  Boundary node visible from K */
-/* NST =   Local copy of N0 */
-
-    /* Parameter adjustments */
-    --lend;
-    --lptr;
-    --list;
-
-    /* Function Body */
-    k = *kk;
-    nst = *n0;
-
-/* Traverse the boundary in clockwise order, inserting K as */
-/*   the first neighbor of each boundary node, and converting */
-/*   the boundary node to an interior node. */
-
-    next = nst;
-L1:
-    lp = lend[next];
-    insert_(&k, &lp, &list[1], &lptr[1], lnew);
-    next = -list[lp];
-    list[lp] = next;
-    if (next != nst) {
-	goto L1;
-    }
-
-/* Traverse the boundary again, adding each node to K's */
-/*   adjacency list. */
-
-    lsav = *lnew;
-L2:
-    lp = lend[next];
-    list[*lnew] = next;
-    lptr[*lnew] = *lnew + 1;
-    ++(*lnew);
-    next = list[lp];
-    if (next != nst) {
-	goto L2;
-    }
-
-    lptr[*lnew - 1] = lsav;
-    lend[k] = *lnew - 1;
-    return 0;
-} /* covsph_ */
-
 /* Subroutine */ int crlist_(integer *n, integer *ncol, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lend, integer 
 	*lptr, integer *lnew, integer *ltri, integer *listc, integer *nb, 
@@ -911,11 +1965,6 @@ L2:
 	     lpn;
     static logical swp;
     static integer ierr;
-    extern /* Subroutine */ int circum_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-    extern logical swptst_(integer *, integer *, integer *, integer *, 
-	    doublereal *, doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -1521,161 +2570,6 @@ L23:
     return 0;
 } /* crlist_ */
 
-/* Subroutine */ int delarc_(integer *n, integer *io1, integer *io2, integer *
-	list, integer *lptr, integer *lend, integer *lnew, integer *ier)
-{
-    /* System generated locals */
-    integer i__1;
-
-    /* Local variables */
-    static integer n1, n2, n3, lp, lph, lpl;
-    extern /* Subroutine */ int delnb_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/17/96 */
-
-/*   This subroutine deletes a boundary arc from a triangula- */
-/* tion.  It may be used to remove a null triangle from the */
-/* convex hull boundary.  Note, however, that if the union of */
-/* triangles is rendered nonconvex, Subroutines DELNOD, EDGE, */
-/* and TRFIND (and hence ADDNOD) may fail.  Also, Function */
-/* NEARND should not be called following an arc deletion. */
-
-/*   This routine is identical to the similarly named routine */
-/* in TRIPACK. */
-
-
-/* On input: */
-
-/*       N = Number of nodes in the triangulation.  N .GE. 4. */
-
-/*       IO1,IO2 = Indexes (in the range 1 to N) of a pair of */
-/*                 adjacent boundary nodes defining the arc */
-/*                 to be removed. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
-/*                             created by Subroutine TRMESH. */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
-/*                             the removal of arc IO1-IO2 */
-/*                             unless IER > 0. */
-
-/*       IER = Error indicator: */
-/*             IER = 0 if no errors were encountered. */
-/*             IER = 1 if N, IO1, or IO2 is outside its valid */
-/*                     range, or IO1 = IO2. */
-/*             IER = 2 if IO1-IO2 is not a boundary arc. */
-/*             IER = 3 if the node opposite IO1-IO2 is al- */
-/*                     ready a boundary node, and thus IO1 */
-/*                     or IO2 has only two neighbors or a */
-/*                     deletion would result in two triangu- */
-/*                     lations sharing a single node. */
-/*             IER = 4 if one of the nodes is a neighbor of */
-/*                     the other, but not vice versa, imply- */
-/*                     ing an invalid triangulation data */
-/*                     structure. */
-
-/* Module required by DELARC:  DELNB, LSTPTR */
-
-/* Intrinsic function called by DELARC:  ABS */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* LP =       LIST pointer */
-/* LPH =      LIST pointer or flag returned by DELNB */
-/* LPL =      Pointer to the last neighbor of N1, N2, or N3 */
-/* N1,N2,N3 = Nodal indexes of a triangle such that N1->N2 */
-/*              is the directed boundary edge associated */
-/*              with IO1-IO2 */
-
-    /* Parameter adjustments */
-    --lend;
-    --list;
-    --lptr;
-
-    /* Function Body */
-    n1 = *io1;
-    n2 = *io2;
-
-/* Test for errors, and set N1->N2 to the directed boundary */
-/*   edge associated with IO1-IO2:  (N1,N2,N3) is a triangle */
-/*   for some N3. */
-
-    if (*n < 4 || n1 < 1 || n1 > *n || n2 < 1 || n2 > *n || n1 == n2) {
-	*ier = 1;
-	return 0;
-    }
-
-    lpl = lend[n2];
-    if (-list[lpl] != n1) {
-	n1 = n2;
-	n2 = *io1;
-	lpl = lend[n2];
-	if (-list[lpl] != n1) {
-	    *ier = 2;
-	    return 0;
-	}
-    }
-
-/* Set N3 to the node opposite N1->N2 (the second neighbor */
-/*   of N1), and test for error 3 (N3 already a boundary */
-/*   node). */
-
-    lpl = lend[n1];
-    lp = lptr[lpl];
-    lp = lptr[lp];
-    n3 = (i__1 = list[lp], abs(i__1));
-    lpl = lend[n3];
-    if (list[lpl] <= 0) {
-	*ier = 3;
-	return 0;
-    }
-
-/* Delete N2 as a neighbor of N1, making N3 the first */
-/*   neighbor, and test for error 4 (N2 not a neighbor */
-/*   of N1).  Note that previously computed pointers may */
-/*   no longer be valid following the call to DELNB. */
-
-    delnb_(&n1, &n2, n, &list[1], &lptr[1], &lend[1], lnew, &lph);
-    if (lph < 0) {
-	*ier = 4;
-	return 0;
-    }
-
-/* Delete N1 as a neighbor of N2, making N3 the new last */
-/*   neighbor. */
-
-    delnb_(&n2, &n1, n, &list[1], &lptr[1], &lend[1], lnew, &lph);
-
-/* Make N3 a boundary node with first neighbor N2 and last */
-/*   neighbor N1. */
-
-    lp = lstptr_(&lend[n3], &n1, &list[1], &lptr[1]);
-    lend[n3] = lp;
-    list[lp] = -n1;
-
-/* No errors encountered. */
-
-    *ier = 0;
-    return 0;
-} /* delarc_ */
-
 /* Subroutine */ int delnb_(integer *n0, integer *nb, integer *n, integer *
 	list, integer *lptr, integer *lend, integer *lnew, integer *lph)
 {
@@ -1849,6 +2743,519 @@ L5:
     return 0;
 } /* delnb_ */
 
+/* Subroutine */ int delarc_(integer *n, integer *io1, integer *io2, integer *
+	list, integer *lptr, integer *lend, integer *lnew, integer *ier)
+{
+    /* System generated locals */
+    integer i__1;
+
+    /* Local variables */
+    static integer n1, n2, n3, lp, lph, lpl;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/17/96 */
+
+/*   This subroutine deletes a boundary arc from a triangula- */
+/* tion.  It may be used to remove a null triangle from the */
+/* convex hull boundary.  Note, however, that if the union of */
+/* triangles is rendered nonconvex, Subroutines DELNOD, EDGE, */
+/* and TRFIND (and hence ADDNOD) may fail.  Also, Function */
+/* NEARND should not be called following an arc deletion. */
+
+/*   This routine is identical to the similarly named routine */
+/* in TRIPACK. */
+
+
+/* On input: */
+
+/*       N = Number of nodes in the triangulation.  N .GE. 4. */
+
+/*       IO1,IO2 = Indexes (in the range 1 to N) of a pair of */
+/*                 adjacent boundary nodes defining the arc */
+/*                 to be removed. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND,LNEW = Triangulation data structure */
+/*                             created by Subroutine TRMESH. */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
+/*                             the removal of arc IO1-IO2 */
+/*                             unless IER > 0. */
+
+/*       IER = Error indicator: */
+/*             IER = 0 if no errors were encountered. */
+/*             IER = 1 if N, IO1, or IO2 is outside its valid */
+/*                     range, or IO1 = IO2. */
+/*             IER = 2 if IO1-IO2 is not a boundary arc. */
+/*             IER = 3 if the node opposite IO1-IO2 is al- */
+/*                     ready a boundary node, and thus IO1 */
+/*                     or IO2 has only two neighbors or a */
+/*                     deletion would result in two triangu- */
+/*                     lations sharing a single node. */
+/*             IER = 4 if one of the nodes is a neighbor of */
+/*                     the other, but not vice versa, imply- */
+/*                     ing an invalid triangulation data */
+/*                     structure. */
+
+/* Module required by DELARC:  DELNB, LSTPTR */
+
+/* Intrinsic function called by DELARC:  ABS */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* LP =       LIST pointer */
+/* LPH =      LIST pointer or flag returned by DELNB */
+/* LPL =      Pointer to the last neighbor of N1, N2, or N3 */
+/* N1,N2,N3 = Nodal indexes of a triangle such that N1->N2 */
+/*              is the directed boundary edge associated */
+/*              with IO1-IO2 */
+
+    /* Parameter adjustments */
+    --lend;
+    --list;
+    --lptr;
+
+    /* Function Body */
+    n1 = *io1;
+    n2 = *io2;
+
+/* Test for errors, and set N1->N2 to the directed boundary */
+/*   edge associated with IO1-IO2:  (N1,N2,N3) is a triangle */
+/*   for some N3. */
+
+    if (*n < 4 || n1 < 1 || n1 > *n || n2 < 1 || n2 > *n || n1 == n2) {
+	*ier = 1;
+	return 0;
+    }
+
+    lpl = lend[n2];
+    if (-list[lpl] != n1) {
+	n1 = n2;
+	n2 = *io1;
+	lpl = lend[n2];
+	if (-list[lpl] != n1) {
+	    *ier = 2;
+	    return 0;
+	}
+    }
+
+/* Set N3 to the node opposite N1->N2 (the second neighbor */
+/*   of N1), and test for error 3 (N3 already a boundary */
+/*   node). */
+
+    lpl = lend[n1];
+    lp = lptr[lpl];
+    lp = lptr[lp];
+    n3 = (i__1 = list[lp], abs(i__1));
+    lpl = lend[n3];
+    if (list[lpl] <= 0) {
+	*ier = 3;
+	return 0;
+    }
+
+/* Delete N2 as a neighbor of N1, making N3 the first */
+/*   neighbor, and test for error 4 (N2 not a neighbor */
+/*   of N1).  Note that previously computed pointers may */
+/*   no longer be valid following the call to DELNB. */
+
+    delnb_(&n1, &n2, n, &list[1], &lptr[1], &lend[1], lnew, &lph);
+    if (lph < 0) {
+	*ier = 4;
+	return 0;
+    }
+
+/* Delete N1 as a neighbor of N2, making N3 the new last */
+/*   neighbor. */
+
+    delnb_(&n2, &n1, n, &list[1], &lptr[1], &lend[1], lnew, &lph);
+
+/* Make N3 a boundary node with first neighbor N2 and last */
+/*   neighbor N1. */
+
+    lp = lstptr_(&lend[n3], &n1, &list[1], &lptr[1]);
+    lend[n3] = lp;
+    list[lp] = -n1;
+
+/* No errors encountered. */
+
+    *ier = 0;
+    return 0;
+} /* delarc_ */
+
+logical left_(doublereal *x1, doublereal *y1, doublereal *z1, doublereal *x2, 
+	doublereal *y2, doublereal *z2, doublereal *x0, doublereal *y0, 
+	doublereal *z0)
+{
+    /* System generated locals */
+    logical ret_val;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/15/96 */
+
+/*   This function determines whether node N0 is in the */
+/* (closed) left hemisphere defined by the plane containing */
+/* N1, N2, and the origin, where left is defined relative to */
+/* an observer at N1 facing N2. */
+
+
+/* On input: */
+
+/*       X1,Y1,Z1 = Coordinates of N1. */
+
+/*       X2,Y2,Z2 = Coordinates of N2. */
+
+/*       X0,Y0,Z0 = Coordinates of N0. */
+
+/* Input parameters are not altered by this function. */
+
+/* On output: */
+
+/*       LEFT = TRUE if and only if N0 is in the closed */
+/*              left hemisphere. */
+
+/* Modules required by LEFT:  None */
+
+/* *********************************************************** */
+
+/* LEFT = TRUE iff <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
+
+    ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) + 
+	    *z0 * (*x1 * *y2 - *x2 * *y1) >= 0.;
+    return ret_val;
+} /* left_ */
+
+integer nbcnt_(integer *lpl, integer *lptr)
+{
+    /* System generated locals */
+    integer ret_val;
+
+    /* Local variables */
+    static integer k, lp;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/15/96 */
+
+/*   This function returns the number of neighbors of a node */
+/* N0 in a triangulation created by Subroutine TRMESH. */
+
+/*   This function is identical to the similarly named */
+/* function in TRIPACK. */
+
+
+/* On input: */
+
+/*       LPL = LIST pointer to the last neighbor of N0 -- */
+/*             LPL = LEND(N0). */
+
+/*       LPTR = Array of pointers associated with LIST. */
+
+/* Input parameters are not altered by this function. */
+
+/* On output: */
+
+/*       NBCNT = Number of neighbors of N0. */
+
+/* Modules required by NBCNT:  None */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* K =  Counter for computing the number of neighbors */
+/* LP = LIST pointer */
+
+    /* Parameter adjustments */
+    --lptr;
+
+    /* Function Body */
+    lp = *lpl;
+    k = 1;
+
+L1:
+    lp = lptr[lp];
+    if (lp == *lpl) {
+	goto L2;
+    }
+    ++k;
+    goto L1;
+
+L2:
+    ret_val = k;
+    return ret_val;
+} /* nbcnt_ */
+
+/* Subroutine */ int optim_(doublereal *x, doublereal *y, doublereal *z__, 
+	integer *na, integer *list, integer *lptr, integer *lend, integer *
+	nit, integer *iwk, integer *ier)
+{
+    /* System generated locals */
+    integer i__1, i__2;
+
+    /* Local variables */
+    static integer i__, n1, n2, lp, io1, io2, nna, lp21, lpl, lpp;
+    static logical swp;
+    static integer iter;
+    static integer maxit;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/30/98 */
+
+/*   Given a set of NA triangulation arcs, this subroutine */
+/* optimizes the portion of the triangulation consisting of */
+/* the quadrilaterals (pairs of adjacent triangles) which */
+/* have the arcs as diagonals by applying the circumcircle */
+/* test and appropriate swaps to the arcs. */
+
+/*   An iteration consists of applying the swap test and */
+/* swaps to all NA arcs in the order in which they are */
+/* stored.  The iteration is repeated until no swap occurs */
+/* or NIT iterations have been performed.  The bound on the */
+/* number of iterations may be necessary to prevent an */
+/* infinite loop caused by cycling (reversing the effect of a */
+/* previous swap) due to floating point inaccuracy when four */
+/* or more nodes are nearly cocircular. */
+
+
+/* On input: */
+
+/*       X,Y,Z = Arrays containing the nodal coordinates. */
+
+/*       NA = Number of arcs in the set.  NA .GE. 0. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       LIST,LPTR,LEND = Data structure defining the trian- */
+/*                        gulation.  Refer to Subroutine */
+/*                        TRMESH. */
+
+/*       NIT = Maximum number of iterations to be performed. */
+/*             NIT = 4*NA should be sufficient.  NIT .GE. 1. */
+
+/*       IWK = Integer array dimensioned 2 by NA containing */
+/*             the nodal indexes of the arc endpoints (pairs */
+/*             of endpoints are stored in columns). */
+
+/* On output: */
+
+/*       LIST,LPTR,LEND = Updated triangulation data struc- */
+/*                        ture reflecting the swaps. */
+
+/*       NIT = Number of iterations performed. */
+
+/*       IWK = Endpoint indexes of the new set of arcs */
+/*             reflecting the swaps. */
+
+/*       IER = Error indicator: */
+/*             IER = 0 if no errors were encountered. */
+/*             IER = 1 if a swap occurred on the last of */
+/*                     MAXIT iterations, where MAXIT is the */
+/*                     value of NIT on input.  The new set */
+/*                     of arcs is not necessarily optimal */
+/*                     in this case. */
+/*             IER = 2 if NA < 0 or NIT < 1 on input. */
+/*             IER = 3 if IWK(2,I) is not a neighbor of */
+/*                     IWK(1,I) for some I in the range 1 */
+/*                     to NA.  A swap may have occurred in */
+/*                     this case. */
+/*             IER = 4 if a zero pointer was returned by */
+/*                     Subroutine SWAP. */
+
+/* Modules required by OPTIM:  LSTPTR, SWAP, SWPTST */
+
+/* Intrinsic function called by OPTIM:  ABS */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* I =       Column index for IWK */
+/* IO1,IO2 = Nodal indexes of the endpoints of an arc in IWK */
+/* ITER =    Iteration count */
+/* LP =      LIST pointer */
+/* LP21 =    Parameter returned by SWAP (not used) */
+/* LPL =     Pointer to the last neighbor of IO1 */
+/* LPP =     Pointer to the node preceding IO2 as a neighbor */
+/*             of IO1 */
+/* MAXIT =   Input value of NIT */
+/* N1,N2 =   Nodes opposite IO1->IO2 and IO2->IO1, */
+/*             respectively */
+/* NNA =     Local copy of NA */
+/* SWP =     Flag set to TRUE iff a swap occurs in the */
+/*             optimization loop */
+
+    /* Parameter adjustments */
+    --x;
+    --y;
+    --z__;
+    iwk -= 3;
+    --list;
+    --lptr;
+    --lend;
+
+    /* Function Body */
+    nna = *na;
+    maxit = *nit;
+    if (nna < 0 || maxit < 1) {
+	goto L7;
+    }
+
+/* Initialize iteration count ITER and test for NA = 0. */
+
+    iter = 0;
+    if (nna == 0) {
+	goto L5;
+    }
+
+/* Top of loop -- */
+/*   SWP = TRUE iff a swap occurred in the current iteration. */
+
+L1:
+    if (iter == maxit) {
+	goto L6;
+    }
+    ++iter;
+    swp = FALSE_;
+
+/*   Inner loop on arcs IO1-IO2 -- */
+
+    i__1 = nna;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	io1 = iwk[(i__ << 1) + 1];
+	io2 = iwk[(i__ << 1) + 2];
+
+/*   Set N1 and N2 to the nodes opposite IO1->IO2 and */
+/*     IO2->IO1, respectively.  Determine the following: */
+
+/*     LPL = pointer to the last neighbor of IO1, */
+/*     LP = pointer to IO2 as a neighbor of IO1, and */
+/*     LPP = pointer to the node N2 preceding IO2. */
+
+	lpl = lend[io1];
+	lpp = lpl;
+	lp = lptr[lpp];
+L2:
+	if (list[lp] == io2) {
+	    goto L3;
+	}
+	lpp = lp;
+	lp = lptr[lpp];
+	if (lp != lpl) {
+	    goto L2;
+	}
+
+/*   IO2 should be the last neighbor of IO1.  Test for no */
+/*     arc and bypass the swap test if IO1 is a boundary */
+/*     node. */
+
+	if ((i__2 = list[lp], abs(i__2)) != io2) {
+	    goto L8;
+	}
+	if (list[lp] < 0) {
+	    goto L4;
+	}
+
+/*   Store N1 and N2, or bypass the swap test if IO1 is a */
+/*     boundary node and IO2 is its first neighbor. */
+
+L3:
+	n2 = list[lpp];
+	if (n2 < 0) {
+	    goto L4;
+	}
+	lp = lptr[lp];
+	n1 = (i__2 = list[lp], abs(i__2));
+
+/*   Test IO1-IO2 for a swap, and update IWK if necessary. */
+
+	if (! swptst_(&n1, &n2, &io1, &io2, &x[1], &y[1], &z__[1])) {
+	    goto L4;
+	}
+	swap_(&n1, &n2, &io1, &io2, &list[1], &lptr[1], &lend[1], &lp21);
+	if (lp21 == 0) {
+	    goto L9;
+	}
+	swp = TRUE_;
+	iwk[(i__ << 1) + 1] = n1;
+	iwk[(i__ << 1) + 2] = n2;
+L4:
+	;
+    }
+    if (swp) {
+	goto L1;
+    }
+
+/* Successful termination. */
+
+L5:
+    *nit = iter;
+    *ier = 0;
+    return 0;
+
+/* MAXIT iterations performed without convergence. */
+
+L6:
+    *nit = maxit;
+    *ier = 1;
+    return 0;
+
+/* Invalid input parameter. */
+
+L7:
+    *nit = 0;
+    *ier = 2;
+    return 0;
+
+/* IO2 is not a neighbor of IO1. */
+
+L8:
+    *nit = iter;
+    *ier = 3;
+    return 0;
+
+/* Zero pointer returned by SWAP. */
+
+L9:
+    *nit = iter;
+    *ier = 4;
+    return 0;
+} /* optim_ */
+
 /* Subroutine */ int delnod_(integer *k, integer *n, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lptr, integer 
 	*lend, integer *lnew, integer *lwk, integer *iwk, integer *ier)
@@ -1862,21 +3269,9 @@ L5:
     static integer nl, lp, nn, nr;
     static doublereal xl, yl, zl, xr, yr, zr;
     static integer nnb, lp21, lpf, lph, lpl, lpn, iwl, nit, lnw, lpl2;
-    extern logical left_(doublereal *, doublereal *, doublereal *, doublereal 
-	    *, doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *);
     static logical bdry;
     static integer ierr, lwkl;
-    extern /* Subroutine */ int swap_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *, integer *), delnb_(
-	    integer *, integer *, integer *, integer *, integer *, integer *, 
-	    integer *, integer *);
-    extern integer nbcnt_(integer *, integer *);
-    extern /* Subroutine */ int optim_(doublereal *, doublereal *, doublereal 
-	    *, integer *, integer *, integer *, integer *, integer *, integer 
-	    *, integer *);
     static integer nfrst;
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
 
 
 /* *********************************************************** */
@@ -2404,16 +3799,8 @@ L26:
     static doublereal dp12;
     static integer lp21, iwc, iwf, lft, lpl, iwl, nit;
     static doublereal dp1l, dp2l, dp1r, dp2r;
-    extern logical left_(doublereal *, doublereal *, doublereal *, doublereal 
-	    *, doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *);
     static integer ierr;
-    extern /* Subroutine */ int swap_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *, integer *);
     static integer next, iwcp1, n1lst, iwend;
-    extern /* Subroutine */ int optim_(doublereal *, doublereal *, doublereal 
-	    *, integer *, integer *, integer *, integer *, integer *, integer 
-	    *, integer *);
     static integer n1frst;
 
 
@@ -3039,19 +4426,15 @@ L35:
     return 0;
 } /* edge_ */
 
-/* Subroutine */ int getnp_(doublereal *x, doublereal *y, doublereal *z__, 
-	integer *list, integer *lptr, integer *lend, integer *l, integer *
-	npts, doublereal *df, integer *ier)
+/* Subroutine */ int intrsc_(doublereal *p1, doublereal *p2, doublereal *cn, 
+	doublereal *p, integer *ier)
 {
-    /* System generated locals */
-    integer i__1, i__2;
+    /* Builtin functions */
+    double sqrt(doublereal);
 
     /* Local variables */
-    static integer i__, n1;
-    static doublereal x1, y1, z1;
-    static integer nb, ni, lp, np, lm1;
-    static doublereal dnb, dnp;
-    static integer lpl;
+    static integer i__;
+    static doublereal t, d1, d2, pp[3], ppn;
 
 
 /* *********************************************************** */
@@ -3061,220 +4444,107 @@ L35:
 /*                                  Dept. of Computer Science */
 /*                                       Univ. of North Texas */
 /*                                           renka@cs.unt.edu */
-/*                                                   07/28/98 */
+/*                                                   07/19/90 */
 
-/*   Given a Delaunay triangulation of N nodes on the unit */
-/* sphere and an array NPTS containing the indexes of L-1 */
-/* nodes ordered by angular distance from NPTS(1), this sub- */
-/* routine sets NPTS(L) to the index of the next node in the */
-/* sequence -- the node, other than NPTS(1),...,NPTS(L-1), */
-/* that is closest to NPTS(1).  Thus, the ordered sequence */
-/* of K closest nodes to N1 (including N1) may be determined */
-/* by K-1 calls to GETNP with NPTS(1) = N1 and L = 2,3,...,K */
-/* for K .GE. 2. */
-
-/*   The algorithm uses the property of a Delaunay triangula- */
-/* tion that the K-th closest node to N1 is a neighbor of one */
-/* of the K-1 closest nodes to N1. */
+/*   Given a great circle C and points P1 and P2 defining an */
+/* arc A on the surface of the unit sphere, where A is the */
+/* shorter of the two portions of the great circle C12 assoc- */
+/* iated with P1 and P2, this subroutine returns the point */
+/* of intersection P between C and C12 that is closer to A. */
+/* Thus, if P1 and P2 lie in opposite hemispheres defined by */
+/* C, P is the point of intersection of C with A. */
 
 
 /* On input: */
 
-/*       X,Y,Z = Arrays of length N containing the Cartesian */
-/*               coordinates of the nodes. */
+/*       P1,P2 = Arrays of length 3 containing the Cartesian */
+/*               coordinates of unit vectors. */
 
-/*       LIST,LPTR,LEND = Triangulation data structure.  Re- */
-/*                        fer to Subroutine TRMESH. */
-
-/*       L = Number of nodes in the sequence on output.  2 */
-/*           .LE. L .LE. N. */
+/*       CN = Array of length 3 containing the Cartesian */
+/*            coordinates of a nonzero vector which defines C */
+/*            as the intersection of the plane whose normal */
+/*            is CN with the unit sphere.  Thus, if C is to */
+/*            be the great circle defined by P and Q, CN */
+/*            should be P X Q. */
 
 /* The above parameters are not altered by this routine. */
 
-/*       NPTS = Array of length .GE. L containing the indexes */
-/*              of the L-1 closest nodes to NPTS(1) in the */
-/*              first L-1 locations. */
+/*       P = Array of length 3. */
 
 /* On output: */
 
-/*       NPTS = Array updated with the index of the L-th */
-/*              closest node to NPTS(1) in position L unless */
-/*              IER = 1. */
+/*       P = Point of intersection defined above unless IER */
+/*           .NE. 0, in which case P is not altered. */
 
-/*       DF = Value of an increasing function (negative cos- */
-/*            ine) of the angular distance between NPTS(1) */
-/*            and NPTS(L) unless IER = 1. */
-
-/*       IER = Error indicator: */
+/*       IER = Error indicator. */
 /*             IER = 0 if no errors were encountered. */
-/*             IER = 1 if L < 2. */
+/*             IER = 1 if <CN,P1> = <CN,P2>.  This occurs */
+/*                     iff P1 = P2 or CN = 0 or there are */
+/*                     two intersection points at the same */
+/*                     distance from A. */
+/*             IER = 2 if P2 = -P1 and the definition of A is */
+/*                     therefore ambiguous. */
 
-/* Modules required by GETNP:  None */
+/* Modules required by INTRSC:  None */
 
-/* Intrinsic function called by GETNP:  ABS */
+/* Intrinsic function called by INTRSC:  SQRT */
 
 /* *********************************************************** */
 
 
 /* Local parameters: */
 
-/* DNB,DNP =  Negative cosines of the angular distances from */
-/*              N1 to NB and to NP, respectively */
-/* I =        NPTS index and DO-loop index */
-/* LM1 =      L-1 */
-/* LP =       LIST pointer of a neighbor of NI */
-/* LPL =      Pointer to the last neighbor of NI */
-/* N1 =       NPTS(1) */
-/* NB =       Neighbor of NI and candidate for NP */
-/* NI =       NPTS(I) */
-/* NP =       Candidate for NPTS(L) */
-/* X1,Y1,Z1 = Coordinates of N1 */
+/* D1 =  <CN,P1> */
+/* D2 =  <CN,P2> */
+/* I =   DO-loop index */
+/* PP =  P1 + T*(P2-P1) = Parametric representation of the */
+/*         line defined by P1 and P2 */
+/* PPN = Norm of PP */
+/* T =   D1/(D1-D2) = Parameter value chosen so that PP lies */
+/*         in the plane of C */
 
     /* Parameter adjustments */
-    --x;
-    --y;
-    --z__;
-    --list;
-    --lptr;
-    --lend;
-    --npts;
+    --p;
+    --cn;
+    --p2;
+    --p1;
 
     /* Function Body */
-    lm1 = *l - 1;
-    if (lm1 < 1) {
-	goto L6;
+    d1 = cn[1] * p1[1] + cn[2] * p1[2] + cn[3] * p1[3];
+    d2 = cn[1] * p2[1] + cn[2] * p2[2] + cn[3] * p2[3];
+
+    if (d1 == d2) {
+	*ier = 1;
+	return 0;
     }
-    *ier = 0;
 
-/* Store N1 = NPTS(1) and mark the elements of NPTS. */
+/* Solve for T such that <PP,CN> = 0 and compute PP and PPN. */
 
-    n1 = npts[1];
-    x1 = x[n1];
-    y1 = y[n1];
-    z1 = z__[n1];
-    i__1 = lm1;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	ni = npts[i__];
-	lend[ni] = -lend[ni];
+    t = d1 / (d1 - d2);
+    ppn = 0.;
+    for (i__ = 1; i__ <= 3; ++i__) {
+	pp[i__ - 1] = p1[i__] + t * (p2[i__] - p1[i__]);
+	ppn += pp[i__ - 1] * pp[i__ - 1];
 /* L1: */
     }
 
-/* Candidates for NP = NPTS(L) are the unmarked neighbors */
-/*   of nodes in NPTS.  DNP is initially greater than -cos(PI) */
-/*   (the maximum distance). */
+/* PPN = 0 iff PP = 0 iff P2 = -P1 (and T = .5). */
 
-    dnp = 2.;
-
-/* Loop on nodes NI in NPTS. */
-
-    i__1 = lm1;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	ni = npts[i__];
-	lpl = -lend[ni];
-	lp = lpl;
-
-/* Loop on neighbors NB of NI. */
-
-L2:
-	nb = (i__2 = list[lp], abs(i__2));
-	if (lend[nb] < 0) {
-	    goto L3;
-	}
-
-/* NB is an unmarked neighbor of NI.  Replace NP if NB is */
-/*   closer to N1. */
-
-	dnb = -(x[nb] * x1 + y[nb] * y1 + z__[nb] * z1);
-	if (dnb >= dnp) {
-	    goto L3;
-	}
-	np = nb;
-	dnp = dnb;
-L3:
-	lp = lptr[lp];
-	if (lp != lpl) {
-	    goto L2;
-	}
-/* L4: */
+    if (ppn == 0.) {
+	*ier = 2;
+	return 0;
     }
-    npts[*l] = np;
-    *df = dnp;
+    ppn = sqrt(ppn);
 
-/* Unmark the elements of NPTS. */
+/* Compute P = PP/PPN. */
 
-    i__1 = lm1;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	ni = npts[i__];
-	lend[ni] = -lend[ni];
-/* L5: */
+    for (i__ = 1; i__ <= 3; ++i__) {
+	p[i__] = pp[i__ - 1] / ppn;
+/* L2: */
     }
+    *ier = 0;
     return 0;
-
-/* L is outside its valid range. */
-
-L6:
-    *ier = 1;
-    return 0;
-} /* getnp_ */
-
-/* Subroutine */ int insert_(integer *k, integer *lp, integer *list, integer *
-	lptr, integer *lnew)
-{
-    static integer lsav;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/17/96 */
-
-/*   This subroutine inserts K as a neighbor of N1 following */
-/* N2, where LP is the LIST pointer of N2 as a neighbor of */
-/* N1.  Note that, if N2 is the last neighbor of N1, K will */
-/* become the first neighbor (even if N1 is a boundary node). */
-
-/*   This routine is identical to the similarly named routine */
-/* in TRIPACK. */
-
-
-/* On input: */
-
-/*       K = Index of the node to be inserted. */
-
-/*       LP = LIST pointer of N2 as a neighbor of N1. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LNEW = Data structure defining the trian- */
-/*                        gulation.  Refer to Subroutine */
-/*                        TRMESH. */
-
-/* On output: */
-
-/*       LIST,LPTR,LNEW = Data structure updated with the */
-/*                        addition of node K. */
-
-/* Modules required by INSERT:  None */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    --lptr;
-    --list;
-
-    /* Function Body */
-    lsav = lptr[*lp];
-    lptr[*lp] = *lnew;
-    list[*lnew] = *k;
-    lptr[*lnew] = lsav;
-    ++(*lnew);
-    return 0;
-} /* insert_ */
+} /* intrsc_ */
 
 logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv, 
 	doublereal *zv, integer *nv, integer *listv, integer *ier)
@@ -3303,8 +4573,6 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
     static integer ierr;
     static logical pinr, qinr;
     static doublereal qnrm, vnrm;
-    extern /* Subroutine */ int intrsc_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *, integer *);
 
 
 /* *********************************************************** */
@@ -3636,486 +4904,6 @@ L14:
     return ret_val;
 } /* inside_ */
 
-/* Subroutine */ int intadd_(integer *kk, integer *i1, integer *i2, integer *
-	i3, integer *list, integer *lptr, integer *lend, integer *lnew)
-{
-    static integer k, n1, n2, n3, lp;
-    extern /* Subroutine */ int insert_(integer *, integer *, integer *, 
-	    integer *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/17/96 */
-
-/*   This subroutine adds an interior node to a triangulation */
-/* of a set of points on the unit sphere.  The data structure */
-/* is updated with the insertion of node KK into the triangle */
-/* whose vertices are I1, I2, and I3.  No optimization of the */
-/* triangulation is performed. */
-
-/*   This routine is identical to the similarly named routine */
-/* in TRIPACK. */
-
-
-/* On input: */
-
-/*       KK = Index of the node to be inserted.  KK .GE. 1 */
-/*            and KK must not be equal to I1, I2, or I3. */
-
-/*       I1,I2,I3 = Indexes of the counterclockwise-ordered */
-/*                  sequence of vertices of a triangle which */
-/*                  contains node KK. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND,LNEW = Data structure defining the */
-/*                             triangulation.  Refer to Sub- */
-/*                             routine TRMESH.  Triangle */
-/*                             (I1,I2,I3) must be included */
-/*                             in the triangulation. */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND,LNEW = Data structure updated with */
-/*                             the addition of node KK.  KK */
-/*                             will be connected to nodes I1, */
-/*                             I2, and I3. */
-
-/* Modules required by INTADD:  INSERT, LSTPTR */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* K =        Local copy of KK */
-/* LP =       LIST pointer */
-/* N1,N2,N3 = Local copies of I1, I2, and I3 */
-
-    /* Parameter adjustments */
-    --lend;
-    --lptr;
-    --list;
-
-    /* Function Body */
-    k = *kk;
-
-/* Initialization. */
-
-    n1 = *i1;
-    n2 = *i2;
-    n3 = *i3;
-
-/* Add K as a neighbor of I1, I2, and I3. */
-
-    lp = lstptr_(&lend[n1], &n2, &list[1], &lptr[1]);
-    insert_(&k, &lp, &list[1], &lptr[1], lnew);
-    lp = lstptr_(&lend[n2], &n3, &list[1], &lptr[1]);
-    insert_(&k, &lp, &list[1], &lptr[1], lnew);
-    lp = lstptr_(&lend[n3], &n1, &list[1], &lptr[1]);
-    insert_(&k, &lp, &list[1], &lptr[1], lnew);
-
-/* Add I1, I2, and I3 as neighbors of K. */
-
-    list[*lnew] = n1;
-    list[*lnew + 1] = n2;
-    list[*lnew + 2] = n3;
-    lptr[*lnew] = *lnew + 1;
-    lptr[*lnew + 1] = *lnew + 2;
-    lptr[*lnew + 2] = *lnew;
-    lend[k] = *lnew + 2;
-    *lnew += 3;
-    return 0;
-} /* intadd_ */
-
-/* Subroutine */ int intrsc_(doublereal *p1, doublereal *p2, doublereal *cn, 
-	doublereal *p, integer *ier)
-{
-    /* Builtin functions */
-    double sqrt(doublereal);
-
-    /* Local variables */
-    static integer i__;
-    static doublereal t, d1, d2, pp[3], ppn;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/19/90 */
-
-/*   Given a great circle C and points P1 and P2 defining an */
-/* arc A on the surface of the unit sphere, where A is the */
-/* shorter of the two portions of the great circle C12 assoc- */
-/* iated with P1 and P2, this subroutine returns the point */
-/* of intersection P between C and C12 that is closer to A. */
-/* Thus, if P1 and P2 lie in opposite hemispheres defined by */
-/* C, P is the point of intersection of C with A. */
-
-
-/* On input: */
-
-/*       P1,P2 = Arrays of length 3 containing the Cartesian */
-/*               coordinates of unit vectors. */
-
-/*       CN = Array of length 3 containing the Cartesian */
-/*            coordinates of a nonzero vector which defines C */
-/*            as the intersection of the plane whose normal */
-/*            is CN with the unit sphere.  Thus, if C is to */
-/*            be the great circle defined by P and Q, CN */
-/*            should be P X Q. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       P = Array of length 3. */
-
-/* On output: */
-
-/*       P = Point of intersection defined above unless IER */
-/*           .NE. 0, in which case P is not altered. */
-
-/*       IER = Error indicator. */
-/*             IER = 0 if no errors were encountered. */
-/*             IER = 1 if <CN,P1> = <CN,P2>.  This occurs */
-/*                     iff P1 = P2 or CN = 0 or there are */
-/*                     two intersection points at the same */
-/*                     distance from A. */
-/*             IER = 2 if P2 = -P1 and the definition of A is */
-/*                     therefore ambiguous. */
-
-/* Modules required by INTRSC:  None */
-
-/* Intrinsic function called by INTRSC:  SQRT */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* D1 =  <CN,P1> */
-/* D2 =  <CN,P2> */
-/* I =   DO-loop index */
-/* PP =  P1 + T*(P2-P1) = Parametric representation of the */
-/*         line defined by P1 and P2 */
-/* PPN = Norm of PP */
-/* T =   D1/(D1-D2) = Parameter value chosen so that PP lies */
-/*         in the plane of C */
-
-    /* Parameter adjustments */
-    --p;
-    --cn;
-    --p2;
-    --p1;
-
-    /* Function Body */
-    d1 = cn[1] * p1[1] + cn[2] * p1[2] + cn[3] * p1[3];
-    d2 = cn[1] * p2[1] + cn[2] * p2[2] + cn[3] * p2[3];
-
-    if (d1 == d2) {
-	*ier = 1;
-	return 0;
-    }
-
-/* Solve for T such that <PP,CN> = 0 and compute PP and PPN. */
-
-    t = d1 / (d1 - d2);
-    ppn = 0.;
-    for (i__ = 1; i__ <= 3; ++i__) {
-	pp[i__ - 1] = p1[i__] + t * (p2[i__] - p1[i__]);
-	ppn += pp[i__ - 1] * pp[i__ - 1];
-/* L1: */
-    }
-
-/* PPN = 0 iff PP = 0 iff P2 = -P1 (and T = .5). */
-
-    if (ppn == 0.) {
-	*ier = 2;
-	return 0;
-    }
-    ppn = sqrt(ppn);
-
-/* Compute P = PP/PPN. */
-
-    for (i__ = 1; i__ <= 3; ++i__) {
-	p[i__] = pp[i__ - 1] / ppn;
-/* L2: */
-    }
-    *ier = 0;
-    return 0;
-} /* intrsc_ */
-
-integer jrand_(integer *n, integer *ix, integer *iy, integer *iz)
-{
-    /* System generated locals */
-    integer ret_val;
-
-    /* Local variables */
-    static doublereal u, x;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/28/98 */
-
-/*   This function returns a uniformly distributed pseudo- */
-/* random integer in the range 1 to N. */
-
-
-/* On input: */
-
-/*       N = Maximum value to be returned. */
-
-/* N is not altered by this function. */
-
-/*       IX,IY,IZ = Integer seeds initialized to values in */
-/*                  the range 1 to 30,000 before the first */
-/*                  call to JRAND, and not altered between */
-/*                  subsequent calls (unless a sequence of */
-/*                  random numbers is to be repeated by */
-/*                  reinitializing the seeds). */
-
-/* On output: */
-
-/*       IX,IY,IZ = Updated integer seeds. */
-
-/*       JRAND = Random integer in the range 1 to N. */
-
-/* Reference:  B. A. Wichmann and I. D. Hill, "An Efficient */
-/*             and Portable Pseudo-random Number Generator", */
-/*             Applied Statistics, Vol. 31, No. 2, 1982, */
-/*             pp. 188-190. */
-
-/* Modules required by JRAND:  None */
-
-/* Intrinsic functions called by JRAND:  INT, MOD, REAL */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* U = Pseudo-random number uniformly distributed in the */
-/*     interval (0,1). */
-/* X = Pseudo-random number in the range 0 to 3 whose frac- */
-/*       tional part is U. */
-
-    *ix = *ix * 171 % 30269;
-    *iy = *iy * 172 % 30307;
-    *iz = *iz * 170 % 30323;
-    x = (doublereal) (*ix) / 30269. + (doublereal) (*iy) / 30307. + (
-	    doublereal) (*iz) / 30323.;
-    u = x - (integer) x;
-    ret_val = (integer) ((doublereal) (*n) * u + 1.);
-    return ret_val;
-} /* jrand_ */
-
-logical left_(doublereal *x1, doublereal *y1, doublereal *z1, doublereal *x2, 
-	doublereal *y2, doublereal *z2, doublereal *x0, doublereal *y0, 
-	doublereal *z0)
-{
-    /* System generated locals */
-    logical ret_val;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/15/96 */
-
-/*   This function determines whether node N0 is in the */
-/* (closed) left hemisphere defined by the plane containing */
-/* N1, N2, and the origin, where left is defined relative to */
-/* an observer at N1 facing N2. */
-
-
-/* On input: */
-
-/*       X1,Y1,Z1 = Coordinates of N1. */
-
-/*       X2,Y2,Z2 = Coordinates of N2. */
-
-/*       X0,Y0,Z0 = Coordinates of N0. */
-
-/* Input parameters are not altered by this function. */
-
-/* On output: */
-
-/*       LEFT = TRUE if and only if N0 is in the closed */
-/*              left hemisphere. */
-
-/* Modules required by LEFT:  None */
-
-/* *********************************************************** */
-
-/* LEFT = TRUE iff <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
-
-    ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) + 
-	    *z0 * (*x1 * *y2 - *x2 * *y1) >= 0.;
-    return ret_val;
-} /* left_ */
-
-integer lstptr_(integer *lpl, integer *nb, integer *list, integer *lptr)
-{
-    /* System generated locals */
-    integer ret_val;
-
-    /* Local variables */
-    static integer nd, lp;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/15/96 */
-
-/*   This function returns the index (LIST pointer) of NB in */
-/* the adjacency list for N0, where LPL = LEND(N0). */
-
-/*   This function is identical to the similarly named */
-/* function in TRIPACK. */
-
-
-/* On input: */
-
-/*       LPL = LEND(N0) */
-
-/*       NB = Index of the node whose pointer is to be re- */
-/*            turned.  NB must be connected to N0. */
-
-/*       LIST,LPTR = Data structure defining the triangula- */
-/*                   tion.  Refer to Subroutine TRMESH. */
-
-/* Input parameters are not altered by this function. */
-
-/* On output: */
-
-/*       LSTPTR = Pointer such that LIST(LSTPTR) = NB or */
-/*                LIST(LSTPTR) = -NB, unless NB is not a */
-/*                neighbor of N0, in which case LSTPTR = LPL. */
-
-/* Modules required by LSTPTR:  None */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* LP = LIST pointer */
-/* ND = Nodal index */
-
-    /* Parameter adjustments */
-    --lptr;
-    --list;
-
-    /* Function Body */
-    lp = lptr[*lpl];
-L1:
-    nd = list[lp];
-    if (nd == *nb) {
-	goto L2;
-    }
-    lp = lptr[lp];
-    if (lp != *lpl) {
-	goto L1;
-    }
-
-L2:
-    ret_val = lp;
-    return ret_val;
-} /* lstptr_ */
-
-integer nbcnt_(integer *lpl, integer *lptr)
-{
-    /* System generated locals */
-    integer ret_val;
-
-    /* Local variables */
-    static integer k, lp;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/15/96 */
-
-/*   This function returns the number of neighbors of a node */
-/* N0 in a triangulation created by Subroutine TRMESH. */
-
-/*   This function is identical to the similarly named */
-/* function in TRIPACK. */
-
-
-/* On input: */
-
-/*       LPL = LIST pointer to the last neighbor of N0 -- */
-/*             LPL = LEND(N0). */
-
-/*       LPTR = Array of pointers associated with LIST. */
-
-/* Input parameters are not altered by this function. */
-
-/* On output: */
-
-/*       NBCNT = Number of neighbors of N0. */
-
-/* Modules required by NBCNT:  None */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* K =  Counter for computing the number of neighbors */
-/* LP = LIST pointer */
-
-    /* Parameter adjustments */
-    --lptr;
-
-    /* Function Body */
-    lp = *lpl;
-    k = 1;
-
-L1:
-    lp = lptr[lp];
-    if (lp == *lpl) {
-	goto L2;
-    }
-    ++k;
-    goto L1;
-
-L2:
-    ret_val = k;
-    return ret_val;
-} /* nbcnt_ */
-
 integer nearnd_(doublereal *p, integer *ist, integer *n, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lptr, integer 
 	*lend, doublereal *al)
@@ -4136,11 +4924,6 @@ integer nearnd_(doublereal *p, integer *ist, integer *n, doublereal *x,
     static integer lpl;
     static doublereal dsr;
     static integer nst, listp[25], lptrp[25];
-    extern /* Subroutine */ int trfind_(integer *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    integer *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
 
 
 /* *********************************************************** */
@@ -4411,254 +5194,6 @@ L6:
     return ret_val;
 } /* nearnd_ */
 
-/* Subroutine */ int optim_(doublereal *x, doublereal *y, doublereal *z__, 
-	integer *na, integer *list, integer *lptr, integer *lend, integer *
-	nit, integer *iwk, integer *ier)
-{
-    /* System generated locals */
-    integer i__1, i__2;
-
-    /* Local variables */
-    static integer i__, n1, n2, lp, io1, io2, nna, lp21, lpl, lpp;
-    static logical swp;
-    static integer iter;
-    extern /* Subroutine */ int swap_(integer *, integer *, integer *, 
-	    integer *, integer *, integer *, integer *, integer *);
-    static integer maxit;
-    extern logical swptst_(integer *, integer *, integer *, integer *, 
-	    doublereal *, doublereal *, doublereal *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/30/98 */
-
-/*   Given a set of NA triangulation arcs, this subroutine */
-/* optimizes the portion of the triangulation consisting of */
-/* the quadrilaterals (pairs of adjacent triangles) which */
-/* have the arcs as diagonals by applying the circumcircle */
-/* test and appropriate swaps to the arcs. */
-
-/*   An iteration consists of applying the swap test and */
-/* swaps to all NA arcs in the order in which they are */
-/* stored.  The iteration is repeated until no swap occurs */
-/* or NIT iterations have been performed.  The bound on the */
-/* number of iterations may be necessary to prevent an */
-/* infinite loop caused by cycling (reversing the effect of a */
-/* previous swap) due to floating point inaccuracy when four */
-/* or more nodes are nearly cocircular. */
-
-
-/* On input: */
-
-/*       X,Y,Z = Arrays containing the nodal coordinates. */
-
-/*       NA = Number of arcs in the set.  NA .GE. 0. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to Subroutine */
-/*                        TRMESH. */
-
-/*       NIT = Maximum number of iterations to be performed. */
-/*             NIT = 4*NA should be sufficient.  NIT .GE. 1. */
-
-/*       IWK = Integer array dimensioned 2 by NA containing */
-/*             the nodal indexes of the arc endpoints (pairs */
-/*             of endpoints are stored in columns). */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND = Updated triangulation data struc- */
-/*                        ture reflecting the swaps. */
-
-/*       NIT = Number of iterations performed. */
-
-/*       IWK = Endpoint indexes of the new set of arcs */
-/*             reflecting the swaps. */
-
-/*       IER = Error indicator: */
-/*             IER = 0 if no errors were encountered. */
-/*             IER = 1 if a swap occurred on the last of */
-/*                     MAXIT iterations, where MAXIT is the */
-/*                     value of NIT on input.  The new set */
-/*                     of arcs is not necessarily optimal */
-/*                     in this case. */
-/*             IER = 2 if NA < 0 or NIT < 1 on input. */
-/*             IER = 3 if IWK(2,I) is not a neighbor of */
-/*                     IWK(1,I) for some I in the range 1 */
-/*                     to NA.  A swap may have occurred in */
-/*                     this case. */
-/*             IER = 4 if a zero pointer was returned by */
-/*                     Subroutine SWAP. */
-
-/* Modules required by OPTIM:  LSTPTR, SWAP, SWPTST */
-
-/* Intrinsic function called by OPTIM:  ABS */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* I =       Column index for IWK */
-/* IO1,IO2 = Nodal indexes of the endpoints of an arc in IWK */
-/* ITER =    Iteration count */
-/* LP =      LIST pointer */
-/* LP21 =    Parameter returned by SWAP (not used) */
-/* LPL =     Pointer to the last neighbor of IO1 */
-/* LPP =     Pointer to the node preceding IO2 as a neighbor */
-/*             of IO1 */
-/* MAXIT =   Input value of NIT */
-/* N1,N2 =   Nodes opposite IO1->IO2 and IO2->IO1, */
-/*             respectively */
-/* NNA =     Local copy of NA */
-/* SWP =     Flag set to TRUE iff a swap occurs in the */
-/*             optimization loop */
-
-    /* Parameter adjustments */
-    --x;
-    --y;
-    --z__;
-    iwk -= 3;
-    --list;
-    --lptr;
-    --lend;
-
-    /* Function Body */
-    nna = *na;
-    maxit = *nit;
-    if (nna < 0 || maxit < 1) {
-	goto L7;
-    }
-
-/* Initialize iteration count ITER and test for NA = 0. */
-
-    iter = 0;
-    if (nna == 0) {
-	goto L5;
-    }
-
-/* Top of loop -- */
-/*   SWP = TRUE iff a swap occurred in the current iteration. */
-
-L1:
-    if (iter == maxit) {
-	goto L6;
-    }
-    ++iter;
-    swp = FALSE_;
-
-/*   Inner loop on arcs IO1-IO2 -- */
-
-    i__1 = nna;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	io1 = iwk[(i__ << 1) + 1];
-	io2 = iwk[(i__ << 1) + 2];
-
-/*   Set N1 and N2 to the nodes opposite IO1->IO2 and */
-/*     IO2->IO1, respectively.  Determine the following: */
-
-/*     LPL = pointer to the last neighbor of IO1, */
-/*     LP = pointer to IO2 as a neighbor of IO1, and */
-/*     LPP = pointer to the node N2 preceding IO2. */
-
-	lpl = lend[io1];
-	lpp = lpl;
-	lp = lptr[lpp];
-L2:
-	if (list[lp] == io2) {
-	    goto L3;
-	}
-	lpp = lp;
-	lp = lptr[lpp];
-	if (lp != lpl) {
-	    goto L2;
-	}
-
-/*   IO2 should be the last neighbor of IO1.  Test for no */
-/*     arc and bypass the swap test if IO1 is a boundary */
-/*     node. */
-
-	if ((i__2 = list[lp], abs(i__2)) != io2) {
-	    goto L8;
-	}
-	if (list[lp] < 0) {
-	    goto L4;
-	}
-
-/*   Store N1 and N2, or bypass the swap test if IO1 is a */
-/*     boundary node and IO2 is its first neighbor. */
-
-L3:
-	n2 = list[lpp];
-	if (n2 < 0) {
-	    goto L4;
-	}
-	lp = lptr[lp];
-	n1 = (i__2 = list[lp], abs(i__2));
-
-/*   Test IO1-IO2 for a swap, and update IWK if necessary. */
-
-	if (! swptst_(&n1, &n2, &io1, &io2, &x[1], &y[1], &z__[1])) {
-	    goto L4;
-	}
-	swap_(&n1, &n2, &io1, &io2, &list[1], &lptr[1], &lend[1], &lp21);
-	if (lp21 == 0) {
-	    goto L9;
-	}
-	swp = TRUE_;
-	iwk[(i__ << 1) + 1] = n1;
-	iwk[(i__ << 1) + 2] = n2;
-L4:
-	;
-    }
-    if (swp) {
-	goto L1;
-    }
-
-/* Successful termination. */
-
-L5:
-    *nit = iter;
-    *ier = 0;
-    return 0;
-
-/* MAXIT iterations performed without convergence. */
-
-L6:
-    *nit = maxit;
-    *ier = 1;
-    return 0;
-
-/* Invalid input parameter. */
-
-L7:
-    *nit = 0;
-    *ier = 2;
-    return 0;
-
-/* IO2 is not a neighbor of IO1. */
-
-L8:
-    *nit = iter;
-    *ier = 3;
-    return 0;
-
-/* Zero pointer returned by SWAP. */
-
-L9:
-    *nit = iter;
-    *ier = 4;
-    return 0;
-} /* optim_ */
-
 /* Subroutine */ int scoord_(doublereal *px, doublereal *py, doublereal *pz, 
 	doublereal *plat, doublereal *plon, doublereal *pnrm)
 {
@@ -4717,266 +5252,6 @@ L9:
     }
     return 0;
 } /* scoord_ */
-
-doublereal store_(doublereal *x)
-{
-    /* System generated locals */
-    doublereal ret_val;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   05/09/92 */
-
-/*   This function forces its argument X to be stored in a */
-/* memory location, thus providing a means of determining */
-/* floating point number characteristics (such as the machine */
-/* precision) when it is necessary to avoid computation in */
-/* high precision registers. */
-
-
-/* On input: */
-
-/*       X = Value to be stored. */
-
-/* X is not altered by this function. */
-
-/* On output: */
-
-/*       STORE = Value of X after it has been stored and */
-/*               possibly truncated or rounded to the single */
-/*               precision word length. */
-
-/* Modules required by STORE:  None */
-
-/* *********************************************************** */
-
-    stcom_1.y = *x;
-    ret_val = stcom_1.y;
-    return ret_val;
-} /* store_ */
-
-/* Subroutine */ int swap_(integer *in1, integer *in2, integer *io1, integer *
-	io2, integer *list, integer *lptr, integer *lend, integer *lp21)
-{
-    /* System generated locals */
-    integer i__1;
-
-    /* Local variables */
-    static integer lp, lph, lpsav;
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   06/22/98 */
-
-/*   Given a triangulation of a set of points on the unit */
-/* sphere, this subroutine replaces a diagonal arc in a */
-/* strictly convex quadrilateral (defined by a pair of adja- */
-/* cent triangles) with the other diagonal.  Equivalently, a */
-/* pair of adjacent triangles is replaced by another pair */
-/* having the same union. */
-
-
-/* On input: */
-
-/*       IN1,IN2,IO1,IO2 = Nodal indexes of the vertices of */
-/*                         the quadrilateral.  IO1-IO2 is re- */
-/*                         placed by IN1-IN2.  (IO1,IO2,IN1) */
-/*                         and (IO2,IO1,IN2) must be trian- */
-/*                         gles on input. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to Subroutine */
-/*                        TRMESH. */
-
-/* On output: */
-
-/*       LIST,LPTR,LEND = Data structure updated with the */
-/*                        swap -- triangles (IO1,IO2,IN1) and */
-/*                        (IO2,IO1,IN2) are replaced by */
-/*                        (IN1,IN2,IO2) and (IN2,IN1,IO1) */
-/*                        unless LP21 = 0. */
-
-/*       LP21 = Index of IN1 as a neighbor of IN2 after the */
-/*              swap is performed unless IN1 and IN2 are */
-/*              adjacent on input, in which case LP21 = 0. */
-
-/* Module required by SWAP:  LSTPTR */
-
-/* Intrinsic function called by SWAP:  ABS */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* LP,LPH,LPSAV = LIST pointers */
-
-
-/* Test for IN1 and IN2 adjacent. */
-
-    /* Parameter adjustments */
-    --lend;
-    --lptr;
-    --list;
-
-    /* Function Body */
-    lp = lstptr_(&lend[*in1], in2, &list[1], &lptr[1]);
-    if ((i__1 = list[lp], abs(i__1)) == *in2) {
-	*lp21 = 0;
-	return 0;
-    }
-
-/* Delete IO2 as a neighbor of IO1. */
-
-    lp = lstptr_(&lend[*io1], in2, &list[1], &lptr[1]);
-    lph = lptr[lp];
-    lptr[lp] = lptr[lph];
-
-/* If IO2 is the last neighbor of IO1, make IN2 the */
-/*   last neighbor. */
-
-    if (lend[*io1] == lph) {
-	lend[*io1] = lp;
-    }
-
-/* Insert IN2 as a neighbor of IN1 following IO1 */
-/*   using the hole created above. */
-
-    lp = lstptr_(&lend[*in1], io1, &list[1], &lptr[1]);
-    lpsav = lptr[lp];
-    lptr[lp] = lph;
-    list[lph] = *in2;
-    lptr[lph] = lpsav;
-
-/* Delete IO1 as a neighbor of IO2. */
-
-    lp = lstptr_(&lend[*io2], in1, &list[1], &lptr[1]);
-    lph = lptr[lp];
-    lptr[lp] = lptr[lph];
-
-/* If IO1 is the last neighbor of IO2, make IN1 the */
-/*   last neighbor. */
-
-    if (lend[*io2] == lph) {
-	lend[*io2] = lp;
-    }
-
-/* Insert IN1 as a neighbor of IN2 following IO2. */
-
-    lp = lstptr_(&lend[*in2], io2, &list[1], &lptr[1]);
-    lpsav = lptr[lp];
-    lptr[lp] = lph;
-    list[lph] = *in1;
-    lptr[lph] = lpsav;
-    *lp21 = lph;
-    return 0;
-} /* swap_ */
-
-logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4, 
-	doublereal *x, doublereal *y, doublereal *z__)
-{
-    /* System generated locals */
-    logical ret_val;
-
-    /* Local variables */
-    static doublereal x4, y4, z4, dx1, dx2, dx3, dy1, dy2, dy3, dz1, dz2, dz3;
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   03/29/91 */
-
-/*   This function decides whether or not to replace a */
-/* diagonal arc in a quadrilateral with the other diagonal. */
-/* The decision will be to swap (SWPTST = TRUE) if and only */
-/* if N4 lies above the plane (in the half-space not contain- */
-/* ing the origin) defined by (N1,N2,N3), or equivalently, if */
-/* the projection of N4 onto this plane is interior to the */
-/* circumcircle of (N1,N2,N3).  The decision will be for no */
-/* swap if the quadrilateral is not strictly convex. */
-
-
-/* On input: */
-
-/*       N1,N2,N3,N4 = Indexes of the four nodes defining the */
-/*                     quadrilateral with N1 adjacent to N2, */
-/*                     and (N1,N2,N3) in counterclockwise */
-/*                     order.  The arc connecting N1 to N2 */
-/*                     should be replaced by an arc connec- */
-/*                     ting N3 to N4 if SWPTST = TRUE.  Refer */
-/*                     to Subroutine SWAP. */
-
-/*       X,Y,Z = Arrays of length N containing the Cartesian */
-/*               coordinates of the nodes.  (X(I),Y(I),Z(I)) */
-/*               define node I for I = N1, N2, N3, and N4. */
-
-/* Input parameters are not altered by this routine. */
-
-/* On output: */
-
-/*       SWPTST = TRUE if and only if the arc connecting N1 */
-/*                and N2 should be swapped for an arc con- */
-/*                necting N3 and N4. */
-
-/* Modules required by SWPTST:  None */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* DX1,DY1,DZ1 = Coordinates of N4->N1 */
-/* DX2,DY2,DZ2 = Coordinates of N4->N2 */
-/* DX3,DY3,DZ3 = Coordinates of N4->N3 */
-/* X4,Y4,Z4 =    Coordinates of N4 */
-
-    /* Parameter adjustments */
-    --z__;
-    --y;
-    --x;
-
-    /* Function Body */
-    x4 = x[*n4];
-    y4 = y[*n4];
-    z4 = z__[*n4];
-    dx1 = x[*n1] - x4;
-    dx2 = x[*n2] - x4;
-    dx3 = x[*n3] - x4;
-    dy1 = y[*n1] - y4;
-    dy2 = y[*n2] - y4;
-    dy3 = y[*n3] - y4;
-    dz1 = z__[*n1] - z4;
-    dz2 = z__[*n2] - z4;
-    dz3 = z__[*n3] - z4;
-
-/* N4 lies above the plane of (N1,N2,N3) iff N3 lies above */
-/*   the plane of (N2,N1,N4) iff Det(N3-N4,N2-N4,N1-N4) = */
-/*   (N3-N4,N2-N4 X N1-N4) > 0. */
-
-    ret_val = dx3 * (dy2 * dz1 - dy1 * dz2) - dy3 * (dx2 * dz1 - dx1 * dz2) + 
-	    dz3 * (dx2 * dy1 - dx1 * dy2) > 0.;
-    return ret_val;
-} /* swptst_ */
 
 /* Subroutine */ int trans_(integer *n, doublereal *rlat, doublereal *rlon, 
 	doublereal *x, doublereal *y, doublereal *z__)
@@ -5065,524 +5340,7 @@ logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4,
     return 0;
 } /* trans_ */
 
-/* Subroutine */ int trfind_(integer *nst, doublereal *p, integer *n, 
-	doublereal *x, doublereal *y, doublereal *z__, integer *list, integer 
-	*lptr, integer *lend, doublereal *b1, doublereal *b2, doublereal *b3, 
-	integer *i1, integer *i2, integer *i3)
-{
-    /* Initialized data */
-
-    static integer ix = 1;
-    static integer iy = 2;
-    static integer iz = 3;
-
-    /* System generated locals */
-    integer i__1;
-    doublereal d__1, d__2;
-
-    /* Local variables */
-    static doublereal q[3];
-    static integer n0, n1, n2, n3, n4, nf;
-    static doublereal s12;
-    static integer nl, lp;
-    static doublereal xp, yp, zp;
-    static integer n1s, n2s;
-    static doublereal eps, tol, ptn1, ptn2;
-    static integer next;
-    extern integer jrand_(integer *, integer *, integer *, integer *);
-    extern doublereal store_(doublereal *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-
-/* *********************************************************** */
-
-/*                                              From STRIPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   11/30/99 */
-
-/*   This subroutine locates a point P relative to a triangu- */
-/* lation created by Subroutine TRMESH.  If P is contained in */
-/* a triangle, the three vertex indexes and barycentric coor- */
-/* dinates are returned.  Otherwise, the indexes of the */
-/* visible boundary nodes are returned. */
-
-
-/* On input: */
-
-/*       NST = Index of a node at which TRFIND begins its */
-/*             search.  Search time depends on the proximity */
-/*             of this node to P. */
-
-/*       P = Array of length 3 containing the x, y, and z */
-/*           coordinates (in that order) of the point P to be */
-/*           located. */
-
-/*       N = Number of nodes in the triangulation.  N .GE. 3. */
-
-/*       X,Y,Z = Arrays of length N containing the Cartesian */
-/*               coordinates of the triangulation nodes (unit */
-/*               vectors).  (X(I),Y(I),Z(I)) defines node I */
-/*               for I = 1 to N. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to Subroutine */
-/*                        TRMESH. */
-
-/* Input parameters are not altered by this routine. */
-
-/* On output: */
-
-/*       B1,B2,B3 = Unnormalized barycentric coordinates of */
-/*                  the central projection of P onto the un- */
-/*                  derlying planar triangle if P is in the */
-/*                  convex hull of the nodes.  These parame- */
-/*                  ters are not altered if I1 = 0. */
-
-/*       I1,I2,I3 = Counterclockwise-ordered vertex indexes */
-/*                  of a triangle containing P if P is con- */
-/*                  tained in a triangle.  If P is not in the */
-/*                  convex hull of the nodes, I1 and I2 are */
-/*                  the rightmost and leftmost (boundary) */
-/*                  nodes that are visible from P, and */
-/*                  I3 = 0.  (If all boundary nodes are vis- */
-/*                  ible from P, then I1 and I2 coincide.) */
-/*                  I1 = I2 = I3 = 0 if P and all of the */
-/*                  nodes are coplanar (lie on a common great */
-/*                  circle. */
-
-/* Modules required by TRFIND:  JRAND, LSTPTR, STORE */
-
-/* Intrinsic function called by TRFIND:  ABS */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    --p;
-    --lend;
-    --z__;
-    --y;
-    --x;
-    --list;
-    --lptr;
-
-    /* Function Body */
-
-/* Local parameters: */
-
-/* EPS =      Machine precision */
-/* IX,IY,IZ = Integer seeds for JRAND */
-/* LP =       LIST pointer */
-/* N0,N1,N2 = Nodes in counterclockwise order defining a */
-/*              cone (with vertex N0) containing P, or end- */
-/*              points of a boundary edge such that P Right */
-/*              N1->N2 */
-/* N1S,N2S =  Initially-determined values of N1 and N2 */
-/* N3,N4 =    Nodes opposite N1->N2 and N2->N1, respectively */
-/* NEXT =     Candidate for I1 or I2 when P is exterior */
-/* NF,NL =    First and last neighbors of N0, or first */
-/*              (rightmost) and last (leftmost) nodes */
-/*              visible from P when P is exterior to the */
-/*              triangulation */
-/* PTN1 =     Scalar product <P,N1> */
-/* PTN2 =     Scalar product <P,N2> */
-/* Q =        (N2 X N1) X N2  or  N1 X (N2 X N1) -- used in */
-/*              the boundary traversal when P is exterior */
-/* S12 =      Scalar product <N1,N2> */
-/* TOL =      Tolerance (multiple of EPS) defining an upper */
-/*              bound on the magnitude of a negative bary- */
-/*              centric coordinate (B1 or B2) for P in a */
-/*              triangle -- used to avoid an infinite number */
-/*              of restarts with 0 <= B3 < EPS and B1 < 0 or */
-/*              B2 < 0 but small in magnitude */
-/* XP,YP,ZP = Local variables containing P(1), P(2), and P(3) */
-/* X0,Y0,Z0 = Dummy arguments for DET */
-/* X1,Y1,Z1 = Dummy arguments for DET */
-/* X2,Y2,Z2 = Dummy arguments for DET */
-
-/* Statement function: */
-
-/* DET(X1,...,Z0) .GE. 0 if and only if (X0,Y0,Z0) is in the */
-/*                       (closed) left hemisphere defined by */
-/*                       the plane containing (0,0,0), */
-/*                       (X1,Y1,Z1), and (X2,Y2,Z2), where */
-/*                       left is defined relative to an ob- */
-/*                       server at (X1,Y1,Z1) facing */
-/*                       (X2,Y2,Z2). */
-
-
-/* Initialize variables. */
-
-    xp = p[1];
-    yp = p[2];
-    zp = p[3];
-    n0 = *nst;
-    if (n0 < 1 || n0 > *n) {
-	n0 = jrand_(n, &ix, &iy, &iz);
-    }
-
-/* Compute the relative machine precision EPS and TOL. */
-
-    eps = 1.;
-L1:
-    eps /= 2.;
-    d__1 = eps + 1.;
-    if (store_(&d__1) > 1.) {
-	goto L1;
-    }
-    eps *= 2.;
-    tol = eps * 100.;
-
-/* Set NF and NL to the first and last neighbors of N0, and */
-/*   initialize N1 = NF. */
-
-L2:
-    lp = lend[n0];
-    nl = list[lp];
-    lp = lptr[lp];
-    nf = list[lp];
-    n1 = nf;
-
-/* Find a pair of adjacent neighbors N1,N2 of N0 that define */
-/*   a wedge containing P:  P LEFT N0->N1 and P RIGHT N0->N2. */
-
-    if (nl > 0) {
-
-/*   N0 is an interior node.  Find N1. */
-
-L3:
-	if (xp * (y[n0] * z__[n1] - y[n1] * z__[n0]) - yp * (x[n0] * z__[n1] 
-		- x[n1] * z__[n0]) + zp * (x[n0] * y[n1] - x[n1] * y[n0]) < 
-		0.) {
-	    lp = lptr[lp];
-	    n1 = list[lp];
-	    if (n1 == nl) {
-		goto L6;
-	    }
-	    goto L3;
-	}
-    } else {
-
-/*   N0 is a boundary node.  Test for P exterior. */
-
-	nl = -nl;
-	if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf] 
-		- x[nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) < 
-		0.) {
-
-/*   P is to the right of the boundary edge N0->NF. */
-
-	    n1 = n0;
-	    n2 = nf;
-	    goto L9;
-	}
-	if (xp * (y[nl] * z__[n0] - y[n0] * z__[nl]) - yp * (x[nl] * z__[n0] 
-		- x[n0] * z__[nl]) + zp * (x[nl] * y[n0] - x[n0] * y[nl]) < 
-		0.) {
-
-/*   P is to the right of the boundary edge NL->N0. */
-
-	    n1 = nl;
-	    n2 = n0;
-	    goto L9;
-	}
-    }
-
-/* P is to the left of arcs N0->N1 and NL->N0.  Set N2 to the */
-/*   next neighbor of N0 (following N1). */
-
-L4:
-    lp = lptr[lp];
-    n2 = (i__1 = list[lp], abs(i__1));
-    if (xp * (y[n0] * z__[n2] - y[n2] * z__[n0]) - yp * (x[n0] * z__[n2] - x[
-	    n2] * z__[n0]) + zp * (x[n0] * y[n2] - x[n2] * y[n0]) < 0.) {
-	goto L7;
-    }
-    n1 = n2;
-    if (n1 != nl) {
-	goto L4;
-    }
-    if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf] - x[
-	    nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) < 0.) {
-	goto L6;
-    }
-
-/* P is left of or on arcs N0->NB for all neighbors NB */
-/*   of N0.  Test for P = +/-N0. */
-
-    d__2 = (d__1 = x[n0] * xp + y[n0] * yp + z__[n0] * zp, fabs(d__1));
-    if (store_(&d__2) < 1. - eps * 4.) {
-
-/*   All points are collinear iff P Left NB->N0 for all */
-/*     neighbors NB of N0.  Search the neighbors of N0. */
-/*     Note:  N1 = NL and LP points to NL. */
-
-L5:
-	if (xp * (y[n1] * z__[n0] - y[n0] * z__[n1]) - yp * (x[n1] * z__[n0] 
-		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >= 
-		0.) {
-	    lp = lptr[lp];
-	    n1 = (i__1 = list[lp], abs(i__1));
-	    if (n1 == nl) {
-		goto L14;
-	    }
-	    goto L5;
-	}
-    }
-
-/* P is to the right of N1->N0, or P = +/-N0.  Set N0 to N1 */
-/*   and start over. */
-
-    n0 = n1;
-    goto L2;
-
-/* P is between arcs N0->N1 and N0->NF. */
-
-L6:
-    n2 = nf;
-
-/* P is contained in a wedge defined by geodesics N0-N1 and */
-/*   N0-N2, where N1 is adjacent to N2.  Save N1 and N2 to */
-/*   test for cycling. */
-
-L7:
-    n3 = n0;
-    n1s = n1;
-    n2s = n2;
-
-/* Top of edge-hopping loop: */
-
-L8:
-    *b3 = xp * (y[n1] * z__[n2] - y[n2] * z__[n1]) - yp * (x[n1] * z__[n2] - 
-	    x[n2] * z__[n1]) + zp * (x[n1] * y[n2] - x[n2] * y[n1]);
-    if (*b3 < 0.) {
-
-/*   Set N4 to the first neighbor of N2 following N1 (the */
-/*     node opposite N2->N1) unless N1->N2 is a boundary arc. */
-
-	lp = lstptr_(&lend[n2], &n1, &list[1], &lptr[1]);
-	if (list[lp] < 0) {
-	    goto L9;
-	}
-	lp = lptr[lp];
-	n4 = (i__1 = list[lp], abs(i__1));
-
-/*   Define a new arc N1->N2 which intersects the geodesic */
-/*     N0-P. */
-
-	if (xp * (y[n0] * z__[n4] - y[n4] * z__[n0]) - yp * (x[n0] * z__[n4] 
-		- x[n4] * z__[n0]) + zp * (x[n0] * y[n4] - x[n4] * y[n0]) < 
-		0.) {
-	    n3 = n2;
-	    n2 = n4;
-	    n1s = n1;
-	    if (n2 != n2s && n2 != n0) {
-		goto L8;
-	    }
-	} else {
-	    n3 = n1;
-	    n1 = n4;
-	    n2s = n2;
-	    if (n1 != n1s && n1 != n0) {
-		goto L8;
-	    }
-	}
-
-/*   The starting node N0 or edge N1-N2 was encountered */
-/*     again, implying a cycle (infinite loop).  Restart */
-/*     with N0 randomly selected. */
-
-	n0 = jrand_(n, &ix, &iy, &iz);
-	goto L2;
-    }
-
-/* P is in (N1,N2,N3) unless N0, N1, N2, and P are collinear */
-/*   or P is close to -N0. */
-
-    if (*b3 >= eps) {
-
-/*   B3 .NE. 0. */
-
-	*b1 = xp * (y[n2] * z__[n3] - y[n3] * z__[n2]) - yp * (x[n2] * z__[n3]
-		 - x[n3] * z__[n2]) + zp * (x[n2] * y[n3] - x[n3] * y[n2]);
-	*b2 = xp * (y[n3] * z__[n1] - y[n1] * z__[n3]) - yp * (x[n3] * z__[n1]
-		 - x[n1] * z__[n3]) + zp * (x[n3] * y[n1] - x[n1] * y[n3]);
-	if (*b1 < -tol || *b2 < -tol) {
-
-/*   Restart with N0 randomly selected. */
-
-	    n0 = jrand_(n, &ix, &iy, &iz);
-	    goto L2;
-	}
-    } else {
-
-/*   B3 = 0 and thus P lies on N1->N2. Compute */
-/*     B1 = Det(P,N2 X N1,N2) and B2 = Det(P,N1,N2 X N1). */
-
-	*b3 = 0.;
-	s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
-	ptn1 = xp * x[n1] + yp * y[n1] + zp * z__[n1];
-	ptn2 = xp * x[n2] + yp * y[n2] + zp * z__[n2];
-	*b1 = ptn1 - s12 * ptn2;
-	*b2 = ptn2 - s12 * ptn1;
-	if (*b1 < -tol || *b2 < -tol) {
-
-/*   Restart with N0 randomly selected. */
-
-	    n0 = jrand_(n, &ix, &iy, &iz);
-	    goto L2;
-	}
-    }
-
-/* P is in (N1,N2,N3). */
-
-    *i1 = n1;
-    *i2 = n2;
-    *i3 = n3;
-    if (*b1 < 0.) {
-	*b1 = 0.;
-    }
-    if (*b2 < 0.) {
-	*b2 = 0.;
-    }
-    return 0;
-
-/* P Right N1->N2, where N1->N2 is a boundary edge. */
-/*   Save N1 and N2, and set NL = 0 to indicate that */
-/*   NL has not yet been found. */
-
-L9:
-    n1s = n1;
-    n2s = n2;
-    nl = 0;
-
-/*           Counterclockwise Boundary Traversal: */
-
-L10:
-    lp = lend[n2];
-    lp = lptr[lp];
-    next = list[lp];
-    if (xp * (y[n2] * z__[next] - y[next] * z__[n2]) - yp * (x[n2] * z__[next]
-	     - x[next] * z__[n2]) + zp * (x[n2] * y[next] - x[next] * y[n2]) 
-	    >= 0.) {
-
-/*   N2 is the rightmost visible node if P Forward N2->N1 */
-/*     or NEXT Forward N2->N1.  Set Q to (N2 X N1) X N2. */
-
-	s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
-	q[0] = x[n1] - s12 * x[n2];
-	q[1] = y[n1] - s12 * y[n2];
-	q[2] = z__[n1] - s12 * z__[n2];
-	if (xp * q[0] + yp * q[1] + zp * q[2] >= 0.) {
-	    goto L11;
-	}
-	if (x[next] * q[0] + y[next] * q[1] + z__[next] * q[2] >= 0.) {
-	    goto L11;
-	}
-
-/*   N1, N2, NEXT, and P are nearly collinear, and N2 is */
-/*     the leftmost visible node. */
-
-	nl = n2;
-    }
-
-/* Bottom of counterclockwise loop: */
-
-    n1 = n2;
-    n2 = next;
-    if (n2 != n1s) {
-	goto L10;
-    }
-
-/* All boundary nodes are visible from P. */
-
-    *i1 = n1s;
-    *i2 = n1s;
-    *i3 = 0;
-    return 0;
-
-/* N2 is the rightmost visible node. */
-
-L11:
-    nf = n2;
-    if (nl == 0) {
-
-/* Restore initial values of N1 and N2, and begin the search */
-/*   for the leftmost visible node. */
-
-	n2 = n2s;
-	n1 = n1s;
-
-/*           Clockwise Boundary Traversal: */
-
-L12:
-	lp = lend[n1];
-	next = -list[lp];
-	if (xp * (y[next] * z__[n1] - y[n1] * z__[next]) - yp * (x[next] * 
-		z__[n1] - x[n1] * z__[next]) + zp * (x[next] * y[n1] - x[n1] *
-		 y[next]) >= 0.) {
-
-/*   N1 is the leftmost visible node if P or NEXT is */
-/*     forward of N1->N2.  Compute Q = N1 X (N2 X N1). */
-
-	    s12 = x[n1] * x[n2] + y[n1] * y[n2] + z__[n1] * z__[n2];
-	    q[0] = x[n2] - s12 * x[n1];
-	    q[1] = y[n2] - s12 * y[n1];
-	    q[2] = z__[n2] - s12 * z__[n1];
-	    if (xp * q[0] + yp * q[1] + zp * q[2] >= 0.) {
-		goto L13;
-	    }
-	    if (x[next] * q[0] + y[next] * q[1] + z__[next] * q[2] >= 0.) {
-		goto L13;
-	    }
-
-/*   P, NEXT, N1, and N2 are nearly collinear and N1 is the */
-/*     rightmost visible node. */
-
-	    nf = n1;
-	}
-
-/* Bottom of clockwise loop: */
-
-	n2 = n1;
-	n1 = next;
-	if (n1 != n1s) {
-	    goto L12;
-	}
-
-/* All boundary nodes are visible from P. */
-
-	*i1 = n1;
-	*i2 = n1;
-	*i3 = 0;
-	return 0;
-
-/* N1 is the leftmost visible node. */
-
-L13:
-	nl = n1;
-    }
-
-/* NF and NL have been found. */
-
-    *i1 = nf;
-    *i2 = nl;
-    *i3 = 0;
-    return 0;
-
-/* All points are collinear (coplanar). */
-
-L14:
-    *i1 = 0;
-    *i2 = 0;
-    *i3 = 0;
-    return 0;
-} /* trfind_ */
-
-/* Subroutine */ int trlist_(integer *n, integer *list, integer *lptr, 
+int trlist_(integer *n, integer *list, integer *lptr, 
 	integer *lend, integer *nrow, integer *nt, integer *ltri, integer *
 	ier)
 {
@@ -5897,13 +5655,7 @@ L12:
     static integer i__, j, k;
     static doublereal d1, d2, d3;
     static integer i0, lp, nn, lpl;
-    extern logical left_(doublereal *, doublereal *, doublereal *, doublereal 
-	    *, doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *);
     static integer nexti;
-    extern /* Subroutine */ int addnod_(integer *, integer *, doublereal *, 
-	    doublereal *, doublereal *, integer *, integer *, integer *, 
-	    integer *, integer *);
 
 
 /* *********************************************************** */

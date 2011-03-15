@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.3 2009-10-17 22:10:49 remko Exp $
+#  $Id: GNUmakefile,v 1.4 2011-03-15 02:06:37 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x x2sys directory
 #	
@@ -15,4 +15,4 @@
 #-------------------------------------------------------------------------------
 
 include Makefile
-include ../manpages.mk
+include $(GMTSRCDIR)manpages.mk

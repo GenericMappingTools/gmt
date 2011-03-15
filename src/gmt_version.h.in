@@ -1,16 +1,33 @@
 #if @CVS_VERSION@
 #ifdef __LP64__
+#ifdef GMT_COMPAT
+#define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__") [64-bit] [C4]"
+#else
 #define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__") [64-bit]"
+#endif
+#else
+#ifdef GMT_COMPAT
+#define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__") [C4]"
 #else
 #define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__")"
+#endif
 #endif
 #define GMT_STRING "@PACKAGE_STRING@ (CVS)"
 #define MANDATE __DATE__
 #else
 #ifdef __LP64__
+#ifdef GMT_COMPAT
+#define GMT_VERSION "@PACKAGE_VERSION@ [64-bit] [C4]"
+#else
+#define GMT_VERSION "@PACKAGE_VERSION@ [64-bit]"
+#endif
 #define GMT_VERSION "@PACKAGE_VERSION@ [64-bit]"
 #else
+#ifdef GMT_COMPAT
+#define GMT_VERSION "@PACKAGE_VERSION@ [C4]"
+#else
 #define GMT_VERSION "@PACKAGE_VERSION@"
+#endif
 #endif
 #define GMT_STRING "@PACKAGE_STRING@"
 #define MANDATE "@MANDATE@"
@@ -18,4 +35,10 @@
 #define GMT_MAJOR_VERSION @GMT_MAJOR_VERSION@
 #define GMT_MINOR_VERSION @GMT_MINOR_VERSION@
 #define GMT_RELEASE_VERSION @GMT_RELEASE_VERSION@
+#define GMT_VERSION_YEAR @GMT_VERSION_YEAR@
 #define GSHHS_VERSION "@GSHHS_VERSION@"
+#ifdef _OPENMP	/* Open MP Parallelization is on */
+#define GMT_MP "-MP"
+#else
+#define GMT_MP ""
+#endif

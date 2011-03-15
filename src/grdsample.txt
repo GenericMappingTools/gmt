@@ -3,41 +3,39 @@
 .SH NAME
 grdsample \- Resample a grid file onto a new grid
 .SH SYNOPSIS
-\fBgrdsample\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(F) ] [ GMT_I_OPT ] 
-[ OPT(L)\fIflag\fP ] [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
-[ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ]
+BD(grdsample) IT(in_grdfile) OPT(G)IT(out_grdfile) [ GMT_I_OPT ] 
+[ OPT(L)IT(flag) ] [ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ]
+[ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
-\fBgrdsample\fP reads a grid file and interpolates it to create a new grid file with either:  a different registration 
-(OPT(F) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
+BD(grdsample) reads a grid file and interpolates it to create a new grid file with either:  a different registration 
+(OPT(r) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
 (OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(Q)) is used, requiring boundary conditions (OPT(L)).  
-Note that using OPT(R) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
+Note that using OPT(R) only is equivalent to BD(grdcut) or BD(grdedit \-S).  BD(grdsample) safely 
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
-\fBgrdfft\fP or \fBgrdfilter\fP.
+BD(grdfft) or BD(grdfilter).
 .br
 .sp
 When OPT(R) is omitted, the output grid will cover the same region as the input grid.
 When OPT(I) is omitted, the grid spacing of the output grid will be the same as the input grid.
-Either OPT(F) or OPT(T) can be used to change the grid registration. When omitted, the output grid will
+Either OPT(r) or OPT(T) can be used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIin_grdfile\fP
+IT(in_grdfile)
 The name of the input 2-D binary grid file.
 (See GRID FILE FORMAT below.)
 .TP
-OPT(G)
+OPT(G)IT(out_grdfile)
 The name of the output grid file.
 (See GRID FILE FORMAT below.)
-.SH OPTIONS
-.TP
-OPT(F)
-Force pixel node registration on output grid.  [Default is same registration as input grid].
+.SH OPTIONAL ARGUMENTS
 #include "explain_-I.txt"
 .TP
-OPT(L)
-Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
-x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+OPT(L)IT(flag)
+Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of 
+x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless the grid is
-automatically recognised as periodic.]  
+automatically recognized as periodic.]  
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
@@ -46,6 +44,8 @@ Translate between grid and pixel registration;  if the input is
 grid-registered, the output will be pixel-registered and vice-versa.
 #include "explain_-V.txt"
 #include "explain_-f.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
 #include "explain_float.txt"
 #include "explain_grd_inout.txt"
 .SH HINTS
@@ -55,19 +55,19 @@ first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear i
 uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
 important.  Use bilinear to minimize the propagation of NaNs.
 .SH EXAMPLES
-To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid:
+To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:
 .br
 .sp
-\fBgrdsample\fP hawaii_5by5_topo.grd OPT(I)1\fBm \-G\fPhawaii_1by1_topo.grd
+BD(grdsample) hawaii_5by5_topo.nc OPT(I)1BD(m) OPT(G)hawaii_1by1_topo.nc
 .br
 .sp
-To translate the gridline-registered file surface.grd to pixel registration while
+To translate the gridline-registered file surface.nc to pixel registration while
 keeping the same region and grid interval:
 .br
 .sp
-\fBgrdsample\fP surface.grd OPT(T) OPT(G)pixel.grd
+BD(grdsample) surface.nc OPT(T) OPT(G)pixel.nc
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdedit (1),
 .IR grdfft (1),
 .IR grdfilter (1)

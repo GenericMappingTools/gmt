@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_separate.sh,v 1.2 2009-06-19 22:14:17 guru Exp $
+#	$Id: swbd_separate.sh,v 1.3 2011-03-15 02:06:37 guru Exp $
 #
 # Usage: swbd_separate.sh w e s n TILE
 #
@@ -82,9 +82,9 @@ if [ $extract -eq 1 ]; then
 		unzip -q $file
 		ogr2ogr -f "GMT" $name.d $name.shp
 		rearranger $name < $name.gmt > tmp
-		gmtconvert -m -fg -S"BA040" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_c/$name.gmt
-		gmtconvert -m -fg -S"BH080" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_l/$name.gmt
-		gmtconvert -m -fg -S"BH140" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_r/$name.gmt
+		gmtconvert -fg -S"BA040" -o0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_c/$name.gmt
+		gmtconvert -fg -S"BH080" -o0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_l/$name.gmt
+		gmtconvert -fg -S"BH140" -o0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_r/$name.gmt
 		rm -f tmp $name.* *.zip
 	done < files.lis
 fi
@@ -99,7 +99,7 @@ if [ $stitch -eq 1 ]; then
 		s=`echo $name | awk '{if (substr($1,5,1) == "s") {printf "-%d\n", substr($1, 6, 2)} else {printf "%d\n", substr($1, 6, 2)}}'`
 		n=`expr $s + 1`
 		for type in c l r; do
-			gmtpoly -L0/2.8e-4/2.8e-4 -m -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D >> SWBD.raw_${type}.d
+			gmtpoly -L0/2.8e-4/2.8e-4 -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D >> SWBD.raw_${type}.d
 		done
 	done < files.lis
 	rm -rf raw_[clr]
@@ -109,7 +109,7 @@ if [ $stitch -eq 1 ]; then
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
 			rm -f closed
-			gmtstitch -fg -Cclosed -m SWBD.raw_${type}.d --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D > open
+			gmtstitch -fg -Cclosed SWBD.raw_${type}.d --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D > open
 			nc=0
 			if [ -f closed ]; then
 				cat closed >> SWBD_${TILE}_closed_${type}.d

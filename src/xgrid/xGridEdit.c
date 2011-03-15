@@ -58,12 +58,13 @@ int main (argc, argv)
   Arg    args[8];
   int    nargs;
   XEvent event;
+  struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
+  struct GMT_CTRL *GMT = NULL;
 
-  GMT_grdio_init ();
-  GMT_io_init ();			/* Init the table i/o structure */
-  GMT_program = argv[0];
-  GMT_make_dnan (GMT_d_NaN);
+  /* 1. Initializing new GMT session */
+  if (GMT_Create_Session (&API, argv[0], GMTAPI_GMT)) exit (EXIT_FAILURE);
 
+  GMT = API->GMT;
   /* This is a pretty simple application, so don't bother
      with WM_TAKE_FOCUS messages.	*/
   nargs = 0;
@@ -98,7 +99,7 @@ int main (argc, argv)
   nargs = 0;
   XtSetArg(args[nargs], XtNshowGrip, False); nargs ++;
   XtSetArg(args[nargs], XtNskipAdjust, False); nargs ++;
-  view = createView(gridFileName, frame, args, nargs);
+  view = createView(GMT,gridFileName, frame, args, nargs);
   
   /* Status/info line: see messages.c */
   nargs = 0;
@@ -115,5 +116,6 @@ int main (argc, argv)
     XtDispatchEvent(&event);
   }
   XtDestroyApplicationContext(self);
+  GMT_Destroy_Session (&API);
   exit(0);
 }

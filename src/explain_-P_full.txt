@@ -1,0 +1,5 @@
+.TP
+OPT(P)
+Selects "Portrait" plot orientation [Default is "Landscape"; see BD(gmt.conf) or BD(gmtset)
+to change the BD(PS_PAGE_ORIENTATION) parameter, or supply --PS_PAGE_ORIENTATION=IT(orientation)
+on the command line].

@@ -1,5 +1,5 @@
 #!/bin/csh -xe
-#	$Id: meca_3.csh,v 1.3 2003-04-11 22:57:15 pwessel Exp $
+#	$Id: meca_3.csh,v 1.4 2011-03-15 02:06:37 guru Exp $
 
 \rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
@@ -9,7 +9,7 @@ alias psvelomeca "psmeca -o"
 
 # this is Harvard CMT for tibethan earthquake (1997)
 psvelomeca -R85/89/25/50 -JX7i -P -M -Sm4i -N  \
-    -L -K -G150 -H1 -T0 << EOF >! meca_3.ps
+    -L -K -G150 -h1 -T0 << EOF >! meca_3.ps
 lon  lat  mrr   mtt  mff   mrt   mrf  mtf ex nlon nlat
  87  35 -0.26 -0.71 0.97 -0.20 -0.61 2.60 27  0    0
 EOF

@@ -1,12 +1,12 @@
 #!/bin/bash
-#	$Id: pattern.sh,v 1.2 2010-12-29 20:08:17 guru Exp $
+#	$Id: pattern.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
 #
 . ../functions.sh
 
 header "Test psscale with patterns"
 
 ps=pattern.ps
-gmtset ANNOT_FONT_SIZE_PRIMARY 10p
+gmtset FONT_ANNOT_PRIMARY 10p
 
 cat << EOF > patt.cpt
 0	p144/9	5	-

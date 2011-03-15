@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: mask.sh,v 1.3 2007-11-15 04:20:42 remko Exp $
+#!/bin/bash
+#	$Id: mask.sh,v 1.4 2011-03-15 02:06:45 guru Exp $
 #
 # Test grdlandmask for proper wrapping.
 
@@ -7,7 +7,7 @@
 header "Test grdlandmask when wrapping over 0-360"
 
 ps=mask.ps
-echo "-10000	white	+10000	white" > $$.cpt
+echo "-10000 white +10000 white" > $$.cpt
 echo "N black" >> $$.cpt
 # Must split a 5x5 degree shore bin across L and R boundary
 grdlandmask -G$$.i2=bs -I60m -R-3/357/-90/90 -Di -N1/NaN/NaN/NaN/NaN -A500/1/1

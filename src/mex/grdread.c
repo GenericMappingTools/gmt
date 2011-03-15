@@ -1,12 +1,12 @@
 /*
- *	$Id: grdread.c,v 1.17 2011-03-03 21:02:51 guru Exp $
+ *	$Id: grdread.c,v 1.18 2011-03-15 02:06:37 guru Exp $
  *
- *      Copyright (c) 1999-2011 by P. Wessel
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation; version 2 or any later version.
+ *      the Free Software Foundation; version 2 of the License.
  *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,150 +16,68 @@
  *      Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /* Program:	grdread.c
- * Purpose:	matlab callable routine to read a grd file
- * Author:	P Wessel, modified from D Sandwell's original version
- * Date:	07/01/93
- * Update:	06/04/96: P Wessel: Now can return [x,y,z] as option.
- *		09/15/97 Phil Sharfstein: modified to Matlab 5 API
- *		10/06/98 P Wessel, upgrade to GMT 3.1 function calls
- *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
- *		10/07/99 P Wessel, Did not set x,y if [x,y,z,d] was used
- *		10/20/03 P Wessel, longer path names [R Mueller]
- *		4/22/08 P Wessel, Now works with either Matlab or Octave
+ * Purpose:	matlab/octave callable routine to read a GMT grid file
  */
  
-#include "gmt.h"
-#include "mex.h"
-
-int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
-{
-	/* info contains xmin, xmax, ymin, ymax, zmin, zmax, node-offset, dx, dy */
-
-	GMT_LONG i, j, pad[4];
-	float *z_4;          /* real array for output */
-
-	pad[0] = pad[1] = pad[2] = pad[3] = 0;
-
-	if (info) {
-		info[0] = grd->x_min;
-		info[1] = grd->x_max;
-		info[2] = grd->y_min;
-		info[3] = grd->y_max;
-		info[4] = grd->z_min;
-		info[5] = grd->z_max;
-		info[6] = grd->node_offset;
-		info[7] = grd->x_inc;
-		info[8] = grd->y_inc;
-	}
-
-	/*  Allocate memory */
-
-	if ((z_4 = (float *) malloc (sizeof (float) * grd->nx * grd->ny)) == (float *)NULL) return (1);
- 
- 	/* Check for file access here since the exit returned by the read routine shuts down Matlab... */
-	
-	if (GMT_access (filein, R_OK)) return (2);
-		
-	/*  Read the grid */
- 
-	if (GMT_read_grd (filein, grd, z_4, 0.0, 0.0, 0.0, 0.0, pad, 0)) {
-		free ((void *)z_4); 
-  	  	return (2);
-	}
- 
-	/*  Load the real grd array into a double matlab array
-	    by transposing from grd format to matlab format */
-    
-	for (i = 0; i < grd->ny; i++) for (j = 0; j < grd->nx; j++) z_8[j*grd->ny+grd->ny-i-1] = z_4[i*grd->nx+j];
-
-	/*  Free memory */
-
-	free ((void *)z_4);
-	
-	return (0);
-}
-
+#include "gmt_mex.h"
 
 /* Matlab Gateway routine */
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	struct GRD_HEADER grd;
-	double *z_8, *info = (double *)NULL, *x = NULL, *y = NULL, off;
-	char *filein, *argv = "grdread-mex";
-	int error, ns, ssz, pz, i;
- 
-	GMT_begin (0, &argv);
+	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
+	struct GMT_GRID *G = NULL;
+	float	*z = NULL;
+	char *filein = NULL;
+	GMT_LONG row, col, gmt_node;
+	int	px = -1, py = -1, pz = -1, pi = -1;
 
-	GMT_grdio_init ();
-
-	if (nrhs != 1 || nlhs < 1 || nlhs > 4) {
-		mexPrintf ("usage: z = grdread('filename');\n");
-		mexPrintf (" 	[z,info] = grdread('filename');\n");
-		mexPrintf ("	[x,y,z] = grdread('filename');\n");
-		mexPrintf ("	[x,y,z,info] = grdread('filename');\n");
+	if (nrhs != 1 || nlhs < 1 || nlhs > 4) {	/* Give usage message and return */
+		GMT5MEX_banner;
+		mexPrintf ("usage: z = grdread ('filename');\n");
+		mexPrintf ("	[z info] = grdread ('filename');\n");
+		mexPrintf ("	[x y z] = grdread ('filename');\n");
+		mexPrintf ("	[x y z info] = grdread ('filename');\n");
 		return;
 	}
+	if (!mxIsChar(prhs[nrhs-1])) mexErrMsgTxt ("Input must contain the filename string\n");
 
 	/* Load the file name into a char string */
 
-	ns = mxGetN (prhs[0]) + 1;
-	ssz = ns * sizeof (mxChar);
+	filein = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 
-	if (ssz > BUFSIZ)
-		mexErrMsgTxt ("grdread: filename too long\n");
+	/* 1. Initializing new GMT session */
+	if (GMT_Create_Session (&API, "MEX", GMTAPI_GMT)) mexErrMsgTxt ("GMT: (grdread) Failure to create GMT Session\n");
 
-	filein = mxMalloc (ssz);
-
-	if (mxGetString (prhs[0], filein, ns + 1)) {
-		mexPrintf ("%s\n", filein);
-		mexErrMsgTxt ("grdread: failure to decode string \n");
-	}
-
-	/* Read the header */
- 
-	GMT_grd_init (&grd, 0, NULL, FALSE);
-	if (GMT_read_grd_info (filein, &grd))
-		mexErrMsgTxt ("grdread: failure to read header\n");
-
+	/* 2. READING IN A GRID */
+	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET)) mexErrMsgTxt ("GMT: (grdinfo) Failure to Begin IO\n");
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&filein, (void **)&G))
+		mexErrMsgTxt ("GMT: (grdread) Read failure\n");
+	if (GMT_End_IO (API, GMT_IN, 0)) mexErrMsgTxt ("GMT: (grdinfo) Failure to End IO\n");
+	
 	/* Create a matrix for the return array */
 
 	pz = (nlhs >= 3) ? 2 : 0;
+	if (nlhs == 2 || nlhs == 4) pi = nlhs - 1;
+	if (nlhs > 2) {px = 0; py = 1;}
 
-	plhs[pz] = mxCreateDoubleMatrix (grd.ny, grd.nx, mxREAL);
+	plhs[pz] = mxCreateNumericMatrix (G->header->ny, G->header->nx, mxSINGLE_CLASS, mxREAL);
+	z = (float *)mxGetData (plhs[pz]);
+	
+	/*  Load the real grd array into a double matlab array
+	    by transposing from padded GMT grd format to unpadded matlab format */
     
-	z_8 = mxGetPr (plhs[pz]);
-
+	GMT_grd_loop (G, row, col, gmt_node) z[MEX_IJ(G,row,col)] = G->data[gmt_node];
+	    
 	/* Create scalars for return arguments */
 
-	if (nlhs == 2) {	/* Also return info array */
-		plhs[1] = mxCreateDoubleMatrix (1, 9, mxREAL);
-		info = mxGetPr (plhs[1]);
-	}
-	else if (nlhs >= 3) {	/* Return x,y arrays instead */
-		plhs[0] = mxCreateDoubleMatrix (1, grd.nx, mxREAL);
-		plhs[1] = mxCreateDoubleMatrix (1, grd.ny, mxREAL);
-		x = mxGetPr (plhs[0]);
-		y = mxGetPr (plhs[1]);
-		if (nlhs == 4) {	/* Also return info array */
-			plhs[3] = mxCreateDoubleMatrix (1, 9, mxREAL);
-			info = mxGetPr (plhs[3]);
-		}
-	}
- 
-	/* Call grdread to get the contents of the file */
- 
-	if ((error = grdread (z_8, info, filein, &grd))) {
-		if (error == 1)
-			mexErrMsgTxt ("grdread: failure to allocate memory\n");
-		else
-			mexErrMsgTxt ("grdread: failure to read file\n");
-	}
-	if (nlhs >= 3) {	/* Fill in the x and y arrayx */
-		off = (grd.node_offset) ? 0.5 : 0.0;
-		for (i = 0; i < grd.nx; i++) x[i] = grd.x_min + (i + off) * grd.x_inc;
-		for (i = 0; i < grd.ny; i++) y[i] = grd.y_min + (i + off) * grd.y_inc;
-	}
-	mxFree (filein);
+	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
+	if (px >= 0) GMTMEX_grdxy (plhs, G, px, py);	/* Return x,y arrays also */
+	
+	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
+	
+	/* 10. Destroy GMT API session */
+	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("GMT: (surface) Failure to destroy GMT Session\n");
+
 	return;
 }

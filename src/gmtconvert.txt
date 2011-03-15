@@ -3,104 +3,119 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E)[\fBf\fP|\fBl\fP] ] 
-[ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ OPT(N) ] 
-[ OPT(S)[\fB~\fP]\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
-[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_m_OPT ]
+BD(gmtconvert) [ IT(datafiles) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)] ] 
+[ OPT(L) ] [ OPT(I) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
+[ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
+BD(gmtconvert) reads its standard input [or inputfiles] and writes out
 the desired information to standard output.  It can do a combination of
-three things: (1) convert between binary and ASCII data tables, (2) paste
-corresponding records from multiple files into a single file, (3)
-extract a subset of the columns, (4) only extract segments whose header
-matches a text pattern search, (5) just list all multisegment headers and no data
-records, and (6) extract first and last data record for each segment.  Input (and hence output) may have multiple
-subheaders if OPT(m) is selected, and ASCII tables may have regular headers as well.
+six tasks: (1) convert between binary and ASCII data tables, (2) paste
+corresponding records from multiple files horizontally into a single file, (3)
+extract a subset of the available columns, (4) only extract segments whose header
+record matches a text pattern search, (5) only list segment headers and no data
+records, and (6) extract first and/or last data record for each segment.
+Input (and hence output) may have multiple sub-headers,
+and ASCII tables may have regular headers as well.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIdatafile(s)\fP
+IT(datafile(s))
 ASCII (or binary, see OPT(bi)) file(s) holding a number of data columns. 
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)
-The records from the input files should be pasted horizontally, not appended vertically.  [Default
-processes one file at the time].  Note for binary input, all the files you want to paste must
-have the same number of columns (as set with OPT(bi)).
+The records from the input files should be pasted horizontally, not appended vertically [Default].
+All files must have the same number of segments and number of
+rows per segment.  Note for binary input, all the files you want to paste must
+have the same number of columns (as set with OPT(bi)); ascii tables can have different number
+of columns.
 .TP
-OPT(D)
+OPT(D)[IT(template)]
 For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
-file to stdout].  Append a format template for the individual file names; this template \fBmust\fP contain a
-C format specifier that can format an integer argument (the segment number); this is usually %d but could
-be %8.8d which gives leading zeros, etc. [Default is gmtconvert_segment_%d.d].
+file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
+C format specifier that can format an long integer argument (the running segment number across all tables);
+this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is gmtconvert_segment_%ld.{txt|bin},
+depending on OPT(b)].
+Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
+number within the table to build the file name.
 .TP
-OPT(E)
+OPT(E)[BD(f)|BD(l)]
 Only extract the first and last record for each segment of interest [Default extracts
-all records].  Optionally, append \fBf\fP or \fBl\fP to only extract the first or last
+all records].  Optionally, append BD(f) or BD(l) to only extract the first or last
 record of each segment, respectively.
-.TP
-OPT(F)
-Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns].
-#include "explain_-h.txt"
 .TP
 OPT(I)
 Invert the order of rows, i.e., output the final records in reverse order, starting with the last and ending
-up with the first input row [Default goes forward].
+up with the first input row, per segment [Default keeps original order].
 .TP
 OPT(L)
-Only output a listing of all multisegment header records and no data records (requires OPT(m) and ASCII data).
+Only output a listing of all segment header records and no data records (requires ASCII data).
 .TP
 OPT(N)
 Do not write records that only contain NaNs in every field [Default writes all records].
 .TP
-OPT(S)
+OPT(Q)IT(seg)
+Only write segment number IT(seg) and skip all others.  Cannot be used with OPT(S).
+.TP
+OPT(S)[BD(~)]IT("search string")
 Only output those segments whose header record contains the specified text string.  To reverse the search,
-i.e., to output segments whose headers do \fInot\fP contain the specified pattern, use OPT(S~).
+i.e., to output segments whose headers do IT(not) contain the specified pattern, use OPT(S~).
 Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
+Cannot be used with OPT(Q).
+.TP
+OPT(T)
+Suppress the writing of segment headers on output.
 #include "explain_-V.txt"
-#include "explain_-t.txt"
+#include "explain_-aspatial.txt"
 #include "explain_-bi.txt"
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_-g.txt"
-#include "explain_-m.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 .br
 .sp
-\fBgmtconvert\fP test.b OPT(bis)4 > test.dat
+BD(gmtconvert) test.b OPT(bis)4 > test.dat
 .br
 .sp
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 .br
 .sp
-\fBgmtconvert\fP test.d OPT(m) OPT(bo) > test.b
+BD(gmtconvert) test.d OPT(bo) > test.b
 .br
 .sp
 You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
 .br
 .sp
-\fBgmtconvert\fP table.d OPT(F)5,0 | psxy ...
+BD(gmtconvert) table.d OPT(o)5,0 | psxy ...
 .br
 .sp
 If the file instead is the binary file results.b which has 9 single-precision values per record,
 we extract the last column and columns 4-6 and write ASCII with the command
 .br
 .sp
-\fBgmtconvert\fP results.b OPT(F)8,4-6 -bi9s | psxy ...
+BD(gmtconvert) results.b OPT(o)8,4-6 -bi9s | psxy ...
 .br
 .sp
 You want to plot the 2nd column of a 2-column file left.d versus the first column of a file right.d:
 .br
 .sp
-\fBgmtconvert\fP left.d right.d OPT(A) OPT(F)1,2 | psxy ...
+BD(gmtconvert) left.d right.d OPT(A) OPT(o)1,2 | psxy ...
 .br
 .sp
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
 .br
 .sp
-\fBgmtconvert\fP big_file.d OPT(m) OPT(S)"RIDGE AXIS" > subset.d
+BD(gmtconvert) big_file.d OPT(S)"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR minmax (1)

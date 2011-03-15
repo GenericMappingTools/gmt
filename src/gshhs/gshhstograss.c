@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.26 2011-03-05 21:24:28 guru Exp $
+/*	$Id: gshhstograss.c,v 1.27 2011-03-15 02:06:37 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -27,7 +27,7 @@
 *
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
-*	the Free Software Foundation; version 2 or any later version.
+*	the Free Software Foundation; version 2 of the License.
 *
 *  This program is distributed in the hope that it will be useful,
 *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,8 +67,7 @@ int main (int argc, char **argv)
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
-	int k, max = 270000000, flip, level, version, greenwich, src, river, shorelines;
-	size_t n_read;
+	int k, max = 270000000, flip, n_read, level, version, greenwich, src, river, shorelines;
 	struct POINT p;
 	struct GSHHS h;
 	int max_id=0;

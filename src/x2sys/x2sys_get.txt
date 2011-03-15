@@ -3,57 +3,49 @@
 .SH NAME
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
-BD(x2sys_get) OPT(T)IT(TAG) [ OPT(C) ] [ OPT(D) ] [ OPT(E) ] [ OPT(F)IT(flags) ] 
-[ OPT(L)[IT(list)] ] [ OPT(N)IT(flags) ] [ OPT(Qe)|BD(i) ]  [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+BD(x2sys_get) OPT(T)IT(TAG) [ OPT(C) ] [ OPT(F)IT(flags) ] [ OPT(G) ] 
+[ OPT(L)[BD(+)][IT(list)] ] [ OPT(N)IT(flags) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 BD(x2sys_get) will return the names of the track data files in the x2sys data
 base for this TAG that match the given
 requirements.  You may choose a specific region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
+.SH REQUIRED ARGUMENTS
 #include "explain_tag.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 OPT(C)
 Instead of reporting the track names, just output the coordinates of the
 center of each bin that has at least one track with the specified data.
 .TP
-OPT(D)
-Only report the track names [Default adds the availability of
-data for each field].
-.TP
-OPT(E)
-Append the file extension to all reported tracks [no extension].
-.TP
-OPT(F)
+OPT(F)IT(flags)
 Give a comma-separated list of column names (as described in the definition
-file) that should all be present within the selected region. [Default selects all data columns].
-A track will be included in the returned list if at least one bin reports
-that the track has all of the listed columns.
+file) that should be present. [Default selects all data columns].
 .TP
-OPT(L)
+OPT(G)
+Report data flags (Y or N) for the entire track rather than just for the
+portion that is inside the region set by OPT(R) [Default].
+.TP
+OPT(L)[BD(+)][IT(list)]
 Crossover mode.  Return a list of track pairs that should be checked for possible
 crossovers.  The list is determined from the bin-index data base on the assumption
 that tracks occupying the same bin are very likely to intersect.  By default we
 return all possible pairs in the data base.  Append the name of a file with a
 list of tracks if you want to limit the output to those pairs that involve
 at least one of the track names in your list.  The output is suitable for the OPT(K)
-option in \fBx2sys_cross\fP.
+option in BD(x2sys_cross).  By default, only external crossover pairs are listed.
+Use OPT(L+) to include internal pairs in the list.
 .TP
-OPT(N)
+OPT(N)IT(flags)
 Give a comma-separated list of column names (as described in the definition
-file) that all must be absent.  A track will be excluded from the returned list
-if at least one bin reports that the track some all of the listed columns. 
-.TP
-OPT(Q)
-Append \fBe\fP for external COEs only, and \fBi\fP for internal
-COEs only [Default is all COEs].  This applies to the crossover setup only
-and requires OPT(L).
+file) that must be absent.
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option limits
 the tracks to those that fall at least partly inside the specified domain.
 #include "explain_-V.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To find all the tracks associated with the tag MGD77, restricted to occupy
 a certain region in the south Pacific, and have at least free air anomalies
@@ -74,11 +66,12 @@ To find all the pairs associated with the tag MGD77 that might intersect each
 other, but only those pairs which involves tracks in your list new.lis, try
 .br
 .sp
-BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis
+BD(x2sys_get) OPT(V) OPT(T)MGD77 OPT(L)new.lis > xpairs.lis 
 .SH NOTE
 The tracks that are returned all have the requested data (OPT(F)) within the
 specified region (OPT(R)).  Furthermore, the columns of Y and N for other data types
-also reflect the content of the track portion within the selected region.
+also reflect the content of the track portion within the selected region, unless
+OPT(G) is set.
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),
 .IR x2sys_cross (1),

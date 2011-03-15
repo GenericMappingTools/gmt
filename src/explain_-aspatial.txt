@@ -1,0 +1,2 @@
+.TP
+GMT_a_OPT Set aspatial column associations IT(col)=IT(name).

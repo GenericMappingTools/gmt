@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.h,v 1.15 2011-03-03 21:02:51 guru Exp $
+ *	$Id: sph.h,v 1.16 2011-03-15 02:06:37 guru Exp $
  *
- *	Copyright (c) 2008-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,9 +50,8 @@ struct STRPACK_ARC {
 	int begin, end;
 };
 
-EXTERN_MSC void stripack_lists (GMT_LONG n, double *x, double *y, double *z, GMT_LONG verbose, struct STRIPACK *T);
+EXTERN_MSC void stripack_lists (struct GMT_CTRL *GMT, GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T);
 EXTERN_MSC double stripack_areas (double *V1, double *V2, double *V3);
-EXTERN_MSC void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat);
+EXTERN_MSC void cart_to_geo (struct GMT_CTRL *GMT, GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC int compare_arc (const void *p1, const void *p2);
-EXTERN_MSC void geo_to_cart (double alat, double alon, double *a, int rads);
-EXTERN_MSC void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, GMT_LONG vartens, GMT_LONG verbose, struct GRD_HEADER *h, double *f);
+EXTERN_MSC void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, GMT_LONG vartens, struct GRD_HEADER *h, double *f);

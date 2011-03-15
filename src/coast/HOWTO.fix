@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.10 2011-01-04 02:15:15 guru Exp $
+	$Id: HOWTO.fix,v 1.11 2011-03-15 02:06:37 guru Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -137,9 +137,3 @@ so that proper hierarchies can be derived.  Perhaps GSHHS v 2.0? Perhaps try to 
 things like the near-crossing Tom though was a crossing by computing nearest distance from
 each point to the polygon?, or examine triangles with very little area or acute angles.
 Also, there are some issues with the river database.  Check with Remko.
-
-DEC 19, 2010
-
-There was a few minor editing errors in the low resolution polygons, plus Tom Krazte
-found a few polygons with non-area excursions.  These were fixed and will be part of
-the updated GSHHS v2.1.1.

@@ -3,132 +3,135 @@
 .SH NAME
 dimfilter \- Directional filtering of 2-D gridded files in the space (or time) domain
 .SH SYNOPSIS
-\fBdimfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP OPT(F)\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file.grd\fP OPT(N)\fI<filtertype><n_sectors>\fP OPT(Q)\fIcols\fP 
-[ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ \fB\-T\fP ] [ GMT_V_OPT ]
+BD(dimfilter) IT(input_file.nc) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[IT(mode)] 
+OPT(G)IT(output_file.nc) OPT(N)IT(<filtertype><n_sectors>) [ OPT(Q)IT(cols) ] 
+[ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBdimfilter\fP will filter a \fI.grd\fP file in the space (or time) domain by dividing the given filter
-circle into \fIn_sectors\fP, applying one of the selected primary convolution or non-convolution filters
+BD(dimfilter) will filter a IT(.nc) file in the space (or time) domain by dividing the given filter
+circle into IT(n_sectors), applying one of the selected primary convolution or non-convolution filters
 to each sector, and choosing the final outcome according to the selected secondary filter.  It computes
-distances using Cartesian or Spherical geometries. The output \fI.grd\fP file can optionally be generated
-as a sub\fB\-R\fPegion of the input and/or with a new OPT(I)ncrement.  In this way, one may have "extra
-space" in the input data so that the edges will not be used and the output can be within one-half-width
-of the input edges.  If the filter is low-pass, then the output may be less frequently sampled than the
-input. \fB-Q\fP is for the error analysis mode and only requires the total number of columns in the input
-file, which contains the filtered depths.  Finally, one should know that \fBdimfilter\fP will not produce
-a smooth output as other spatial filters do because it returns a minimum median out of \fIN\fP medians of
-\fIN\fP sectors.  The output can be edgy unless the input data is noise-free.  Thus, an additional
-filtering (e.g., Gaussian) to the DiM-filtered data is generally recommended.
+distances using Cartesian or Spherical geometries. The output IT(.nc) file can optionally be generated
+as a subregion of the input and/or with a new OPT(I)ncrement.  In this way, one may have "extra
+space" in the input data so that there will be no edge effects for the output grid.
+If the filter is low-pass, then the output may be less frequently sampled than the
+input. BD(-Q) is for the error analysis mode and only requires the total number of columns in the input
+file, which contains the filtered depths.  Finally, one should know that BD(dimfilter) will not produce
+a smooth output as other spatial filters do because it returns a minimum median out of IT(N) medians of
+IT(N) sectors.  The output can be rought unless the input data is noise-free.  Thus, an additional
+filtering (e.g., Gaussian via BD(grdfilter)) of the DiM-filtered data is generally recommended.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinput_file.grd\fP
-The file of points to be filtered.
+IT(input_file.nc)
+The data grid to be filtered.
 .TP
-.B \-D
-Distance \fIflag\fP tells how grid (x,y) relates to filter \fIwidth\fP as follows:
+OPT(D)IT(distance_flag)
+Distance IT(flag) tells how grid (x,y) relates to filter IT(width), as follows:
 .sp
-\fIflag\fP = 0:  grid (x,y) same units as \fIwidth\fP, Cartesian distances.
+IT(flag) = 0:  grid (x,y) same units as IT(width), Cartesian distances.
 .br
-\fIflag\fP = 1:  grid (x,y) in degrees, \fIwidth\fP in kilometers, Cartesian distances.
+IT(flag) = 1:  grid (x,y) in degrees, IT(width) in kilometers, Cartesian distances.
 .br
-\fIflag\fP = 2:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cos(middle y), Cartesian distances.
+IT(flag) = 2:  grid (x,y) in degrees, IT(width) in km, dx scaled by cos(middle y), Cartesian distances.
 .sp
 The above options are fastest because they allow weight matrix to be computed only once.
 The next three options are slower because they recompute weights for each latitude.
 .sp
-\fIflag\fP = 3:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cosine(y), Cartesian distance calculation.
+IT(flag) = 3:  grid (x,y) in degrees, IT(width) in km, dx scaled by cosine(y), Cartesian distance calculation.
 .br
-\fIflag\fP = 4:  grid (x,y) in degrees, \fIwidth\fP in km, Spherical distance calculation.
+IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calculation.
 .TP
-.B \-F
+OPT(F)IT(<filtertype><width>)[IT(mode)]
 Sets the primary filter type.  Choose among convolution and non-convolution filters.  Append the filter code followed
-by the full diameter \fIwidth\fP. Available convolution filters are:
+by the full diameter IT(width). Available convolution filters are:
 .br
-(\fBb\fP) Boxcar: All weights are equal.
+(BD(b)) Boxcar: All weights are equal.
 .br
-(\fBc\fP) Cosine Arch: Weights follow a cosine arch curve.
+(BD(c)) Cosine Arch: Weights follow a cosine arch curve.
 .br
-(\fBg\fP) Gaussian: Weights are given by the Gaussian function.
+(BD(g)) Gaussian: Weights are given by the Gaussian function.
 .br
 Non-convolution filters are:
 .br
-(\fBm\fP) Median: Returns median value.
+(BD(m)) Median: Returns median value.
 .br
-(\fBp\fP) Maximum likelihood probability (a mode estimator): Return modal value.
+(BD(p)) Maximum likelihood probability (a mode estimator): Return modal value.
 If more than one mode is found we return their average value.  Append - or + to
 the filter width if you rather want to return the smallest or largest of the modal
 values.
 .TP
-.B \-N
-Sets the secondary filter type and the number of bow-tie sectors. \fIn_sectors\fP must be integer and larger than 0.
-When \fIn_sectors\fP is set to 1, the secondary filter is not effective.  Available secondary filters are:
+OPT(N)IT(<filtertype><n_sectors>)
+Sets the secondary filter type and the number of bow-tie sectors. IT(n_sectors) must be integer and larger than 0.
+When IT(n_sectors) is set to 1, the secondary filter is not effective.  Available secondary filters are:
 .br
-(\fBl\fP) Lower: Return the minimum of all filtered values.
+(BD(l)) Lower: Return the minimum of all filtered values.
 .br
-(\fBu\fP) Upper: Return the maximum of all filtered values.
+(BD(u)) Upper: Return the maximum of all filtered values.
 .br
-(\fBa\fP) Average: Return the mean of all filtered values.
+(BD(a)) Average: Return the mean of all filtered values.
 .br
-(\fBm\fP) Median: Return the median of all filtered values.
+(BD(m)) Median: Return the median of all filtered values.
 .br
-(\fBp\fP) Mode: Return the mode of all filtered values.
+(BD(p)) Mode: Return the mode of all filtered values.
 .TP
-.B \-G
-\fIoutput_file.grd\fP is the output of the filter.
-.SH OPTIONS
+OPT(G)IT(output_file.nc)
+IT(output_file.nc) is the output of the filter.
+.SH OPTIONAL ARGUMENTS
 .TP
-.B \-I
-\fIx_inc\fP [and optionally \fIy_inc\fP] is the output Increment. Append \fBm\fP to indicate minutes, or \fBc\fP to indicate seconds.
-If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
+OPT(I)
+IT(x_inc) [and optionally IT(y_inc)] is the output Increment. Append BD(m) to indicate minutes, or BD(c) to indicate seconds.
+If  the new IT(x_inc), IT(y_inc) are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
 [Default:  Same as input.]
 .TP
-.B \-R
-\fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
+OPT(R)
+IT(west), IT(east), IT(south), and IT(north) defines the Region of the output points.  [Default:  Same as input.]
 .TP
-.B \-T
+OPT(T)
 Toggle the node registration for the output grid so as to become the opposite of the input grid
 [Default gives the same registration as the input grid].
 .TP
-.B \-Q
-\fIcols\fP is the total number of columns in the input file.  For this mode, it expects to read depths
+OPT(Q)IT(cols)
+IT(cols) is the total number of columns in the input text table file.  For this mode, it expects to read depths
 consisted of several columns. Each column represents a filtered grid with a filter width, which can be
 obtained by 'grd2xyz -Z'. The outcome will be median, MAD, and mean. So, the column with the medians is
-used to generate the regional component and the column with the MADs to conduct the error analysis.
+used to generate the regional component and the column with the MADs is used to conduct the error analysis.
 #include "explain_-V.txt"
+#include "explain_-f.txt"
+#include "explain_help.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N,
+Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N,
 and you want to find the medians of values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want the output values every 0.5 degree.
 To prevent the medians from being biased by the sloping plane, you want to divide the filter circle into
 6 sectors and to choose the lowest value among 6 medians. Using spherical distance calculations, you need:
 .sp
-\fBdimfilter\fP north_pacific_dbdb5.grd OPT(G)filtered_pacific.grd \fB\-Fm\fP600 OPT(D)4 OPT(N)l6 \fB\-R\fP150/250/10/40 OPT(I)0.5 \fB\-V\fP
+BD(dimfilter) north_pacific_dbdb5.nc OPT(G)filtered_pacific.nc OPT(Fm)600 OPT(D)4 OPT(N)l6 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
 .sp
-Suppose that cape_verde.grd is a file of 0.5 minute bathymetry from 32W to 15W and 8N to 25N, and you
+Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W to 15W and 8N to 25N, and you
 want to remove small-length-scale features in order to define a swell in an area extending from 27.5W
 to 20.5W and 12.5N to 19.5N, and you want the output value every 2 minute. Using cartesian distance calculations, you need:
 .sp
-\fBdimfilter\fP cape_verde.grd OPT(G)t.grd \fB\-Fm\fP220 \fB\-Nl\fP8 OPT(D)2 \fB\-R\fP-27.5/-20.5/12.5/19.5 OPT(I)2m \fB\-V\fP
+BD(dimfilter) cape_verde.nc OPT(G)t.nc OPT(Fm)220 \OPT(Nl)8 OPT(D)2 OPT(R)-27.5/-20.5/12.5/19.5 OPT(I)2m OPT(V)
 .br
-\fBgrdfilter\fP t.grd OPT(G)cape_swell.grd \fB\-Fg\fP50 OPT(D)2 \fB\-V\fP
+BD(grdfilter) t.nc OPT(G)cape_swell.nc OPT(-Fg)50 OPT(D)2 OPT(V)
 .sp
 Suppose that you found a range of filter widths for a given area, and you filtered the given bathymetric
-data using the range of filter widths (e.g., \fIf100.grd f110.grd f120.grd f130.grd\fP), and you want to
+data using the range of filter widths (e.g., IT(f100.nc f110.nc f120.nc f130.nc)), and you want to
 define a regional trend using the range of filter widths, and you want to obtain median absolute deviation
-(MAD) estimates at each data point, you need:
+(MAD) estimates at each data point. Then, you will need to do:
 .sp
-\fBgrd2xyz\fP f100.grd \fB-Z\fP > f100.d
+BD(grd2xyz) f100.nc BD(-Z) > f100.d
 .br
-\fBgrd2xyz\fP f110.grd \fB-Z\fP > f110.d
+BD(grd2xyz) f110.nc BD(-Z) > f110.d
 .br
-\fBgrd2xyz\fP f120.grd \fB-Z\fP > f120.d
+BD(grd2xyz) f120.nc BD(-Z) > f120.d
 .br
-\fBgrd2xyz\fP f130.grd \fB-Z\fP > f130.d
+BD(grd2xyz) f130.nc BD(-Z) > f130.d
 .br
-\fBpaste\fP f100.d f110.d f120.d f130.d > depths.d
+BD(paste) f100.d f110.d f120.d f130.d > depths.d
 .br
-\fBdimfilter\fP depths.d \fB-Q\fP4 > output.z
+BD(dimfilter) depths.d BD(-Q)4 > output.z
 .sp  
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize
@@ -141,8 +144,8 @@ The dim.template.sh is a skeleton shell script that can be used
 to set up a complete DiM analysis, including the MAD analysis.
 .SH REFERENCE
 Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering
-for Regional-Residual Separation of Bathymetry, \fIGeochem. Geophys. Geosyst.,
-9(Q03005)\fP, doi:10.1029/2007GC001850. 
+for Regional-Residual Separation of Bathymetry, IT(Geochem. Geophys. Geosyst.),
+BD(9), Q03005, doi:10.1029/2007GC001850. 
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdfilter (1)

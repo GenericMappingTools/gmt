@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.66 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.67 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Creating GMT Graphics}
@@ -210,25 +210,27 @@ the positive topography mesh painted light gray (the remainder
 is white). The left side of Figure~\ref{fig:GMT_example_04} shows the complete illustration.
 
 \begin{figure}[ht]
-   \includegraphics[scale=0.42]{scripts/example_04}\hfill
-   \includegraphics[scale=0.42]{scripts/example_04c}
+   \includegraphics[scale=0.42]{example_04}\hfill
+   \includegraphics[scale=0.42]{example_04c}
    \caption{3-D perspective mesh plot (left) and colored version (right).}
    \label{fig:GMT_example_04}
 \end{figure}
 
-A color version of this figure was used in our first article in \emph{EOS
-Trans. AGU} (Oct. 8th, 1991).  It was created along similar
-lines, but instead of a mesh plot we chose a color-coded surface
-with artificial illumination from a light-source due north.
-We choose to use the \Opt{Qi} option in \GMTprog{grdview} to
+The color version of this figure was used in our first article in \emph{EOS
+Trans. AGU} (8 October 1991).  Using \GMTprog{grdview} one can choose
+to either plot a mesh surface (left) or a color-coded surface (right).
+We have also added artificial illumination from a light-source due north,
+which is simulated by computing the gradient of the surface grid
+in that direction though the \GMTprog{grdgradient} program.
+We choose to use the \Opt{Qc} option in \GMTprog{grdview} to
 achieve a high degree of smoothness.  Here, we select 100 dpi
 since that will be the resolution of our final raster
-(The EOS raster was 300 dpi). We used \GMTprog{grdgradient} to
-provide the intensity files.  The following script creates
+(The EOS raster was 300 dpi).
+The following script creates
 the color \PS\ file.  Note that the size of the
 resulting output file is directly dependent on the square of
 the dpi chosen for the scanline conversion.  A higher value
-for dpi in \Opt{Qi} would have resulted in a much larger
+for dpi in \Opt{Qc} would have resulted in a much larger
 output file.  The cpt files were taken from Section~\ref{sec:example_02}.
 
 \script{example_04c} 
@@ -686,7 +688,7 @@ a full description of symbol design).  In this Section we will create two new sy
 a volcano and a bulls eye.
 
 \begin{figure}[ht]
-   \centering\includegraphics{scripts/GMT_volcano}
+   \centering\includegraphics{GMT_volcano}
 \end{figure}
 
 \item After designing the symbol we will encode it using a
@@ -945,7 +947,7 @@ grid using a linear projection with a suitable scale (here 0.25 inches per degre
 To overlay basemaps and features that has geographic longitude/latitude coordinates we must remember
 two key issues:
 \begin{enumerate}
-	\item This is a \emph{spherical} Mercator grid so we must use {\bf --ELLIPSOID}=Sphere with all
+	\item This is a \emph{spherical} Mercator grid so we must use {\bf --PROJ\_ELLIPSOID}=Sphere with all
 	commands that involve projections (or use \GMTprog{gmtset} to change the setting).
 	\item Select Mercator projection and use the same scale that was used with the linear projection.
 \end{enumerate}
@@ -995,7 +997,7 @@ UTM and lon/lat coordinates and consistent use of the same map scale.}
 \section{Gridding spherical surface data using splines}
 \index{Example!Gridding spherical surface data using splines|(}
 
-Next, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
+Finally, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
 of surface splines, with or without tension.  Global gridding does not work particularly well in
 Cartesian coordinates hence the chosen approach.  We use \GMTprog{greenspline} to produce a crude
 topography grid for Mars based on radii estimates from the Mariner 9 and Viking Orbiter spacecrafts.
@@ -1031,3 +1033,38 @@ x- and y-axis, at the given angle.
 \GMTexample{30}{Trigonometric functions plotted in graph mode.}
  
 \index{Example!Trigonometric functions plotted in graph mode|)}
+
+\section{Using non-default fonts in \PS}
+\label{sec:non-default-fonts-example}
+\index{Example!Using non-default fonts in \PS|(}
+
+This example illustrates several possibilities to create \GMT\
+plots with non-default fonts. As these fonts are not part of the
+standard \PS\ font collection they have to be embedded in the PS-
+or PDF-file with \progname{Ghostscript}. See also
+Appendix~\ref{sec:non-default-fonts} for further information. The
+script includes the following steps:
+
+\begin{itemize}
+\item create a \filename{CUSTOM\_font\_info.d} file;
+\item set the \GMT\ parameters \verb#MAP_DEGREE_SYMBOL#,
+  \verb#PS_CHAR_ENCODING#, and \verb#FONT#;
+\item replace the default Helvetica font in the \GMT-\PS-File with
+  sed;
+\item create a \PS-File with outlined fonts (optional);
+\item convert \GMT's \PS\ output to PDF or any image format
+  (optional).
+\end{itemize}
+
+\script{example_31}
+
+The script produces the plot in
+Figure~\ref{fig:GMT_example_31}. All standard fonts have been
+substituted by the free OpenType fonts Linux Libertine (title) and
+Linux Biolinum (annotations). Uncomment the appropriate lines in
+the script to make a \PS-file with outlined fonts or to convert to
+a PDF-file.
+
+\GMTexample{31}{Using non-default fonts in \PS.}
+ 
+\index{Example!Using non-default fonts in \PS|)}

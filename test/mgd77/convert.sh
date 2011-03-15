@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: convert.sh,v 1.5 2007-11-15 04:20:42 remko Exp $
+#!/bin/bash
+#	$Id: convert.sh,v 1.6 2011-03-15 02:06:45 guru Exp $
 #
 # Tests mgd77convert
 

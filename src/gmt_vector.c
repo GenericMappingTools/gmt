@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.37 2011-03-03 21:02:51 guru Exp $
+ *	$Id: gmt_vector.c,v 1.38 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,11 @@
  
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+#include "gmt_internals.h"
 
 #define MAX_SWEEPS 50
 
-GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
+GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -118,18 +119,17 @@ GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, 
  * Revised:	PW: 12-MAR-1998 for GMT 3.1
  * Revision by WHF Smith, March 03, 2000, to speed up loop indexes.
  */
-	GMT_LONG	p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
-	double	sum, threshold, g, h, t, theta, c, s, tau;
-
+	GMT_LONG p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
+	double sum, threshold, g, h, t, theta, c, s, tau;
 
 	/* Begin by initializing v, b, d, and z.  v = identity matrix,
 		b = d = diag(a), and z = 0:  */
-	
-	memset ((void *)v, 0, (size_t)((*m)*(*n)*sizeof(double)) );
-	memset ((void *)z, 0, (size_t)((*n)*sizeof(double)) );
-	
+
+	GMT_memset (v, (*m)*(*n), double);
+	GMT_memset (z, (*n), double);
+
 	mp1 = (*m) + 1;
-	
+
 	for (p = 0, pp = 0; p < (*n); p++, pp+=mp1) {
 		v[pp] = 1.0;
 		b[p] = a[pp];
@@ -142,60 +142,53 @@ GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, 
 	nsweeps = 0;
 
 	while (nsweeps < MAX_SWEEPS) {
-	
+
 		/* Sum off-diagonal elements of upper triangle.  */
 		sum = 0.0;
 		for (q = 1, qm = (*m); q < (*n); q++, qm += (*m) ) {
-			for (p = 0, pq = qm; p < q; p++, pq++) {
-				sum += fabs(a[pq]);
-			}
+			for (p = 0, pq = qm; p < q; p++, pq++) sum += fabs(a[pq]);
 		}
-		
+
 		/* Exit this loop (converged) when sum == 0.0  */
 		if (sum == 0.0) break;
-
 
 		/* If (nsweeps < 3) do only bigger elements;  else all  */
 		threshold =  (nsweeps < 3) ? 0.2 * sum / ( (*n) * (*n) ) : 0.0;
 
 		/* Now sweep whole upper triangle doing Givens rotations:  */
-		
 		for (q = 1, qm = (*m); q < (*n); q++, qm += (*m) ) {
 			for (p = 0, pm = 0, pq = qm; p < q; p++, pm += (*m), pq++) {
 				/* In 3/2000 I swapped order of these loops,
 					to allow simple incrementing of pq  */
-			
+
 				if (a[pq] == 0.0) continue;	/* New 3/2000  */
-			
-				g = 100.0 * fabs(a[pq]);
-				
+
+				g = 100.0 * fabs (a[pq]);
+
 				/* After four sweeps, if g is small relative
 					to a(p,p) and a(q,q), skip the 
 					rotation and set a(p,q) to zero.  */
 
-				if ( (nsweeps > 3) && ( (fabs(d[p])+g) == fabs(d[p]) ) && ( (fabs(d[q])+g) == fabs(d[q]) ) ) {
+				if ((nsweeps > 3) && ((fabs (d[p])+g) == fabs (d[p])) && ((fabs (d[q])+g) == fabs (d[q]))) {
 					a[pq] = 0.0;
 				}
-				else if (fabs(a[pq]) > threshold) {
-
+				else if (fabs (a[pq]) > threshold) {
 					h = d[q] - d[p];
-					
-					if (h == 0.0) {
+
+					if (h == 0.0)
 						t = 1.0;	/* This if block is new 3/2000  */
-					}
-					else if ( (fabs(h)+g) ==  fabs(h) ) {
+					else if (fabs (h) + g == fabs (h))
 						t = a[pq] / h;
-					}
 					else {
 						theta = 0.5 * h / a[pq];
-						t = 1.0 / (fabs(theta) + sqrt(1.0 + theta*theta) );
+						t = 1.0 / (fabs (theta) + sqrt (1.0 + theta*theta) );
 						if (theta < 0.0) t = -t;
 					}
 
-					c = 1.0 / sqrt(1.0 + t*t);
+					c = 1.0 / sqrt (1.0 + t*t);
 					s = t * c;
 					tau = s / (1.0 + c);
-					
+
 					h = t * a[pq];
 					z[p] -= h;
 					z[q] += h;
@@ -233,9 +226,9 @@ GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, 
 				}
 			}
 		}
-		
+
 		/* End of one sweep of the upper triangle.  */
-		
+
 		nsweeps++;
 
 		for (p = 0; p < (*n); p++) {
@@ -273,381 +266,194 @@ GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, 
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		fprintf (stderr, "GMT_jacobi:  Failed to converge in %ld sweeps\n", nsweeps);
+		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi: Failed to converge in %ld sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
 }
 
-#ifdef OBSOLETE
-GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots)
-/*
- *
- * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
- * method, which is a convergent series of Givens rotations.
- * Modified from Numerical Recipes FORTRAN edition.
- * Returns integer 0 if OK, -1 if failure to converge in MAX_SWEEPS.
- *
- * programmer:	W. H. F. Smith, 7 June, 1991.
- * Revised:	PW: 12-MAR-1998 for GMT 3.1
- *
- * Caveat Emptor!  Assumes underflows return zero without killing execution.
- * I am not sure what happens if the eigenvalues are degenerate or not distinct.
- */
- 
-
-      	    	/* Sent.  n by n matrix in full storage mode.
-		On return, superdiagonal elements are destroyed.  */
-   	   	/* Sent.  row and column dimension of a as used.  */
-   	   	/* Sent.  row and column dimension of a and v as
-		allocated, so that a(i,j) is at a[i + (*m)*j].  */
-      	    	/* Returned.  vector of n eigenvalues of a.  */
-      	    	/* Returned.  n x n matrix of eigenvectors of a,
-		with row dimension m  */
-      	    	/* Work vector of n elements must be supplied.  */
-      	    	/* Another work vector of n elements must be supplied.  */
-   	       	/* Returned.  number of Givens rotations performed.  */
-
+void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n_in, GMT_LONG nstore_in, double test, GMT_LONG *ierror, GMT_LONG itriag)
 {
-	GMT_LONG	ip, iq, nsweeps, i, j, k;
-	double	sum, threshold, g, h, t, theta, c, s, tau, p;
 
-
-	/* Begin by initializing v, b, d, and z.  v = identity matrix,
-		b = d = diag(a), and z = 0:  */
-
-	for (ip = 0; ip < (*n); ip++) {
-		for (iq = 0; iq < (*n); iq++) {
-			v[ip + (*m)*iq] = 0.0;
-		}
-		v[ip + (*m)*ip] = 1.0;
-		b[ip] = a[ip + (*m)*ip];
-		d[ip] = b[ip];
-		z[ip] = 0.0;
-	}
-
-	/* End of initializations.  Set counters and begin:  */
-
-	(*nrots) = 0;
-	nsweeps = 0;
-
-	while (nsweeps < MAX_SWEEPS) {
-
-		/* Convergence test:
-			Sum off-diagonal elements of upper triangle.
-			When sum == 0.0 (underflow !) we have converged.
-			In this case, break out of while loop.  */
-
-		sum = 0.0;
-		for (ip = 0; ip < (*n)-1; ip++) {
-			for (iq = ip+1; iq < (*n); iq++) {
-				sum += fabs(a[ip + (*m)*iq]);
-			}
-		}
-		if (sum == 0.0) break;
-
-		/* Now we are not converged.
-			If (nsweeps < 3) do only the big elements;
-				else do them all.  */
-		if (nsweeps < 3) {
-			threshold = 0.2 * sum / ( (*n) * (*n) );
-		}
-		else {
-			threshold = 0.0;
-		}
-
-		/* Now sweep whole upper triangle doing Givens rotations:  */
-
-		for (ip = 0; ip < (*n) - 1; ip++) {
-			for (iq = ip+1; iq < (*n); iq++) {
-
-				/* After four sweeps, if the off-diagonal
-					element is "small", skip the rotation
-					and just set it to zero.  "Small" is
-					a relative test by addition:  */
-
-				g = 100.0 * fabs(a[ip + (*m)*iq]);
-
-				if ( (nsweeps > 3) && ( (fabs(d[ip])+g) ==  fabs(d[ip]) ) && ( (fabs(d[iq])+g) ==  fabs(d[iq]) ) ) {
-					a[ip + (*m)*iq] = 0.0;
-				}
-				else if (fabs(a[ip + (*m)*iq]) > threshold) {
-
-					h = d[iq] - d[ip];
-
-					if ( (fabs(h)+g) ==  fabs(h) ) {
-						/* I think this could divide by zero if a(i,j) = a(i,i) = a(j,j) = 0.0.
-							Would this occur only in a degenerate matrix?  */
-						t = a[ip + (*m)*iq] / h;
-					}
-					else {
-						theta = 0.5 * h / a[ip + (*m)*iq];
-						t = 1.0 / (fabs(theta) + sqrt(1.0 + theta*theta) );
-						if (theta < 0.0) t = -t;
-					}
-
-					c = 1.0 / sqrt(1.0 + t*t);
-					s = t * c;
-					tau = s / (1.0 + c);
-					
-					h = t * a[ip + (*m)*iq];
-					z[ip] -= h;
-					z[iq] += h;
-					d[ip] -= h;
-					d[iq] += h;
-					a[ip + (*m)*iq] = 0.0;
-
-					for (j = 0; j < ip; j++) {
-						g = a[j + (*m)*ip];
-						h = a[j + (*m)*iq];
-						a[j + (*m)*ip] = g - s * (h + g * tau);
-						a[j + (*m)*iq] = h + s * (g - h * tau);
-					}
-					for (j = ip+1; j < iq; j++) {
-						g = a[ip + (*m)*j];
-						h = a[j + (*m)*iq];
-						a[ip + (*m)*j] = g - s * (h + g * tau);
-						a[j + (*m)*iq] = h + s * (g - h * tau);
-					}
-					for (j = iq+1; j < (*n); j++) {
-						g = a[ip + (*m)*j];
-						h = a[iq + (*m)*j];
-						a[ip + (*m)*j] = g - s * (h + g * tau);
-						a[iq + (*m)*j] = h + s * (g - h * tau);
-					}
-
-					for (j = 0; j < (*n); j++) {
-						g = v[j + (*m)*ip];
-						h = v[j + (*m)*iq];
-						v[j + (*m)*ip] = g - s * (h + g * tau);
-						v[j + (*m)*iq] = h + s * (g - h * tau);
-					}
-
-					(*nrots)++;
-				}
-			}
-		}
-
-		for (ip = 0; ip < (*n); ip++) {
-			b[ip] += z[ip];
-			d[ip] = b[ip];
-			z[ip] = 0.0;
-		}
-
-		nsweeps++;
-	}
-
-	/* Get here via break when converged, or when nsweeps == MAX_SWEEPS.
-		Sort eigenvalues by insertion:  */
-
-	for (i = 0; i < (*n)-1; i++) {
-		k = i;
-		p = d[i];
-		for (j = i+1; j < (*n); j++) {  /* Find max location  */
-			if (d[j] >= p) {
-				k = j;
-				p = d[j];
-			}
-		}
-		if (k != i) {  /*  Need to swap value and vector  */
-			d[k] = d[i];
-			d[i] = p;
-			for (j = 0; j < (*n); j++) {
-				p = v[j + (*m)*i];
-				v[j + (*m)*i] = v[j + (*m)*k];
-				v[j + (*m)*k] = p;
-			}
-		}
-	}
-
-	/* Return 0 if converged; else print warning and return -1:  */
-
-	if (nsweeps == MAX_SWEEPS) {
-		fprintf(stderr,"GMT_jacobi:  Failed to converge in %d sweeps\n", nsweeps);
-		return(-1);
-	}
-	return(0);
-}
-#endif
-
-void GMT_gauss (double *a, double *vec, GMT_LONG n_in, GMT_LONG nstore_in, double test, GMT_LONG *ierror, GMT_LONG itriag)
-{
- 
 /* subroutine gauss, by william menke */
 /* july 1978 (modified feb 1983, nov 85) */
- 
-/* a subroutine to solve a system of n linear equations in n unknowns*/
-/* gaussian reduction with partial pivoting is used */
-/*      a               (sent, destroyed)       n by n matrix           */
-/*      vec             (sent, overwritten)     n vector, replaced w/ solution*/
-/*      nstore          (sent)                  dimension of a  */
-/*      test            (sent)                  div by zero check number*/
-/*      ierror          (returned)              zero on no error*/
-/*      itriag          (sent)                  matrix triangularized only*/
-/*                                               on TRUE useful when solving*/
-/*                                               multiple systems with same a */
-        static GMT_LONG l1;
-        GMT_LONG *line, *isub, i = 0, j, k, l, j2, n, nstore;
-	GMT_LONG iet, ieb;
-        double big, testa, b, sum;
 
-        iet=0;  /* initial error flags, one for triagularization*/
-        ieb=0;  /* one for backsolving */
+/* a subroutine to solve a system of n linear equations in n unknowns
+ * gaussian reduction with partial pivoting is used
+ *      a	(sent, destroyed)	n by n matrix
+ *      vec	(sent, overwritten)	n vector, replaced w/ solution
+ *      nstore	(sent)			dimension of a
+ *      test	(sent)			div by zero check number
+ *      ierror	(returned)		zero on no error
+ *      itriag	(sent)			matrix triangularized only
+ *					on TRUE useful when solving
+ *					multiple systems with same a
+ */
+	static GMT_LONG l1;
+	GMT_LONG *line = NULL, *isub = NULL, i = 0, j, k, l, j2, n, nstore, iet, ieb;
+	double big, testa, b, sum;
+
+	iet = 0;  /* initial error flags, one for triagularization*/
+	ieb = 0;  /* one for backsolving */
 	n = n_in;
 	nstore = nstore_in;
-	(void)GMT_alloc_memory2 ((void **)&line, (void **)&isub, n, 0, sizeof (GMT_LONG), "GMT_gauss");
+	(void)GMT_malloc2 (C, line, isub, n, 0, GMT_LONG);
 
-/* triangularize the matrix a*/
+/* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
 /* with the coefficients needed to transform the vector vec */
 
-        if (itriag) {   /* triangularize matrix */
- 
-                for( j=0; j<n; j++ ) {      /*line is an array of flags*/
-                        line[j]=0; 
-                        /* elements of a are not moved during pivoting*/
-                        /* line=0 flags unused lines */
-                        }    /*end for j*/
-                        
-                for( j=0; j<n-1; j++ ) {
-                        /*  triangularize matrix by partial pivoting */
-                       big = 0.0; /* find biggest element in j-th column*/
-                                  /* of unused portion of matrix*/
-                       for( l1=0; l1<n; l1++ ) {
-                               if( line[l1]==0 ) {
-                                       testa=(double) fabs((double) (*(a+l1*nstore+j)));
-                                       if (testa>big) {
-                                                i=l1;
-                                                big=testa;
-                                                } /*end if*/
-                                        } /*end if*/
-                                } /*end for l1*/
-                       if( big<=test) {   /* test for div by 0 */
-                               iet=1;
-                               } /*end if*/
- 
-                       line[i]=1;  /* selected unused line becomes used line */
-                       isub[j]=i;  /* isub points to j-th row of tri. matrix */
- 
-                       sum=1.0/(*(a+i*nstore+j)); 
-                                /*reduce matrix towards triangle */
-                       for( k=0; k<n; k++ ) {
-                                if( line[k]==0 ) {
-                                        b=(*(a+k*nstore+j))*sum;
-                                        for( l=j+1; l<n; l++ ) {
-                                               *(a+k*nstore+l)= (*(a+k*nstore+l)) -b*(*(a+i*nstore+l));
-                                               } /*end for l*/
-                                       *(a+k*nstore+j)=b;
-                                        } /*end if*/
-                                } /*end for k*/
-                        } /*end for j*/
- 
-               for( j=0; j<n; j++ ) {
-                        /*find last unused row and set its pointer*/
-                        /*  this row contains the apex of the triangle*/
-                        if( line[j]==0) {
-                                l1=j;   /*apex of triangle*/
-                                isub[n-1]=j;
-                                break;
-                                } /*end if*/
-                        } /*end for j*/
- 
-                } /*end if itriag true*/
-                
-        /*start backsolving*/
-        
-        for( i=0; i<n; i++ ) {  /* invert pointers. line(i) now gives*/
-                                /* row no in triang matrix of i-th row*/
-                                /* of actual matrix */
-                line[isub[i]] = i;
-                } /*end for i*/
- 
-        for( j=0; j<n-1; j++) { /*transform the vector to match triang. matrix*/
-               b=vec[isub[j]];
-               for( k=0; k<n; k++ ) {
-                      if (line[k]>j) {  /* skip elements outside of triangle*/
-                                vec[k]=vec[k]-(*(a+k*nstore+j))*b;
-                                } /*end if*/
-                        } /*end for k*/
-                } /*end for j*/
- 
-      b = *(a+l1*nstore+(n-1));   /*apex of triangle*/
-      if( ((double)fabs( (double) b))<=test) {
-                /*check for div by zero in backsolving*/
-                ieb=2;
-                } /*end if*/
-      vec[isub[n-1]]=vec[isub[n-1]]/b;
- 
-      for( j=n-2; j>=0; j-- ) { /* backsolve rest of triangle*/
-                sum=vec[isub[j]];
-                for( j2=j+1; j2<n; j2++ ) {
-                        sum = sum - vec[isub[j2]] * (*(a+isub[j]*nstore+j2));
-                        } /*end for j2*/
-                        b = *(a+isub[j]*nstore+j);
-               if( ((double)fabs((double)b))<=test) {
-                        /* test for div by 0 in backsolving */
-                        ieb=2;
-                        } /*end if*/
-                vec[isub[j]]=sum/b;   /*solution returned in vec*/
-                } /*end for j*/
+	if (itriag) {   /* triangularize matrix */
 
-/*put the solution vector into the proper order*/
+		for (j = 0; j < n; j++) {      /*line is an array of flags*/
+			line[j] = 0;
+			/* elements of a are not moved during pivoting*/
+			/* line=0 flags unused lines */
+		}
 
-      for( i=0; i<n; i++ ) {    /* reorder solution */
-                for( k=i; k<n; k++ ) {  /* search for i-th solution element */
-                        if( line[k]==i ) {
-                                j=k;
-                                break;
-                                } /*end if*/
-                        } /*end for k*/
-               b = vec[j];       /* swap solution and pointer elements*/
-               vec[j] = vec[i];
-               vec[i] = b;
-               line[j] = line[i];
-                } /*end for i*/
+		for (j=0; j<n-1; j++) {
+			/*  triangularize matrix by partial pivoting */
+			big = 0.0; /* find biggest element in j-th column*/
+				  /* of unused portion of matrix*/
+			for (l1=0; l1<n; l1++) {
+				if (line[l1]==0) {
+					testa = fabs ((double)(*(a+l1*nstore+j)));
+					if (testa>big) {
+						i=l1;
+						big=testa;
+					}
+				}
+			}
+			if (big<=test) iet=1;   /* test for div by 0 */
  
-		GMT_free ((void *)isub);
-		GMT_free ((void *)line);
-      *ierror = iet + ieb;   /* set final error flag*/
+			line[i]=1;  /* selected unused line becomes used line */
+			isub[j]=i;  /* isub points to j-th row of tri. matrix */
+ 
+			sum=1.0/(*(a+i*nstore+j)); 
+
+			/*reduce matrix towards triangle */
+			for (k=0; k<n; k++) {
+				if (line[k]==0) {
+					b=(*(a+k*nstore+j))*sum;
+					for (l=j+1; l<n; l++) *(a+k*nstore+l) -= (b*(*(a+i*nstore+l)));
+					*(a+k*nstore+j)=b;
+				}
+			}
+		}
+
+		for( j=0; j<n; j++ ) {
+			/* find last unused row and set its pointer */
+			/* this row contains the apex of the triangle */
+			if (line[j]==0) {
+				l1=j;   /* apex of triangle */
+				isub[n-1]=j;
+				break;
+			}
+		}
+ 
+	}
+		
+	/* start backsolving */
+	
+	for (i=0; i<n; i++) line[isub[i]] = i;  /* invert pointers. line(i) now gives row no in triang matrix of i-th row of actual matrix */
+ 
+	for (j=0; j<n-1; j++) { /* transform the vector to match triang. matrix */
+		b=vec[isub[j]];
+		for( k=0; k<n; k++ ) {
+			if (line[k]>j) vec[k] -= (b*(*(a+k*nstore+j)));  /* skip elements outside of triangle */
+		}
+	}
+ 
+	b = *(a+l1*nstore+(n-1));   /* apex of triangle */
+	if (fabs((double)b)<=test) ieb=2; /* check for div by zero in backsolving */
+	vec[isub[n-1]]=vec[isub[n-1]]/b;
+ 
+	for (j=n-2; j>=0; j--) { /* backsolve rest of triangle*/
+		sum=vec[isub[j]];
+		for (j2=j+1; j2<n; j2++) sum -= (vec[isub[j2]] * (*(a+isub[j]*nstore+j2)));
+		b = *(a+isub[j]*nstore+j);
+		if (fabs((double)b)<=test) ieb=2; /* test for div by 0 in backsolving */
+		vec[isub[j]]=sum/b;   /* solution returned in vec */
+	}
+
+	/* put the solution vector into the proper order */
+
+	for (i=0; i<n; i++) {    /* reorder solution */
+		for (k=i; k<n; k++) {  /* search for i-th solution element */
+			if (line[k]==i) {
+				j=k;
+				break;
+			}
+		}
+		b = vec[j];	/* swap solution and pointer elements*/
+		vec[j] = vec[i];
+		vec[i] = b;
+		line[j] = line[i];
+	}
+ 
+	GMT_free (C, isub);
+	GMT_free (C, line);
+	*ierror = iet + ieb;   /* set final error flag*/
 }
 
-/*  cartesian_stuff.c  --  bits and pieces for doing spherical trig
- *  in terms of dot and cross products.
- *
- * w. h. f. smith, 16 June. 1989
- *
- */
-
-double GMT_dot3v (double *a, double *b)
+double GMT_dot3v (struct GMT_CTRL *C, double *a, double *b)
 {
-	return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
+	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y] + a[GMT_Z]*b[GMT_Z]);
 }
 
-double GMT_mag3v (double *a)
+double GMT_dot2v (struct GMT_CTRL *C, double *a, double *b)
 {
-	return (d_sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]));
+	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y]);
 }
 
-void GMT_normalize3v (double *a)
+double GMT_mag3v (struct GMT_CTRL *C, double *a)
+{
+	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
+}
+
+void GMT_add3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+{	/* C = A + B */
+	int k;
+	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
+}
+
+void GMT_sub3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+{	/* C = A - B */
+	int k;
+	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
+}
+
+void GMT_normalize3v (struct GMT_CTRL *C, double *a)
 {
 	double r_length;
-	r_length = GMT_mag3v(a);
+	r_length = GMT_mag3v (C,a);
 	if (r_length != 0.0) {
 		r_length = 1.0 / r_length;
-		a[0] *= r_length;
-		a[1] *= r_length;
-		a[2] *= r_length;
+		a[GMT_X] *= r_length;
+		a[GMT_Y] *= r_length;
+		a[GMT_Z] *= r_length;
 	}
 }
 
-void GMT_cross3v (double *a, double *b, double *c)
+void GMT_normalize2v (struct GMT_CTRL *C, double *a)
 {
-	c[0] = a[1] * b[2] - a[2] * b[1];
-	c[1] = a[2] * b[0] - a[0] * b[2];
-	c[2] = a[0] * b[1] - a[1] * b[0];
+	double r_length;
+	r_length = hypot (a[GMT_X], a[GMT_Y]);
+	if (r_length != 0.0) {
+		r_length = 1.0 / r_length;
+		a[GMT_X] *= r_length;
+		a[GMT_Y] *= r_length;
+	}
 }
 
-void GMT_geo_to_cart (double lat, double lon, double *a, GMT_LONG degrees)
+void GMT_cross3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+{
+	c[GMT_X] = a[GMT_Y] * b[GMT_Z] - a[GMT_Z] * b[GMT_Y];
+	c[GMT_Y] = a[GMT_Z] * b[GMT_X] - a[GMT_X] * b[GMT_Z];
+	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
+}
+
+void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, GMT_LONG degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = TRUE,
@@ -659,29 +465,52 @@ void GMT_geo_to_cart (double lat, double lon, double *a, GMT_LONG degrees)
 		lat *= D2R;
 		lon *= D2R;
 	}
-	sincos (lat, &a[2], &clat);
+	sincos (lat, &a[GMT_Z], &clat);
 	sincos (lon, &slon, &clon);
-	a[0] = clat * clon;
-	a[1] = clat * slon;
+	a[GMT_X] = clat * clon;
+	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (double *lat, double *lon, double *a, GMT_LONG degrees)
+void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, GMT_LONG degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = TRUE, the output coordinates
 	   are in degrees, otherwise in radian. */
 
 	if (degrees) {
-		*lat = d_asind (a[2]);
-		*lon = d_atan2d (a[1], a[0]);
+		*lat = d_asind (a[GMT_Z]);
+		*lon = d_atan2d (a[GMT_Y], a[GMT_X]);
 	}
 	else {
-		*lat = d_asin (a[2]);
-		*lon = d_atan2 (a[1], a[0]);
+		*lat = d_asin (a[GMT_Z]);
+		*lon = d_atan2 (a[GMT_Y], a[GMT_X]);
 	}
 }
 
-GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
+void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, GMT_LONG degrees)
+{
+	/* Convert polar (cylindrical) coordinates r, theta
+	   to a 2-vector of unit length (a). If degrees = TRUE,
+	   input theta is in degrees, otherwise in radian */
+
+	if (degrees) theta *= D2R;
+	sincos (theta, &a[GMT_Y], &a[GMT_X]);
+	a[GMT_X] *= r;
+	a[GMT_Y] *= r;
+}
+
+void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, GMT_LONG degrees)
+{
+	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
+	   coordinates (r, theta). If degrees = TRUE, the output coordinates
+	   are in degrees, otherwise in radian. */
+
+	*r = hypot (a[GMT_X], a[GMT_Y]);
+	*theta = d_atan2 (a[GMT_Y], a[GMT_X]);
+	if (degrees) *theta *= R2D;
+}
+
+GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -690,93 +519,86 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	 * If mode=1: first follows meridian, then parallel
 	 * If mode=2: first follows parallel, then meridian
 	 * Returns the new number of points (original plus auxiliary).
-	 *
-	 * The original argument "greenwich" became superfluous when the algorithm for
-	 * wrapping the inserted points was altered on 23-May-2007. This was also when
-	 * it was discovered that the calling programs sometimes defined "step" in
-	 * inches of map projection.
 	 */
       
-	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc = 0;
-	GMT_LONG meridian;
-	double *lon_tmp = NULL, *lat_tmp = NULL, *old;
-	double a[3], b[3], x[3], *lon, *lat;
+	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0, meridian;
+	double *lon_tmp = NULL, *lat_tmp = NULL;
+	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
-	
+
 	lon = *a_lon;
 	lat = *a_lat;
-	
-	GMT_geo_to_cart (lat[0], lon[0], a, TRUE);
-	n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, 1, 0, sizeof (double), "GMT_fix_up_path");
+
+	GMT_geo_to_cart (C, lat[0], lon[0], a, TRUE);
+	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 1, 0, double);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;
-	
+
 	for (i = 1; i < n; i++) {
-		
-		GMT_geo_to_cart (lat[i], lon[i], b, TRUE);
+
+		GMT_geo_to_cart (C, lat[i], lon[i], b, TRUE);
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
-			theta = fabs(lon[i]-lon[i-1]) * cosd(lat[i-1]);
+			theta = fabs (lon[i]-lon[i-1]) * cosd (lat[i-1]);
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i-1];
 				n_tmp++;
 			}
-			theta = fabs(lat[i]-lat[i-1]);
+			theta = fabs (lat[i]-lat[i-1]);
 			n_step = irint (theta / step);
-			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
+			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
 				lon_tmp[n_tmp] = lon[i];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
 			}
+			k = 0;
 		}
 
 		else if (mode == 2) {	/* First follow parallel, then meridian */
-			theta = fabs(lat[i]-lat[i-1]);
+			theta = fabs (lat[i]-lat[i-1]);
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
 			}
-			theta = fabs(lon[i]-lon[i-1]) * cosd(lat[i]);
+			theta = fabs (lon[i]-lon[i-1]) * cosd(lat[i]);
 			n_step = irint (theta / step);
-			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
+			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i];
 				n_tmp++;
 			}
+			k = 0;
 		}
 
 		/* Follow great circle */
-		else if ((theta = d_acosd (GMT_dot3v (a, b))) == 180.0) {	/* trouble, no unique great circle */
-			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Two points in input list are antipodal - no resampling taken place!\n", GMT_program);
-		}
+		else if ((theta = d_acosd (GMT_dot3v (C, a, b))) == 180.0)	/* trouble, no unique great circle */
+			GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Two points in input list are antipodal - no resampling taken place!\n");
 
 		else if ((n_step = irint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
-			fraction = 1.0 / (float) n_step;
-			minlon = MIN(lon[i-1],lon[i]);
-			maxlon = MAX(lon[i-1],lon[i]);
+			fraction = 1.0 / (double)n_step;
+			minlon = MIN (lon[i-1],lon[i]);
+			maxlon = MAX (lon[i-1],lon[i]);
 			meridian = GMT_IS_ZERO (maxlon - minlon);	/* A meridian; make a gap so tests below will give right range */
 			for (j = 1; j < n_step; j++) {
 				c = j * fraction;
 				d = 1 - c;
-				x[0] = a[0] * d + b[0] * c;
-				x[1] = a[1] * d + b[1] * c;
-				x[2] = a[2] * d + b[2] * c;
-				GMT_normalize3v (x);
-				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
-				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, TRUE);
+				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
+				GMT_normalize3v (C, x);
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
+				GMT_cart_to_geo (C, &lat_tmp[n_tmp], &lon_tmp[n_tmp], x, TRUE);
 				if (meridian)
 					lon_tmp[n_tmp] = minlon;
 				else if (lon_tmp[n_tmp] < minlon)
@@ -786,25 +608,103 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				n_tmp++;
 			}
 		}
-		if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
+		if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, n_alloc, double);
 		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
-		a[0] = b[0];	a[1] = b[1];	a[2] = b[2];
+		GMT_cpy3v (a, b);
 	}
-	n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, 0, n_tmp, sizeof (double), "GMT_fix_up_path");
-	
-	old = lon;
-	lon = lon_tmp;
-	GMT_free ((void *) old);
-	old = lat;
-	lat = lat_tmp;
-	GMT_free ((void *) old);
-	*a_lon = lon;
-	*a_lat = lat;
-	return (n_tmp);
-}		
+	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 0, n_tmp, double);
 
-GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
+	/* Destroy old alocated memory and put the knew none in place */
+	GMT_free (C, lon);
+	GMT_free (C, lat);
+	*a_lon = lon_tmp;
+	*a_lat = lat_tmp;
+	return (n_tmp);
+}
+
+GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, GMT_LONG n, double step, GMT_LONG mode)
+{
+	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
+	 * auxiliary points if the distance between two given points exceeds
+	 * <step> units.
+	 * If mode=0: returns points along a straight line
+	 * If mode=1: staircase; first follows y, then x
+	 * If mode=2: staircase; first follows x, then y
+	 * Returns the new number of points (original plus auxiliary).
+	 */
+      
+	GMT_LONG i, j, k = 1, n_tmp, n_step = 0, n_alloc = 0;
+	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
+
+	x = *a_x;	y = *a_y;
+
+	n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, 1, 0, double);
+	x_tmp[0] = x[0];	y_tmp[0] = y[0];	n_tmp = 1;
+	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
+
+	for (i = 1; i < n; i++) {
+		if (mode == 1) {	/* First follow x, then y */
+			n_step = irint (fabs (x[i] - x[i-1]) / step);
+			for (j = 1; j < n_step; j++) {
+				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
+				y_tmp[n_tmp] = y[i-1];
+				n_tmp++;
+			}
+			n_step = irint (fabs (y[i]-y[i-1]) / step);
+			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
+				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				x_tmp[n_tmp] = x[i];
+				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
+				n_tmp++;
+			}
+			k = 0;
+		}
+		else if (mode == 2) {	/* First follow y, then x */
+			n_step = irint (fabs (y[i]-y[i-1]) / step);
+			for (j = 1; j < n_step; j++) {
+				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				x_tmp[n_tmp] = x[i-1];
+				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
+				n_tmp++;
+			}
+			n_step = irint (fabs (x[i]-x[i-1]) / step);
+			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
+				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
+				y_tmp[n_tmp] = y[i];
+				n_tmp++;
+			}
+			k = 0;
+		}
+		/* Follow straight line */
+		else if ((n_step = irint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+			for (j = 1; j < n_step; j++) {
+				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
+				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
+				n_tmp++;
+			}
+		}
+		if (n_tmp == n_alloc) n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, n_alloc, double);
+		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
+	}
+	n_alloc = GMT_malloc2 (C, x_tmp, y_tmp, 0, n_tmp, double);
+
+	/* Destroy old alocated memory and put the knew none in place */
+	GMT_free (C, x);	GMT_free (C, y);
+	*a_x = x_tmp;	*a_y = y_tmp;
+	
+	return (n_tmp);
+}
+
+GMT_LONG GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -830,15 +730,15 @@ GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LON
 	the condition number of a would be the square of
 	this.  This condition number is only set if the
 	procedure runs successfully.
-	
+
 	W H F Smith, 18 Feb 2000.
 */
-	GMT_LONG	i, j, k, ik, ij, kj, kk, nrp1;
-	double	eigmax, eigmin;
+	GMT_LONG i, j, k, ik, ij, kj, kk, nrp1;
+	double eigmax, eigmin;
 
 	nrp1 = nr + 1;
-	
-	eigmax = eigmin = sqrt ( fabs (a[0]) );
+
+	eigmax = eigmin = sqrt (fabs (a[0]));
 
 	for (k = 0, kk = 0; k < n; k++, kk+=nrp1 ) {
 		d[k] = a[kk];
@@ -846,10 +746,10 @@ GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LON
 		if (a[kk] <= 0.0) return (-(k+1));
 		a[kk] = sqrt(a[kk]);
 		if (a[kk] <= 0.0) return (-(k+1));	/* Shouldn't happen ?  */
-		
+
 		if (eigmax < a[kk]) eigmax = a[kk];
 		if (eigmin > a[kk]) eigmin = a[kk];
-		
+
 		for (i = k+1; i < n; i++) {
 			ik = i + k*nr;
 			for (j = 0, ij = i, kj = k; j < k; j++, ij+=nr, kj+=nr) a[ik] -= (a[ij]*a[kj]);
@@ -860,7 +760,7 @@ GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LON
 	return (0);
 }
 
-void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
+void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -872,18 +772,18 @@ void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG n
 	but the Cholesky decomposition did not run to completion.  A vector
 	d has been assigned the original diagonal elements of a from 1 to
 	abs(nerr), in this case.
-	
+
 	GMT_chol_recover() takes a and d and restores a so that some other
 	solution of a may be attempted.  
-	
+
 	If (donly != 0) then only the diagonal elements of a will be restored.
 	This might be enough if the next attempt will be to run GMT_jacobi()
 	on a, for the jacobi routine uses only the upper right triangle of
 	a.  If (donly == 0) then all elements of a will be restored, by
 	transposing the upper half to the lower half.
-	
+
 	To use these routines, the call should be:
-	
+
 	if ( (ier = GMT_chol_dcmp (a, d, &cond, nr, n) ) != 0) {
 		GMT_chol_recover (a, d, nr, ier, donly);
 		[and then solve some other way, e.g. GMT_jacobi]
@@ -894,27 +794,23 @@ void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG n
 
 	W H F Smith, 18 Feb 2000
 */
-	
-	GMT_LONG	kbad, i, j, ii, ij, ji, nrp1;
-	
-	kbad = GMT_abs(nerr) - 1;
+
+	GMT_LONG kbad, i, j, ii, ij, ji, nrp1;
+
+	kbad = GMT_abs (nerr) - 1;
 	nrp1 = nr + 1;
-	
-	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) {
-		a[ii] = d[i];
-	}
-	
+
+	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) a[ii] = d[i];
+
 	if (donly) return;
-	
+
 	for (j = 0; j < kbad; j++) {
-		for (i = j+1, ij = j*nrp1 + 1, ji = j*nrp1 + nr; i < n; i++, ij++, ji+=nr) {
-			a[ij] = a[ji];
-		}
+		for (i = j+1, ij = j*nrp1 + 1, ji = j*nrp1 + nr; i < n; i++, ij++, ji+=nr) a[ij] = a[ji];
 	}
 	return;
 }
 
-void GMT_chol_solv (double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n) {
+void GMT_chol_solv (struct GMT_CTRL *C, double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n) {
 	/* Given an n by n linear system ax = y, with a a symmetric, 
 	positive-definite matrix, y a known vector, and x an unknown
 	vector, this routine finds x, if a holds the lower-triangular
@@ -929,11 +825,11 @@ void GMT_chol_solv (double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n) {
 	assumes that GMT_chol_dcmp() ran without error, which means
 	that all diagonal elements b[ii] are positive; these are
 	divisors in the loops below.
-	
+
 	W H F Smith, 18 Feb 2000
 */
-	GMT_LONG	i, j, ij, ji, ii, nrp1;
-	
+	GMT_LONG i, j, ij, ji, ii, nrp1;
+
 	nrp1 = nr + 1;
 
 	/* Find t, store in i, working forward:  */
@@ -942,7 +838,7 @@ void GMT_chol_solv (double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n) {
 		for (j = 0, ij = i; j < i; j++, ij += nr) x[i] -= (a[ij] * x[j]);
 		x[i] /= a[ii];
 	}
-	
+
 	/* Find x, starting from t stored in x, going backward:  */
 	for (i = n-1, ii = (n-1)*nrp1; i >= 0; i--, ii -= nrp1) {
 		for (j = n-1, ji = (n-1)+i*nr; j > i; j--, ji--) x[i] -= (a[ji] * x[j]);

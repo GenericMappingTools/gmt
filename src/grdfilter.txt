@@ -3,104 +3,108 @@
 .SH NAME
 grdfilter \- Filter a 2-D grid file in the space (or time) domain
 .SH SYNOPSIS
-\fBgrdfilter\fP \fIinput_file\fP OPT(D)\fIdistance_flag\fP OPT(F)\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file\fP [ GMT_I_OPT ] [ OPT(N)\fBi\fP|\fBp\fP|\fBr\fP ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+BD(grdfilter) IT(input_file) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[IT(mode)] 
+OPT(G)IT(output_file) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
+BD(grdfilter) will filter a IT(.nc) file in the time domain using one
 of the selected convolution or non-convolution isotropic filters and
 compute distances using Cartesian or Spherical geometries.
-The output \fI.grd\fP file can optionally be generated as a
-subOPT(R)egion of the input and/or with a new OPT(I)ncrement.  In this
+The output IT(.nc) file can optionally be generated as a
+sub-region of the input (via OPT(R)) and/or with a new OPT(I)ncrement.  In this
 way, one may have "extra space" in the input data so that the
 edges will not be used and the output can be within one-half-
 width of the input edges.  If the filter is low-pass, then the
 output may be less frequently sampled than the input.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinput_file\fP
+IT(input_file)
 The grid file of points to be filtered.
 (See GRID FILE FORMATS below).
 .TP
-OPT(D)
-Distance \fIflag\fP tells how grid (x,y) relates to filter \fIwidth\fP as follows:
+OPT(D)IT(distance_flag)
+Distance IT(flag) tells how grid (x,y) relates to filter IT(width) as follows:
 .sp
-\fIflag\fP = 0:  grid (x,y) same units as \fIwidth\fP, Cartesian distances.
+IT(flag) = 0:  grid (x,y) same units as IT(width), Cartesian distances.
 .br
-\fIflag\fP = 1:  grid (x,y) in degrees, \fIwidth\fP in kilometers, Cartesian distances.
+IT(flag) = 1:  grid (x,y) in degrees, IT(width) in kilometers, Cartesian distances.
 .br
-\fIflag\fP = 2:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cos(middle y), Cartesian distances.
+IT(flag) = 2:  grid (x,y) in degrees, IT(width) in km, dx scaled by cos(middle y), Cartesian distances.
 .sp
 The above options are fastest because they allow weight matrix to be computed only once.
 The next three options are slower because they recompute weights for each latitude.
 .sp
-\fIflag\fP = 3:  grid (x,y) in degrees, \fIwidth\fP in km, dx scaled by cosine(y), Cartesian distance calculation.
+IT(flag) = 3:  grid (x,y) in degrees, IT(width) in km, dx scaled by cosine(y), Cartesian distance calculation.
 .br
-\fIflag\fP = 4:  grid (x,y) in degrees, \fIwidth\fP in km, Spherical distance calculation.
+IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calculation.
 .br
-\fIflag\fP = 5:  grid (x,y) in Mercator -Jm1 img units, \fIwidth\fP in km, Spherical distance calculation.
+IT(flag) = 5:  grid (x,y) in Mercator -Jm1 img units, IT(width) in km, Spherical distance calculation.
 .TP
-OPT(F)
-Sets the filter type.  Choose among convolution and non-convolution filters.  Append the filter code followed
-by the full diameter \fIwidth\fP. Available convolution filters are:
+OPT(F)IT(<filtertype><width>)[IT(mode)]
+Sets the filter type.  Choose among convolution and non-convolution filters.  Use any
+IT(filtertype) (listed below) followed by the full diameter IT(width).
 .br
-(\fBb\fP) Boxcar: All weights are equal.
+Convolution filters are:
 .br
-(\fBc\fP) Cosine Arch: Weights follow a cosine arch curve.
+(BD(b)) Boxcar: All weights are equal.
 .br
-(\fBg\fP) Gaussian: Weights are given by the Gaussian function, where \fIwidth\fP is 6 times the
+(BD(c)) Cosine Arch: Weights follow a cosine arch curve.
+.br
+(BD(g)) Gaussian: Weights are given by the Gaussian function, where IT(width) is 6 times the
 conventional Gaussian sigma.
 .br
 Non-convolution filters are:
 .br
-(\fBm\fP) Median: Returns median value.
+(BD(m)) Median: Returns median value.
 .br
-(\fBp\fP) Maximum likelihood probability (a mode estimator): Return modal value.
+(BD(p)) Maximum likelihood probability (a mode estimator): Return modal value.
 If more than one mode is found we return their average value.  Append - or + to
 the filter width if you rather want to return the smallest or largest of the modal
 values.
 .br
-(\fBl\fP) Lower: Return the minimum of all values.
+(BD(l)) Lower: Return the minimum of all values.
 .br
-(\fBL\fP) Lower: Return minimum of all positive values only.
+(BD(L)) Lower: Return minimum of all positive values only.
 .br
-(\fBu\fP) Upper: Return maximum of all values.
+(BD(u)) Upper: Return maximum of all values.
 .br
-(\fBU\fP) Upper: Return maximum or all negative values only.
+(BD(U)) Upper: Return maximum or all negative values only.
 .br
-In the case of \fBL\fP|\fBU\fP it is possible that no data passes the initial sign test; in that case
+In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .TP
-OPT(G)
-\fIoutput_file\fP is the output grid file of the filter.
+OPT(G)IT(output_file)
+IT(output_file) is the output grid file of the filter.
 (See GRID FILE FORMATS below).
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(I)
-\fIx_inc\fP [and optionally \fIy_inc\fP] is the output Increment. Append \fBm\fP to indicate minutes, or \fBc\fP to indicate seconds.
-If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
+GMT_I_OPT
+IT(x_inc) [and optionally IT(y_inc)] is the output Increment. Append BD(m) to indicate arc minutes, or BD(s) to indicate arc seconds.
+If  the new IT(x_inc), IT(y_inc) are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
 [Default:  Same as input.]
 .TP
-OPT(N)
-Determine how NaN-values in the input grid affects the filtered outout:  Append \fBi\fP to ignore all NaNs in
-the calculation of filtered value [Default], \fBr\fP is same as \fBi\fP except if the input node was NaN then the
-output node will be set to NaN (only applies if both grids are coregistered), and \fBp\fP which will
+OPT(N)BD(i)|BD(p)|BD(r)
+Determine how NaN-values in the input grid affects the filtered outout:  Append BD(i) to ignore all NaNs in
+the calculation of filtered value [Default], BD(r) is same as BD(i) except if the input node was NaN then the
+output node will be set to NaN (only applies if both grids are coregistered), and BD(p) which will
 force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle.
 .TP
 OPT(R)
-\fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
+IT(west), IT(east), IT(south), and IT(north) defines the Region of the output points.  [Default:  Same as input.]
 .TP
 OPT(T)
 Toggle the node registration for the output grid so as to become the opposite of the input grid
 [Default gives the same registration as the input grid].
 #include "explain_-V.txt"
 #include "explain_-f.txt"
+#include "explain_help.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
+Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
 and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
 .sp
-\fBgrdfilter\fP north_pacific_dbdb5.grd OPT(G)filtered_pacific.grd OPT(Fm)600 OPT(D)4 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
+BD(grdfilter) north_pacific_dbdb5.nc OPT(G)filtered_pacific.nc OPT(Fm)600 OPT(D)4 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize
 the filter weights for the variation in gridbox size with latitude, and correctly determine which nodes are needed for the convolution
@@ -111,6 +115,6 @@ filters you should project your data to an equal-area projection and run grdfilt
 To use the OPT(D)5 option the input Mercator grid must be created by img2mercgrd using the OPT(C) option so the origin of the
 y-values is the Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdfft (1)
 .IR img2mercgrd (1)

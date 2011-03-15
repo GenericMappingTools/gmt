@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.12 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.13 2011-03-15 02:06:35 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,10 +66,10 @@
  *
  * Authors:	Walter Smith and Remko Scharroo
  * Date:	23-SEP-1993 and 11-SEP-2007
- * Version:	4
+ * Version:	5
  * Now 64-bit enabled.
  *
- * Modules in this file:
+ * Public functions:
  *
  *	GMT_bcr_init		Initialize structure for convolution interpolation
  *	GMT_get_bcr_z		Get interpolated value by convolution
@@ -77,8 +77,9 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+#include "gmt_internals.h"
 
-void GMT_bcr_init (struct GRD_HEADER *grd, GMT_LONG *pad, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
+void GMT_bcr_init (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize interpolant and threshold */
 	bcr->interpolant = interpolant;
@@ -90,30 +91,24 @@ void GMT_bcr_init (struct GRD_HEADER *grd, GMT_LONG *pad, GMT_LONG interpolant, 
 	else
 		bcr->n = 4;
 
-	/* Initialize ioff, joff, mx, my according to grd and pad:  */
-	bcr->ioff = pad[0];
-	bcr->joff = pad[3];
-	bcr->mx = (GMT_LONG)(grd->nx + pad[0] + pad[1]);
-	bcr->my = (GMT_LONG)(grd->ny + pad[2] + pad[3]);
-
 	/* Initialize rx_inc, ry_inc, and offset:  */
-	bcr->rx_inc = 1.0 / grd->x_inc;
-	bcr->ry_inc = 1.0 / grd->y_inc;
-	bcr->offset = (grd->node_offset) ? 0.5 : 0.0;
+	bcr->rx_inc = 1.0 / G->header->inc[GMT_X];
+	bcr->ry_inc = 1.0 / G->header->inc[GMT_Y];
+	bcr->offset = (G->header->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
 }
 
-double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
+double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
 	GMT_LONG i, j, ij;
-	double	x, y, retval, wsum, wx[4], wy[4], w, wp, wq;
+	double x, y, retval, wsum, wx[4], wy[4], w, wp, wq;
 
 	/* First check that xx,yy are not Nan - if so return NaN */
 	
-	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (GMT_d_NaN);
+	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (C->session.d_NaN);
 	
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points
@@ -121,19 +116,19 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	   Remember that we have padded the grid with 2 extra values, so this should not be
 	   a problem. */
 
-	if (xx < grd->x_min - GMT_SMALL || xx > grd->x_max + GMT_SMALL) return (GMT_d_NaN);
-	if (yy < grd->y_min - GMT_SMALL || yy > grd->y_max + GMT_SMALL) return (GMT_d_NaN);
+	if (xx < G->header->wesn[XLO] - GMT_SMALL || xx > G->header->wesn[XHI] + GMT_SMALL) return (C->session.d_NaN);
+	if (yy < G->header->wesn[YLO] - GMT_SMALL || yy > G->header->wesn[YHI] + GMT_SMALL) return (C->session.d_NaN);
 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
-	x = (xx - grd->x_min) * bcr->rx_inc - bcr->offset;
-	y = (grd->y_max - yy) * bcr->ry_inc - bcr->offset;
+	x = (xx - G->header->wesn[XLO]) * bcr->rx_inc - bcr->offset;
+	y = (G->header->wesn[YHI] - yy) * bcr->ry_inc - bcr->offset;
 
 	if (bcr->interpolant == BCR_NEARNEIGHBOR) {
 		/* Find the indices (i,j) of the closest node. */
-		i = irint(x);
-		j = irint(y);
+		i = irint (x);
+		j = irint (y);
 	}
 	else {
 		/* Find the indices (i,j) of the node to the upper left of that.
@@ -152,14 +147,12 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	/* Normally, one would expect here a check on the value (i,j) to make sure that the
 	   corners of the convolution kernel, (i,j) and (i+bcr->n-1,j+bcr->n-1), are both within
 	   the padded grid. However, the check on (xx, yy) above, even with the slack, ensures
-	   that the corner points are between (-2,-2) and (grd->nx+1,grd->ny+1), the corners
+	   that the corner points are between (-2,-2) and (G->header->nx+1,G->header->ny+1), the corners
 	   of the padding.
-
-	if (i < -2 || j < -2 || i+bcr->n > grd_nx+2 || j+bcr->n > grd_ny+2) return (GMT_d_NaN);
 	*/
 
 	/* Save the location of the upper left corner point of the convolution kernel */
-	ij = (j + bcr->joff) * bcr->mx + (i + bcr->ioff);
+	ij = GMT_IJP (G->header, j, i);
 
 	/* Build weights */
 
@@ -229,13 +222,13 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	retval = wsum = 0.0;
 	for (j = 0; j < bcr->n; j++) {
 		for (i = 0; i < bcr->n; i++) {
-			if (!GMT_is_fnan(data[ij+i])) {
+			if (!GMT_is_fnan(G->data[ij+i])) {
 				w = wx[i] * wy[j];
-				retval += data[ij+i] * w;
+				retval += G->data[ij+i] * w;
 				wsum += w;
 			}
 		}
-		ij += bcr->mx;
+		ij += G->header->mx;
 	}
-	return ( ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) ? retval / wsum : GMT_d_NaN);
+	return ( ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) ? retval / wsum : C->session.d_NaN);
 }

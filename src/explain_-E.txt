@@ -1,7 +1,0 @@
-.TP
-OPT(E)
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
-For frames used for animation, you may want to append \fB+\fP to fix the center
-of your data domain (or specify a particular world coordinate point with \fB+w\fP\fIlon0\fP/\fIlat\fP[/\fIz\fP])
-which will project to the center of your page size (or specify the coordinates
-of the projected veiw point with \fB+v\fP\fIx0\fP/\fIy0).

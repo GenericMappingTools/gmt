@@ -1,5 +1,2 @@
 .TP
-OPT(H)
-Input file(s) has header record(s).  If used, the default number of header records is \fBN_HEADER_RECS\fP.
-Use OPT(Hi) if only input data should have header records [Default will write out header records if the
-input data have them]. Blank lines and lines starting with # are always skipped.
+GMT_h_OPT Skip or produce header record(s).

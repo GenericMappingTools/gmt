@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_M.tex,v 1.18 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_M.tex,v 1.19 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Of colors and color legends}
@@ -14,7 +14,8 @@
 \thispagestyle{headings}
 
 Figure~\ref{fig:GMT_App_M_1} shows each of the 22 built-in color palettes,
-stored in so-called cpt tables.
+stored in so-called cpt tables\footnote{The 23rd palette is called {\it random}
+and produces a random set of colors suitable for categorical plots.}.
 The programs \GMTprog{makecpt} and \GMTprog{grd2cpt} are used to access these master cpt tables
 and translate/scale them to fit the user's range of $z$-values.
 The top half of the color bars in the Figure shows the original color scale, which can be either discrete or
@@ -24,7 +25,7 @@ The bottom half the color bar are built by using
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{scripts/GMT_App_M_1}
+\includegraphics[width=\textwidth]{GMT_App_M_1}
 \caption{The standard 22 cpt files supported by \gmt.}
 \label{fig:GMT_App_M_1}
 \end{figure}
@@ -40,7 +41,7 @@ Normally, the name labels are plotted at the lower end of the intervals. But by 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{scripts/GMT_App_M_2}
+\includegraphics[width=\textwidth]{GMT_App_M_2}
 \caption{The many forms of color legends created by \protect\GMTprog{psscale}.}
 \label{fig:GMT_App_M_2}
 \end{figure}

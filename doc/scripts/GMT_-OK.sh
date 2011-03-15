@@ -1,49 +1,64 @@
 #!/bin/bash
-#	$Id: GMT_-OK.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
+#	$Id: GMT_-OK.sh,v 1.11 2011-03-15 02:06:29 guru Exp $
 #
 . functions.sh
 
-psxy -R0/2.7/0/2.5 -Jx1i -K -L -m -N -P << EOF > GMT_-OK.ps
-> -G200
+psxy -R0/2.7/0/2.5 -Jx1i -K -L -N -P << EOF > GMT_-OK.ps
+> -Glightyellow
+0	1.2
+1	1.2
+1	2.1
+0	2.1
+> -Glightred
 0	1.4
 1	1.4
 1	1.2
 0	1.2
-> -G200
+> -Glightgreen
 0	1.9
 1	1.9
 1	2.1
 0	2.1
-> -Wthick
+> -Wthick -G-
 0	1.2
 1	1.2
 1	2.1
 0	2.1
 EOF
-pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
-0.5	2.3	9	0	0	CM	1-part PostScript file
-0.5	2.0	10	0	1	CM	HEADER
-0.5	1.65	10	0	1	CM	BODY@-1@-
-0.5	1.3	10	0	1	CM	TRAILER
+pstext -R -J -O -K -N -F+f << EOF >> GMT_-OK.ps
+0.5	2.3	9p,Helvetica		1-part PostScript file
+0.5	2.0	10p,Helvetica-Bold	HEADER
+0.5	1.65	10p,Helvetica-Bold	BODY@-1@-
+0.5	1.3	10p,Helvetica-Bold	TRAILER
 EOF
 
-psxy -R -J -X1.3i -O -K -L -m -N << EOF >> GMT_-OK.ps
-> -G200
-0	0.8
-1	0.8
-1	0.6
-0	0.6
-> -G200
-0	1.9
-1	1.9
-1	2.1
-0	2.1
-> -Wthick
+psxy -R -J -X1.3i -O -K -L -N << EOF >> GMT_-OK.ps
+> -Glightyellow
 0	0.6
 1	0.6
 1	1.3
 0	1.3
-> -Wthick
+> -Glightred
+0	0.8
+1	0.8
+1	0.6
+0	0.6
+> -Glightyellow
+0	1.4
+1	1.4
+1	2.1
+0	2.1
+> -Glightgreen
+0	1.9
+1	1.9
+1	2.1
+0	2.1
+> -Wthick -G-
+0	0.6
+1	0.6
+1	1.3
+0	1.3
+> -Wthick -G-
 0	1.4
 1	1.4
 1	2.1
@@ -52,38 +67,48 @@ psxy -R -J -X1.3i -O -K -L -m -N << EOF >> GMT_-OK.ps
 0.5	1.3
 0.5	1.4
 EOF
-pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
-0.5	2.3	9	0	0	CM	2-part PostScript file
-0.5	2.0	10	0	1	CM	HEADER
-0.5	1.65	10	0	1	CM	BODY@-1@-
-1.1	1.5	9	0	0	LM	@%1%\035K@%% omits trailer
-1.1	1.2	9	0	0	LM	@%1%\035O@%% omits header
-0.5	1.05	10	0	1	CM	BODY@-2@-
-0.5	0.7	10	0	1	CM	TRAILER
+pstext -R -J -O -K -N -F+f+j << EOF >> GMT_-OK.ps
+0.5	2.3	9p,Helvetica		CM	2-part PostScript file
+0.5	2.0	10p,Helvetica-Bold	CM	HEADER
+0.5	1.65	10p,Helvetica-Bold	CM	BODY@-1@-
+1.1	1.5	9p,Helvetica		LM	@%1%\035K@%% omits trailer
+1.1	1.2	9p,Helvetica		LM	@%1%\035O@%% omits header
+0.5	1.05	10p,Helvetica-Bold	CM	BODY@-2@-
+0.5	0.7	10p,Helvetica-Bold	CM	TRAILER
 EOF
 
-psxy -R -J -X2.3i -O -K -m -L -N << EOF >> GMT_-OK.ps
-> -G200
-0	0.2
-1	0.2
-1	0.0
-0	0.0
-> -G200
-0	1.9
-1	1.9
-1	2.1
-0	2.1
-> -Wthick
+psxy -R -J -X2.3i -O -K -L -N << EOF >> GMT_-OK.ps
+> -Glightyellow
 0	0.0
 1	0.0
 1	0.7
 0	0.7
-> -Wthick
+> -Glightred
+0	0.2
+1	0.2
+1	0.0
+0	0.0
+> -Glightyellow
+0	1.4
+1	1.4
+1	2.1
+0	2.1
+> -Glightgreen
+0	1.9
+1	1.9
+1	2.1
+0	2.1
+> -Wthick -G-
+0	0.0
+1	0.0
+1	0.7
+0	0.7
+> -Wthick -Glightyellow
 0	0.8
 1	0.8
 1	1.3
 0	1.3
-> -Wthick
+> -Wthick -G-
 0	1.4
 1	1.4
 1	2.1
@@ -95,16 +120,16 @@ psxy -R -J -X2.3i -O -K -m -L -N << EOF >> GMT_-OK.ps
 0.5	0.7
 0.5	0.8
 EOF
-pstext -R -J -O -N << EOF >> GMT_-OK.ps
-0.5	2.3	9	0	0	CM	n-part PostScript file
-0.5	2.0	10	0	1	CM	HEADER
-0.5	1.65	10	0	1	CM	BODY@-1@-
-1.1	1.5	9	0	0	LM	@%1%\035K@%% omits trailer
-0.5	1.05	10	0	1	CM	BODY@-i@-
-1.1	1.25	9	0	0	LM	2nd through n-1'th
-1.1	1.1	9	0	0	LM	overlays require
-1.1	0.95	9	0	0	LM	both @%1%\035O@%% and @%1%\035K@%%
-1.1	0.6	9	0	0	LM	@%1%\035O@%% omits header
-0.5	0.45	10	0	1	CM	BODY@-n@-
-0.5	0.1	10	0	1	CM	TRAILER
+pstext -R -J -O -N -F+f+j << EOF >> GMT_-OK.ps
+0.5	2.3	9p,Helvetica		CM	n-part PostScript file
+0.5	2.0	10p,Helvetica-Bold	CM	HEADER
+0.5	1.65	10p,Helvetica-Bold	CM	BODY@-1@-
+1.1	1.5	9p,Helvetica		LM	@%1%\035K@%% omits trailer
+0.5	1.05	10p,Helvetica-Bold	CM	BODY@-i@-
+1.1	1.25	9p,Helvetica		LM	2nd through n-1'th
+1.1	1.1	9p,Helvetica		LM	overlays require
+1.1	0.95	9p,Helvetica		LM	both @%1%\035O@%% and @%1%\035K@%%
+1.1	0.6	9p,Helvetica		LM	@%1%\035O@%% omits header
+0.5	0.45	10p,Helvetica-Bold	CM	BODY@-n@-
+0.5	0.1	10p,Helvetica-Bold	CM	TRAILER
 EOF

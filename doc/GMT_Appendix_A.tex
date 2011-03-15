@@ -1,9 +1,9 @@
 %-----------------------------------------
-%	$Id: GMT_Appendix_A.tex,v 1.44 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_A.tex,v 1.45 2011-03-15 02:06:28 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %-----------------------------------------
 %
 
@@ -82,35 +82,16 @@ This package currently holds the programs \GMTprog{mgd77convert}, \GMTprog{mgd77
 \GMTprog{mgd77magref}, \GMTprog{mgd77manage}, \GMTprog{mgd77path}, \GMTprog{mgd77sniffer}, and \GMTprog{mgd77track} which can be
 used to extract information or data values from or plot marine geophysical
 data files in the ASCII MGD77 or netCDF MGD77+ formats\footnote{The ASCII MGD77 data are available on CD-ROM from NGDC
-(www.ngdc.noaa.gov).}).  We expect this package eventually to replace the {\bf mgg} package.
+(www.ngdc.noaa.gov).}).  This package has replaced the old {\bf mgg} package.
 The package is maintained by Paul Wessel.
-
-\section{mgg: GMT-MGD77 extractor and plotting tools}
-
-This package holds the legacy programs \GMTprog{binlegs}, \GMTprog{dat2gmt},
-\GMTprog{gmt2dat}, \GMTprog{gmtinfo}, \GMTprog{gmtlegs}, \GMTprog{gmtlist},
-\GMTprog{gmtpath}, \GMTprog{gmttrack}, and \GMTprog{mgd77togmt}, which can be
-used to maintain, access, extract data from, and plot marine geophysical
-data files converted from the MGD77 format to the .gmt format\footnote{These data are available on CD-ROM from NGDC
-(www.ngdc.noaa.gov).}). The package is maintained by the \GMT\ developers.
 
 \section{misc: Miscellaneous tools}
 
 At the moment, this package contains the programs \GMTprog{dimfilter}, which
 is an extension of \GMTprog{grdfilter} in that it allows for spatial directional
-filtering, \GMTprog{psmegaplot}
-which you can use to make large posters using a simple laserwriter,
-\GMTprog{makepattern} which generates raster patterns from \GMT\ 3.0
-icon files, \GMTprog{gmt2kml} which converts \GMT\ table data to Google
-Earth's KML format, \GMTprog{gmtdigitize} which provides a GMT interface
-to a digitizing tablet via a serial port, \GMTprog{gmtstitch} which can
-be used to assemble pieces digitized lines into complete lines or
-polygons, \GMTprog{gmtdp} which performs line reduction using the Douglas-Peucker algorithm,
-\GMTprog{kml2gmt} which extracts \GMT\ table data from Google Earth KML files,
-and \GMTprog{nc2xy} which can extract data from column-oriented netCDF files.
+filtering and \GMTprog{gmtdigitize}, which provides a GMT interface
+to a digitizing tablet via a serial port.
 The package is maintained by Paul Wessel.
-The increasingly popular utility \GMTprog{ps2raster}, which simplifies the rasterization of \GMT
-\PS\ to raster formats (see Appendix~\ref{app:C}), was moved to the general tools starting with \GMT\ 4.2.0.
 
 \section{segyprogs: plotting SEGY seismic data}
 
@@ -138,11 +119,16 @@ The package is maintained by Paul Wessel.
 
 This package contains the plate tectonic programs \GMTprog{backtracker},
 which you can use to move geologic markers forward or backward in time, 
+\GMTprog{grdpmodeler} which evaluates predictions of a plate motion model on a grid,
 \GMTprog{grdrotater} which rotates entire grids using a finite rotation,
 \GMTprog{hotspotter} which generates CVA grids based on seamount locations
 and a set of absolute plate motion stage poles (\GMTprog{grdspotter} does the
 same using a bathymetry grid instead of seamount locations), \GMTprog{originator},
-which associates seamounts with the most likely hotspot origins, and \GMTprog{rotconverter}
+which associates seamounts with the most likely hotspot origins,
+\GMTprog{rotatorer} which determines finite rotations from seamount trails,
+\GMTprog{rotextractor} which extracts subsets of raw rotations for processing,
+\GMTprog{rotsmoother} which averages raw rotations into a smooth model,
+and \GMTprog{rotconverter}
 which does various operations involving finite rotations on a sphere.  The package
 is maintained by Paul Wessel.
 
@@ -157,19 +143,9 @@ Newly added are the tools \GMTprog{x2sys\_init},  \GMTprog{x2sys\_binlist},
 \GMTprog{x2sys\_report}, \GMTprog{x2sys\_solve} and \GMTprog{x2sys\_merge} 
 which extends the track-management system
 employed by the mgg supplement to generic track data of any format.
-This package represents a new generation of tools intended to replace the old
-``X\_SYSTEM'' crossover tools (below).  The package is maintained
+This package represents a new generation of tools and replaces the old
+{\bf x\_system} package.  The package is maintained
 by Paul Wessel.
-
-\section{x\_system: track crossover error estimation}
-
-This package contains the tools \GMTprog{x\_edit},
-\GMTprog{x\_init}, \GMTprog{x\_list}, \GMTprog{x\_over}, \GMTprog{x\_remove},
-\GMTprog{x\_report}, \GMTprog{x\_setup}, \GMTprog{x\_solve\_dc\_drift}, and
-\GMTprog{x\_update}.
-Collectively, they make up the old ``XSYSTEM'' crossover tools.  This
-package with remain in the \GMT\ supplemental archive until \progname{x2sys} is complete.
-The package is maintained by Paul Wessel.
 
 \section{xgrid: visual editor for grid files}
 

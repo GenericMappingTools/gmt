@@ -3,43 +3,44 @@
 .SH NAME
 psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
-\fBpsclip\fP \fIxyfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ GMT_B_OPT ] [ OPT(E)\fIazim\fP/\fIelev\fP ] [ GMT_K_OPT ] [ OPT(N) ] 
-[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
-[ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_mo_OPT ]
+BD(psclip) IT(xyfiles) GMT_J_OPT GMT_Rgeoz_OPT 
+[ GMT_B_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(T) ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_bi_OPT ] 
+[ GMT_c_OPT] [ GMT_fi_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .br
 .sp
-\fBpsclip\fP OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
+BD(psclip) OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
 .SH DESCRIPTION
-\fBpsclip\fP reads (x,y) file(s) [or standard input] and draws polygons that are
+BD(psclip) reads (x,y) file(s) [or standard input] and draws polygons that are
 activated as clipping paths.  Several files may be read to create complex paths
 consisting of several non-connecting segments.
 Only marks that are subsequently drawn inside the clipping path will be shown. To determine what is inside or
-outside the clipping path, \fBpsclip\fP uses the even-odd rule. When a ray drawn from any point, regardless of
+outside the clipping path, BD(psclip) uses the even-odd rule. When a ray drawn from any point, regardless of
 direction, crosses the clipping path segments an odd number of times, the point is inside the clipping path.
 If the number is even, the point is outside.
 The OPT(N) option, reverses the sense of what is the inside and outside of the paths by plotting a clipping
 path along the map boundary.
 After subsequent plotting, which will be clipped against these paths, the clipping
-may be deactivated by running \fBpsclip\fP a second time with the OPT(C) option only.
+may be deactivated by running BD(psclip) a second time with the OPT(C) option only.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIxyfiles\fP
+IT(xyfiles)
 ASCII [or binary, see OPT(b)] file(s) with (x,y) values for clip polygons.  If no files are given, the
 standard input is read.
 .TP
 OPT(C)
 Mark end of existing clip path.  No input file or projection information are needed.
 However, you must supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
-#include "explain_-J_short.txt"
+#include "explain_-J.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .sp
-#include "explain_-B_short.txt"
-.TP
-OPT(E)
-Sets the viewpoint's azimuth and elevation [180/90].\"'
-#include "explain_-h.txt"
+#include "explain_-B.txt"
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 OPT(N)
@@ -50,38 +51,40 @@ only points outside that path will be shown. Cannot be used together with OPT(B)
 .TP
 OPT(T)
 Rather than read any input files, simply turn on clipping for the current map region.
-Basically, OPT(T) is a convenient way to run \fBpsclip\fP with
+Basically, OPT(T) is a convenient way to run BD(psclip) with
 the arguments OPT(N) /dev/null (or, under Windows, OPT(N) NUL). Cannot be used together with OPT(B).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
-.TP
-OPT(Z)
-For 3-D projections:  Sets the z-level of the polygons [0].
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
-#include "explain_-m.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
-To make an overlay \fIPostScript\fP file that will set up a complex clip area to which
+To make an overlay IT(PostScript) file that will set up a complex clip area to which
 subsequent plotting will be confined, run:
 .br
 .sp
-\fBpsclip\fP my_region.xy OPT(R)0/40/0/40 OPT(Jm)0.3\fBi\fP OPT(O) OPT(K) > clip_mask_on.ps
+BD(psclip) my_region.xy OPT(R)0/40/0/40 OPT(Jm)0.3BD(i) OPT(O) OPT(K) > clip_mask_on.ps
 .br
 .sp
 To deactivate the clipping in an existing plotfile, run:
 .br
 .sp
-\fBpsclip\fP OPT(C) OPT(O) >> complex_plot.ps
+BD(psclip) OPT(C) OPT(O) >> complex_plot.ps
 .SH BUGS
-\fBpsclip\fP cannot handle polygons that contain the south or north pole.  For such polygons,
+BD(psclip) cannot handle polygons that contain the south or north pole.  For such polygons,
 you should split them into two and make each explicitly contain the polar point.  The two
 clip polygons will combine to give the desired effect.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdmask (1),
 .IR psbasemap (1),
 .IR psmask (1)

@@ -3,13 +3,13 @@
 .SH NAME
 backtracker \- Reconstruct points, flowlines and hotspot tracks 
 .SH SYNOPSIS
-\fBbacktracker\fP [\fIinfile(s)\fP] OPT(E)\fIrotations.txt\fP | OPT(e)\fIlon\fP/\fIlat\fP/\fIangle\fP
-[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ OPT(F)\fIdrift.txt\fP ] [ GMT_H_OPT ] 
-[ OPT(Lf)|\fBb\fP\fIstep\fP ] [ OPT(N)\fIupper_age\fP ] 
-[ OPT(Q)\fIfixed_age\fP ] [ OPT(S)\fIfilestem\fP ] [ OPT(T)\fIzero_age\fP ] [ GMT_V_OPT ] 
-[ OPT(W)[\fBa\fP|\fBt\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
+BD(backtracker) [IT(infile(s))] OPT(E)IT(rot_file) | OPT(e)IT(lon)/IT(lat)/IT(angle)
+[ OPT(A)[IT(young)/IT(old)] ] [ OPT(Df)|BD(b) ] [ OPT(F)IT(drift.txt) ] 
+[ OPT(Lf)|BD(b)IT(step) ] [ OPT(N)IT(upper_age) ] 
+[ OPT(Q)IT(fixed_age) ] [ OPT(S)IT(filestem) ] [ OPT(T)IT(zero_age) ] [ GMT_V_OPT ] 
+[ OPT(W)[BD(a)|BD(t)] ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
+BD(backtracker) reads (longitude, latitude, age) positions from IT(infiles) 
 [or standard input] and computes rotated (x,y,t) coordinates using the 
 specified rotation parameters.  It can either calculate final
 positions [Default] or create a sampled track (flowline or hotspot track) between the initial and final
@@ -19,106 +19,100 @@ See option OPT(:) on how to read (latitude,longitude,age) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinfile(s)\fP
+IT(infile(s))
 Data file(s) to be projected.  If not given, standard input is read.
 #include "euler.txt"
 .TP
-OPT(e)
+OPT(e)IT(lon)/IT(lat)/IT(angle)
 Alternatively, specify the longitude, latitude, and opening angle (all in degrees
 and separated by /) for a single total reconstruction
-rotation that should be applied to all input points.
-.SH OPTIONS
+rotation that should be applied to all input points (input ages, if present, are ignored).
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
-Used in conjunction with OPT(Lb)|\fBf\fP to limit the track output to those sections
-whose predicted ages lie between the specified \fIyoung\fP and \fIold\fP limits.  If OPT(LB)|\fBF\fP
+OPT(A)[IT(young)/IT(old)]
+Used in conjunction with OPT(Lb)|BD(f) to limit the track output to those sections
+whose predicted ages lie between the specified IT(young) and IT(old) limits.  If OPT(LB)|BD(F)
 is used instead then the limits apply to the stage ids (id 1 is the youngest stage).  If no limits are specified
 then individual limits for each record are expected in columns 4 and 5 of the input file.
 .TP
-OPT(C)
-Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
-File format is similar to the stage pole format except that the \fItstart\fP column
-is not present (assumed to be 0 Ma).  Requires OPT(E).
-.TP
-OPT(D)
+OPT(Df)|BD(b)
 Set the direction to go: OPT(Df) will go backward in time (from younger to older positions), while
 OPT(Db) will go forward in time (from older to younger positions) [Default].  Note: For OPT(Db) you
 are specifying the age at the given location, whereas for OPT(Df)
 you are not; instead you specify the age at the reconstructed point.
 .TP
-OPT(F)
-Supply a file with lon, lat, age records that contains the history of hotspot motion for the current hotspot.  If given,
-the reconstructions will only use the 3rd data input column (i.e., the age) to obtain the location
+OPT(F)IT(drift.txt)
+Supply a file with lon, lat, age records that describe the history of hotspot motion for the current hotspot.
+The reconstructions will only use the 3rd data input column (i.e., the age) to obtain the location
 of the hotspot at that time, via an interpolation of the hotspot motion history.  This adjusted
 location is then used to reconstruct the point or path [No drift].
-#include "explain_-h.txt"
 .TP
-OPT(L)
+OPT(Lf)|BD(b)IT(step)
 Specify a sampled path between initial and final position: OPT(Lf) will
 draw particle flowlines, while OPT(Lb) will draw backtrack (hotspot track) paths.
-Append sampling interval in km.  If \fIstep\fP < 0 then only the rotation times
+Append sampling interval in km.  If IT(step) < 0 then only the rotation times
 will be returned.  When OPT(LF) or OPT(LB) is used, the
 third output column will contain the stage id (1 is youngest) [Default is
 along-track predicted ages].  You can control the direction of the paths
 by using OPT(D).
 .TP
-OPT(N)
+OPT(N)IT(upper_age)
 Set the maximum age to extend the oldest stage rotation back in time [Default is no extension].
 .TP
-OPT(Q)
+OPT(Q)IT(fixed_age)
 Assign a fixed age to all positions.  Only lon, lat input is expected [Default expects longitude, latitude, age].
 Useful when the input are points defining isochrons.
 .TP
-OPT(S)
-When OPT(L) is set, the tracks are normally written to stdout as a multisegment
-file.  Specify a \fIfilestem\fP to have each track written to \fIfilestem.#\fP, where
-\fI#\fP is the track number.  The track number is also copied to the 4th output column.
+OPT(S)IT(filestem)
+When OPT(L) is set, the tracks are normally written to IT(stdout) as a multisegment
+file.  Specify a IT(filestem) to have each track written to IT(filestem.#), where
+IT(#) is the track number.  The track number is also copied to the 4th output column.
 .TP
-OPT(T)
+OPT(T)IT(zero_age)
 Set the current time [Default is 0 Ma].
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)[BD(a)|BD(t)]
 Rotates the given input (lon,lat,t) and calculates the confidence ellipse for the
-projected point.  The input point \fImust\fP have a time coordinate that exactly matches
-a particular finite rotation time, otherwise the point will be skipped.  Append
-\fBt\fP or \fBa\fP to output time or angle, respectively, after the projected
+projected point.  The input point IT(must) have a time coordinate that exactly matches
+a particular total reconstruction rotation time, otherwise the point will be skipped.  Append
+BD(t) or BD(a) to output time or angle, respectively, after the projected
 lon, lat.  After these 2-3 items, we write azimuth, major, minor (in km) for the
 95% confidence ellipse.  See OPT(D) for the direction of rotation.
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-bo.txt"
 [Default depends on settings].
-#include "explain_-m.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 .br
 .sp
-\fBbacktracker\fP seamounts.d OPT(Db) OPT(E)DC85.d > newpos.d
+BD(backtracker) seamounts.d OPT(Db) OPT(E)DC85.d > newpos.d
 .br
 .sp
 To project flowlines forward from the (x,y,t) points stored in several 3-column,
 binary, double precision files, run
 .br
 .sp
-\fBbacktracker\fP points.* OPT(Df) OPT(E)DC85.d OPT(Lf)25 OPT(bo) OPT(bi)\fI3\fP > lines.b
+BD(backtracker) points.* OPT(Df) OPT(E)DC85.d OPT(Lf)25 OPT(bo) OPT(bi)IT(3) > lines.b
 .br
 .sp
-This file can then be plotted with \fBpsxy \-M\fP.
+This file can then be plotted with BD(psxy).
 .br
 .sp
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1 Ma, given a history of
 hotspot motion file (HIdrift.txt) and a set of total reconstruction rotations for the plate (PAC_APM.d), try
 .br
 .sp
-echo 204 19 80 | \fBbacktracker\fP OPT(Df) OPT(C) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
-.SH COORDINATES
-Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
-before spherical rotations are performed.  We convert back to geodetic coordinates for output.
-Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
+echo 204 19 80 | BD(backtracker) OPT(Df) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),

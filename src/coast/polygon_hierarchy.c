@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.8 2010-03-02 20:21:17 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.9 2011-03-15 02:06:37 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -29,7 +29,7 @@ int main (int argc, char **argv) {
 	}
 	
 #ifdef DEBUG
-	GMT_memtrack_off (GMT_mem_keeper);
+	GMT_memtrack_off (GMT->dbg.mem_keeper);
 #endif
 	for (res = 0; res < 5; res++) {
 		strcpy (file, argv[1]);	/* Get full file and replace _f with _<res> */
@@ -68,12 +68,12 @@ int main (int argc, char **argv) {
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {	/* For all full resolution polygons */
 	
 		fprintf (stderr, "Full polygon %7d res f", P[FULL][id1].h.id);
-		cont_no_1 = (P[FULL][id1].h.continent);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no_1 = (P[FULL][id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 		for (res = 1; res < 5; res++) {	/* For each of the lower resolutions */
 			fprintf (stderr, "-%c", kind[res]);
 			for (id2 = 0; link[res][id1] == NOT_PRESENT && id2 < n_id[res]; id2++) {
 				if (P[res][id2].father >= 0) continue;	/* Already determined the father polygon */
-				cont_no_2 = (P[res][id2].h.continent);	/* Get continent nubmer 1-6 (0 if not a continent) */
+				cont_no_2 = (P[res][id2].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
 				if (cont_no_1 && cont_no_2) continue;	/* Skip pairs of continents as they cannot contain each other */
 				if (nothing_in_common (&P[FULL][id1].h, &P[res][id2].h, &x_shift)) continue;	/* No area in common */
 				ix_shift = irint (x_shift) * MILL;
@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
 	crude_free_int (IX, IY, N);
 	
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	GMT_memtrack_on (GMT->dbg.mem_keeper);
 #endif
 	GMT_end (argc, argv);
 	

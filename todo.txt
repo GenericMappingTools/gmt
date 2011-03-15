@@ -1,6 +1,6 @@
-#	$Id: todo.txt,v 1.34 2009-08-18 02:15:40 remko Exp $
+#	$Id: todo.txt,v 1.35 2011-03-15 02:06:28 guru Exp $
 
-List of unresolved bugs and desireable enhancements not yet implemented.
+List of unresolved bugs and desirable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
 remember to add an entry in ChangeLog.
 
@@ -25,22 +25,13 @@ ENHANCEMENTS:
 
 gmt_init/plot..	Add TICK_LENGTH_SECONDARY (and _PRIMARY)
 
-gmt_*.c:	Separate allocation of memory for plot-related things from the
-		core calculation-related things.  E.g., grd2xyz does not need GMT_begin
-		to allocated fonts etc.
-
-GIS supplement:	In src/gis, finalize grd2geotiff.c donated from K. Feigl.  Needs work
-		on configure and finding libs.  This supplement should also have Lloyd's
-		shapefile converter.
-		
-grd|gmtmath.c	1) Add macro support; macros defined in .gmtmath or passed via -D
-		2) Add variable support:  _var will assign stack content to variable
+grd|gmtmath.c	1) Add variable support:  _var will assign stack content to variable
 		var which can be used later in the expression.
 		
 pslegend: 	Add support for typesetting a table?
 
 gmt_plot.c:	Different phase shifts for a, f, g?
-		gridlines for x/z, y-z in 3-D (ie. for the vertical walls in the background)
+		gridlines for x/z, y-z in 3-D (i.e. for the vertical walls in the background)
 		X_AXIS_TYPE: introduce new parameter to rotate x labels?
 
 grd2cpt.c	Knowledge of some color tables having a "hinge" at 0.  Many cpt files
@@ -52,23 +43,21 @@ grd2cpt.c	Knowledge of some color tables having a "hinge" at 0.  Many cpt files
 		would require a flag in the CPT files, e.g. # HINGE = 0.  Several of
 		our cpt files would then acquire a HINGE comment.
 
-met:		Supplement with wind barb solution and other symbols.  There are lots
-		of meteorology symbols out there - perhaps starting off with a tool
-		that can hande the barbs is a good start.
+------------------------------------------------------------------------
+DISTANCES and INCREMENTS
 
-psscale:	Add 3-D view option.  Add 3-D view [Need to reclaim the -E option
-		for -Eaz/el but allow backwards comp for current -E option.  Rename
-		current -E option as -T.  Also reclaim -Z for setting the z-level
-		for 3-D views and move current -Z to -W for bar widths; process
-		-Z<file> still for backwardness.
+Goal is to harmonize the many ways we specify search radii, distances, "map units", etc.
 
-pstext.c	Implement -S option in paragraph mode.
+gmtdp:		-T<tolerance>.  Also need proper spherical treatment.
+grdfft:		-F units
+grdfilter:	-Fwidth units and -D
+grdinfo:	-M for global min/max
+grdproject:	-A[k|m|n|i|c|p]
+grdvolume:	-S[k] convert deg to m or km (like -M elsewhere) use -fg
+greenspline:	-St lengthscale units?
+project:	-Gdist[unit] -Lw[lvalues] -W[wvalues] 
+pswiggle:	-M -> -fg
+surface:	[-S<search_radius>[m|c]]
 
-geotiff:	Kurt Feigl has contributed a grd2geotiff.c program but it is mostly
-		based on grdimage that I can imagine we could add this extensive
-		feature as an option to grdimage.  There is also some shapefile
-		support that Lloyd wrote that needs to be finalized; perhaps these
-		two things could go into a "gis" supplement.
-
-pslib.c:	Is there a way to make layers partially transparent? I tried "setoverprint"
-		in a PostScript test file but it didn't work.
+backtracker:	-Lb|fd_km 
+originator:	-Dd_km

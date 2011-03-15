@@ -1,9 +1,2 @@
 .TP
-OPT(f)
-Special formatting of input and/or output columns (time or geographical data).
-Specify \fBi\fP or \fBo\fP to make this apply only to input or output [Default applies to both].
-Give one or more columns (or column ranges) separated by commas.
-Append \fBT\fP (absolute calendar time), \fBt\fP (relative time in chosen \fBTIME_UNIT\fP since \fBTIME_EPOCH\fP),
-\fBx\fP (longitude), \fBy\fP (latitude), or \fBf\fP (floating point) to each column
-or column range item.  Shorthand OPT(f)[\fBi\fP|\fBo\fP]\fBg\fP means OPT(f)[\fBi\fP|\fBo\fP]0\fBx\fP,1\fBy\fP
-(geographic coordinates).
+GMT_f_OPT Special formatting of input and/or output columns.

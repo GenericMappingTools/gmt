@@ -1,3 +1,2 @@
 .TP
-OPT(K)
-More \fIPostScript\fP code will be appended later [Default terminates the plot system].
+OPT(K) Do not finalize the PS plot.

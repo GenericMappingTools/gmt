@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_doc_tests.sh,v 1.11 2011-02-28 02:12:25 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.12 2011-03-15 02:06:29 guru Exp $
 #
 #	Test newly created plots for documentation against archive
 #

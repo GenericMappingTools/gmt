@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: DOS_finder.sh,v 1.2 2010-11-02 02:10:26 guru Exp $
+# $Id: DOS_finder.sh,v 1.3 2011-03-15 02:06:31 guru Exp $
 # Looks for files with \r in them
 if [ $# -eq 1 ]; then
 	long=1

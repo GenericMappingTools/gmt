@@ -1,0 +1,2 @@
+.TP
+GMT_s_OPT Suppress NaN records.

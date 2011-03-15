@@ -1,10 +1,11 @@
-#!/bin/sh
-#	$Id: trivor.sh,v 1.4 2010-07-21 02:57:46 remko Exp $
+#!/bin/bash
+#	$Id: trivor.sh,v 1.5 2011-03-15 02:06:46 guru Exp $
 #
 # Test Delauney and Voronoi for Cartesian data
 
 . ../functions.sh
 header "Test triangulate for generating Delaunay and Voronoi edges"
+
 cat << EOF > nodes.xy
 2.53857	5.16657
 2.48365	6.26811
@@ -17,13 +18,14 @@ cat << EOF > nodes.xy
 8.1706	4.46765
 5.27815	1.15172
 EOF
-ps=trivor.ps
-triangulate nodes.xy -m | psxy -m -R0/10/0/10 -JX6 -P -K -W0.25p,red > trivor.ps
-psxy -R -J -O -B2g1 -Sc0.2 -Gwhite -W0.25p nodes.xy -K >> trivor.ps
-awk '{printf "%s %s 8 0 0 CM %d\n", $1, $2, NR-1}' nodes.xy | pstext -R -J -O -K >> trivor.ps
-triangulate nodes.xy -m -Q -R0/10/0/10 | psxy -R0/10/0/10 -J -O -K -W1p -m >> trivor.ps
-psxy -R -J -O /dev/null >> trivor.ps
 
-rm -f .gmtcommands4 nodes.xy
+ps=trivor.ps
+triangulate nodes.xy -M | psxy -R0/10/0/10 -JX6 -P -K -W0.25p,red > $ps
+psxy -R -J -O -B2g1 -Sc0.2 -Gwhite -W0.25p nodes.xy -K >> $ps
+awk '{printf "%s %s %d\n", $1, $2, NR-1}' nodes.xy | pstext -R -J -F+f8p -O -K >> $ps
+triangulate nodes.xy -M -Q -R0/10/0/10 | psxy -R0/10/0/10 -J -O -K -W1p >> $ps
+psxy -R -J -O /dev/null >> $ps
+
+rm -f nodes.xy
 
 pscmp

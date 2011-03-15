@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 17
-#		$Id: job17.sh,v 1.12 2011-02-28 00:58:03 remko Exp $
+#		$Id: job17.sh,v 1.13 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:	Illustrates clipping of images using coastlines
 # GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -36,8 +36,8 @@ psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> $ps
 
 # Add a text paragraph
 
-pstext -R -J -O -m -Wwhite,Othinner -D-0.1i/0.1i >> $ps << END
-> 90 -10 12 0 4 RB 12p 3i j
+pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i -F+f12,Times-Roman+jRB >> $ps << END
+> 90 -10 12p 3i j
 @_@%5%Example 17.@%%@_  We first plot the color geoid image
 for the entire region, followed by a gray-shaded @#etopo5@#
 image that is clipped so it is only visible inside the coastlines.
@@ -45,4 +45,4 @@ END
 
 # Clean up
 
-rm -f geoid.cpt gray.cpt *_i.nc .gmt*
+rm -f geoid.cpt gray.cpt *_i.nc

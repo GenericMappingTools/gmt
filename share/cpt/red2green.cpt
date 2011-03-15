@@ -1,7 +1,7 @@
-#	$Id: red2green.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#	$Id: red2green.cpt,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 # Like POLAR, but red to green instead
 # Designed by P. Wessel, SOEST
-# COLOR_MODEL = RGB
--1	255	0	0	0	255	255	255
-0	255	255	255	1	0	255	0
+#
+-1	red	0	white
+0	white	1	green

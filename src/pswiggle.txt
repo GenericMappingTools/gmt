@@ -1,57 +1,54 @@
 #include "common_options.txt"
 .TH PSWIGGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN 15
-#define SCALE_S OPT(JS)0/90/15\fBc\fP
+#define SCALE_S OPT(JS)0/90/15BD(c)
 .SH NAME
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
-\fBpswiggle\fP \fIxyz_files\fP GMT_J_OPT GMT_Rgeo_OPT 
-OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)[\fBx\fP]\fIgap\fP ] 
-[ GMT_E_OPT ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
-[ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[/\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_m_OPT ]
+BD(pswiggle) IT(xyz_files) GMT_J_OPT GMT_Rgeoz_OPT 
+OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 
+[ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
+[ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(S)[BD(x)]IT(lon0)/IT(lat0)/IT(length)[/IT(units)] ] [ OPT(T)IT(pen) ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBpswiggle\fP reads (\fIx\fP,\fIy\fP,\fIz\fP) triplets from files [or standard input] and plots z as a function of
-distance along track.  This means that two consecutive (\fIx\fP,\fIy\fP) points define the local distance axis,
-and the local \fIz\fP axis is then perpendicular to the distance axis.  The user may set a preferred
+BD(pswiggle) reads (IT(x),IT(y),IT(z)) triplets from files [or standard input] and plots z as a function of
+distance along track.  This means that two consecutive (IT(x),IT(y)) points define the local distance axis,
+and the local IT(z) axis is then perpendicular to the distance axis.  The user may set a preferred
 positive anomaly plot direction, and if the positive normal is outside
 the plus/minus 90 degree window around the preferred direction, then 180 degrees are added to the
-direction.  Either the positive or the negative wiggle may be shaded.  The resulting \fIPostScript\fP
+direction.  Either the positive or the negative wiggle may be shaded.  The resulting IT(PostScript)
 code is written to standard output.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIfiles\fP
-List one or more file-names. If no files are given, \fBpswiggle\fP will read standard input.
-#include "explain_-J_short.txt"
+IT(files)
+List one or more file-names. If no files are given, BD(pswiggle) will read standard input.
+#include "explain_-J.txt"
 #include "explain_-R.txt"
+#include "explain_-Rz.txt"
 .TP
-OPT(Z)
+OPT(Z)IT(scale)
 Gives anomaly scale in data-units/distance-unit.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
+OPT(A)IT(azimuth)
 Sets the preferred positive azimuth.  Positive wiggles will "gravitate" towards that
 direction.
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(C)
-Subtract \fIcenter\fP from the data set before plotting [0].
+OPT(C)IT(center)
+Subtract IT(center) from the data set before plotting [0].
 .TP
-OPT(D)
-Means there is a data gap if 2 consecutive points are more than \fIgap\fP distance
-units apart.  For geographic map projections the \fIgap\fP is assumed to be in km, else it is in the
-user's units.\"'.  Use OPT(Dx) to specify the gap in projected coordinates (append units \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP).
-#include "explain_-E.txt"
-.TP
-OPT(G)
+OPT(G)IT(fill)
 Set fill shade, color or pattern of positive wiggles [Default is black]
 (See SPECIFYING FILL below).
-#include "explain_-h.txt"
 .TP
-OPT(I)
+OPT(I)IT(fix_az)
 Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 OPT(N)
@@ -59,27 +56,32 @@ Paint negative wiggles instead of positive [Default].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(S)
-Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use OPT(Sx) to specify cartesian coordinates instead.
-\fIlength\fP is in z units, append unit name for labeling
+OPT(S)[BD(x)]IT(lon0)/IT(lat0)/IT(length)[/IT(units)]
+Draws a simple vertical scale centered on IT(lon0/lat0).  Use OPT(Sx) to specify cartesian coordinates instead.
+IT(length) is in z units, append unit name for labeling.  BD(FONT_ANNOT_PRIMARY) is used as font.
 .TP
-OPT(T)
-Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 0.25p, color = black, texture = solid].
+OPT(T)IT(pen)
+Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 0.25p, color = black, style = solid].
 (See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)IT(pen)
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
-[Defaults: width = 0.25p, color = black, texture = solid].
+[Defaults: width = 0.25p, color = black, style = solid].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
-#include "explain_-m.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
@@ -89,7 +91,7 @@ using a LEN-cm-wide Polar Stereographic map ticked
 every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, use
 .br
 .sp
-\fBpswiggle\fP track.xym OPT(R)-20/10/-80/-60 SCALE_S OPT(Z)1000 OPT(B)5 OPT(C)32000 OPT(P) OPT(G)red OPT(T)0.25\fBp\fP,blue
+BD(pswiggle) track.xym OPT(R)-20/10/-80/-60 SCALE_S OPT(Z)1000 OPT(B)5 OPT(C)32000 OPT(P) OPT(G)red OPT(T)0.25BD(p),blue
 OPT(S)1000 OPT(V) > track_xym.ps
 .SH BUGS
 Sometimes the (x,y) coordinates are not printed with enough significant
@@ -104,12 +106,12 @@ awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 Then if these numbers jump around a lot, you may do this:
 .br
 .sp
-awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP OPT(Fb)5 OPT(N)4/0 PAR(D_FORMAT,\fP%.12lg) > smoothed.xyz
+awk '{ print NR, $0 }' yourdata.xyz | BD(filter1d) OPT(Fb)5 OPT(N)4/0 PAR(D_FORMAT,)%.12lg) > smoothed.xyz
 .br
 .sp
 and plot this data set instead.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR gmtcolors (5),
 .IR filter1d (1),
 .IR psbasemap (1),

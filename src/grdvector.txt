@@ -1,55 +1,55 @@
 #include "common_options.txt"
 .TH GRDVECTOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS_SI	0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
+#define PARAMS	2BD(p)/9BD(p)/7BD(p)
 #define LEN1	5
-#define SCALE	OPT(Jx)5\fBc\fP
-#define PARAMS_US	0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
+#define SCALE	OPT(Jx)5BD(c)
 #define LEN2	10
-#define SCL2	OPT(S)10\fBi\fP
+#define SCL2	OPT(S)10BD(i)
 .SH NAME
 grdvector \- Plot vector fields from grid files
 .SH SYNOPSIS
-\fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP GMT_J_OPT [ OPT(A) ] 
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E) ]  
-[ OPT(G)\fIfill\fP ] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(Q)\fIparameters\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBl\fP]\fIscale\fP ] 
-[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ]
+BD(grdvector) IT(compx.nc) IT(compy.nc) GMT_J_OPT [ OPT(A) ] 
+[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(E) ]  
+[ OPT(G)IT(fill) ] [ GMT_I_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(Q)[IT(parameters)] ] [ GMT_Rgeo_OPT ] [ OPT(S)[BD(l)]IT(scale) ] 
+[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBgrdvector\fP reads two 2-D grid files which represents the x- and y-components of a vector field and
+BD(grdvector) reads two 2-D grid files which represents the x- and y-components of a vector field and
 produces a vector field plot by 
 drawing vectors with orientation and length according to the information in the files.  Alternatively,
 polar coordinate components may be used (r, theta).
-\fBgrdvector\fP is basically a short-hand for using 2 calls to \fBgrd2xyz\fP and pasting the output through
-\fBpsxy \-SV\fP.
+BD(grdvector) is basically a short-hand for using 2 calls to BD(grd2xyz) and pasting the output through
+BD(psxy) OPT(SV).
+.SH REQUIRED ARGUMENTS
 .TP
-\fIcompx.grd\fP
+IT(compx.nc)
 Contains the x-component of the vector field.
 .TP
-\fIcompy.grd\fP
+IT(compy.nc)
 Contains the y-component of the vector field. 
 (See GRID FILE FORMATS below.)
-#include "explain_-J_short.txt"
-.SH OPTIONS
+#include "explain_-J.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Means grid files have polar (r, theta) components instead of Cartesian (x, y).
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(C)
-Use \fIcptfile\fP to assign colors based on vector length.
+OPT(C)IT(cptfile)
+Use IT(cptfile) to assign colors based on vector length.
 .TP
 OPT(E)
 Center vectors on grid nodes [Default draws from grid node].
 .TP
-OPT(G)
+OPT(G)IT(fill)
 Sets color or shade for vector interiors [Default is no fill].
 (See SPECIFYING FILL below).
 .TP
 OPT(I)
-Only plot vectors at nodes every \fIx_inc, y_inc\fP apart (must be multiples of
-original grid spacing).  Append \fBm\fP for minutes or \fBc\fP for seconds. [Default plots every node].
+Only plot vectors at nodes every IT(x_inc), IT(y_inc) apart (must be multiples of
+original grid spacing).  Append BD(m) for arc minutes or BD(s) for arc seconds. [Default plots every node].
 #include "explain_-K.txt"
 .TP
 OPT(N)
@@ -57,16 +57,16 @@ Do NOT clip vectors at map boundaries [Default will clip].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(Q)
-Select vector plot [Default is stick-plot].  Optionally, specify \fIparameters\fP which
-are \fIarrowwidth/headlength/headwidth\fP [Default is PARAMS_SI (or PARAMS_US)].  Append \fBn\fP\fIsize\fP
-which will cause vectors shorter than \fIsize\fP to have their appearance scaled by length/\fIsize\fP.
+OPT(Q)[IT(parameters)]
+Select vector plot [Default is stick-plot].  Optionally, specify IT(parameters) which
+are IT(vectorwidth/headlength/headwidth) [Defaults are PARAMS].  Append BD(n)IT(size)
+which will cause vectors shorter than IT(size) to have their appearance scaled by length/IT(size).
 #include "explain_-R.txt"
 Specify a subset of the grid.
 .TP
-OPT(S)
-Sets scale for vector length in data units per distance measurement unit [1].  Append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP
-to indicate the measurement unit (cm, inch, m, point).  Prepend \fBl\fP to indicate a fixed length for
+OPT(S)[BD(l)]IT(scale)
+Sets scale for vector length in data units per distance measurement unit [1].  Append BD(c), BD(i), or BD(p)
+to indicate the measurement unit (cm, inch,or point).  Prepend BD(l) to indicate a fixed length for
 all vectors.
 .TP
 OPT(T)
@@ -74,8 +74,8 @@ Means azimuth should be converted to angles based on the selected map projection
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
-Set pen attributes used for vector outlines [Default: width = 0.25p, color = black, texture = solid].
+OPT(W)IT(pen)
+Set pen attributes used for vector outlines [Default: width = 1, color = black, style = solid].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
@@ -83,22 +83,25 @@ OPT(Z)
 Means the angles provided are azimuths rather than direction (requires OPT(A)).
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
-To draw the vector field given by the files r.grd and theta.grd on a linear plot
+To draw the vector field given by the files r.nc and theta.nc on a linear plot
 with scale LEN1 cm per data unit,
 using vector rather than stick plot, and scale vector magnitudes so that LEN2 units
 equal 1 inch, run 
 .br
 .sp
-\fBgrdvector\fP r.grd theta.grd SCALE OPT(A) OPT(Q) SCL2 > gradient.ps
+BD(grdvector) r.nc theta.nc SCALE OPT(A) OPT(Q) SCL2 > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR gmtcolors (5),
 .IR grdcontour (1),
 .IR psxy (1)

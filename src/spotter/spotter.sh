@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: spotter.sh,v 1.2 2010-06-21 23:55:21 guru Exp $
+#	$Id: spotter.sh,v 1.3 2011-03-15 02:06:37 guru Exp $
 #
 #	Examples of how to use the SPOTTER package
 #
@@ -51,7 +51,7 @@ tmax=145			# Upper age limit
 dx=10m				# The grid spacing to use
 region=130/260/-66/60		# Our Pacific region
 
-hotspotter $DATA -H -I$dx -R$region -E${POLES} -Gexample_1.nc -V -T -N$tmax
+hotspotter $DATA -h -I$dx -R$region -E${POLES} -Gexample_1.nc -V -T -N$tmax
 
 # Make a suitable color table
 
@@ -77,7 +77,7 @@ dx=10m				# The flowline sampling interval to use
 region=130/260/-66/60		# Our Pacific region
 N=2				# return the two most likely hotspots per seamount
 
-originator $DATA -S${N} -H -D$dx -E${POLES} -F${HS} -V > example_3.d
+originator $DATA -S${N} -h -D$dx -E${POLES} -F${HS} -V > example_3.d
 
 echo "Done.  Inspect example_3.d data file"
 #$EDITOR example_3.d

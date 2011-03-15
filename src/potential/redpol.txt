@@ -1,0 +1,68 @@
+#include "common_options.txt"
+.TH REDPOL 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+redpol \- Compute the Continuous Reduction To the Pole, AKA differential RTP.
+.SH SYNOPSIS
+BD(redpol) IT(anom_grd) OPT(G)IT(rtp_grd) [OPT(C)IT(<dec/dip>)] [OPT(E)IT(<dec_grd/dip_grd>)] 
+[OPT(F)IT(<m/n>)] [OPT(M)IT(<m|r>)] [OPT(N)] [OPT(W)IT(<win_width>)] [ GMT_Rgeo_OPT ] 
+[ OPT(T<year>) ] [ OPT(Z<filter>) ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(redpol) will take a IT(.nc) file with a magnetic anomaly and compute the reduction to the pole
+(RTP) anomaly. This anomaly is the one that would have been produce if the bodies were magnetized
+vertically and the anomalies were observed at the geomagnetic pole. Standard RTP procedure assumes
+the direction of magnetization to be uniform throughout the causative body, and the geomagnetic
+field to be uniform in direction throughout the study region. Although these assumptions are
+reasonable for small areas, they do not hold for large areas.   
+
+In the method used here computations are carried out in both the frequency and the space domains.
+The idea is that a large area may be decomposed in small size windows where both the ambient field
+and the magnetization vector change by a very small amount. Inside each of those windows, or bins,
+a set of filter coefficients are calculate and reconstruct for each individual point the component
+filter using a first order Taylor series expansion. 
+.TP
+IT(anom_grd)
+The anomaly grid to be converted.
+.TP
+.B OPT(G)
+IT(rtp_grd) is the filename for output grdfile with the RTP solution 
+.SH OPTIONS
+.TP
+.B OPT(C)
+IT(dec/dip) Use this (constant) declination and inclination angles for both field and magnetization.
+This option consists in the classical RTP procedure.
+.TP
+.B OPT(E)
+IT(dip_grd/dec_grd) Get magnetization DIP & DEC from these grids [default: use IGRF]. Note that
+these two grids do not need to have the same resolution as the anomaly grid. Than can be coarser.
+.TP
+.B OPT(F)
+IT(m/n) The filter window size in terms of row/columns. The default value is 25x25.
+.TP
+.B OPT(M)
+IT(m|r) Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding). 
+.TP
+.B OPT(N)
+Do NOT use Taylor expansion.
+.TP
+.B OPT(R)
+IT(west), IT(east), IT(south), and IT(north) defines the Region of the output points.  [Default:  Same as input.]
+.TP
+.B OPT(Y)
+IT(year) Decimal year used by the IGRF routine to compute the declination and inclination at each
+point [default: 2000] 
+.TP
+.B OPT(W)
+IT(wid)  The size of the moving window in degrees [5].
+.TP
+.B OPT(Z)
+IT(filter_grd) Write the filter file on disk.
+#include "explain_-V.txt"
+.SH EXAMPLES
+Suppose that IT(anom.grd) is a file with the magnetic anomaly reduced to the 2010 epoch and that the IT(dec.grd) and IT(dip.grd) contain the magnetization declination and inclination respectively for an area that encloses that of the IT(anom.grd), compute the IT(RTP) using bins of 2 degrees and a filter of 45 coefficients. 
+BD(redpol) anom.grd OPT(G)rtp.grd OPT(W2) OPT(F)45/45 OPT(T)2010 OPT(E)dec.grd/dip.grd OPT(V)
+To compute the same IT(RTP) but now with the field and magnetization vectors collinear and computed from IGRF 
+BD(redpol) anom.grd OPT(G)rtp.grd OPT(W2) OPT(F)45/45 OPT(T)2010 OPT(V)
+.SH REFERENCE
+Luis, J.L. and Miranda, J.M. (2008), Reevaluation of magnetic chrons in the North Atlantic between 35N
+and 47N: Implications for the formation of the Azores Triple Junction and associated plateau. IT(JGR),     
+VOL. BD(113), B10105, doi:10.1029/2007JB005573

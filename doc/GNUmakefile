@@ -1,11 +1,11 @@
-#	$Id: GNUmakefile,v 1.44 2011-03-03 21:02:50 guru Exp $
+#	$Id: GNUmakefile,v 1.45 2011-03-15 02:06:29 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+#	the Free Software Foundation; version 2 of the License.
 #
 #	This program is distributed in the hope that it will be useful,
 #	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +19,8 @@
 #	The following commands are available to create all the GMT documentation
 #
 #	make all	: same as : make pdf html
-#	make pdf	: Create GMT_Docs.pdf and GMT_Tutorial.pdf
-#	make html	: Create GMT_Docs.html and GMT_Tutorial.html
+#	make pdf	: Create GMT_Docs.pdf, GMT_Tutorial.pdf and GMT_API.pdf
+#	make html	: Create GMT_Docs.html, GMT_Tutorial.html and GMT_API.html
 #	make install	: same as : make all
 #
 #	All the above commands prepare all the necessary graphs and text to be included.
@@ -64,6 +64,12 @@ TUTPDF=$(TUTPS:.ps=.pdf)
 TUTPNG=$(TUTPS:.ps=.png)
 TUTTEX=GMT_Tutorial.tex $(ALLTEX)
 
+# PS, PDF, PNG and TEX files used to make API documentation
+APIPS=
+APIPDF=$(APIPS:.ps=.pdf)
+APIPNG=$(APIPS:.ps=.png)
+APITEX=GMT_API.tex $(ALLTEX)
+
 # PS files to be converted from example PS files
 EX_PS=	scripts/example_01.ps scripts/example_02.ps scripts/example_03.ps scripts/example_04.ps \
 	scripts/example_04c.ps scripts/example_05.ps scripts/example_06.ps scripts/example_07.ps \
@@ -72,8 +78,11 @@ EX_PS=	scripts/example_01.ps scripts/example_02.ps scripts/example_03.ps scripts
 	scripts/example_16.ps scripts/example_17.ps scripts/example_18.ps scripts/example_19.ps \
 	scripts/example_20.ps scripts/example_21.ps scripts/example_22.ps scripts/example_23.ps \
 	scripts/example_24.ps scripts/example_25.ps scripts/example_26.ps scripts/example_27.ps \
-	scripts/example_28.ps scripts/example_29.ps scripts/example_30.ps
+	scripts/example_28.ps scripts/example_29.ps scripts/example_30.ps scripts/example_31.ps
 EX_DIR= ../share/doc/gmt/examples
+
+# Ghostscript font lookup path
+FONTPATH=$(EX_DIR)/ex31/fonts
 
 # PS files to be converted from animation PS files
 AN_PS=	scripts/anim_01.ps scripts/anim_02.ps scripts/anim_03.ps scripts/anim_04.ps
@@ -98,9 +107,8 @@ IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
 RGBPS=	scripts/GMT_RGBchart_a4.ps scripts/GMT_RGBchart_letter.ps scripts/GMT_RGBchart_tabloid.ps
 
 # PS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
-DOCPS1=scripts/GMT_App_B_1.ps scripts/GMT_App_B_2.ps \
-	scripts/GMT_App_K_1.ps scripts/GMT_App_K_2.ps scripts/GMT_App_K_3.ps scripts/GMT_App_K_4.ps \
-	scripts/GMT_App_K_5.ps $(APP_O_PS) \
+DOCPS1=scripts/GMT_App_K_1.ps scripts/GMT_App_K_2.ps scripts/GMT_App_K_3.ps scripts/GMT_App_K_4.ps \
+	scripts/GMT_App_K_5.ps $(APP_O_PS) scripts/GMT_-B_custom.ps \
 	scripts/GMT_-B_time1.ps scripts/GMT_-B_time2.ps scripts/GMT_-B_time3.ps \
 	scripts/GMT_-B_time4.ps scripts/GMT_-B_time5.ps scripts/GMT_-B_time6.ps scripts/GMT_-B_time7.ps \
 	$(SQRT_PS) scripts/GMT_linear_cal.ps scripts/GMT_linear_d.ps scripts/GMT_polar.ps \
@@ -120,7 +128,7 @@ DOCPS1=scripts/GMT_App_B_1.ps scripts/GMT_App_B_2.ps \
 DOCPS2=scripts/GMT_-B_geo_1.ps scripts/GMT_-B_geo_2.ps scripts/GMT_-B_linear.ps scripts/GMT_-B_log.ps \
 	scripts/GMT_-B_pow.ps scripts/GMT_utm_zones.ps \
 	scripts/GMT_-J.ps scripts/GMT_-OK.ps scripts/GMT_-P.ps scripts/GMT_-R.ps scripts/GMT_-U.ps \
-	scripts/GMT_-XY.ps scripts/GMT_App_E.ps \
+	scripts/GMT_-XY.ps scripts/GMT_registration.ps scripts/GMT_App_E.ps \
 	$(APP_F_PS) scripts/GMT_App_G.ps $(APP_J_PS) scripts/GMT_App_M_1.ps scripts/GMT_App_M_2.ps $(APP_N_PS) \
 	scripts/GMT_Defaults_1a.ps scripts/GMT_Defaults_1b.ps scripts/GMT_Defaults_1c.ps scripts/GMT_volcano.ps \
 	scripts/GMT_App_P_2.ps scripts/GMT_color_interpolate.ps
@@ -149,9 +157,10 @@ DOCTEX= \
 all install:	pdf html
 
 # Shortcut, just to preprocess all required files
-ps:		$(DOCPS) $(TUTPS)
+ps:		$(DOCPS) $(TUTPS) $(APIPS)
 prepro:		$(DOCTEX) $(DOCPS) $(DOCPDF) $(DOCPNG) $(DOCIMG) \
-		$(TUTTEX) $(TUTPS) $(TUTPDF) $(TUTPNG)
+		$(TUTTEX) $(TUTPS) $(TUTPDF) $(TUTPNG) \
+		$(APITEX) $(APIPS) $(APIPDF) $(APIPNG)
 
 # Test if plots are OK
 tests doctests:	ps
@@ -166,7 +175,7 @@ clean:
 	\rm -f scripts/*.{tex,eps,pdf,csh,ps,png} scripts/sqrt.d* scripts/.gmt* scrips/gmt.conf
 	\rm -f scripts/anim_*.sh scripts/example_*.sh scripts/volcano.sh scripts/bullseye.sh
 	\rm -f fig/*.pdf fig/GMT_*.png
-	\rm -rf GMT_Docs GMT_Tutorial
+	\rm -rf GMT_Docs GMT_Tutorial GMT_API
 
 clean-png:
 	\rm -f fig/GMT_*.png scripts/*.png
@@ -175,13 +184,15 @@ spotless:	clean
 	\rm -f GMT_version.tex
 
 # Shortcuts, just to do a couple of things
-pdf:	docs tutorial
+pdf:	docs tutorial api
 docs:	$(DOC)/pdf/GMT_Docs.pdf
 tutorial: $(DOC)/pdf/GMT_Tutorial.pdf
+api:	$(DOC)/pdf/GMT_API.pdf
 
-html:	htdocs httutorial
+html:	htdocs httutorial htapi
 htdocs:	$(DOC)/html/GMT_Docs.html
 httutorial: $(DOC)/html/GMT_Tutorial.html
+htapi:	$(DOC)/html/GMT_API.html
 
 # Create links to script files elsewhere on the system
 $(EX_TEX:.tex=.sh):
@@ -194,11 +205,12 @@ $(AN_TEX:.tex=.sh):
 
 # Convert the PS files of the examples and animations to PS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait.
+# The extra FONTPATH options is strictly only needed for example 31, but we do it here for all.
 $(EX_PS) $(AN_PS):	scripts/%.ps: $(EX_DIR)/%.ps
 $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf):	scripts/%.pdf: $(EX_DIR)/%.ps
-	ps2raster -Au -P -Tf -Dscripts $(EX_DIR)/$*.ps
+	ps2raster -Au -P -Tf -Dscripts -C-sFONTPATH=$(FONTPATH) $(EX_DIR)/$*.ps
 $(EX_PS:.ps=.png) $(AN_PS:.ps=.png):    scripts/%.png: $(EX_DIR)/%.ps
-	ps2raster -Au -P -Tg -E$(PNGRES) -Dscripts $(EX_DIR)/$*.ps
+	ps2raster -Au -P -Tg -E$(PNGRES) -Dscripts -C-sFONTPATH=$(FONTPATH) $(EX_DIR)/$*.ps
 
 %.pdf: %.ps
 	ps2raster -A -P -Tf $*.ps
@@ -234,8 +246,8 @@ $(RGBPS):	scripts/GMT_RGBchart.sh
 	cd scripts ; bash GMT_RGBchart.sh $(word 3,$(subst _, ,$*))
 
 # How to run the scripts in the scripts directory to make PS files
-%.ps:	%.sh scripts/functions.sh
-	cd scripts ; bash ../$*.sh
+scripts/%.ps:	scripts/%.sh scripts/functions.sh
+	cd scripts ; bash $*.sh
 
 # Turn scripts into TEX files for inclusion in the documentation. Remove comments in these.
 $(DOCPS1:.ps=.tex):	%.tex:	%.sh
@@ -278,7 +290,16 @@ $(DOC)/pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
 	\mv GMT_Tutorial.pdf $@
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
-# Dependencies and rules to make HTML documentation
+$(DOC)/pdf/GMT_API.pdf:	$(APIPDF) $(APITEX)
+	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
+	$(PDFLATEX) GMT_API
+	$(PDFLATEX) GMT_API
+	makeindex -s GMT.ist GMT_API.idx
+	$(PDFLATEX) GMT_API
+	$(PDFLATEX) GMT_API
+	\mv GMT_API.pdf $@
+	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
+
 $(DOC)/html/GMT_Docs.html:	$(DOCPNG) $(DOCIMG) $(DOCTEX)
 	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Docs{-js.tex,1.tmp}
 	$(HTLATEX) GMT_Docs $(HTLATEX_OPT)
@@ -296,3 +317,11 @@ $(DOC)/html/GMT_Tutorial.html:	$(TUTPNG) $(TUTTEX)
 	\ln -f GMT_Tutorial.css $(DOC)/html
 	\ln -f $(TUTPNG) $(DOC)/html/images
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Tutorial{-js.tex,1.tmp}
+
+$(DOC)/html/GMT_API.html:	$(APIPNG) $(APITEX)
+	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_API{-js.tex,1.tmp}
+	$(HTLATEX) GMT_API $(HTLATEX_OPT)
+	\mkdir -p $(DOC)/html/images
+	$(SEDIMG) GMT_API.html > $@
+	\mv GMT_API.css $(DOC)/html
+	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_API{-js.tex,1.tmp}
