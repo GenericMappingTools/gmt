@@ -1,12 +1,12 @@
 #!/bin/bash
-#       $Id: ogrtest.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
+#       $Id: ogrtest.sh,v 1.3 2011-03-15 04:30:03 remko Exp $
 #
 # Test grdmask for proper handling of perimeter and holes [OGR].
 
 . ../functions.sh
 header "Test grdmask for OGR perimeter/hole compliance"
 
-ps=ogr.ps
+ps=ogrtest.ps
 # 1. make a regular mask from a perimeter+hole file
 grdmask -R77:03:35W/77:03:10W/38:52:05N/38:52:25N -I0.25s -fg -A pentagon.gmt -N0/1/2 -Gmask.nc
 cat << EOF > mask.cpt
