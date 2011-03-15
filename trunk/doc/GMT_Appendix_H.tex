@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.20 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.21 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Problems with display of \gmt\ \PS}
@@ -167,8 +167,8 @@ a different film.
 \section{Resolution and dots per inch}
 \index{PostScript@\PS!resolution and dpi}
 
-The parameter {\bf DOTS\_PR\_INCH} can be set by the user through
-the \filename{.gmtdefaults4} file or \GMTprog{gmtset}.  By default
+The parameter \textbf{PS\_DPI} can be set by the user through
+the \filename{gmt.conf} file or \GMTprog{gmtset}.  By default
 it is equal to the value in the \filename{gmt\_defaults.h}
 file, which is supplied with 300 when you get \GMT\ from us.
 This seems a good size for most applications, but should ideally
@@ -176,11 +176,11 @@ reflect the resolution of your hardcopy device (most laserwriters
 have at least 300 dpi, hence our default value).  \GMT\ computes what the
 plot should look like in double precision floating point
 coordinates, and then converts these to integer coordinates at
-{\bf DOTS\_PR\_INCH} resolution.  This helps us find out that certain
+\textbf{PS\_DPI} resolution.  This helps us find out that certain
 points in a path lie on top of other points, and we can remove
 these, making smaller paths.  Small paths are important for the
 laserwriter bugs above, and also to make fill operations compute
-faster.  Some users have set their {\bf DOTS\_PR\_INCH} to very large
+faster.  Some users have set their \textbf{PS\_DPI} to very large
 numbers.  This only makes the \PS\ output bigger
 without affecting the appearance of the plot.  However, if you
 want to make a plot which fits on a page at first, and then
@@ -230,7 +230,7 @@ $<$bunch of definitions$>$ \\
 Now try \progname{pageview} on the edited version.  If it now comes
 up, you have a limited subset of OpenWindows installed.  If
 you discover that these fonts cause you trouble, then you can
-edit your \filename{.gmtdefaults4} file to set {\bf CHAR\_ENCODING} = Standard,
+edit your \filename{gmt.conf} file to set \textbf{PS\_CHAR\_ENCODING} = Standard,
 which will suppress the printing of this definition in the
 \GMT\ \PS\ header.  You can
 make output which will be viewable in \progname{pageview} without
@@ -260,9 +260,9 @@ we replace the \GMTprog{psbasemap} calls with the actually desired
 
 If you want to make color shaded relief images and you haven't
 had much experience with it, here is a good first cut at the
-problem:  Set your {\bf COLOR\_MODEL} to HSV using \GMTprog{gmtset}.  Use
+problem:  Set your \textbf{COLOR\_MODEL} to HSV using \GMTprog{gmtset}.  Use
 \GMTprog{makecpt} or \GMTprog{grd2cpt} to make a continuous color
 palette spanning the range of your data.  Use the \Opt{Nt}
 option on \GMTprog{grdgradient}.  Try the result, and then play with
-the tuning of the \filename{.gmtdefaults4}, the cpt file, and
+the tuning of the \filename{gmt.conf}, the cpt file, and
 the gradient file.

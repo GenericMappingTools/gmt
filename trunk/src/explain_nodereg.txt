@@ -1,4 +1,2 @@
 .TP
-OPT(F)
-Force pixel node registration [Default is gridline registration].
-(Node registrations are defined in \fBGMT\fP Cookbook Appendix B on grid file formats.)
+GMT_r_OPT Set pixel node registration [gridline].

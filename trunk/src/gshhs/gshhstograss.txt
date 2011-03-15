@@ -3,35 +3,36 @@
 .SH NAME
 gshhs2grass \- Extracting GSHHS and WDBII data in GRASS-compatible ASCII format
 .SH SYNOPSIS
-\fBgshhs2grass\fP OPT(i) gshhs_[f|h|i|l|c].b [ OPT(x)\fIminx\fP ] [OPT(X)\fImaxx\fP ] 
-[ OPT(y)\fIminy\fP ] [ OPT(Y)\fImaxy\fP ]
+BD(gshhs2grass) OPT(i) gshhs_[f|h|i|l|c].b [ OPT(x)IT(minx) ] [OPT(X)IT(maxx) ] 
+[ OPT(y)IT(miny) ] [ OPT(Y)IT(maxy) ]
 .SH DESCRIPTION
-\fBgshhs2grass\fP reads the binary coastline (GSHHS) and
+BD(gshhs2grass) reads the binary coastline (GSHHS) and
 and translates it into an ASCII format suitable for import into GRASS.  It automatically
 handles byte-swabbing between different architectures.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIgshhs_[f|h|i|l|c].b\fP
+IT(gshhs_[f|h|i|l|c].b)
 One of the GSHHS binary data file as distributed with the GSHHS data supplement.  Any of the
 5 standard resolutions (full, high, intermediate, low, crude) can be used.
 The resulting files are called dig_[ascii|att|cats].gshhs_[f|h|i|l|c].
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(x)
+OPT(x)IT(minx)
 Specify a minimum (west) longitude.
 .TP
-OPT(X)
+OPT(X)IT(maxx)
 Specify a maximum (east) longitude.
 .TP
-OPT(y)
+OPT(y)IT(miny)
 Specify a minimum (south) latitude.
 .TP
-OPT(Y)
+OPT(Y)IT(maxy)
 Specify a maximum (north) latitude.
 .SH EXAMPLES
 .sp
 To convert the full GSHHS data set , try
 .sp
-\fBgshhs2grass\fP \fIgshhs_f.b\fP
+BD(gshhs2grass) IT(gshhs_f.b)
 .SH BUGS
 Not updated to handle the WDBII line data (borders or rivers).
 .SH AUTHOR

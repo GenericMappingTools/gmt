@@ -1,52 +1,59 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.874 2011-03-09 00:28:59 guru Exp $
------------------------------------------------------------------------------------------
-2011-03-10	pwessel
-	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4.
-	  GMT5 branch will be merged to new trunk and converted to subversion.
+	$Id: ChangeLog,v 1.875 2011-03-15 02:06:28 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-08	pwessel
 	* configure.ac:		Check for bad 64-bit qsort under earlier OS X did not work.
 				Needed to add -fno-common to CFLAGS under OS X Tiger
+	* gmt2kml_func.c:	Segment headers now can have -T<text> options that are used for
+				feature descriptions, but we will backwards honor the old -Dtext
+				options.
+	* gmt_init.c:		Will allow extended columns D (distance), G (fill), L (label),
+				T (text), W (pen) and Z( value) to be used in -a<col>=<name>.
 
-2011-03-06	pwessel
-	* share/cpt:		GMT_jet.cpt had two bad values causing discontinuities.
-	* mex/grdwrite.c:	Round-off could lead to false detection of a non-equally spaced grid.
+2011-03-07	pwessel
+	* gmt_init.c:		The -a parsing now allows +G (upper case) for geometry, which means
+				we must split features that straddles the Dateline since the G in
+				GIS apparently does not mean what we think it means...
+	* gmtconvert_func.c:	Did not copy over segment headers, labels, and ogr info.
+	* gmt_map.c:		Added GMT_split_dateline_poly which splits a polygon that straddles
+				the Dateline into TWO pieces (some pieces connected by non-area bridges)
+	* gmt_support.c:	Added GMT_split_dateline_line which splits a line that straddles
+				the Dateline into several individual segments.
+
+2011-03-06	remko
+	* GMT_jet.cpt:		Bug fix: Palette had two bad values causing discontinuities.
+	* makecpt_func.c, grd2cpt_func.c:	Added -W option to not interpolate color palette.
+	* GMT_categorical.cpt, GMT_etopo1.cpt:	Two new color palettes.
+
+2011-03-04	remko
+	* xyz2grd_func.c:	-Z did not work, changed order of parsing -Z option and GMT_Begin_IO.
+				 Also: -Z...s... now properly skips number of bytes, not items.
+
+2011-03-02	pwessel
+	* CPTs:			Added "random" as valid cpt file; this will generate
+				random colors instead of interpolating from a master table.
+	* gmt_plot.c:		Added GMT_geo_polygon_segment which extends GMT_geo_polygon
+				to handle filling and outline in the polar cap cases.  Used
+				by psxy_func.c.
+	* gmt_init.c:		Let -a also imply -fg
 
 2011-03-01	pwessel
-	* GNUmakefile:		Added make get-gshhs-cvs to get the pre-release GSHHS from the
-				pwessel ftp.  Updated gmt_shore.c message on this subject.
+	* sample1d_func.c:	Enhanced -S to accept -Sstart[/stop].
+	* gmt_io.c:		Improved OGR parsing and using aspatial data in GMT input
 
 2011-03-01	remko
 	* gmt_init.c:		On Windows: Look for HOMEPATH after HOME for setting GMT_HOMEDIR
 
-2011-02-28	remko
-	* doc/* examples/*:	Run documentation and tests now as it is done in GMT5.
-
-2011-02-27	pwessel
-	* gmt_init.c:		Processing of mathangle symbol (-Sm[bfl]) confused the unit detector.
-				Added test scripts to check for correct symbol size plotting
-				under both CM and INCH environments.
-
-2011-02-27	jluis
-	* scripts/GMT_*.sh:	Replaced $AWK for awk since the $AWK variable was not
-				set in those the scripts anyway.
-
 2011-02-25	pwessel
-	* x2sys/x2sys_datalist.c:	When geographic data and -R it failed to consider periodic lons.
-	* x2sys/x2sys_get.c:	The -N option did not work properly, and the reported Y|N flags
-				reflected the entire track on not just the portion inside the
-				region.  Man page updated to clarify what is returned.
-	* gmt_cdf.c:		Apply netcdf open/initfill fix; thanks to Sebastian Heimann.
+	* gmt_cdf.c:		Apply netcdf fix; thanks to Sebastian Heimann.
 	* gmt_nc.c:		---"---
 
-2011-02-25	jluis
-	* gmt_grdio.c:		Increase the size of the string array in GMT_grd_get_units() to
-				avoid 'Buffer overrun' that occurred with long description strings
+2011-02-25	remko
+	* gmt_io.[ch], gmt_init.c:	Implemented scale/offset option in -i. E.g., -i0,1s1000.
 
 2011-02-23	pwessel
-	* spotter/backtracker.c:	For -W, now report full-length major/minor axes and not
+	* spotter/backtracker_func.c:	For -W, now report full-length major/minor axes and not
 				SEMI-axes (docs said major/minor but code did semi.)
 
 2011-02-22	pwessel
@@ -54,306 +61,803 @@
 				column types when no symbol size was given.  This affected
 				symbols that require angles (-Sw, -SE, -SJ) when unit was SI.
 
-2011-02-17	pwessel
-	* gmt_init.c:		The -: option messed up the column type arrays; should
-				only swap x|y data columns, not type columns.
+2011-02-21	pwessel
+	* grdimage_func.c:	Wasted time resampling image when -JQ was used (is linear).
+	* gmt_project.h:	Added macro GMT_IS_NONLINEAR_GRATICULE which returns true
+				when parallels/meridians are not orthogonal or nonlinear.
+				Used in grdimage to determine if resampling is needed.
 
-2011-02-16	jluis
-	* grdproject.c:		Not providing -R was not working anymore.
-				Test if hemisphere sign is provided when doing -Ju and no -R
+2011-02-20	pwessel
+	* grdmask_func.c:	New option -Ni|I|p|P to set inside of polygons to the polygon IDs.
+				These may come from OGR aspatial values, segment head -L<ID>,
+				or a running number, starting at a specified origin [0].
+				Now correctly handles polygons with perimeters and holes.
 
-2011-02-10	pwessel
-	* pslib.c:		Add check for incomplete escape sequences.
+2011-02-18	pwessel
+	* gmt_version.h.in	Added macro GMT_MP which will appear in usage messages to indicate
+				if a module has multi-processor support ([API] vs [API-MP]).
+	* grid registration:	Now given new common option -r which replaces mostly -F and
+				is backwards compatible in compat mode.
+
+2011-02-17	remko
+	* gmt_init.c:		-: Option flipped column type, which it should not have done!
+
+2011-02-16	remko
+	* *.c, *.txt, gmtdefaults.in:	Replaced .gmtdefaults and gmtdefaults.conf by gmt.conf
+	* gmt.conf.in, gmt_init.c:	Removed PS_COPIES as setting. Use -c instead.
+	* gmt_init.c:		Old setting VERBOSE = FALSE|TRUE is now converted to GMT_VERBOSE = 1|2
+	* pslib.*:		Got rid of n_copies argument in PSL_setdefaults
+
+2011-02-15	remko
+	* configure.ac, config.mk, Makefile:	Smarter way of specifying -O or -g when using --enable-debug
+				or not. Use dsymutil on Mac when setting --enable-debug. Thanks to
+				Florian Wobbe.
+
+2011-02-15	pwessel
+	* gmt_io.c:		multi_segments[GMT_OUT] defaults to FALSE but becomes TRUE if a
+				multisegment header is read or we detect a gap via -g.
+
+2011-02-12	remko
+	* pslegend_func.c:	Make setting of text color ("C") work
+	* gmt_init.c:		Bug fix: Do not rely on settings associated with width_given to be FALSE.
+				Bug fix: Allow spaces in arguments stored in .gmtcommands (e.g. -B).
 
 2011-02-09	pwessel
-	* grdclip.c:		Now complains if no -S option was given.
+	* grdclip_func.c:	Now an error if no -S option is given.
 
 2011-02-08	pwessel
-	* grdtrack.c:		Message about -L being obsolete should only come when no
-				modifier is given; else it is valid for BC setting.
+	* gmt_vector.c:		Added GMT_fix_up_path_cartesian to complement the spherical version
+	* gmt_support.c:	Added support for creating Cartesian cross-profiles to a line.
+	* grdtrack_func.c:	The -C option can now work with Cartesian data (assumes x = y in
+				terms of units).
+
+2011-02-08	remko
+	* gmt_init.c:		Replaced GMT_getparameter by GMT_putparameter, avoiding requirement to
+				set size of "value" accurately.
+				Complete rewrite of GMT_savedefaults, using GMT_putparameter to
+				avoid code duplication. Output now follows layout of gmtdefaults.conf.
+
+2011-02-05	pwessel
+	* blockmean_func.c:	Now use -Ss for block sums [-Sz remains under GMT_COMPAT].
+				Added -Sn to explicitly count the number of points per block.
+				[It will now ignore any weights read].
+
+2011-02-03	pwessel
+	* filter1d_func.c:	Did not reset F.n_rows = 0 for each segment
+				Improved parsing of -N w/wo GMT_COMPAT set
+	* mapproject_func.c:	Did not reset cumulative distance for new segments (only for gaps)
+
+2011-01-27	pwessel
+	* grdpaste_func.c:	Need to pass original headers and instead manipulate data pointer.
+	* configure.ac:		Added --enable-openmp to utilize openMP with GCC.
+
+2011-01-25	jluis
+	* grdfilter_func.c	Implemented OpenMP parallelization after GMT4 code provided
+				by Dan Kokron. Modifications are #ifdefed and will be used
+				only if GMT is compiled with OpenMP.
+
+2011-01-25	remko
+	* makecpt_func.c:	Make dz in -T optional. If omitted, keep same number of colors.
+	* makecpt.txt:		---"---
 
 2011-01-25	pwessel
-	* pscontour.c:		Did not find some contours following triangle edges.
+	* pscontour_func.c:	Did not find some contours following triangle edges.
+
+2011-01-17	remko
+	* gmt_init.c:		Allow HxW as PS_MEDIA (dropping custom_)
 
 2011-01-17	pwessel
-	* x2sys/x2sys_init.c:	Did not write both of -Nd -Ns to the tag file.
+	* x2sys/x2sys_init_func.c:	Did not write both or -Nd -Ns to the tag file.
+
+2011-01-16	remko
+	* GMT_pstext_justify.sh:	Put nodes in the proper places (not the same as box)
 
 2011-01-11	remko
-	* ps2raster.c:		Bug fix after last -F option update
-	* gmt_map.c:		Fixed bug in Haversine equation for duplicate point.
+	* src/pslib.c:		Improved proportioning of textbox. Replaced 'exch def' by 'edef'
+	* PSL_prologue.ps:	Introduced /edef. Replaced 'exch def' by 'edef'
 
 2011-01-09	pwessel
-	* triangulate.c:	Did not use projected coordinates when -R -J was given.
-	
-2011-01-07	pwessel
-	* ps2raster.c:		Must pass the optional -C args when calculating BB.
-				Added -dSAFER as well, + fix -F option [F. Wobbe].
-	* gmtswitch:		Requires bash.
+	* triangulate_func.c:	Did not use projected coordinates when -R -J was given.
+
+2011-01-09	remko
+	* doc/GNUmakefile:	Use tex4ht instead of latex2html. This allows/requires
+				creating PNG files of the images ourselves.
+
+2011-01-08	pwessel
+	* gmt_plot.c:		Let -U timestamp use FONT_LOGO [Helvetica] instead of being
+				hardwired to use Helvetica.
+				Use line-cap SQUARE for rectangular, plain map frames.
+	* pstext_func.c:	New option -Ql|u to change the case of all text to lower
+				or upper case [Default leaves text alone].
+	* Example 31:		Added, thanks to Florian Wobbe.  Shows how to use non-standard
+				fonts in a GMT plot via CUSTOM_font_info.d.
 
 2011-01-04	pwessel
 	* gmt_support.c:	GMT_cspline should initialize c[0] = c[n-1] = 0.0 in case
 				it is called repeatedly [not the case in GMT].
-
 2011-01-03	pwessel
+	* grdproject_func.c:	The -N is now obsolete (backwards compatible as in grdsample)
+				since -D can set nx/ny if requested.
 	* autoconf.ac:		Moving to use GSHHS 2.1.1 for next release.
 	* gmt_shore.c:		---"---
 
 2010-12-31	pwessel
-	* x2sys_init.c:		Crashed if -D was not given [should imply -DTAG].
+	* x2sys_init_func.c:	Crashed if -D was not given [should imply -DTAG].
 
 2010-12-29	pwessel
-	* psscale.c:		Now patterns have constant orientation regardless of using
+	* psscale_func.c:	Now patterns have constant orientation regardless of using
 				horizontal or vertical bar.
 
+2010-12-22	jluis
+	* mex/mapproject.c:	Works, but not with all advertised output options.
+	* mex/grd2grd.c:	Template program to build all MEXs that take one grid
+				in input and create one grid in output (e.g. grdclip)
+	* mex/compile_mex.bat:	Update to build MEXs that use the grd2grd.c template.
+
+2010-12-21	pwessel
+	* gmt_io.c:		GMT_extract_label had a few bugs; now gets the label OK.
+
 2010-12-20	remko
-	* meca/utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
+	* utilmeca.c:		Patch to fix incorrect plotting of moment tensors with big
 				isotropic components. Thanks to Jeremy Pesicek.
 
-2010-12-17	pwessel
-	* grdfilter.c:		Allow -D2 and -D3 to handle periodic and polar boundary conditions.
-	
+2010-12-19	pwessel
+	* grdfilter_func.c:	Can now do spherical filtering (with wrap around longitudes
+				and over poles) for non-global grids.
+
+2010-12-16	remko
+	* configure.ac, gmt_config.mk.in:	Allow gmt2rgb to be created for backup.
+
 2010-12-15	pwessel
+	* gmt_init.c:		Use 's' for seconds as TIME_UNIT; 'c' is deprecated.
+	* *.c:			Added more warnings when GMT_COMPAT options are used.
+	* grd2rgb*:		Renamed from gmt2rgb*
 	* gmt_support.c:	When calculating how far to place an annotation from the tick mark
 				we must check if a fancy frame width exceeds the tick length.
+
 2010-12-13	pwessel
-	* splitxyz.c:		Did not list -Q in synopsis.
-	* surface.c:		Bug if using seconds (c) in search radius (got minutes).
-	* *.txt:		Fixed typos in several man pages.
+	* project_func.c:	The -Dg|d is made obsolete (under GMT_COMPAT) but did not work
+				anyway since output is entirely controlled by FORMAT_GEO_OUT.
+	* pswiggle_func.c:	The gap -D is made obsolete (under GMT_COMPAT) as that functionality
+				is provided by the universal -g option.
+	* pshistogram_func.c:	The -T<col> option is made obsolete (under GMT_COMPAT) as we
+				now have the universal -i<col> option.
 
 2010-12-13	jluis
-	* ps2raster.c		For some reason -W was not forcing -A. Now it does it again  
+	* ps2raster.c:		For some reason -W was not forcing -A. Now it does it again
+
+2010-12-12	jluis
+	* gmt_gdalread.ch:	Added a new struct in output that holds metadata info per each band.
+				Namely the scale/offset factors.
+	* gmt_customio.c:	When reading from GDAL apply scale/offset in case they differ to 1/0
+	* gmt_grdio.c:		Add mechanism to allow request a SUBDATASET (GDAL parlance) via GDAL
+	* ps2raster_func.c:	Added optional margins to -A.
+
+2010-12-12	pwessel
+	* gmt_grdio.c:		Let GMT_grd_init also set the default pad.
 
 2010-12-11	pwessel
-	* pslegend.c:		One more place to use original -R -J (see 2010-11-18 fix).
-	* gmt_map.c:		For van Grinten: errors in left/right_circle
-	* gmt_plot.c:		A colored TICK_PEN would also color annotations.
+	* pslegend_func.c:	Need to keep the original -R around since it may be -R....r
+				If -Dx is used then -R -J are not needed for overlays.
+	* gmt_init.c:		The -R parsing must reset common.R.oblique if not ...r
+	* grdedit_func.c:	Several basic bugs from porting now fixed.
+	* gmt_map.c:		For van Grinten: errors in left/right_cirle
+
+2010-12-11	jluis
+	* gmt_grdio.c:		Increase the size of the string array in GMT_grd_get_units() to
+				avoid 'Buffer overrun' that occurred with long description strings
+
+2010-12-06	pwessel
+	* gmtget_func.c:	New module, replacing shell script temporary version.
 
 2010-12-05	pwessel
-	* spotter/grdrotater.c:	Did not handle the rotation of an entire global grid since
+	* spotter/grdrotater_func.c:	Did not handle the rotation of an entire global grid since
 				the polygon outline interfered with the domain.
 
 2010-12-02	pwessel
-	* x2sys/x2sys.c:	Minor bug in x2sys binary reading of floats.
+	* x2sys/x2sys.c:	Minor bug in x2sys binary reading of floats
 
 2010-11-30	pwessel
-	* xyz2grd.c:		Do not tolerate NaNs in x,y and give error (e.g., if junk is given).
+	* xyz2grd_func.c:	Now complain about junk if garbage is given as x,y .
+	* gmt_grd.h:		GMT_y_is_outside now returns TRUE if y == NaN
+	* gmt_support.c:	GMT_x_is_outside now returns TRUE if x == NaN
+
+2010-11-29	pwessel
+	* grdmath_func.c:	Using = with nothing on the stack crashed.  Now gives error.
+	* grdmask_func.c:	Insisted on reading stdin when files were given.
+
+2010-11-27	pwessel
+	* gmt_plot.c:		Implemented custom and/or irregular annotations.
+	* gmt_support.c:	Implemented custom and/or irregular annotations.
+	* -B:			Can now take -Bc<intfile>, for manual control
+				of placement of annotations/ticks/gridlines as
+				well as overriding the annotation with a text label.
+
+2010-11-25	pwessel
+	* share/doc/gmt/examples/Makefile:
+	* doc/scripts/GMT_RGBchart.sh:
+	* configure.ac:
+	* doc/scripts/functions.sh:
+	* Misc *.c:		Applied patches from Florian Wobbe fixing minor scripting
+				omissions and a few dozen warnings.
 
 2010-11-23	pwessel
-	* grdmask.c:		Must skip "polygons" with less than 3 points.  Also, the
+	* grdmask_func.c:	Must skip "polygons" with less than 3 points.  Also, the
 				resampling distance for spherical data was wrong, now 0.1 degrees.
-	* misc/gmt2kml.c:	Options -N+ and -D would crash under Windows (usual DLL hell).
+
+2010-11-21	pwessel
+	* psscale_func.c:	Added option -T to place a rectangle behind the scale.
+
+2010-11-19	jluis
+	* gmt_esri_io.c:	Replaced call to GMT_fscanf by plain fscanf because with first
+				it was failing to read the datastream on Windows.
+				Added float output ESRI format (ef) and renamed int format (ei).
+	* xyz2grd_func.c:	Replaced call to GMT_fscanf by plain fscanf
+	* gmt_io.c:		Same
 
 2010-11-19	pwessel
-	* grd2xyz.c:		Extended -Ef mode to write floats (patch by Pierre Cazenave).
-	* gmtselect.c:		Due to resampling of parallels in -N, some points exactly on
+	* gmtselect_func.c:	Due to resampling of parallels in -N, some points exactly on
 				a coast bin parallel could fail the test due to roundoff.
 				Fixed by not resampling coastlines since it is a Cartesian test.
-	* grdlandmask.c:	Same.
-				
+				Added -Efn to change how boundary points are treated [Default
+				considers them to be inside].  Place the old -N...[o] under
+				GMT_COMPAT check.
+	* grdlandmask_func.c:	Same.
+
 2010-11-18	pwessel
-	* gmt_io.c:		When ASCII mode, also need to save/restore any netcdf i/o settings.
+	* gmt_esri_io.c:	Must look for both nodata_value and NODATA_value, apparently.
+	* xyz2grd_func.c:	Failed if -Evalue was given and the ESRI grid already had a
+				nodata_value line.  Now will process this line, if present.
+				The value given on the command line will override any setting
+				found in the file. [Note: -E is only available in GMT_COMPAT mode].
+				Also made string-checks case-insensitive.
 	* gmt_map.c:		We have a safety valve for preventing a painful slow search
 				around the map perimeter.  The search is appropriate for maps
 				but not for mapproject results.  The limit was for 200 inch
 				wide maps == 14400p.  A user ran pscoast with 14401p and was
-				caught.  Now check for 400 inch and also check current page
-				size (PAPER_MEDIA). If map width vastly outsizes the paper
-				size then it is probably a projection job.
-	* pslegend.c:		Need to keep the original -R around since it may be -R....r
-	* xyz2grd.c:		Failed if -Evalue was given and the ESRI grid already had a
-				nodata_value line.  Now will process this line, if present.
-				The value given on the command line will override any setting
-				found in the file.  Also made string-checks case-insensitive.
+				caught.  Now check for 400 inch and also check if PSL has
+				been initiated. If not then it is probably a projection job.
+	* gmtselect_func.c:	Need to pass GMT_IO_ASCII model to GMT_Get_Data to ensure
+				the -C, -F, -L files are read as ASCII regardless of what
+				the input data source is.
+	* gmt_io.c:		When ASCII mode, need to save/restore any netcdf i/o settings.
+	* gmtapi_util.c:	Check if GMT_IO_ASCII is present in the mode flag.
 	* gmt_support.c:	GMT_inonout_sphpol_count failed to detect crossings if a
 				polygon had vertical line-segments with same longitude as
 				the point we were testing.
 
-2010-11-16	pwessel
-	* gmt_plot.c:		Tried to free an unallocated array in GMT_draw_custom_symbol.
-	
-2010-11-15	pwessel
-	* grdproject.c:		Now assign proper x/y units.
+2010-11-17	pwessel
+	* gmtdp_func.c:		Now properly deals with units for geographic calculations
+				and no units for Cartesian.
+	* grdmath_func.c:	Now, LDIST and PDIST, like SDIST, returns distances in degrees
+				if -fg; otherwise Cartesian.  use new operator DEG2KM to
+				convert spherical degrees to km.
 
-2010-11-12	pwessel
-	* spotter/rotconverter.c:	Forgot to skip args when -N or -S was used.
+2010-11-15	pwessel
+	* grdtrack_func.c:	New options -Clength/dx[/spacing] to automatically create
+				cross-profiles normal to the given line segments.  Also
+				given -Am|p to affect resampling of paths, and -D<dfile>
+				to save the resampled original line (with dist/az appended).
+	* grdproject_func.c:	Now assign proper x/y units.
+	* grdsample_func.c:	Did not use -R value when given.
+	* imgsrc/img2grd_func.c:	Many bug fixes. Now works.
+	* gmtapi_utils.c:	Write grid to memory forgot to set pointer.
+	* gmt_vector.c:		GMT_fix_up_path in -Ap|m mode might duplicate the start point.
+
+2010-11-14	pwessel
+	* project_func.c:	Did not use IO_COL_SEPARATOR when writing mixed mode output.
+	* grdtrack_func.c:	Did not use IO_COL_SEPARATOR when writing mixed mode output.
+				Can now handle any number of -Gingrds and will sample them
+				all in the order given.
+
+2010-11-13	jluis
+	* gmtinstall|suppl.bat: Build Windows binaries in GMT_COMPAT mode. We will revert
+				this sometime in a not too distant future.
+
+2010-11-11	pwessel
+	* filter1d_func.c:	Changed -Nncols/tcol to just -Ntcol since we are reading
+				in the file and thus know the number of columns.  Allow
+				for backwards compatibility (skip the users ncols).
+	* sample1d_func.c:	Did not have -A[m|p] option.
 
 2010-11-10	pwessel
-	* nearneighbor.c:	Changed default to a more reasonable -N4/2.
-	
+	* nearneighbor_func.c:	Changed default to a more reasonable -N4/2.
+				Fixed issues with distances and i/o (double close file)
+
 2010-11-05	jluis
 	* meca/utilmeca.c:	Fix bug affecting the plot of P & T axis
+	* meca/psmeca_func.c:	Fix a few issues in -a option.
+				T_axes marker was white instead of black.
 
-2010-11-05	pwessel
-	* blockmean.txt:	Referred to unknown -D option.
+2010-11-08	jluis
+	* gmt_plot.c:		Wrap the fp assignement in GMT_plotinit with a #ifdef WIN32
+				to avoid another cross DLL issue.
+
+2010-11-07	pwessel
+	* grdgradient_func.c:	The -M is now replaced by -fg (but backwards compatible)
+	* grdfft_func.c:	The -M is now replaced by -fg (but backwards compatible)
+
+2010-11-06	pwessel
+	* pslib.c:		PSL_loadimage now tries to use ImageMagick's convert to
+				turn non-Sun rasters into a temporary Sun raster file.
+	* psimage_func.c:	Can now handle any raster image format.
+	* pslegend_func.c:	Can now handle any raster image format.
+
+2010-11-04	pwessel
+	* gmt*.c:		New distance unit parser and consistent use of units begun.
 
 2010-11-04	remko
-	* meca/*.txt:		Replaced .IP with .TP
-	* configure.ac:		Updated to version 4.5.6
+	* gmt_notposix.h.in:	Added #define HAVE_STRTOK_R 0
+	* doc/GNUmakefile:	Make sure scripts are run in bash
+	* meca/*.txt:		Replaced .IP by .TP
 
 -----------------------------------------------------------------------------------------
 2010-11-01	pwessel
 	* GMT 4.5.5 finalized and released. GMT 5.0.0alpha announced, get via cvs
-	NOTE: Windows binaries are built with VC2010 and will not run on older Windows
-	versions prior to Windows XP SP2.
 -----------------------------------------------------------------------------------------
 
-2010-11-01	pwessel
-	* Missing html:		gmt_shell_functions, gmtcolors, gmtget, gmtlogo
-				img2google, isogmt, psbbox, sphdistance
-				sphinterpolate, sphtriangulate, x2sys_merge
-	* A few source files had DOS line endings by mistake
-	* Some Makefiles were not 100% GNU portable under Solaris 8.
-
------------------------------------------------------------------------------------------
-2010-11-01	pwessel
-	* GMT 4.5.4 finalized, placed on ftp, but not announced yet.  However, there were
-	  a few issues we had to address, hence skipping to 4.5.5 immediately.
------------------------------------------------------------------------------------------
-	
-2010-10-29	pwessel
-	* ex??/job??.[c]sh:	Many used awk instead of $AWK
+2010-10-30	pwessel
+	* gmtmath_func.c:	The -F is deprecated and available via compatibility-mode only
+				Same function is available via the system-wide -o option.
+	* gmtconvert_func.c:	---"---
+	* spotter/grdpmodeler_func.c:	New tool for evaluating plate motion model predictions.
 
 2010-10-28	pwessel
 	* gmt_init.c:		Could not use @:<size>: and @:: in -B strings as the colons
-				interfered with the :label: parsing.  Now fixed.
+	* -o<cols>:		New common option to select internal columns should be output
+				and in what order (e.g., -o3,0 means that 3rd col will be first
+				and 0th col will be second).  Available in all programs that write
+				data tables.
 
 2010-10-27	pwessel
-	* psmask.c:		Did not update internal clip level (if -T not used) do could
-				not warn if clipping had not been properly terminated.
+	* psmask_func.c:	Did not update internal clip level (if not -T) in order
+				to warn if clipping has not been terminated.
 
 2010-10-26	pwessel
-	* mapproject.c:		When -L is used with -fg and an ellipsoid we convert lats
-				to geocentric lats before doing spherical trig, then
-				convert back to geodetic coordinates.
-
-2010-10-24	jluis
-	* gmtdefaults:		Still had one free() that should be GMT_free (Win crash)
+	* mapproject_func.c:	When -L is used with -fg and an ellipse we convert lats
+				to geocentric lats before doing spherical trig.
 
 2010-10-19	pwessel
 	* gmtswitch:		Given D it picks the first entry in .gmtversions. Also
-				is now installed with rest of scripts and executables.
-	* mapproject.c		Did not show/explain the option of appending + to -L.
+				is now installed with rest of executables.
+	* mapproject_func.c:	Did not show/explain the option of appending + to -L.
 				Corrected synopsis, usage, and man page.
 
 2010-10-17	pwessel
 	* grdpaste.c:		Lacked -fg so could not paste 352/360 and 0/8 in longitudes.
+	* -i<cols>:		New common option to select which input file columns to use
+				and in what order (e.g., -i6,2 means that 6th col will be x
+				and 2nd col will by y).  Available in all programs that reads
+				data tables.
 
 2010-10-14	pwessel
 	* psbasemap.c:		The -L option had trouble parsing if there were + signs
 				in the label string.
 	* pscoast.c:		---"---
-	
+
 2010-10-13	pwessel
-	* mapproject.c:		Did not reset azimuth to NaN at start of next segment.
-	* psscale.c:		Give warning and skip any command-line file arguments.
-	* pscoast.c:		Give warning and skip any command-line file arguments.
-	* psbasemap.c:		Give warning and skip any command-line file arguments.
+	* mapproject_func.c:	Did not reset azimuth to NaN at start of next segment.
+
+2010-10-11	pwessel
+	* mapproject_func.c:	Extended -A to take -Ao|O to compute orientations (-90/90).
+				Did not reset azimuth to NaN at start of a new segment.
+
+2010-10-11	pwessel
+	* gmt_support.c:	Extended macro language with if/elseif/else blocks {} and nested tests.
+	* gmt_plot.c:		---"---
+
+2010-10-08	pwessel
+	* gmt_support.c:	Added extension to handle multi-parameter custom symbols
+	* gmt_plot.c:		---"---
+	* gmt_symbol.h:		---"---
+	* psxy[z]_func.c:	Can now use multi-parameter symbols.
+	* GMT_Appendix_N.tex:	Now includes macro definitions for custom symbols
 
 2010-10-05	pwessel
 	* configure.ac:		Set correct mex extensions for 64-bit version.
-	
-2010-09-29	pwessel
-	* share/time/hi.d:	Added Hawaiian time language items.
+
+2010-10-05	jluis
+	* make_gmtapi.sh:	While generating the modules files distinguish between the mains
+					and supplements in what regards the name of the including header.
+
+2010-10-03	remko
+	* gmt_support.c:	Fixed numerous cases where rgb[4]/hsv[4]/cmyk[5] were not
+				dimensioned or not set.
+	* gmt_init.c:		Y_AXIS_TYPE replaced by MAP_ANNOT_ORTHO. Can now apply to
+				all axes.
+	* gmt_plot.c, gmtdefaults.txt, gmt_keywords.txt, gmtdefaults.in, gmt_defaults.h:
+				---"---
+	* gmt_plot.c:		Axis plotting now done without unnecessary rotations.
+	* gmt_support.c:	Commented out GMT_set_map_label_offsets (never used).
+	* pslib.c:		More improvements to macros for string alignment.
+
+2010-10-01	remko
+	* pslib.c:		Added much better macros for string alignment, which
+				significantly shortened PostScript output.
+				Added new options to PSL_deftextdim.
+	* psldemo.c:		Do Standard+ encoding.
+
+2010-09-30	remko
+	* pslib.c:		No longer writes encoding string at init, but only when fonts
+				are produced.
+				No longer writes %ld F%ld before every string, but only when
+				different from last font or fontsize.
+				Removed font_no argument from PSL_deftextdim. Works on current
+				font only.
+	* pslib.h, gmt_plot.c:	---"---
+	* psldemo.c:		Changed math and title string not to be outlined.
+	* src/Makefile:		Make psldemo without libraries. Easier for debugging.
+
+2010-09-29	remko
+	* gmt_init.c:		Reintroduced + directive for FONT_ANNOT_PRIMARY, scaling other
+				fonts, offsets and frame width with it.
+	* gmt_common.h:		Added common.B.set to indicate whether -B is set (for psscale).
+	* psscale_func.c:	Work correctly with -B0
+	* doc/GNUmakefile:	Removed HTML docs. Improved doctests system.
+
+2010-09-28	pwessel
+	* minmax_func.c:	With -C we needed to reshuffle the output col type variables.
+	* share/time/hi.d:	Added Hawaiian month/day names [Thanks to Kāwika Trang]
 
 2010-09-28	remko
-	* gmt_mgg.c:		Use GMT_getsharepath to find gmtfile_paths file.
+	* doc/GNUmakefile:	New without getbox, getrect, etc.
+	* cartesian.sh:		Avoid .gmtcommands problems in pipes.
+	* pslegend_func.c:	Fixed many errors in the offsets of various components.
+	* x2sys.c, mgd77.c:	Get mgg-related files using GMT_getsharepath function.
+	* pslib.c:		Need to set font during PSL_beginplot.
+				Should not change current fill color when changing stroke.
+	* psxy*_func.c:		-Z headers did not control the stroke/fill colors properly.
+	* xyz2grd_func.c:	Wrong order of GMT_begin_module and GMT_Parse_Common.
+	* psxyz_func.c:		Fixed colors for painting "walls"; needed 4-byte rgb code.
+	* gmt_plot.c:		Changed order of plotting strokes and fonts in rose to avoid leaking
+				font color into strokes.
+	* explain_-T_rose.txt:	Need to explain that font colors follow FONT_TITLE and FONT_LABEL.
+	* job04.*:		Added --FONT=red to keep rose labels being painted red.
+	* gmt_support.c:	Fixed initialization of fill pattern colors.
+	* src/*/Makefile:	Fixed rules for shared libraries.
+	* segyprogs/*_func.c:	Needed to name routines with common names differently.
+	* gmt_init.c:		gmt_parse_t_option renamed to gmt_parse_colon_option.
+	* gmt_common.h:		common.t is now common.colon, while common.t refers to new -t option.
+	* *.txt, *.c:		GMT_t_OPT now GMT_colon_OPT, while GMT_t_OPT refers to new -t option.
 
 2010-09-27	pwessel
-	* gmt_map.c:		Did not check if nodes were beyond the horizon in GMT_grd_project.
-				Also did not initialize output grid to NaNs before filling.
+	* gmt_map.c:		Did not check if we were beyond the horizon in GMT_grd_project.
+				Also did not initialize output grid to NaNs.
+	* gmt_init.c:		New common option -t<transp> that sets a layer's PDF transparency.
+				Only applies to Adobe Distiller for now.
 
-2010-09-20	pwessel
-	* ps2raster.c:		Made tolerant of \r-only line-endings.
+2010-09-20      pwessel
+	* ps2raster_func.c:      Made tolerant of \r line-endings.
 
-2010-09-15	pwessel
-	* sph/Makefile:		Did not have LDFLAGS in link statement.
+2010-09-15      pwessel
+	* gmt_plot.c:		Allow text to be painted using patterns.
+	* pslib.c:		PSL_plottext has new mode == 2 if fill is a pattern.
 
-2010-09-07	pwessel
-	* ps2raster.c:		The -A- option did not reset -A for -W.
-	* grdtrack.c:		Did not ensure that given -R was adjusted to fit grid spacing
-	* minmax.c:		With -I, could end up returning -R355/0/... since 360 becomes 0.
+2010-09-14      pwessel
+	* pstext_func.c:	The -S is not backwards compatible only as fonts can be
+				specified with optional outline pen.
+	* *.c:			All annotations (e.g., -B, pstext, pswiggle, psrose etc)
+				can now use outline pen if set.  Contour labels do not.
 
-2010-09-03	pwessel
-	* misc/gmtstitch.c:	Could crash if -C was used.
+2010-09-10      pwessel
+	* gmt_init.c:		Reintroduce PS_TRANSPARENCY for setting the transparency mode
+				when planning to use Adobe Distiller [Normal].
+	* pslib.[ch]:		Add PSL_settransparencymode which sets the desired mode.
+				Fill and stroke are set and if transparency is selected we
+				use the current transparency mode.
+	* gmt_texture.h:	Add GMT_PEN to GMT_FONT for drawing text outlines.  All font
+				color or pattern specifications may have =pen appended if we
+				want to draw the text outline.
+
+2010-09-09      pwessel
+	* makecpt_func.c:	Added -A[+]transparency to set CPT slice transparencies.
+	* grd2cpt_func.c:	Added -A[+]transparency to set CPT slice transparencies.
+	* gmt_init.c:		Removed the PS_TRANSPARENCY as a global parameter as fills
+				and stroke colors can now be set with transparency.
+	* gmtdefaults.txt:	---"---
+	* pslib.c:		Uses rgb[3] for transparency and if non-zero will issue the
+				PDF extension operators for stroke and fill transparency.
+	* GMT_Chapter_4.tex:	New section Transparency which explains how to set it and
+				how to render PDF files to honor the transparency.
+	* *.[ch]:		Extend all rgb[3] arrays to rgb[4] array since the 4th item
+				contains the transparency [0 or opaque by default].
+
+2010-09-08      pwessel
+	* gmt_support.c:	GMT_getrgb and GMT_gethsv will decode optional @<transparency>
+				requests.
+	* gmt2kml_func.c:	Eliminated -Q since transparency can now be set via -W and -G.
+
+2010-09-07      pwessel
+	* ps2raster_func.c:	The -A- option did not reset -A for -W.
 
 2010-08-30	pwessel
-	* nearneighbor.c:	Did not check that -S was not set.
+	* gmt_support.c:	Eliminate global variable by using qsort_r if available.
+
+2010-08-25	jluis
+	* src/potential:	New supplement with programs to do potential field operations
+	* potential/redpol:	Do continuous reduction to the pole of magnetic anomalies.
+	* potential/xyzokb:	Compute grav/mag effect of bodies of any (triangular) shape.
 
 2010-08-25	pwessel
-	* psxy[z].c:		Units given in -S without sizes (e.g., -Sci) would be
+	* psxy[z]_func.c:	Units given in -S without sizes (e.g., -Sci) would be
 				ignored and overridden by MEASURE_UNIT.
 
 2010-08-21	pwessel
-	* misc/gmt2kml.c:	Did not parse -D"description" for points.
+	* gmtapi_parse.c:	Single-string commands may contain "> file" and "< file"
+				and these will be converted to -<file and ->file options.
+	* gmt2kml_func.c:	Also look for -D in segments for points
+
+2010-08-20	pwessel
+	* gmt2kml_func.c:	Now has consistent tabbing and use of folders
+	* kml2gmt_func.c:	Now searches for <Placemark and not <Placemark>, etc.
 
 2010-08-19	pwessel
-	* gmt_plot.c:		map_latline/lonline tried to draw a 2-point line when
+	* gmt_plot.c:		GMT_map_latline/lonline tried to draw a 2-point line when
 				no points were defined.  Checks that we have at least 2 points
-	* psxy.c:		The -Ap|m options were ignored since the mode was not checked.
-	* grdmask.c:		---"---
+	* psxy_func.c:		The -Ap|m options were ignored since the mode was not checked.
+	* grdmask_func.c:		---"---
 
+2010-08-18	pwessel
+	* gmtspatial_func.c:	The -D option is now greatly enhanced and can consider
+				median line separation [mean] and thus robust closeness
+				computations.  It also, via +p, limits comparisons to
+				points that project orthogonally onto the other feature
+				and not onto its extensions.
 2010-08-18	jluis
-	* ps2raster.c:		Added missing on-line description of -C option.
+	* gmt_init.c:		Implement workaround solution to force Matlab print to screen
+	* ps2raster_func.c:	Added -TF option to create multi-pages PDF files
 
-2010-08-17	pwessel
-	* GMT_App_F.sh:		Missed two slots that should be shaded in Standard+
-	* misc/gmt2kml.c:	Only append running number when a segment has more than
-				one point, else just use segment label.
+2010-08-16	pwessel
+	* gmt|grdmath_func.c:	Added support for simple replacement macros via user files
+				.grdmath and .gmtmath.  Works by replacing the macro name
+				with the equivalent arguments in the option lists.
+
+2010-08-15	pwessel
+	* gmtconvert_func.c:	Added -Q to select a particular segment number.
+
+2010-08-14	remko
+	* meca/utilmeca.[ch]:	Merged with utilstrain.[ch] and utilvelo.[ch]
+
+2010-08-12	jluis
+	* mex:			Allow usage where output is specified in the options string
+				via -G<file> and no output is return to Matlab.
+
+2010-08-10	pwessel
+	* gmtdefaults:		FORMAT_GEO_MAP can now end in G instead of F, which means
+				"insert a space before the hemisphere letter W E S N".
+
+2010-08-07	pwessel
+	* *_func.c:		Cleaner module initialization with assignment in consistent
+				order.  More checking and minor typo fixing.
+	* grdclip_func.c:	Now takes -R for subset of inputfile.
+	* grdgradient_func.c:	--"--".
+	* grdhisteq_func.c:	--"--".
+	* grdinfo_func.c:	--"--".
+	* grdtrend_func.c:	--"--".
+	* gmtvector_func.c:	New tools for basic manipulation of 2-D and 3-D vectors
+
+2010-08-04	pwessel
+	* xgrid:		Now compiles under GMT 5.  All GMT supplements now compile.
+				They all will need testing and test scripts to be added.
+	* mex/blockmean.c:	Works but only by duplicating the output vectors.  Need to
+				figure out how to just pass by reference.
 
 2010-08-03	pwessel
 	* gmt_plot.c:		Bug in fault symbol psxy -Sfrc, fixed w/ thanx to J. Robert
+	* mgg/*:		Removed from GMT 5 as obsolete; see mgd77 instead
+	* x_system/*:		Removed from GMT 5 as obsolete; see x2sys instead
+
+2010-08-02	pwessel
+	* segyprogs/*:		Modularized, compiles.
+
+2010-08-01	pwessel
+	* spotter/*:		Rotation file type (stage vs rotal reconstruction) is automatically
+				determined from the file format, eliminating the -C option across
+				the supplement.  If GMT_COMPAT is selected then we silently ignore
+				the now useless -C option; otherwise it is a parse error.
+2010-07-31	pwessel
+	* spotter/*.c:		The -E option can now take -E+ which means we wish to
+				invert the rotations prior to use.  Requires -C.
+
+2010-07-30	pwessel
+	* gmt2kml.c:		Promoted from misc supplement to main GMT suite
+	* kml2gmt.c:		Promoted from misc supplement to main GMT suite
+	* misc/makepattern.c:	Obsolete and removed
+	* misc/psmegaplot.c:	Obsolete and removed
+	* misc/nc2xy.c:		Obsolete and removed (gmtconvert handles the same task)
+	* misc:			Now GMT 5 compatible.
+	* spotter/libspotter.c:	Can now interpret rotation filenames like PAC-MBL to mean
+				"use the GPlates rotation file and find the rotations for
+				the Pacific plate relative to a fixed Marie Byrd Land".
+				Requires that the GPlates plate id and rotation files
+				have been put in the GMT data path.
+	* spotter/rotconverter_func.c:	New option -G to write GPlates rotation file format.
 
 2010-07-28	pwessel
-	* spotter/rotconverter.c:	Complained of "bad option" when a rotation with a
+	* mgg/*:		Modularized, compiles.
+	* mgg/binlegs.c:	Changed -R (replace)  to -E and -P (path) to -A to avoid
+				clash with GMT internals.  Allow for compatibility though.
+	* mgg/gmt2bin.c:	Same, -P(path) to -A.
+	* mgg/mgd77togmt.c:	Same, let -Y (year) become -E.
+	* spotter/rotconverter_func.c:	Complained of "bad option" when a rotation with a
 				negative longitude was given on the command line, e.g. -135/35/-2.5
-				Would sometimes issue a rotation twice (same time)
-		
-2010-07-27	pwessel
-	* spotter/backtracker.c:	Added the -F option to compute predicted hotspot tracks
-				given a hotspot motion record and plate rotations.
+				Would sometimes issues a rotation twice (same time)
 
 2010-07-26	pwessel
 	* mgd77/mgd77manage.c:	The -F option had no break statement.
-	* mgd77/mgd77track.c:	Had inactive code to write segmentheader to output.
+	* mgd77/mgd77path.c:	Renamed the -P option to -A (but also has compatibility mode).
 
 2010-07-24	pwessel
-	* mgd77/mgd77list.c:	The -G option was not listed in synopsis or usage, only
-				in the man pages.  Also -Fall+ and -Fmgd77+ did not append
-				the auxiliary columns properly.
+	* gmtparse_func.c:	GMT_Create_Options now expects a void pointer for args
+				so we may pass static strings, single strings, or arrays.
+				This simplifies the calling of GMT modules.
+	* meca/*:		Modularized, compiles.
+	* mgd77/mgd77convert.c:	The -4 option is now -D, but backwards compatible.
 	* mgd77/mgd77magref.c:	The -D failed on numeric arguments.
+	* mgd77/*.c:		Begun modularizing.
+
+2010-07-23	pwessel
+	* gmt_plot.c:		Now use module_name to report who writes the PS.
+	* x2sys/*:		Compiles, not tested.
+	* x2sys/x2sys_cross_func.c:	Renamed -K to -A to avoid GMT common collision,
+				and renamed -2 to -Z to avoid it being seen as a number.
+
+2010-07-23	remko
+	* gmt_init.c:		Removed common.processed (all through C->common.?.active)
+				Replaced common.h.active[2] by common.h.active
+				Replaced common.B.active by common.B.active[2]
+				Made all gmt_parse_?_option local to gmt_init.c
 
 2010-07-22	pwessel
-	* psimage.c:		justify text string must be 3-char longs to hold trailing 0.
-				This could cause SEGV on some systems.
+	* psimage_func.c:	justify text string must be 3-char longs to hold trailing 0.
+	* gmt*.c:		Moved -b variables to common.b
+	* x2sys/*:		Begun modularizing.
+
+2010-07-21	pwessel
+	* *_func.c:		All progs that need -J now checks during parsing.
+	* gmt_common.h:		We now use the common.? structs to hold read-only
+				parameters given via the common options.
+	* *.c:			Eliminated the duplicate proj.degree[] variable.
+
+2010-07-21	remko
+	* gmtlogo:		New pstext syntax
+	* doc/scripts/functions.sh:	Introduced as helper for doc scripts
+	* getbox.sh, getrect.sh:	Removed (part of functions.sh)
+	* doc/scripts/*.sh:	Added functions.sh
+
+2010-07-20	remko
+	* gmtdefaults.in:	Set COLOR_NAN = 127.5, COLOR_MODEL = none
+	* gmt_support.c:	Improved GMT_read_cpt and GMT_write_cpt
+	* gmt_default.h:	setting.color_[background|foreground|nan] replaced by setting.color_patch
+	* gmt_init.c:		Added GMT_put{rgb,hsv,cmyk}, changed meaning of COLOR_MODEL
+	* gmtdefaults.txt:	Changed meaning of COLOR_MODEL
+	* grd2cpt_func.c, makecpt_func.c:	Added -F option, expanded -D option
+	* *.cpt:		Use new format for all CPT files
+	* ex??/job*:		Use only text strings for fonts (e.g. Helvetica-Bold)
+	* project_func.c:	Fixed bug introduced by forcing -fg too early
+	* pslegend_func.c:	Fixed bug in ellipse size
+	* pstext_func.c:	Needed to empty paragraph after plotting
+	* map_plot.c:		GMT_linearx_grid: Avoid plotting e and w gridline on top of each other
+				GMT_map_{lat,lon}line: Reverted to GMT4 style since they were not cut
+				properly in polar plots.
+	* psxy_func.c:		Fixed bug with plotting rotated rectangles and ellipses
+
+2010-07-19	pwessel
+	* spotter/*.c:		Now made into modules
 
 2010-07-18	remko
-	* pstext.txt:		Added missing description of -A option.
+	* gmt_init.c:		Put reading of file by PROJ_ELLIPSOID=file under GMT_COMPAT.
+				Made PS_CHAR_ENCODING work again.
+	* mapproject_func.c:	Output of forward transformation was incorrectly defined as lon/lat
+	* gmtdefaults_func.c:	Need not load defaults again when not -D
+	* gmtset_func.c:	Need not load defaults again when not -D, -C, or -G
+	* pstext_func.c:	Added warning when old-style. Fixed bug with -A.
+	* project_func.c:	Fixed bug regarding azimuth with -N.
+	* psxy_func.c:		Flip start and end of wedge symbol when angles are azimuth.
+	* test/*/*.sh:		Adjusted to bash and new pstext input style
+
+2010-07-18	pwessel
+	* pstext_func.c:	Can now recognize GMT4-style text inputs automatically.
+	* ex??/job*:		Now use new pstext format with -F option as needed.
+
+2010-07-17	remko
+	* gmtapi_parse.c:	GMT_Parse_Common updated to handle all common options and I/O
+				registration for all GMT_modules.
+				GMT_Sort_Options has become obsolete.
+	* *_func.c:		Now use GMT_Parse_Common to handle common options.
+
+2010-07-16	remko
+	* minmax_func.c:	Fixed bug that prevented any output with -R
 
 2010-07-16	pwessel
-	* ex23/*:		The scripts plotted names at a 1-degree angle instead of 0.
+	* mapproject_func.c:	New -N option to do geodetic/geocentric conversions [and -I].
 
-2010-07-16	pwessel
-	* spotter/*.c:		Now convert geodetic to geocentric latitudes before doing
-				spherical rotations; recover geodetic for output points.
-
------------------------------------------------------------------------------------------
-2010-07-15	pwessel
-	* GMT 4.5.3 finalized and released
------------------------------------------------------------------------------------------
+2010-07-14	pwessel
+	* gmtconvert_func.c:	Preliminary handling of -a option to convert GMT data to
+				GMT/OGR files with metadata.  Checks polygons and marks
+				holes and perimeters.
 
 2010-07-14	remko
 	* GMT_nighttime.cpt:	Colortable for DMSP-OLS Nighttime Lights Time Series
 				Designed by Andreas Trawoeger.
+	* pstext_func.c:	Reading order of text parameters depends of order on -F option
+	* pstext.txt:		---"---
+	* gmt_init.c:		Beautification of GMT_pen_syntax.
+				Let GMT_begin_module parse for -V -- and -^ so that -- are
+				picked up even before setting up Ctrl struct.
+	* *_func.c:		---"---
 
 2010-07-13	pwessel
-	* gmt_plot.c:		Ensure that axis vector for GRAPH mode matches axis pen width.
+	* gmt_plot.c:           Ensure that axis vector for GRAPH mode matches axis pen width.
+	* gmt_io.c:		Added preliminary aspatial data assignments.
+	* pstext_func.c:	Introduced -F to help set font, angle, justification.
+				Also added -a to set aspatial data associations.
+	* psxy_func.c:		Added -a to use aspatial data associations, and added modifier
+				+s<scale>[unit][/<origin>][l] to -S to adjust scale
+	* psxyz_func.c:		Same as psxy_func.c
 
 2010-07-13	remko
-	* gmt_plot.c, gmt_map.c:	Replace GMT_coordinate_to_[xy] by already existing
-				GMT_x_to_xx and GMT_y_to_yy.
+	* gmt_colors.h:		Introduced GMT_u255 to convert double rgb (0-1 range) to unsigned char (0-255)
+	* gmt_support.c:	---"---
+	* psscale_func.c, grdview_func.c, grdimage_func.c:	---"---
+	* xyz2grd_func.c:	Padding was incorrectly switched off with -Z
+	* *contour_func.c:	Made -A- work again. Removed bugs in sort_and_plot_ticks
+	* pscontour_func.c:	-T..: can now be : (default to -+), :LH (use L and H), or
+				:stringl,stringh (for two strings).
+	* mapproject_func.c:	Fixed output in -G mode
+
+2010-07-12	pwessel
+	* blockm*.c:		Eliminated block_subs.c (only block_subs.h needed)
+
+2010-07-12	remko
+	* job15, job27:		Avoid unnecessary use of variables and temp files
+	* test/grdcontour/contours.sh:	Renamed from oriented.sh
+	* test/grdcontour/grdcontour.sh:	-W options changed from dpi to pt default unit
+	* gmt_init.c:		C->current.setting.ps_compress is now C->PSL->internal.compress.
+				Do GMT_set_ellipsoid etc directly in GMT_setdefaults, and not as
+				part of GMT_begin and/or GMT_begin_module.
+				Do not warn for multiple uses of -f option.
+	* explain_-f.txt:	Allow multiple uses of -f option.
+	* gmt_io.c:		Removed hash nodes for month_name (only 12 items, runs fast enough with strcmp).
+	* gmt_time.h:		Added uppercase array to month_name
+	* explain_pen.txt:	Explain better that default unit for pen thickness is points
+	* grdcontour_func.c:	---"---
+	* gmt_plot.c:		Properly align time annotations
+	* psbasemap_func.c, psbasemap.txt:	Added -f option.
+
+2010-07-10	pwessel
+	* mapproject_func.c:	UTM auto-setting of -R was reset to 0/360/-90/90
+
+2010-07-10	remko
+	* gmt_init.c:		Issue warning when using -m, -M, -S in GMT_COMPAT mode
+	* configure.ac:		Added flag --enable-compat for compatibility mode
+	* ex12:			Triangulate needs -M option
+	* triangulate_func.c:	Activate -M option
+	* grd2xyz_func.c:	Warn when using -E in GMT_COMPAT mode
+	* mapproject_func.c:	Proper use of GMT_IS_LAT/LON/FLOAT
+	* ex10:			Use proper bold font
+	* pstext_func.c:	Make -M work
+	* gmt_plot.c:		Reset linewidth after time-stamp
+	* psxy_func.c:		No more checks on whether -m is used, since it is implied
+	* grdcontour_func.c:	Force multi segment for -D<dumpfile>
+
+2010-07-09	pwessel
+	* grdcontour_func.c:	-T..: can now be : (default to -+), :LH (use L and H), or
+				:stringl,stringh (for two strings).
+	* ex25:			grd2xyz now takes -s, not -S unless in compatibility mode.
+	* ex21:			gmtconvert needed -T to turn off headers.
+	* gmt_io.c:		The -ZTLf read machinery did not use -s; now it does.
 
 2010-07-08	pwessel
-	* ex13:			Used -G2i/10 which is a syntax from pre-GMT 4.  Changed to -Gd2i.
+	* -m:			The -m option is no longer required and has been made obsolete,
+				meaning it is only accessible if compiled with GMT_COMPAT.
+				The option has been removed from all scripts and documentation.
+	* gmtspatial_func.c:	Added new program for geospatial operations on lines and polygons.
+				Still in development and tests will be added shortly.
+	* ex13,14:		Used -G<dist>/<width> which is a syntax from GMT 3.  The 10 used to
+				mean "use 10 points to compute average angle" but the syntax
+				now is -Gd2i[/<frac>], where <frac> can be changed from 0.25
+				which is how quickly the first label is plotted.
 	* explain_contlabel.txt: Did not fully describe the -Gd label option, including the
 				fractional part.
 	* gmt_support.c:	Now complains if -Gd<dist>[/<frac>] finds frac outside 0-1.
@@ -362,353 +866,850 @@
 	* ps2raster.c:		Also converts ps files with headers but no image. Now it will
 				create a 1x1 raster instead of aborting with an error message.
 
-2010-06-29	pwessel
-	* grdcontour.c:		Placement of H and L annotations improved by using centroids
-
-2010-06-28	pwessel
-	* mapproject.c:		Applied scaling to -C/dx/dy when -Fk was used, despite docs
-				saying -C is in meters when -F is used. Fixed, and clarified
-				docs/man to say with -F, -C is always in meters.
-	* gmt_io.c:		Added GMT_IS_DIMENSION for converting input dimensions which
-				may have a suffix unit (e.g., 3.5c).  This can occur in the
-				input to psxy[z], which sometimes complained about bad input.
-	* psxy[z].c:		Better handling of dimensions with units passed via columns
-				in the data file, as in psxy.
-
-2010-06-25	pwessel
-	* gmt_io.c:		GMT_fgets now checks for input record truncation and handles
-				this gracefully (gives warning and winds to next record).
-
-2010-06-24	pwessel
-	* nearneighbor.c:	Did not handle periodic x input when -fg was used
-	* grdmask.c:		Did not handle periodic x input when -fg was used
-	* psmask.c:		Did not handle periodic x input when -fg was used
-	* surface.c:		Did not handle periodic x input when -fg was used
-
-2010-06-24	jluis
-	* grdview.c:		Check that topo and illumination file have the same size,
-				otherwise it would crash.
+2010-06-30	pwessel
+	* project_func.c:	Now properly handles multisegment files.
+	* ex18/job*:		Changed to handle new grdcontour -D behavior.
 
 2010-06-30  remko
-	* pstext.c:     Did not recognize -f option, so could not use e.g. -f0T
+	* pstext_func.c:	Added -f option
 
-2010-06-21	pwessel
-	* job??.*, *.sh:	All examples with gridded files now use the extension .nc and not .grd
+2010-06-29	pwessel
+	* pscontour_func.c:	Greatly enhanced, with similar options to grdcontour.
+				1. -C can take cpt, table, or interval, 2. -A can take
+				annotation interval, -D dumps contours, -Tindexfile has
+				been renamed -Qindexfile, so -T for ticks can be used.
+				(but with backwards compatibility option.)
+				-W can now take contour or annot pens.  Placement of H and
+				L annotations improved by using centroids.
+				No plot is generated when -D is used.
+	* gmt_support.c:	New functions to compute polygon centroid/area added.
 
-2010-06-16	pwessel
-	* WDBII:		Based on feedback (and data) from Branislav Mikulas I have added some
-				missing/mangled borders to the WDBII borders, level 1: Syria-Israel,
-				Israel-Jordan, Moldova-Ukraine, and the Eritrea border with Ethiopia.
+2010-06-28	pwessel
+	* grdcontour_func.c:	New -D treatment will allow more flexibility in output forms
+				and file names, as well as writing via memory ref. NOT DONE YET.
+	* gmt_io.c:		Added GMT_IS_DIMENSION for converting input dimensions which
+				may have a suffix unit (e.g., 3.5c).  This can occur in the
+				input to psxy[z].
+	* psxy[z]_func.c:	Better handling of dimensions with units passed via columns
+				in the data file.
+2010-06-24	pwessel
+	* gmt*.c:		Use GMT_fscanf (macro or function) to handle Windows DLL
+	* gmt_io.c:		GMT_fgets now checks for input record truncation and handles
+				this gracefully (gives warning and scans to next record).
+	* examples:		Now all work in GMT 5
+
+2010-06-23	pwessel
+	* *.c:			Programs that read table data but has no need for segment
+				divisions (e.g., surface, nearneighbor) will automatically
+				set -mi internally to avoid complaints of missing -m.
+	* grdvolume_func.c:	Enhanced -T to be -T[c|h] for ORS estimate based on max
+				curvature or height.  Results always written to stdout.
+	* pscontour_func.c:	-T nodes are considered like any other data file (no longer
+				expects binary integer files)
+	* triangulate_func.c:	Indices output with -bo are now double, as all other i/o files.
+	* filter1d_func.c:	Now reads -Ff coefficients via GMT_Get_Data.
+	* nearneighbor_func.c:	Did not handle periodic x input when -fg was used
+	* grdmask_func.c:	Did not handle periodic x input when -fg was used
+	* grdmask_func.c:	Did not handle periodic x input when -fg was used
+	* psmask_func.c:	Did not handle periodic x input when -fg was used
+	* surface_func.c:	Did not handle periodic x input when -fg was used
+
+2010-06-18	pwessel
+	* *.c:			Changed current.proj.w,e,s,n,x|ymin|max to
+				current.proj.wesn[] and current.proj.rect[].
+
+2010-06-17	pwessel
+	* *.c:			Use node_offset == GMT_GRIDLINE_REG or GMT_PIXEL_REG.
+
+2010-06-15	pwessel
+	* *.c:			Many internal changes, replacing how loops over grid nodes are
+				done. Compiles, tested by running examples; ex16 not working.
+2010-06-11	pwessel
+	* *.c:			Change pad default to 2, i.e. all grids will have two rows/cols
+				for padding use.  Exceptions will be grdfft_func.c and
+				grdpaste_func.c.  Use GMT_IJP and variables row,col throughout.
+
+2010-06-10	pwessel
+	* GMT.c:		Let GNUmakefile work off GMTprogs.txt to build the parts
+				that depend on which programs have been added. This info
+				becomes gmt_prognames.h and gmt_progcases.h
+
+2010-06-09	pwessel
+	* gmt_grdio.c:		When reading subset with pad we try to fill pad with actual
+				data if possible; otherwise BC is used to fill the pad.
+
+2010-06-08	pwessel
+	* grd2xyz_func.c:	Made -E obsolete (now under #define GMT_COMPAT)
+	* xyz2grd_func.c:	Made -E obsolete (now under #define GMT_COMPAT)
+
+2010-06-07	pwessel
+	* gmt_esri_io.c:	Added format "aa" ESRI Arc/Info ASCII interchange format
+				to the recognized GMT grid formats.
 
 2010-06-06	pwessel
-	* x2sys/x2sys_get.c:	Need -L+[<list>] so internal crossovers can be added.
+	* imgsrc/img2grd_func.c:	Initial porting to GMT 5. This function/executable
+				combines functionality of old img2mercgrid and script img2grd.
+				Not tested yet due to bug in grdproject.
 
-2010-06-06	jluis
-	* mgd77/mgd77convert.c:	Fix for the never-ending troubles with the dll cross on Windows
-	* x2sys/x2sys_list.c:	Implemented -S[+] to print info relevant to both cruises 
+2010-06-02	pwessel
+	* gshhs/gshhs_func.c:	Initial porting to GMT 5
+	* *_func.c:		Consistently use GMT_V_OPT for -v synopsis and add [API]
 
-2010-05-31	pwessel
-	* misc/kml2gmt.c:	Did not allow for optional attributes for tags <PlaceMark> etc.
-
-2010-05-25	pwessel
-	* x2sys/x2sys.c:	Need to include the "." when checking if a suffix is present.
-
-2010-05-24	remko
-	* gshhs-*.info:		Fink info files updated for GSHHS version 2.1
-
-2010-05-22	pwessel
-	* GSHHS:		Now version 2.1 which fixes the lack of river-lake metadata
-				in the binary and shapefile release.
+2010-05-20	remko
+	* gmtdefaults_func.c:	No longer require -L (default behavior)
+	* gmtset_func.c:	Allow no parameters at all. That is: "gmtset" on its own
+				does the same as gmtdefaults > .gmtdefaults
 
 2010-05-20	jluis
 	* ps2raster.c:		Print a warning if the converted file was not created, as will
 				happen with some formats (e.g. jpeg) if input PS file was not
 				correctly closed (the -O -K swing).
-	* gmtdefaults.c:	Call GMT_begin so that all memory allocations/freeing is done 
-				inside the dll and no crash on Windows.
-
 2010-05-19	pwessel
 	* pswiggle.c:		Option -Dx<gap> allows gaps to be in projected distances.
 
 2010-05-18	jluis
-	* grdgradient.c:	Let -S work alone without forcing -G.
+	* grdgradient.c:	Let -S work alone without forcing -G
 
 2010-05-13	jluis
-	* gmt_gdalread.c:	Limit the patch against the GDAL flipud bug on netCDF files 
-				to versions prior to 1.7.
+	* gmt_gdalread.c:	Limit the patch against the GDAL flipud bug on netCDF files
+				to versions prior than 1.7
 
-2010-04-24	jluis
-	* mgd77/mgd77magref.c:	Fix bug in -A option when using const time in calendar format.
-				(fix by Marcelo Banik)
-	* share/mgd77:		Updated F107_mon.plt and Dst_all.wdc index files to March/April 2010.
-				In umdl.CM4 file, extended the limit of the 'bkpo' indices from 2010 to 2015.
-				This should make no difference to core field estimation that ends at 2002.5
-				but lets the atmospheric components be computed after 1-Jan-2010. 
+2010-05-07	pwessel
+	* gmt_init.c:		Changed -s[r] to the more general -s[<cols>][r]
+
+2010-05-03	pwessel
+	* gmt_init.c:		Added new global i/o option -s[r] that controls what
+				happens to records whose z-column == NaN.
+	* gmt_io.c:		The -s[r] mechanism is implemented in the basic i/o
+	* grd2xyz_func.c:	The -S[r] is now obsolete, replaced by -s[r].
+	* gmtselect_func.c:	Added -s[r] as option.
+	* mapproject_func.c:	Added -s[r] as option.
+	* project_func.c:	Added -s[r] as option.
+	* gmtmath_func.c:	Added -s[r] as option.
+	* gmtconvert_func.c:	Added -s[r] as option.
+
+2010-05-02	pwessel
+	* gmtstitch_func.c:	Promoted from supplement misc. Compiles, not tested.
+	* gmtdp_func.c:		Promoted from supplement misc. Compiles, not tested.
 
 2010-04-25	pwessel
-	* psxy[z].c:		For -Svs, the 2nd set of coordinates did not consider -:
+	* psxy[z]_func.c:	For -Svs, the 2nd set of coordinates did not consider -:
 
 2010-04-22	remko
-	* gmt_map.c:		Improving map boundary crossing mechanism (first step).
+	* gmt_map.c:		Improving map boundary crossing mechanism (first step)
 
 2010-04-21	pwessel
-	* sph/sphtriangulate.c:	Incorrect items for cols 3-4 for -N
+	* sph/*:		Initial port to GMT 5 modules (compiles)
 
-2010-04-14	pwessel
-	* pshistogram.c:	Fixed # of bins bug when a datapoint equaled east.
+2010-04-20	pwessel
+	* dbase/grdraster_func.c:	Operational.
+
+2010-04-20	remko
+	* *.txt, *_func.c:	-? causes usage message. Added info on -^ and -? (syntax and usage).
+				Put explanation of -h and -: in the proper place.
+	* explain_help.txt:	Help info
+	* explain_colon.txt:	Renamed from explain_-t.txt
+	* explain_-h.txt:	Renamed from explain_-H.txt
+
+2010-04-19	pwessel
+	* gmt_init.c:		Duplicated some initializations from GMT_begin to GMT_begin_module
+				and split freeing between GMT_end and GMT_end_module.
+	* dbase/grdraster.c:	Started initial porting to GMT 5 as module
+
+2010-04-19	remko
+	* gmtapi_parse.c:	Allow programs (like minmax) to work with NO arguments. Other
+				programs should produce the usage message, not a segfault.
+				Return OK from GMT_Sort_Options when list is empty, not error.
+	* minmax_func.c:	Work again without arguments.
+	* gmt_map.c:		GMT_wrap_around_check_x: removed superfluous code.
+				GMT_geo_to_xy_line: Lift pen up when encountering NaN values.
+
+2010-04-16	remko
+	* gmt_init.c:		Isolated more compatibility code within #ifdef GMT_COMPAT #endif
+				Added warning when using GMT4 parameters.
+	* test/*.sh, scripts/*.sh, examples/*:	Use GMT5 default names
+
+2010-04-15	pwessel
+	* pshistogram_func.c:	Fixed # of bins bug when a datapoint equaled east.
+	* gmt.h:		Make most members be allocated in the struct itself
+	* gmt_init.c:		Added GMT_module_begin|end to manage save/restore of GMT struct
+	* pslegend_func.c:	Mostly is now working with the new save/restore system.
+	* examples/*:		Use GMT5 default names and syntax
+
+2010-04-11	pwessel
+	* gmtapi_util.c:	Now register resources with both family and method.
+	* pslegend_func.c:	Now produces output (to be refined).  No image/scales yet.
+
+2010-04-11	remko
+	* gmt_init.c:		Changed frame.side to be binary flag 1 + 2, instead of 1 or 2.
+				Use gmt_decode_wesnz (renamed from gmt_strip_wesnz) more efficiently.
+
+2010-04-10	remko
+	* pslib.c:		Renamed PSL_set{integer,pen,points,textdim,units} to PSL_def...
+				Renamed PSL_setrgb to PSL_defcolor.
+				psl_putcolor and psl_putdash, replacements for psl_place_color and
+				psl_place_setdash, now return strings, instead of write out directly.
+				Significantly simplified font and color indexing and output
+				formatting in psl_paragraphprocess.
+				Avoided using any fputc commands. All PS output through PSL_command.
+	* gmt_init.c:		System-wide defaults is now share/conf/gmtdefaults.conf.
+				Removed GMT_getdefpath.
+
+2010-04-09	pwessel
+	* pslegend_func.c:	First porting, added to Makefile, compiles only.
+
+2010-04-09	remko
+	* gmtset_func.c:	Introduced -D[s|u] to gmtset, like in gmtdefaults
+	* gmt_init.c (GMT_getdefpath):	Use 's', 'u', and other as argument, not 2, 1, 0.
+	* pslib.h:		PSL_SQUARE_CAP had wrong value (0 instead of 2)
+	* gmt_init.c:		Significant improvement and simplification of option parsing.
+				All gmtdefaults files must be read before PSL_beginsession.
+
+2010-04-08	remko
+	* gmt_support.c:	More robust checking of font, pen and color representation.
+	* *.tex:		Replaced .gmtdefaults4 and .gmtcommands4
+	* gmt_init.c:		Added extra argument to GMT_unit_lookup and GMT_convert_units to
+				better select default unit (other than settings.measure_unit).
+	* gmt_init.h:		Introduced macro GMT_to_inch to shorten GMT_convert_units call
+				when default unit is settings.measure_unit and target unit is inch.
+
+2010-04-08	pwessel
+	* gmt*.{c,h,tex,txt,sh,csh,bat}:	The header option -H is now -h but is backwards compatible.
+	* *_func.c:		Parsing simplified by doing all GMT commons inside library.
+
+2010-04-07	remko
+	* gmtapi_parse.c:	Always allocate at least a null string in GMT_Make_Option.
+				Issue error GMT_ARG_IS_NULL when arg is null pointer in GMT_Append_Option.
+	* gmtapi_errors.d:	New input file to create both gmtapi_errno.h and gmtapi_errstr.h.
+				This file should later contain also an actual error string.
+	* gmt_support.c:	Let GMT_chop zero out ALL \n and \r.
+	* *_func.c:		Replaced checks on opt->arg by opt->arg[0]
 
 2010-04-06	remko
-	 * pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism.
+	* gmt_init.c, gmt_unique.h, gmt.h:	Redid workings of .gmtcommands.
+				Avoids crashes and simplifies way of dealing with -J.
+	* gmt_plot.c:		Plot vertical axis before basemap so that title is plotted on top,
+				not along the basemap. Fixed bug when using user-defined z-level.
+	* gmt_init.c:		Make -Z option part of -p. -Z still allowed for backwards compatibility.
+				Suggest using -R and -J when using -p.
+	* {grdview,psbasemap,psclip,pscoast,pstext,psxyz}_func.c:	---"---
+	* pstext_func.c:	Old -Z+ changed to -Z, but implemented with backwards compatibility.
+	* pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism.
+	* {psimage,psscale}_func.c:	Make -p work with optional -R -J -Jz.
+	* *.txt:		Use IT() and BD() macros.
+
+2010-04-05	remko
+	* pslib.c:		Used wrong PS call for textbox with straight corners
+				Round dash length back to integers.
+	* pstext_func.c:	Split the confusing -W option into three options:
+				-G<fill>   color of textbox (was textcolor but that can be done with
+				           font specification, e.g. Helvetica,red)
+				-W<pen>    pen of the textbox (was -Wo<pen>)
+				-To|O|c|C  shape of the textbox
+	* gmt_io.c (GMT_parse_segment_header): -G+ and -W+ can now simply be -G and -W.
+				-W option modifies the default setting, which is the one given on
+				the command line.
+	* gmt_io.c (GMT_read_table): Work properly with gaps (used to skip following record)
+	* gmt_support.c:	GMT_gap_detected moved to gmt_io.c
+	* gmt_plot.c:		Worked out way to make checkers in frames work properly.
+
+2010-04-04	remko
+	* job*.*, scripts/*.sh:	Replaced -W0.25p by -W (default pen)
+				Replaced -W<>,o by -W<>,. (dotted line)
+				Replaced -W<>,a by -W<>,- (dashed line)
+	* gmt_plot.c (GMT_plane_perspective):	Allow plane = GMT_ZW to indicate z-level is not
+				yet a projected coordinate.
+	* gmt_map.c, gmt_init.c:	Set default current.proj.{fwd,inv}_{x,y,z} to linear
+				transformation just in case they do not get set elsewhere.
+
+2010-04-02	pwessel
+	* gmtmath_func.c:	Now honors the order of columns in -F.  Also implemented the
+				handling of -S[f|l] since that was left out when porting.
+
+2010-04-02	jluis
+	* gmt_init.c:		New function GMT_fprintf that uses vfprintf ().
+	* *_func.c:		Replaced all occurences of fprintf by GMT_fprintf on mains.
+	* job*.bat:		Fixed errors in examples ex03, ex04 & ex17 batch files
+
+2010-04-02	remko
+	* *_func.c:		Replaced -E<azim>/<elev>... by -p<azim>/<evel> conform grdimage, thus
+				avoiding clash with -E<dpi>.
+	* *.txt:		---"---
+	* explain_{-J,-R,-X,-Y,-c,perspective}.txt:	Mention use of option without argument
+	* gmt_init.c:		Added gmt_parse_p_option to GMT_parse_common_option to handle new -p
+				option consistently.
+	* gmt_support.c:	Removed now obsolete GMT_get_proj3D
+	* explain_perspective.txt:	Replaces explain_-E.txt
+	* psimage_func.c, psscale_func.c:	Implemented -p option to do 3-D perspective
+	* job04*.*:		Replaced -E by -p
+	* gmt_unique.h:		Added -p, so one can repeat -p after having set -p<azim>/<elev> in a
+				previous command.
+
+2010-04-01	jluis
+	* gmt_init.c:		Re-write GMT_message & PSL_command macros as functions to workaround
+	* pslib.c:		the DLL boundary cross problem on Windows. This solution is #ifdeffed
+				to the Windows build.
+
+2010-04-01	remko
+	* gmtset_func.c:	Added -C option to convert .gmtdefaults4 file to GMT5
+	* *.txt, *.tex:		Replaced all gmtdefaults parameter names by the new ones
+	* grdimage_func.c:	Implemented -p option to do 3-D perspective
+	* job04c.*:		Replaced plane perspective grdview image with grdimage
 
 2010-03-31	remko
+	* gmt_pennames.h:	Promoted "default" above "thinnest".
+	* gmt_support.c:	GMT_putpen moved from gmt_init.c, now "names" the pen thickness.
+				GMT_init_pen (now obsolete) sets default to black.
+				Removed last to arguments of GMT_font_lookup (always the same).
+				Added GMT_getfont, GMT_putfont and GMT_font_lookup.
+				Removed GMT_old2newpen and GMT_contourlabel_specs_old:
+				No more backwards compatibility with GMT 3.
+	* gmt_init.c:		Moved GMT_font_lookup to gmt_support.c
+				Removed FONT_*SIZE* (now integral to FONT_*).
+	* gmt_texture.h:	Rename GMT_FONT to GMT_FONTSPEC.
+				Added new GMT_FONT struct to hold size,name,color combination.
+	* *.c:			Default pen now is set by MAP_DEFAULT_PEN (current.setting.default_pen)
+	* gmtapi_parse.c:	Parse -- options before the others.
+	* gmtdefaults.in:	Added MAP_DEFAULT_PEN. Used new FONT_* specifications.
+				Removed FONT_*SIZE* (now integral to FONT_*).
+				MAP_FRAME_PEN changed from 1.25p to "thicker" (1.50p).
+	* gmt_defaults.h, gmt_keywords.txt:	---"---
+	* *_func.c:		Use new GMT_FONT struct.
+				Replaced background_rgb by default_pen.rgb where appropriate.
+				Replaced foreground_rgb by page_rgb where appropriate.
+	* gmt_plot.c:		---"---
+	* ps|grdcontour_func.c:	Added new modifier -W- to instruct coloring of contour labels.
 	* configure.ac:		Fixed reversed use off --enable-flock.
 	* gmt_init.c, gmt_notunix.h:	Use -DFLOCK to switch file locking on instead of -DNO_LOCK
 				to switch it off.
 
+
+2010-03-30	pwessel
+	* *.c:			Introduced GMT_Begin|End_IO throughout.
+
+2010-03-30	remko
+	* gmt_init.c:		Replaced gmt_put_colorname by GMT_putcolor, which can be
+				more easily used to produce the color name.
+				Removed GMT->current.setting.basemap_frame_rgb setting,
+				use GMT->current.setting.frame_pen.rgb instead.
+				No longer produces MAP_FRAME_COLOR on output.
+				Introduced MAP_PEN to set all MAP_*_PEN.
+	* gmt_prototypes.h:	Added GMT_putcolor and GMT_putpen.
+	* gmt_support.c:	GMT_init_pen now initializes pen as black (as specified) not as
+				GMT->current.setting.frame_pen.rgb
+
 2010-03-29	remko
-	* grdview.c:		Fixed bug in parsing of -W[m|c|f] option when color starts with [m|c|f]
+	* pscoast_func.c:	Fixed order of GMT_plane_perspective calls
+	* *_func.c:		Removed superfluous "if (GMT->current.proj.three_D)"
+	* grdview_func.c:	Fixed problems with parsing -Wm|c|f option
+				Colors were rounded to primary and secondary colors
+				Fixed plotting of mesh over surface
+				Fixed plotting of 3D image
+				No more clipmask drawn when using -Qc (using image mask instead)
+	* PSL_label.ps:		Replaced one gsave by clipsave
+	* gmt_plot.c:		Fill the "open" parts of the frame checkers with the page color
+				set by PS_PAGE_COLOR (not done the corners though).
+	* gmt_support.c:	Headers in GMT_PALETTE need to be deallocated with free(),
+				not GMT_free().
+
+2010-03-28	jluis
+	* configure.ac:		Removed the -D_WIN32 association to Cygwin as on 1.7 version
+				there would be a conflict with the GMT_setmode function
+
+2010-03-28	remko
+	* gmt_io.c:		Made closing of netCDF files in GMT_fclose safer
+	* psxyz_func.c:		Made 3-D plotting of polygons, lines, and rotated rectangles work
+	* gmt_plot.c:		Get the perspective of the vertical axis in 3D right
+	* grdview_func.c:	Fixed some errors in perspective
+
+2010-03-27	pwessel
+	* gmtapi_parse.c:	Not allow -<number> as option so that negative numbers
+				on the command line can be recognized.
+	* *.[ch]:		Many little bug fixes to get all examples to run without
+				crashing.  Still need to rewrite pslegend.
+
+2010-03-27	remko
+	* *.[ch]:		Replaced GMT_TEXTURE texture by GMT_PALLETTE palette
+				Replaced texture in GMT_PEN by style
+				Replaced texture = solid by style = solid
+				Replaced GMT_*_texture by GMT_*_palette
+				Replaced GMT_gettexture and GMT_is_texture by GMT_getpenstyle
+				and GMT_is_penstyle
+				Removed current.palette
+				Replaced "multisegment header" with "segment header"
+	* *.txt */*.txt:	---"---
+				Replaced all generic mention of "r/g/b" by "color"
+	* gmt_support.c:	Fixed GMT_copy_palette to properly copy labels
+
+2010-03-26	remko
+	* gmtdefaults.txt:	Changed all GMT setting names from GMT4 to GMT5 standard
+	* GMT.in:		Removed. Now made from GMT.c
+	* gmtdefaults_??.in:	Removed. Replaced with single gmtdefaults.in file.
+	* configure.ac:		Changed accordingly.
 
 2010-03-25	remko
-	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace.
+	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace
+	* gmt_support.c:	Interpolation in CPT file was rounded, creating only primary/
+				secondary colors.
+	* psxy_func.c:		Now properly parses headers (used to use last one only).
+				Can now use GMT_fix_up_path (used to crash).
+	* gmt_init.c:		PS_VERBOSE was read as numerical, instead of true/false.
+				Routine gmt_true_false_or_error will now also take "1" or "t"
+				to mean "true" and "0" or "f" to mean "false" as well.
 
-2010-03-24	jluis
-	* *.c:			In mains that used GMT_stdout, replaced fprintf (stdout, ...) 
-				by GMT_fputs () because both forms cannot coexist for >= VC 2005
+2010-03-25	pwessel
+	* *_func.c:		Check that API was initialized, then assign GMT = API->GMT.
+	* *.c:			Many minor fixes to prevent SEGV in examples, as well as
+				memory handling issues.
 
-2010-03-23	pwessel
-	* *.c:			Use GMT_LL/PSL_LL to handle 64-bit integers across many OS
+2010-03-24	pwessel
+	* gmtapi_parse.c:	Improved developer documentation in this file, streamlined
+				the code, ensured proper error handling throughout, and fixed
+				a free/GMT_free bug in GMT_Delete_Option.
+	* gmtapi_util.c:	Improved developer documentation in this file, streamlined
+				the code, ensured proper error handling throughout, eliminated
+				checking when it is known that a calling function would already
+				have checked.  Fixed some minor errors.
+2010-03-24	remko
+	* gmt_plot.c:		Renamed GMT_geo_line to GMT_plot_line and introduced new
+				GMT_geo_line to plot lines with lon/lat coordinates.
+	* psxy_func.c:		Several fixes to make almost work.
+
+2010-03-23      pwessel
+	* *.c:                  Use GMT_LL/PSL_LL to handle 64-bit integers across many OS
 
 2010-03-23	remko
 	* pslib.[ch], pslib_inc.h:	Removed pslib_inc.h, now in pslib.c.
 				Removed PRINT_SIZE_T macro. Added PSL_LL macro.
-	* gmt.h, gmt_notunix.h:	Removed PRINT_SIZE_T macro. Added GMT_LL macro.
-	* grdinfo.c:		Removed PRINT_SIZE_T macro.
+	* gmt.h, gmt_macros.h:	Removed PRINT_SIZE_T macro. Added GMT_LL macro.
+	* grdinfo_func.c:	Removed PRINT_SIZE_T macro.
 
 2010-03-22	pwessel
-	* *.[ch]:		Replaced BOOLEAN typedef by using GMT_LONG instead.
+	* *.[ch]:		Replaced all BOOLEANs with GMT_LONGs
 
-2010-03-21	jluis
-	* *.c:			In mains, replaced all occurrences of fprintf (GMT_stdout, ...)  by
-				fprintf (stdout, ...) so that it compiles under VC 2005 and higher.
+2010-03-20	pwessel
+	* minmax_func.c:	Added -A option, rewrote processing of records using new i/o,
+				updated man page.
 
-2010-03-17	pwessel
-	* psxy.c:		The -Sw/W symbols did not handle the azimuth/direction conversions
-				properly.
-	* psxyz.c:		The -Sw/W machinery mistakenly converted angles to radians before
-				passing arguments to the plot functions.
-
+2010-03-19	pwessel
+	* testgmtio.c:		Added to test and demonstrate how rec-by-rec table i/o is to be
+				done in GMT5 applications.  It has hooks to handle all the things
+				that set off flags in the i/o, e.g., headers, segments, NaNs,
+				errors, gaps.
 2010-03-15	pwessel
-	* gmt_io.c:		Added GMT_io.skip_duplicates [FALSE] to control if consecutive
+	* gmt_io.c:		Added GMT->current.io.skip_duplicates [FALSE] to control if consecutive
 				records with identical x,y should be skipped.  This is needed
 				by programs that uses GMT_sph_inonout, which does not expect to
 				find duplicates vertices.
-	* gmtselect.c:		Turns skip_duplicates on before reading polygons
-	* grdmask.c:		Turns skip_duplicates on before reading polygons
-	* grdmath.c:		Turns skip_duplicates on before reading polygons
-	* ps2raster.c:		Now checks that all PS files begin with %!PS.
+	* gmtselect_func.c:	Turns skip_duplicates on before reading polygons
+	* grdmask_func.c:	Turns skip_duplicates on before reading polygons
+	* grdmath_func.c:	Turns skip_duplicates on before reading polygons
+	* ps2raster_func.c:	Now checks that all PS files begin with %!PS.
 
 2010-03-11	remko
 	* ps2raster.c:		End matter did not get parsed when there is no %%Orientation.
 
-2010-03-10	pwessel
-	* gmt_map.c:		Tried to free memory when nothing had been allocated.
-
 2010-03-09	pwessel
-	* pslegend.c:		Uninitialized text string could put garbage in script.
+	* pslegend_func.c:	Uninitialized text string could put garbage in script.
 
-2010-03-02	pwessel
-	* x2sys/x2sys_get.c:	Added undocumented -d option to dump x2sys_index.b to text
-				to aid in debugging.
-	* mgd77/mgd77.c:	Incorrectly added track list =tracks.lis as another track name
-				after correctly including all the listed tracks. No harm done
-				other than an annoying "Cannot find track =tracks" message.
+2010-03-08	remko
+	* make_math.sh:		Removed creation of *math_def.h, merged with *math_func.h.
+	* *math_func.c:		Removed include of *math_def.h. Removed backwards compatibilities
+				for GDIST and x, -, +, ^
 
 2010-02-28	pwessel
 	* gmt_map.c:		GMT_wesn_clip function would clip polygons even though
 				there were no restrictions on longitudes (w/e = 360).
 
-2010-02-26	pwessel
-	* x2sys/x2sys.c:	Reading of data formats .gmt and custom returned all columns and
-				not just the requested columns, causing errors upstream.
-	* x2sys/x2sys_datalist.c:	Check to see if both lon and lat had been requested only
-				checked for longitude (twice).
-	* mgg/mgd77togmt.c:	Now has proper synopsis
+2010-02-21	pwessel
+	* gmtapi_parse.c:	Protect against char arguments with trailing \n or \r in option list.
 
 2010-02-21	jluis
 	* gmt2rgb.c:		Option -G was freeing the output name before it was even allocated.
 				This crashed the Windows binary.
 
-2010-02-20	jluis
-	* gmt_init.c:		Chop off any eventual EOLs characters that might be in argv
-				strings as it will happen when it was created by a shell command.
-				We need this so that native Win binaries can be used in Cygwin
+2010-02-17	pwessel
+	* grd2cpt_func.c:	Now added.
+	* GMT.c:		Now added.
+	* gmtapi_cmd.c:		Now included in libgmt.a with no internal function conflicts.
 
 2010-02-15	remko
 	* gmt_support.c:	Further improved internals of GMT_contour, GMT_trace_contour,
 				GMT_splice_contour, significantly reducing amount of code lines.
-				Removed GMT_start_contour. 
-
-2010-02-14	remko
-	* grdcontour.c:		Reverting change of 2010-01-28 because closing a contour
-				crossing east-to-west or west-to-east also causes lines drawn across
+				Removed GMT_start_contour.
 
 2010-02-13	pwessel
-	* greenspline.c:	Must insist that one of [-R -I], -N, or -T is specified.
-	
+	* greenspline_func.c:	Must insist that one of [-R -I], -N, or -T is specified.
+
 2010-02-11	remko
 	* gmt_support.c:	Improved the way contours on saddle points are produced.
 
 2010-02-08	pwessel
 	* gmt_plot.c:		Parallels that should be straight (e.g., in -JI) would sometimes
 				appear with jump gaps.  Reported by E. Suarez 2/2/2010.
-
 2010-02-01	remko
-	* g??math.c:		Added function SQR (square).
+	* g??math_func.c:	Added function SQR (square).
 
 2010-01-28	pwessel
-	* grdcontour.c:		L or H color for first min/max annotation was not set
-	
+	* grdcontour_func.c:	L or H color for first min/max annotation was not set
+
 2010-01-26	remko
 	* gmt_plot.c:		Fixed bug in GMT_plot_map_scale that could lead to endless loops
 				when using scales to 100 km or any exact power of 10. Error was
 				limited to 64-bit.
 
 2010-01-24	jluis
-	* meca/submeca.c:	Replaced calls to d_atan2() by d_atan2d() since the code expects 
-				angles in degrees. Thanks to Dan Scheirer for finding this.  
-	* meca/psmeca.c:	Removed out of place and repeated line to compute size in -a option 
+	* meca/submeca.c:	Replaced calls to d_atan2() by d_atan2d() since the code expects
+				angles in degrees. Thanks to Dan Scheirer for finding this.
+	* meca/psmeca.c:	Removed out of place and repeated line to compute size in -a option
 	* test/meca:		More meca tests added (from src/meca)
 
 2010-01-21	jluis
-	* mgd77/mgd77.c:	Update for 11th generation IGRF - IGRF2010 
+	* mgd77/mgd77.c:	Update for 11th generation IGRF - IGRF2010
 
------------------------------------------------------------------------------------------
-2010-01-15	pwessel
-	* GMT 4.5.2 finalized and released
-	* install_gmt, web/Perl scripts:	Offer choice between default, 32-bit, or 64-bit
-				compilations.
------------------------------------------------------------------------------------------
-
-2010-01-14	pwessel
-	* gmt_init.c:		Added an #ifdef CYGWIN_LOCALE_TROUBLE so that Cygwin users who
-				experience locale issues can compile with -DCYGWIN_LOCALE_TROUBLE
-				until we have a better solution.  This can be set by adding the
-				--enable-cygloc option when running configure.
-2010-01-13	pwessel
-	* gmt_init.c:		The .gmtdefaults4 file was assumed to be in UNIX EOL format.
-				Now we strip off EOL before checking for blank lines etc.
-	* *.c:			Made sure chopping was done consistently in other codes.
+2010-01-17	jluis
+	* surface_func.c:	Add options to interpolate with breaklines and to create
+				pixel registration grids (options -D & -F)
 
 2010-01-13	remko
-	* psscale.c:		psscale -Bg now correctly produces gridlines using GRID_PEN_PRIMARY.
-
-2010-01-13	jluis
-	* gmtdefaults.c:	Replaced free(..) with GMT_free (..) so Win version doesn't crash
-
-2010-01-12	remko
-	* job18.*, job24.*:	psxy -Se|E now correctly uses major/minor axis (as in documentation)
-				instead of semimajor/minor axis. This required changes in the scripts.
-	* clip_ellipse.sh:	---"---
-	* example_01.eps:	Local minima and maxima now appear correctly in this example. Was wrong
-				at least since 4.2.0.
+	* psscale_func.c:	psscale -Bg now honours MAP_GRID_PEN_PRIMARY (as GMT4).
 
 2010-01-11	pwessel
-	* grd2xyz.c:		Added -N<value> to replace NaNs on output and to match xyz2grd options.
+	* grd2xyz_func.c:	Added -N<value> to replace NaNs on output and to match xyz2grd options.
 	* gmt_support.c:	GMT_inonout_sphpol_count could count a tangent touch as a crossing if
 				the tangent point was a node point.
-
-2010-01-10	pwessel
-	* gmt_init.c:		The .gmtcommands4 file was assumed to be in UNIX EOL format.
-				Now we strop off EOL before checking for blank lines etc.
 
 2010-01-09	pwessel
 	* gmt_map.c:		GMT_wesn_clip assumed we always were clipping a polygon when in fact
 				this depends on the application.
-
 2010-01-08	jluis
 	* gmt_support.c:	Increase the size of the variable that contains the path to
 				a CPT file and the pathname to BUFSIZ bytes.
-	* surface.c:		Eliminate 2nd sort when no change in throw_away_unusables.
+	* surface_func.c:	Eliminate 2nd sort when no change in throw_away_unusables.
 
 2010-01-07	pwessel
-	* borders:		Added the Nunavut province boundary in Canada (land only)
-	* grdproject.txt:	Now has better explanation for -D (same as -I in other progs)
-	
+	* pslib.c:		PSL_plottext can now accepts NULL text, which then assumes
+				PSL_plottextbox was called first.
+
 2010-01-05	pwessel
 	* gmt_plot.c:		Calculation of actual width of map scale in pscoast/psbasemap
 				did not anticipate using -E for 3-D perspective and got
 				wrong width sometimes with a negative sign.
-2010-01-04	pwessel
-	* spotter/grdrotater.c:	Bug in node index gave no longitudinal variation in rotated grid.
-	* example 30 added.
+2009-12-20	jluis
+	* ps2raster.c:		Write a GeoPDF registration info (doesn't work most of times)
 
-2009-12-15	pwessel
-	* gmtdfaults:		Added BASEMAP_TYPE = graph for linear projections to
-				have the axes extended 7.5% with arrow heads.
-	* psxy.c:		New (and final) symbol -Sm for math angle, which lets
+2009-12-17	remko
+	* psxy[z]_func.c:	New (and final) symbol -Sm for math angle, which lets
 				you draw a circular arc with optional curved arrow
 				heads in one, both, or zero ends.
-	* psxyz.c:		Same but no arrow heads yet.
 
-2009-12-08	pwessel
-	* sph/sphinterpolate.c:	Bad index on line 317 went outside array limit.
-				Did not initialize the grid header properly.
-	* sph/sphdistance.c:	Did not initialize the grid header properly.
-	* misc/gmtstitch.c:	NULL segment headers passed to strcpy() and
-				fixed output message when -C and only one segment.
+	* psimage_func.c:	Added, needs testing.
+	* psmask_func.c:	Added, needs testing.
+	* psrose_func.c:	Added, needs testing.
+	* pswiggle_func.c:	Added, needs testing.
+	* sample1d_func.c:	Added, needs testing.
+	* spectrum1d_func.c:	Added, needs testing.
+	* splitxyz_func.c:	Added, needs testing.
+	* surface_func.c:	Added, needs testing.
+	* trend1d_func.c:	Added, needs testing.
+	* trend2d_func.c:	Added, needs testing.
+	* triangulate_func.c:	Added, needs testing.
+	* xyz2grd_func.c:	Added, needs testing.
+	* grdblend_func.c:	Added, needs testing.
 
-2009-12-07	pwessel
-	* grdtrack.c:		The -Z option gave z-values a longitude-formatting
+2009-12-07	pwessel:
+	* grdvolume_func.c:	Added, needs testing.
+	* grdview_func.c:	Added, needs testing.
+	* grdproject_func.c:	Added, needs testing.
+	* minmax_func.c:	Added, needs testing.
+	* project_func.c:	Added, needs testing.
+	* ps2raster_func.c:	Added, needs testing.
+	* psclip_func.c:	Added, needs testing.
+	* pshistogram_func.c:	Added, needs testing.
 
-2009-11-29	pwessel
-	* x2sys/x2sys.c:	Automatically strip off extensions for tracks given
-				via list files.
-	* x2sys/x2sys_get.c:	Added -E to select extensions on output.
+2009-12-06	pwessel:
+	* grdfft_func.c:	Compiles.  Major changes due to global variables now eliminated.
+				Needs testing.
+	* grdhisteq_func.c:	Added, needs testing.
+	* grdmask_func.c:	Added, needs testing.
+	* grdmath_func.c:	Added, needs testing.
+	* grdpaste_func.c:	Added, needs testing.
+	* grdreformat_func.c:	Added, needs testing.
+	* grdvector_func.c:	Added, needs testing.
+
+2009-12-03	pwessel:
+	* gmtmath_func.c:	Starts to work, at least for simple cases.  Needs more testing.
+	* gmt2rgb_func.c:	Added, compiles.
+
+2009-12-01	pwessel:
+	* gmt_io.c:		Added GMT_set_cols to simplify i/o # column settings.
+	* pstext_func.c:	Added, tested normal text mode which plotted.
+
+2009-11-30	pwessel:
+	* gmt_grd.h:		Added GMT_grd_[i|j]_to_[x|y] and inverse macros when we
+				can use a struct GRD_HEADER pointer for all the parameters
+				needed by GMT_[i|j]_to_[x|y].
+	* nearneighbor_func.c:	Added
+	* gmt_io.c:		Placed error report on ascii read inside read function to
+				avoid endless duplication in the main functions.
+
+2009-11-29	pwessel:
+	* gmtapi_util.c:	Let GMT_Put_Record take a mode rather than n_cols and use
+				mode to write data-, header-, segment-, or text-records.
+				The rec pointer is now void and can be *double or *char.
+	* gmtselect_func.c:	Added
+	* grd2xyz_func.c:	Added
+	* grdfilter_func.c:	Added
+	* grdgradient_func.c:	Added
+	* pscontour_func.c:	Added
+
+2009-11-29	remko
+	* gmt_init.c:		Set progname in GMT_begin. Output PS_EPS setting properly.
+				Added module_name to GMT_INIT struct to be used in error msg.
+				Binary image format removed as option.
+	* gmtdefaults_??.in:	New naming of settings.
+	* configure.ac:		@EPS@ is now true or false.
+	* gmtprogram.c:		Pass argv[0] to Create_Session (for GMT_begin).
+	* pslib.c:		Binary image format removed as option.
+	* gmt_plot.c:		Got plotting of z-axis right.
 
 2009-11-28	pwessel
-	* x2sys/x2sys.c:	Now, various lists can contain header records
-	* x2sys/x2sys.c:	Added internal book-keeping so we know which
-				in AND out columns correspond to x, y, and t.
-	* x2sys/x2sys_datalist.c:	Should now get the correct data columns.
-	* x2sys/x2sys_get.c:		Added -Q[i|e] to be used with -L.
-	* x2sys/x2sys_solve.c:	Added -Z to remove smallest dist/time for -Ed|t
+	* fitcircle_func.c:	Added
+	* blockmedian_func.c:	Added
+	* blockmode_func.c:	Added
+	* gmtapi_util.c:	The import functions now report things like "reading from ..."
+				so no mains needs to worry about that.  Also, no mains need
+				to have #ifdef SET_IO_MODE since that is taken care of by
+				the GMT API library.
+
+2009-11-27	pwessel
+	* gmt_init.c:		The old +gmtdefaults mechanism is no longer supported.
+	* gmtwhich_func.c:	Added.
+	* grdlandmask_func.c:	Added
 
 2009-11-26	pwessel
-	* grdcontour.c:		1) -Q should only apply to closed contours
+	* grdcontour_func.c:	1) -Q should only apply to closed contours
 				2) -T failed to find inside point for oblique projections.
-	* x2sys/x2sys_get.c:	-D now only lists track names
+
+2009-11-25	pwessel
+	* gmt_init.c:		Modified GMT_begin to also initialize PSL, then parse
+				GMT/PSL defaults.  Split gmt_history into gmt_get_history
+				which is called by GMT_begin at start of session. History
+				is maintained via GMT->init.history and updated by the
+				GMT_Complete_Options via GMT_Sort_Options.  This replaces
+				-R with the latest -Rw/e/s/n, etc.  Then, GMT_Destroy_Session
+				calls GMT_end which calls gmt_put_history which finally
+				writes out the new .gmtcommands listing.
+				Also parse .gmtcommands PSL defaults directly into the PSL struct
+				if it is not NULL.
+	* gmtdefaults_func.c:	Now moved to "PSL" programs since it must be able to parse PSL.
+	* gmtset_func.c:	---"---
+
+2009-11-25	remko
+	* pslib.c:		Be more tolerant of short paths in psl_patch, PSL_plotline
+				and PSL_plotpolygon
 
 2009-11-24	pwessel
 	* gmt_init.c:		Guard against getting a negative hash value (happened
 				when text was Russian language codes from ru.d)
+2009-11-24	remko
+	* pslib.c:		Removed old obscure traps needed for pscoast. Fixed bug
+				in PSL_plotarc. Only issue setlinecap/setlinejoin/setmiterlimit
+				when actually changed.
+	* pscoast_func.c:	No longer relies on traps in pslib.
+				Reuse recursive code both for filling and clipping.
+				No longer suggests it is clipping while it is filling.
+	* gmt_support.c:	GMT_NaN_pen_up moved to gmt_plot.c.
+	* gmt_map.c:		Now needs pslib.h because of defines PSL_MOVE and PSL_DRAW
+	* gmt_init.c:		Now needs pslib.h because of defines PSL_BUTT_CAP, etc.
+	* gmt_plot.c:		Replaced old identifiers 3,2 by PSL_MOVE,PSL_DRAW.
+				Make sure boundary checkers are drawn with butt cap.
+
+2009-11-24	jluis
+	* grdedit_func.c:	Now a GMT 5 program (not complete)
+	* grdtrend_func.c:	Do not allocate the residue array if not needed.
+				Simplify the 'xval & yval' computation
+
 2009-11-23	pwessel
-	* grdlandmask.c:	Round-off and bug caused missing nodes for -F -Rd
+	* grdimage_func.o:	Initial version, compiles, makes image but gv wont show?
+	* grdlandmask.c:	Round-off and bug caused missing nodes for -F -R
+
+2009-11-23	remko
+	* pslib.c:		PSL_plotline: arguments "type" and "close" merged.
+				Use combination of PSL_DRAW, PSL_MOVE, PSL_STROKE and
+				PSL_CLOSE for "type. Previous version incorrectly removed
+				last point on "close" when line did not start with move.
+				PSL_plotarc, PSL_plotpoint: use combination of PSL_DRAW,
+				PSL_MOVE, PSL_STROKE, PSL_REL for "type.
+	* pslib.h, pslib.txt, *.*.c:	---"---
+	* gmt_plot.c:		Removed GMT_geoplot and GMT_geosegment (obsolete).
+
+2009-11-22	pwessel
+	* grd2cpt_func.c:	Added. More or less finalized GMT API.
+	* gmt_globals.h:	Not used.
+
+2009-11-20	remko
+	* pslib.c, PSL_prologue.ps:	"os" is now either "P S" or "N", thus changing all
+				"P fs os" to "fs os". Fill automatically closes path, so no
+				"P" needed before that. Also ensure init of "fs" and "os".
+
+2009-11-20	pwessel
+	* doc/GMT_API.tex:	Worked up to a reasonable shape; GNUmakefile now builds the
+				HTML and PDF documentation in share/doc.
+	* gmtapi_util.c:	Added error checking throughout, especially checking the
+				pointers returned by GMT_memory.  Now, all *_Destroy_*
+				functions, like the *_Create_* functions, expects the address
+				of the pointer whose memory should be freed.
+	* gmtapi_parse.c:	Same as above.
+	* share/cpt/*.cpt:	Cleaned up (removed DOS \r, spaces, unneeded decimals) so one
+				can compare originals to output of makecpt for testing of i/o
+	* psscale_func.c:	Ported.
+
+2009-11-19	pwessel
+	* gmtapi_util.c:	Removed argc, argv as argument.  Replaced by a session tag
+				which (if not NULL) is used in error messages.  Also added
+				a session_ID which is useful for tracking multiple sessions.
+	* pscoast_func.c:	Now finishes but misses some bins.
+	* gmtconvert.txt:	With -D can now use single segment number of a combination
+				of table number and segment number within the table
+
+2009-11-19	remko
+	* gmt_map.c, gmt_shore.c:	Removed 3D projections (use GMT_plane_projection instead)
+	* gmt_plot.c:		Replaced gsave/grestore in GMT_plane_perspective by
+				currentmatrix/setmatrix pair.
+				Promoted GMT_plane_perspective to higher level (only
+				GMT_vertical_axis sets it and restores it).
+				No more need for origin shift when doing 3D (already in GMT_plane_perspective and
+				GMT_xyz_to_xy).
+	* *.c:			Update GMT_plane_perspective calls
+	* pscoast_func.c:	Introduced (runs but aborts prematurely).
+	* gmt_map.c:		view_azimuth now remains viewer azimuth, not viewing direction.
+	* pslib.c:		Use clipsave/cliprestore to encapsulate clipping, not gsave/grestore.
+
+2009-11-18	pwessel
+	* filter1d_func.c:	Now using the new i/o, hence acquires -m -g capability!
+	* pslib.c:		Initialize pointers to NULL and reset them to NULL in
+				psl_free.
+
+2009-11-18	remko
+	* gmt_map.c:		Removed GMT_coordinate_to_[xy]. Obsolete, use GMT_x_to_xx
+				and GMT_y_to_yy instead.
+	* gmt_plot.c:		GMT_vertical_axis now through plane_perspective mechanism.
+				Removed GMT_xyz_axis3D, GMT_text3D, GMT_textbox3D.
+				Removed bug from GMT_plane_perspective.
+
+2009-11-17	pwessel
+	* *_func.c:		Merged in *_func.h since only included by these funcs.
+	* gmt_support.h:	Macro GMT_free now sets freed pointers to NULL
+	* gmt*.c:		Declared pointers are initialized to NULL
+
+2009-11-17	jluis
+	* grdclip_func.[ch]:	Now a GMT 5 program and working.
+	* grdinfo_func.c:	Now a GMT 5 program (partially working).
+
+2009-11-17	remko
+	* gmt_plot.c:		Keep dimensions of annotation labels during dimensioning of offsets
+				for faster use during justification.
+				Further removed 3D functions from internal functions and replace by
+				GMT_plane_perspective (all marked by #ifdef OLD3D).
+				GMT_fill removed (use GMT_setfill + PSL_plotpolygon instead).
+
+2009-11-16	pwessel
+	* gmtdefaults_func.c:	Now a GMT 5 program and working.
+	* gmtset_func.[ch]:	Now a GMT 5 program and working.
+	* grdcontour.txt:	Default for -T is now 15p/3p
+	* psxy[z]_func.c:	Now use points for vector and error-cap dimensions.
+	* psrose.c:		Now use points for vector attributes
+	* grdcontour.c:		---"---
+	* pslegend.c:		Now use points for box clearance
+	* greenspline_func.c:	Converted, compiles and tested 1d/2d.
 
 2009-11-16	remko
-	* psxyz.c:		Fixed bug in distance sorting (also made much simpler).
+	* gmtdefaults_??.in, gmt_globals.h:	Defaults of small offsets that were different
+				between SI and US are now all in points. Origin offset now
+				1 inch in both cases.
+	* gmt_init.c:		MEASURE_UNIT can now just be 'c', 'i', 'm', or 'p'.
+				Will store input unit on settings like X_ORIGIN and then
+				write those out when producing a GMT defaults file.
+				Removed resize option for annotation offsets (was obsolete).
+				Removed all backwards compatible setting names like ANOT_FONT_SIZE.
+	* gmt_keywords.d:	Removed all backwards compatible setting names like ANOT_FONT_SIZE.
+	* gmt_plot.c:		Removed need for global parameters from GMT_plane_perspective.
+				Starting to remove all 3D functions and using GMT_plane_perspective
+				instead.
+
+2009-11-15	pwessel
+	* gmtapi_util.c:	Added GMTAPI_{Import|Export|Destroy}_CPT i/o funcs.
+	* makecpt_func.c:	Now using GMTAPI i/o machinery successfully.
+	* *_inc.h:		Now renamed to *_func.h to match *_func.c
 
 2009-11-15	jluis
 	* x2sys/x2sys_list.c:	Weights were not written out when names were selected as well,
 				as in -Fncw
 
+2009-11-15	remko
+	* gmt_init.c:		Move normalization of symbol sizes to symbol_parse function,
+				thus allowing to remove it from psxy[z].
+	* psxy.c:		A lot of coding improvements.
+	* psxyz.c:		---"---. Fixed bug in distance sorting (also made much simpler).
+	* gmt_plot.c:		Deleted all GMT_<symbol> routines. Became superfluous after
+				introduction of GMT_plane_perspective.
+				GMT_plane_perspective further improved: do just translations if
+				possible and but global variables in z_project struct.
+
+2009-11-14	pwessel
+	* makecpt_func.c:	Working version but not passing via ptr yet
+
+2009-11-13	pwessel
+	* testgmt5.c:		Simple GMT 5 program that does its own grid i/o but
+				then calls GMT_grdcut to do the work.
+
 2009-11-12	pwessel
-	* fitcircle.c:		Now, -S optionally takes a latitude instead of finding
-				the best-fitting latitude.
-	* mgd77/mgd77manage.c:	Add attribute array of TZ corrections for the few cruises
-				that stored TZ and local time instead of UTC time.
+	* gmt_io.c:		Internal i/o seems complete
+	* gmtconvert_func.c:	Application works with all options and binary data.
+	* grdcut_func.c:	Initial effort; appears to work.
 
 2009-11-12	remko
+	* PSL_prologue.ps, pslib.c:	Renamed all symbol macros. Added /Sm for rounded box.
+				Guarded all symbol macros against rogue lines drawn from
+				currentpoint. Improved rectangle macros /Sj and /Sr.
+				Inserted /Sb and /Sm in PSL_plottextbox.
+	* psxyz_func.c:		Introduced GMT_plane_perspective to do 3D plotting more easily.
+				Testing stage.
+	* psxy_func.c:		Code harmonization with psxyz_func.c
+	* gmt_map.c:		Removed GMT_project3D, use GMT_geo_to_xy and GMT_z_to_zz instead.
+				GMT_2D_to_3D renamed to GMT_xyz_to_xy_n.
+				GMT_2Dz_to_3D renamed to GMT_xy_do_z_to_xy_n
 	* *.c:			Renamed {Free,New}_Program_Ctrl to {New,Free}_program_Ctrl
+	* gmt_plot.c:		GMT_plot_* renamed to GMT_geo_*. Removed fill/outline arguments
+				from those routines. GMT_<symbol> routines made obsolete.
+				GMT_draw_fence, GMT_draw_custom_symbol, GMT_draw_{mag,dir}_rose
+				converted back to 2D. GMT_draw_map_rose uses GMT_plane_perspective.
+				GMT_draw_custom_symbol now uses GMT_SYMBOL_<symbol> macros.
+	* custom/*.def:		Replaced 'C' (old standard) by 'c' for circles.
+
+2009-11-12	pwessel
+	* gmtconvert_func.c:	First working version (only ascii tested)
+	* gmt_io.c:		Added GMT_write_dataset function
+
+2009-11-11	pwessel
+	* psxyz_func.c:		Now working with basic input file.
+	* gmtapi_util.c:	GMTAPI_Import_Dataset now accepts a geometry variable
+				so we know if it is point, line, poly, grid.
 
 2009-11-10	remko
-	* gmt_plot.c:		Get dimensions of 3D ellipse right (full, not semi axes)
-	* psxy.c:		plot_?_errorbar incorrectly drew tips at plot boundary
-				when clipping error bars.
+	* pslib.c:		Properly init fill
+	* gmt_support.c:	Convert GMT_rgb_color to 0-1 range
+	* psxyz_func.c:		First working version
+	* psxy_func.c:		Added to CVS
+
+2009-11-09	remko
+	* PSL_prologue.ps, pslib.c:	Removed all superfluous strokes. Both M and m are
+				now just /moveto. "m" slated to be replaced by "M".
+	* gmt_support.c, gmt_error.h:	Changed GMT_err_pass and GMT_err_fail to macros, passing
+				sourcefile:lineno on to GMT_err_func in DEBUG mode.
 
 2009-11-09	pwessel
-	* x2sys/x2sys_init.c:	Did not accept -m, only old -M
-
-2009-11-08	pwessel
 	* gmt_shore.[ch]:	Changes to accommodate new GSHHS2.0.2 netcdf files
 				which needed more metadata to properly compute the
 				level of tile corners after features where dropped
@@ -723,56 +1724,192 @@
 	* gmt_io.c:		GMT_access did not check for NULL filename
 
 2009-11-07	remko
-	* pslib.c:		Ellipse was wrongly dimensioned by semi-major and semi-
-				minor axes, instead of major and minor axes.
+	* PSL_prologue.ps:	/SX and /SY introduced for x-dash and y-dash. /SW, /O and /SC
+				improved/changed so that order of arguments generally is:
+				size x y.
+	* pslib.c:		---"---
+				psl_sector renamed psl_wedge, psl_rotaterect renamed psl_rotrect.
+				psl_ellipse: sizes are now full major/minor axes, not semi-axes.
+
+2009-11-06	remko
+	* pslib.c:		PSL_plotbox introduced (plots box).
+				PSL_plot*image added justify option; allow 0 x|ysize to keep aspect
+				ratio.
+				psl_point renamed to psl_dot. PSL_POINT renamed to PSL_DOT.
+				psl_rotatetrans and psl_transrotate removed: single code in PSL_setorigin.
+				psl_rect fixed to work properly with plot coordinates.
+
 2009-11-05	pwessel
 	* imgsrc/img2google:	One gmtmath call did not have -Q
 
+2009-11-04	pwessel
+	* pslib.[ch]:		Added function to map user coords to measurement coords.
+
 2009-11-02	pwessel
 	* mapproject.c:		The -S option failed after i/o makeover.
-	
-2009-10-28	remko
-	* pslib.c:		Bug fix: memory never got freed by ps_free.
 
+2009-10-31	pwessel
+	* pslib.[ch]:		Break up PSL_paragraph to separate out PSL_paragraphbox.
+
+2009-10-30	remko
+	* pslib.h, gmt_colors.h:	Introduced PSL_rgb_copy and GMT_rgb_copy to copy RGB triplets.
+	* pslib.c, pslib.txt:	PSL_setdash and PSL_linewidth now officially take points as input.
+				Removed invert argument from PSL_bitimage.
+				Removed invert and outline argument from PSL_setpattern.
+				Fixed bugs in PSL_plot preventing proper stroking.
+	* gmt_support.c:	Removed GMT_convertpen (became obsolete).
+
+2009-10-29	remko
+	* gmt.h, gmtapi.h:	gmt.h now includes gmtapi.h and not vice versa.
+	* pslib.c:		PSL_textbox now responds to PSL_setfill for fill color and outline.
+
+2009-10-28	pwessel
+	* pslib.[ch]:		Use dpu and dpp to scale units and points to PS dots.
+
+2009-10-28	remko
+	* *.c, *.h:		Changed RGB from int to double.
+				PSL_setpaint -> PSL_setcolor.
+				PSL_setlength -> PSL_setunit, PSL_setheight -> PSL_setpoints.
+	* pslib_inc.h:		New macros PSL_[stq]255 for double (0-1) to int (0-255) conversion.
+	* pslib.c:		Removed PSL_rgb_to_mono.
+	* psimage.c:		Replace PSL_rgb_to_mono by PSL_gray_encode.
+	* pslib.c:		Bug fix: memory never got freed by PSL_free
+	* gmt_plot.c:		Adjust to several changes in pslib.c.
+	* gmt_support.c (GMT_memory_func):	Print number of items and size on error.
+	* *_func.c:		More cleaning work and safe returns (freeing mem first).
+	* Makefile:		psldemo included
+
+2009-10-27	pwessel
+	* pslib.[ch]:		Now specify colors in double precision 0-1 range; fontsizes, pen widths
+				and dashes in points; and offsets and other dimensions in session
+				measurement units (cm, inch, points, m).
+
+2009-10-27	remko
+	* GNUmakefile:		New location of config.* files for download
+	* config.*:		New files of Sep/Oct 2009.
+
+2009-10-26	pwessel
+	* pslib.[ch]:		Removed rgb & outline as args to symbols and polygons.   Now all
+				symbols are called via PSL_symbol.  Removed PSL_colortiles and
+				changed PSL_transrotate/rotatetrans to PSL_coord_transform (...,PSL_FWD|INV)
+	* pslib.txt:		Updated man page for PSL and group functions by type.
+	* gmtpsprogram.c: 	Dummy for building GMT executables that need PSL
+	* gmt_init.c:		Removed COLOR_IMAGE [Adobe/tiles] as a GMT default since we eliminated tiles.
+
+2009-10-26	remko
+	* gmt_init.c:		Added GMT_check_binary_io to do a bunch of commonly used checks
+				concerning binary I/O.
+	* gmt_error.h:		Added macro GMT_check_condition to do a regularly occurring
+				conditional error report.
+				Created new GMT_report macro.
+	* pslib.h:		Created new PSL_message macro.
+	* *.c:			Use GMT_check_binary_io and GMT_check_condition where possible.
+
+2009-10-25	remko
+	* filter1d_func.c, filter1d_inc.h:	Added these new functions to replace filter1d.c
+
+2009-10-24	remko
+	* pslib.[ch]:		Replaced PSL_command routine with a macro so that it can handle
+				a variable number of arguments, similar to fprintf.
+				Note that the new PSL_command does not automatically end in \n.
+	* gmt_plot.c:		Implemented new PSL_command.
+
+2009-10-23	pwessel
+	* pslib.[ch]:		Functions are now called PSL_* and take a PSL_CTRL pointer as
+				their first argument.
 2009-10-23	remko
 	* config.mk.in, common.mk: Replaced makegmt.macros by config.mk
 				Replaced gmtalldeps.macros by common.mk
 	* All makefiles:	Improved handling of libs in Makefiles
 
-2009-10-15	pwessel
-	* x2sys.c:		x2sys_pick_fields should NOT reset x_col, y_col, t_col as
-				these indicate which input columns hold x, y, t.
-	* x2sys/x2sys_datalist.c:	Confusion between input order and output order when
-				the -F<list> option was used.
+2009-10-21	remko
+	* src/GNUmakefile, src/Makefile, gmtprogram.c: make_program.sh replaced by gmtprogram.c,
+				which accomplishes the same without creating intermediate
+				source files.
+				This made *_cmd functions and gmtapi_cmd.c superfluous (still
+				included though).
+	* gmt_customio.c, gmt_grdio.c:	Make sure GMT_memory always has sizeof() argument.
+	* gmt_support.c, *.c:	New convenience macros for memory allocation:
+				GMT_memory for GMT_memory_func, GMT_malloc for GMT_malloc_func
+				which used to be called GMT_alloc_memory, GMT_free for GMT_free_func.
+	* GMT_memory.sed:	Sed script to change the code for the new convenience macros.
+
+2009-10-20	remko
+	* configure.ac:		Compatibility version is 5.0.0 not 4.0.0.
+	* src/Makefile:		Fixed dependancies for *_func.o.
+	* gmt_init.c:		Replaced GMT_default_error function with a macro.
+	* gmt_io.c:		Fixed bug in GMT_traverse_dir.
+	* gmt_map.c:		Initialize the uninitialized.
+	* gmt_support.[ch]:	Changed GMT_alloc_memory[234] from function to macro.
+	* gmt_error.h:		New GMT_message, GMT_report and GMT_default_error macros.
+	* *.c:			Use GMT_message and GMT_report where appropriate.
+	* explain_-V.txt:	Add multiple levels.
+
+2009-10-17      pwessel
+	* gmt_init.c:		verbose is now integer from 0-4, with default 1 which
+				is fatal errors.  -V equals 2, -V<level> now accepted.
+				Implemented Remko's idea of GMT_message macro with
+				variable arguments to print variables if needed.
+
+2009-10-16      pwessel
+	* Moved gmt5 stuff into src, changed library names to gmtcore, gmtcoreps, and
+	  gmtapi, added make_gmtapi.sh which creates gmtapi_cmd.[ch] and gmtapi_func.h.
+	  All makefiles are now called Makefile (uppercase M).
+	* gmt_init.c:		GMT_parse_common_options no longer takes the w,e,s,n pointers
+	* Makefile:		Only does libraries and blockmean, psbasemap for now.  We
+				will add programs as they are converted.
+
+2009-10-15      pwessel
+	* gmt_init.c:		Now use .gmtdefaults and check for GMT 5 version.  Also
+				use .gmtcommands, and no longer check for backwards
+				compatibility with GMT 3 defaults.
+	* x2sys.c:              x2sys_pick_fields should NOT reset x_col, y_col, t_col as
+	                        these indicate which input columns hold x, y, t.
+	* x2sys/x2sys_datalist.c:       Confusion between input order and output order when
+	                        the -F<list> option was used.
 
 2009-10-15	jluis
 	* gmt_customio.c:	Fixed bug resulting from releasing the pointer to from_gdalread
 				structure before its members.
 	* gmt_gdalread.c:	Force computation of min/max since metadata info may be wrong
 
+2009-10-14	pwessel
+	* src/gmt5:		Can now build psbasemap application!
+
 2009-10-14	remko
-	* grdtrend.c:		Explicitly set pstuff[0] = 1 and use it in loops.
+	* grdtrend.c:	Explicitly set pstuff[0] = 1 and use it in loops.
+			Ported from grdtrend.c:1.36.
 
 2009-10-12	pwessel
-	* gmt_plot.c:		qsort of GMT_LONGs passed ints
+	* Passes the tests.
+	* gmtwhich.c:	New program that reports the full path to
+	  		data files by searching the GMT_DATADIR paths.
 
-2009-10-11	pwessel
-	* misc/kml2gmt.c:	Mix of fopen and GMT_fclose not good under Windoze
+2009-10-08	pwessel
+	* Now completes test suite as before except for psmeca test.
+	* All supplements now compile but not tested for run-time yet.
 
-2009-10-09	pwessel
-	* gmt_init.c:		If GMT_DATADIR was set to a list of colon-separated dirs
-				then then init failed since we tried to check access as
-				if GMT_DATADIR was always a single entity (as in the past).
+2009-10-07	pwessel
+	* Running the 29 examples now works.  No work on supplements yet except
+	  sed changes.  Many test script also fail at this stage.
 
-2009-10-06	remko
-	* gmt2kml.c:		Removed additional > in </ExtendedData>>.
+2009-10-05	pwessel
+	* Introduced gmt_prototypes.h for all API low-level functions
+	  The libraries now all use pointers to pass the GMT "globals"
+	  and they are compiling. All progs are compile, link.
 
-2009-10-04	pwessel
-	* gmt_init.c:		Opened file with fopen but closed with GMT_fclose.
-	* gmt_mgg_header2.c:	Opened file with GMT_fopen but closed with fclose.
+2009-10-03	pwessel
+	* Introduce several new include files by breaking up gmt.h:
+		gmt_crossing.h gmt_hash.h gmt_texture.h gmt_ps.h
+		gmt_defaults.h gmt_macros.h gmt_time.h gmt_types.h
+		gmt_debug.h gmt_constants.h gmt5.h
+	* Replaced all global variables, now passed via stucture GMT.
+	  Currently the only remaining global.  All compiles now.
 
-2009-10-03	pwessel		
-				GMT 5 branch tag set: GMT5_branch
+-----------------------------------------------------------------------------------------
+2009-10-03	pwessel		This is now GMT 5 work
+-----------------------------------------------------------------------------------------
+2009-10-03	pwessel		GMT 5 branch tag set: GMT5_branch
 
 2009-10-01	pwessel
 	* psrose.c:		Needed to set scale to 1 so the bounding box
@@ -794,7 +1931,7 @@
 	* gmt_init.c:		Bug in the parsing of -Jg<lon>/<lat>/<radius>/<lat>.
 	* spotter/backtracker.c:	When -L is set, -mo must be turned on automatically
 					even if -m is not set.
-	
+
 2009-09-25	pwessel
 	* gmtconvert.c:		The -S option failed for actual matches; the 2009/5/26
 				change screwed that up.  Now fixed and tested.
@@ -835,7 +1972,7 @@
 	* spotter/backtracker.c:	Needed GMT_LONG variables to be passed to GMT libs
 	* spotter/hotspotter.c:		Needed GMT_LONG variables to be passed to GMT libs
 	* spotter/originator.c:		Needed GMT_LONG variables to be passed to GMT libs
-	
+
 2009-09-11	remko
 	* gmtdefaults_*.in:	Enter TRANSPARENCY = 0; replaced color triplets by names.
 	* gmt_init.c:		Let gmtdefaults output TRANSPARENCY and print colors as names
@@ -846,7 +1983,7 @@
 
 2009-09-10	pwessel
 	* grdcontour.c:		The -L option was not used in limiting contours.
-	
+
 2009-09-10	remko
 	* gmt_init.c:		Introduced option to make material transparent using the
 				--TRANSPARENCY setting (or gmtset TRANSPARENCY). Can be viewed
@@ -877,7 +2014,7 @@
 	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but
 				not implemented in this program.
 	* misc/gmt2kml.c:	-T did not handle spaces in titles and folder names
-			
+
 2009-09-07	jluis
 	* gmt_customio.[ch]:	Added the optional GDAL interface as format 22
 	* gmtinstall.bat:	Now has rules to optionally compile the GDAL interface
@@ -938,7 +2075,7 @@
 2009-07-24	pwessel
 	* gmt_support.c:	The routine that checks if a points is inside or outside a
 				polar cap had trouble when the points longitude exactly
-				equalled a point on the polygon since round-off would 
+				equalled a point on the polygon since round-off would
 				cause our test to fail.  Now hopefully fool-proof.
 2009-07-23	pwessel
 	* psmask.c:		With -D, the internal di,dj constant was set way too large.
@@ -1068,7 +2205,7 @@
 
 2009-06-17	pwessel
 	* grdfft.c:		Now also has Butterworth band-pass filter.
-	
+
 2009-06-17	remko
 	* gmt_init.c (GMT_begin):	GMT_history should come AFTER reading defaults, otherwise
 				there is no way to switch it off.
@@ -1083,7 +2220,7 @@
 	* gmt2kml.{c,txt}:	-T now takes title and optionally folder name.  When -O or -K is used
 				we always group features into folders and each folder has their own
 				style settings.
-	
+
 2009-06-16	remko
 	* gmtmath.c:		Fixed bug: tried to free memory that was not allocated.
 	* gmt_io.c:		Allow specifying both -mi and -mo.
@@ -1478,7 +2615,7 @@
 	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
 	* mgg/gmt_mgg.c:	New -T and -W options to store total field and account for the
 				magnetometer tow distance. Also tries to get info from header file.
-	* mgg/mgd77togmt.c:	--"--"
+	* mgg/mgd77togmt.c:	---"---
 
 2009-03-05	pwessel
 	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with
@@ -1778,7 +2915,7 @@
 				"land" along map perimeter for some projections.
 	* gmt_math.h:		Check for macro definitions for system math functions.
 	* gmt_vector.c:		GMT_resample_path would add 360 to points along meridians.
-	r pslegend.c:		Can now use rectangle among the symbols.
+	* pslegend.c:		Can now use rectangle among the symbols.
 
 2008-12-05	pwessel
 	* greenspline.c:	New interpolation/gridding program for 1-3 dimensions using
@@ -4247,7 +5384,7 @@
 
 2005-08-22
 	* gmt_customio.c:	New NetCDF format routines are default
-	* gmt.h:			Added GRID_FORMAT to gmtdefaults with "nf" as default
+	* gmt.h:		Added GRID_FORMAT to gmtdefaults with "nf" as default
 	* gmt_init.c:		---"---
 
 2005-08-12

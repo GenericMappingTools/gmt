@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.13 2009-11-08 22:47:07 guru Exp $
+ *	$Id: shoremaker.c,v 1.14 2011-03-15 02:06:37 guru Exp $
  */
 /*
  *
@@ -15,14 +15,13 @@
 #define NC_INT 4
 
 int main (int argc, char **argv) {
-	int i, dims, n_id, n_nodes;
+	int i, dims, n_id;
 	size_t start, count;
-	int *bin_firstseg, *seg_info, *seg_start, *seg_GSHHS_id;
-	int *GSHHS_parent, *GSHHS_area, *GSHHS_area_fraction, *GSHHS_node;
+	int *bin_firstseg, *seg_info, *seg_area, *seg_frac, *seg_start, *seg_GSHHS_id, *GSHHS_parent;
 	
 	short *bin_info, *bin_nseg, *pt_dx, *pt_dy;
 	char file[512], *prefix;
-	FILE *fp_bin, *fp_seg, *fp_pt, *fp_gshhs, *fp_ndid;
+	FILE *fp_bin, *fp_seg, *fp_pt, *fp_par;
 	struct GMT_SHORE s;
 	struct SHORT_PAIR p;
 	struct GMT3_FILE_HEADER file_head;
@@ -53,14 +52,9 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "shoremaker:  Cannot open shore point file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
-	sprintf (file, "%s.pol", prefix);
-	if ((fp_gshhs = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore pol file %s\n", file);
-		exit (EXIT_FAILURE);
-	}
-	sprintf (file, "%s.ndid", prefix);
-	if ((fp_ndid = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore node id file %s\n", file);
+	sprintf (file, "%s.par", prefix);
+	if ((fp_par = fopen (file, "r")) == NULL) {
+		fprintf (stderr, "shoremaker:  Cannot open shore parent file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 		
@@ -102,6 +96,8 @@ int main (int argc, char **argv) {
 	fprintf (stderr, "shoremaker:  Process segment file\n");
 
 	seg_info	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
+	seg_area	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
+	seg_frac	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 	seg_start	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 	seg_GSHHS_id	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 
@@ -113,6 +109,8 @@ int main (int argc, char **argv) {
 		}
 		
 		seg_info[i] 	    = seg_head.info;
+		seg_area[i] 	    = seg_head.p_area;
+		seg_frac[i] 	    = seg_head.p_area_fraction;
 		seg_start[i]        = seg_head.first_p;
 		seg_GSHHS_id[i]	    = seg_head.GSHHS_ID;
 	}
@@ -139,42 +137,18 @@ int main (int argc, char **argv) {
 	
 	fprintf (stderr, "shoremaker:  Process parent file\n");
 
-	if (fread ((void *)&n_id, sizeof (int), 1, fp_gshhs) != 1) {
+	if (fread ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "shoremaker: Error reading # of GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
 	GSHHS_parent = (int *) GMT_memory(VNULL, n_id, sizeof(int), "shoremaker");
-	if (fread ((void *)GSHHS_parent, sizeof (int), n_id, fp_gshhs) != n_id) {
-		fprintf (stderr, "shoremaker: Error reading GSHHS parents\n");
+	if (fread ((void *)GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
+		fprintf (stderr, "shoremaker: Error writing GSHHS parents\n");
 		exit (EXIT_FAILURE);
 	}
-	GSHHS_area = (int *) GMT_memory(VNULL, n_id, sizeof(int), "shoremaker");
-	if (fread ((void *)GSHHS_area, sizeof (int), n_id, fp_gshhs) != n_id) {
-		fprintf (stderr, "shoremaker: Error reading GSHHS area\n");
-		exit (EXIT_FAILURE);
-	}
-	GSHHS_area_fraction = (int *) GMT_memory(VNULL, n_id, sizeof(int), "shoremaker");
-	if (fread ((void *)GSHHS_area_fraction, sizeof (int), n_id, fp_gshhs) != n_id) {
-		fprintf (stderr, "shoremaker: Error reading GSHHS area_fraction\n");
-		exit (EXIT_FAILURE);
-	}
-	fclose (fp_gshhs);
+	fclose (fp_par);
 	s.n_poly = n_id;
 
-	fprintf (stderr, "shoremaker:  Process node ID file\n");
-
-	if (fread ((void *)&n_nodes, sizeof (int), 1, fp_ndid) != 1) {
-		fprintf (stderr, "shoremaker: Error reading # of nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	GSHHS_node = (int *) GMT_memory(VNULL, n_nodes, sizeof(int), "shoremaker");
-	if (fread ((void *)GSHHS_node, sizeof (int), n_nodes, fp_ndid) != n_nodes) {
-		fprintf (stderr, "shoremaker: Error reading GSHHS node ids\n");
-		exit (EXIT_FAILURE);
-	}
-	fclose (fp_ndid);
-	s.n_nodes = n_nodes;
-	
 	/* Create array of segment addresses, npoints, and type */
 			
 	if (s.bin_size == 60)
@@ -192,14 +166,9 @@ int main (int argc, char **argv) {
 	GMT_err_fail (nc_def_var (s.cdfid, "N_polygons_in_file", NC_INT, (size_t)1, &dims, &s.n_poly_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "N_segments_in_file", NC_INT, (size_t)1, &dims, &s.n_seg_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "N_points_in_file", NC_INT, (size_t)1, &dims, &s.n_pt_id), file);
-	GMT_err_fail (nc_def_var (s.cdfid, "N_nodes_in_file", NC_INT, (size_t)1, &dims, &s.n_node_id), file);
 			
 	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_polygon_array", s.n_poly, &dims), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_parent_polygons", NC_INT, (size_t)1, &dims, &s.GSHHS_parent_id), file);
-	GMT_err_fail (nc_def_var (s.cdfid, "Ten_times_the_km_squared_area_of_polygons", NC_INT, (size_t)1, &dims, &s.GSHHS_area_id), file);
-	GMT_err_fail (nc_def_var (s.cdfid, "Micro_fraction_of_full_resolution_area", NC_INT, (size_t)1, &dims, &s.GSHHS_areafrac_id), file);
-	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_node_arrays", s.n_nodes, &dims), file);
-	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_node_polygons", NC_INT, (size_t)1, &dims, &s.GSHHS_node_id), file);
 	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_bin_arrays", s.n_bin, &dims), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_first_segment_in_a_bin", NC_INT, (size_t)1, &dims, &s.bin_firstseg_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Embedded_node_levels_in_a_bin", NC_SHORT, (size_t)1, &dims, &s.bin_info_id), file);
@@ -207,6 +176,8 @@ int main (int argc, char **argv) {
 			
 	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_segment_arrays", s.n_seg, &dims), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", NC_INT, (size_t)1, &dims, &s.seg_info_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", NC_INT, (size_t)1, &dims, &s.seg_area_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Micro_fraction_of_full_resolution_area", NC_INT, (size_t)1, &dims, &s.seg_frac_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_first_point_in_a_segment", NC_INT, (size_t)1, &dims, &s.seg_start_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_GSHHS_ID", NC_INT, (size_t)1, &dims, &s.seg_GSHHS_ID_id), file);
 
@@ -239,18 +210,11 @@ int main (int argc, char **argv) {
         GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_bin_id, &start, &s.n_bin), file);
         GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_seg_id, &start, &s.n_seg), file);
         GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_pt_id, &start, &s.n_pt), file);
-        GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_node_id, &start, &s.n_nodes), file);
 			
 	count = s.n_poly;
 
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.GSHHS_parent_id, &start, &count, GSHHS_parent), file);
-        GMT_err_fail (nc_put_vara_int(s.cdfid, s.GSHHS_area_id, &start, &count, GSHHS_area), file);
-        GMT_err_fail (nc_put_vara_int(s.cdfid, s.GSHHS_areafrac_id, &start, &count, GSHHS_area_fraction), file);
 			
-	count = s.n_nodes;
-
-        GMT_err_fail (nc_put_vara_int(s.cdfid, s.GSHHS_node_id, &start, &count, GSHHS_node), file);
-
 	count = s.n_bin;
 
         GMT_err_fail (nc_put_vara_short(s.cdfid, s.bin_info_id, &start, &count, bin_info), file);
@@ -260,6 +224,8 @@ int main (int argc, char **argv) {
 	count = s.n_seg;
 				
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_info_id, &start, &count, seg_info), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_area_id, &start, &count, seg_area), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_frac_id, &start, &count, seg_frac), file);
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_start_id, &start, &count, seg_start), file);
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_GSHHS_ID_id, &start, &count, seg_GSHHS_id), file);
 				
@@ -271,16 +237,14 @@ int main (int argc, char **argv) {
         GMT_err_fail (nc_close (s.cdfid), file);
 	
 	GMT_free ((void *)GSHHS_parent);
-	GMT_free ((void *)GSHHS_area);
-	GMT_free ((void *)GSHHS_area_fraction);
-	
-	GMT_free ((void *)GSHHS_node);
 	
 	GMT_free ((void *)bin_firstseg);
 	GMT_free ((void *)bin_info);
 	GMT_free ((void *)bin_nseg);
 	
 	GMT_free ((void *)seg_info);
+	GMT_free ((void *)seg_area);
+	GMT_free ((void *)seg_frac);
 	GMT_free ((void *)seg_start);
 	GMT_free ((void *)seg_GSHHS_id);
 	

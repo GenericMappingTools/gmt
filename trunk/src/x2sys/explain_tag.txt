@@ -1,3 +1,3 @@
 .TP
-OPT(T)
-Specify the x2sys \fITAG\fP which tracks the attributes of this data type.
+OPT(T)IT(TAG)
+Specify the x2sys IT(TAG) which tracks the attributes of this data type.

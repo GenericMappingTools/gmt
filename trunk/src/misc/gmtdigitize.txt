@@ -7,12 +7,12 @@
 .SH NAME
 gmtdigitize \- Digitizing and Inverse map transformation of map x/y coordinates 
 .SH SYNOPSIS
-\fBgmtdigitize\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ OPT(A) ] [ OPT(C)\fIdevice\fP ] [ OPT(D)\fIlimit\fP ] [ OPT(F) ] [ GMT_H_OPT ] 
-[ OPT(L)\fIlpi\fP ] [ OPT(N)\fInamestem\fP ] [ OPT(S) ] 
-[ GMT_V_OPT ] [ OPT(Zk)|\fBv\fP ] [ GMT_bo_OPT ] [ GMT_mo_OPT ] [ > output.d ]
+BD(gmtdigitize) GMT_J_OPT GMT_Rgeo_OPT 
+[ OPT(A) ] [ OPT(C)IT(device) ] [ OPT(D)IT(limit) ] [ OPT(F) ]
+[ OPT(L)IT(lpi) ] [ OPT(N)IT(namestem) ] [ OPT(S) ] 
+[ GMT_V_OPT ] [ OPT(Zk)|BD(v) ] [ GMT_bo_OPT ] [ GMT_h_OPT ] [ > output.d ]
 .SH DESCRIPTION
-\fBgmtdigitize\fP digitizes points from a digitizer via a serial line connection and
+BD(gmtdigitize) digitizes points from a digitizer via a serial line connection and
 computes map coordinates using the specified map projection.  The program is interactive
 and will take you through the setup procedure and how you will digitize points.
 The program will determine the actual map scale as well as rotation of the paper that
@@ -20,20 +20,21 @@ is taped to the digitizer table.  By default the output will go to stdout.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
-#include "explain_-J_short.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
 For geographic projections you can give 1 as the scale will be solved for anyway.
 #include "explain_-R.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)
 Give an audible signal each time the digitizer mouse/puck is clicked [Default is silent].
 .TP
-OPT(C)
+OPT(C)IT(device)
 Specify the device (port) to read from [Default is DIG_PORT].
 .TP
-OPT(D)
-Only output a point if it is further than \fIlimit\fP units from the previous point.  Append
-\fBc, i, m, p\fP for cm, inch, meter, or point, respectively [Default is no limit].
+OPT(D)IT(limit)
+Only output a point if it is further than IT(limit) units from the previous point.  Append
+BD(c), BD(i), BD(m), BD(p) for cm, inch, meter, or point, respectively [Default is no limit].
 .TP
 OPT(F)
 Force the program to ask for 4 arbitrary calibration points [Default is to use the
@@ -44,10 +45,10 @@ This option allows you to write out any number of header records to the beginnin
 output file.  Each record will automatically start with a #-character to indicate comment.
 Headers are not written if multiple output files are selected with OPT(N) OPT(m).
 .TP
-OPT(L)
+OPT(L)IT(lpi)
 Set the digitizer table resolution in lines per inch [DIG_LPI].
 .TP
-OPT(N)
+OPT(N)IT(namestem)
 Set name for output file(s).  If a regular filename is given, then all digitized data will be written to that
 file.  If the file contains a C-format for an integer (i.e., %d) then the file is used as a format statement
 to create unique filenames based on the current segment number (e.g., line_%d.d will yield files line_0.d, line_1.d, etc).
@@ -58,12 +59,12 @@ Suppress points that fall outside the specified map region [Default outputs all 
 #include "explain_-V.txt"
 The program will also duplicate data output to stderr for monitoring.
 .TP
-OPT(Z)
-Append \fBv\fP to prompt for a \fIz\fP-value and output it as a third data column.
-Append \fBk\fP to output the button key as the final data column.  Both OPT(Zk) and
+OPT(Zk)|BD(v)
+Append BD(v) to prompt for a IT(z)-value and output it as a third data column.
+Append BD(k) to output the button key as the final data column.  Both OPT(Zk) and
 OPT(Zv) can be specified. [Default is just 2 column x,y output].
 #include "explain_-bo.txt"
-#include "explain_-m.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try

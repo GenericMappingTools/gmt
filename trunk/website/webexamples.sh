@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.25 2010-01-11 20:56:46 guru Exp $
+#	 $Id: webexamples.sh,v 1.26 2011-03-15 02:06:46 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -20,7 +20,7 @@
 #	gmt/examples/example_??_100dpi.png (using ps2raster)
 #-----------------------------------------------------------------------------
 
-n_examples=30
+n_examples=29
 
 GMT050dpi="ps2raster -E50 -Tg -P"
 GMT100dpi="ps2raster -E100 -Tg -P"
@@ -146,9 +146,6 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex29/gmt_example_29.html">Spherical surface gridding using Green's functions.</A></LI>
-
-<LI>
-<A HREF="examples/ex30/gmt_example_30.html">A simple math graph with curved arrow.</A></LI>
 </OL>
 </BODY>
 </HTML>

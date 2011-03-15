@@ -1,9 +1,9 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.73 2011-02-28 16:05:16 remko Exp $
+%       $Id: GMT_Tutorial.tex,v 1.74 2011-03-15 02:06:29 guru Exp $
 %
 %       The GMT Documentation Project
-%       Copyright 2000-2011.
-%       Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \documentclass{report}
@@ -56,8 +56,8 @@ Version 2.0 was released with an article in EOS, October 1991, and
 quickly spread worldwide.  We obtained NSF-funding for \GMT\
 version 3.0 in 1993 which was released with another article in EOS
 on August 15, 1995.  Significantly improved versions (3.1-3.3,
-3.3.1--6), 3.4, 3.4.1--5, and 4.0--4.5.3 were released between November 1998 and
-July 2010, culminating in the \GMTDOCDATE\ introduction of \GMTDOCVERSION.
+3.3.1--6), 3.4, 3.4.1--5, and 4.0--4.5.0 were released between November 1998 and
+July 2009, culminating in the \GMTDOCDATE\ introduction of \GMTDOCVERSION.
 \GMT\ now is used by $\sim$15,000 users worldwide in a broad range of disciplines.
 
 \subsection*{Philosophy}
@@ -126,7 +126,7 @@ if not they are always available from the main
 
 \item We recommend you create a sub-directory called \filename{tutorial},
 cd into that directory, and copy all the tutorial files directly
-there with ``\texttt{cp -r \$GMTHOME/share/doc/gmt/tutorial/* .} ''.
+there with ``\texttt{cp -r \$GMTHOME/tutorial/* .} ''.
 
 \item As we discuss \GMT\ principles it may be a good idea to
 consult the \GMT\ Technical Reference and Cookbook for more
@@ -145,7 +145,7 @@ you place all the \GMT\ (and \UNIX) commands in a shell script
 file and make it executable.  To ensure that \UNIX\ recognizes
 your script as a shell script it is a good habit always to start
 the script with the line \#!/bin/sh or \#!/bin/csh, depending on the shell you prefer to use.
-All the examples in this tutorial assumes you are running the Bourne shell, \progname{sh}; if you are using
+All the examples in this tutorial assumes you are running the bourne shell, \progname{sh}; if you are using
 something different then you are on your own.
 
 \item Making a script executable is accomplished using the \texttt{chmod}
@@ -173,7 +173,7 @@ the hood''.  Figure~\ref{fig:GMT_Environment} illustrates the relationships
 you need to be aware of at run-time.
 
 \begin{figure}[h]
-   \centering\includegraphics[width=0.8\textwidth]{fig/GMT_Environment}
+   \centering\includegraphics[width=0.8\textwidth]{GMT_Environment}
    \caption{The \gmt\ run-time environment.}
    \label{fig:GMT_Environment}
 \end{figure}
@@ -195,21 +195,21 @@ unlimited number of rows.  We distinguish between two groups:
 
 \item ASCII (Preferred unless files are huge)
 
-\begin{description}
+\begin{itemize}
 
-\item [--] Single segment [Default]
+\item Single segment [Default]
 
-\item [--] Multi-segment with internal header records ({\bf --M})
-\end{description}
+\item Multi-segment with internal header records ({\bf --M})
+\end{itemize}
 
 \item Binary (to speed up input/output)
 
-\begin{description}
+\begin{itemize}
 
-\item [--] Single segment [Default]
+\item Single segment [Default]
 
-\item [--] Multi-segment (segment headers are all NaN fields) ({\bf --M})
-\end{description}
+\item Multi-segment (segment headers are all NaN fields) ({\bf --M})
+\end{itemize}
 
 \end{itemize}
 
@@ -242,11 +242,11 @@ We will discuss these later.
 \item Supplied command line options/switches or program defaults.
 
 \item Short-hand notation to select previously used option arguments
-(stored in \filename{.gmtcommands4}).
-\index{.gmtdefaults4@\filename{.gmtdefaults4}}
+(stored in \filename{.gmtcommands}).
+\index{gmt.conf@\filename{gmt.conf}}
 
 \item Implicitly using \GMT\ defaults for a variety of parameters
-(stored in \filename{.gmtdefaults4}).
+(stored in \filename{gmt.conf}).
 
 \item May use hidden support data like coastlines or \PS\ patterns.
 
@@ -502,14 +502,16 @@ pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -Gchocolate > map.ps
 
 \item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{.gmtdefaults4} file, change {\bf PLOT\_DEGREE\_FORMAT}
-to another setting (see the \GMTprog{gmtdefaults} man page), and plot again.
+\item Edit your \filename{gmt.conf} file, change \textbf{FORMAT\_GEO\_MAP}
+to another setting (see the \GMTprog{gmt.conf} man page), and plot again.
 
 \item Pick another region and change land color.
 
 \item Pick a region that includes the north or south poles.
 
-\item Try \Opt{W}0.25{\bf p} instead of (or in addition to) \Opt{G}.
+%\item Try \Opt{W}0.25{\bf p} instead of (or in addition to) \Opt{G}.
+
+\item Try \Opt[0.25{\textbf{p}}]{W} instead of (or in addition to) \Opt{G}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -523,7 +525,8 @@ its conformal cousin is the Lambert conic projection (\Opt{JL}).
 Their usages are almost identical so we will only use the Albers here.
 The general syntax is \\
 
-\Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$ \\
+%\Opt{JB}$lon_0/lat_0/lat_1/lat_2/width$ \\
+\Opt[$lon_0/lat_0/lat_1/lat_2/width$]{JB} \\
 
 \noindent
 where ($lon_0, lat_0$) is the map (projection) center and $lat_1, lat_2$
@@ -541,7 +544,7 @@ pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
 
 \begin{enumerate}
 
-\item Change the parameter {\bf GRID\_CROSS\_SIZE\_PRIMARY} to make grid crosses instead of gridlines.
+\item Change the parameter \textbf{MAP\_GRID\_CROSS\_SIZE\_PRIMARY} to make grid crosses instead of gridlines.
 
 \item Change \Opt{R} to a rectangular box specification instead of
 minimum and maximum values.
@@ -590,7 +593,8 @@ We conclude the survey of map projections with the Eckert IV and VI projections
 (\Opt{JK}), two of several projections used for global thematic maps; They
 are both equal-area projections whose syntax is \\
 
-\Opt{JK}[{\bf f$|$s}]$lon_0/width$ \\
+%\Opt{JK}[{\bf f$|$s}]$lon_0/width$ \\
+\Opt[{$[${\textbf{f\textbar s}}$]lon_0/width$}]{JK} \\
 
 \noindent
 where {\bf f} gives Eckert IV (4) and {\bf s} (Default) gives Eckert VI (6).
@@ -953,20 +957,21 @@ sizes are interpreted to be in inches.
 
 In many situations we need to annotate plots or maps with text strings;
 in \GMT\ this is done using \GMTprog{pstext}.  Apart from the common
-switches, there are 7 options that are particularly useful (Table~\ref{tbl:pstext}).
+switches, there are 8 options that are particularly useful (Table~\ref{tbl:pstext}).
 
 \begin{table}[h]
 \small
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it dx}/{\it dy} & Spacing between text and the text box (see \Opt{W}) \\ \hline
+\Opt{C}{\it dx}/{\it dy} & Spacing between text and the text box (see \Opt{G} and \Opt{W}) \\ \hline
 \Opt{D}{\it dx}/{\it dy} & Offsets the projected location of the strings \\ \hline
-\Opt{G}{\it fill} & Sets the color of the text \\ \hline
+\Opt{G}{\it fill} & Paint the text box (see \Opt{C} and \Opt{T}) \\ \hline
 \Opt{L} & Lists the font ids and exits \\ \hline
 \Opt{N} & Deactivates clipping at the borders \\ \hline
 \Opt{S}{\it pen} & Selects outline font and sets pen attributes \\ \hline
-\Opt{W}[{\it fill}][{\bf o}[{\it pen}]] & Paint the text box; draw the outline if {\bf o} is appended (also see \Opt{C}) \\ \hline
+\Opt{T}\textbf{o}$|$\textbf{O}$|$\textbf{c}$|$\textbf{C} & Selects shape of text box rectangle (see \Opt{G} and \Opt{W}) \\ \hline
+\Opt{W}[{\it pen}] & Draw the text box outline (see \Opt{C} and \Opt{T}) \\ \hline
 \end{tabular}
 \caption{Some of the most frequently used options in \protect\GMTprog{pstext}.}
 \label{tbl:pstext}
@@ -1027,7 +1032,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in \GMT\, including in arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
-set {\bf CHAR\_ENCODING} to ISOLatin1 in your \filename{.gmtdefaults4} file.
+set \textbf{PS\_CHAR\_ENCODING} to ISOLatin1 in your \filename{gmt.conf} file.
 
 We will demonstrate \GMTprog{pstext} with the following script:
 
@@ -1786,8 +1791,9 @@ In addition, some options may be required:
 \Opt{I}{\it intens\_file} & File with illumination intensities \\ \hline
 \Opt{Qm} & Selects mesh plot \\ \hline
 \Opt{Qs}[{\bf m}] & Surface plot using polygons; append {\bf m} to show mesh.  This option allows for \Opt{W} \\ \hline
-\Opt{Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image.  \Opt{B} is disabled. \\ \hline
-\Opt{W}{\it pen} & Draw contours on top of surface (except with \Opt{Qi}) \\ \hline
+\Opt{Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image. \\ \hline
+\Opt{Qc}{\it dpi}[{\bf g}] & Same as \Opt{Qi} but using PostScript Level 3 to make NaN color transparent. \\ \hline
+\Opt{W}{\it pen} & Draw contours on top of surface (except with \Opt{Qi} or \Opt{Qc}) \\ \hline
 \end{tabular}
 \caption{The most useful options in \protect\GMTprog{grdview}.}
 \label{tbl:grdview}
@@ -1829,7 +1835,7 @@ We will make a perspective, color-coded view of the US Rockies
 from the southeast.  This is done using
 
 {\small\begin{verbatim}
-grdview us.nc -JM6i -E135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -B2 \
+grdview us.nc -JM6i -E135/35 -Qc50 -Ius_i.nc -Ctopo.cpt -V -B2 \
     -JZ0.5i > view.ps
 \end{verbatim}
 }

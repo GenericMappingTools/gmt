@@ -1,6 +1,14 @@
-#	$Id: Makefile,v 1.52 2010-11-01 22:31:53 remko Exp $
+#	$Id: Makefile,v 1.53 2011-03-15 02:06:37 guru Exp $
 #
-# makefile for x2sys directory
+#		Makefile for GMT x2sys supplements
+#
+#	The x2sys supplements are assumed to be installed in a subdirectory
+#	under the main gmt/src directory and will refer to the gmt libraries
+#	and makefile macros in the parent directory.
+#	To compile/link them, try "make all", then "make install".
+#	When done, clean out directory with "make clean".
+#
+#	Author:	Paul Wessel, SOEST, U. of Hawaii
 #
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
@@ -10,17 +18,17 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)config.mk
 include $(GMTSRCDIR)common.mk
 
-INCLUDES	= -I$(srcdir) -I../mgg -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
-ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg $(GMT_LIB) $(LIBS)
+INCLUDES	= -I$(srcdir) -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
+
+API_O		= gmt_x2sys.o
+API_H		= $(API_O:.o=.h)
+FUNCS_O		= x2sys_init_func.o x2sys_put_func.o x2sys_get_func.o x2sys_binlist_func.o x2sys_datalist_func.o \
+		  x2sys_cross_func.o x2sys_list_func.o x2sys_report_func.o x2sys_solve_func.o x2sys_merge_func.o
+PROGS_O		= $(FUNCS_O:_func.o=.o)
+MAN1		= $(PROGS_O:.o=.1)
 
 LIB_O		= x2sys.o
 LIB_H		= x2sys.h
-LIB		= libx2sys.$(LIBEXT)
-
-PROGS_H		=
-PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o \
-		  x2sys_cross.o x2sys_list.o x2sys_report.o x2sys_solve.o x2sys_merge.o
-MAN1		= $(PROGS_O:.o=.1)
 
 #---------------------------------------------------------------
 #	software targets
@@ -31,27 +39,27 @@ all:		$(PROGS)
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(includedir); \
-			$(INSTALL) -m 644 $(LIB_H) $(includedir); \
+			$(INSTALL) -d $(includedir)/gmt; \
+			$(INSTALL) -m 644 $(LIB_H) $(API_H) $(includedir)/gmt; \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 644 $(LIB:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIB) $(libdir); fi \
+			$(INSTALL) -m 644 $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBAPI) $(libdir); fi \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libx2sys.$(SL) libx2sys.$(SL_VERSION) ; \
-			$(LN_S) libx2sys.$(SL_VERSION) libx2sys.$(SL) ; \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)} ; \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).{$(SL_VERSION),$(SL)} ; \
 		fi
 
 uninstall:	
 		cd $(bindir); \rm -f $(PROGS)
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			cd $(includedir); \rm -f $(LIB_H);\
+			cd $(includedir)/gmt; \rm -f $(LIB_H) $(API_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libx2sys.a libx2sys.$(SL) libx2sys.$(SL_VERSION); \
+			cd $(libdir); \rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)
@@ -60,17 +68,17 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
+spotless::	clean
+
 clean:
 		\rm -f *% *.o *.a *.$(SL) $(PROGS)
-
-spotless::	clean
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	$(LIB_H) $(PROGS_H) $(GMT_H)
-$(LIB_O):	$(LIB_H) $(GMT_H)
+$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(GMT_H) $(API_H)
+x2sys.o:	$(LIB_H) $(GMT_H)
 
 #-------------------------------------------------------------------------------
 #	library
@@ -78,12 +86,17 @@ $(LIB_O):	$(LIB_H) $(GMT_H)
 
 .SUFFIXES:	.$(SL)
 
-libx2sys.a:	$(LIB_O)
-		$(AR) cvr $@ $?
+LIBAPI		= libgmt_x2sys.$(LIBEXT)
+
+libs:		libgmt_x2sys.a
+
+libgmt_x2sys.a:	$(FUNCS_O) $(LIB_O)
+		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
-libx2sys.$(SL):	libx2sys.a
-		$(LD) $(LD_OPT) x2sys.o $(ALLLIB) -o $@
+libgmt_x2sys.$(SL):	libgmt_x2sys.a
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(LIBS) -o $@
+
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -100,6 +113,9 @@ x2sys_report$(EXE):	x2sys_report.o
 x2sys_solve$(EXE):	x2sys_solve.o
 x2sys_merge$(EXE):	x2sys_merge.o
 
-$(PROGS):	$(LIB) $(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB) $(NETCDF_LIB) $(GDAL_LIB)
+$(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
+
+$(PROGS_O):	../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

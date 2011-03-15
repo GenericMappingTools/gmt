@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.15 2010-03-02 20:21:17 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.16 2011-03-15 02:06:37 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -8,13 +8,11 @@
  * many blocks will be completely outside all polygons (mid ocean) or
  * completely inside a large enough polygon that no crossings with the
  * block borders occur (mid continent, middle of big lake etc).  We
- * store the node levels in a grdfile for convenience.  We also store
- * the GSHHS ID of the polygon that determined the node level since we
- * may later have to re-determine the level if some polygons are skipped
- * for being too small (pscoast -A).
+ * store the node levels in a grdfile for convenience.
  */
  
 #include "wvs.h"
+
 
 struct BLOB {
 	struct GMT3_POLY h;
@@ -26,7 +24,6 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 
 struct GRD_HEADER grdh;
 float *grd;
-int *ID;
 int main (int argc, char **argv)
 {
 	int i, j, k, n_id, pos, n_nodes, id, intest, n, nx_minus_1, ix0, off, iy0, slow = 0;
@@ -36,8 +33,8 @@ int main (int argc, char **argv)
 	FILE *fp;
 	struct LONGPAIR p;
 	
-	if (argc != 5) {
-		fprintf (stderr, "usage: polygon_setnodes final_dbase.b bin_width nodegrdfile IDnodefile\n");
+	if (argc != 4) {
+		fprintf (stderr, "usage: polygon_setnodes final_dbase.b bin_width nodegrdfile\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -53,13 +50,12 @@ int main (int argc, char **argv)
 	grdh.ny = irint (180.0 * iw) + 1;
 	n_nodes = grdh.nx * grdh.ny;
 	grd = (float *) GMT_memory (VNULL, (size_t)n_nodes, sizeof(float), "polygon_setnodes");
-	ID = (int *) GMT_memory (VNULL, (size_t)n_nodes, sizeof(int), "polygon_setnodes");
         grdh.x_min = 0.0;
         grdh.x_max = 360.0;
         grdh.y_min = -90.0;
         grdh.y_max = 90.0;
         grdh.x_inc = grdh.y_inc = w;
-        grdh.node_offset = 0;
+        grdh.registration = 0;
         grdh.z_scale_factor = 1.0;
         grdh.z_add_offset = 0.0;
         strcpy (grdh.x_units, "Longitude");
@@ -76,7 +72,7 @@ int main (int argc, char **argv)
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		cont_no = (blob[n_id].h.continent);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no = (blob[n_id].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
@@ -99,7 +95,7 @@ int main (int argc, char **argv)
 
 	for (id = 0; id < n_id; id++) {	/* For all anchor polygons */
 	
-		cont_no = blob[id].h.continent;	/* Continent number 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (blob[id].h);	/* Get continent number 1-6 (0 if not a continent) */
 
 		slow = (w <= 2.0 && cont_no);
 		
@@ -167,17 +163,9 @@ int main (int argc, char **argv)
 					intest = non_zero_winding2 (iblon + off, iblat, IX[c][INSIDE], IY[c][INSIDE], N[c][INSIDE]);
 
 					if (intest == 2) {	/* way inside, set levels */
-						if (irint ((double)grd[ij]) > blob[id].h.level) continue;
-						grd[ij] = (float)blob[id].h.level;
-						ID[ij] = blob[id].h.id;
-						if (i == 0) {
-							grd[ij+nx_minus_1] = grd[ij];
-							ID[ij+nx_minus_1] = ID[ij];
-						}
-						else if (i == nx_minus_1) {
-							grd[ij-nx_minus_1] = grd[ij];
-							ID[ij-nx_minus_1] = ID[ij];
-						}
+						if (grd[ij] < blob[id].h.level) grd[ij] = blob[id].h.level;
+						if (i == 0) grd[ij+nx_minus_1] = grd[ij];
+						if (i == nx_minus_1) grd[ij-nx_minus_1] = grd[ij];
 						continue;
 					}
 					/* If not, we fall down to the _real_ test */
@@ -219,17 +207,10 @@ int main (int argc, char **argv)
 
 				/* Inside or on edge is inside here */
 			
-				if (irint ((double)grd[ij]) < blob[id].h.level) {	/* Update node level and ID */
-					grd[ij] = (float)blob[id].h.level;
-					ID[ij] = blob[id].h.id;
-					if (i == 0) {
-						grd[ij+nx_minus_1] = grd[ij];
-						ID[ij+nx_minus_1] = ID[ij];
-					}
-					else if (i == nx_minus_1) {
-						grd[ij-nx_minus_1] = grd[ij];
-						ID[ij-nx_minus_1] = ID[ij];
-					}
+				if (irint ((double)grd[ij]) < blob[id].h.level) {
+					grd[ij] = (double)blob[id].h.level;
+					if (i == 0) grd[ij+nx_minus_1] = grd[ij];
+					if (i == nx_minus_1) grd[ij-nx_minus_1] = grd[ij];
 				}
 				
 			}
@@ -243,22 +224,7 @@ int main (int argc, char **argv)
 	free ((void *)lon);
 	free ((void *)lat);
 
-	GMT_err_fail (GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), argv[3]);
-	for (i = 0; i < n_nodes; i++) grd[i] = (float)ID[i];
-	GMT_err_fail (GMT_write_grd ("shit.grd", &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), "shit.grd");
- 	free ((void *)grd);
-	fp = fopen (argv[4], "wb");
-	if (fwrite ((void *)&n_nodes, sizeof (int), 1, fp) != 1) {
-		fprintf (stderr, "polygon_setnodes: Error writing # of GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	if (fwrite ((void *)ID, sizeof (int), n_nodes, fp) != n_nodes) {
-		fprintf (stderr, "polygon_setnodes: Error writing GSHHS nodes\n");
-		exit (EXIT_FAILURE);
-	}
-	fclose (fp);
-	
- 	free ((void *)ID);
+	GMT_err_fail (GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[3]);
 	
 	exit (EXIT_SUCCESS);
 }	

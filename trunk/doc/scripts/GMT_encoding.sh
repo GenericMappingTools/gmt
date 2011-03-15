@@ -1,13 +1,12 @@
 #!/bin/bash
 #
-#	$Id: GMT_encoding.sh,v 1.10 2011-02-28 00:58:03 remko Exp $
+#	$Id: GMT_encoding.sh,v 1.11 2011-03-15 02:06:29 guru Exp $
 #
 #	This plots the given encoding vector to stdout
 #
 #	e.g., GMT_encoding.sh ISO-8859-1 | gv -
 #
 . functions.sh
-trap 'rm -f $$.*; exit 1' 1 2 3 15
 
 if [ $# -eq 0 ]; then
 	exit
@@ -25,7 +24,7 @@ cat << EOF > $$.awk	# This awk script creates the $$.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | awk -f $$.awk > $$.chart
+egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.chart
 cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
@@ -34,29 +33,29 @@ cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' ../../share/pslib/$1.ps | awk -f $$.awk > $$.empty
+egrep -v '\[|\]' ../../share/pslib/$1.ps | $AWK -f $$.awk > $$.empty
 
 cat << EOF > $$.awk
 BEGIN {
-	printf "0.5 -0.5 10 0 4 MC octal\n"
+	printf "0.5 -0.5 octal\n"
 	for (i = 0; i < 8; i++)
 	{
-		printf "%g -0.5 10 0 4 MC %d\n", i + 1.5, i
+		printf "%g -0.5 %d\n", i + 1.5, i
 	}
 }
 {
-	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%g %g 10 0 4 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
 
-gmtset CHAR_ENCODING $1
-psxy -R0/9/-1/32 -Jx0.345/-0.21 -B0g1:."Octal codes for $1": -P -K -m -Ggray -X3 -Sr $$.empty
-awk -f $$.awk $$.chart | pstext -R -J -O -K
-psxy -R -J -O -m -Wthick << EOF
+gmtset PS_CHAR_ENCODING $1
+psxy -R0/9/-1/32 -Jx0.345/-0.21 -B0g1:."Octal codes for $1": -P -K -Ggray -X3 -Sr $$.empty
+$AWK -f $$.awk $$.chart | pstext -R -J -O -K -F+f10p,Times-Roman
+psxy -R -J -O -Wthick << EOF
 >
 0	0
 9	0
@@ -64,4 +63,3 @@ psxy -R -J -O -m -Wthick << EOF
 1	0
 1	32
 EOF
-rm -f $$.*

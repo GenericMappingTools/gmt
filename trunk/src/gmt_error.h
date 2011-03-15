@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.14 2011-03-03 21:02:50 guru Exp $
+ *	$Id: gmt_error.h,v 1.15 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,12 +20,19 @@
  * Include file for GMT error codes
  *
  * Author:	Paul Wessel
- * Date:	7-MAR-2007
- * Version:	4.2
+ * Date:	1-JAN-2010
+ * Version:	5 API
  */
 
 #ifndef GMT_ERROR_H
 #define GMT_ERROR_H
+
+/* Verbosity levels */
+#define GMT_MSG_SILENCE		0	/* No messages whatsoever */
+#define GMT_MSG_FATAL		1	/* Fatal messages */
+#define GMT_MSG_NORMAL		2	/* Warnings level -V */
+#define GMT_MSG_VERBOSE		3	/* Longer verbose, -Vl in some programs */
+#define GMT_MSG_DEBUG		4	/* Debug messages for developers mostly */
 
 /* Grid i/o error codes */
 
@@ -65,25 +72,55 @@
 #define GMT_GRDIO_GRD98_BADMAGIC	-160
 #define GMT_GRDIO_GRD98_BADLENGTH	-161
 #define GMT_GRDIO_GRD98_COMPLEX		-162
-#define GMT_GRDIO_RI_OLDBAD		-163
-#define GMT_GRDIO_RI_NEWBAD		-164
-#define GMT_GRDIO_RI_NOREPEAT		-165
-#define GMT_IO_BAD_PLOT_DEGREE_FORMAT	-166
-#define GMT_CHEBYSHEV_NEG_ORDER		-167
-#define GMT_CHEBYSHEV_BAD_DOMAIN	-168
-#define GMT_MAP_EXCEEDS_360		-169
-#define GMT_MAP_BAD_ELEVATION_MIN	-170
-#define GMT_MAP_BAD_ELEVATION_MAX	-171
-#define GMT_MAP_BAD_LAT_MIN		-172
-#define GMT_MAP_BAD_LAT_MAX		-173
-#define GMT_MAP_NO_REGION		-174
-#define GMT_MAP_NO_PROJECTION		-175
-#define GMT_MAP_BAD_DIST_FLAG		-176
-#define GMT_MAP_BAD_MEASURE_UNIT	-177
+#define GMT_GRDIO_ESRI_NONSQUARE	-164
+#define GMT_GRDIO_RI_OLDBAD		-165
+#define GMT_GRDIO_RI_NEWBAD		-166
+#define GMT_GRDIO_RI_NOREPEAT		-167
+#define GMT_IO_BAD_PLOT_DEGREE_FORMAT	-168
+#define GMT_CHEBYSHEV_NEG_ORDER		-169
+#define GMT_CHEBYSHEV_BAD_DOMAIN	-170
+#define GMT_MAP_EXCEEDS_360		-171
+#define GMT_MAP_BAD_ELEVATION_MIN	-172
+#define GMT_MAP_BAD_ELEVATION_MAX	-173
+#define GMT_MAP_BAD_LAT_MIN		-174
+#define GMT_MAP_BAD_LAT_MAX		-175
+#define GMT_MAP_NO_REGION		-176
+#define GMT_MAP_NO_PROJECTION		-177
+#define GMT_MAP_BAD_DIST_FLAG		-178
+#define GMT_MAP_BAD_MEASURE_UNIT	-179
+#define GMT_PSL_INIT_FAILED		-180
 
 /* Definition for an error trap */
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 
 EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
+
+/* Definition for printing a report. When DEBUG is on, also print source file and line number.
+ * Use this for various progress statements, debugging to see certain variables, and even fatal
+ * error messages not covered by GMT_err_pass or GMT_err_fail functions.
+ */
+#ifdef DEBUG
+#define GMT_report(C,level,...) ((level) <= C->current.setting.verbose ? GMT_message (C, "%s(%s):%s:%d: ", C->init.progname, C->init.module_name, __FILE__, __LINE__) + GMT_message (C, __VA_ARGS__) : 0)
+#else
+#define GMT_report(C,level,...) ((level) <= C->current.setting.verbose ? GMT_message (C, "%s(%s): ", C->init.progname, C->init.module_name) + GMT_message (C, __VA_ARGS__) : 0)
+#endif
+
+/* Definition for printing a simple message to standard output */
+/* Due to the DLL boundary cross problem on Windows the next macro is implemented as a function in gmt_init.c */
+#if !(defined (WIN32) || defined (__MINGW32__))
+#define GMT_message(C,...) fprintf(C->session.std[GMT_ERR],__VA_ARGS__)
+#endif
+
+/* Check condition and report error if true */
+#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__)+1 : 0)
+
+/* Convenience functions to GMT_err_func */
+#ifdef DEBUG
+#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,__FILE__,__LINE__)
+#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,__FILE__,__LINE__)
+#else
+#define GMT_err_pass(C,err,file) GMT_err_func (C,err,FALSE,file,"",0)
+#define GMT_err_fail(C,err,file) GMT_err_func (C,err,TRUE,file,"",0)
+#endif
 
 #endif /* GMT_ERROR_H */

@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_K.tex,v 1.22 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_K.tex,v 1.23 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{The \gmt\ High-Resolution Coastline Data}
@@ -209,18 +209,16 @@ map to go from \mbox{-2000} km to \mbox{+2000} km in the longitudinal
 and the latitudinal direction.
 However, \GMT\ programs expects degrees in the \Opt{R} option that
 specifies the desired region.  Given the chosen map projection we
-can automate this process by using a simple shell script that we
-call \progname{getbox.sh}:
-
-\script{getbox} 
+can automate this process by using a simple shell function that we
+call \progname{getbox}.
 
 Also, as we zoom in on the projection center we want to draw the
 outline of the next map region on the plot.  To do that we need
 the geographical coordinates of the four corners of the region
 rectangle.  Again, we automate this task by adding the simple
-script \progname{getrect.sh}:
+function \progname{getrect} from \progname{doc/scripts/functions.sh}.
 
-\script{getrect} 
+\script{../functions}
 
 \subsection{The crude resolution (\Opt{Dc})} 
 \index{Coastlines!resolution!crude|(}
@@ -244,8 +242,8 @@ script:
 
 \GMTfig{GMT_App_K_1}{Map using the crude resolution coastline data.}
 
-Here, we use the {\bf OBLIQUE\_ANNOTATION} bit flags to achieve
-horizontal annotations and set {\bf ANNOT\_MIN\_SPACING} to suppress some longitudinal
+Here, we use the \textbf{MAP\_ANNOT\_OBLIQUE} bit flags to achieve
+horizontal annotations and set \textbf{MAP\_ANNOT\_MIN\_SPACING} to suppress some longitudinal
 annotations near the S pole that otherwise would overprint.
 The box indicates the outline of the next map.
 

@@ -3,162 +3,216 @@
 .SH NAME
 GMT \- The Generic Mapping Tools data processing and display software package
 .SH INTRODUCTION
-\fBGMT\fP is a collection of public-domain Unix tools that allows you to manipulate
+BD(GMT) is a collection of public-domain Unix tools that allows you to manipulate
 x,y and x,y,z data sets (filtering, trend fitting, gridding, projecting, etc.)
-and produce \fIPostScript\fP illustrations ranging from simple x-y plots, via
+and produce IT(PostScript) illustrations ranging from simple x-y plots, via
 contour maps, to artificially illuminated surfaces and 3-D perspective
 views in black/white or full color.  Linear, log10, and power scaling is supported in
-addition to 25 common map projections.  The processing and display routines
-within \fBGMT\fP are completely general and will handle any (x,y) or (x,y,z) data
+addition to over 30 common map projections.  The processing and display routines
+within BD(GMT) are completely general and will handle any (x,y) or (x,y,z) data
 as input.
 .SH SYNOPSIS
-\fBGMT\fP is also a wrapper script that can start any of the programs:
+BD(GMT) is also a wrapper program that can start any of the programs:
 .br
 .sp
-\fBGMT\fP module module-options
+BD(GMT) module module-options
 .br
 .sp
-where module is the name of a \fBGMT\fP program and the options are those that pertain to
+where module is the name of a BD(GMT) program and the options are those that pertain to
 that particular program.
 .SH GMT OVERVIEW
-The following is a summary of all the programs supplied with \fBGMT\fP and
+The following is a summary of all the programs supplied with BD(GMT) and
 a very short description of their purpose. Detailed information about each program
 can be found in the separate manual pages.
 .br
 .sp
-\fBblockmean\fP		L2 (x,y,z) data filter/decimator
+BD(blockmean)		L2 (x,y,z) data filter/decimator
 .br
-\fBblockmedian\fP	L1 (x,y,z) data filter/decimator
+BD(blockmedian)	L1 (x,y,z) data filter/decimator
 .br
-\fBblockmode\fP		Mode (x,y,z) data filter/decimator
+BD(blockmode)		Mode (x,y,z) data filter/decimator
 .br
-\fBfilter1d\fP		Filter 1-D data sets (time series)
+BD(filter1d)		Filter 1-D data sets (time series)
 .br
-\fBfitcircle\fP		Finds the best-fitting great circle to a set of points
+BD(fitcircle)		Finds the best-fitting great circle to a set of points
 .br
-\fBgmt2rgb\fP		Convert Sun rasterfile or grid to r, g, b grids
+BD(gmt2kml)		Convert GMT data tables to KML files for Google Earth
 .br
-\fBgmtconvert\fP	Convert between ASCII and binary 1-D tables
+BD(grd2rgb)		Convert Sun rasterfile or grid to r, g, b grids
 .br
-\fBgmtdefaults\fP	List the current default settings
+BD(gmtconvert)	Convert between ASCII and binary 1-D tables
 .br
-\fBgmtmath\fP		Mathematical operations on data tables
+BD(gmtdp)	Line reduction using the Douglas-Peucker algorithm
 .br
-\fBgmtset\fP		Set individual default parameters
+BD(gmtdefaults)	List the current default settings
 .br
-\fBgmtselect\fP		Extract data subsets based on spatial criteria
+BD(gmtget)		Get individual default parameters
 .br
-\fBgrdfilter\fP		Filter 2-D data sets in the space domain
+BD(gmtmath)		Mathematical operations on data tables
 .br
-\fBgrd2cpt\fP		Make a color palette table from grid files
+BD(gmtset)		Set individual default parameters
 .br
-\fBgrd2xyz\fP		Conversion from 2-D grid file to table data
+BD(gmtselect)		Extract data subsets based on spatial criteria
 .br
-\fBgrdblend\fP		Blend several partially over-lapping grid files onto one grid
+BD(gmtspatial)		Geospatial operations on lines and polygons
 .br
-\fBgrdclip\fP		Limit the z-range in gridded data
+BD(gmtstitch)		Join individual lines whose end points match within tolerance
 .br
-\fBgrdcontour\fP	Contouring of 2-D gridded data
+BD(gmtvector)		Basic vector manipulation in 2-D and 3-D
 .br
-\fBgrdcut\fP		Cut a sub-region from a grid file
+BD(gmtwhich)		Find full path to specified files
 .br
-\fBgrdedit\fP		Modify header information in a 2-D grid file
+BD(grdfilter)		Filter 2-D data sets in the space domain
 .br
-\fBgrdfft\fP		Operate on grid files in the wavenumber (or frequency) domain
+BD(grd2cpt)		Make a color palette table from grid files
 .br
-\fBgrdgradient\fP	Compute directional gradient from grid files
+BD(grd2xyz)		Conversion from 2-D grid file to table data
 .br
-\fBgrdhisteq\fP		Histogram equalization for grid files
+BD(grdblend)		Blend several partially over-lapping grid files onto one grid
 .br
-\fBgrdimage\fP		Produce images from 2-D gridded data
+BD(grdclip)		Limit the z-range in gridded data
 .br
-\fBgrdinfo\fP		Get information about grid files
+BD(grdcontour)	Contouring of 2-D gridded data
 .br
-\fBgrdlandmask\fP	Create mask grid file from shoreline data base
+BD(grdcut)		Cut a sub-region from a grid file
 .br
-\fBgrdmask\fP		Reset nodes outside a clip path to a constant
+BD(grdedit)		Modify header information in a 2-D grid file
 .br
-\fBgrdmath\fP		Mathematical operations on grid files
+BD(grdfft)		Operate on grid files in the wavenumber (or frequency) domain
 .br
-\fBgrdpaste\fP		Paste together grid files along a common edge
+BD(grdgradient)	Compute directional gradient from grid files
 .br
-\fBgrdproject\fP	Project gridded data onto a new coordinate system
+BD(grdhisteq)		Histogram equalization for grid files
 .br
-\fBgrdreformat\fP	Converting between different grid file formats
+BD(grdimage)		Produce images from 2-D gridded data
 .br
-\fBgrdsample\fP		Resample a 2-D gridded data set onto a new grid
+BD(grdinfo)		Get information about grid files
 .br
-\fBgrdtrend\fP		Fits polynomial trends to grid files
+BD(grdlandmask)	Create mask grid file from shoreline data base
 .br
-\fBgrdtrack\fP		Sampling of 2-D data set along 1-D track
+BD(grdmask)		Reset nodes outside a clip path to a constant
 .br
-\fBgrdvector\fP		Plot vector fields from grid files
+BD(grdmath)		Mathematical operations on grid files
 .br
-\fBgrdview\fP		3-D perspective imaging of 2-D gridded data
+BD(grdpaste)		Paste together grid files along a common edge
 .br
-\fBgrdvolume\fP		Volume calculations from 2-D gridded data
+BD(grdproject)	Project gridded data onto a new coordinate system
 .br
-\fBgreenspline\fP	Interpolation using Green's functions for splines in 1-3 dimensions
+BD(grdreformat)	Converting between different grid file formats
 .br
-\fBmakecpt\fP		Make color palette tables
+BD(grdsample)		Resample a 2-D gridded data set onto a new grid
 .br
-\fBmapproject\fP	Forward or inverse map projections of table data
+BD(grdtrend)		Fits polynomial trends to grid files
 .br
-\fBminmax\fP		Find extreme values in data tables
+BD(grdtrack)		Sampling of 2-D data set along 1-D track
 .br
-\fBnearneighbor\fP	Nearest-neighbor gridding scheme
+BD(grdvector)		Plot vector fields from grid files
 .br
-\fBproject\fP		Project data onto lines/great circles
+BD(grdview)		3-D perspective imaging of 2-D gridded data
 .br
-\fBps2raster\fP		Crop and convert \fIPostScript\fP files to raster images, EPS, and PDF
+BD(grdvolume)		Volume calculations from 2-D gridded data
 .br
-\fBpsbasemap\fP		Create a basemap plot
+BD(greenspline)	Interpolation using Green's functions for splines in 1-3 dimensions
 .br
-\fBpsclip\fP		Use polygon files to define clipping paths
+BD(kml2gmt)		Extract GMT data from a Google Earth KML file
 .br
-\fBpscoast\fP		Plot coastlines and filled continents on maps
+BD(makecpt)		Make color palette tables
 .br
-\fBpscontour\fP		Contour xyz-data by triangulation
+BD(mapproject)	Forward or inverse map projections of table data
 .br
-\fBpshistogram\fP	Plot a histogram
+BD(minmax)		Find extreme values in data tables
 .br
-\fBpsimage\fP		Plot images (EPS or Sun raster files) on maps
+BD(nearneighbor)	Nearest-neighbor gridding scheme
 .br
-\fBpslegend\fP		Plot legend on maps
+BD(project)		Project data onto lines/great circles
 .br
-\fBpsmask\fP		Create overlay to mask out regions on maps
+BD(ps2raster)		Crop and convert IT(PostScript) files to raster images, EPS, and PDF
 .br
-\fBpsrose\fP		Plot sector or rose diagrams
+BD(psbasemap)		Create a basemap plot
 .br
-\fBpsscale\fP		Plot gray scale or color scale on maps
+BD(psclip)		Use polygon files to define clipping paths
 .br
-\fBpstext\fP		Plot text strings on maps
+BD(pscoast)		Plot coastlines and filled continents on maps
 .br
-\fBpswiggle\fP		Draw time-series along track on maps
+BD(pscontour)		Contour xyz-data by triangulation
 .br
-\fBpsxy\fP			Plot symbols, polygons, and lines on maps
+BD(pshistogram)	Plot a histogram
 .br
-\fBpsxyz\fP		Plot symbols, polygons, and lines in 3-D
+BD(psimage)		Plot images (EPS or Sun raster files) on maps
 .br
-\fBsample1d\fP		Resampling of 1-D table data sets
+BD(pslegend)		Plot legend on maps
 .br
-\fBspectrum1d\fP	Compute various spectral estimates from time-series
+BD(psmask)		Create overlay to mask out regions on maps
 .br
-\fBsplitxyz\fP		Split xyz-files into several segments
+BD(psrose)		Plot sector or rose diagrams
 .br
-\fBsurface\fP		A continuous curvature gridding algorithm
+BD(psscale)		Plot gray scale or color scale on maps
 .br
-\fBtrend1d\fP		Fits polynomial or Fourier trends to y = f(x) data
+BD(pstext)		Plot text strings on maps
 .br
-\fBtrend2d\fP		Fits polynomial trends to z = f(x,y) data
+BD(pswiggle)		Draw time-series along track on maps
 .br
-\fBtriangulate\fP	Perform optimal Delaunay triangulation and gridding
+BD(psxy)			Plot symbols, polygons, and lines on maps
 .br
-\fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grid file
+BD(psxyz)		Plot symbols, polygons, and lines in 3-D
 .br
+BD(sample1d)		Resampling of 1-D table data sets
+.br
+BD(spectrum1d)	Compute various spectral estimates from time-series
+.br
+BD(splitxyz)		Split xyz-files into several segments
+.br
+BD(surface)		A continuous curvature gridding algorithm
+.br
+BD(trend1d)		Fits polynomial or Fourier trends to y = f(x) data
+.br
+BD(trend2d)		Fits polynomial trends to z = f(x,y) data
+.br
+BD(triangulate)	Perform optimal Delaunay triangulation and gridding
+.br
+BD(xyz2grd)		Convert equidistant xyz data to a 2-D grid file
+.br
+.SH THE COMMON GMT OPTIONS
+GMT_B_OPT GMT_J_OPT GMT_Jz_OPT GMT_K_OPT GMT_O_OPT GMT_P_OPT 
+GMT_Rgeoz_OPT GMT_U_OPT GMT_V_OPT GMT_X_OPT GMT_Y_OPT 
+GMT_a_OPT GMT_b_OPT GMT_c_OPT GMT_f_OPT GMT_g_OPT GMT_h_OPT GMT_i_OPT 
+GMT_o_OPT GMT_p_OPT GMT_r_OPT GMT_s_OPT GMT_t_OPT GMT_colon_OPT
+.SH DESCRIPTION
+These are all the common GMT options that remain the same
+for all GMT programs.  No space between the option flag and the associated arguments.
+#include "explain_-B_full.txt"
+#include "explain_-J_full.txt"
+#include "explain_-Jz_full.txt"
+#include "explain_-K_full.txt"
+#include "explain_-O_full.txt"
+#include "explain_-P_full.txt"
+#include "explain_-R_full.txt"
+#include "explain_-Rz_full.txt"
+#include "explain_-U_full.txt"
+#include "explain_-V_full.txt"
+#include "explain_-XY_full.txt"
+#include "explain_-aspatial_full.txt"
+#include "explain_-bi_full.txt"
+#include "explain_-bo_full.txt"
+#include "explain_-c_full.txt"
+#include "explain_-f_full.txt"
+#include "explain_-g_full.txt"
+#include "explain_-h_full.txt"
+#include "explain_-icols_full.txt"
+#include "explain_-ocols_full.txt"
+#include "explain_perspective_full.txt"
+#include "explain_nodereg_full.txt"
+#include "explain_-s_full.txt"
+#include "explain_-t_full.txt"
+#include "explain_help.txt"
+#include "explain_pen.txt"
+#include "explain_font.txt"
+#include "explain_color.txt"
+#include "explain_precision.txt"
+#include "explain_grd_input.txt"
 .SH "SEE ALSO"
 Look up the individual man pages for more details and full syntax.
-Run \fBGMT\fP without options
+Run BD(GMT) without options
 to list all GMT programs and to show all installation directories.
-Information is also available on the \fBGMT\fP home page gmt.soest.hawaii.edu
+Information is also available on the BD(GMT) home page gmt.soest.hawaii.edu
 #include "refs.i"

@@ -4,7 +4,7 @@
 
 
 /*
- *	$Id: segy_io.c,v 1.4 2011-03-05 21:24:29 guru Exp $
+ *	$Id: segy_io.c,v 1.5 2011-03-15 02:06:37 guru Exp $
  * segy_io.c:  A suite of functions to cover reading SEGY header variables.
  *
  * modified by T. Henstock from the PASSCAL software suite.
@@ -19,10 +19,7 @@
  * needed since the SEGY standard only allows 32767 samples, which
  * is often exceeded in refraction experiments. */
 
-unsigned long samp_rd(hdr)
- SEGYHEAD       *hdr;
-
-{
+unsigned long samp_rd(SEGYHEAD *hdr) {
   if (!hdr) {
     printf("samp_rd: Received a NULL pointer\n");
     return (FALSE);
@@ -37,14 +34,10 @@ unsigned long samp_rd(hdr)
 /************************ get_segy_reelhd() **************************/
 /* read (and discard!) EBCDIC text reel header */
 
-int get_segy_reelhd (fileptr, reelhead)
-	FILE *fileptr;
-	char *reelhead;
-{
-	size_t igot;
+int get_segy_reelhd (FILE *fileptr, char *reelhead) {
+	int igot;
 
-
-        if ((igot = fread (reelhead, (size_t)3200, (size_t)1, fileptr)) != 1) {
+        if ((igot = (int)fread (reelhead, (size_t)3200, (size_t)1, fileptr)) != 1) {
 		fprintf(stderr,"Error reading SEGY reel header \n");
 		exit(1);
 		}
@@ -54,14 +47,10 @@ int get_segy_reelhd (fileptr, reelhead)
 /*********************** get_segy_binhd() ****************************/
 /* read SEGY binary reel header */
 
-int get_segy_binhd (fileptr, binhead)
-	FILE *fileptr;
-	SEGYREEL *binhead;
-{		
-	size_t igot;
+int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {		
+	int igot;
 
-
-	if ((igot = fread (binhead, (size_t)400, (size_t)1, fileptr)) !=1) {
+	if ((igot = (int)fread (binhead, (size_t)400, (size_t)1, fileptr)) !=1) {
 		fprintf(stderr, "Error reading SEGY binary header \n");
 		return(FALSE);
 		}
@@ -86,9 +75,7 @@ int get_segy_binhd (fileptr, binhead)
  * to stderr explaining the problem.
  */
 
-SEGYHEAD *get_segy_header(file_ptr)
-  FILE           *file_ptr;
-{
+SEGYHEAD *get_segy_header(FILE *file_ptr) {
   SEGYHEAD       *head_ptr;
 
   /* get memory for SegyHead'er */
@@ -118,11 +105,7 @@ SEGYHEAD *get_segy_header(file_ptr)
  * to stderr explaining the problem.
  */
 
-char *get_segy_data(file_ptr, head_ptr)
-  FILE           *file_ptr;
-  SEGYHEAD       *head_ptr;
-
-{
+char *get_segy_data(FILE *file_ptr, SEGYHEAD *head_ptr) {
   char           *data_ptr;
   unsigned long            size_of_data, num_samps, num_bytes;
 

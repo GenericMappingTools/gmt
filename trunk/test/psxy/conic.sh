@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: conic.sh,v 1.1 2008-05-21 01:31:49 guru Exp $
+#!/bin/bash
+#	$Id: conic.sh,v 1.2 2011-03-15 02:06:46 guru Exp $
 #
 # Check clipping of line for a global conic plot
 
@@ -12,7 +12,5 @@ psxy -R -J -O -W2p << EOF >> $ps
 30	50
 -30	45
 EOF
-
-rm -f .gmtcommands4
 
 pscmp

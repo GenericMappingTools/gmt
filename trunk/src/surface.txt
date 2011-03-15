@@ -3,12 +3,12 @@
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS
-\fBsurface\fP [ \fIxyzfile\fP ] OPT(G)\fIoutputfile.grd\fP GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)\fIaspect_ratio\fP ] 
-[ OPT(C)\fIconvergence_limit\fP ] [ GMT_H_OPT ] [ OPT(Ll)\fIlower\fP ] [ OPT(Lu)\fIupper\fP ] [ OPT(N)\fImax_iterations\fP ] [ OPT(Q) ] 
-[ OPT(S)\fIsearch_radius\fP[\fBm\fP] ] [ OPT(T)\fItension_factor\fP[\fBi\fP|\fBb\fP] ] [ GMT_V_OPT[\fBl\fP] ] 
-[ OPT(Z)\fIover-relaxation_factor\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+BD(surface) [ IT(xyzfile) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
+[ OPT(C)IT(convergence_limit) ] [ OPT(Ll)IT(lower) ] [ OPT(Lu)IT(upper) ] [ OPT(N)IT(max_iterations) ] [ OPT(Q) ] 
+[ OPT(S)IT(search_radius)[BD(m)|BD(s)] ] [ OPT(T)IT(tension_factor)[BD(i)|BD(b)] ] [ GMT_V_OPT ] 
+[ OPT(Z)IT(over-relaxation_factor) ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
+BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(xyzfile)] and produces
 a binary grid file of gridded values z(x,y) by solving:
 .sp
 	(1 - T) * L (L (z)) + T * L (z) = 0
@@ -20,101 +20,105 @@ packages.  Minimum curvature can cause undesired oscillations and false local ma
 Experience suggests T ~ 0.25 usually looks good for potential field data and T should be larger
 (T ~ 0.35) for steep topography data.  T = 1 gives a harmonic surface (no maxima or minima are
 possible except at control data points).  It is recommended that the user pre-process the data with
-\fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP to avoid spatial aliasing and eliminate redundant data.
+BD(blockmean), BD(blockmedian), or BD(blockmode) to avoid spatial aliasing and eliminate redundant data.
 You may impose lower and/or upper bounds on the solution.  These may be entered in the form of
 a fixed value, a grid with values, or simply be the minimum/maximum input data values.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIxyzfile\fP
-3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
+IT(xyzfile)
+3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
 standard input.
 .TP
-OPT(G)
-Output file name.  Output is a binary 2-D \fI.grd\fP file.  Note that the smallest grid dimension must be at least 4.
+OPT(G)IT(outputfile.nc)
+Output file name.  Output is a binary 2-D IT(.nc) file.  Note that the smallest grid dimension must be at least 4.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
-Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter \fIaspect_ratio\fP,
-where dy = dx / \fIaspect_ratio\fP relates the grid dimensions.  [Default = 1 assumes isotropic grid.]
+OPT(A)IT(aspect_ratio)
+Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter IT(aspect_ratio),
+where dy = dx / IT(aspect_ratio) relates the grid dimensions.  [Default = 1 assumes isotropic grid.]
 .TP
-OPT(C)
+OPT(C)IT(convergence_limit)
 Convergence limit.  Iteration is assumed to have converged when the maximum absolute change in 
-any grid value is less than \fIconvergence_limit\fP.  (Units same as data z units).  [Default is scaled
+any grid value is less than IT(convergence_limit).  (Units same as data z units).  [Default is scaled
 to 0.1 percent of typical gradient in input data.]
-#include "explain_-h.txt"
-Not used with binary data.
 .TP
-OPT(L)
-Impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
-grid file with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
-\fBu\fP\fIupper\fP sets the upper bound and can be the name of a
-grid file with upper bound values, a fixed value, \fBd\fP to set to maximum input value, or \fBu\fP for unconstrained [Default].
+OPT(Ll)IT(lower) and OPT(Lu)IT(upper)
+Impose limits on the output solution.  BD(l)IT(lower) sets the lower bound.  IT(lower) can be the name of a
+grid file with lower bound values, a fixed value, BD(d) to set to minimum input value, or BD(u) for unconstrained [Default].
+BD(u)IT(upper) sets the upper bound and can be the name of a
+grid file with upper bound values, a fixed value, BD(d) to set to maximum input value, or BD(u) for unconstrained [Default].
 .TP
-OPT(N)
-Number of iterations.  Iteration will cease when \fIconvergence_limit\fP is reached or when number of
-iterations reaches \fImax_iterations\fP. [Default is 250.]
+OPT(N)IT(max_iterations)
+Number of iterations.  Iteration will cease when IT(convergence_limit) is reached or when number of
+iterations reaches IT(max_iterations). [Default is 250.]
 .TP
 OPT(Q)
 Suggest grid dimensions which have a highly composite greatest
 common factor. This allows surface to use several intermediate steps in the
 solution, yielding faster run times and better results. The sizes suggested by
 OPT(Q) can be achieved by altering OPT(R) and/or OPT(I). You can
-recover the OPT(R) and OPT(I) you want later by using \fBgrdsample\fP or \fBgrdcut\fP on the output of \fBsurface\fP.
+recover the OPT(R) and OPT(I) you want later by using BD(grdsample) or BD(grdcut) on the output of BD(surface).
 .TP
-OPT(S)
-Search radius.  Enter \fIsearch_radius\fP in same units as x,y data; append \fBm\fP to indicate minutes.
+OPT(S)IT(search_radius)[BD(m)|BD(s)]
+Search radius.  Enter IT(search_radius) in same units as x,y data; append BD(m) to indicate arc minutes
+or BD(s) for arc seconds.
 This is used to initialize the grid before the first iteration; it is not worth the time unless the
 grid lattice is prime and cannot have regional stages.  [Default = 0.0 and no search is made.]
 .TP
-OPT(T)
+OPT(T)IT(tension_factor)[BD(i)|BD(b)]
 Tension factor[s].  These must be between 0 and 1.  Tension may be used in the interior solution
 (above equation, where it suppresses spurious oscillations) and in the boundary conditions (where
 it tends to flatten the solution approaching the edges).  Using zero for both values results in
 a minimum curvature surface with free edges, i.e. a natural bicubic spline.
-Use OPT(T)\fItension_factor\fP\fBi\fP to set interior tension, and OPT(T)\fItension_factor\fP\fBb\fP
-to set boundary tension.  If you do not append \fBi\fP or \fBb\fP, both will be set to the same value.
+Use OPT(T)IT(tension_factor)BD(i) to set interior tension, and OPT(T)IT(tension_factor)BD(b)
+to set boundary tension.  If you do not append BD(i) or BD(b), both will be set to the same value.
 [Default = 0 for both gives minimum curvature solution.]
 #include "explain_-V.txt"
-OPT(Vl) will report the convergence after each iteration;  OPT(V) will report only after 
+OPT(V3) will report the convergence after each iteration;  OPT(V) will report only after 
 each regional grid is converged.
 .TP
-OPT(Z)
+OPT(Z)IT(over-relaxation_factor)
 Over-relaxation factor.  This parameter is used to accelerate the convergence; it is a number between
 1 and 2.  A value of 1 iterates the equations exactly, and will always assure stable convergence.  Larger
 values overestimate the incremental changes during convergence, and will reach a solution more rapidly but may
 become unstable.  If you use a large value for this factor, it is a good idea to monitor each iteration
 with the OPT(Vl) option.  [Default = 1.4 converges quickly and is almost always stable.]
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"
+#include "explain_-h.txt"
+Not used with binary data.
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
 .sp
-To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a \fItension_factor\fP = 0.25,
-a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called hawaii_grd.grd, 
+To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg, using a IT(tension_factor) = 0.25,
+a IT(convergence_limit) = 0.1 milligal, writing the result to a file called hawaii_grd.nc, 
 and monitoring each iteration, try:
 .sp
-\fBsurface\fP hawaii_5x5.xyg OPT(R)198/208/18/25 OPT(I)5\fBm\fP OPT(G)hawaii_grd.grd OPT(T)0.25 OPT(C)0.1 OPT(Vl)
+BD(surface) hawaii_5x5.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(G)hawaii_grd.nc OPT(T)0.25 OPT(C)0.1 OPT(Vl)
 .SH BUGS
-\fBsurface\fP will complain when more than one data point is found for
-any node and suggest that you run \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP first.  If you
-did run \fBblockm*\fP and still get this message it usually means that your
+BD(surface) will complain when more than one data point is found for
+any node and suggest that you run BD(blockmean), BD(blockmedian), or BD(blockmode) first.  If you
+did run BD(blockm*) and still get this message it usually means that your
 grid spacing is so small that you need more decimals in the output format used by
-\fBblockm*\fP.  You may specify more decimal places by editing the
-parameter \fBD_FORMAT\fP in your \.gmtdefaults4 file prior to running \fBblockm*\fP,
+BD(blockm*).  You may specify more decimal places by editing the
+parameter BD(FORMAT_FLOAT_OUT) in your BD(gmt.conf) file prior to running BD(blockm*),
 or choose binary input and/or output using single or double precision storage.
 .br
-Note that only gridline registration is possible with \fBsurface\fP.  If you need a pixel-registered
-grid you can resample a gridline registered grid using \fBgrdsample \-T\fP.
+Note that only gridline registration is possible with BD(surface).  If you need a pixel-registered
+grid you can resample a gridline registered grid using BD(grdsample) OPT(T).
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),
 .IR blockmode (1),
-.IR GMT (1),
+.IR gmt (1),
 .IR nearneighbor (1),
 .IR triangulate (1)
 .SH REFERENCES
-Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature splines in tension, \fIGeophysics\fP,
+Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature splines in tension, IT(Geophysics),
 55, 293\-305.

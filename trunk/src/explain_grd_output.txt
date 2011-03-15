@@ -1,11 +1,11 @@
 .SH GRID FILE FORMATS
-By default \fBGMT\fP writes out grid as single precision floats in a COARDS-complaint netCDF file format.
-However, \fBGMT\fP is able to produce grid files in many other commonly used grid file formats and also facilitates so called "packing" of grids,
+By default BD(GMT) writes out grid as single precision floats in a COARDS-complaint netCDF file format.
+However, BD(GMT) is able to produce grid files in many other commonly used grid file formats and also facilitates so called "packing" of grids,
 writing out floating point data as 2- or 4-byte integers. To specify the precision, scale and offset, the user should add the suffix
-GMT_GRD_SUFFIX, where \fIid\fP is a two-letter identifier of the grid type and precision, and \fIscale\fP and \fIoffset\fP are optional scale factor
-and offset to be applied to all grid values, and \fInan\fP is the value used to indicate missing data.
-See \fBgrdreformat\fP(1) and Section 4.17 of the GMT Technical Reference and Cookbook for more information.
+GMT_GRD_SUFFIX, where IT(id) is a two-letter identifier of the grid type and precision, and IT(scale) and IT(offset) are optional scale factor
+and offset to be applied to all grid values, and IT(nan) is the value used to indicate missing data.
+See BD(grdreformat)(1) and Section 4.17 of the GMT Technical Reference and Cookbook for more information.
 .P
-When writing a netCDF file, the grid is stored by default with the variable name "z". To specify another variable name \fIvarname\fP,
-append \fB?\fP\fIvarname\fP to the file name.  Note that you may need to escape the special meaning of \fB?\fP in your shell program
+When writing a netCDF file, the grid is stored by default with the variable name "z". To specify another variable name IT(varname),
+append BD(?)IT(varname) to the file name.  Note that you may need to escape the special meaning of BD(?) in your shell program
 by putting a backslash in front of it, or by placing the filename and suffix between quotes or double quotes.

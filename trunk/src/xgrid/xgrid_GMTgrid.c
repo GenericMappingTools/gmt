@@ -26,19 +26,19 @@ static void clear (grid)
   
   grid->value = NULL;
   
-  grid->header.x_min = 0.0;
-  grid->header.x_max = 0.0;
-  grid->header.y_min = 0.0;
-  grid->header.y_max = 0.0;
+  grid->header.wesn[XLO] = 0.0;
+  grid->header.wesn[XHI] = 0.0;
+  grid->header.wesn[YLO] = 0.0;
+  grid->header.wesn[YHI] = 0.0;
   grid->header.z_min = 0.0;
   grid->header.z_max = 0.0;
-  grid->header.x_inc = 0.0;
-  grid->header.y_inc = 0.0;
+  grid->header.inc[GMT_X] = 0.0;
+  grid->header.inc[GMT_Y] = 0.0;
   grid->header.z_scale_factor	= 1.0;
   grid->header.z_add_offset	= 0.0;
   grid->header.nx = 0;
   grid->header.ny = 0;
-  grid->header.node_offset = GridCoordNodes;
+  grid->header.registration = GridCoordNodes;
 
   strcpy(grid->header.x_units, "x");
   strcpy(grid->header.y_units, "y");
@@ -50,18 +50,18 @@ static void clear (grid)
 
 static void readFromFile (GMTGrid *grid, String fileName, int *status)
 {
-    if ((*status = GMT_read_grd_info (fileName, &grid->header)))
+    if ((*status = GMT_read_grd_info (grid->GMT, fileName, &grid->header)))
       return;
 
     grid->value = calloc (grid->header.nx * grid->header.ny, sizeof (float));
 
-    *status = GMT_read_grd (fileName, &grid->header, grid->value, 0.0, 0.0,
-			 0.0, 0.0, GMT_pad, FALSE);
+    *status = GMT_read_grd (grid->GMT, fileName, &grid->header, grid->value, NULL,
+	grid->GMT->current.io.pad, FALSE);
 
     /* Update generic grid values */    
     grid->methods.width  = grid->header.nx;
     grid->methods.height = grid->header.ny;
-    grid->methods.coordType = grid->header.node_offset; 
+    grid->methods.coordType = grid->header.registration; 
 
   return;
 }
@@ -71,8 +71,7 @@ static void writeToFile (grid, fileName, status)
 	String    fileName;
 	int *	  status;
 {
-  *status = GMT_write_grd (fileName, &grid->header, grid->value, 0.0, 0.0, 0.0,
-			   0.0, GMT_pad, FALSE);
+  *status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, NULL, grid->GMT->current.io.pad, FALSE);
 }
 
 static void dispose (grid)
@@ -93,12 +92,12 @@ static void dumpGrid (grid)
   printf("Grid: %s\n", grid->header.title);
   printf("Width, height = %d x %d\n", grid->header.nx, grid->header.ny);
   printf("X Coordinates: %f to %f by %f\n",
-  	grid->header.x_min, grid->header.x_max, grid->header.x_inc);
+  	grid->header.wesn[XLO], grid->header.wesn[XHI], grid->header.inc[GMT_X]);
   printf("Y Coordinates: %f to %f by %f\n",
-  	grid->header.y_min, grid->header.y_max, grid->header.y_inc);
-  if (grid->header.node_offset == GridCoordNodes)
+  	grid->header.wesn[YLO], grid->header.wesn[YHI], grid->header.inc[GMT_Y]);
+  if (grid->header.registration == GridCoordNodes)
     printf("Data points centred on coordinates\n");
-  else if (grid->header.node_offset == GridCoordPixels)
+  else if (grid->header.registration == GridCoordPixels)
     printf("Data points between coordinates\n");  
   printf("Z range = %f to %f, scale by %f and add %f\n",
   	grid->header.z_min, grid->header.z_max,
@@ -122,8 +121,8 @@ static void getIndexes (grid, coord, index)
 {
   int column, row;
   
-  column = (int)((coord->x - grid->header.x_min) / grid->header.x_inc);
-  row    = (int)((coord->y - grid->header.y_min) / grid->header.y_inc);
+  column = (int)((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
+  row    = (int)((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
   index->x = column;
   /* Allow for origin being at the bottom rather than the top */
   index->y = grid->header.ny - row;
@@ -134,8 +133,8 @@ static void getCoords (grid, index, coord)
 	XPoint *    index;
 	GridPoint * coord;
 {
-  coord->x = grid->header.x_min + index->x * grid->header.x_inc;
-  coord->y = grid->header.y_max - index->y * grid->header.y_inc;
+  coord->x = grid->header.wesn[XLO] + index->x * grid->header.inc[GMT_X];
+  coord->y = grid->header.wesn[YHI] - index->y * grid->header.inc[GMT_Y];
 }
 
 static void set (grid, xIndex, yIndex, value)
@@ -159,7 +158,7 @@ static GridValue get (grid, xIndex, yIndex)
   return grid->value[yIndex * grid->header.nx + xIndex];
 }
 
-GMTGrid * CreateGMTGrid ()
+GMTGrid * CreateGMTGrid (struct GMT_CTRL *GMT)
 {
   GMTGrid * result;
   
@@ -173,6 +172,7 @@ GMTGrid * CreateGMTGrid ()
   result->methods.getCoords	= getCoords;
   result->methods.set		= set;
   result->methods.get		= get;
+  result->GMT		= GMT;	/* Pass CTRL struct pointer */
   
   return result;
 }

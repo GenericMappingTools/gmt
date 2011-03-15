@@ -1,6 +1,6 @@
 {"faint",	0.00},
-{"thinnest",	0.25},
 {"default",	0.25},
+{"thinnest",	0.25},
 {"thinner",	0.50},
 {"thin",	0.75},
 {"thick",	1.00},

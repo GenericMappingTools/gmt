@@ -3,101 +3,99 @@
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grid file format
 .SH SYNOPSIS
-\fBxyz2grd\fP \fIxyzfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A)[\fBn|z|u|l\fP] ] [ GMT_GRDEDIT ] 
-[ OPT(E)[\fInodata\fP] ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(N)\fInodata\fP ] [ OPT(S)[\fIzfile\fP] ] [ GMT_V_OPT ] 
-[ OPT(Z)[\fIflags\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+BD(xyz2grd) IT(xyzfile) OPT(G)IT(grdfile) GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)[BD(n|z|u|l)] ] [ GMT_GRDEDIT ] 
+[ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ] [ OPT(Z)[IT(flags)] ] 
+[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBxyz2grd\fP reads a z or xyz table and
-creates a binary grid file.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
+BD(xyz2grd) reads a z or xyz table and
+creates a binary grid file.  BD(xyz2grd) will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the average value.  As an option (using OPT(Z)),
 a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
 number of formats, see OPT(Z) below.)
+.SH REQUIRED ARGUMENTS
 .TP
-\fI[xy]zfile\fP
+IT([xy]zfile)
 ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
 have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the OPT(Z) must be set). 
 .TP
-OPT(G)
-\fIgrdfile\fP is the name of the binary output grid file.
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
 (See GRID FILE FORMAT below.)
 #include "explain_-I.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
+OPT(A)[BD(n|z|u|l)]
 Add up multiple values that belong to the same node (same as OPT(Az)).
-Append \fBn\fP to simply count the number of data points that were assigned to each node.
-Append \fBl\fP or \fBu\fP to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
+Append BD(n) to simply count the number of data points that were assigned to each node.
+Append BD(l) or BD(u) to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
 [Default (no OPT(A) option) will calculate mean value].  Ignored if OPT(Z) is given.
 .TP
-OPT(D)
-Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
+GMT_GRDEDIT
+Give values for IT(xname), IT(yname), IT(zname), IT(scale), IT(offset), IT(title), and IT(remark).
 To leave some of these values untouched, specify = as the value.
 Alternatively, to allow "/" to be part of one of the values, use any non-alphanumeric
 character (and not the equal sign) as separator by both starting and ending with it. For example:
-OPT(D):\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
+OPT(D):IT(xname):IT(yname):IT(zname):IT(scale):IT(offset):IT(title):IT(remark):
 .TP
-OPT(E)
-Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
-value that should be set to NaN in the grid [If we find the optional 6th record in the file we will use it instead].
-The values normally given by OPT(R), OPT(I), and OPT(F) are determined from the ESRI header instead.
-#include "explain_nodereg.txt"
-#include "explain_-h.txt"
-Not used with binary data.
-.TP
-OPT(N)
+OPT(N)IT(nodata)
 No data.  Set nodes with no input xyz triplet to this value [Default is NaN].  For z-tables, this
-option is used to replace z-values that equal \fInodata\fP with NaN.
+option is used to replace z-values that equal IT(nodata) with NaN.
 .TP
-OPT(S)
+OPT(S)[IT(zfile)]
 Swap the byte-order of the input only.  No grid file is produced.  You must
-also supply the OPT(Z) option.  The output is written to \fIzfile\fP (or
+also supply the OPT(Z) option.  The output is written to IT(zfile) (or
 stdout if not supplied).
 #include "explain_-V.txt"
 .TP
-OPT(Z)
+OPT(Z)[IT(flags)]
 Read a 1-column ASCII [or binary] table.  This assumes that all the nodes are
-present and sorted according to specified ordering convention contained in \fIflags\fP.
-If incoming data represents rows, make \fIflags\fP start with \fBT\fP(op) if first row is y = ymax
-or \fBB\fP(ottom) if first row is y = ymin.  Then, append \fBL\fP or \fBR\fP to indicate that first element is at left
-or right end of row.  Likewise for column formats: start with \fBL\fP or \fBR\fP to position first column,
-and then append \fBT\fP or \fBB\fP to position first element in a row.  
+present and sorted according to specified ordering convention contained in IT(flags).
+If incoming data represents rows, make IT(flags) start with BD(T)(op) if first row is y = ymax
+or BD(B)(ottom) if first row is y = ymin.  Then, append BD(L) or BD(R) to indicate that first element is at left
+or right end of row.  Likewise for column formats: start with BD(L) or BD(R) to position first column,
+and then append BD(T) or BD(B) to position first element in a row.  
 For gridline registered grids:  If data are periodic in x but the
-incoming data do not contain the (redundant) column at x = xmax, append \fBx\fP.  For data periodic in y
-without redundant row at y = ymax, append \fBy\fP.  Append \fBs\fP\fIn\fP to skip the first \fIn\fP number
-of bytes (probably a header).  If the byte-order needs to be swapped, append \fBw\fP.  Select
-one of several data types (all binary except \fBa\fP):
+incoming data do not contain the (redundant) column at x = xmax, append BD(x).  For data periodic in y
+without redundant row at y = ymax, append BD(y).  Append BD(s)IT(n) to skip the first IT(n) number
+of bytes (probably a header).  If the byte-order needs to be swapped, append BD(w).  Select
+one of several data types (all binary except BD(a)):
 .br
 .sp
-	\fBA\fP  ASCII representation of one or more floating point values per record
+	BD(A)  ASCII representation of one or more floating point values per record
 .sp
-	\fBa\fP  ASCII representation of a single item per record
+	BD(a)  ASCII representation of a single item per record
 .br
-	\fBc\fP  signed 1-byte character
+	BD(c)  signed 1-byte character
 .br
-	\fBu\fP  unsigned 1-byte character
+	BD(u)  unsigned 1-byte character
 .br
-	\fBh\fP  short 2-byte integer
+	BD(h)  short 2-byte integer
 .br
-	\fBi\fP  4-byte integer
+	BD(i)  4-byte integer
 .br
-	\fBl\fP  long (4- or 8-byte) integer [architecture-dependent!]
+	BD(l)  long (4- or 8-byte) integer [architecture-dependent!]
 .br
-	\fBf\fP  4-byte floating point single precision
+	BD(f)  4-byte floating point single precision
 .br
-	\fBd\fP  8-byte floating point double precision
+	BD(d)  8-byte floating point double precision
 .br
 .sp
 Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
-Note that OPT(Z) only applies to 1-column input.  The difference between \fBA\fP and \fBa\fP is that
-the latter can decode both \fIdate\fPT\fIclock\fP and \fIddd:mm:ss[.xx]\fP formats while the former is
+Note that OPT(Z) only applies to 1-column input.  The difference between BD(A) and BD(a) is that
+the latter can decode both IT(date)BD(T)IT(clock) and IT(ddd:mm:ss[.xx]) formats while the former is
 strictly for regular floating point values.
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see OPT(Z) for z tables.
 #include "explain_-f.txt"
+#include "explain_-h.txt"
+Not used with binary data.
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_float.txt"
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
@@ -105,21 +103,22 @@ strictly for regular floating point values.
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br
 .sp
-\fBxyz2grd\fP hawaii_grv.xyz OPT(D)degree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
-OPT(G)hawaii_grv_new.grd OPT(R)198/208/18/25 OPT(I)5\fBm\fP OPT(V)
+BD(xyz2grd) hawaii_grv.xyz OPT(D)degree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+OPT(G)hawaii_grv_new.nc OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(V)
 .br
 .sp
 To create a grid file from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
 .br
 .sp
-\fBxyz2grd\fP raw.b OPT(D)m/m/m/1/0/=/= OPT(G)raw.grd OPT(R)0/100/0/100 OPT(I)1 OPT(V) OPT(Z) OPT(b)3
+BD(xyz2grd) raw.b OPT(D)m/m/m/1/0/=/= OPT(G)raw.nc OPT(R)0/100/0/100 OPT(I)1 OPT(V) OPT(Z) OPT(b)3
 .br
 .sp
 To make a grid file from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
-global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), use
+global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.
+On such machines (like Sun), use
 .br
 .sp
-\fBxyz2grd\fP topo30. OPT(D)m/m/m/1/0/=/= OPT(G)ustopo.grd OPT(R)234/294/24/50 OPT(I)30c OPT(N)-9999 OPT(B) OPT(ZTLhw)
+BD(xyz2grd) topo30. OPT(D)m/m/m/1/0/=/= OPT(G)ustopo.nc OPT(R)234/294/24/50 OPT(I)30s OPT(N)-9999 OPT(B) OPT(ZTLhw)
 .br
 .sp
 Say you have received a binary file with 4-byte floating points that were
@@ -127,8 +126,9 @@ written on a machine of different byte-order than yours.  You can swap the
 byte-order with
 .br
 .sp
-\fBxyz2grd\fP floats.bin OPT(S)new_floats.bin OPT(V) OPT(Zf)
+BD(xyz2grd) floats.bin OPT(S)new_floats.bin OPT(V) OPT(Zf)
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grd2xyz (1),
 .IR grdedit (1)
+.IR grdreformat (1)

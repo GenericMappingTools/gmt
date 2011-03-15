@@ -3,19 +3,20 @@
 .SH NAME
 isogmt \- Run GMT command or script in isolation mode
 .SH SYNOPSIS
-\fBisogmt\fP \fIcommand\fP
+BD(isogmt) IT(command)
 .SH DESCRIPTION
-\fBisogmt\fP runs a single \fBGMT\fP command or shell script in \fBisolation mode\fP.
-This means that the files \fI.gmtcommands4\fP and \fI.gmtdefaults4\fP will be read
-from the usual locations (current directory, \fI~/.gmt\fP, or home directory), but
+BD(isogmt) runs a single BD(GMT) command or shell script in BD(isolation mode).
+This means that the files IT(.gmtcommands) and IT(gmt.conf) will be read
+from the usual locations (current directory, IT(~/.gmt), or home directory), but
 changes will only be written in a temporary directory, which will be removed after
 execution. The name of the temporary directory will be available to the command or
-script as the environment variable \fBGMT_TMPDIR\fP.
+script as the environment variable BD(GMT_TMPDIR).
 .SH EXAMPLES
-Run the shell script \fIscript.gmt\fP in isolation mode
+Run the shell script IT(script.gmt) in isolation mode
 .br
 .sp
-\fBisogmt\fP sh script.gmt
+BD(isogmt) sh script.gmt
 .br
 .SH "SEE ALSO"
-.IR GMT (1)
+.IR gmt (1),
+.IR gmt.conf (5)

@@ -1,6 +1,6 @@
-#	$Id: copper.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#	$Id: copper.cpt,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 # Simulates the COPPER colormap in Matlab
-# COLOR_MODEL = RGB
-0.000000	0	0	0	0.796875	255	159	102
-0.796875	255	159	102	1.000000	255	200	128
+#
+0		0/0/0		0.796875	255/159/102
+0.796875	255/159/102	1		255/200/128

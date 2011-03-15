@@ -1,21 +1,10 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.91 2011-03-03 21:02:50 guru Exp $
+#  $Id: GNUmakefile,v 1.92 2011-03-15 02:06:35 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	GNUmakefile for GMT Version 5.x src directory
+#
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
-#
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
-#
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
-#
-#	Contact info: gmt.soest.hawaii.edu
-#-------------------------------------------------------------------------------
-#	GNUmakefile for GMT Version 4.x src directory
 #
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
@@ -25,10 +14,12 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		29-MAY-2008
+#	Date:		29-MAY-2010
 #-------------------------------------------------------------------------------
 
 include Makefile
+
+FUNCS_C         = $(FUNCS_O:.o=.c)
 
 # To retain binaries for more than one architecture you can 
 # say "make install2" instead of (or in addition to) "make install"
@@ -64,18 +55,20 @@ uninstall2-suppl:
 
 FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
 	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
-	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
-	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i explain_-I_via_D.txt
+	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
+	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
+	grdreformat_man.i gmtapi_errstr.h gmtapi_errno.h \
+	$(API_H) $(API_C) gmt_prognames.h gmt_progcases.h gmt_progpurpose.h
 
 gmtmacros FILES:	$(FILES)
 
-# Must create gmt_key*.h from gmt_keywords.d
+# Must create gmt_key*.h from gmt_keywords.txt
 
-gmt_keywords.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | $(AWK) '{printf "\"%s\",\n", $$1}' | sed '$$s/,$$//' > $@
+gmt_keywords.h:		gmt_keywords.txt
+			cat gmt_keywords.txt gmt_keywords.d | grep -v '^#' | $(AWK) '{print $$1}' | sort -u | $(AWK) '{printf "\"%s\",\n", $$1}' | sed '$$s/,$$//' > $@
 
-gmt_keycases.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | $(AWK) '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
+gmt_keycases.h:		gmt_keywords.txt
+			cat gmt_keywords.txt gmt_keywords.d | grep -v '^#' | $(AWK) '{print $$1}' | sort -u | $(AWK) '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
 
 # Must create Colors.i, gmt_color_rgb.h and gmt_colornames.h from Colors.txt
 
@@ -102,6 +95,14 @@ Ellipsoids.i:		Ellipsoids.txt
 			$(AWK) '{printf "(%d)\n", $$2}' tmp0.txt > tmp3.txt
 			paste -d' ' tmp[123].txt | $(AWK) '{printf ".br\n%s\n", $$0}' > $@
 			rm -f tmp[0123].txt
+
+# Must create gmtapi_errstr.h and gmtapi_errno.h from gmtapi_errors.d
+
+gmtapi_errstr.h:	gmtapi_errors.d
+			grep -v '^#' gmtapi_errors.d | awk '{printf "\"%s\",\n", $$1}' > $@
+
+gmtapi_errno.h:		gmtapi_errors.d
+			grep -v '^#' gmtapi_errors.d | awk '{printf "#define %s\t%d\n", $$1, 1-NR}' > $@
 
 # Must create Fonts.i from PS_font_info.d
 
@@ -137,10 +138,21 @@ grdinfo.h:		Grdformats.txt
 			echo "};" >> $@
 			rm -f tmp0.txt
 
+# Must create gmt_prognames.h, gmtprogs_inc.h and gmt_progpurpose.h for GMT.c from GMTprogs.txt
+
+gmt_prognames.h:	GMTprogs.txt
+			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "{\"%s\",\t%s},\n", $$1, $$2}' > gmt_prognames.h
+
+gmt_progcases.h:	GMTprogs.txt
+			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "\t\tcase %d:\n\t\t\tfunc = (PFL)GMT_%s_cmd;\n\t\t\t*mode = %s;\n\t\t\tbreak;\n", NR-1, $$1, $$2}' > gmt_progcases.h
+
+gmt_progpurpose.h:	$(FUNCS_C)
+			grep -h "%s \[API\]" *_func.c | sed -e 's/GMT_message (GMT/fprintf (stderr/g' -e 's/\[API\] //g' -e 's/\\n\\n/\\n/g' -e 's/ %s/%s/g' -e 's/GMT_VERSION/""/g' > gmt_progpurpose.h
+
 # Add all the dimensions to gmt_dimensions.h
 
 gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.h gmt_keywords.h \
-			gmt_media_name.h gmt_pennames.h gmt_unique.h
+			gmt_media_name.h gmt_pennames.h gmt_unique.h gmt_prognames.h
 			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` > $@
 			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
 			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
@@ -149,19 +161,15 @@ gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.
 			printf "#define GMT_N_MEDIA\t\t%d\t/* Lines in %s */\n" `wc -l gmt_media_name.h` >> $@
 			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
 			printf "#define GMT_N_UNIQUE\t\t%d\t/* Lines in %s */\n" `wc -l gmt_unique.h` >> $@
+			printf "#define GMT_N_PROGRAMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_prognames.h` >> $@
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c
 
-gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
+gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath_func.c
 			$(SHELL) make_math.sh gmt
 
-grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
+grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath_func.c
 			$(SHELL) make_math.sh grd
-
-# grdproject uses -D for increments since -I there means inverse.  Build it from explain_-I.txt
-
-explain_-I_via_D.txt:	explain_-I.txt
-			sed -e 's/OPT(I)/OPT(D)/g' explain_-I.txt > explain_-I_via_D.txt
 
 # When doing "spotless" make sure at least a dummy config.mk exists.
 
@@ -176,14 +184,6 @@ endif
 # Must create manpages before install-man
 
 include manpages.mk
-
-# For debug test purposes:
-greenspline_test:	greenspline_test.o
-			$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-			$(COMPRESS) $@
-
-greenspline_test.o:	greenspline.c
-			$(CC) $(CFLAGS) $(CPPFLAGS) -c -DTEST greenspline.c -o greenspline_test.o
 
 # How to clean it all up
 

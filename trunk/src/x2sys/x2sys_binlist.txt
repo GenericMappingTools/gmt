@@ -3,51 +3,53 @@
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
+BD(x2sys_binlist) IT(track(s)) OPT(T)IT(TAG) 
 [ OPT(D) ] [ OPT(E) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBx2sys_binlist\fP reads one or more track data files and produces a
-multi-segment ASCII track bin-index file (tbf) with the track name in the header and
-one data record per bin crossed; these records contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
-where \fIlon, lat\fP are the coordinates of the center of the bin, the \fIindex\fP is
-the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
-fields were available in this bin.  The optional \fIdist\fP requires OPT(D).
+BD(x2sys_binlist) reads one or more track data files and produces a
+multisegment ASCII track bin-index file (tbf) with the track name in the header and
+one data record per bin crossed; these records contain IT(lon), IT(lat), IT(index), IT(flags)[, IT(dist)],
+where IT(lon), IT(lat) are the coordinates of the center of the bin, the IT(index) is
+the 1-D number of the bin, and IT(flags) is a bitflag that describes which data
+fields were available in this bin.  The optional IT(dist) requires OPT(D).
 The input files can be of any format, which must be described and passed with the
 OPT(T) option.  The bin-index listing is a crude representation of where
 the track goes and is used by the data archivist to build an x2sys track data base for
 miscellaneous track queries, such as when needing to determine which tracks
-should be compared in a crossover analysis.  You must run \fBx2ys_init\fP
+should be compared in a crossover analysis.  You must run BD(x2ys_init)
 to initialize the tag before you can run the indexing.
+.SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 OPT(D)
 Calculate the length of trackline segments per bin [Default skips this step].
-The length fragments are given as the 5th output column (after the \fIflags\fP).
-The length units are obtained via the TAB setting (see \fBx2sys_init\fP).
+The length fragments are given as the 5th output column (after the IT(flags)).
+The length units are obtained via the TAB setting (see BD(x2sys_init)).
 .TP
 OPT(E)
 Convert geographic data to a cylindrical equal-area projection prior to binning.  Basically, we
-apply the projection OPT(JY)\fIlon0\fP/37:04:17.166076/360, where \fIlon0\fP is the
+apply the projection OPT(JY)IT(lon0)/37:04:17.166076/360, where IT(lon0) is the
 mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
 (e.g., OPT(Rg) or OPT(Rd)).  This option is useful for statistics related to trackline
 density but should not be used when preparing bin-index files for the x2sys track data bases.
 #include "explain_-V.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To create a bin index file from the MGD77 file 01030061.mgd77 using the settings associated
 with the tag MGD77, do
 .br
 .sp
-\fBx2sys_binlist\fP 01030061.mgd77 OPT(T)MGD77 > 01030061.tbf
+BD(x2sys_binlist) 01030061.mgd77 OPT(T)MGD77 > 01030061.tbf
 .br
 .sp
 To create a track bin index file of all MGD77+ files residing in the current directory
 using the settings associated with the tag MGD77+ and calculate track distances, run
 .br
 .sp
-\fBx2sys_binlist\fP *.nc OPT(T)MGD77+ \-D\fP > all.tbf
+BD(x2sys_binlist) *.nc OPT(T)MGD77+ OPT(D) > all.tbf
 .SH "SEE ALSO"
 .IR x2sys_cross (1),
 .IR x2sys_datalist (1),

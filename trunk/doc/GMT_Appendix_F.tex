@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_F.tex,v 1.16 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_F.tex,v 1.17 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Chart of octal codes for characters}
@@ -17,12 +17,12 @@
 The characters and their octal codes in the Standard and ISOLatin1 encoded fonts
 are shown in Figure~\ref{fig:GMT_App_F_text}.  Dark gray areas signify codes reserved for
 control characters.  In order to use all the extended characters (shown in the light gray boxes) you need to
-set {\bf CHAR\_ENCODING} to Standard+ or ISOLatin1+ in your \filename{.gmtdefaults4} file\footnote{If you chose
+set \textbf{PS\_CHAR\_ENCODING} to Standard+ or ISOLatin1+ in your \filename{gmt.conf} file\footnote{If you chose
 SI units during the installation then the default encoding is ISOLatin1+, otherwise it is Standard+.}.
 
 \begin{figure}[h]
-   \includegraphics[scale=0.92]{scripts/GMT_App_F_stand+}\hfill
-   \includegraphics[scale=0.92]{scripts/GMT_App_F_iso+}
+   \includegraphics[scale=0.92]{GMT_App_F_stand+}\hfill
+   \includegraphics[scale=0.92]{GMT_App_F_iso+}
    \caption{Octal codes and corresponding symbols for StandardEncoding (left)
    and ISOLatin1Encoding (right) fonts.}
    \label{fig:GMT_App_F_text}
@@ -42,8 +42,8 @@ $\backslash$266 in the Symbol font.  The euro currency symbol is $\backslash$240
 print if your printer supports it (older printer's firmware will not know about the euro).
 
 \begin{figure}[h]
-   \includegraphics[scale=0.92]{scripts/GMT_App_F_symbol}\hfill
-   \includegraphics[scale=0.92]{scripts/GMT_App_F_dingbats}
+   \includegraphics[scale=0.92]{GMT_App_F_symbol}\hfill
+   \includegraphics[scale=0.92]{GMT_App_F_dingbats}
    \caption{Octal codes and corresponding symbols for Symbol (left)
    and ZapfDingbats (right) fonts.}
    \label{fig:GMT_App_F_symbol}

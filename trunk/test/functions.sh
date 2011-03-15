@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.12 2010-03-09 18:55:53 remko Exp $
+#	$Id: functions.sh,v 1.13 2011-03-15 02:06:38 guru Exp $
 #
 # Functions to be used with test scripts
 
@@ -7,8 +7,6 @@
 # and make sure to use US system defaults
 header () {
 	printf "%-72s" "$0: $1"
-	gmtdefaults -Du > .gmtdefaults4
-	gmtset PAPER_MEDIA letter
 }
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
@@ -25,7 +23,6 @@ pscmp () {
         	echo "[FAIL]"
 		echo $f: RMS Error = $rms >> ../fail_count.d
 	fi
-	rm -f .gmtdefaults4 .gmtcommands4
 }
 
 passfail () {
@@ -37,5 +34,18 @@ passfail () {
         	echo "[PASS]"
         	rm -f fail $1.log $1.png
 	fi
-	rm -f .gmtdefaults4 .gmtcommands4
 }
+
+# Temporary change LANG to C
+LANG=C
+
+# Extend executable and library path to use the current version
+srcdir=`cd ../../src;pwd`
+export PATH=$srcdir:$PATH
+export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
+
+# Make sure to cleanup at end
+trap "\rm -f .gmt* gmt.conf" EXIT
+
+# Start with proper GMT defaults
+gmtset -Du PS_EPS false

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2010-11-01 22:31:53 remko Exp $
+#	$Id: Makefile,v 1.21 2011-03-15 02:06:37 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -17,27 +17,47 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES = -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
-CODE_C		= sphtriangulate.c sphdistance.c sphinterpolate.c
+API_O		= gmt_sph.o
+API_H		= $(API_O:.o=.h)
+FUNCS_O		= sphtriangulate_func.o sphdistance_func.o sphinterpolate_func.o
+
+LIB_O		= sph.o
+LIB_H		= sph.h
+
+PROGS_O		= $(FUNCS_O:_func.o=.o)
+MAN1		= $(PROGS_O:.o=.1)
+
 LIB_C		= sph.c
-MAN1		= $(CODE_C:.c=.1)
 SCRIPTS		= sph_ex_1.sh sph_ex_2.sh sph_ex_3.sh sph_ex_4.sh
-SPHLIB		= libsph.a
-#-------------------------------------------------------------------------------
-#	object file dependencies
-#-------------------------------------------------------------------------------
-
-CODE_O	= $(CODE_C:.c=.o)
-CODE	= $(CODE_C:.c=)
-LIB_O	= $(LIB_C:.c=.o)
-
-all:		$(CODE)
 
 #-------------------------------------------------------------------------------
+all:		$(PROGS)
 
 install:	all
-		for i in $(CODE); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
+		$(INSTALL) $(PROGS) $(bindir)
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(libdir) ; \
+			$(INSTALL) -m 644 $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBAPI) $(libdir); fi \
+		fi
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(includedir)/gmt; \
+			$(INSTALL) -m 644 $(API_H) $(includedir)/gmt; \
+		fi
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
+			cd $(libdir) ; \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).$(SL) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION); \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION) $(LIBAPI:.$(LIBEXT)=).$(SL); \
+		fi
+
+uninstall:
+		cd $(bindir); rm -f $(PROGS)
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			cd $(includedir)/gmt; rm -f $(API_H);\
+		fi
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			cd $(libdir); rm -f libgmt_sph.{a,$(SL),$(SL_VERSION)}; \
+		fi
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
@@ -45,11 +65,10 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
+spotless::	clean
+
 clean:
-		rm -f *.o
-		for i in $(CODE); do \
-			rm -f $$i$(EXE); \
-		done
+		\rm -f *.o *.a *.$(SL) *% $(PROGS)
 
 ex:		$(SCRIPTS)
 		for i in $(SCRIPTS); do \
@@ -57,21 +76,40 @@ ex:		$(SCRIPTS)
 		done
 		
 #-------------------------------------------------------------------------------
-#       sph library
+#	library
 #-------------------------------------------------------------------------------
 
-$(SPHLIB):	$(LIB_O)
-	$(AR) cvr $@ $?
-	$(RANLIB) $@
+.SUFFIXES:	.$(SL)
 
-sph.o:	sph.c sph.h stripack.c ssrfpack.c $(GMT_H)
+LIBAPI		= libgmt_sph.$(LIBEXT)
 
-spotless::	clean
-	rm -rf $(SPHLIB)
-	
+libs:		libgmt_sph.a
+
+libgmt_sph.a:	$(FUNCS_O) $(LIB_O) $(API_O)
+		$(AR) cvur $@ $?
+		$(RANLIB) $@
+
+libgmt_sph.$(SL):	libgmt_sph.a
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(LIBS) -o $@
+
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(GMT_H) $(PS_H) $(API_H) 
+$(LIB_O):	$(LIB_H) $(GMT_H) stripack.c ssrfpack.c
+
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(CODE):	$(CODE_O) $(SPHLIB)
-	$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) -L. -lsph  $(LIBS) -o $@
+sphtriangulate$(EXE):	sphtriangulate.o
+sphdistance$(EXE):	sphdistance.o
+sphinterpolate$(EXE):	sphinterpolate.o
+
+$(PROGS):	$(PROGS_O) $(LIBAPI) $(PROGS_O)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_sph $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBAPI) -o $@
+		$(COMPRESS) $@
+
+$(PROGS_O):	../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

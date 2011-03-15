@@ -1,98 +1,100 @@
 .RS
 .TP
-\fB+a\fP\fIangle\fP
-For annotations at a fixed angle, \fB+an\fP for line-normal, or \fB+ap\fP for line-parallel [Default].
+BD(+a)IT(angle)
+For annotations at a fixed angle, BD(+an) for line-normal, or BD(+ap) for line-parallel [Default].
 #ifdef CONTOUR
-By appending the \fBu\fP or \fBd\fP we get annotations whose top face the next upper or lower annotation, respectively.
+By appending the BD(u) or BD(d) we get annotations whose top face the next upper or lower annotation, respectively.
 #endif
 .TP
-\fB+c\fP\fIdx\fP[/\fIdy\fP]
-Sets the clearance between label and optional text box.  Append \fBc|i|m|p\fP to specify
+BD(+c)IT(dx)[/IT(dy)]
+Sets the clearance between label and optional text box.  Append BD(c)|BD(i)|BD(p) to specify
 the unit or % to indicate a percentage of the label font size [15%].
 .TP
-\fB+d\fP
+BD(+d)
 Turns on debug which will draw helper points and lines to illustrate the workings of the quoted line setup.
 .TP
-\fB+f\fP\fIfont\fP
-Sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
+BD(+f)IT(font)
+Sets the desired font [Default BD(FONT_ANNOT_PRIMARY) with its size changed to 9p].
+(See SPECIFYING FONTS below).
 .TP
-\fB+g\fP[\fIcolor\fP]
-Selects opaque text boxes [Default is transparent]; optionally specify the color [Default is \fBPAGE_COLOR\fP].
+BD(+g)[IT(color)]
+Selects opaque text boxes [Default is transparent]; optionally specify the color [Default is BD(PS_PAGE_COLOR)].
 (See SPECIFYING COLOR below).
 .TP
-\fB+j\fP\fIjust\fP
-Sets label justification [Default is MC].  Ignored when -SqN|n+|-1 is used.
+BD(+j)IT(just)
+Sets label justification [Default is MC].  Ignored when OPT(SqN)|BD(n)+|-1 is used.
 .TP
 \fB+k\fP\fIcolor\fP
 Sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
 (See SPECIFYING COLOR below).
 #if !defined(CONTOUR)
 .TP
-\fB+l\fP\fIlabel\fP
+BD(+l)IT(label)
 Sets the constant label text.
 .TP
-\fB+L\fP\fIflag\fP
+BD(+L)IT(flag)
 Sets the label text according to the specified flag:
 .RS
 .TP
-\fB+Lh\fP
-Take the label from the current multisegment header (first scan for an embedded
-OPT(L)\fIlabel\fP option, if not use the first word following the segment flag).
+BD(+Lh)
+Take the label from the current segment header (first scan for an embedded
+OPT(L)IT(label) option, if not use the first word following the segment flag).
 For multiple-word labels, enclose entire label in double quotes.
 .TP
-\fB+Ld\fP
-Take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP
-as the unit [Default is \fBMEASURE_UNIT\fP].
+BD(+Ld)
+Take the Cartesian plot distances along the line as the label; append BD(c)|BD(i)|BD(p)
+as the unit [Default is BD(PROJ_LENGTH_UNIT)].
 .TP
-\fB+LD\fP
-Calculate actual map distances; append \fBd|e|k|m|n\fP as the unit [Default is \fBd\fP(egrees),
+BD(+LD)
+Calculate actual map distances; append BD(d|e|f|k|n|M|n|s) as the unit [Default is BD(d)(egrees),
 unless label placement was based on map distances along the lines in which case we use the same unit specified for that algorithm].
 Requires a map projection to be used.
 .TP
-\fB+Lf\fP
+BD(+Lf)
 Use text after the 2nd column in the fixed label location file as the label.  Requires the fixed label
 location setting.
 .TP
-\fB+Lx\fP
-As \fB+Lh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
+BD(+Lx)
+As BD(+Lh) but use the headers in the IT(xfile.d) instead.  Requires the crossing file option.
 .RE
 #endif
 .TP
-\fB+n\fP\fIdx\fP[/\fIdy\fP]
-Nudges the placement of labels by the specified amount (append \fBc|i|m|p\fP to specify the units).
+BD(+n)IT(dx)[/IT(dy)]
+Nudges the placement of labels by the specified amount (append BD(c)|BD(i)|BD(p) to specify the units).
 Increments are considered in the coordinate system defined by the orientation of the line; use
-\fB+N\fP to force increments in the plot x/y coordinates system [no nudging].
+BD(+N) to force increments in the plot x/y coordinates system [no nudging].
 .TP
-\fB+o\fP
-Selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP) and
+BD(+o)
+Selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (BD(+v)) and
 only makes sense for opaque text boxes.
 .TP
-\fB+p\fP[\fIpen\fP]
-Draws the outline of text boxsets [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p, color = black, texture = solid].
+BD(+p)[IT(pen)]
+Draws the outline of text boxes [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p,
+color = black, style = solid].
 (See SPECIFYING PENS below).
 .TP
-\fB+r\fP\fImin_rad\fP
+BD(+r)IT(min_rad)
 Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
 .TP
 \fB+s\fP\fIsize\fP
 Sets the desired font size in points [Default is 9].
 .TP
-\fB+u\fP\fIunit\fP
-Appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hyphen (-) then there will be no space
+BD(+u)IT(unit)
+Appends IT(unit) to all line labels. If IT(unit) starts with a leading hyphen (-) then there will be no space
 between label value and the unit.
 #ifdef GRID
-If no \fIunit\fP is appended we use the units listed in the grid file.
+If no IT(unit) is appended we use the units listed in the grid file.
 #endif
 [Default is no unit].
 .TP
-\fB+v\fP
+BD(+v)
 Specifies curved labels following the path [Default is straight labels].
 .TP
-\fB+w\fP
-Specifies how many (\fIx, y\fP) points will be used to estimate label angles [Default is 10].
+BD(+w)
+Specifies how many (IT(x),IT(y)) points will be used to estimate label angles [Default is 10].
 .TP
-\fB+=\fP\fIprefix\fP
-Prepends \fIprefix\fP to all line labels.
-If \fIprefix\fP starts with a leading hyphen (-) then there will be no space
+BD(+=)IT(prefix)
+Prepends IT(prefix) to all line labels.
+If IT(prefix) starts with a leading hyphen (-) then there will be no space
 between label value and the prefix. [Default is no prefix].
-.RE
+.RE 

@@ -3,69 +3,69 @@
 .SH NAME
 segy2grd \- Converting SEGY file to grid file format
 .SH SYNOPSIS
-\fBsegy2grd\fP \fIsegyfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT
-GMT_Rgeo_OPT [ OPT(A)[\fBn\fP|\fBz\fP] ] [ GMT_GRDEDIT ]
-[ OPT(F) ]   [ OPT(N)\fInodata\fP ] [ OPT(S)[\fIzfile\fP] ] [ GMT_V_OPT ]
-[ OPT(Z)[\fIflags\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
+BD(segy2grd) IT(segyfile) OPT(G)IT(grdfile) GMT_I_OPT
+GMT_Rgeo_OPT [ OPT(A)[BD(n)|BD(z)] ] [ GMT_GRDEDIT ]
+[ OPT(M)[IT(flags)] ] [ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ]
+[ GMT_bi_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBsegy2grd\fP reads an IEEE SEGY file and
+BD(segy2grd) reads an IEEE SEGY file and
 creates a binary grid file. Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
 averaging where a particular grid cell includes values from more than one sample in the SEGY file can be done.
-\fBsegy2grd\fP will report if some of the nodes are not filled in with
+BD(segy2grd) will report if some of the nodes are not filled in with
 data. Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the average value.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIsegyfile\fP
+IT(segyfile)
 ASCII [or binary] file holding z or (x,y,z) values. xyz triplets do not
 have to be sorted (for binary triplets, see OPT(b)). 1-column z tables must be sorted and the OPT(Z) must be set).
 .TP
-OPT(G)
-\fIgrdfile\fP is the name of the binary output grid file.
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
 .TP
 OPT(I)
-\fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
+IT(x_inc) [and optionally IT(y_inc)] is the grid spacing. Append BD(m) to indicate minutes or BD(c) to indicate seconds.
 #include "explain_-Rgeo.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
+OPT(A)[BD(n)|BD(z)]
 Add up multiple values that belong to the same node (same as OPT(Az)).
-Append \fBn\fP to simply count the number of data points that were assigned to each node.
+Append BD(n) to simply count the number of data points that were assigned to each node.
 [Default (no OPT(A) option) will calculate mean value]. Not used for simple mapping.
 .TP
-OPT(D)
-Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
+GMT_GRDEDIT
+Give values for IT(xname), IT(yname), IT(zname), IT(scale), IT(offset), IT(title), and IT(remark).
 To leave some of these values untouched, specify = as the value.
 .TP
-OPT(F)
-Force pixel registration [Default is grid registration].
+OPT(M)[IT(flags)]
+Fix number of traces to read in. Default tries to read 10000 traces.
+OPT(M)0 will read number in binary header, OPT(M)IT(n) will attempt to read only IT(n) traces.
 .TP
-OPT(N)
+OPT(N)IT(nodata)
 No data. Set nodes with no input sample to this value [Default is NaN].
 .TP
-OPT(S)
-set variable spacing \fIheader\fP is c for cdp, o for offset, b<number> for 4-byte float starting at byte number
+OPT(S)[IT(zfile)]
+set variable spacing IT(header) is c for cdp, o for offset, b<number> for 4-byte float starting at byte number
 If -S not set, assumes even spacing of samples at the dx, dy supplied with -I
 .TP
 OPT(L)
 Override number of samples in each trace
 .TP
 OPT(X)
-applies scalar \fIx-scale\fP to coordinates in trace header to match the coordinates specified in -R
+applies scalar IT(x-scale) to coordinates in trace header to match the coordinates specified in -R
 .TP
 OPT(Y)
-Specifies sample interval as \fIs_int\fP if incorrect in the SEGY file
-.TP
-OPT(M)
-Fix number of traces to read in. Default tries to read 10000 traces.
--M0 will read number in binary header, -Mn will attempt to read only n traces.
+Specifies sample interval as IT(s_int) if incorrect in the SEGY file
 #include "explain_-V.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
 .TP
 .SH EXAMPLES
 To create a grid file from an even spaced SEGY file test.segy, try
 .br
 .sp
 segy2grd test.segy OPT(I)0.1/0.1
-OPT(G)test.grd OPT(R)198/208/18/25 OPT(V)
+OPT(G)test.nc OPT(R)198/208/18/25 OPT(V)
 .br
 .sp
 Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at
@@ -76,7 +76,7 @@ To create a grid file from the SEGY file test.segy, locating traces according to
 there are 10 CDPs per km and the sample interval is 0.1, try
 .br
 .sp
-segy2grd test.segy  OPT(G)test.grd OPT(R)0/100/0/10 OPT(I)0.5/0.2 OPT(V) OPT(X)0.1  OPT(Y)0.1
+segy2grd test.segy  OPT(G)test.nc OPT(R)0/100/0/10 OPT(I)0.5/0.2 OPT(V) OPT(X)0.1  OPT(Y)0.1
 .br
 .sp
 Because the grid interval is larger than the SEGY file sampling, the individual samples will be averaged

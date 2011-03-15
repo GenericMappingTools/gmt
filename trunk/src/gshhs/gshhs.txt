@@ -3,44 +3,44 @@
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
 .SH SYNOPSIS
-\fBgshhs\fP \fIbinaryfile.b\fP [ OPT(I)\fIid\fP ] [ OPT(L) ] [ OPT(M) ] > \fIasciifile.txt\fP
+BD(gshhs) IT(binaryfile.b) [ OPT(I)IT(id) ] [ OPT(L) ] [ OPT(bo) ] [ GMT_o_OPT ] > IT(asciifile.txt)
 .SH DESCRIPTION
-\fBgshhs\fP reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
+BD(gshhs) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
 extracts an ASCII listing.  It automatically handles byte-swabbing between different
 architectures.  Optionally, only segment header info can be displayed.  The header info has
-the format \fIID npoints  hierarchical-level source area f_area west east south north container ancestor\fP,
+the format IT(ID npoints  hierarchical-level source area f_area west east south north container ancestor),
 where hierarchical levels for coastline polygons go from 1 (shoreline) to 4 (lake inside
 island inside lake inside land).  Source is either W (World Vector Shoreline) or C (CIA World
-Data Bank II); lower case is used if a lake is a river-lake. The \fIwest east south north\fP is
+Data Bank II); lower case is used if a lake is a river-lake. The IT(west east south north) is
 the enclosing rectangle, area is the polygon area in km^2 while f_area is the actual area of the
 ancestor polygon, container is the ID of the polygon that contains this polygon (-1 if none),
 and ancestor is the ID of the polygon in the full resolution set that was reduced to yield this
 polygon (-1 if full resolution).
 For line data the header is simply
-\fIID npoints  hierarchical-level source west east south north\fP
+IT(ID npoints  hierarchical-level source west east south north)
+.SH REQUIRED ARGUMENTS
 .TP
-\fIbinaryfile.b\fP
+IT(binaryfile.b)
 GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
 5 standard resolutions (full, high, intermediate, low, crude) can be used.
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(I)
-Only output information for the polygon that matches \fIid\fP [default outputs all polygons].
+OPT(I)IT(id)
+Only output information for the polygon that matches IT(id) [default outputs all polygons].
 .TP
 OPT(L)
 Only output a listing of polygon or line segment headers [default outputs headers and data records].
-.TP
-OPT(M)
-Start all header records with the GMT multiple segment indicator '>' [Default uses P for polygons
-and L for lines].
+#include "explain_-bo.txt"
+#include "explain_-ocols.txt"
 .SH EXAMPLES
 .sp
 To convert the entire intermediate GSHHS binary data to ASCII, run
 .sp
-\fBgshhs\fP gshhs_i.b > gshhs_i.txt
+BD(gshhs) gshhs_i.b > gshhs_i.txt
 .sp
 To only get a listing of the headers for the river data set at full resolution, try
 .sp
-\fBgshhs\fP wdb_rivers_f.b OPT(L) > riverlisting.txt
+BD(gshhs) wdb_rivers_f.b OPT(L) > riverlisting.txt
 .SH BUGS
 While the GSHHS data is organized as a set of closed polygons, the rivers and boundary
 data are just a set of line segments in no particular order.  Thus, it is not possible

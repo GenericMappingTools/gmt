@@ -1,0 +1,251 @@
+.TP
+GMT_J_OPT
+Selects the map projection. The following character determines the projection. If the
+character is upper case then the argument(s) supplied as scale(s) is interpreted to be
+the map width (or axis lengths), else the scale argument(s) is the map scale (see its
+definition for each projection). UNIT is cm, inch, or point, depending on the BD(PROJ_LENGTH_UNIT)
+setting in BD(gmt.conf), but this can be overridden on the command line by appending
+BD(c), BD(i), or BD(p) to the IT(scale) or IT(width) values.  Append BD(h), BD(+), or BD(-)
+to the given IT(width) if you instead want to set map height, the maximum dimension, or
+the minimum dimension, respectively [Default is BD(w) for width].
+.br
+In case the central meridian is an optional parameter and it is being omitted, then the
+center of the longitude range given by the OPT(R) option is used. The default standard parallel
+is the equator.
+.br
+The ellipsoid used in the map projections is user-definable by editing the BD(gmt.conf) file
+in your home directory. 73 commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custum ellipsoid parameters [Default is WGS-84].
+Several GMT parameters can affect the projection: BD(PROJ_ELLIPSOID), BD(GMT_INTERPOLANT),
+BD(PROJ_SCALE_FACTOR), and BD(PROJ_LENGTH_UNIT); see the BD(gmt.conf) man page for details.
+.br
+Choose one of the following projections (The BD(E) or BD(C) after projection names
+stands for Equal-Area and Conformal, respectively):
+.RS
+.PP
+BD(CYLINDRICAL PROJECTIONS:)
+.TP
+OPT(Jc)IT(lon0/lat0/scale) or OPT(JC)IT(lon0/lat0/width) (Cassini).
+Give projection center IT(lon0/lat0) and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jcyl_stere)/[IT(lon0/)[IT(lat0/)]]IT(scale) or OPT(JCyl_stere)/[IT(lon0/)[IT(lat0/)]]IT(width) (Cylindrical Stereographic).
+Give central meridian IT(lon0) (optional), standard parallel IT(lat0) (optional), and IT(scale) along parallel (BD(1:)IT(xxxx) or UNIT/degree).
+The standard parallel is typically one of these (but can be any value):
+.RS
+.RS
+66.159467 - Miller's modified Gall
+.br
+55 - Kamenetskiy's First
+.br
+45 - Gall's Stereographic
+.br
+30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second
+.br
+0 - Braun's Cylindrical
+.RE
+.RE
+.TP
+OPT(Jj)[IT(lon0/)]IT(scale) or OPT(JJ)[IT(lon0/)]IT(width) (Miller Cylindrical Projection).
+Give the central meridian IT(lon0) (optional) and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jm)[IT(lon0/)[IT(lat0/)]]IT(scale) or OPT(JM)[IT(lon0/)[IT(lat0/)]]IT(width)
+Give central meridian IT(lon0) (optional), standard parallel IT(lat0) (optional), and IT(scale) along parallel (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jo)IT(parameters) (Oblique Mercator BD([C])).
+Specify one of:
+.RS
+.TP
+OPT(Jo)[BD(a)]IT(lon0/lat0/azimuth/scale) or OPT(JO)[BD(a)]IT(lon0/lat0/azimuth/width)
+Set projection center IT(lon0/lat0), IT(azimuth) of oblique equator, and IT(scale).
+.TP
+OPT(Jo)[BD(b)]IT(lon0/lat0/lon1/lat1/scale) or OPT(JO)[BD(b)]IT(lon0/lat0/lon1/lat1/scale)
+Set projection center IT(lon0/lat0), another point on the oblique equator IT(lon1/lat1), and IT(scale).
+.TP
+OPT(Joc)IT(lon0/lat0/lonp/latp/scale) or OPT(JOc)IT(lon0/lat0/lonp/latp/scale)
+Set projection center IT(lon0/lat0), pole of oblique projection IT(lonp/latp), and IT(scale).
+.PP
+Give IT(scale) along oblique equator (BD(1:)IT(xxxx) or UNIT/degree).
+.RE
+.TP
+OPT(Jq)[IT(lon0/)[IT(lat0/)]]IT(scale) or OPT(JQ)[IT(lon0/)[IT(lat0/)]]IT(width) (Cylindrical Equidistant).
+Give the central meridian IT(lon0) (optional), standard parallel IT(lat0) (optional), and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+The standard parallel is typically one of these (but can be any value):
+.RS
+.RS
+61.7 - Grafarend and Niermann, minimum linear distortion
+.br
+50.5 - Ronald Miller Equirectangular
+.br
+43.5 - Ronald Miller, minimum continental distortion
+.br
+42 - Grafarend and Niermann
+.br
+37.5 - Ronald Miller, minimum overall distortion
+.br
+0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
+.br
+.RE
+.RE
+.TP
+OPT(Jt)IT(lon0/)[IT(lat0/)]IT(scale) or OPT(JT)IT(lon0/)[IT(lat0/)]IT(width)
+Give the central meridian IT(lon0), central parallel IT(lat0) (optional), and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Ju)IT(zone/scale) or OPT(JU)IT(zone/width) (UTM - Universal Transverse Mercator BD([C])).
+Give the UTM zone (A,B,1-60[C-X],Y,Z)) and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.br
+Zones: If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
+.TP
+OPT(Jy)[IT(lon0/)[IT(lat0/)]]IT(scale) or OPT(JY)[IT(lon0/)[IT(lat0/)]]IT(width) (Cylindrical Equal-Area BD([E])).
+Give the central meridian IT(lon0) (optional), standard parallel IT(lat0) (optional), and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+The standard parallel is typically one of these (but can be any value):
+.RS
+.RS
+50 - Balthasart
+.br
+45 - Gall-Peters
+.br
+37.0666 - Caster
+.br
+37.4 - Trystan Edwards
+.br
+37.5 - Hobo-Dyer
+.br
+30 - Behrman
+.br
+0 - Lambert (default)
+.RE
+.RE
+.PP
+BD(CONIC PROJECTIONS:)
+.TP
+OPT(Jb)IT(lon0/lat0/lat1/lat2/scale) or OPT(JB)IT(lon0/lat0/lat1/lat2/width) (Albers BD([E])).
+Give projection center IT(lon0/lat0), two standard parallels IT(lat1/lat2), and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jd)IT(lon0/lat0/lat1/lat2/scale) or OPT(JD)IT(lon0/lat0/lat1/lat2/width) (Conic Equidistant)
+Give projection center IT(lon0/lat0), two standard parallels IT(lat1/lat2), and IT(scale) (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jl)IT(lon0/lat0/lat1/lat2/scale) or OPT(JL)IT(lon0/lat0/lat1/lat2/width) (Lambert BD([C]))
+Give origin IT(lon0/lat0), two standard parallels IT(lat1/lat2), and IT(scale) along these (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jpoly)/[IT(lon0/)[IT(lat0/)]]IT(scale) or OPT(JPoly)/[IT(lon0/)[IT(lat0/)]]IT(width) ((American) Polyconic).
+Give the central meridian IT(lon0) (optional), reference parallel IT(lat0) (optional, default = equator),
+and IT(scale) along central meridian (BD(1:)IT(xxxx) or UNIT/degree).
+.PP
+BD(AZIMUTHAL PROJECTIONS:)
+.sp
+Except for polar aspects, OPT(R)w/e/s/n will be reset to OPT(Rg).  Use OPT(R)<...>BD(r) for smaller regions.
+.TP
+OPT(Ja)IT(lon0/lat0)[IT(/horizon)]IT(/scale) or OPT(JA)IT(lon0/lat0)[IT(/horizon)]IT(/width) (Lambert BD([E])).
+IT(lon0/lat0) specifies the projection center.
+IT(horizon) specifies the max distance from projection center (in degrees, <= 180, default 90).
+Give IT(scale) as BD(1:)IT(xxxx) or IT(radius/lat), where IT(radius) is distance
+in UNIT from origin to the oblique latitude IT(lat).
+.TP
+OPT(Je)IT(lon0/lat0)[IT(/horizon)]IT(/scale) or OPT(JE)IT(lon0/lat0)[IT(/horizon)]IT(/width) (Azimuthal Equidistant).
+IT(lon0/lat0) specifies the projection center.
+IT(horizon) specifies the max distance from projection center (in degrees, <= 180, default 180).
+Give IT(scale) as BD(1:)IT(xxxx) or IT(radius/lat), where IT(radius) is distance
+in UNIT from origin to the oblique latitude IT(lat).
+.TP
+OPT(Jf)IT(lon0/lat0)[IT(/horizon)]IT(/scale) or OPT(JF)IT(lon0/lat0)[IT(/horizon)]IT(/width) (Gnomonic).
+IT(lon0/lat0) specifies the projection center.
+IT(horizon) specifies the max distance from projection center (in degrees, < 90, default 60).
+Give IT(scale) as BD(1:)IT(xxxx) or IT(radius/lat), where IT(radius) is distance
+in UNIT from origin to the oblique latitude IT(lat).
+.TP
+OPT(Jg)IT(lon0/lat0)[IT(/horizon)]IT(/scale) or OPT(JG)IT(lon0/lat0)[IT(/horizon)]IT(/width) (Orthographic).
+IT(lon0/lat0) specifies the projection center.
+IT(horizon) specifies the max distance from projection center (in degrees, <= 90, default 90).
+Give IT(scale) as BD(1:)IT(xxxx) or IT(radius/lat), where IT(radius) is distance
+in UNIT from origin to the oblique latitude IT(lat).
+.TP
+OPT(Jg)IT(lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale) or OPT(JG)IT(lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width) (General Perspective).
+IT(lon0/lat0) specifies the projection center.
+IT(altitude) is the height (in km) of the viewpoint above local sea level.
+If IT(altitude) is less than 10, then it is the distance from the center of the earth
+to the viewpoint in earth radii. If IT(altitude) has a suffix BD(r) then it is the radius
+from the center of the earth in kilometers.
+IT(azimuth) is measured to the east of north of view.
+IT(tilt) is the upward tilt of the plane of projection. If IT(tilt) is negative, then the
+viewpoint is centered on the horizon.
+Further, specify the clockwise IT(twist), IT(Width), and
+IT(Height) of the viewpoint in degrees.
+Give IT(scale) as BD(1:)IT(xxxx) or IT(radius/lat), where IT(radius) is distance
+in UNIT from origin to the oblique latitude IT(lat).
+.TP
+OPT(Js)IT(lon0/lat0)[IT(/horizon)]IT(/scale) or OPT(JS)IT(lon0/lat0)[IT(/horizon)]IT(/width) (General Stereographic BD([C])).
+IT(lon0/lat0) specifies the projection center.
+IT(horizon) specifies the max distance from projection center (in degrees, < 180, default 90).
+Give IT(scale) as BD(1:)IT(xxxx) (true at pole) or IT(lat0)/BD(1:)IT(xxxx) (true at standard parallel IT(lat0))
+or IT(radius/lat) (IT(radius) in UNIT from origin to the oblique latitude IT(lat)).
+Note if BD(1:)IT(xxxx) is used then to specify IT(horizon) you must also specify the IT(lat0) as +-90 to avoid ambiguity.
+.PP
+BD(MISCELLANEOUS PROJECTIONS:)
+.TP
+OPT(Jh)[IT(lon0/)]IT(scale) or OPT(JH)[IT(lon0/)]IT(width) (Hammer BD([E])).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Ji)[IT(lon0/)]IT(scale) or OPT(JI)[IT(lon0/)]IT(width) (Sinusoidal BD([E])).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jkf)[IT(lon0/)]IT(scale) or OPT(JKf)[IT(lon0/)]IT(width) (Eckert IV) BD([E])).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jk)[BD(s)][IT(lon0/)]IT(scale) or OPT(JK)[BD(s)][IT(lon0/)]IT(width) (Eckert VI) BD([E])).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jn)[IT(lon0/)]IT(scale) or OPT(JN)[IT(lon0/)]IT(width) (Robinson).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jr)[IT(lon0/)]IT(scale) OPT(JR)[IT(lon0/)]IT(width) (Winkel Tripel).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jv)[IT(lon0/)]IT(scale) or OPT(JV)[IT(lon0/)]IT(width) (Van der Grinten).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.TP
+OPT(Jw)[IT(lon0/)]IT(scale) or OPT(JW)[IT(lon0/)]IT(width) (Mollweide BD([E])).
+Give the central meridian IT(lon0) (optional) and IT(scale) along equator (BD(1:)IT(xxxx) or UNIT/degree).
+.PP
+BD(NON-GEOGRAPHICAL PROJECTIONS:)
+.TP
+OPT(Jp)[BD(a)]IT(scale)[IT(/origin)][BD(r)|BD(z)] or OPT(JP)[BD(a)]IT(width)[IT(/origin)][BD(r)|BD(z)] (Polar coordinates (theta,r))
+Optionally insert BD(a) after OPT(Jp) [ or OPT(JP)] for
+azimuths CW from North instead of directions CCW from East [Default].
+Optionally append /IT(origin) in degrees to indicate an angular offset [0]).
+Finally, append BD(r) if r is elevations in degrees (requires s >= 0 and n <= 90)
+or BD(z) if you want to annotate depth rather than radius [Default].
+Give IT(scale) in UNIT/r-unit.
+.TP
+OPT(Jx)IT(x-scale)[IT(/y-scale)] or OPT(JX)IT(width)[IT(/height)] (Linear, log, and power scaling)
+Give IT(x-scale) (BD(1:)IT(xxxx) or UNIT/x-unit) and/or IT(y-scale) (BD(1:)IT(xxxx) or UNIT/y-unit); or
+specify IT(width) and/or IT(height) in UNIT.
+IT(y-scale)=IT(x-scale) if not specified separately and using BD(1:)IT(xxxx) implies that x-unit and y-unit are in
+meters.
+Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down). Set
+IT(height) or IT(width) to 0 to have it recomputed based on the implied scale of the other axis.
+Optionally, append to IT(x-scale), IT(y-scale), IT(width) or IT(height) one of the following:
+.RS
+.TP
+.B d
+Data are geographical coordinates (in degrees).
+.TP
+.B l
+Take log10 of values before scaling.
+.TP
+BD(p)IT(power)
+Raise values to IT(power) before scaling.
+.TP
+.B t
+Input coordinates are time relative to BD(TIME_EPOCH).
+.TP
+.B T
+Input coordinates are absolute time.
+.PP
+Default axis lengths (see BD(gmt.conf)) can be invoked
+using OPT(JXh) (for landscape); OPT(JXv) (for portrait) will swap the x- and y-axis lengths.
+The default unit for this installation is either cm or inch, as defined in the file
+BD(share/gmt.conf). However, you may change this by editing your BD(gmt.conf) file(s).
+.RE
+.RE
+When OPT(J) is used without any further arguments, or just with the projection type, the arguments of the
+last used OPT(J), or the last used OPT(J) with that projection type, will be used.

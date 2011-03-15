@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT Appendix P, example 2
-#		$Id: GMT_App_P_2.sh,v 1.5 2011-02-28 00:58:03 remko Exp $
+#		$Id: GMT_App_P_2.sh,v 1.6 2011-03-15 02:06:29 guru Exp $
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
@@ -16,12 +16,12 @@ ps=GMT_App_P_2.ps
 gmt_init_tmpdir
 
 # These settings will be local to this script only since it writes to
-# $GMT_TMPDIR/.gmtdefaults4
-gmtset ANNOT_FONT_SIZE_PRIMARY 14p
+# $GMT_TMPDIR/gmt.conf
+gmtset FONT_ANNOT_PRIMARY 14p
 
 # Make grid file and color map in temporary directory
 grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
-makecpt -Crainbow -T-90/90/60 -Z > $GMT_TMPDIR/lat.cpt
+makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
 
 # The grdimage command creates the history file $GMT_TMPDIR/.gmtcommands4
 grdimage $GMT_TMPDIR/lat.nc -Sl -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K > $ps

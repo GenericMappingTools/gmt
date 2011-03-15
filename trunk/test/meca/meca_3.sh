@@ -1,16 +1,16 @@
-#!/bin/sh
-#	$Id: meca_3.sh,v 1.2 2010-03-09 16:51:40 remko Exp $
+#!/bin/bash
+#	$Id: meca_3.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (3)"
 
 ps=meca_3.ps
 
-gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i X_ORIGIN 2.5c Y_ORIGIN 1.3i HEADER_FONT_SIZE 18p
+gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i FONT_TITLE 18p
 
 # this is Harvard CMT for tibethan earthquake (1997)
-psmeca -o -R85/89/25/50 -JX7i -P -M -Sm4i -N  -L -K -G150 -H1 -T0 << EOF > $ps
-lon  lat  mrr   mtt  mff   mrt   mrf  mtf ex nlon nlat
+psmeca -o -R85/89/25/50 -JX7i -P -M -Sm4i -N  -L -K -G150 -T0 << EOF > $ps
+# lon  lat  mrr   mtt  mff   mrt   mrf  mtf ex nlon nlat
  87  35 -0.26 -0.71 0.97 -0.20 -0.61 2.60 27  0    0
 EOF
  

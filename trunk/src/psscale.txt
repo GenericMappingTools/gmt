@@ -2,41 +2,44 @@
 .TH PSSCALE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1	7.5
 #define LEN_2	1.25
-#define SCALE	OPT(D)6.5\fBi\fP/2\fBi\fP/7.5\fBc\fP/1.25\fBc\fP
+#define SCALE	OPT(D)6.5BD(i)/2BD(i)/7.5BD(c)/1.25BD(c)
 #define LEN_3	6
 #define LEN_4	4
 .SH NAME
 psscale \- Plot gray scale or color scale on maps
 .SH SYNOPSIS
-\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A)[\fBa\fP|\fBl\fP|\fBc\fP] ] [ GMT_B_OPT ] 
-[ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP|\fIlow_i\fP/\fIhigh_i\fP] ] 
-[ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
-[ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ OPT(Z)\fIzfile\fP ] [ GMT_c_OPT ]
+BD(psscale) OPT(D)IT(xpos)/IT(ypos)/IT(length)/IT(width)[BD(h)] [ OPT(A)[BD(a)|BD(l)|BD(c)] ] [ GMT_B_OPT ] 
+[ OPT(C)IT(cpt_file) ] [ OPT(E)[BD(b)|BD(f)][IT(length)] ] [ OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)] ] 
+[ GMT_J_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)[BD(i)][IT(gap)] ] [ OPT(M) ] 
+[ OPT(N)IT(dpi) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] [ OPT(S) ] 
+[ OPT(T)[BD(+p)IT(pen)][BD(+g)IT(fill)][BD(+l)|BD(r)|BD(b)|BD(t)IT(off)] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z)IT(zfile) ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBpsscale\fP plots gray scales or color scales on maps.  Both horizontal and vertical scales
+BD(psscale) plots gray scales or color scales on maps.  Both horizontal and vertical scales
 are supported.  For cpt_files with gradational colors (i.e., the lower and upper
-boundary of an interval have different r/g/b values) \fBpsscale\fP will interpolate to give
+boundary of an interval have different colors) BD(psscale) will interpolate to give
 a continuous scale.  Variations in intensity due to shading/illumination may be
 displayed by setting the option OPT(I).  Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile widths.
+The font used for the annotations along the scale and optional units is specified by BD(FONT_ANNOT_PRIMARY).
+If a label is requested, it is plotted with BD(FONT_LABEL)
+.SH REQUIRED ARGUMENTS
 .TP
-OPT(D)
+OPT(D)IT(xpos)/IT(ypos)/IT(length)/IT(width)[BD(h)]
 Defines the position of the center/top (for horizontal scale) or center/left (for
 vertical scale) and the dimensions of the scale.
 Give a negative length to reverse the scalebar.
-Append \fIh\fP to get a horizontal scale [Default is vertical].
-.SH OPTIONS
+Append IT(h) to get a horizontal scale [Default is vertical].
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
+OPT(A)[BD(a)|BD(l)|BD(c)]
 Place annotations and labels above (instead of below) horizontal scalebars and to the left
 (instead of the right) of vertical scalebars.
-Append \fBa\fP or \fBl\fP to move only the annotations or the label to the other side.
-Append \fBc\fP if you want to print a vertical label as a column of characters (does not work with special characters).
+Append BD(a) or BD(l) to move only the annotations or the label to the other side.
+Append BD(c) if you want to print a vertical label as a column of characters (does not work with special characters).
 .TP
-OPT(B)
+GMT_B_OPT
 Set annotation, tick, and gridline interval for the colorbar.  The
 x-axis label will plot beneath a horizontal bar (or vertically
 to the right of a vertical bar), except when using OPT(A).
@@ -44,38 +47,40 @@ As an option, use the y-axis label to plot the data unit to the right of a horiz
 If OPT(B) is omitted, or no annotation intervals are provided, the default is to annotate
 every color level based on the numerical entries in the cpt file
 (which may be overridden by ULB flags in the cpt file).
-To specify custom text annotations for intervals, you must append ;\fIannotation\fP to each z-slice in the cpt file.
+To specify custom text annotations for intervals, you must append ;IT(annotation) to each z-slice in the cpt file.
 .TP
-OPT(C)
-\fIcpt_file\fP is the color palette file to be used.
+OPT(C)IT(cpt_file)
+IT(cpt_file) is the color palette file to be used.
 By default all color changes are annotated.  To use a subset, add an extra column to the
 cpt-file with a L, U, or B to annotate Lower, Upper, or Both color segment boundaries (but see OPT(B)).
-If not given, \fBpsscale\fP will read stdin.  Like \fBgrdview\fP, \fBpsscale\fP can understand
+If not given, BD(psscale) will read stdin.  Like BD(grdview), BD(psscale) can understand
 pattern specifications in the cpt file.
 .TP
-OPT(E)
-Add sidebar triangles for \fBb\fPack- and/or \fBf\fPoreground colors.  Add \fBf\fP or \fBb\fP for
+OPT(E)[BD(b)|BD(f)][IT(length)]
+Add sidebar triangles for BD(b)ack- and/or BD(f)oreground colors.  Add BD(f) or BD(b) for
 only one sidebar triangle [Default gives both].  Optionally, append
 triangle height [Default is half the barwidth].
 .TP
-OPT(I)
+OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)]
 Add illumination effects.  Optionally, set the range of intensities from
-- to + \fImax_intens\fP.  If not specified, 1 is used.  Alternatively,
-append \fIlow/high\fP intensities to specify an asymmetric range [Default is no illumination].
+- to + IT(max_intens).  If not specified, 1 is used.  Alternatively,
+append IT(low/high) intensities to specify an asymmetric range [Default is no illumination].
+#include "explain_-J.txt"
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
-OPT(L)
+OPT(L)[BD(i)][IT(gap)]
 Gives equal-sized color rectangles.  Default scales rectangles according to the
 z-range in the cpt-file  (Also see OPT(Z)).  If set, any equal interval annotation
-set with OPT(B) will be ignored.  If \fIgap\fP is appended and the cpt table is
+set with OPT(B) will be ignored.  If IT(gap) is appended and the cpt table is
 discrete we will center each annotation on each rectangle, using the lower boundary
-z-value for the annotation.  If \fBi\fP is prepended we annotate the interval range instead.
+z-value for the annotation.  If BD(i) is prepended we annotate the interval range instead.
 If OPT(I) is used then each rectangle will have its constant color modified by the specified intensity.
 .TP
 OPT(M)
 Force a monochrome graybar using the (television) YIQ transformation.
 .TP
-OPT(N)
+OPT(N)IT(dpi)
 Effective dots-per-inch for the rectangular image making up the color scale [300].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
@@ -84,28 +89,41 @@ OPT(Q)
 Select logarithmic scale and power of ten annotations.  All z-values in the cpt file
 will be converted to p = log10(z) and only integer p values will be annotated using
 the 10^p format [Default is linear scale].
+#include "explain_-Rgeo.txt"
+#include "explain_-Rz.txt"
 .TP
 OPT(S)
-Do not separate different colour intervals with black lines.
+Do not separate different color intervals with black grid lines.
+.TP
+OPT(T)[BD(+p)IT(pen)][BD(+g)IT(fill)][BD(+l)|BD(r)|BD(b)|BD(t)IT(off)]
+Place a rectangle as background to the color scale.  You must specify either a pen outline
+(with modifier BD(+p)IT(pen)) or a fill (with modifier BD(+g)IT(fill)), or both.  The size
+of the rectangle is computed from OPT(D) and the current fontsize and offset parameters.
+You can add (or remove) additional space on any side by appending BD(+s)IT(off), where BD(s) is one of
+\fBl\fPeft, \fBr\fPight, \fBb\fPottom, or \fBt\fPop.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 .TP
-OPT(Z)
+OPT(Z)IT(zfile)
 File with colorbar-width per color entry.  By default, width of entry is scaled
 to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see OPT(L)).
 #include "explain_-c.txt"
+#include "explain_perspective.txt"
+(Required OPT(R) and OPT(J) for proper functioning).
+#include "explain_-t.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To append a vertical color scale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
 high, using illumination, and show back- and foreground colors, and annotating every 5 units, use
 .br
 .sp
-\fBpsscale\fP SCALE OPT(O) OPT(C)colors.cpt OPT(I) OPT(E) OPT(B)5:BATHYMETRY:/:m: >> map.ps
+BD(psscale) SCALE OPT(O) OPT(C)colors.cpt OPT(I) OPT(E) OPT(B)5:BATHYMETRY:/:m: >> map.ps
 .SH NOTES
 When the cpt file is discrete and no illumination is specified, the color bar will be painted
 using polygons.  For all other cases we must paint with an image.  Some color printers may give
 slightly different colors for the two methods given identical RGB values.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR makecpt (1),
 .IR grd2cpt (1)

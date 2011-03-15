@@ -1,0 +1,4 @@
+.TP
+GMT_t_OPT
+Sets the PDF transparency level for an overlay, in 0-100 range. [Default is 0, i.e. opaque].
+Transparency is only supported via Adobe Distiller.

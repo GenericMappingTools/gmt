@@ -1,10 +1,10 @@
-#       $Id: Grdformats.txt,v 1.4 2009-09-07 15:12:31 jluis Exp $
+#       $Id: Grdformats.txt,v 1.5 2011-03-15 02:06:35 guru Exp $
 #
 # To add new formats, read gmt_customio.c.  Entries must be
 # added in the right group and given unique 2-char code names.
 # 2nd char should reflect data type (f float, i int etc).
 # 1st char should reflect format class.  Add new id numbers
-# sequentially.
+# sequentially; note first id = 1, but 0 is same as 18.
 # DO NOT mess with the old id numbers - they must remain as is
 # for backwards compatibility.
 # Note that src/GNUmakefile expects this format exactly as
@@ -43,5 +43,7 @@
   6 | sf | Golden Software Surfer format 6 (float)                 |
  20 | sd | Golden Software Surfer format 7 (double, read-only)     |
  21 | af | Atlantic Geoscience Center format AGC (float)           |
+ 23 | ei | ESRI Arc/Info ASCII Grid Interchange format (integer)   |
+ 24 | ef | ESRI Arc/Info ASCII Grid Interchange format (float)     |
  22 | gd | Import through GDAL (convert to float) -- NON-STANDARD  |
   - ----------------------------------------------------------------

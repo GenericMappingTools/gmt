@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 22
-#		$Id: job22.sh,v 1.12 2011-02-28 00:58:03 remko Exp $
+#		$Id: job22.sh,v 1.13 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
@@ -8,7 +8,7 @@
 #
 . ../functions.sh
 ps=../example_22.ps
-gmtset ANNOT_FONT_SIZE_PRIMARY 10p HEADER_FONT_SIZE 18p PLOT_DEGREE_FORMAT ddd:mm:ssF
+gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 # Get the data (-q quietly) from USGS using the wget (comment out in case
 # your system does not have wget or curl)
@@ -45,7 +45,7 @@ END
 pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
 	-Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
 $AWK -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
-	| psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> $ps
+	| psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
 # Create legend input file for NEIS quake plot
 
 cat > neis.legend << END
@@ -70,13 +70,12 @@ S 0.1i c 0.18i - 0.25p 0.3i M 9
 V 0 1p
 D 0 1p
 N 1
->
 END
 
 # Put together a reasonable legend text, and add logo and user's name:
 
 cat << END >> neis.legend
->
+P
 T USGS/NEIS most recent earthquakes for the last seven days.  The data were
 T obtained automatically from the USGS Earthquake Hazards Program page at
 T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts
@@ -92,8 +91,8 @@ END
 # OK, now we can actually run pslegend.  We center the legend below the map.
 # Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -J -R -O -F neis.legend -Glightyellow >> $ps
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F neis.legend -Glightyellow >> $ps
 
 # Clean up after ourselves:
 
-rm -f neis.* .gmt*
+rm -f neis.*

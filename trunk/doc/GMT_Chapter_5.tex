@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_5.tex,v 1.21 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Chapter_5.tex,v 1.22 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{\gmt\ Coordinate Transformations}
@@ -25,9 +25,9 @@ will summarize the properties of the Cartesian and Polar coordinate transformati
 which parameters define them, and demonstrate how they are used to create simple plot axes.  We will mostly
 be using \GMTprog{psbasemap} (and occasionally \GMTprog{psxy}) to demonstrate the various transformations.
 Our illustrations may differ from those you reproduce with the same commands because of different settings
-in our \filename{.gmtdefaults4} file.)  Finally, note that while we will specify dimensions in inches (by
-appending {\bf i}), you may want to use cm ({\bf c}), meters ({\bf m}), or points ({\bf p}) as unit instead
-(see the \GMTprog{gmtdefaults} man page). 
+in our \filename{gmt.conf} file.)  Finally, note that while we will specify dimensions in inches (by
+appending {\bf i}), you may want to use cm ({\bf c}), or points ({\bf p}) as unit instead
+(see the \GMTprog{gmt.conf} man page). 
 
 \section{Cartesian transformations}
 \index{Projection!cartesian|(}
@@ -59,7 +59,7 @@ operates on or creates table data:
 
 \index{Reverse Polish Notation (RPN)}
 \index{RPN (Reverse Polish Notation)}
-\script{GMT_dummydata}
+\script{../gmtmath}
 
 %---------------------------------------LINEAR TRANSFORMATION----------------------------------------------
 

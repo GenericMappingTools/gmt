@@ -1,7 +1,15 @@
-/* $Id: ssrfpack.c,v 1.8 2009-07-09 00:35:55 guru Exp $
+/* $Id: ssrfpack.c,v 1.9 2011-03-15 02:06:37 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
+
+/* Need three functions from stripack.c: */
+extern doublereal store_(doublereal *);
+extern integer lstptr_(integer *, integer *, integer *, integer *);
+extern int trfind_(integer *, doublereal *, integer *, 
+	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
+	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
+	    integer *, integer *);
 
 double d_sign (doublereal *a, doublereal *b)
 {
@@ -12,7 +20,7 @@ double d_sign (doublereal *a, doublereal *b)
 
 /* Table of constant values */
 
-static doublereal c_b23 = 1.;
+static doublereal c_b23 = 1.0;
 
 /* Subroutine */ int aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, 
@@ -154,6 +162,169 @@ L1:
     return 0;
 } /* aplyrt_ */
 
+doublereal arclen_(doublereal *p, doublereal *q)
+{
+    /* System generated locals */
+    doublereal ret_val, d__1;
+
+    /* Builtin functions */
+    double atan(doublereal), sqrt(doublereal);
+
+    /* Local variables */
+    static doublereal d__;
+    static integer i__;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   05/09/92 */
+
+/*   This function computes the arc-length (angle in radians) */
+/* between a pair of points on the unit sphere. */
+
+/* On input: */
+
+/*       P,Q = Arrays of length 3 containing the X, Y, and Z */
+/*             coordinates (in that order) of points on the */
+/*             unit sphere. */
+
+/* Input parameters are not altered by this function. */
+
+/* On output: */
+
+/*       ARCLEN = Angle in radians between the unit vectors */
+/*                P and Q.  0 .LE. ARCLEN .LE. PI. */
+
+/* Modules required by ARCLEN:  None */
+
+/* Intrinsic functions called by ARCLEN:  ATAN, SQRT */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* D = Euclidean norm squared of P+Q */
+/* I = DO-loop index */
+
+    /* Parameter adjustments */
+    --q;
+    --p;
+
+    /* Function Body */
+    d__ = 0.;
+    for (i__ = 1; i__ <= 3; ++i__) {
+/* Computing 2nd power */
+	d__1 = p[i__] + q[i__];
+	d__ += d__1 * d__1;
+/* L1: */
+    }
+    if (d__ == 0.) {
+
+/* P and Q are separated by 180 degrees. */
+
+	ret_val = atan(1.) * 4.;
+    } else if (d__ >= 4.) {
+
+/* P and Q coincide. */
+
+	ret_val = 0.;
+    } else {
+	ret_val = atan(sqrt((4. - d__) / d__)) * 2.;
+    }
+    return ret_val;
+} /* arclen_ */
+
+/* Subroutine */ int snhcsh_(doublereal *x, doublereal *sinhm, doublereal *
+	coshm, doublereal *coshmm)
+{
+    /* Initialized data */
+
+    static doublereal c1 = .1666666666659;
+    static doublereal c2 = .008333333431546;
+    static doublereal c3 = 1.984107350948e-4;
+    static doublereal c4 = 2.768286868175e-6;
+
+    /* Builtin functions */
+    double exp(doublereal);
+
+    /* Local variables */
+    static doublereal f, ax, xc, xs, xsd2, xsd4, expx;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   03/18/90 */
+
+/*   This subroutine computes approximations to the modified */
+/* hyperbolic functions defined below with relative error */
+/* bounded by 4.7E-12 for a floating point number system with */
+/* sufficient precision.  For IEEE standard single precision, */
+/* the relative error is less than 1.E-5 for all x. */
+
+/*   Note that the 13-digit constants in the data statements */
+/* below may not be acceptable to all compilers. */
+
+/* On input: */
+
+/*       X = Point at which the functions are to be */
+/*           evaluated. */
+
+/* X is not altered by this routine. */
+
+/* On output: */
+
+/*       SINHM = sinh(X) - X. */
+
+/*       COSHM = cosh(X) - 1. */
+
+/*       COSHMM = cosh(X) - 1 - X*X/2. */
+
+/* Modules required by SNHCSH:  None */
+
+/* Intrinsic functions called by SNHCSH:  ABS, EXP */
+
+/* *********************************************************** */
+
+
+    ax = fabs(*x);
+    xs = ax * ax;
+    if (ax <= .5) {
+
+/* Approximations for small X: */
+
+	xc = *x * xs;
+	*sinhm = xc * (((c4 * xs + c3) * xs + c2) * xs + c1);
+	xsd4 = xs * .25;
+	xsd2 = xsd4 + xsd4;
+	f = (((c4 * xsd4 + c3) * xsd4 + c2) * xsd4 + c1) * xsd4;
+	*coshmm = xsd2 * f * (f + 2.);
+	*coshm = *coshmm + xsd2;
+    } else {
+
+/* Approximations for large X: */
+
+	expx = exp(ax);
+	*sinhm = -(1. / expx + ax + ax - expx) / 2.;
+	if (*x < 0.) {
+	    *sinhm = -(*sinhm);
+	}
+	*coshm = (1. / expx - 2. + expx) / 2.;
+	*coshmm = *coshm - xs / 2.;
+    }
+    return 0;
+} /* snhcsh_ */
+
 /* Subroutine */ int arcint_(doublereal *p, doublereal *p1, doublereal *p2, 
 	doublereal *f1, doublereal *f2, doublereal *g1, doublereal *g2, 
 	doublereal *sigma, doublereal *f, doublereal *g, doublereal *gn)
@@ -168,9 +339,6 @@ L1:
     static doublereal s, b1, b2, d1, d2, e1, e2, al, cm, gt, sm, tm, un[3], 
 	    ts, cm2, sb1, sb2, sm2, tm1, tm2, tp1, tp2, cmm, sig, ems, tau1, 
 	    tau2, sinh__, sinh2, dummy, unorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -386,89 +554,11 @@ L1:
 /*    2 WRITE (LUN,100) (P1(I),I=1,3), (P2(I),I=1,3) */
 /*  100 FORMAT ('1','ERROR IN ARCINT -- P1 = ',2(F9.6,',  '), */
 /*     .        F9.6/1X,19X,'P2 = ',2(F9.6,',  '),F9.6) */
-if (dbg_verbose) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
 L2:
+    if (dbg_verbose) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
     i__ = 1;
     return 0;
 } /* arcint_ */
-
-doublereal arclen_(doublereal *p, doublereal *q)
-{
-    /* System generated locals */
-    doublereal ret_val, d__1;
-
-    /* Builtin functions */
-    double atan(doublereal), sqrt(doublereal);
-
-    /* Local variables */
-    static doublereal d__;
-    static integer i__;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   05/09/92 */
-
-/*   This function computes the arc-length (angle in radians) */
-/* between a pair of points on the unit sphere. */
-
-/* On input: */
-
-/*       P,Q = Arrays of length 3 containing the X, Y, and Z */
-/*             coordinates (in that order) of points on the */
-/*             unit sphere. */
-
-/* Input parameters are not altered by this function. */
-
-/* On output: */
-
-/*       ARCLEN = Angle in radians between the unit vectors */
-/*                P and Q.  0 .LE. ARCLEN .LE. PI. */
-
-/* Modules required by ARCLEN:  None */
-
-/* Intrinsic functions called by ARCLEN:  ATAN, SQRT */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* D = Euclidean norm squared of P+Q */
-/* I = DO-loop index */
-
-    /* Parameter adjustments */
-    --q;
-    --p;
-
-    /* Function Body */
-    d__ = 0.;
-    for (i__ = 1; i__ <= 3; ++i__) {
-/* Computing 2nd power */
-	d__1 = p[i__] + q[i__];
-	d__ += d__1 * d__1;
-/* L1: */
-    }
-    if (d__ == 0.) {
-
-/* P and Q are separated by 180 degrees. */
-
-	ret_val = atan(1.) * 4.;
-    } else if (d__ >= 4.) {
-
-/* P and Q coincide. */
-
-	ret_val = 0.;
-    } else {
-	ret_val = atan(sqrt((4. - d__) / d__)) * 2.;
-    }
-    return ret_val;
-} /* arclen_ */
 
 /* Subroutine */ int constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy)
@@ -528,6 +618,118 @@ doublereal arclen_(doublereal *p, doublereal *q)
     return 0;
 } /* constr_ */
 
+doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
+	hp1, doublereal *hp2, doublereal *sigma)
+{
+    /* System generated locals */
+    doublereal ret_val;
+
+    /* Builtin functions */
+    double exp(doublereal);
+
+    /* Local variables */
+    static doublereal e, s, b1, b2, d1, d2, e1, e2, cm, sm, tm, ts, cm2, sb1, 
+	    sb2, sm2, tm1, tm2, cmm, sig, ems, dummy;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   11/21/96 */
+
+/*   Given a line segment P1-P2 containing a point P, along */
+/* with values and derivatives at the endpoints, this func- */
+/* tion returns the value H(P), where H is the Hermite inter- */
+/* polatory tension spline defined by the endpoint data. */
+
+/* On input: */
+
+/*       B = Local coordinate of P with respect to P1-P2: */
+/*           P = B*P1 + (1-B)*P2, and thus B = d(P,P2)/ */
+/*           d(P1,P2), where d(P1,P2) is the distance between */
+/*           P1 and P2.  B < 0 or B > 1 results in extrapola- */
+/*           tion. */
+
+/*       H1,H2 = Values interpolated at P1 and P2, respec- */
+/*               tively. */
+
+/*       HP1,HP2 = Products of d(P1,P2) with first order der- */
+/*                 ivatives at P1 and P2, respectively.  HP1 */
+/*                 may, for example, be the scalar product of */
+/*                 P2-P1 with a gradient at P1. */
+
+/*       SIGMA = Nonnegative tension factor associated with */
+/*               the spline.  SIGMA = 0 corresponds to a */
+/*               cubic spline, and H approaches the linear */
+/*               interpolant of H1 and H2 as SIGMA increases. */
+
+/* Input parameters are not altered by this function. */
+
+/* On output: */
+
+/*       HVAL = Interpolated value H(P). */
+
+/* SSRFPACK module required by HVAL:  SNHCSH */
+
+/* Intrinsic functions called by HVAL:  ABS, EXP */
+
+/* *********************************************************** */
+
+    b1 = *b;
+    b2 = 1. - b1;
+
+/* Compute slope S and second differences D1 and D2 scaled */
+/*   by the separation between P1 and P2. */
+
+    s = *h2 - *h1;
+    d1 = s - *hp1;
+    d2 = *hp2 - s;
+
+/* Test the range of SIGMA. */
+
+    sig = fabs(*sigma);
+    if (sig < 1e-9) {
+
+/* Hermite cubic interpolation: */
+
+	ret_val = *h1 + b2 * (*hp1 + b2 * (d1 + b1 * (d1 - d2)));
+    } else if (sig <= .5) {
+
+/* 0 < SIG .LE. .5.  Use approximations designed to avoid */
+/*   cancellation error in the hyperbolic functions. */
+
+	sb2 = sig * b2;
+	snhcsh_(&sig, &sm, &cm, &cmm);
+	snhcsh_(&sb2, &sm2, &cm2, &dummy);
+	e = sig * sm - cmm - cmm;
+	ret_val = *h1 + b2 * *hp1 + ((cm * sm2 - sm * cm2) * (d1 + d2) + sig *
+		 (cm * cm2 - (sm + sig) * sm2) * d1) / (sig * e);
+    } else {
+
+/* SIG > .5.  Use negative exponentials in order to avoid */
+/*   overflow.  Note that EMS = EXP(-SIG). */
+
+	sb1 = sig * b1;
+	sb2 = sig - sb1;
+	e1 = exp(-sb1);
+	e2 = exp(-sb2);
+	ems = e1 * e2;
+	tm = 1. - ems;
+	ts = tm * tm;
+	tm1 = 1. - e1;
+	tm2 = 1. - e2;
+	e = tm * (sig * (ems + 1.) - tm - tm);
+	ret_val = *h1 + b2 * s + (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 * 
+		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2)) 
+		/ (sig * e);
+    }
+    return ret_val;
+} /* hval_ */
+
 doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
 	v1, doublereal *v2, doublereal *v3, doublereal *f1, doublereal *f2, 
 	doublereal *f3, doublereal *g1, doublereal *g2, doublereal *g3, 
@@ -544,12 +746,6 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     static integer i__;
     static doublereal c1, c2, c3, q1[3], q2[3], q3[3], s1, s2, s3, u1[3], u2[
 	    3], u3[3], ds, dv, u1n, u2n, u3n, sig, val, dum, sum;
-    extern doublereal hval_(doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *);
-    extern /* Subroutine */ int arcint_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *);
 
 
 /* *********************************************************** */
@@ -800,13 +996,8 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     static doublereal ssm, ems2, d1pd2, fneg, dsig, dmax__, fmax;
     static integer icnt;
     static doublereal ftol, rtol, stol, coshm, sigin, sinhm, ssinh;
-    extern doublereal store_(doublereal *);
     static doublereal unorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
     static doublereal coshmm;
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
 
 
 /* *********************************************************** */
@@ -1434,6 +1625,85 @@ L12:
     return 0;
 } /* givens_ */
 
+/* Subroutine */ int grcoef_(doublereal *sigma, doublereal *d__, doublereal *sd)
+{
+    /* Builtin functions */
+    double exp(doublereal);
+
+    /* Local variables */
+    static doublereal e, scm, sig, ems, ssm, coshm, sinhm, ssinh, coshmm;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   11/21/96 */
+
+/*   This subroutine computes factors involved in the linear */
+/* systems solved by Subroutines GRADG and SMSGS. */
+
+/* On input: */
+
+/*       SIGMA = Nonnegative tension factor associated with a */
+/*               triangulation arc. */
+
+/* SIGMA is not altered by this routine. */
+
+/* On output: */
+
+/*       D = Diagonal factor.  D = SIG*(SIG*Coshm(SIG) - */
+/*           Sinhm(SIG))/E where E = SIG*Sinh(SIG) - 2* */
+/*           Coshm(SIG).  D > 0, and D = 4 at SIG = 0. */
+
+/*       SD = Off-diagonal factor.  SD = SIG*Sinhm(SIG)/E. */
+/*            SD > 0, and SD = 2 at SIG = 0. */
+
+/* SSRFPACK module required by GRCOEF:  SNHCSH */
+
+/* Intrinsic function called by GRCOEF:  EXP */
+
+/* *********************************************************** */
+
+    sig = *sigma;
+    if (sig < 1e-9) {
+
+/* Cubic function: */
+
+	*d__ = 4.;
+	*sd = 2.;
+    } else if (sig <= .5) {
+
+/* 0 < SIG .LE. .5. */
+
+/* Use approximations designed to avoid cancellation error */
+/*   in the hyperbolic functions when SIGMA is small. */
+
+	snhcsh_(&sig, &sinhm, &coshm, &coshmm);
+	e = sig * sinhm - coshmm - coshmm;
+	*d__ = sig * (sig * coshm - sinhm) / e;
+	*sd = sig * sinhm / e;
+    } else {
+
+/* SIG > .5. */
+
+/* Scale SINHM, COSHM, and E by 2*EXP(-SIG) in order to */
+/*   avoid overflow when SIGMA is large. */
+
+	ems = exp(-sig);
+	ssinh = 1. - ems * ems;
+	ssm = ssinh - sig * 2. * ems;
+	scm = (1. - ems) * (1. - ems);
+	e = sig * ssinh - scm - scm;
+	*d__ = sig * (sig * scm - ssm) / e;
+	*sd = sig * ssm / e;
+    }
+    return 0;
+} /* grcoef_ */
+
 /* Subroutine */ int gradg_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, integer *nit, doublereal *
@@ -1460,11 +1730,6 @@ L12:
     static integer iter;
     static doublereal sinal;
     static integer maxit;
-    extern /* Subroutine */ int grcoef_(doublereal *, doublereal *, 
-	    doublereal *), constr_(doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *), aplyrt_(
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -1826,6 +2091,322 @@ L13:
     return 0;
 } /* gradg_ */
 
+/* Subroutine */ int getnp_(doublereal *x, doublereal *y, doublereal *z__, 
+	integer *list, integer *lptr, integer *lend, integer *l, integer *
+	npts, doublereal *df, integer *ier)
+{
+    /* System generated locals */
+    integer i__1, i__2;
+
+    /* Local variables */
+    static integer i__, n1;
+    static doublereal x1, y1, z1;
+    static integer nb, ni, lp, np, lm1;
+    static doublereal dnb, dnp;
+    static integer lpl;
+
+
+/* *********************************************************** */
+
+/*                                              From STRIPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   07/28/98 */
+
+/*   Given a Delaunay triangulation of N nodes on the unit */
+/* sphere and an array NPTS containing the indexes of L-1 */
+/* nodes ordered by angular distance from NPTS(1), this sub- */
+/* routine sets NPTS(L) to the index of the next node in the */
+/* sequence -- the node, other than NPTS(1),...,NPTS(L-1), */
+/* that is closest to NPTS(1).  Thus, the ordered sequence */
+/* of K closest nodes to N1 (including N1) may be determined */
+/* by K-1 calls to GETNP with NPTS(1) = N1 and L = 2,3,...,K */
+/* for K .GE. 2. */
+
+/*   The algorithm uses the property of a Delaunay triangula- */
+/* tion that the K-th closest node to N1 is a neighbor of one */
+/* of the K-1 closest nodes to N1. */
+
+
+/* On input: */
+
+/*       X,Y,Z = Arrays of length N containing the Cartesian */
+/*               coordinates of the nodes. */
+
+/*       LIST,LPTR,LEND = Triangulation data structure.  Re- */
+/*                        fer to Subroutine TRMESH. */
+
+/*       L = Number of nodes in the sequence on output.  2 */
+/*           .LE. L .LE. N. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       NPTS = Array of length .GE. L containing the indexes */
+/*              of the L-1 closest nodes to NPTS(1) in the */
+/*              first L-1 locations. */
+
+/* On output: */
+
+/*       NPTS = Array updated with the index of the L-th */
+/*              closest node to NPTS(1) in position L unless */
+/*              IER = 1. */
+
+/*       DF = Value of an increasing function (negative cos- */
+/*            ine) of the angular distance between NPTS(1) */
+/*            and NPTS(L) unless IER = 1. */
+
+/*       IER = Error indicator: */
+/*             IER = 0 if no errors were encountered. */
+/*             IER = 1 if L < 2. */
+
+/* Modules required by GETNP:  None */
+
+/* Intrinsic function called by GETNP:  ABS */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* DNB,DNP =  Negative cosines of the angular distances from */
+/*              N1 to NB and to NP, respectively */
+/* I =        NPTS index and DO-loop index */
+/* LM1 =      L-1 */
+/* LP =       LIST pointer of a neighbor of NI */
+/* LPL =      Pointer to the last neighbor of NI */
+/* N1 =       NPTS(1) */
+/* NB =       Neighbor of NI and candidate for NP */
+/* NI =       NPTS(I) */
+/* NP =       Candidate for NPTS(L) */
+/* X1,Y1,Z1 = Coordinates of N1 */
+
+    /* Parameter adjustments */
+    --x;
+    --y;
+    --z__;
+    --list;
+    --lptr;
+    --lend;
+    --npts;
+
+    /* Function Body */
+    lm1 = *l - 1;
+    if (lm1 < 1) {
+	goto L6;
+    }
+    *ier = 0;
+
+/* Store N1 = NPTS(1) and mark the elements of NPTS. */
+
+    n1 = npts[1];
+    x1 = x[n1];
+    y1 = y[n1];
+    z1 = z__[n1];
+    i__1 = lm1;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	ni = npts[i__];
+	lend[ni] = -lend[ni];
+/* L1: */
+    }
+
+/* Candidates for NP = NPTS(L) are the unmarked neighbors */
+/*   of nodes in NPTS.  DNP is initially greater than -cos(PI) */
+/*   (the maximum distance). */
+
+    dnp = 2.;
+
+/* Loop on nodes NI in NPTS. */
+
+    i__1 = lm1;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	ni = npts[i__];
+	lpl = -lend[ni];
+	lp = lpl;
+
+/* Loop on neighbors NB of NI. */
+
+L2:
+	nb = (i__2 = list[lp], abs(i__2));
+	if (lend[nb] < 0) {
+	    goto L3;
+	}
+
+/* NB is an unmarked neighbor of NI.  Replace NP if NB is */
+/*   closer to N1. */
+
+	dnb = -(x[nb] * x1 + y[nb] * y1 + z__[nb] * z1);
+	if (dnb >= dnp) {
+	    goto L3;
+	}
+	np = nb;
+	dnp = dnb;
+L3:
+	lp = lptr[lp];
+	if (lp != lpl) {
+	    goto L2;
+	}
+/* L4: */
+    }
+    npts[*l] = np;
+    *df = dnp;
+
+/* Unmark the elements of NPTS. */
+
+    i__1 = lm1;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	ni = npts[i__];
+	lend[ni] = -lend[ni];
+/* L5: */
+    }
+    return 0;
+
+/* L is outside its valid range. */
+
+L6:
+    *ier = 1;
+    return 0;
+} /* getnp_ */
+
+/* Subroutine */ int setup_(doublereal *xi, doublereal *yi, doublereal *wi, 
+	doublereal *wk, doublereal *s1, doublereal *s2, doublereal *wt, 
+	doublereal *row)
+{
+    static doublereal w1, w2;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   05/09/92 */
+
+/*   This subroutine sets up the I-th row of an augmented */
+/* regression matrix for a weighted least squares fit of a */
+/* quadratic function Q(X,Y) to a set of data values Wi, */
+/* where Q(0,0) = Wk.  The first 3 columns (quadratic terms) */
+/* are scaled by 1/S2 and the fourth and fifth columns (lin- */
+/* ear terms) are scaled by 1/S1. */
+
+/* On input: */
+
+/*       XI,YI = Coordinates of node I. */
+
+/*       WI = Data value at node I. */
+
+/*       WK = Data value interpolated by Q at the origin. */
+
+/*       S1,S2 = Inverse scale factors. */
+
+/*       WT = Weight factor corresponding to the I-th */
+/*            equation. */
+
+/*       ROW = Array of length 6. */
+
+/* Input parameters are not altered by this routine. */
+
+/* On output: */
+
+/*       ROW = Array containing a row of the augmented re- */
+/*             gression matrix. */
+
+/* Modules required by SETUP:  None */
+
+/* *********************************************************** */
+
+
+/* Local parameters: */
+
+/* W1 = Weighted scale factor for the linear terms */
+/* W2 = Weighted scale factor for the quadratic terms */
+
+    /* Parameter adjustments */
+    --row;
+
+    /* Function Body */
+    w1 = *wt / *s1;
+    w2 = *wt / *s2;
+    row[1] = *xi * *xi * w2;
+    row[2] = *xi * *yi * w2;
+    row[3] = *yi * *yi * w2;
+    row[4] = *xi * w1;
+    row[5] = *yi * w1;
+    row[6] = (*wi - *wk) * *wt;
+    return 0;
+} /* setup_ */
+
+/* Subroutine */ int rotate_(integer *n, doublereal *c__, doublereal *s, 
+	doublereal *x, doublereal *y)
+{
+    /* System generated locals */
+    integer i__1;
+
+    /* Local variables */
+    static integer i__;
+    static doublereal xi, yi;
+
+
+/* *********************************************************** */
+
+/*                                              From SSRFPACK */
+/*                                            Robert J. Renka */
+/*                                  Dept. of Computer Science */
+/*                                       Univ. of North Texas */
+/*                                           renka@cs.unt.edu */
+/*                                                   09/01/88 */
+
+/*                                                ( C  S) */
+/*   This subroutine applies the Givens rotation  (     )  to */
+/*                                                (-S  C) */
+/*                    (X(1) ... X(N)) */
+/* the 2 by N matrix  (             ) . */
+/*                    (Y(1) ... Y(N)) */
+
+/*   This routine is identical to Subroutine SROT from the */
+/* LINPACK BLAS (Basic Linear Algebra Subroutines). */
+
+/* On input: */
+
+/*       N = Number of columns to be rotated. */
+
+/*       C,S = Elements of the Givens rotation.  Refer to */
+/*             Subroutine GIVENS. */
+
+/* The above parameters are not altered by this routine. */
+
+/*       X,Y = Arrays of length .GE. N containing the compo- */
+/*             nents of the vectors to be rotated. */
+
+/* On output: */
+
+/*       X,Y = Arrays containing the rotated vectors (not */
+/*             altered if N < 1). */
+
+/* Modules required by ROTATE:  None */
+
+/* *********************************************************** */
+
+
+    /* Parameter adjustments */
+    --y;
+    --x;
+
+    /* Function Body */
+    i__1 = *n;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	xi = x[i__];
+	yi = y[i__];
+	x[i__] = *c__ * xi + *s * yi;
+	y[i__] = -(*s) * xi + *c__ * yi;
+/* L1: */
+    }
+    return 0;
+} /* rotate_ */
+
 /* Subroutine */ int gradl_(integer *n, integer *k, doublereal *x, doublereal 
 	*y, doublereal *z__, doublereal *w, integer *list, integer *lptr, 
 	integer *lend, doublereal *g, integer *ier)
@@ -1860,19 +2441,6 @@ L13:
     static integer lmin, ierr, lmax;
     static doublereal avsq;
     static integer npts[30];
-    extern /* Subroutine */ int getnp_(doublereal *, doublereal *, doublereal 
-	    *, integer *, integer *, integer *, integer *, integer *, 
-	    doublereal *, integer *), aplyr_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *), setup_(
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *), givens_(
-	    doublereal *, doublereal *, doublereal *, doublereal *), rotate_(
-	    integer *, doublereal *, doublereal *, doublereal *, doublereal *)
-	    , constr_(doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *), aplyrt_(doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -2236,202 +2804,6 @@ L14:
     return 0;
 } /* gradl_ */
 
-/* Subroutine */ int grcoef_(doublereal *sigma, doublereal *d__, doublereal *
-	sd)
-{
-    /* Builtin functions */
-    double exp(doublereal);
-
-    /* Local variables */
-    static doublereal e, scm, sig, ems, ssm, coshm, sinhm, ssinh, coshmm;
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   11/21/96 */
-
-/*   This subroutine computes factors involved in the linear */
-/* systems solved by Subroutines GRADG and SMSGS. */
-
-/* On input: */
-
-/*       SIGMA = Nonnegative tension factor associated with a */
-/*               triangulation arc. */
-
-/* SIGMA is not altered by this routine. */
-
-/* On output: */
-
-/*       D = Diagonal factor.  D = SIG*(SIG*Coshm(SIG) - */
-/*           Sinhm(SIG))/E where E = SIG*Sinh(SIG) - 2* */
-/*           Coshm(SIG).  D > 0, and D = 4 at SIG = 0. */
-
-/*       SD = Off-diagonal factor.  SD = SIG*Sinhm(SIG)/E. */
-/*            SD > 0, and SD = 2 at SIG = 0. */
-
-/* SSRFPACK module required by GRCOEF:  SNHCSH */
-
-/* Intrinsic function called by GRCOEF:  EXP */
-
-/* *********************************************************** */
-
-    sig = *sigma;
-    if (sig < 1e-9) {
-
-/* Cubic function: */
-
-	*d__ = 4.;
-	*sd = 2.;
-    } else if (sig <= .5) {
-
-/* 0 < SIG .LE. .5. */
-
-/* Use approximations designed to avoid cancellation error */
-/*   in the hyperbolic functions when SIGMA is small. */
-
-	snhcsh_(&sig, &sinhm, &coshm, &coshmm);
-	e = sig * sinhm - coshmm - coshmm;
-	*d__ = sig * (sig * coshm - sinhm) / e;
-	*sd = sig * sinhm / e;
-    } else {
-
-/* SIG > .5. */
-
-/* Scale SINHM, COSHM, and E by 2*EXP(-SIG) in order to */
-/*   avoid overflow when SIGMA is large. */
-
-	ems = exp(-sig);
-	ssinh = 1. - ems * ems;
-	ssm = ssinh - sig * 2. * ems;
-	scm = (1. - ems) * (1. - ems);
-	e = sig * ssinh - scm - scm;
-	*d__ = sig * (sig * scm - ssm) / e;
-	*sd = sig * ssm / e;
-    }
-    return 0;
-} /* grcoef_ */
-
-doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
-	hp1, doublereal *hp2, doublereal *sigma)
-{
-    /* System generated locals */
-    doublereal ret_val;
-
-    /* Builtin functions */
-    double exp(doublereal);
-
-    /* Local variables */
-    static doublereal e, s, b1, b2, d1, d2, e1, e2, cm, sm, tm, ts, cm2, sb1, 
-	    sb2, sm2, tm1, tm2, cmm, sig, ems, dummy;
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   11/21/96 */
-
-/*   Given a line segment P1-P2 containing a point P, along */
-/* with values and derivatives at the endpoints, this func- */
-/* tion returns the value H(P), where H is the Hermite inter- */
-/* polatory tension spline defined by the endpoint data. */
-
-/* On input: */
-
-/*       B = Local coordinate of P with respect to P1-P2: */
-/*           P = B*P1 + (1-B)*P2, and thus B = d(P,P2)/ */
-/*           d(P1,P2), where d(P1,P2) is the distance between */
-/*           P1 and P2.  B < 0 or B > 1 results in extrapola- */
-/*           tion. */
-
-/*       H1,H2 = Values interpolated at P1 and P2, respec- */
-/*               tively. */
-
-/*       HP1,HP2 = Products of d(P1,P2) with first order der- */
-/*                 ivatives at P1 and P2, respectively.  HP1 */
-/*                 may, for example, be the scalar product of */
-/*                 P2-P1 with a gradient at P1. */
-
-/*       SIGMA = Nonnegative tension factor associated with */
-/*               the spline.  SIGMA = 0 corresponds to a */
-/*               cubic spline, and H approaches the linear */
-/*               interpolant of H1 and H2 as SIGMA increases. */
-
-/* Input parameters are not altered by this function. */
-
-/* On output: */
-
-/*       HVAL = Interpolated value H(P). */
-
-/* SSRFPACK module required by HVAL:  SNHCSH */
-
-/* Intrinsic functions called by HVAL:  ABS, EXP */
-
-/* *********************************************************** */
-
-    b1 = *b;
-    b2 = 1. - b1;
-
-/* Compute slope S and second differences D1 and D2 scaled */
-/*   by the separation between P1 and P2. */
-
-    s = *h2 - *h1;
-    d1 = s - *hp1;
-    d2 = *hp2 - s;
-
-/* Test the range of SIGMA. */
-
-    sig = fabs(*sigma);
-    if (sig < 1e-9) {
-
-/* Hermite cubic interpolation: */
-
-	ret_val = *h1 + b2 * (*hp1 + b2 * (d1 + b1 * (d1 - d2)));
-    } else if (sig <= .5) {
-
-/* 0 < SIG .LE. .5.  Use approximations designed to avoid */
-/*   cancellation error in the hyperbolic functions. */
-
-	sb2 = sig * b2;
-	snhcsh_(&sig, &sm, &cm, &cmm);
-	snhcsh_(&sb2, &sm2, &cm2, &dummy);
-	e = sig * sm - cmm - cmm;
-	ret_val = *h1 + b2 * *hp1 + ((cm * sm2 - sm * cm2) * (d1 + d2) + sig *
-		 (cm * cm2 - (sm + sig) * sm2) * d1) / (sig * e);
-    } else {
-
-/* SIG > .5.  Use negative exponentials in order to avoid */
-/*   overflow.  Note that EMS = EXP(-SIG). */
-
-	sb1 = sig * b1;
-	sb2 = sig - sb1;
-	e1 = exp(-sb1);
-	e2 = exp(-sb2);
-	ems = e1 * e2;
-	tm = 1. - ems;
-	ts = tm * tm;
-	tm1 = 1. - e1;
-	tm2 = 1. - e2;
-	e = tm * (sig * (ems + 1.) - tm - tm);
-	ret_val = *h1 + b2 * s + (tm * tm1 * tm2 * (d1 + d2) + sig * ((e2 * 
-		tm1 * tm1 - b1 * ts) * d1 + (e1 * tm2 * tm2 - b2 * ts) * d2)) 
-		/ (sig * e);
-    }
-    return ret_val;
-} /* hval_ */
-
 /* Subroutine */ int intrc0_(integer *n, doublereal *plat, doublereal *plon, 
 	doublereal *x, doublereal *y, doublereal *z__, doublereal *w, integer 
 	*list, integer *lptr, integer *lend, integer *ist, doublereal *pw, 
@@ -2447,10 +2819,6 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
     static integer lp;
 static doublereal cos_plat;
     static doublereal sum, ptn1, ptn2;
-    extern /* Subroutine */ int trfind_(integer *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    integer *, integer *);
 
 
 /* *********************************************************** */
@@ -2715,25 +3083,9 @@ L13:
     static doublereal p1[3], p2[3], p3[3], s1, s2, s3, fq, gq[3], s12;
     static integer lp, nn;
     static doublereal dum[3], gqn, sum, ptn1, ptn2;
-    extern doublereal fval_(doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *);
     static integer ierr;
     static doublereal ptgq;
-    extern /* Subroutine */ int gradl_(integer *, integer *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, integer *);
     static doublereal qnorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
-    extern /* Subroutine */ int arcint_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *), trfind_(integer *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    integer *, integer *);
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
 
 
 /* *********************************************************** */
@@ -3184,144 +3536,6 @@ L13:
     return 0;
 } /* intrc1_ */
 
-/* Subroutine */ int rotate_(integer *n, doublereal *c__, doublereal *s, 
-	doublereal *x, doublereal *y)
-{
-    /* System generated locals */
-    integer i__1;
-
-    /* Local variables */
-    static integer i__;
-    static doublereal xi, yi;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   09/01/88 */
-
-/*                                                ( C  S) */
-/*   This subroutine applies the Givens rotation  (     )  to */
-/*                                                (-S  C) */
-/*                    (X(1) ... X(N)) */
-/* the 2 by N matrix  (             ) . */
-/*                    (Y(1) ... Y(N)) */
-
-/*   This routine is identical to Subroutine SROT from the */
-/* LINPACK BLAS (Basic Linear Algebra Subroutines). */
-
-/* On input: */
-
-/*       N = Number of columns to be rotated. */
-
-/*       C,S = Elements of the Givens rotation.  Refer to */
-/*             Subroutine GIVENS. */
-
-/* The above parameters are not altered by this routine. */
-
-/*       X,Y = Arrays of length .GE. N containing the compo- */
-/*             nents of the vectors to be rotated. */
-
-/* On output: */
-
-/*       X,Y = Arrays containing the rotated vectors (not */
-/*             altered if N < 1). */
-
-/* Modules required by ROTATE:  None */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    --y;
-    --x;
-
-    /* Function Body */
-    i__1 = *n;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	xi = x[i__];
-	yi = y[i__];
-	x[i__] = *c__ * xi + *s * yi;
-	y[i__] = -(*s) * xi + *c__ * yi;
-/* L1: */
-    }
-    return 0;
-} /* rotate_ */
-
-/* Subroutine */ int setup_(doublereal *xi, doublereal *yi, doublereal *wi, 
-	doublereal *wk, doublereal *s1, doublereal *s2, doublereal *wt, 
-	doublereal *row)
-{
-    static doublereal w1, w2;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   05/09/92 */
-
-/*   This subroutine sets up the I-th row of an augmented */
-/* regression matrix for a weighted least squares fit of a */
-/* quadratic function Q(X,Y) to a set of data values Wi, */
-/* where Q(0,0) = Wk.  The first 3 columns (quadratic terms) */
-/* are scaled by 1/S2 and the fourth and fifth columns (lin- */
-/* ear terms) are scaled by 1/S1. */
-
-/* On input: */
-
-/*       XI,YI = Coordinates of node I. */
-
-/*       WI = Data value at node I. */
-
-/*       WK = Data value interpolated by Q at the origin. */
-
-/*       S1,S2 = Inverse scale factors. */
-
-/*       WT = Weight factor corresponding to the I-th */
-/*            equation. */
-
-/*       ROW = Array of length 6. */
-
-/* Input parameters are not altered by this routine. */
-
-/* On output: */
-
-/*       ROW = Array containing a row of the augmented re- */
-/*             gression matrix. */
-
-/* Modules required by SETUP:  None */
-
-/* *********************************************************** */
-
-
-/* Local parameters: */
-
-/* W1 = Weighted scale factor for the linear terms */
-/* W2 = Weighted scale factor for the quadratic terms */
-
-    /* Parameter adjustments */
-    --row;
-
-    /* Function Body */
-    w1 = *wt / *s1;
-    w2 = *wt / *s2;
-    row[1] = *xi * *xi * w2;
-    row[2] = *xi * *yi * w2;
-    row[3] = *yi * *yi * w2;
-    row[4] = *xi * w1;
-    row[5] = *yi * w1;
-    row[6] = (*wi - *wk) * *wt;
-    return 0;
-} /* setup_ */
-
 doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x, 
 	doublereal *y, doublereal *z__, doublereal *h__, integer *list, 
 	integer *lptr, integer *lend, doublereal *grad, integer *iflgb, 
@@ -3349,12 +3563,8 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
     static integer lpl, nit;
     static doublereal ssm, d1pd2, fneg, dsig, dmax__, fmax, sneg, ftol, rsig, 
 	    rtol, stol, coshm, sinhm, ssinh;
-    extern doublereal store_(doublereal *);
     static doublereal unorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
     static doublereal coshmm;
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -3882,12 +4092,8 @@ doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x,
     static integer lpl, nit;
     static doublereal ems2, d1pd2, fneg, dsig, dmax__, fmax, sinh__, ftol, 
 	    rtol, stol, coshm, sinhm;
-    extern doublereal store_(doublereal *);
     static doublereal unorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
     static doublereal coshmm;
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -4361,11 +4567,7 @@ doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x,
     static doublereal tp1, d1d2, sig, ems;
     static integer lpl, nit;
     static doublereal ssm, dsig, ftol, rtol, coshm, sinhm, dummy;
-    extern doublereal store_(doublereal *);
     static doublereal unorm;
-    extern doublereal arclen_(doublereal *, doublereal *);
-    extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
-	    doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -4721,11 +4923,6 @@ L11:
     static integer iter;
     static doublereal alfsq, sinal;
     static integer itmax;
-    extern /* Subroutine */ int grcoef_(doublereal *, doublereal *, 
-	    doublereal *), constr_(doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *), aplyrt_(
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *);
 
 
 /* *********************************************************** */
@@ -5046,10 +5243,6 @@ L7:
     static doublereal tol, gneg, dmax__;
     static integer ierr, iter;
     static doublereal sumw, q2min, q2max, dfmax;
-    extern /* Subroutine */ int smsgs_(integer *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, integer *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *);
 
 
 /* *********************************************************** */
@@ -5402,91 +5595,6 @@ if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
     goto L3;
 } /* smsurf_ */
 
-/* Subroutine */ int snhcsh_(doublereal *x, doublereal *sinhm, doublereal *
-	coshm, doublereal *coshmm)
-{
-    /* Initialized data */
-
-    static doublereal c1 = .1666666666659;
-    static doublereal c2 = .008333333431546;
-    static doublereal c3 = 1.984107350948e-4;
-    static doublereal c4 = 2.768286868175e-6;
-
-    /* Builtin functions */
-    double exp(doublereal);
-
-    /* Local variables */
-    static doublereal f, ax, xc, xs, xsd2, xsd4, expx;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   03/18/90 */
-
-/*   This subroutine computes approximations to the modified */
-/* hyperbolic functions defined below with relative error */
-/* bounded by 4.7E-12 for a floating point number system with */
-/* sufficient precision.  For IEEE standard single precision, */
-/* the relative error is less than 1.E-5 for all x. */
-
-/*   Note that the 13-digit constants in the data statements */
-/* below may not be acceptable to all compilers. */
-
-/* On input: */
-
-/*       X = Point at which the functions are to be */
-/*           evaluated. */
-
-/* X is not altered by this routine. */
-
-/* On output: */
-
-/*       SINHM = sinh(X) - X. */
-
-/*       COSHM = cosh(X) - 1. */
-
-/*       COSHMM = cosh(X) - 1 - X*X/2. */
-
-/* Modules required by SNHCSH:  None */
-
-/* Intrinsic functions called by SNHCSH:  ABS, EXP */
-
-/* *********************************************************** */
-
-
-    ax = fabs(*x);
-    xs = ax * ax;
-    if (ax <= .5) {
-
-/* Approximations for small X: */
-
-	xc = *x * xs;
-	*sinhm = xc * (((c4 * xs + c3) * xs + c2) * xs + c1);
-	xsd4 = xs * .25;
-	xsd2 = xsd4 + xsd4;
-	f = (((c4 * xsd4 + c3) * xsd4 + c2) * xsd4 + c1) * xsd4;
-	*coshmm = xsd2 * f * (f + 2.);
-	*coshm = *coshmm + xsd2;
-    } else {
-
-/* Approximations for large X: */
-
-	expx = exp(ax);
-	*sinhm = -(1. / expx + ax + ax - expx) / 2.;
-	if (*x < 0.) {
-	    *sinhm = -(*sinhm);
-	}
-	*coshm = (1. / expx - 2. + expx) / 2.;
-	*coshmm = *coshm - xs / 2.;
-    }
-    return 0;
-} /* snhcsh_ */
-
 /* Subroutine */ int unif_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, integer *nrow, integer *ni, 
@@ -5502,13 +5610,6 @@ if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
 
     /* Local variables */
     static integer i__, j, nn, nx, ny, ifl, nex, ist, ierr;
-    extern /* Subroutine */ int gradl_(integer *, integer *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, integer *), intrc1_(integer *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, integer *, integer *, integer *, 
-	    integer *, doublereal *, integer *, doublereal *, integer *, 
-	    doublereal *, integer *);
 
 
 /* *********************************************************** */

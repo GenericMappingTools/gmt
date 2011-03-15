@@ -1,5 +1,5 @@
 #!/bin/csh -xe
-#	$Id: meca_4.csh,v 1.3 2003-04-11 22:57:16 pwessel Exp $
+#	$Id: meca_4.csh,v 1.4 2011-03-15 02:06:37 guru Exp $
 
 \rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
@@ -13,7 +13,7 @@ set plotfile = meca_4.ps
 #     sigma uncertainties.
  
 psvelo << EOF  -X2i -Y5i -Jm1.3i -R238.5/242/32.5/35.5 -B2/2/:.psvelo:WeSn \
-    -Sw0.4/1.e7 -W0.25p -G60 -E210 -H1 -D2 -P -K > $plotfile    
+    -Sw0.4/1.e7 -W0.25p -G60 -E210 -h1 -D2 -P -K > $plotfile    
  lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 241.4806 34.2073  5.65E-08 1.17E-08
 241.6024 34.4468 -4.85E-08 1.85E-08
@@ -22,7 +22,7 @@ EOF
 
 # omit the shading
 psvelo -Jm1.3i -R238.5/242/32.5/35.5 -Sw0.4/1.e7 \
-    -W0.25p -H1 -D2 -P -O -K << EOF >> $plotfile    
+    -W0.25p -h1 -D2 -P -O -K << EOF >> $plotfile    
  lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 241.2542 34.2581  1.28E-07 1.59E-08
 242.0593 34.0773 -6.62E-08 1.74E-08
@@ -43,7 +43,7 @@ pscoast -P -O -R238.5/242/32.5/35.5 -Jm1.3i -W0.25p -Di -K >> $plotfile
 gmtset DEGREE_FORMAT 0
  
 #
-psvelo << EOF -Y-4.5i -H2 -R-10/10/-10/10 -W5/255/0/0 \
+psvelo << EOF -Y-4.5i -h2 -R-10/10/-10/10 -W5/255/0/0 \
  -Se0.2/0.39/12 -B1g1/WeSn -Jx0.2i/0.2i -G0/255/0 -E0/0/255 -L -N \
 -A0.1i/0.76c/0.3i -P -V -O -K >> $plotfile    
   Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
@@ -57,7 +57,7 @@ EOF
 
 # simpler colors, labeled with following font
 gmtset ANOT_FONT  Helvetica
-psvelo -H2 -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i \
+psvelo -h2 -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i \
     -P -V -O -Umeca_4 << EOF >> $plotfile    
   Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
   (deg)  (deg)    (mm/yr)        (mm/yr)

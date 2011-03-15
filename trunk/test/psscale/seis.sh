@@ -1,12 +1,12 @@
-#!/bin/sh
-#	$Id: seis.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
+#!/bin/bash
+#	$Id: seis.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
 #
 . ../functions.sh
 
 header "Test psscale and makecpt combinations"
 
 ps=seis.ps
-gmtset ANNOT_FONT_SIZE 10p MEASURE_UNIT cm
+gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
 makecpt -T-6/6/1 -Cseis -D > tmp.cpt
 psscale -Ctmp.cpt -D00/04/8/0.5 -K           > $ps
@@ -25,6 +25,6 @@ makecpt -T-6/6/1 -Cseis -D -Z | grep -v ^0 | sed 's/^1/0/' > tmp.cpt
 psscale -Ctmp.cpt -D20/04/8/0.5 -O -K       >> $ps
 psscale -Ctmp.cpt -D20/13/8/0.5 -O    -I -N100 >> $ps
 
-rm -f tmp.cpt .gmtcommands4
+rm -f tmp.cpt
 
 pscmp seis

@@ -1,70 +1,80 @@
 #include "common_options.txt"
 .TH PSIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-psimage \- To plot images (EPS files or Sun raster files) on maps
+psimage \- To plot images (EPS or raster files) on maps
 .SH SYNOPSIS
-\fBpsimage\fP \fIimagefile\fP [ OPT(W)[\fB-\fP]\fIwidth\fP[/\fIheight\fP] | OPT(E)\fIdpi\fP ] [ OPT(C)\fIxpos\fP/\fIypos\fP[/\fIjustify\fP] ] 
-[ OPT(F)\fIpen\fP ] [ OPT(G)[\fBb\fP|\fBf\fP|\fBt\fP]\fIcolor\fP ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M) ] 
-[ OPT(N)\fInx\fP[/\fIny\fP] ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
-[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
+BD(psimage) IT(imagefile) [ OPT(W)[BD(-)]IT(width)[/IT(height)] | OPT(E)IT(dpi) ] 
+[ OPT(C)IT(xpos)/IT(ypos)[/IT(justify)] ] [ OPT(F)IT(pen) ] 
+[ OPT(G)[BD(b)|BD(f)|BD(t)]IT(color) ] [ OPT(I) ] [ GMT_J_OPT ] 
+[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N)IT(nx)[/IT(ny)] ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_Rgeoz_OPT ] [ GMT_U_OPT ] 
+[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBpsimage\fP reads an Encapsulated \fIPostScript\fP\fR file or
-a 1, 8, 24, or 32-bit Sun raster file and plots it on a map.
+BD(psimage) reads an Encapsulated IT(PostScript)\fR file or
+a raster image file and plots it on a map.
 The image can be scaled arbitrarily, and 1-bit raster images can be (1) inverted, i.e.,
 black pixels (on) becomes white (off) and vice versa, or (2) colorized, by
 assigning different foreground and background colors, and (3) made transparent
 where one of back- or foreground is painted only. As an option,
 the user may choose to convert colored raster images to grayscale using TV's YIQ-transformation.\"'
-In case of 8-, 24- or 32-bit Sun raster files, the user can select which color to be made transparent.
+For raster files, the user can select which color to be made transparent.
 The user may also choose to replicate the image which, when preceded by appropriate clip
 paths, may allow larger custom-designed fill patterns to be implemented (the OPT(Gp)
-mechanism offered in most \fBGMT\fP programs is limited to rasters smaller than 146 by 146).
+mechanism offered in most BD(GMT) programs is limited to rasters smaller than 146 by 146).
+.SH REQUIRED ARGUMENTS
 .TP
-\fIimagefile\fP
-This must be an Encapsulated \fIPostScript\fP\fR (EPS) file or a Sun raster file.
+IT(imagefile)
+This must be an Encapsulated IT(PostScript)\fR (EPS) file or a raster image.
 An EPS file must contain an appropriate BoundingBox.
-A raster file can have a depth of 1, 8, 24, or 32 bits. Old-style, Standard, Run-length-encoded, and
-RGB Sun raster files are supported.  Other raster formats can be converted
-to Sun format via a variety of public-domain software (e.g., convert, xv).
+A raster file can have a depth of 1, 8, 24, or 32 bits. Only
+Sun raster files are supported natively; other raster formats are automatically converted
+to the Sun format via ImageMagick's \fBconvert\fP program, if installed.\"'
 .TP
-OPT(E)
+OPT(E)IT(dpi)
 Sets the dpi of the image in dots per inch, or use OPT(W).
 .TP
-OPT(W)
+OPT(W)[BD(-)]IT(width)[/IT(height)]
 Sets the width (and height) of the image in plot coordinates (inches, cm, etc.).
-If \fIheight\fP is not given, the original aspect ratio of the image is maintained.
-If \fIwidth\fP is negative we use the absolute value and interpolate image to the
-device resolution using the \fIPostScript\fP image operator.
+If IT(height) is not given, the original aspect ratio of the image is maintained.
+If IT(width) is negative we use the absolute value and interpolate image to the
+device resolution using the IT(PostScript) image operator.
 Alternatively, use OPT(E).
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(C)
+OPT(C)IT(xpos)/IT(ypos)[/IT(justify)]
 Sets position of the image in plot coordinates (inches, cm, etc.) from the current origin
 of the plot.
 By default, this defines the position of the lower left corner
 of the image, but this can be changed by specifying justification [0/0/BL].
 .TP
-OPT(F)
+OPT(F)IT(pen)
 Draws a rectangular frame around the image with the given pen [no frame].
 (See SPECIFYING PENS below).
+#include "explain_-J.txt"
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 OPT(M)
 Convert color image to monochrome grayshades using the (television) YIQ-transformation.
 .TP
-OPT(N)
-Replicate the image \fInx\fP times horizontally and \fIny\fP times vertically.
-If \fIny\fP is omitted, it will be identical to \fInx\fP [Default is 1/1].
+OPT(N)IT(nx)[/IT(ny)]
+Replicate the image IT(nx) times horizontally and IT(ny) times vertically.
+If IT(ny) is omitted, it will be identical to IT(nx) [Default is 1/1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+#include "explain_-Rgeo.txt"
+#include "explain_-Rz.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_perspective.txt"
 .P
-These options are for 1-bit Sun raster images only.
+These options are for 1-bit images only.
 They have no effect when plotting other images or PostScript files.
+.TP
+OPT(G)[BD(b)|BD(f)|BD(t)]IT(color)
 .TP
 OPT(Gb)
 Sets background color (replace white pixel) of 1-bit images.
@@ -80,7 +90,7 @@ OPT(I)
 Invert 1-bit image before plotting. This is what is done
 when you use OPT(GP) in other GMT programs.
 .P
-These options are for 8-, 24-, and 32-bit Sun raster images only.
+These options are for 8-, 24-, and 32-bit raster images only.
 They have no effect when plotting 1-bit images or PostScript files.
 .TP
 OPT(Gt)
@@ -88,6 +98,10 @@ Assigns the color that is to be made transparent.
 Sun Raster files do not support transparency, so indicate here which color to be made
 transparent.
 (See SPECIFYING COLOR below).
+#include "explain_perspective.txt"
+(Requires OPT(R) and OPT(J) for proper functioning).
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
@@ -96,22 +110,30 @@ it to 8 by 10 cm (thereby possibly changing the aspect ratio), and making the wh
 use
 .br
 .sp
-\fBpsimage\fP scanned_face.ras OPT(W)8\fBc\fP/10\fBc\fP -Gtwhite > image.ps
+BD(psimage) scanned_face.ras OPT(W)8BD(c)/10BD(c) -Gtwhite > image.ps
 .br
 .sp
-To include an Encapsulated \fIPostScript\fP file tiger.eps with its upper right corner 2 inch to the right
+To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled accordingly), and outline with a thin, blue pen,
+use
+.br
+.sp
+BD(psimage) logo.jpg OPT(W)1BD(i) -Fthin,blue > image.ps
+.br
+.sp
+To include an Encapsulated IT(PostScript) file tiger.eps with its upper right corner 2 inch to the right
 and 1 inch up from the current location, and have its width scaled to 3 inches, while keeping the aspect ratio, use
 .br
 .sp
-\fBpsimage\fP tiger.eps OPT(C)2\fBi\fP/1\fBi\fP/TR OPT(W)3\fBi\fP > image.ps
+BD(psimage) tiger.eps OPT(C)2BD(i)/1BD(i)/TR OPT(W)3BD(i) > image.ps
 .br
 .sp
 To replicate the 1-bit raster image template 1_bit.ras, colorize it (brown background and
 red foreground), and setting each of 5 by 5 tiles to be 1 cm wide, use
 .br
 .sp
-\fBpsimage\fP 1_bit.ras OPT(Gb)brown OPT(Gf)red OPT(N)5 OPT(W)1\fBc\fP > image.ps
+BD(psimage) 1_bit.ras OPT(Gb)brown OPT(Gf)red OPT(N)5 OPT(W)1BD(c) > image.ps
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR gmtcolors (5),
 .IR psxy (1)
+.IR convert (1)

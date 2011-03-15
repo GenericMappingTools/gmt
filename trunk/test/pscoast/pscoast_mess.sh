@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+#	$Id: pscoast_mess.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
 #
-#	$Id: pscoast_mess.sh,v 1.1 2008-12-17 18:42:55 guru Exp $
 
 ps=pscoast_mess.ps
 

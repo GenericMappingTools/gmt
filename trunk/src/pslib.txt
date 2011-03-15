@@ -1,653 +1,79 @@
 #include "common_options.txt"
-.TH PSLIB 3 MANDATE GMT_STRING "Generic Mapping Tools"
+#define PSLIB BD(PSL)
+#define ARG(kind,name) BD(kind) IT(name)
+.TH PSL 3 MANDATE GMT_STRING "PSL: The PostScript Library"
 .SH NAME
-pslib 4.3 \- A \fIPostScript\fP based plotting library
+PSL 5.0 \- A PS based plotting library
 .SH DESCRIPTION
 .LP
-\fBpslib\fP\fR was created to make the generation of \fIPostScript\fR page
-description code easier.  It is a library that contains a series of tools
-that can be used to create plots.  The resulting \fIPostScript\fR code is
-ASCII text and can be edited using any text editor.  Thus, it is fairly easy
-to modify a plot file even after it has been created, e.g., to change text
-strings, set new gray shades or colors, experiment with various pen widths, etc.
-\fBpslib\fP\fR is written in C but now includes FORTRAN bindings (thanks to John Goff, WHOI)
-and can therefore be called from both C and FORTRAN programs.  To use this library, you must link your plotting program with
-pslib.a.  \fBpslib\fP\fR is the core of the \fBGMT\fP\fR
-graphics programs.  \fBpslib\fP\fR output conforms to the Adobe Encapsulated
-\fIPostScript\fP File Specification Version 3.0 (EPSL), and may be used as EPS
-files and inserted into, say, a Word document on a Mac.  See Appendix F in the
-Technical Reference for detailed instructions.
+PSLIB was created to make the generation of PS page description code easier.
+PS is a page description language developed by the Adobe for specifying how a
+printer should render a page of text or graphics.
+It uses a reverse Polish notation that puts and gets items from a stack to draws
+lines, text, and images and even performs calculations.
+PSLIB is a self-contained library that presents a series of functions that can
+be used to create plots.  The resulting PS code is ASCII text (with some
+exceptions for images if so desired) and can thus be edited using any text editor.  Thus,
+it is possible to modify a plot file even after it has been created, e.g.,
+to change text strings, set new gray shades or colors, experiment with various
+pen widths, etc.  Furthermore, various tools exist that can parse PS and let you make such edits via
+a graphical user interface (e.g., Adobe Illustrator).
+PSLIB is written in C but includes FORTRAN bindings
+and can therefore be called from both C and FORTRAN programs.
+To use this library, you must link your plotting program with
+PSLIB.  PSLIB is used by the BD(GMT) graphics programs to generate PS.
+PSLIB output can be freeform PS or EPS that conforms to the Adobe Encapsulated
+PS File Specification Version 3.0 (EPSL).
 .LP
-Before any \fBpslib\fP\fR calls can be issued, the plotting system must be
-initialized.  This is done by calling \fBps_plotinit\fP (or \fBps_plotinit_hires\fP), which defines macros, sets up
+Before any PSLIB calls can be issued, the plotting system must be
+initialized.  This is done by calling BD(PSL_beginsession), which initializes a new
+PSLIB session, sets internal
+variables and default settings, accepts settings for measurement units and character
+encoding, and returns a pointer to a struct PSL_CTRL which must be passed as first
+argument to all other PSLIB functions.  The measure unit for sizes and positions can be set to be centimeter (c),
+inch (i), meter (m), or points (p).  A PSLIB session is terminated by calling BD(PSL_endsession).
+You may create one or more plots within the same session.  A new plot is started
+by calling BD(PSL_beginplot), which defines macros, sets up
 the plot-coordinate system, scales, and [optionally] opens a file where all the
-\fIPostScript\fR code will be written.  Normally, the plot code is written
-to \fIstdout\fP.  The measure unit for sizes and positions can be set to be centimeter (c),
-inch (i), or meter (m).  When all plotting is done, you must terminate the plotting system
-by calling \fBps_plotend\fP.
+PS code will be written.  Normally, the plot code is written
+to IT(stdout).  When all plotting to this file is done, you finalize the plot
+by calling BD(PSL_endplot).
 .LP
-\fBpslib\fP uses the direct color model where red, green, and blue are given separately,
-each must be in the range from 0-255.  If red < 0 then no fill operation takes place.
+A wide variety of output devices that support PS exist, including many printers
+and large-format plotters.  Many tools exists to display PS on a computer screen.
+Open source tools such as ghostscript can be used to convert PS into PDF or raster
+images (e.g., TIFF, JPEG) at a user-defined resolution (DPI).  In particular, the
+GMT tool ps2raster is a front-end to ghostscript and pre-selects the optimal options
+for ghostscript that will render quality PDF and images.
+.LP
+The PSLIB is fully 64-bit compliant.  Integer parameters are here specified by the type
+BD(long) to distinguish them from the 32-bit BD(int).  Note that under standard 32-bit
+compilation they are equivalent.  Users of this library under 64-bit mode must make sure
+they pass proper BD(long) variables (under Unix flavors) or BD(__int64) under Windows 64.
+.SH UNITS
+PSLIB can be instructed to use centimeters, inches, meters or points as input units for the coordinates
+and sizes of elements to be plotted. Any dimension that takes this setting as a unit is specified as
+IT(user units) or IT(plot units) in this manual. Excluded from this are line widths and font sizes
+which are always measured in IT(points).
+The user units can be further refined by calling BD(PSL_beginaxes), giving
+the user the opportunity to specify any linear coordinate frame. Changing the coordinate frame only
+affects the coordinates of plotted material indicated as measured in IT(plot units), not the sizes of
+symbols (which remain in IT(user units)), nor line widths or font sizes (which remain in IT(points)).
+.SH COLOR
+PSLIB uses the direct color model where red, green, and blue are given separately,
+each must be in the range from 0-1.  If red = -1 then no fill operation takes place.
+If red = -3, then pattern fill will be used, and the green value will indicate the pattern to be
+used.
 Most plot-items can be plotted
 with or without outlines.  If outline is desired (i.e., set to 1), it
-will be drawn using the current linewidth and pattern. \fBpslib\fP\fR uses highly
+will be drawn using the current line width and pattern. PSLIB uses highly
 optimized macro substitutions and scales the coordinates depending on the resolution
 of the hardcopy device so that the output file is kept as compact as possible.
+.SH JUSTIFICATION
+Text strings, text boxes and images can be "justified" by specifying the corner to which the IT(x) and IT(y) coordinates of the subroutine call
+apply. Nine different values are possible, as shown schematically in this diagram:
 .LP
-A wide variety of output devices that support \fIPostScript\fR exist, including laserwriters
-(color or monochrome) and workstations running \fIPostScript\fR based window systems
-like Sun's OpenWindows.  xnews (part of OpenWindows) or ghostscript (public domain) can be used to create rasterfiles at a\"'
-user-defined resolution (DPI), making it possible to render \fIPostScript\fR on a Versatec
-and other non-\fIPostScript\fR raster devices.  Regular Sun rasterfiles created under NeWS
-from \fIPostScript\fR files can be sent to a variety of color hardcopy units.  Check
-the devices available on your network.
-.LP
-The \fBpslib\fP\fR is now fully 64-bit compliant.  However, only a few function parameters
-are affected by this (such as the number of point in an array which can now be a 64-bit
-integer).  These few parameters are here given the type \fBlong\fP to distinguish them
-from \fBint\fP.  Note that under standard 32-bit compilation they are equivalent.  Users
-of this library under 64-bit mode must make sure they pass proper \fBlong\fP variables
-(under Unix flavors) or \fB__int64\fP under Windows 64.
-.SH FUNCTION CALLS
-.LP
-The following is a list of available functions and a short description of what they do and what
-parameters they expect.  All floating point variables are expected to be \fBdouble\fP (i.e.,
-8 bytes), whereas all integers are assumed to be 4 bytes long.  All plotting functions are
-declared as functions returning an int.  Currently, the return value is undefined.
-.LP
-.IP
-void \fBps_arc\fR (\fIx, y, radius, angle1, angle2, status\fP)
-.br
-\fBdouble\fR \fIx, y, radius, angle1, angle2\fP;
-.br
-\fBint\fR \fIstatus\fP;
-.RS 10
-Draws a circular arc centered on (\fIx,y\fP) from angle \fIangle1\fP to \fIangle2\fP.
-Angles must be given in decimal degrees.  If angle1 > angle2, a negative arc is
-drawn.  \fIstatus\fP is a value from 0 through 3.  1 means set new anchor point, 2 means
-stroke the circle, 3 means both, 0 means none of the above.
-.RE
-.IP
-void \fBps_axis\fR (\fIxpos, ypos, length, startval, stopval, tickval, label, annotpointsize, side\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, length, startval, stopval, tickval\fP;
-.br
-\fBdouble\fR \fIannotpointsize, side\fP;
-.br
-\fBchar\fR \fI*label\fP;
-.RS 10
-Plots an axis with tickmarks, annotation, and label.  \fIxpos, ypos\fP, and \fIlength\fP
-are in inches (or cm or meters), \fIannotpointsize\fP in points (72 points = 1 inch), else
-data units are used.  \fIside\fP can be 0, 1, 2, or 3, which selects lower x-axis, right y-axis,
-upper x-axis, or left y-axis, respectively.  labelpointsize = 1.5 * \fIannotpointsize\fP.
-A negative \fItickval\fP will reverse the sense of positive direction, e.g., to have the
-y-axis be positive down.
-.RE
-.IP
-void \fBps_bitimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, invert, f_rgb, b_rgb\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.br
-\fBint\fR \fInx, ny, invert, f_rgb[3], b_rgb[3]\fP;
-.RS 10
-Plots a 1-bit image using the given foreground color \fIf_rgb\fP and background color \fIb_rgb\fP.
-Specify position of lower left corner and size (in inches) of image.  \fIbuffer\fP
-is an unsigned character array with 8 pixels per byte.  \fInx,ny\fP
-refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must
-be an integral number of 8.  \fIbuffer\fP[0] is upper left corner.  \fIbuffer\fP
-values are stored as columns, starting at the lower left corner and ending at
-the upper right corner.  If \fIinvert\fP is 0 then the bits that are 1 are
-painted with the foreground color, while bits that are 0 are painted with the
-backgound color.  If \fIinvert\fP is 1, foreground and background are switched.
-To get a partly transparent image, set the first index of the foreground or
-background color to -1, i.e. f_rgb[0]=-1 or b_rgb[0]=1.
-See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
-.RE
-.IP
-void \fBps_circle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a circle and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-.RE
-.IP
-void \fBps_clipoff\fR ()
-.RS 10
-Resets the clip path to what it was before the last call to \fBps_clipon\fP.
-.RE
-.IP
-void \fBps_clipon\fR (\fIxarray, yarray, npoints, rgb, flag\fP)
-.br
-\fBdouble\fR \fIxarray[], yarray[]\fP;
-.br
-\fBlong\fR \fInpoints\fP;
-.br
-\fBint\fR \fIrgb[3], flag\fP;
-.RS 10
-Sets up a user-definable clip path.  Plotting outside this polygon will be clipped
-until \fBps_clipoff\fP is called.  If \fIred\fP >= 0 the inside of the path is
-filled with the specified color.  \fIflag\fP is used to create complex clip paths
-consisting of several disconnected regions, and takes on values 0-3. \fIflag\fP = 1
-means this is the first path in a multi-segment clip path.  \fIflag\fP = 2 means
-this is the last segment.  Thus, for a single path, \fIflag\fP = 3.
-.RE
-.IP
-void \fBps_colorimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, depth\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.br
-\fBint\fR \fInx, ny, depth\fP;
-.RS 10
-Plots a 1-, 2-, 4-, 8-, or 24-bit deep image.
-This functions sets up a call to the \fIPostScript\fP colorimage or image operators.
-\fIxpos, ypos, xlength, ylength\fP specify the position of lower left corner and size (in inches) of image.
-The pixel values are stored in \fIbuffer\fP, an unsigned character array in scanline orientation with gray shade or r/g/b
-values (0 - 255) where 0 is black, 255 is white.  \fIbuffer[0]\fP is upper left corner.
-\fIdepth\fP is number of bits per pixel (24, 8, 4, 2, or 1).
-\fInx,ny\fP refers to the number of pixels in image.
-The rowlength of \fIbuffer\fP must be an integral number of 8/\fIdepth\fP.
-E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
-gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
-When \fI-depth\fP is passed instead then "hardware" interpolation of the image is requested.
-If \fI-nx\fP is passed with 8- or 24-bit images then the first one or three bytes of \fIbuffer\fP
-holds the gray or r/g/b color for pixels that are to be masked out using the \fIPostScript\fP
-Level 3 Color Mask method.
-See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
-.RE
-.IP
-void \fBps_colortiles\fR (\fIx0, y0, xlength, ylength, buffer, nx, ny\fP)
-.br
-\fBdouble\fR \fIx0, y0, xlength, ylength\fP;
-.br
-\fBint\fR \fInx, ny\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.RS 10
-Plots a true color image based on individual color tiles. \fIx0, y0\fP is
-the location of the lower left corner of the image in inches.  \fIxlength,
-ylength\fP is the image size in inches.  \fIbuffer\fP contains rgb triplets
-stored as rgbrgbrgb... \fInx, ny\fP is the image size in pixels.
-.RE
-.IP
-void \fBps_command\fR (\fItext\fP)
-.br
-\fBchar\fR \fI*text\fP;
-.br
-.RS 10
-Writes a raw \fIPostScript\fP command to the \fIPostScript\fP output file,
-e.g. "1 setlinejoin".
-.RE
-.IP
-void \fBps_comment\fR (\fItext\fP)
-.br
-\fBchar\fR \fI*text\fP;
-.RS 10
-Writes a comment (\fItext\fP) to the \fIPostScript\fP\fR output file, e.g. "Start of graph 2".
-.RE
-.IP
-void \fBps_cross\fR (\fIxcenter, ycenter, diameter\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.RS 10
-Plots a cross (x) at the specified point using current pen-width and -pattern
-that fits inside a circle of given diameter. No fill possible.
-.RE
-.IP
-void \fBps_diamond\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a diamond and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_ellipse\fR (\fIxcenter, ycenter, angle, major, minor, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, angle, major, minor\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a ellipse with its major axis rotated by \fIangle\fP degrees and fills it
-with the specified color.  If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
-.RE
-.IP
-void \fBps_encode_font\fR (\fIfont_no\fP)
-.br
-\fBint\fR \fIfont_no\fP;
-.RS 10
-Will reencode this font using the current encoding vector if it is not StandardEncoding.
-.RE
-.IP
-void \fBps_epsimage\fR (\fIxpos, ypos, xlength, ylength, buffer, size, nx, ny, ox, oy\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.br
-\fBint\fR \fIsize, nx, ny, ox, oy\fP;
-.RS 10
-Plots an Encapsulated \fIPostScript\fP\fR (EPS) image. The EPS file is stored in \fIbuffer\fP and has \fIsize\fP bytes.
-This functions simply includes the image in the \fIPostScript\fP\fR output stream within an appropriate wrapper.
-Specify position of lower left corner and size (in inches) of image.
-\fInx,ny,ox,oy\fP refers to the width, height and origin (lower left corner) of the BoundingBox.
-.RE
-.IP
-void \fBps_flush\fR ()
-.RS 10
-Flushes the output buffer.
-.RE
-.IP
-void \fBps_hexagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a hexagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_image\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, bits\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.br
-\fBint\fR \fInx, ny, bits\fP;
-.RS 10
-Obsolete, simply passes arguments to \fBps_colorimage\fP.
-.RE
-.IP
-void \fBps_imagefill\fR (\fIx, y, n, image, imagefile, invert, dpi, outline, f_rgb, b_rgb\fP)
-.br
-\fBdouble\fR \fIx[], y[], x0, y0\fP;
-.br
-\fBint\fR \fIn, image, invert, dpi, outline, f_rgb[3], b_rgb[3]\fP;
-.br
-\fBchar\fR \fIimagefile\fP;
-.RS 10
-Similar to \fBps_polygon\fP, but fills the area with an image pattern rather than a color
-or grayshade.  \fIx\fP and \fIy\fP hold the arrays of \fIn\fP points.  90 predefined
-patterns are available  (See \fBGMT\fP Appendix E).  \fIimage\fP gives the image number (1-90).  If set to 0,
-\fIimagefile\fP must be the name to the user's image, which must be stored as a\"'
-Sun 1-, 8-, or 24-bit rasterfile.
-.br
-1-bit images only:
-(i) The set pixels (1) are colored using the RGB combination in \fIf_rgb\fP,
-while the unset pixels (0) are painted with \fPb_rgb\fP.
-Set the f_rgb[0] to -1 to make set pixels transparent.
-Set b_rgb[0] to -1 to make the unset pixels transparent.
-(ii) If \fIinvert\fP is TRUE (1), the set and unset pixels are interchanged before plotting. 
-.br
-The unit size of the image is
-controlled by \fIdpi\fP (in dots-per-inch).  If set to zero, the image is plotted at the device
-resolution.  If \fIoutline\fP is TRUE, the current penwidth is used to draw the
-polygon outline.
-.RE
-.IP
-void \fBps_itriangle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots an inverted and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-long \fBps_line\fR (\fIxarray, yarray, npoints, type, close, dummy\fP)
-.br
-\fBdouble\fR \fIxarray[], yarray[]\fP;
-.br
-\fBlong\fR \fInpoints\fP;
-.br
-\fBint\fR \fItype, close, dummy\fP;
-.RS 10
-Draw a continuous line from the positions in the x-y arrays.  If \fIclose\fP == 1,
-the first and last point will automatically be closed by the \fIPostScript\fP driver.
-If this is the first segment in a multi-segment path, set \fItype\fP == 1.  To end
-the segments and have the line(s) drawn,  set \fItype\fP == 2.  Thus, for a single
-segment, \fItype\fP must be 3.  The line is drawn using the current penwidth.
-The \fIdummy\fP is an obsolete parameter no longer used internally.
-.RE
-.IP
-unsigned char \fB*ps_load_image\fP (\fIfp, header\fP)
-.br
-\fBFILE\fP \fI*fp\fP;
-.br
-\fBstruct imageinfo\fP \fI*header\fP;
-.RS 10
-Reads the image contents of the EPS file or Sun rasterfile pointed to by the open filepointer \fIfp\fP.
-The routine can handle Encapsulated \fIPostScript\fP\fR files or 1-, 8-, 24-, or 32-bit rasterfiles in old, standard,
-run-length encoded, or RGB-style Sun format.
-.RE
-.IP
-void \fBps_octagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a octagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_patch\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxarray[], yarray[]\fP;
-.br
-\fBlong\fR \fInpoints\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Identical to \fBps_polygon\fP except polygon must be < 20 points long and there will
-be no attempt to shorten the path by discarding unnecessary intermediate points along
-straight segments.  Primarily used when painting large number of small polygons and
-not waste output space.  If more than 20 points are given we pass the buck to \fBps_polygon\fP.
-.RE
-.IP
-void \fBps_pentagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a pentagon and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_pie\fR (\fIxcenter, ycenter, radius, azimuth1, azimuth2, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, radius, azimuth1, azimuth2\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a sector of a circle and paints it with the specified RGB combination.  If
-\fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
-.RE
-.IP
-void \fBps_plot\fR (\fIxabs, yabs, kpen\fP)
-.br
-\fBdouble\fR \fIxabs, yabs\fP;
-.br
-\fBint\fR \fIkpen;\fP
-.RS 10
-Absolute move (\fIkpen\fP=3) or draw (\fIkpen=\fP2), using current linewidth.
-Use (\fIkpen=\fP-2) to make sure the line is stroked.
-.RE
-.IP
-void \fBps_plotend\fR (\fIlast_page\fP)
-.br
-\fBint\fR \fIlast_page\fP;
-.RS 10
-Terminates the plotting sequence and closes plot file (if other than \fIstdout\fP). If
-\fIlast_page\fP == 1, then a \fIPostScript\fP\fR showpage command is issued, which initiates
-the printing process on hardcopy devices.
-.RE
-.IP
-void \fBps_plotinit\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, encoding, eps\fP)
-.br
-\fBchar\fR \fI*plotfile, *encoding;\fP
-.br
-\fBint\fR \fIoverlay, mode, ncopies, dpi, unit\fP;
-.br
-\fBdouble\fR \fIxoff, yoff, xscl, yscl\fP;
-.br
-\fBint\fR \fIpagesize[2], rgb[3]\fP;
-\fBstruct EPS *\fR \fIeps\fP;
-.RS 10
-Initializes the plotting.  If \fIplotfile\fP == NULL (or ""), then output is sent to \fIstdout\fP,
-else output is sent to \fIplotfile\fP.  \fIoverlay\fP should be 1 only if you plan to append
-it to some existing \fIPostScript\fP\fR file.  \fImode\fP contains three flags in the three lowest
-bits.  The lowest bit controls the plot orientation and can be 0 (Landscape) or 1 (Portrait).  The
-next bit, if set to 1, will re-encode the fonts to include European accented characters using the
-now-obsolete \fBGMT\fP 3.4 encoding.  To use the ISOLatin1 encoding set the 5th bit to 1.  The third
-bit controls the format used to write \fIPostScript\fP images: 0 means binary, 1 means hexadecimal.  Most
-printers needs the latter while some can handle binary which are 50% smaller and therefore execute
-faster.
-\fIxoff,yoff\fP are used to move the origin from the default position in the lower left corner.
-\fIxscl,yscl\fP are used to scale the entire plot (Usually set to 1.0, 1.0).  Set \fIncopies\fP to get
-more than 1 copy.  \fIdpi\fP sets the hardcopy resolution in dots pr units.  For optimum plot
-quality and processing speed, choose \fIdpi\fP to match the intended plotter resolution.  Examples are
-300 for most laserwriters, 2540 for Linotype-300, and ~85 for Sun screens.  When in
-doubt, use 300.  \fIunit\fP can be any of 0 (cm), 1 (inch), or 2 (m), telling the plot system
-what units are used for distance and sizes.  Note that, regardless of choice of unit, dpi is still in
-dots-pr-inch.  \fIpagesize\fP means the physical width and height of the plotting media in points, (typically 612 by 792 for
-Letter or 595 by 842 for A4 laserwriter plotters.  The \fIrgb\fP array holds the color of the page (usually white = 255,255,255).
-The \fIencoding\fP is the name of a character encoding scheme to be used, e.g., Standard, ISOLatin1, ISO-8859-2, etc.
-The EPS structure is defined in the pslib.h include file and contains information that will make up the comments header of a EPS file.
-Programmers who plan to call pslib routines should read the comments in pslib.h first.  Note that the FORTRAN binding does not
-expect this last argument.
-.RE
-.IP
-void \fBps_plotinit_hires\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, encoding, eps\fP)
-.br
-\fBchar\fR \fI*plotfile, *encoding;\fP
-.br
-\fBint\fR \fIoverlay, mode, ncopies, dpi, unit, rgb[3]\fP;
-.br
-\fBdouble\fR \fIxoff, yoff, xscl, yscl\fP;
-.br
-\fBdouble\fR \fIpagesize[2]\fP;
-\fBstruct EPS *\fR \fIeps\fP;
-.RS 10
-Same as \fBps_plotinit\fR but expects the page size to be given in double precision points.
-.RE
-.IP
-void \fBps_plotr\fR (\fIxrel, yrel, kpen\fP)
-.br
-\fBdouble\fR \fIxrel, yrel\fP;
-.br
-\fBint\fR \fIkpen\fP;
-.RS 10
-Move (\fIkpen\fP = 3) or draw (\fIkpen\fP = 2) relative to current point (see \fBps_plot\fP).
-Use (\fIkpen=\fP-2) to make sure the line is stroked.
-.RE
-.IP
-void \fBps_plus\fR (\fIxcenter, ycenter, diameter\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.RS 10
-Plots a plus (+) at the specified point using current pen-width and -pattern
-that fits inside a circle of given diameter. No fill possible.
-.RE
-.IP
-void \fBps_point\fR (\fIxcenter, ycenter, diameter\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.RS 10
-Plots a point (dot) using current pen with given diameter.
-Note the linecap setting must first be set to 1 for this function to work.
-.RE
-.IP
-void \fBps_polygon\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxarray[], yarray[]\fP;
-.br
-\fBlong\fR \fInpoints\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Creates a colored polygon from the positions in the x-y arrays.  Polygon will
-automatically be closed by the \fIPostScript\fP driver.  If \fIoutline\fP == 0,
-no outline is drawn.  If \fIoutline\fP == 1, the outline is drawn using current
-penwidth.
-.RE
-.IP
-void \fBps_rect\fR (\fIx1, y1, x2, y2, rgb, outline\fP)
-.br
-\fBdouble\fR \fIx1, y1, x2, y2\fP;
-.br
-int \fIrgb[3], outline;\fP
-.RS 10
-Plots a colored rectangle. (\fIx1,y1)\fP and (\fIx2,y2\fP) are any two corners on a diagonal.
-If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
-.RE
-.IP
-void \fBps_rotaterect\fR (\fIx, y, angle, xsize, ysize, rgb, outline\fP)
-.br
-\fBdouble\fR \fIx, y, angle, xsize, ysize\fP;
-.br
-int \fIrgb[3], outline;\fP
-.RS 10
-Plots a colored rectangle rotated \fIangle\fP degrees from baseline. (\fIx,y)\fP is the center
-and (\fIxsize,ysize\fP) are the dimensions.
-If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
-.RE
-.IP
-void \fBps_rotatetrans\fR (\fIx, y, angle\fP)
-.br
-\fBdouble\fR \fIx, y, angle\fP;
-.RS 10
-Rotates the coordinate system by \fIangle\fP degrees, then translates origin to (\fIx,y\fP).
-.RE
-.IP
-void \fBps_segment\fR (\fIx0, y0, x1, y1\fP)
-.br
-\fBdouble\fR \fIx0, y0, x1, y1;\fP
-.RS 10
-Draws a line segment between the two points using current pen attributes.
-.RE
-.IP
-void \fBps_setdash\fR (\fIpattern, offset\fP)
-.br
-\fBchar\fR \fI*pattern;\fP
-.br
-\fBint\fR \fIoffset;\fP
-.RS 10
-Changes the current dashpattern.  The character string \fIpattern\fP is set to the desired
-pattern.  E.g., "4 2" and \fIoffset\fP = 1 will plot like:
 .RS 5
-x ----  ----  ---- 
-.RE
-etc, where x is starting point (The x is not plotted).  That is, the line is made up of a repeating pattern of a
-4 units long line and a 2 unit long gap, starting 1 unit after the x.  To reset to solid line,
-specify \fIpattern\fP = NULL ("") and \fIoffset\fP = 0.  Units are in dpi units.
-.RE
-.IP
-void \fBps_setfill\fR (\fIrgb, outline\fP)
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Sets the current fill color and whether or not outline is needed for symbols.
-.RE
-.IP
-void \fBps_setfont\fR (\fIfontnr\fP)
-.br
-\fBint\fR \fIfontnr\fP;
-.RS 10
-Changes the current font number to \fIfontnr\fP.  The fonts available are:  0 = Helvetica,
-1 = H. Bold, 2 = H. Oblique, 3 = H. Bold-Oblique, 4 = Times, 5 =
-T. Bold, 6 = T. Italic, 7 = T. Bold Italic, 8 = Courier, 9 = C. Bold,
-10 = C Oblique, 11 = C Bold Oblique, 12 = Symbol, 13 = AvantGarde-Book,
-14 = A.-BookOblique, 15 = A.-Demi, 16 = A.-DemiOblique, 17 = Bookman-Demi,
-18 = B.-DemiItalic, 19 = B.-Light, 20 = B.-LightItalic, 21 = Helvetica-Narrow,
-22 = H-N-Bold, 23 = H-N-Oblique, 24 = H-N-BoldOblique, 25 = NewCenturySchlbk-Roman, 
-26 = N.-Italic, 27 = N.-Bold, 28 = N.-BoldItalic,
-29 = Palatino-Roman, 30 = P.-Italic, 31 = P.-Bold, 32 = P.-BoldItalic,
-33 = ZapfChancery-MediumItalic, 34 = ZapfDingbats, 35 = Ryumin-Light-EUC-H,
-36 = Ryumin-Light-EUC-V, 37 = GothicBBB-Medium-EUC-H, and 38 = GothicBBB-Medium-EUC-V.  If \fIfontnr\fP is outside this range, it is set to 0.
-.RE
-.IP
-void \fBps_setformat\fR (\fIn_decimals\fP)
-.br
-\fBint\fR \fIn_decimals\fP;
-.RS 10
-Sets number of decimals to be used when writing color or gray values.  The default
-setting of 3 gives 1000 choices per red, green, and blue value, which is more than
-the 255 choices offered by most 24-bit platforms.  Choosing a lower value will make
-the output file smaller at the expense of less color resolution.  Still, a value of 2
-gives 100 x 100 x 100 = 1 million colors, more than most eyes can distinguish.  For
-a setting of 1, you will have 10 nuances per primary color and a total of 1000 unique
-combinations.
-.RE
-.IP
-void \fBps_setline\fR (\fIlinewidth\fP)
-.br
-\fBint\fR \fIlinewidth\fP;
-.RS 10
-Changes the current linewidth in DPI units.  0 gives thinnest line, but the use of
-0 is implementation-dependent (Works fine on most laserwriters).
-.RE
-.IP
-void \fBps_setlinecap\fR (\fIcap\fP)
-.br
-\fBint\fR \fIcap\fP;
-.RS 10
-Changes the current linecap.  0 gives butt cap [Default], 1 gives round, and 2 gives square.
-.RE
-.IP
-void \fBps_setlinejoin\fR (\fIjoin\fP)
-.br
-\fBint\fR \fIjoin\fP;
-.RS 10
-Changes the current linejoin.  0 gives mitered [Default], 1 gives round, and 2 gives bevel joins.
-.RE
-.IP
-void \fBps_setmiterlimit\fR (\fIlimit\fP)
-.br
-\fBint\fR \fIlimit\fP;
-.RS 10
-Changes the current miter limit.  0 gives default miter, other values are the cutoff-, acute- angle
-when mitering takes place.
-.RE
-.IP
-void \fBps_setpaint\fR (\fIrgb\fP)
-.br
-\fBint\fR \fIrgb[3]\fP;
-.RS 10
-Changes the current RGB setting for pens and text.
-.RE
-.IP
-void \fBps_square\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a square and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_star\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
-.br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a star and fills it with the specified color.  If \fIoutline\fP == 1, the outline
-will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
-.RE
-.IP
-void \fBps_text\fR (\fIx, y, pointsize, text, angle, justify, form\fP)
-.br
-\fBdouble\fR \fIx, y, pointsize, angle\fP;
-.br
-\fBchar\fR \fI*text\fP;
-.br
-\fBint\fR \fIjustify, form\fP;
-.RS 10
-The \fItext\fP is plotted starting at (\fIx,y\fP), and will make an \fIangle\fP with the horizontal.  The
-point (\fIx,y\fP) maps onto different points of the textstring by giving various values for
-\fIjustify\fP.  It is used as follows:
-.LP
-.RS 10
 9------------10----------- 11
 .br
 |                           |
@@ -658,98 +84,628 @@ point (\fIx,y\fP) maps onto different points of the textstring by giving various
 .br
 1------------ 2------------ 3
 .RE
-The box represents the textstring.  E.g., to plot a textstring with its center of gravity
-at (\fIx,y\fP), you must use \fIjustify\fP == 6.  If \fIjustify\fP is negative, then all leading and trailing
+The box represents the text or image.  E.g., to plot a text string with its center
+at (IT(x), IT(y)), you must use IT(justify) == 6. IT(justify) == 0 means "no justification", which generally means (IT(x), IT(y)) is
+at the bottom left. Convenience values PSL_NONE, PSL_BL, PSL_BC, PSL_BL, PSL_ML, PSL_MC, PSL_MR, PSL_TL, PSL_TC and PSL_TR are
+available.
+.SH INITIALIZATION
+These functions initialize or terminate the PSLIB system.  We use the term PSLIB session to
+indicate one instance of the PSLIB system (a complicated program could run many PSLIB
+sessions concurrently as each would operate via its own control structure).  During a single
+session, one or more plots may be created.  Here are the functions involved in initialization:
+.br
+.sp
+BD(struct PS_CTRL *PSL_beginsession) (ARG(FILE,*err), ARG(long,unit), ARG(long,verbose), ARG(long,comments), ARG(long,compression),
+ARG(long,imgtype), ARG(const char,*encoding))
+.RS 5
+This is the first function that must be called as it initializes a new PSLIB session.  Specifically, it will
+allocate a new PSLIB control structure and initialize the session parameters to those given by the arguments.
+Here, IT(err) is a stream pointer indicating where error messages should go (if NULL we will use IT(stderr)),
+IT(unit) indicates the units of the coordinates used in this session and must be one of PSL_CM (0), PSL_INCH (1), PSL_METER (2), or PSL_PT (3).
+This setting tells the PSLIB session what units are used for coordinates, distances and dimensions.
+The IT(verbose) setting indicates the PS verbosity level (PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal errors (1),
+PSL_MSG_NORMAL = warnings and progress (2), PSL_MSG_VERBOSE = extensive progress reports (3), or PSL_MSG_DEBUG = debugging (4)).
+Set IT(comments) to indicate if you want PS comments to be written (PSL_YES = 1) or not (PSL_NO = 0).
+The IT(compression) parameter controls image compression (all are lossless).  Choose from PSL_NONE = none (0),
+PSL_RLE = Run-length encoding (1), or PSL_LZW = Lempel-Ziv-Welch compression (2).
+Use IT(imgtype) to indicate whether images should be written in ASCII (PSL_ASCII = 0) or BINARY (PSL_BINARY = 2) format.
+Note: if you use PSL_BINARY you may not be able to manually edit the PS file or use it with GMT's ps2raster.
+Finally, use IT(encoding) to select the character encoding used.  Choose from Standard [Default if NULL is given],
+Standard+, ISOLatin1, ISOLatin1+, ISO-8859-X (with X = 1-10, 13-15).  See GMT Appendix F for the enhanced Standard+
+and ISOLatin1+ encodings.
+.RE
+.br
+.sp
+BD(long PSL_endsession) (ARG(struct PS_CTRL,*PSL))
+.RS 5
+This function terminates the active PSLIB session; it is the last function you must call in your program.
+Specifically, this function will deallocate memory used and free up resources.
+.RE
+.br
+.sp
+BD(long PSL_fopen) (ARG(char,*file), ARG(char,*mode))
+.RS 5
+This function simply opens a file, just like fopen.  The reason it is replicated here is that under Windows,
+file pointers must be assigned wihtin the same DLL as they are being used.  Yes, this is retarded but if we
+do not do so then PSL will not work well under Windows.  Under non-Windows this functions is just a macro
+that becomes fopen.
+.RE
+.br
+.sp
+BD(void PSL_free) (ARG(struct PS_CTRL,*PSL), ARG(void, *ptr))
+.RS 5
+This function frees up the memory allocated inside PSLIB.  Programmers using C/C++ should now this is a macro
+and there is no need to cast the pointer to IT(void *) as this will be done by the macro.  Fortran programmers
+should instead call BD(PSL_freefunction).
+.RE
+.br
+.sp
+BD(void PSL_beginaxes) (ARG(struct PS_CTRL,*PSL), ARG(double, llx), ARG(double, lly), ARG(double, width),
+ARG(double, height), ARG(double, x0), ARG(double, y0), ARG(double, x1), ARG(double, y1))
+.RS 5
+This function sets up the mapping that takes the users data coordinates and converts them to the positions
+on the plot in PS units.  This should be used when plotting data coordinates and is terminated with BD(PSL_endaxes),
+which returns PSLIB to the default measurement units and scaling. Here, IT(llx) and IT(lly) sets the lower left
+position of the mapping region, while IT(width) and IT(height) sets the dimension of the plot area in user units.  Finally,
+IT(x0), IT(x1) and IT(y0), IT(y1) indicate the range of the users x- and y-coordinates, respectively.
+Specify a reverse axis direction (e.g., to let the y-axis be positive down) by setting IT(y0) larger
+than IT(y1), and similarly for an x-axis that increases to the left.
+.RE
+.br
+.sp
+BD(void PSL_endaxes) (ARG(struct PS_CTRL,*PSL))
+.RS 5
+Terminates the map scalings initialized by BD(PSL_beginaxes) and returns PSLIB to standard scaling in measurement
+units.
+.RE
+.br
+.sp
+BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode),
+ARG(long,absolute), ARG(double,xoff), ARG(double,yoff), ARG(double,pagesize)[], ARG(struct EPS,*eps))
+.RS 5
+Controls the initiation (or continuation) of a particular plot within the current session.
+Pass file pointer IT(fp) where the PS code will be written; if NULL then the output is written to IT(stdout).
+The IT(orientation) may be landscape (PSL_LANDSCAPE or 0) or portrait (PSL_PORTRAIT or 1).
+Set IT(overlay) to PSL_OVERLAY (0) if the following PS code should be appended to an existing plot;
+otherwise pass PSL_INIT (1) to start a new plot. Let IT(colormode) be one of PSL_RGB (0), PSL_CMYK (1), PSL_HSV (2) or PSL_GRAY (3);
+this setting controls how colors are presented in the PS code.
+The IT(absolute) setting is either PSL_REL (0) of PSL_ABS (1) and controls whether the specified offsets (next two arguments) are relative
+to the previous origin (PSL_REL) or  measured from an absolute lower-left page origin (PSL_ABS).
+The IT(xoff) and IT(yoff) are used to move the origin from the default position in the lower left corner (PSL_ABS) or relative to the
+current origin (PSL_REL).
+IT(pagesize) means the physical width and height of the plotting media in points (typically 612 by 792 for
+Letter or 595 by 842 for A4 format). 
+The EPS structure is defined in the psl.h include file and contains information that will make up the comments header of a EPS file.
+Programmers who plan to call PSLIB routines should read the comments in psl.h first.  Note that the FORTRAN binding does not
+expect this last argument.  Pass NULL to have PSLIB do its best.
+.RE
+.br
+.sp
+BD(long PSL_endplot) (ARG(struct PSL_CTRL,*P), ARG(long,last_page))
+.RS 5
+Terminates the plotting sequence and closes plot file (if other than IT(stdout)). If
+IT(last_page) == PSL_FINALIZE (1), then a PS IT(showpage) command is issued, which initiates
+the printing process on hardcopy devices.  Otherwise, pass PSL_OVERLAY (0).
+.RE
+.br
+.sp
+BD(long PSL_setorigin) (ARG(struct PSL_CTRL,*P), ARG(double,xorigin), ARG(double,yorigin),
+ARG(double,angle), ARG(long,mode))
+.RS 5
+Changes the coordinate system by translating by (IT(xorigin),IT(yorigin)) followed by a IT(angle)-degree rotation (IT(mode)=PSL_FWD or 0)
+or alternatively the rotation followed by translation (IT(mode)=PSL_INV or 1).
+.RE
+.SH CHANGING SETTINGS
+The following functions are used to change various PSLIB settings and affect the current state of parameters such as line and
+fill attributes.
+.br
+.sp
+BD(long PSL_define_pen) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(long,width), ARG(char,*style), ARG(double,offset), ARG(double,rgb)[])
+.RS 5
+Stores the specified pen characteristics in a PS variable called IT(name).  This can be used to place
+certain pen attributes in the PS file and then retrieve them later with BD(PSL_load_pen).  This makes
+the stored pen the current pen.
+.RE
+.br
+.sp
+BD(long PSL_define_rgb) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,rgb)[])
+.RS 5
+Stores the specified color in a PS variable called IT(name).  This can be used to place
+certain color values in the PS file and then retrieve them later with BD(PSL_load_rgb).
+This makes the stored color the current color.
+.RE
+.br
+.sp
+BD(long PSL_setcolor) (ARG(struct PSL_CTRL,*P), ARG(double,rgb)[], ARG(long,mode))
+.RS 4
+Sets the current color for all stroked (mode = BD(PSL_IS_STROKE)) or filled (mode = BD(PSL_IS_FILL))
+material to follow (lines, symbol outlines, text).
+IT(rgb) is a triplet of red, green and blue values in the range 0.0 through 1.0.
+Set the red color to -3.0 and the green color to the pattern number returned by BD(PSL_setpattern)
+to select a pattern as current paint color.  For PDF transparency, set IT(rgb)[3] to a value
+between 0 (opaque) and 1 (fully transparent).
+.RE
+.br
+.sp
+BD(long PSL_setpattern) (ARG(struct PSL_CTRL,*P), ARG(long,image_no), ARG(char,*imagefile),
+ARG(long,dpi), ARG(double,f_rgb)[], ARG(double,b_rgb)[])
+.RS 5
+Sets up the specified image pattern as the fill to use for polygons and symbols.
+Here, IT(image_no) is the number of the standard PSL fill patterns (1-90; use a negative number when you specify
+an image IT(filename) instead.  The scaling (i.e., resolution in dots per inch) of the pattern is controlled by the image IT(dpi); if
+set to 0 it will be plotted at the device resolution.
+The two remaining settings apply to 1-bit images only and are otherwise ignored:
+You may replace the foreground color (the set bits) with the
+IT(f_rgb) color and the background color (the unset bits) with IT(b_rgb).  Alternatively, pass either color with
+the red component set to -1.0 and we will instead issue an image mask that is see-through for the specified
+fore- or background component.
+To subsequently use the pattern as a pen or fill color,
+use BD(PSL_setcolor) or DB(PSL_setfill) with the a color IT(rgb) code made up of IT(r) = -3, and IT(b) = the pattern
+number returned by BD(PSL_setpattern).
+.RE
+.br
+.sp
+BD(long PSL_setdash) (ARG(struct PSL_CTRL,*P), ARG(char,*pattern), ARG(double,offset))
+.RS 5
+Changes the current pen style attributes.  The character string IT(pattern) contains the desired
+pattern using a series of lengths in points specifying the alternating lengths of dashes and gaps in points.
+E.g., "4 2" and IT(offset) = 1 will plot like
+.RS 5
+x ----  ----  ---- 
+.RE
+where x is starting point of a line (The x is not plotted).  That is, the line is made up of a repeating pattern of a
+4 points long solid line and a 2 points long gap, starting 1 point after the x.  To reset to solid line,
+specify IT(pattern) = NULL ("") and IT(offset) = 0.
+.RE
+.IP
+BD(long PSL_setfill) (ARG(struct PSL_CTRL,*P), ARG(double,rgb)[], ARG(long,outline))
+.RS 5
+Sets the current fill color and whether or not outline is needed for symbols.  Special cases
+are handled by passing the red color as -1.0 (no fill), -2.0 (do not change the outline setting)
+or -3.0 (select the image pattern indicated by the second (green) element of IT(rgb)).
+For PDF transparency, set IT(rgb)[3] to a value between 0 (opaque) and 1 (fully transparent).
+Set outline to PSL_OUTLINE (1) to draw the outlines of polygons and symbols using the current pen.
+.RE
+.br
+.sp
+BD(long PSL_setfont) (ARG(struct PSL_CTRL,*P), ARG(long,fontnr))
+.RS 5
+Changes the current font number to IT(fontnr).  The fonts available are:  0 = Helvetica,
+1 = H. Bold, 2 = H. Oblique, 3 = H. Bold-Oblique, 4 = Times, 5 =
+T. Bold, 6 = T. Italic, 7 = T. Bold Italic, 8 = Courier, 9 = C. Bold,
+10 = C Oblique, 11 = C Bold Oblique, 12 = Symbol, 13 = AvantGarde-Book,
+14 = A.-BookOblique, 15 = A.-Demi, 16 = A.-DemiOblique, 17 = Bookman-Demi,
+18 = B.-DemiItalic, 19 = B.-Light, 20 = B.-LightItalic, 21 = Helvetica-Narrow,
+22 = H-N-Bold, 23 = H-N-Oblique, 24 = H-N-BoldOblique, 25 = NewCenturySchlbk-Roman, 
+26 = N.-Italic, 27 = N.-Bold, 28 = N.-BoldItalic,
+29 = Palatino-Roman, 30 = P.-Italic, 31 = P.-Bold, 32 = P.-BoldItalic,
+33 = ZapfChancery-MediumItalic, 34 = ZapfDingbats, 35 = Ryumin-Light-EUC-H,
+36 = Ryumin-Light-EUC-V, 37 = GothicBBB-Medium-EUC-H, and 38 = GothicBBB-Medium-EUC-V.
+If IT(fontnr) is outside this range, it is reset to 0.
+.RE
+.br
+.sp
+BD(long PSL_setformat) (ARG(struct PSL_CTRL,*P), ARG(long,n_decimals))
+.RS 5
+Sets the number of decimals to be used when writing color or gray values.  The default
+setting of 3 gives 1000 choices per red, green, and blue value, which is more than
+the 255 choices offered by most 24-bit platforms.  Choosing a lower value will make
+the output file smaller at the expense of less color resolution.  Still, a value of 2
+gives 100 x 100 x 100 = 1 million colors, more than most eyes can distinguish.  For
+a setting of 1, you will have 10 nuances per primary color and a total of 1000 unique
+combinations.
+.RE
+.br
+.sp
+BD(long PSL_setlinewidth) (ARG(struct PSL_CTRL,*P), ARG(double,linewidth))
+.RS 5
+Changes the current line width in points.  Specifying 0 gives the thinnest
+line possible, but this is implementation-dependent (seems to work fine on most PS printers).
+.RE
+.br
+.sp
+BD(long PSL_setlinecap) (ARG(struct PSL_CTRL,*P), ARG(long,cap))
+.RS 5
+Changes the current line cap, i.e., what happens at the beginning and end of a line segment.
+PSL_BUTT_CAP (0) gives butt line caps [Default], PSL_ROUND_CAP (1)
+selects round caps, while PSL_SQUARE_CAP (2) results in square caps.  THus, the two last options
+will visually lengthen a straight line-segment by half the line width at either end.
+.RE
+.br
+.sp
+BD(long PSL_setlinejoin) (ARG(struct PSL_CTRL,*P), ARG(long,join))
+.RS 5
+Changes the current linejoin setting, which handles how lines of finite thickness are joined
+together when the meet at different angles.  PSL_MITER_JOIN (0) gives a mitered joint [Default],
+PSL_ROUND_JOIN (1) makes them round, while PSL_BEVEL_JOIN (2) produces bevel joins.
+.RE
+.br
+.sp
+BD(long PSL_setmiterlimit) (ARG(struct PSL_CTRL,*P), ARG(long,limit))
+.RS 5
+Changes the current miter limit used for mitered joins.  PSL_MITER_DEFAULT (35) gives the default 
+PS miter; other values are interpreted as the cutoff acute angle (in degrees) when mitering becomes
+active.
+.RE
+.br
+.sp
+BD(long PSL_settransparencymode) (ARG(struct PSL_CTRL,*P), ARG(char,*mode))
+.RS 5
+Changes the current PDF transparency rendering mode [Default is Normal].  Choose among
+Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
+Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen.
+This option is only used by Adobe Distiller when converting PS to PDF.
+.RE
+.br
+.sp
+BD(long PSL_setdefaults) (ARG(struct PSL_CTRL,*P), ARG(double,dpi), ARG(double,xyscales)[], ARG(double,pagergb)[])
+.RS 5
+Allows changes to the PSL session settings and should be called immediately after BD(PSL_beginsession).
+Specify IT(dpi) to change the dots-per-inch resolution used internally to general integer coordinates [7200].
+The IT(xyscales) array affect an overall magnification of your plot [1,1].  This can be useful if you
+design a page-sized plot but would then like to magnify (or shrink) it by a given factor.
+Finally, change the default paper media color [white; 1/1/1] by
+specifying an alternate page color.  Passing zero (or NULL for IT(pagergb)) will leave the setting unchanged.
+.RE
+.br
+.sp
+BD(long PSL_defunits) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,value))
+.RS 5
+Creates a PS variable called IT(name) and initializes it to the equivalent of IT(value) user units.
+.RE
+.br
+.sp
+BD(long PSL_defpoints) (ARG(struct PSL_CTRL,*P), ARG(char,*name), ARG(double,fontsize))
+.RS 5
+Creates a PS variable called IT(name) and initializes it to the value that corresponds to the font size (in points) given by
+IT(fontsize).
+.RE
+.SH PLOTTING LINES AND POLYGONS
+Here are functions used to plot lines and closed polygons, which may optionally be filled.  The attributes
+used for drawing and filling are set prior to calling these functions; see CHANGING SETTINGS above.
+.br
+.sp
+BD(long PSL_plotarc) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,radius),
+ARG(double,angle1), ARG(double,angle2), ARG(long,type))
+.RS 5
+Draws a circular arc with its center at plot coordinates (IT(x), IT(y)), starting from angle IT(angle1) and end at IT(angle2).
+Angles must be given in decimal degrees.  If IT(angle1) > IT(angle2), a negative arc is
+drawn. The IT(radius) is in user units. The IT(type) determines how the arc is interpreted: PSL_MOVE (1) means set new anchor
+point, PSL_STROKE (2) means stroke the arc, PSL_MOVE + PSL_STROKE (3) means both, whereas PSL_DRAW (0)
+justs adds to arc path to the current path.
+.RE
+.br
+.sp
+BD(long PSL_plotline) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(long,type))
+.RS 5
+Assemble a continuous line through IT(n) points whose the plot coordinates are in the IT(x), IT(y) arrays.
+To continue an existing line, use IT(type) = PSL_DRAW (0), or if this is
+the first segment in a multisegment path, set IT(type) = PSL_MOVE (1).  To end
+the segments and draw the lines, add PSL_STROKE (2).  Thus, for a single
+segment, IT(type) must be PSL_MOVE + PSL_STROKE (3).  The line is drawn using the current pen attributes.
+Add PSL_CLOSE (8) to IT(type) to close the first and last point by the PS operators.
+.RE
+.br
+.sp
+BD(long PSL_plotpoint) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,type))
+.RS 5
+Moves the pen from the current to the specified plot coordinates (IT(x), IT(y)) and optionally
+draws and strokes the line, depending on IT(type).
+Specify IT(type) as either a move (PSL_MOVE, 1), or draw (PSL_DRAW, 2),
+or draw and stroke (PSL_DRAW + PSL_STOKE, 3) using current pen attributes.
+It the coordinates are relative to the current point add PSL_REL (4) to IT(type).
+.RE
+.br
+.sp
+BD(long PSL_plotbox) (ARG(struct PSL_CTRL,*P), ARG(double,x0), ARG(double,y0), ARG(double,x1), ARG(double,y1))
+.RS 5
+Creates a closed box with opposite corners at plot coordinates (IT(x0),IT(y1)) and (IT(x1),IT(y1)).  The box may be filled and its outline
+stroked depending on the current settings for fill and pen attributes.
+.RE
+.br
+.sp
+BD(long PSL_plotpolygon) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n))
+.RS 5
+Creates a closed polygon through IT(n) points whose plot coordinates are in the IT(x), IT(y) arrays.
+The polygon may be filled and its outline stroked depending on the current settings for fill and pen attributes.
+.RE
+.br
+.sp
+BD(long PSL_plotsegment) (ARG(struct PSL_CTRL,*P), ARG(double,x0), ARG(double,y0), ARG(double,x1), ARG(double,y1))
+.RS 5
+Draws a line segment between the two points (plot coordinates) using the current pen attributes.
+.RE
+.SH PLOTTING SYMBOLS
+Here are functions used to plot various geometric symbols or constructs.
+.br
+.sp
+BD(long PSL_plotaxis) (ARG(struct PSL_CTRL,*P), ARG(double,tickval), ARG(char,*label), ARG(double,fontsize), ARG(long,side))
+.RS 5
+Plots a basic axis with tick marks, annotations, and label.  Assumes that BD(PSL_beginaxes) has been called to
+set up positioning and user data ranges.  Annotations will be set using the IT(fontsize) in points.
+IT(side) can be 0, 1, 2, or 3, which selects lower x-axis, right y-axis, upper x-axis, or left y-axis, respectively.
+The IT(label) font size is set to 1.5 times the IT(fontsize).
+.RE
+.br
+.sp
+BD(long PSL_plotsymbol) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,size)[], ARG(long,symbol))
+.RS 5
+Plots a simple geometric symbol centered on plot coordinates (IT(x), IT(y)).  The argument IT(symbol) selects the geometric symbol to use.
+Most symbols are scaled to fit inside a circle of diameter given as IT(size)[0], but some symbols take additional parameters.
+Choose from these 1-parameter symbols using the predefined self-explanatory integer values
+PSL_CIRCLE, PSL_DIAMOND, PSL_HEXAGON, PSL_INVTRIANGLE, PSL_OCTAGON, PSL_PENTAGON, PSL_SQUARE, PSL_STAR, and PSL_TRIANGLE; these
+may all be filled and stroked if BD(PSL_setfill) has been called first.  In addition, you can choose several line-only symbols that cannot be filled.
+They are PSL_CROSS, PSL_DOT, PSL_PLUS, PSL_XDASH, and PSL_YDASH.
+Finally, more complicated symbols require more than one parameter to be passed via IT(size). These are
+PSL_ELLIPSE (IT(size) is expected to contain the three parameter IT(angle), IT(major), and IT(minor) axes,
+which defines an ellipse with its major axis rotated by IT(angle) degrees),
+PSL_MANGLE (IT(size) is expected to contain the four parameter IT(radius), IT(angle1), and IT(angle2) for the math angle specification,
+and IT(type) as 1 or 2 to place arrow head at angle 1 and 2; use 3 for both and 0 for none),
+PSL_WEDGE (IT(size) is expected to contain the three parameter IT(radius), IT(angle1), and IT(angle2) for the sector specification),
+PSL_RECT (IT(size) is expected to contain the two dimensions IT(width) and IT(height)),
+PSL_ROTRECT (IT(size) is expected to contain the three parameter IT(angle), IT(width), and IT(height), with rotation relative to the horizontal), and
+PSL_VECTOR (IT(size) is expected to contain the IT(x_tip), IT(y_tip), IT(tailwidth), IT(headlength), IT(headwidth), IT(shape), and IT(dual).
+Here (IT(x_tip),IT(y_tip)) are the coordinates to the head of the vector, while (IT(x), IT(y)) are those of the tail.
+IT(shape) can take on values from 0-1 and specifies how far the intersection point between the base of a
+straight vector head and the vector line is moved toward the tip.  0.0 gives a triangular
+head, 1.0 gives an arrow shaped head. Specify IT(dual) = 1.0 for a double-headed vector and 0.0 for a single-headed vector.
+The symbol may be filled and its outline stroked depending on the current settings for fill and pen attributes.
+.RE
+.SH PLOTTING IMAGES
+Here are functions used to read and plot various images.
+.br
+.sp
+BD(long PSL_plotbitimage) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,xsize), ARG(double,ysize),
+ARG(int,justify), ARG(unsigned char,buffer), ARG(long,nx), ARG(long,ny), ARG(double,f_rgb)[], ARG(double,b_rgb)[])
+.RS 5
+Plots a 1-bit image image at plot coordinates (IT(x), IT(y)) justified as per the argument IT(justify) (see BD(JUSTIFICATION) for
+details).
+The target size of the image is given by IT(xsize) and IT(ysize) in user units. If one of these is specified as zero, the
+corresponding size is adjusted to the other such that the aspect ratio of the original image is retained.
+IT(buffer) is an unsigned character array in scanline orientation with 8 pixels per byte.  IT(nx), IT(ny)
+refers to the number of pixels in the image.  The rowlength of IT(buffer) must
+be an integral number of 8; pad with zeros.  IT(buffer)[0] is upper left corner.
+You may replace the foreground color (the set bits) with the
+IT(f_rgb) color and the background color (the unset bits) with IT(b_rgb).  Alternatively, pass either color with
+the red component set to -1.0 and we will instead issue an image mask that is see-through for the specified
+fore- or background component.
+See the Adobe Systems PS Reference Manual for more details.
+.RE
+.br
+.sp
+BD(long PSL_plotcolorimage) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,xsize), ARG(double,ysize),
+ARG(int,justify), ARG(unsigned char,*buffer), ARG(long,nx), ARG(long,ny), ARG(long,depth))
+.RS 5
+Plots a 1-, 2-, 4-, 8-, or 24-bit deep image at plot coordinates (IT(x), IT(y)) justified as per the argument IT(justify) (see
+BD(JUSTIFICATION) for details).
+The target size of the image is given by IT(xsize) and IT(ysize) in user units. If one of these is specified as zero, the
+corresponding size is adjusted to the other such that the aspect ratio of the original image is retained.
+This functions sets up a call to the PS colorimage or image operators.
+The pixel values are stored in IT(buffer), an unsigned character array in scanline orientation with gray shade or r/g/b
+values (0-255).  IT(buffer)[0] is the upper left corner.
+IT(depth) is number of bits per pixel (24, 8, 4, 2, or 1).
+IT(nx), IT(ny) refers to the number of pixels in image.
+The rowlength of IT(buffer) must be an integral number of 8/IT(Idepth).
+E.g. if IT(depth) = 4, then IT(buffer)[j]/16
+gives shade for pixel[2j-1] and IT(buffer)[j%16 (mod 16) gives shade for pixel[2j].
+When IT(-depth) is passed instead then "hardware" interpolation of the image is requested (this is implementation dependent).
+If IT(-nx) is passed with 8- (or 24-) bit images then the first one (or three) bytes of IT(buffer)
+holds the gray (or r/g/b) color for pixels that are to be masked out using the PS
+Level 3 Color Mask method.
+See the Adobe Systems PS Reference Manual for more details.
+.RE
+.br
+.sp
+BD(long PSL_plotepsimage) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,xsize), ARG(double,ysize),
+ARG(int,justify), ARG(unsigned char,*buffer), ARG(long,size), ARG(long,nx), ARG(long,ny), ARG(long,ox), ARG(long,oy))
+.RS 5
+Plots an Encapsulated PS (EPS) image at plot coordinates (IT(x), IT(y)) justified as per the argument IT(justify) (see BD(JUSTIFICATION)
+for details).
+The target size of the image is given by IT(xsize) and IT(ysize) in user units. If one of these is specified as zero, the
+corresponding size is adjusted to the other such that the aspect ratio of the original image is retained.
+The EPS file is stored in IT(buffer) and has IT(size) bytes.
+This function simply includes the image in the PS output stream within an appropriate wrapper.
+Specify position of lower left corner and size of image.
+IT(nx), IT(ny), IT(ox), IT(oy) refers to the width, height and origin (lower left corner) of the BoundingBox in points.
+.RE
+.br
+.sp
+BD(long PSL_loadimage) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(struct imageinfo,*header), ARG(unsigned char,**image))
+.RS 5
+Reads the image contents of the EPS file or a raster image pointed to by the open file pointer IT(fp).
+The routine can handle Encapsulated PS files or 1-, 8-, 24-, or 32-bit raster images in old, standard,
+run-length encoded, or RGB-style Sun format.  Non-Sun rasters are automatically reformatted to Sun rasters
+via a system call to ImageMagick's BD(convert), if installed.  The image is returned via the IT(image) pointer.\"'
+.RE
+.SH PLOTTING TEXT
+Here are functions used to read and plot text strings and paragraphs.  This can be somewhat complicated since
+we rely on the PS interpreter to determine the exact dimensions of text items given the font chosen.  For
+perfect alignment you may have to resort to calculate offsets explicitly using BD(long PSL_deftextdim), BD(PSL_set_height) and others
+and issue calculations with BD(PSL_setcommand).
+.br
+.sp
+BD(long PSL_plottext) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,fontsize), ARG(char,*text), ARG(double,angle), ARG(long,justify), ARG(long,mode))
+.RS 5
+The IT(text) is plotted starting at plot coordinates (IT(x), IT(y)) and will make an IT(angle) with the horizontal.  The
+point (IT(x), IT(y)) maps onto different points of the text-string by giving various values for IT(justify) (see BD(JUSTIFICATION)
+for details).
+If IT(justify) is negative, then all leading and trailing
 blanks are stripped before plotting.  Certain character sequences (flags) have special
-meaning to ps_text. @~ toggles between current font and the Mathematical Symbols font.
-@%\fIno\fP% sets font to \fIno\fP; @%% resets to starting font.
+meaning to BD(PSL_plottext). @~ toggles between current font and the Mathematical Symbols font.
+@%IT(no)% selects font IT(no) while @%% resets to the previous font.
 @- turns subscript on/off, @+ turns superscript on/off, @# turns small caps
 on/off, and @\\ will make a composite character of the following two character.
-@;\fIr/g/b\fP; changes the font color (@;; resets it), @:\fIsize\fP: changes the font size (@:: resets it),
-and @_ toggles underline on/off.
-Give fontsize in points (72 points = 1 inch).  Normally, the text is typed using solid characters.
-To draw outline characters, set \fIform\fP == 1.  If \fIpointsize\fP is negative it means
-that the current point has already been set before \fBps_text\fP was called and that
-(\fIx,y\fP) should be ignored.
+@;IT(r/g/b); changes the font color while @;; resets it [optionally append =IT(transparency) to
+change the transparency (0--100) of the text (the Default is opaque or 0)], @:IT(size): changes the font size (@:: resets it),
+and @_ toggles underline on/off. If IT(text) is NULL then we assume BD(PSL_plottextbox) was called first.
+Give IT(fontsize) in points.  Normally, the text is typed using solid characters
+in the current color (set by BD(PSL_setcolor)).
+To draw outline characters, set IT(mode) == 1; the outline will get the current color and the text is
+filled with the current fill color (set by BD(PSL_setfill)).  Use IT(mode) == 2 if the current fill is
+a pattern.
+If IT(fontsize) is negative it means that the current point has already been set before BD(PSL_plottext) was called and that
+(IT(x), IT(y)) should be ignored.
 .RE
-.IP
-void \fBps_textbox\fR (\fIx, y, pointsize, text, angle, justify, outline, dx, dy, rgb\fP)
 .br
-\fBdouble\fR \fIx, y, angle, pointsize, dx, dy\fP;
-.br
-\fBchar\fR \fI*text\fP;
-.br
-\fBint\fR \fIjustify, outline, rgb[3]\fP;
-.RS 10
-This function is used in conjugation with \fBps_text\fP when a box surrounding the
-text string is desired.  Taking most of the arguments of \fBps_text\fP, the user must
-also specify the color of the resulting rectangle, and whether its outline should
-be drawn.  More room between text and rectangle can be obtained by setting \fIdx\fP
-and \fIdy\fP accordingly.
+.sp
+BD(long PSL_plottextbox) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,fontsize), ARG(char,*text),
+ARG(double,angle), ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
+.RS 5
+This function is used in conjugation with BD(PSL_plottext) when a box surrounding the
+text string is desired.  Taking most of the arguments of BD(PSL_plottext), the user must
+also specify IT(mode) to indicate whether the box needs rounded (PSL_YES = 1) or straight (PSL_NO = 0) corners.
+The box will be colored with the current fill style set by BD(PSL_setfill). That means, if an outline
+is desired, and the color of the inside of the box should be set with that routine.
+The outline will be drawn with the current pen color (and width).
+The IT(offset) array holds the horizontal and vertical distance gaps between text and the surrounding
+text box in distance units. The smaller of the two determined the radius of the rounded corners (if requested).
 .RE
-.IP
-void \fBps_transrotate\fR (\fIx, y, angle\fP)
 .br
-\fBdouble\fR \fIx, y, angle\fP;
-.RS 10
-Translates the origin to (\fIx,y\fP), then rotates the coordinate system by \fIangle\fP degrees.
+.sp
+BD(long PSL_plottextclip) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(double,fontsize),
+ARG(char,*text)[], ARG(double,angle)[], ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
+.RS 5
+This function is called twice: First time we pass the text strings and other parameters and use PS to compute
+clip paths so that no feature plotted after this call will be visible in areas where text will be plotted.
+The second call actually plots the texts in the predetermined locations (NULL may be passed for all arrays for
+the second call).  All labels have a straight baseline (for plotting along curved text, see BD(PSL_plottextpath)).
+The IT(x) and IT(y) arrays contain the plot coordinates where labels will be plotted; there are
+IT(n) such labels and locations.  Each label has its own entry in the IT(angle) array.  The IT(text) is an
+array of text pointers to the individual text items, which will all appear using the current font and scaled
+to specified IT(fontsize) in points.  The IT(offset) array holds the horizontal and vertical distance gaps between text and the surrounding
+text box in user units (the clip path is the combination of all these text boxes).  Use IT(justify) to specify how the
+text string relates to the coordinates (see BD(JUSTIFICATION) for details).  Finally, IT(mode) is a bit pattern that
+controls how the function does its work; pass IT(mode) as the sum of the values you need:  0 = lay down clip path,
+1 = place the text, 2 = turn off clipping, 4 = draw the IT(x-y) line (useful for debugging), 8 = reuse the previous
+parameters (so pass NULL as args), 16 = construct rounded text boxes [Default is rectangular], 
+128 = fill the text box (this requires you to first define the text box rgb color with BD(PSL_define_rgb) by setting
+a local PS variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
+first define the text box pen with BD(PSL_define_pen) by setting a local PS variable that must be called PSL_setboxpen).
+For font color you must use BD(PSL_define_rgb) and create a PS variable called PSL_settxtrgb.  If not set we default
+to black.
 .RE
-.IP
-void \fBps_triangle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
 .br
-\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
-.br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Plots a triangle and paints it with the specified RGB combination.  If \fIoutline\fP == 1,
-the outline will be drawn using current pen-width and -pattern.
-The symbol will fit inside a circle of given diameter.
+.sp
+BD(long PSL_deftextdim) (ARG(struct PSL_CTRL,*P), ARG(char,*prefix), ARG(double,fontsize), ARG(char,*text))
+.RS 5
+Computes the dimensions (width and height) required by the selected IT(text) given the current font and its IT(fontsize) (in points).
+The values are stored as PS variables called IT(prefix)_w and IT(prefix)_h, respectively.  This function can be
+used to compute dimensions and, via BF(PSL_setcommand), calculate chances to position a particular item should be
+plotted.  For instance, if you compute a position this way and wish to plot the text there, pass the coordinates
+to BD(PSL_plottext) as NaNs.
+If IT(prefix) is BF(-w), BF(-h), BF(-d) or BF(-b), no PS variables will be assigned, but the values of
+width, height, depth, or both width and height will be left on the PS stack.
 .RE
-.IP
-void \fBps_vector\fR (\fIxtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape, rgb, outline\fP)
 .br
-\fBdouble\fR \fIxtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape\fP;
+.sp
+BD(long PSL_setparagraph) (ARG(struct PSL_CTRL,*P), ARG(double,line_space), ARG(double,par_width), ARG(long,par_just))
+.RS 5
+Initialize common settings to be used when typesetting paragraphs of text with BD(PSL_plotparagraph).
+Specify the line spacing (1 equals the font size) and paragraph width (in distance units).
+Text can be aligned left (PSL_BL), centered  (PSL_BC), right (PSL_BR), or
+justified (PSL_JUST) and is controlled by IT(par_just).
 .br
-\fBint\fR \fIrgb[3], outline\fP;
-.RS 10
-Draws a vector of size and appearance as specified by the various parameters.  \fIheadshape\fP can
-take on values from 0-1 and specifies how far the intersection point between the base of a
-straight vector head and the vector line is moved toward the tip.  0 gives a triangular
-head, 1.0 gives an arrow shaped head. If \fIoutline\fP == 1, the outline will be drawn using
-current penwidth.  Add 8 to \fIoutline\fP for a double-headed vector.
+.sp
+BD(long PSL_plotparagraphbox) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,fontsize), ARG(char,*text), ARG(double,angle),
+ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
+.RS 5
+Computes and plots the text rectangle for a paragraph using the specified IT(fontsize) (in points).
+Here, IT(text) is an array of the text to be typeset, using the settings
+initialized by BD(PSL_setparagraph).  The escape sequences described for BD(PSL_plottext)
+can be used to modify the text.  Separate text into several paragraphs by appending \\r to the last item in
+a paragraph.  The whole text block is positioned at plot coordinates IT(x), IT(y), which is
+mapped to a point on the block specified by IT(justify) (see BD(JUSTIFICATION) for details).
+The whole block is then shifted by the amounts IT(shift)[].  The box will be plotted using the current
+fill and outline settings.  The IT(offset) array holds the horizontal and vertical distance gaps between text and the surrounding
+text box in distance units.  Use IT(mode) to indicate whether the box should be straight (PSL_RECT_STRAIGHT = 0), rounded (PSL_RECT_ROUNDED = 1),
+convex (PSL_RECT_CONVEX = 2) or concave (PSL_RECT_CONCAVE = 3).
 .RE
-.IP
-void \fBps_words\fR (\fIx, y, text, n_words, line_space, par_width, par_just, font, font_size, angle, rgb, justify, draw_box, x_off, y_off, x_gap, y_gap, boxpen_width, boxpen_texture, boxpen_offset, boxpen_rgb, vecpen_width, vecpen_texture, vecpen_offset, vecpen_rgb, boxfill_rgb\fP)
 .br
-\fBdouble\fR \fIx, y, line_space, par_width, angle, x_off, y_off, x_gap, y_gap\fP;
-.br
-\fBlong\fR \fIn_words\fP;
-.br
-\fBint\fR \fIfont, font_size, justify, draw_box, boxpen_width, boxpen_offset\fP;
-.br
-\fBint\fR \fIboxpen_rgb[3], vecpen_width, vecpen_offset, vecpen_rgb[3], boxfill_rgb[3]\fP;
-.br
-\fBchar\fP \fI**text, *boxpen_texture, *vecpen_texture\fP;
-.RS 10
-Typesets paragraphs of text.  \fItext\fP is an array of the words to typeset, using the given
-line-spacing and paragraph width.  The whole text block is positioned at \fIx, y\fP which is
-the anchor point on the box as indicated by \fIjustify\fP (see ps_text). The whole block
-is then shifted by \fIx_off, y_off\fP. Inside the box, text
-is justified left, centered, right, or justified as governed by \fIpar_just\fP (lcrj).
-\fIdraw_box\fP contains 4 bit flags pertaining to the surrounding outline box.  If on, the first
-(lowest) bit draws the box outline.  The second bit fills the box interior.  The third bit
-makes the outline box have rounded corners (unless \fIx_gap, y_gap\fP, which specifies the
-padding between the text and the box, are zero), while the forth bit draws a line from the original
-\fIx, y\fP point to the shifted position.  The escape sequences described for ps_text applies as well.
+.sp
+BD(long PSL_plotparagraph) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(double,fontsize), ARG(char,*text), ARG(double,angle),
+ARG(long,justify), ARG(long,mode))
+.RS 5
+Typesets paragraphs of text using the specified IT(fontsize) (in points).
+Here, IT(text) is an array of the text to be typeset, using the settings
+initialized by BD(PSL_setparagraph).  The escape sequences described for BD(PSL_plottext)
+can be used to modify the text.  Separate text into several paragraphs by appending \\r to the last item in
+a paragraph.  The whole text block is positioned at plot coordinates IT(x), IT(y), which is
+mapped to a point on the block specified by IT(justify) (see BD(JUSTIFICATION) for details).
+See BD(PSL_plotparagraphbox) for laying down the surrounding text rectangle first.
 .RE
-.SH AUTHOR
-Paul Wessel, School of Ocean and Earth Science and Technology, 1680 East-West Road, Honolulu,
-Hawaii 96822, (808) 956-4778, Internet address: pwessel@hawaii.edu.
+.br
+.sp
+BD(long PSL_plottextpath) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(long,node)[],
+ARG(double,fontsize), ARG(char,*text)[], ARG(long,m), ARG(double,angle)[], ARG(long,justify), ARG(double,offset)[], ARG(long,mode))
+.RS 5
+Please text along a curved path.  This function is also called twice: First time we pass the text strings and locations and PS will compute
+clip paths so that no features plotted after this call will be visible in areas where text will be plotted.
+The second call actually plots the texts in the predetermined locations (NULL may be passed for all arrays for
+the second call).  All labels will follow the path specified by the plot coordinates in the IT(x), IT(y) arrays
+(for plotting straight text with clipping, see BD(PSL_plottextclip)).
+The IT(node) array contains the index numbers into the IT(x) and IT(y) arrays where each labels will be plotted; there are
+IT(n) such labels and node locations.  Each label has its own entry in the IT(angle) array.  The IT(text) is an
+array of text pointers to the individual text items, which will all appear using the current font and scaled
+to specified IT(fontsize) (in points).  The IT(offset) array holds the x and y distance gaps between text and the surrounding
+text box in user units (the clip path is the combination of all these text boxes).  Use IT(justify) to specify how the
+text string relates to the coordinates (see BF(JUSTIFICATION) for details).  Finally, IT(mode) is a bit pattern that
+controls how the function does its work; pass IT(mode) as the sum of the values you need:  0 = lay down clip path,
+1 = place the text, 2 = turn off clipping, 4 = draw the IT(x-y) line (useful for debugging), 8 = reuse the previous
+parameters (so pass NULL as args), 16 = construct rounded text boxes [Default is rectangular], 32 = set the first time BD(PSL_plottextpath) is
+called (if you are placing text several times), 64 = set the last time BD(PSL_plottextpath) is called,
+128 = fill the text box (this requires you to first define the text box rgb color with BD(PSL_define_rgb) by setting
+a local PS variable that must be called PSL_setboxrgb), and 256 = draw the text box outlines (this requires you to
+first define the text box pen with BD(PSL_define_pen) by setting a local PS variable that must be called PSL_setboxpen).
+For font color you must use BD(PSL_define_rgb) and create a PS variable called PSL_settxtrgb.  If not set we default
+to black.
+.RE
+.SH CLIPPING
+Here are functions used to activate and deactivate clipping regions.
+.br
+.sp
+BD(long PSL_beginclipping) (ARG(struct PSL_CTRL,*P), ARG(double,x), ARG(double,y), ARG(long,n), ARG(double,rgb)[], ARG(long,flag))
+.RS 5
+Sets up a user-definable clip path as a series on IT(n) points with plot coordinates (IT(x), IT(y)).
+Plotting outside this polygon will be clipped
+until BD(PSL_endclipping) is called.  If IT(rgb)[0] = -1 the inside of the path is left empty, otherwise it is
+filled with the specified color.  IT(flag) is used to create complex clip paths
+consisting of several disconnected regions, and takes on values 0-3. IT(flag) = PSL_PEN_MOVE_ABS (1)
+means this is the first path in a multisegment clip path.  IT(flag) = PSL_PEN_DRAW_ABS (2) means
+this is the last segment.  Thus, for a single path, IT(flag) = PSL_PEN_DRAW_AND_STROKE_ABS (3).
+.RE
+.br
+.sp
+BD(long PSL_endclipping) (ARG(struct PSL_CTRL,*P))
+.RS 5
+Resets the clip path to what it was before the previous call to BD(PSL_beginclipping).
+.RE
+.SH MISCELLANEOUS FUNCTIONS
+Here are functions used to issue comments or to pass custom PS commands directly to the output PS file.
+In C these functions are declared as macros and they can accept a variable
+number of arguments.  However, from FORTRAN only a single text argument may be passed.
+.br
+.sp
+BD(long PSL_setcommand) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
+.RS 5
+Writes a raw PS command to the PS output file,
+e.g. "1 setlinejoin\n".
+.RE
+.br
+.sp
+BD(long PSL_comment) (ARG(struct PSL_CTRL,*P), ARG(char,*text))
+.RS 5
+Writes a comment (IT(text)) to the PS output file, e.g. "Start of graph 2\n".
+The comment are prefixed with with %% .
+.RE
+.SH AUTHORS
+Paul Wessel, School of Ocean and Earth Science and Technology, http://www.soest.hawaii.edu.
+.br
+Remko Scharroo, Altimetrics, http://www.altimetrics.com.
 .SH BUGS
-Caveat Emptor:  The author is \fBnot\fP responsible for any disasters, suicide attempts, or ulcers
-caused by correct \fBor\fP incorrect use of \fBpslib\fR.  If you find bugs, please report
-them to the author by electronic mail.  Be sure to provide enough detail so that I
+Caveat Emptor:  The authors are BD(not) responsible for any disasters, suicide attempts, or ulcers
+caused by correct BD(or) incorrect use of PSLIB.  If you find bugs, please report
+them to the authors by electronic mail.  Be sure to provide enough detail so that we
 can recreate the problem.
 .SH REFERENCES
-Adobe Systems Inc., 1990, \fIPostScript\fP language reference manual, 2nd edition,
+Adobe Systems Inc., 1990, PS language reference manual, 2nd edition,
 Addison-Wesley, (ISBN 0-201-18127-4).

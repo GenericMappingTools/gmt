@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: east_map_6.sh,v 1.3 2010-07-14 15:11:30 remko Exp $
+#!/bin/bash
+#	$Id: east_map_6.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km specific point)"
@@ -27,6 +27,6 @@ TITLE=:.${PSFILE}:
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitude}/${vp_latitude}/${twist}/${Width}/${Height}/7i+
 
-pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g5/5g5${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
+pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g5/5g5${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $PSFILE.ps
 
 pscmp $PSFILE

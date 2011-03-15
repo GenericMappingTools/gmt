@@ -1,3 +1,2 @@
 .TP
-OPT(c)
-Specifies the number of plot copies. [Default is 1].
+GMT_c_OPT Specifies the number of plot copies [1].

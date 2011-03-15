@@ -1,9 +1,2 @@
 .TP
-OPT(bi)
-Selects binary input.
-Append \fBs\fP for single precision [Default is \fBd\fP (double)].
-Uppercase \fBS\fP or \fBD\fP will force byte-swapping.
-Optionally, append \fIncol\fP, the number of columns in your binary input file
-if it exceeds the columns needed by the program.
-Or append \fBc\fP if the input file is netCDF. Optionally, append \fIvar1\fP\fB/\fP\fIvar2\fP\fB/\fP\fI...\fP to
-specify the variables to be read.
+GMT_bi_OPT Selects binary input.

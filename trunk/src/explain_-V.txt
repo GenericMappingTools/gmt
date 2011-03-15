@@ -1,3 +1,2 @@
 .TP
-OPT(V)
-Selects verbose mode, which will send progress reports to stderr [Default runs "silently"].
+GMT_V_OPT Selects verbosity level [1].

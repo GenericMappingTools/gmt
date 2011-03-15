@@ -1,4 +1,3 @@
-#	$Id: Makefile,v 1.3 2011-03-03 20:25:45 guru Exp $
 .PHONY:
 	examples run-examples animations run-animations
 
@@ -7,7 +6,8 @@ example_04.ps example_04c.ps example_05.ps example_06.ps \
 example_07.ps example_08.ps example_09.ps example_10.ps example_11.ps example_12.ps \
 example_13.ps example_14.ps example_15.ps example_16.ps example_17.ps example_18.ps \
 example_19.ps example_20.ps example_21.ps example_22.ps example_23.ps example_24.ps \
-example_25.ps example_26.ps example_27.ps example_28.ps example_29.ps example_30.ps
+example_25.ps example_26.ps example_27.ps example_28.ps example_29.ps example_30.ps \
+example_31.ps
 ANIM=anim_01.ps anim_02.ps anim_03.ps anim_04.ps
 
 examples run-examples:	$(EX)
@@ -86,6 +86,8 @@ example_29.ps: ex29/job29.sh
 	cd ex29 ; ./job29.sh
 example_30.ps: ex30/job30.sh ex29/mars370.in
 	cd ex30 ; ./job30.sh
+example_31.ps: ex31/job31.sh
+	cd ex31 ; ./job31.sh
 
 anim_01.ps: anim01/anim_01.sh
 	cd anim01 ; ./anim_01.sh

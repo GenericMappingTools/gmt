@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.7 2010-03-22 18:55:46 guru Exp $
+ * $Id: polygon_match.c,v 1.8 2011-03-15 02:06:37 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
 	}
 	report_area = (argc == 4 && !strcmp (argv[3], "-A")) ? FALSE : TRUE;
 #ifdef DEBUG
-	GMT_memtrack_off (GMT_mem_keeper);
+	GMT_memtrack_off (GMT->dbg.mem_keeper);
 #endif
 
 	new_P = (struct POLYGON_NEW *) GMT_memory (VNULL, N_POLY, sizeof (struct POLYGON_NEW), "polygon_match");
@@ -110,7 +110,7 @@ int main (int argc, char **argv) {
 	for (id1 = 0; id1 < n_A; id1++) {	/* For all polygons in the new file*/
 	
 		/* if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1); */
-		cont_no_1 = (new_P[id1].h.continent);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no_1 = (new_P[id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 
 		for (id2 = 0; new_P[id1].brother == NOT_PRESENT && id2 < n_B; id2++) {	/* For all polygons in the old file*/
 			if (old_P[id2].brother >= 0) continue;	/* Already determined to match another polygon */
@@ -185,7 +185,7 @@ int main (int argc, char **argv) {
 	crude_free_int (IX, IY, N);
 	
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	GMT_memtrack_on (GMT->dbg.mem_keeper);
 #endif
 	GMT_end (argc, argv);
 	

@@ -1,6 +1,6 @@
 # GMT Time language file for HI (Hawaiian) mode [US]
 #
-#	$Id: hi.d,v 1.2 2010-09-30 00:18:58 guru Exp $
+#	$Id: hi.d,v 1.3 2011-03-15 02:06:35 guru Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Ianuali		Ian	I

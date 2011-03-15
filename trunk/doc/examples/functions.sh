@@ -22,8 +22,7 @@ export PATH=$srcdir:$PATH
 export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
 
 # Make sure to cleanup at end
-trap "\rm -f .gmt*" EXIT
+trap "\rm -f .gmt* gmt.conf" EXIT
 
 # Start with proper GMT defaults
-gmtdefaults -Du > .gmtdefaults4
-gmtset PAPER_MEDIA letter UNIX_TIME_FORMAT "Version 4"
+gmtset -Du PS_EPS false FORMAT_TIME_LOGO "Version 5"

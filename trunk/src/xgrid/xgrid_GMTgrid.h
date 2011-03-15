@@ -9,10 +9,11 @@ typedef struct {
 	/* Required fields for all grids */
 	Grid		  methods;
 	/* GMT specific fields */
+	struct GMT_CTRL *GMT;
 	struct GRD_HEADER header;
 	GridValue *	  value;
 	} GMTGrid;
 
-extern GMTGrid * CreateGMTGrid ();	/* No arguments */
+extern GMTGrid * CreateGMTGrid (struct GMT_CTRL *GMT);	/* No arguments */
 		
 #endif

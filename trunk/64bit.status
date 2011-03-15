@@ -1,4 +1,4 @@
-#	$Id: 64bit.status,v 1.6 2011-03-04 06:47:15 guru Exp $
+#	$Id: 64bit.status,v 1.7 2011-03-15 02:06:28 guru Exp $
 #
 # Updated information on how GMT currently supports 64-bit computing
 
@@ -22,5 +22,3 @@ Fall 2008: qsort shown to use two 32-bit variables that cannot handle
 
 Fall 2009: Snow Leopard fixes qsort problem so we must still check for earlier
 	OSX versions.
-
-Spring 2011: Stable 64-bit reached.

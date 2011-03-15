@@ -1,3 +1,2 @@
 .TP
-OPT(P)
-Selects Portrait plotting mode [Default is Landscape, see \fBgmtdefaults\fP to change this].
+OPT(P) Selects "Portrait" plot orientation.

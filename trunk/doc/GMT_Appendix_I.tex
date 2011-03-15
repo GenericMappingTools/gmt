@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.25 2011-02-28 16:05:16 remko Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.26 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \chapter{Color Space: The final frontier}
@@ -25,8 +25,8 @@ Remember your (parents') first color television set? Likely it had three little 
 A mix of levels of red, green, and blue creates basically any color imaginable. In \GMT\ each color can be represented by the triplet $r$/$g$/$b$. For example, 127/255/0 (half red, full green, and no blue) creates a color called chartreuse. The color sliders in the graphics program \progname{GIMP} are an excellent way to experiment with colors, since they show you in advance how moving one of the color sliders will change the color. As Figure~\ref{fig:gimp}\emph{a} shows: increase the red and you will get a more yellow color, while lowering the blue level will turn it into brown.
 
 \begin{figure}[b]
-   \includegraphics[width=0.47\textwidth,bb=0 0 375 209]{fig/gimp-sliders.png}~\emph{a}\hfill
-   \emph{b}~\includegraphics[width=0.47\textwidth,bb=0 0 375 209]{fig/gimp-panel.png}
+   \includegraphics[width=0.47\textwidth,bb=0 0 375 209]{gimp-sliders.png}~\emph{a}\hfill
+   \emph{b}~\includegraphics[width=0.47\textwidth,bb=0 0 375 209]{gimp-panel.png}
    \caption{Chartreuse in \protect\progname{GIMP}. (\emph{a}) Sliders indicate how the color is altered when changing the H, S, V, R, G, or B levels. (\emph{b}) For a constant hue (here 90\DS) value increases to the right and saturation increases up, so the ``pure'' color is on the top right.}
    \label{fig:gimp}
 \end{figure}
@@ -36,7 +36,7 @@ Is chocolate your favorite color, but you do not know the RGB equivalent values?
 Are you very web-savvy and work best with hexadecimal color codes as they are used in HTML? Even that is allowed in \GMT. Just start with a hash mark (\texttt{\#}) and follow with the 2 hexadecimal characters for red, green, and blue. For example, you can use \texttt{\#79ff00} for chartreuse, \texttt{\#D2691E} for chocolate.
 
 \begin{figure}
-   \includegraphics[angle=90,width=\textwidth]{scripts/GMT_RGBchart_a4}
+   \includegraphics[angle=90,width=\textwidth]{GMT_RGBchart_a4}
    \caption{The 555 unique color names that can be used in GMT. Lower, upper, or mixed case, as well as the british
    spelling of ``grey'' are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be found in the
    GMT documentation directory.}
@@ -138,7 +138,7 @@ Another representation of the HSV space is the color cone illustrated in Figure~
 \begin{figure}[h]
    \parbox[b]{0.54\textwidth}{``Pure'' colors are around the edge of the circular surface at the top. Hue runs counter-clockwise. Saturation decreases to the center. Value increases from zero (black) at the bottom to 1 at the top. Gray shades are along the vertical axis.}%
    \hfill%
-   \includegraphics[width=0.45\textwidth,bb=0 0 750 508]{fig/hsv-cone.png}%
+   \includegraphics[width=0.45\textwidth,bb=0 0 750 508]{hsv-cone.png}%
    \caption{The HSV color space.}
    \label{fig:hsv-cone}
 \end{figure}
@@ -153,7 +153,7 @@ The top row in Figure~\ref{fig:GMT_color_interpolate} illustrates two examples: 
 
 \begin{figure}[h]
    \centering
-   \includegraphics[width=0.80\textwidth]{scripts/GMT_color_interpolate}%
+   \includegraphics[width=0.80\textwidth]{GMT_color_interpolate}%
    \caption{When interpolating colors, the color system matters. The polar palette on the left needs to be interpolated in RGB, otherwise hue will change between blue (240\DS) and white (0\DS). The rainbow palette should be interpolated in HSV, since only hue should change between magenta (300\DS) and red (0\DS). Diamonds indicate which colors are defined in the palettes; they are fixed, the rest is interpolated.}
    \label{fig:GMT_color_interpolate}
 \end{figure}
@@ -168,10 +168,10 @@ coordinates of the color.  When the intensity is zero (flat illumination), the d
 are colored according to the cpt file.  If the intensity is
 non-zero, the color is either lightened or darkened depending on the illumination.
 The color is first converted to HSV (if necessary) and then
-darkened by moving ($s$,$v$) toward (\textbf{HSV\_MIN\_SATURATION},
-\textbf{HSV\_MIN\_VALUE}) if the intensity is negative, or lightened by sliding ($s$,$v$) toward
-(\textbf{HSV\_MAX\_SATURATION}, \textbf{HSV\_MAX\_VALUE}) if the illumination is positive.
-The extremes of the $s$ and $v$ are defined in the \filename{.gmtdefaults4} file and are usually
+darkened by moving ($s$,$v$) toward (\textbf{COLOR\_HSV\_MIN\_S},
+\textbf{COLOR\_HSV\_MIN\_V}) if the intensity is negative, or lightened by sliding ($s$,$v$) toward
+(\textbf{COLOR\_HSV\_MAX\_S}, \textbf{COLOR\_HSV\_MAX\_V}) if the illumination is positive.
+The extremes of the $s$ and $v$ are defined in the \filename{gmt.conf} file and are usually
 chosen so the corresponding points are nearly black ($s$ = 1,
 $v$ = 0) and white ($s$ = 0, $v$ = 1).
 The reason this works is that the HSV system allows movements in
@@ -205,5 +205,6 @@ in RGB coordinates.
 Finally, you can imagine that printers work in a different way: they mix different paints to make a color. The more paint, the darker the color, which is the reverse of adding more light. Also, mixing more colored paints does not give you true black, so that means that you really need four colors to do it right. Open up your color printer and you'll probably find four cartridges: cyan, magenta, yellow (often these are combined into one), and black. They form the CMYK system of colors, each value running from 0 to 1 (or 100\%). In \GMT\ CMYK color coding can be achieved using $c$/$m$/$y$/$k$ quadruplets.
 
 Obviously, there is no unique way to go from the 3-dimensional RGB system to the 4-dimensional CMYK system. So, again, there is a lot of hand waving applied in the transformation. Strikingly, CMYK actually covers a smaller color space than RGB. We will not try to explain you the details behind it, just know that there is a transformation needed to go from the colors on your screen to the colors on your printer. It might explain why what you see is not necessarily what you get. If you are really concerned about how your color plots will show up in your PhD thesis, for example, it might be worth trying to save and print all your color plots using the CMYK system. Letting \GMT\ do the conversion to CMYK may avoid
-some nasty surprises when it comes down to printing. To specify the color space of your \PS\ file, set \textbf{PS\_COLOR} in the \filename{.gmtdefaults4} file to RGB, HSV, or CMYK.
+some nasty surprises when it comes down to printing. To specify the color space of your \PS\ file, set \textbf{PS\_COLOR\_MODEL}
+in the \filename{gmt.conf} file to RGB, HSV, or CMYK.
 \index{Color|)}

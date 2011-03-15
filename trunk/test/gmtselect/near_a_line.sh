@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: near_a_line.sh,v 1.10 2010-06-21 23:55:22 guru Exp $
+#!/bin/bash
+#	$Id: near_a_line.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -14,7 +14,7 @@
 . ../functions.sh
 header "Test gmtselect's new -L[p] option on given data"
 
-ps=nearline.ps
+ps=near_a_line.ps
 # Some test data
 grdmath -R0/5/0/5 -I0.1 0 = $$.nc
 cat << EOF > $$.d
@@ -29,23 +29,23 @@ grd2xyz $$.nc > $$.xyz
 # CARTESIAN DATA: distance D = 1 unit
 D=1
 # Old behavior
-psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X0.75i -Y1i > $ps
+psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X0.75i -Y1i > $ps
 gmtselect $$.xyz -L${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -m -W1p >> $ps
+psxy -R -J -O -K $$.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X3.75i >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -m -W1p >> $ps
-# SPHERICAL DATA (-fg): distance D = 1 degree ~= 111.13 km
-D=111.13
+psxy -R -J -O -K $$.d -W1p >> $ps
+# SPHERICAL DATA (-fg): distance D = 1 degree
+D=1d
 # Old behavior
-psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X-3.75i -Y4i >> $ps
+psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X-3.75i -Y4i >> $ps
 gmtselect $$.xyz -L${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -m -W1p >> $ps
+psxy -R -J -O -K $$.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X3.75i >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O $$.d -m -W1p >> $ps
+psxy -R -J -O $$.d -W1p >> $ps
 rm -f $$.nc $$.xyz $$.d
 
 pscmp

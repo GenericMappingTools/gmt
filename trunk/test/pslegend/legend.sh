@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: legend.sh,v 1.16 2010-09-29 02:43:16 remko Exp $
+#!/bin/bash
+#	$Id: legend.sh,v 1.17 2011-03-15 02:06:45 guru Exp $
 #
 # Testing pslegend capabilities
 
@@ -8,7 +8,7 @@ header "Test pslegend and its various items"
 
 ps=legend.ps
 makecpt -Cpanoply -T-8/8/1 > $$.cpt
-gmtset ANNOT_FONT_SIZE_PRIMARY 12p
+gmtset FONT_ANNOT_PRIMARY 12p
 pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F -B5f1 > $ps <<EOF
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
@@ -33,7 +33,7 @@ M 5 5 600+u f
 G 0.05i
 I SOEST_block4.ras 3i CT
 G 0.05i
-B $$.cpt 0.2i 0.2i
+B $$.cpt 0.2i 0.2i -B/
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i

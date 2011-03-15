@@ -1,13 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: colormasking.sh,v 1.10 2010-06-21 23:55:22 guru Exp $
+#	$Id: colormasking.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for use of color masking"
 
 ps=colormasking.ps
-#grdmath -R0/3/0/3 -I1 X Y DIV = t.nc
-xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -F -Gt.nc <<%
+xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -r -Gt.nc <<%
 0 0 0.0
 0 1 0.2
 0 2 0.4
@@ -28,6 +27,6 @@ psxy -R -J -Gp50/10:FwhiteB- -O >> $ps <<%
 2 1
 1 1
 %
-rm -f t.nc t.cpt .gmtcommands4
+rm -f t.nc t.cpt
 
 pscmp

@@ -1,9 +1,9 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.38 2011-01-02 20:09:05 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.39 2011-03-15 02:06:28 guru Exp $
 %
 %       The GMT Documentation Project
-%       Copyright 2000-2011.
-%       Paul Wessel and Walter H. F. Smith
+%       Copyright (c) 2000-2011.
+%       P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 
@@ -15,11 +15,8 @@
 \index{Table!format}
 
 These files have \emph{N} records which have \emph{M} fields each.
-Most programs can read multicolumn files, but require that the
-\emph{x} [and \emph{y}] variable(s) be stored in the 1st [and 2nd]
-column (There are, however, some exceptions to this rule, such as
-\GMTprog{filter1d} and \GMTprog{sample1d}).  \GMT\ can read both ASCII and
-binary table data.
+All programs that handle tables can read multicolumn files.  \GMT\ can
+read both ASCII, native binary, and netCDF table data.
 
 \subsection{ASCII tables}
 \index{Table!ASCII}
@@ -28,10 +25,10 @@ binary table data.
 
 \subsubsection{Optional file header records}
 The first data record may be preceded by 1 or more header records.
-When using such files, make sure to use the \Opt{H} option and set
-the parameter \textbf{N\_HEADER\_RECS} in the \filename{.gmtdefaults4} file
-(System default is 1 header record if \Opt{H} is set; you may also
-use \Opt{H}\emph{nrecs} directly).  Fields
+When using such files, make sure to use the \Opt{h} option and set
+the parameter \textbf{IO\_N\_HEADER\_RECS} in the \filename{gmt.conf} file
+(System default is 1 header record if \Opt{h} is set; you may also
+use \Opt{h}\emph{nrecs} directly).  Fields
 within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
 coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
@@ -47,19 +44,17 @@ One file per feature would in this case be unreasonable and
 furthermore clog up the directory. \GMT\ provides a mechanism for
 keeping more than one profile in a file.  Such files are called
 \emph{multiple segment files} and are identical to the ones
-just outlined except that they have subheaders interspersed with
+just outlined except that they have segment headers interspersed with
 data records that signal the start of a segment.
-The subheaders may be of any format, but all must have the same
+The segment headers may be of any format, but all must have the same
 character in the first column.  When using such files, you must
 specify the \Opt{m} option.  The unique character is by default
-'$>$', but you can override that by appending your chosen character
-to the M option.  E.g., \Opt{mH} will look for subheaders starting
-with H, whereas \Opt{m'*'} will check for asterisks (The quotes
-are necessary since * has special meaning to \UNIX).  Some programs
-such as \GMTprog{psxy} will examine the subheaders to see if they
-contain \Opt{W} and \Opt{G} options for specifying pen and
+'$>$', but you can override that by modifying the {\bf IO\_SEGMENT\_MARKER}
+default setting.  Programs can examine the segment headers to see if they
+contain \Opt{D} for a distance value, \Opt{W} and \Opt{G} options for specifying pen and
 fill attributes for individual segments, \Opt{Z} to change
-color via a cpt-file, or \Opt{L} for label specifications.  These settings
+color via a cpt-file, \Opt{L} for label specifications, or \Opt{T} for
+general-purpose text descriptions.  These settings
 (and occasionally others) will override the corresponding command line options.
 
 \subsection{Binary tables}
@@ -72,16 +67,15 @@ color via a cpt-file, or \Opt{L} for label specifications.  These settings
 
 \GMT\ programs also support native binary tables to speed up input-output
 for i/o-intensive tasks like gridding and preprocessing.  Files
-may have no header (hence the \Opt{H} option cannot be used)
+may have no header (hence the \Opt{h} option cannot be used)
 and all data must either be single or double precision (no mixing
-allowed).  Multiple segment files are allowed (\Opt{m}) and the
+allowed).  Multiple segment files are allowed and the
 segment headers are assumed to be records where all the fields equal 
-NaN.  Flags appended to \Opt{m} are ignored.  The format and number
-of fields are specified with the \Opt{b} option.
+NaN.  The format and number of fields are specified with the \Opt{b} option.
 Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
 where \textbf{s} designates single precision (default is \textbf{d} for double) and
 \emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}] 
-(the programs know how many columns to write, unless you use \Opt{m} in which
+(the programs know how many columns to write, unless you use \Opt{m}, in which
 case we need to know the number of output columns up front).  If you need
 to swap the byte-order on either input or output you must use upper case
 \textbf{S} or \textbf{D} instead.
@@ -134,7 +128,7 @@ from the standards used by \GMT\ can also be read.
 Conventions			& COARDS, CF-1.0 (optional) \\ \hline
 title				& Title (optional) \\ \hline
 source				& How file was created (optional) \\ \hline
-node\_offset			& 0 for gridline node registration (default), 1 for pixel registration \\ \hline
+registration			& 0 for gridline node registration (default), 1 for pixel registration \\ \hline
 \multicolumn{2}{|c|}{\emph{$x$- and $y$-variable attributes}} \\ \hline
 long\_name			& Coordinate name (default: ``Longitude'' and ``Latitude'') \\ \hline
 units				& Unit of the coordinate (default: ``degrees\_east'' and ``degrees\_north'') \\ \hline
@@ -177,69 +171,24 @@ for more information.
 \index{grid file!formats!CF-1.0|)}
 
 \subsection{Gridline and Pixel node registration} 
-\index{grid file!registration|(}
-\label{sec:node_registration}
 
 Scanline format means that the data are stored in rows (\emph{y} = constant)
 going from the ``top'' ($y = y_{max}$ (north)) to the ``bottom''
 ($y = y_{min}$ (south)).  Data within each row are ordered from
 ``left'' ($x = x_{min}$ (west)) to ``right'' ($x = x_{max}$
-(east)).  The \emph{node\_offset} signals how the nodes are laid out.
+(east)).  The \emph{registration} signals how the nodes are laid out.
 The grid is always defined as the intersections of all \emph{x}
 ( \( x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max} \) )
 and \emph{y} ( \( y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} \) )
-lines.  The two scenarios differ in which area each data point
-represents.
+lines.  The two scenarios differ as to which area each data point represents.
 The default node registration in \GMT\ is gridline node registration.  Most
 programs can handle both types, and for some programs like \GMTprog{grdimage}
 a pixel registered file makes more sense.  Utility programs like
 \GMTprog{grdsample} and \GMTprog{grdproject} will allow you to convert
 from one format to the other; \GMTprog{grdedit} can make changes to the grid header
-and convert a pixel- to a gridline-registred grid, or \emph{vice versa}.
-
-\subsubsection{Gridline registration}
-\index{grid file!registration!grid line|(}
-
-In this registration, the nodes are centered on the grid line
-intersections and the data points represent the average value
-in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on the
-nodes (Figure~\ref{fig:GMT_App_B_1}).
-In the case of grid line registration the number of nodes are
-related to region and grid spacing by \\
-
-\[ \begin{array}{ccl} 
-nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\ 
-ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
-\end{array} \]
-
-which for the example in Figure~\ref{fig:GMT_App_B_1} yields $nx = ny = 4$.
-
-\GMTfig[h]{GMT_App_B_1}{Gridline registration of data nodes.}
-
-\index{grid file!registration!grid line|)}
-
-\subsubsection{Pixel registration}
-\index{grid file!registration!pixel|(}
-
-Here, the nodes are centered in the grid cells, i.e., the areas
-between grid lines, and the data points represent the average
-values within each cell (Figure~\ref{fig:GMT_App_B_2}.
-In the case of pixel registration the number of nodes are related
-to region and grid spacing by \\
-
-\[ \begin{array}{ccl} 
-nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\ 
-ny & =  &       (y_{max} - y_{min}) / y_{inc}
-\end{array} \]
-
-Thus, given the same region (\Opt{R}), the pixel node registered grids have one less
-column and one less row than the grid line registered grids; here we
-find $nx = ny = 3$.
-
-\GMTfig[H]{GMT_App_B_2}{Pixel registration of data nodes.}
-
-\index{grid file!registration!pixel|)}
-\index{grid file!registration|)}
+and convert a pixel- to a gridline-registered grid, or \emph{vice versa}.
+The grid registration is determined by the common \GMT\ \Opt{r} option
+(see Section~\ref{sec:registration}).
 
 \subsection{Boundary Conditions for operations on grids} 
 \index{grid file!boundary conditions|(}
@@ -334,7 +283,7 @@ programmers must take care to read this header correctly (see our code for detai
 \multicolumn{1}{|c}{\emph{Parameter}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
 \textbf{int} \emph{nx}                      &       Number of nodes in the $x$-dimension    \\ \hline
 \textbf{int} \emph{ny}                      &       Number of nodes in the y-dimension      \\ \hline
-\textbf{int} \emph{node\_offset}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
+\textbf{int} \emph{registration}    &       0 for grid line registration, 1 for pixel registration  \\ \hline
 \textbf{double} \emph{x\_min}               &       Minimum $x$-value of region     \\ \hline
 \textbf{double} \emph{x\_max}               &       Maximum $x$-value of region  \\ \hline
 \textbf{double} \emph{y\_min}               &       Minimum $y$-value of region  \\ \hline

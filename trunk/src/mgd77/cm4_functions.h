@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.h,v 1.6 2009-05-07 19:10:52 jluis Exp $
+ *	$Id: cm4_functions.h,v 1.7 2011-03-15 02:06:37 guru Exp $
  *
  *
  *  File:	cm4_functions.h
@@ -15,41 +15,41 @@
  *-------------------------------------------------------------------------*/
 
 struct MGD77_CM4 {
-	struct L {	/*  */
+	struct CM4_L {	/*  */
 		int curr;
 		int curr_components[4];
 		int n_curr_components;
 		int curr_sources[4];
 		int n_curr_sources;
-	} L;
-	struct D {	/*  */
+	} CM4_L;
+	struct CM4_D {	/*  */
 		int active;
 		int index; 
 		int load;
 		double *dst;
 		char *path;
-	} D;
-	struct I {	/*  */
+	} CM4_D;
+	struct CM4_I {	/*  */
 		int active;
 		int index; 
 		int load;
 		double F107;
 		char *path;
-	} I;
-	struct F {	/* -F<xymrw> */
+	} CM4_I;
+	struct CM4_F {	/* -F<xymrw> */
 		int active;
 		int field_components[7];
 		int n_field_components;
 		int field_sources[7];
 		int n_field_sources;
-	} F;
-	struct G {	/*  */
+	} CM4_F;
+	struct CM4_G {	/*  */
 		int geodetic;
-	} G;
-	struct M {	/*  */
+	} CM4_G;
+	struct CM4_M {	/*  */
 		char *path;
-	} M;
-	struct DATA {	/* */
+	} CM4_M;
+	struct CM4_DATA {	/* */
 		int pred[6];
 		int n_pts;
 		int n_times;
@@ -57,12 +57,12 @@ struct MGD77_CM4 {
 		int coef;
 		double	gmdl[1];
 		double	*out_field;
-	} DATA;
-	struct S {	/*  */
+	} CM4_DATA;
+	struct CM4_S {	/*  */
 		int nlmf[2];
 		int nhmf[2];
-	} S;
+	} CM4_S;
 };
 
-int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
-void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
+int MGD77_cm4field (struct GMT_CTRL *C, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
+EXTERN_MSC void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);

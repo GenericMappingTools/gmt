@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.70 2011-03-03 19:40:18 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.71 2011-03-15 02:06:31 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -14,6 +14,7 @@ configure.ac
 configure
 gmt_bench-marks
 gmtswitch
+gmtpatch.sh
 install-sh
 Makefile
 src/Makefile
@@ -26,6 +27,7 @@ src/gmt_shell_functions.sh
 src/gmtinstall.bat
 src/gmtsuppl.bat
 src/gmt.h
+src/gmt5.h
 src/gmt_bcr.h
 src/gmt_boundcond.h
 src/gmt_calclock.h
@@ -33,9 +35,13 @@ src/gmt_colors.h
 src/gmt_colornames.h
 src/gmt_color_rgb.h
 src/gmt_common.h
+src/gmt_constants.h
 src/gmt_contour.h
+src/gmt_crossing.h
 src/gmt_customio.h
 src/gmt_datums.h
+src/gmt_debug.h
+src/gmt_defaults.h
 src/gmt_dimensions.h
 src/gmt_ellipsoids.h
 src/gmt_error.h
@@ -46,10 +52,13 @@ src/gmt_grdformats.h
 src/grdreformat.h
 src/grdinfo.h
 src/gmt_grdio.h
+src/gmt_hash.h
 src/gmt_init.h
+src/gmt_internals.h
 src/gmt_io.h
 src/gmt_keycases.h
 src/gmt_keywords.h
+src/gmt_macros.h
 src/gmt_map.h
 src/gmt_math.h
 src/gmt_mgg_header2.h
@@ -58,21 +67,25 @@ src/gmt_notposix.h.in
 src/gmt_notunix.h
 src/gmt_media_name.h
 src/gmt_media_size.h
-src/gmt_parse_z_io.h
 src/gmt_pennames.h
 src/gmt_proj.h
 src/gmt_project.h
 src/gmt_plot.h
+src/gmt_ps.h
 src/gmt_shore.h
 src/gmt_stat.h
 src/gmt_support.h
 src/gmt_symbol.h
 src/gmt_synopsis.h
+src/gmt_texture.h
+src/gmt_types.h
+src/gmt_time.h
 src/gmt_unique.h
 src/gmt_vector.h
 src/gmt_version.h.in
-src/psbbox.sh
 src/pslib.h
+src/pslconfig.h.in
+src/GMT.c
 src/blockmean.c
 src/blockmedian.c
 src/blockmode.c
@@ -99,18 +112,25 @@ src/gmt_shore.c
 src/gmt_stat.c
 src/gmt_support.c
 src/gmt_vector.c
-src/gmt2rgb.c
+src/gmt2kml.c
 src/gmtdefaults.c
+src/gmtdp.c
 src/gmtconvert.c
-src/gmtget
+src/gmtget.c
 src/gmtmath.c
 src/gmtmath_def.h
+src/gmtmath_op.h
 src/gmtmath_explain.h
 src/gmtmath.h
 src/gmtlogo
 src/gmtselect.c
 src/gmtset.c
+src/gmtspatial.c
+src/gmtstitch.c
+src/gmtvector.c
+src/gmtwhich.c
 src/grd2cpt.c
+src/grd2rgb.c
 src/grd2xyz.c
 src/grdblend.c
 src/grdclip.c
@@ -127,6 +147,7 @@ src/grdlandmask.c
 src/grdmask.c
 src/grdmath.c
 src/grdmath_def.h
+src/grdmath_op.h
 src/grdmath_explain.h
 src/grdmath.h
 src/grdpaste.c
@@ -139,6 +160,7 @@ src/grdvector.c
 src/grdview.c
 src/grdvolume.c
 src/greenspline.c
+src/kml2gmt.c
 src/makecpt.c
 src/mapproject.c
 src/minmax.c
@@ -175,16 +197,22 @@ src/blockmode.1
 src/filter1d.1
 src/fitcircle.1
 src/gmt_shell_functions.1
-src/gmt2rgb.1
+src/gmt2kml.1
 src/gmtcolors.5
 src/gmtconvert.1
 src/gmtdefaults.1
+src/gmtdp.1
 src/gmtget.1
 src/gmtmath.1
 src/gmtlogo.1
 src/gmtselect.1
 src/gmtset.1
+src/gmtspatial.1
+src/gmtstitch.1
+src/gmtvector.1
+src/gmtwhich.1
 src/grd2cpt.1
+src/grd2rgb.1
 src/grd2xyz.1
 src/grdblend.1
 src/grdclip.1
@@ -211,6 +239,7 @@ src/grdview.1
 src/grdvolume.1
 src/greenspline.1
 src/isogmt.1
+src/kml2gmt.1
 src/makecpt.1
 src/mapproject.1
 src/minmax.1
@@ -218,7 +247,6 @@ src/nearneighbor.1
 src/project.1
 src/ps2raster.1
 src/psbasemap.1
-src/psbbox.1
 src/psclip.1
 src/pscoast.1
 src/pscontour.1
@@ -241,6 +269,5 @@ src/trend1d.1
 src/trend2d.1
 src/triangulate.1
 src/xyz2grd.1
-share/conf/gmtdefaults_SI.in
-share/conf/gmtdefaults_US.in
+share/conf/gmtdefaults.in
 share/conf/gmt.conf.in

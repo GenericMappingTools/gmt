@@ -1,218 +1,221 @@
 #include "common_options.txt"
 .TH GREENSPLINE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green's function splines.
+greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green's function splines.\"'
 .SH SYNOPSIS
-\fBgreenspline\fP [ \fIdatafile(s)\fP ] 
-[ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
-[ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] 
-[ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fInodefile\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
-[ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
-[ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fImaskgrid\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
+BD(greenspline) [ IT(datafile(s)) ] 
+[ OPT(A)[BD(1)|BD(2)|BD(3)|BD(4)|BD(5),]IT(gradfile) ] [ OPT(C)IT(cut)[/IT(file)] ] 
+[ OPT(D)IT(mode) ] [ OPT(G)IT(grdfile) ]
+[ OPT(I)IT(xinc)[IT(yinc)[IT(zinc)]] ] [ OPT(L) ] [ OPT(N)IT(nodefile) ] [ OPT(Q)IT(az)|IT(x/y/z) ] 
+[ OPT(R)IT(xmin)/IT(xmax)[/IT(ymin)/IT(ymax)[/IT(zmin)IT(zmax)]] ] 
+[ OPT(S)BD(c|t|g|p|q)[IT(pars)] ] [ OPT(T)IT(maskgrid) ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
+[ GMT_bo_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBgreenspline\fP uses the Green's function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
+BD(greenspline) uses the Green's function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
 at regular [or arbitrary] output locations.  Mathematically, the solution is composed as
-\fIw\fP(\fBx\fP) = sum {\fIc\fP(\fIi\fP) G(\fBx\fP; \fBx\fP(\fIi\fP))}, for \fIi\fP = 1, \fIn\fP, the number
-of data points {\fBx\fP(\fIi\fP), \fIw\fP(\fIi\fP)}.  Once the \fIn\fP coefficients \fIc\fP(\fIi\fP)
-have been found then the sum can be evaluated at any output point \fBx\fP.
+IT(w)(BD(x)) = sum {\fIc\fP(\fIi\fP) G(\fBx'\fP; \fBx\fP(\fIi\fP))}, for \fIi\fP = 1, \fIn\fP, the number\"'
+of data points {BD(x)(IT(i)), IT(w)(IT(i))}.  Once the IT(n) coefficients IT(c)(IT(i))
+have been found then the sum can be evaluated at any output point BD(x).
 Choose between ten minimum curvature, regularized, or continuous curvature splines in tension for
 either 1-D, 2-D, or 3-D Cartesian coordinates or spherical surface coordinates. After first removing a linear or planar trend
 (Cartesian geometries) or mean value (spherical surface) and normalizing these residuals,
-the least-squares matrix solution for the spline coefficients \fIc\fP(\fIi\fP) is found by
-solving the \fIn\fP by \fIn\fP linear system \fIw\fP(\fIj\fP) = sum-over-\fIi\fP {\fIc\fP(\fIi\fP) G(\fBx\fP(\fIj\fP); \fBx\fP(\fIi\fP))},
-for \fIj\fP = 1, \fIn\fP; this
+the least-squares matrix solution for the spline coefficients IT(c)(IT(i)) is found by
+solving the IT(n) by IT(n) linear system IT(w)(IT(j)) = sum-over-IT(i) {IT(c)(IT(i)) G(BD(x)(IT(j)); BD(x)(IT(i)))},
+for IT(j) = 1, IT(n); this
 solution yields an exact interpolation of the supplied data points.  Alternatively, you may
 choose to perform a singular value decomposition (SVD) and eliminate the contribution from the
 smallest eigenvalues; this approach yields an approximate solution.  Trends and scales are
 restored when evaluating the output.
-.SH OPTIONS
+.SH REQUIRED ARGUMENTS
 .TP
-\fIdatafile(s)\fP
-The name of one or more ASCII [or binary, see OPT(bi)] files holding the \fBx\fP, \fIw\fP
+IT(datafile(s))
+The name of one or more ASCII [or binary, see OPT(bi)] files holding the BD(x), IT(w)
 data points.  If no file is given then we read standard input instead.
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
-The solution will partly be constrained by surface gradients \fBv\fP = \fIv\fP*\fBn\fP, where \fIv\fP is the
-gradient magnitude and \fBn\fP its unit vector direction.  The gradient direction may be specified either by
-Cartesian components (either unit vector \fBn\fP and magnitude \fIv\fP separately or gradient components \fBv\fP directly)
+OPT(A)[BD(1)|BD(2)|BD(3)|BD(4)|BD(5),]IT(gradfile)
+The solution will partly be constrained by surface gradients BD(v) = IT(v)*BD(n), where IT(v) is the
+gradient magnitude and BD(n) its unit vector direction.  The gradient direction may be specified either by
+Cartesian components (either unit vector BD(n) and magnitude IT(v) separately or gradient components BD(v) directly)
 or angles w.r.t. the coordinate axes.  Specify one of five input formats:
-\fB0\fP: For 1-D data there is no direction, just gradient magnitude (slope) so the input format is
-\fIx, gradient\fP.  Options 1-2 are for 2-D data sets:
-\fB1\fP: records contain \fIx, y, azimuth, gradient\fP (\fIazimuth\fP in degrees is measured
+BD(0): For 1-D data there is no direction, just gradient magnitude (slope) so the input format is
+IT(x), IT(gradient).  Options 1-2 are for 2-D data sets:
+BD(1): records contain IT(x), IT(y), IT(azimuth), IT(gradient) (IT(azimuth) in degrees is measured
 clockwise from the vertical (north) [Default]).
-\fB2\fP: records contain \fIx, y, gradient, azimuth\fP (\fIazimuth\fP in degrees is measured
+BD(2): records contain IT(x), IT(y), IT(gradient), IT(azimuth) (IT(azimuth) in degrees is measured
 clockwise from the vertical (north)).  Options 3-5 are for either 2-D or 3-D data:
-\fB3\fP: records contain \fBx\fP, \fIdirection(s), v\fP (\fIdirection(s)\fP in degrees are measured
+BD(3): records contain BD(x), IT(direction(s)), IT(v) (IT(direction(s)) in degrees are measured
 counter-clockwise from the horizontal (and for 3-D the vertical axis). 
-\fB4\fP: records contain \fBx\fP, \fBv\fP.
-\fB5\fP: records contain \fBx\fP, \fBn\fP, \fIv\fP.
+BD(4): records contain BD(x), BD(v).
+BD(5): records contain BD(x), BD(n), IT(v).
 Append name of ASCII file with the surface gradients (following a comma if a format is specified).  
 .TP
-OPT(C)
+OPT(C)IT(cut)[/IT(file)]
 Find an approximate surface fit: Solve the linear system for the spline coefficients by SVD and eliminate the contribution
 from all eigenvalues whose ratio to the largest
-eigenvalue is less than \fIcut\fP [Default uses Gauss-Jordan elimination to solve the
-linear system and fit the data exactly].  Optionally, append /\fIfile\fP to
+eigenvalue is less than IT(cut) [Default uses Gauss-Jordan elimination to solve the
+linear system and fit the data exactly].  Optionally, append /IT(file) to
 save the eigenvalue ratios to the specified file for further analysis.
-Finally, if a negative \fIcut\fP is given then /\fIfile\fP is required and execution
+Finally, if a negative IT(cut) is given then /IT(file) is required and execution
 will stop after saving the eigenvalues, i.e., no surface output is produced.
 .TP
-OPT(D)
+OPT(D)IT(mode)
 Sets the distance flag that determines how we calculate distances between data points.  
-Select \fImode\fP 0 for Cartesian 1-D spline interpolation:
-OPT(D)0 means (\fIx\fP) in user units, Cartesian distances,
-Select \fImode\fP 1-3 for Cartesian 2-D surface spline interpolation:
-OPT(D)1 means (\fIx,y\fP) in user units, Cartesian distances,
-OPT(D)2 for (\fIx,y\fP) in degrees, flat Earth distances, and
-OPT(D)3 for (\fIx,y\fP) in degrees, spherical distances in km.
-Then, if \fBELLIPSOID\fP is spherical, we compute great circle arcs, otherwise geodesics.
-Option \fImode\fP = 4 applies to spherical surface spline interpolation only:
-OPT(D)4 for (\fIx,y\fP) in degrees, use cosine of great circle (or geodesic) arcs.
-Select \fImode\fP 5 for Cartesian 3-D surface spline interpolation:
-OPT(D)5 means (\fIx,y,z\fP) in user units, Cartesian distances.
+Select IT(mode) 0 for Cartesian 1-D spline interpolation:
+OPT(D)0 means (IT(x)) in user units, Cartesian distances,
+Select IT(mode) 1-3 for Cartesian 2-D surface spline interpolation:
+OPT(D)1 means (IT(x),IT(y)) in user units, Cartesian distances,
+OPT(D)2 for (IT(x),IT(y)) in degrees, Flat Earth distances, and
+OPT(D)3 for (IT(x),IT(y)) in degrees, Spherical distances in km.
+Then, if BD(PROJ_ELLIPSOID) is spherical, we compute great circle arcs, otherwise geodesics.
+Option IT(mode) = 4 applies to spherical surface spline interpolation only:
+OPT(D)4 for (IT(x),IT(y)) in degrees, use cosine of great circle (or geodesic) arcs.
+Select IT(mode) 5 for Cartesian 3-D surface spline interpolation:
+OPT(D)5 means (IT(x),IT(y),IT(z)) in user units, Cartesian distances.
 .TP
-OPT(F)
-Force pixel registration.  [Default is gridline registration].
-.TP
-OPT(G)
-Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(F) are set we produce
+OPT(G)IT(grdfile)
+Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(r) are set we produce
 an equidistant output table.  This will be written to stdout unless OPT(G) is specified.  Note: for 2-D
 grids the OPT(G) option is required.  (2) If option OPT(T) is selected then OPT(G) is required and the
 output file is a 2-D binary grid file.  Applies to 2-D interpolation only.
 (3) If OPT(N) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.
-#include "explain_-h.txt"
 .TP
-OPT(I)
+OPT(I)IT(xinc)[IT(yinc)[IT(zinc)]]
 Specify equidistant sampling intervals, on for each dimension, separated by slashes.
 .TP
 OPT(L)
-Do \fInot\fP remove a linear (1-D) or planer (2-D) trend when OPT(D) selects mode 0-3 [For those Cartesian cases a least-squares
+Do IT(not) remove a linear (1-D) or planer (2-D) trend when OPT(D) selects mode 0-3 [For those Cartesian cases a least-squares
 line or plane is modeled and removed, then restored after fitting a spline to the residuals].  However, in mixed
 cases with both data values and gradients, or for spherical surface data, only the mean data value is removed
 (and later and restored).
 .TP
-OPT(N)
-ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
-\fIw\fP values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
+OPT(N)IT(nodefile)
+ASCII file with coordinates of desired output locations BD(x) in the first column(s).  The resulting
+IT(w) values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
 see OPT(bo) for binary output instead.  This option eliminates the need to
-specify options OPT(R), OPT(I), and OPT(F).
+specify options OPT(R), OPT(I), and OPT(r).
 .TP
-OPT(Q)
-Rather than evaluate the surface, take the directional derivative in the \fIaz\fP azimuth and return the magnitude of this
+OPT(Q)IT(az)|IT(x/y/z)
+Rather than evaluate the surface, take the directional derivative in the IT(az) azimuth and return the magnitude of this
 derivative instead.  For 3-D interpolation, specify the three components of the desired vector direction (the vector will
 be normalized before use).
 .TP
-OPT(R)
-Specify the domain for an equidistant lattice where output predictions are required.  Requires OPT(I) and optionally OPT(F).
+OPT(R)IT(xmin)/IT(xmax)[/IT(ymin)/IT(ymax)[/IT(zmin)IT(zmax)]]
+Specify the domain for an equidistant lattice where output predictions are required.  Requires OPT(I) and optionally OPT(r).
 .br
-\fI1-D:\fP  Give \fIxmin/xmax\fP, the minimum and maximum \fIx\fP coordinates.
+IT(1-D:)  Give IT(xmin/xmax), the minimum and maximum IT(x) coordinates.
 .br
-\fI2-D:\fP  Give \fIxmin/xmax/ymin/ymax\fP, the minimum and maximum \fIx\fP and \fIy\fP coordinates.
+IT(2-D:)  Give IT(xmin/xmax/ymin/ymax), the minimum and maximum IT(x) and IT(y) coordinates.
 These may be Cartesian or geographical.  If geographical, then
-\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest, and you may specify them
+IT(west), IT(east), IT(south), and IT(north) specify the Region of interest, and you may specify them
 in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain
 (0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 .br
-\fI3-D:\fP  Give \fIxmin/xmax/ymin/ymax/zmin/zmax\fP, the minimum and maximum \fIx\fP, \fIy\fP and \fIz\fP coordinates.
+IT(3-D:)  Give IT(xmin/xmax/ymin/ymax/zmin/zmax), the minimum and maximum IT(x), IT(y) and IT(z) coordinates.
 See the 2-D section if your horizontal coordinates are geographical; note the shorthands OPT(Rg) and OPT(Rd) cannot
 be used if a 3-D domain is specified.
 .TP
-OPT(S)
+OPT(S)BD(c|t|g|p|q)[IT(pars)]
 Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion).
-Note that all tension values are expected to be normalized tension in the range 0 < \fIt\fP < 1:
-(\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1987],
-(\fBt\fP) Continuous curvature spline in tension [\fIWessel and Bercovici\fP, 1998]; append
-\fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
+Note that all tension values are expected to be normalized tension in the range 0 < IT(t) < 1:
+(BD(c)) Minimum curvature spline [IT(Sandwell), 1987],
+(BD(t)) Continuous curvature spline in tension [IT(Wessel and Bercovici), 1998]; append
+IT(tension)[/IT(scale)] with IT(tension) in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
 The next is a 2-D or 3-D spline:
-(\fBr\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; again, append \fItension\fP and optional \fIscale\fP.
+(BD(r)) Regularized spline in tension [IT(Mitasova and Mitas), 1993]; again, append IT(tension) and optional IT(scale).
 The last two are spherical surface splines and both imply OPT(D)4 OPT(fg):
-(\fBp\fP) Minimum curvature spline [\fIParker\fP, 1994],
-(\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP.
-The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying OPT(SQ) you can speed up calculations
-by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values (e.g., 100,001 nodes between -1 to +1)
-and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [100001]
+(BD(p)) Minimum curvature spline [IT(Parker), 1994],
+(BD(q)) Continuous curvature spline in tension [IT(Wessel and Becker), 2008]; append IT(tension).
+The G(\fBx'\fP; \fBx'\fP) for the last method is slower to compute; by specifying OPT(SQ) you can speed up calculations
+by first pre-calculating G(\fBx'\fP; \fBx'\fP) for a dense set of BD(x) values (e.g., 100,001 nodes between -1 to +1)
+and store them in look-up tables.  Optionally append /IT(N) (an odd integer) to specify how many points in the spline to set [100001]
 .TP
-OPT(T)
-For 2-D interpolation only.  Only evaluate the solution at the nodes in the \fImaskgrid\fP that are not equal to NaN. This option eliminates the need to
-specify options OPT(R), OPT(I), and OPT(F).
+OPT(T)IT(maskgrid)
+For 2-D interpolation only.  Only evaluate the solution at the nodes in the IT(maskgrid) that are not equal to NaN. This option eliminates the need to
+specify options OPT(R), OPT(I), and OPT(r).
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
-[Default is 2-4 input columns (\fBx\fP,\fIw\fP); the number depends on the chosen dimension].
+[Default is 2-4 input columns (BD(x),IT(w)); the number depends on the chosen dimension].
 #include "explain_-bo.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
 .SH 1-D EXAMPLES
-To resample the \fIx,y\fP Gaussian random data created by \fBgmtmath\fP and stored in 1D.txt, requesting output
+To resample the IT(x),IT(y) Gaussian random data created by BD(gmtmath) and stored in 1D.txt, requesting output
 every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
-\fBgmtmath\fP OPT(T)0/10/1 0 1 \fBNRAND\fP = 1D.txt
+BD(gmtmath) OPT(T)0/10/1 0 1 BD(NRAND) = 1D.txt
 .br
-\fBpsxy \-R\fP0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1D.ps
+BD(psxy) OPT(R)0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1D.ps
 .br
-\fBgreenspline\fP 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(Sc) OPT(V) | \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1D.ps
+BD(greenspline) 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(Sc) OPT(V) | BD(psxy) OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1D.ps
 .br
 .sp
 To apply a spline in tension instead, using a tension of 0.7, try
 .br
 .sp
-\fBpsxy \-R\fP0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1Dt.ps
+BD(psxy) OPT(R)0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1Dt.ps
 .br
-\fBgreenspline\fP 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(St)0.7 OPT(V) | \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1Dt.ps
+BD(greenspline) 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(St)0.7 OPT(V) | BD(psxy) OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1Dt.ps
 .SH 2-D EXAMPLES
 To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
-used in the GMT Cookbook example 16, try
+used in the GMT Technical Reference and Cookbook example 16, try
 .sp
-\fBgreenspline\fP table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(G)S1987.grd
+BD(greenspline) table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(G)S1987.nc
 .br
-\fBpsxy \-R\fP0/6.5/-0.2/6.5 OPT(JX)6i OPT(B)2f1 OPT(Sc)0.1 OPT(G)black table_5.11 OPT(K) > 2D.ps
+BD(psxy) OPT(R)0/6.5/-0.2/6.5 OPT(JX)6i OPT(B)2f1 OPT(Sc)0.1 OPT(G)black table_5.11 OPT(K) > 2D.ps
 .br
-\fBgrdcontour \-JX\fP6i OPT(B)2f1 OPT(O) OPT(C)25 OPT(A)50 S1987.grd >> 2D.ps
+BD(grdcontour) OPR(JX)6i OPT(B)2f1 OPT(O) OPT(C)25 OPT(A)50 S1987.nc >> 2D.ps
 .br
 .sp
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 OPT(T)mask.grd OPT(St)0.5 OPT(V) OPT(D)1 OPT(G)WB1998.grd
+BD(greenspline) table_5.11 OPT(T)mask.nc OPT(St)0.5 OPT(V) OPT(D)1 OPT(G)WB1998.nc
 .br
 .sp
 To use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sr)0.95 OPT(V) OPT(D)1 OPT(Q)-45 OPT(G)slopes.grd
+BD(greenspline) table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sr)0.95 OPT(V) OPT(D)1 OPT(Q)-45 OPT(G)slopes.nc
 Finally, to use Cartesian minimum curvature splines in recovering a surface where the input data is a single surface
 value (pt.d) and the remaining constraints specify only the surface slope and direction (slopes.d), use
 .br
 .sp
-\fBgreenspline\fP pt.d OPT(R)-3.2/3.2/-3.2/3.2 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(A)1,slopes.d OPT(G)slopes.grd
+BD(greenspline) pt.d OPT(R)-3.2/3.2/-3.2/3.2 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(A)1,slopes.d OPT(G)slopes.nc
 .SH 3-D EXAMPLES
-To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains \fIx,y,z\fP locations and
+To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains IT(x),IT(y),IT(z) locations and
 a measure of uranium oxide concentrations (in percent), try
 .br
 .sp
-\fBgreenspline\fP table_5.23 OPT(R)5/40/-5/10/5/16 OPT(I)0.25 OPT(Sr)0.85 OPT(V) OPT(D)5 OPT(G)3D_UO2.txt
+BD(greenspline) table_5.23 OPT(R)5/40/-5/10/5/16 OPT(I)0.25 OPT(Sr)0.85 OPT(V) OPT(D)5 OPT(G)3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
-To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
+To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try\"'
 .sp
-greenspline OPT(V) OPT(Rg) OPT(fg) OPT(Sp) OPT(D)3 OPT(I)1 OPT(G)P1994.grd mag_obs_1990.d
+greenspline OPT(V) OPT(Rg) OPT(fg) OPT(Sp) OPT(D)3 OPT(I)1 OPT(G)P1994.nc mag_obs_1990.d
 .sp
 To do the same problem but applying tension and use pre-calculated Green functions, use
 .sp
-greenspline OPT(V) OPT(Rg) OPT(fg) OPT(SQ)0.85 OPT(D)3 OPT(I)1 OPT(G)WB2008.grd mag_obs_1990.d
+greenspline OPT(V) OPT(Rg) OPT(fg) OPT(SQ)0.85 OPT(D)3 OPT(I)1 OPT(G)WB2008.nc mag_obs_1990.d
 .SH CONSIDERATIONS
 (1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
 is arbitrarily set to reflect the extent of your data.  However, if your application requires
-particular boundary conditions then you may consider using \fBsurface\fP instead.
+particular boundary conditions then you may consider using BD(surface) instead.
 .br
-(2) In all cases, the solution is obtained by inverting a \fIn\fP x \fIn\fP double precision matrix for the Green
-function coefficients, where \fIn\fP
-is the number of data constraints.  Hence, your computer's memory may place restrictions on how large data
-sets you can process with \fBgreenspline\fP.  Pre-processing your data with \fBblockmean\fP, \fBblockmedian\fP,
-or \fBblockmode\fP is recommended to avoid aliasing and may also control the size of \fIn\fP. For information,
-if \fIn\fP = 1024 then only 8 Mb memory is needed, but for \fIn\fP = 10240 we need 800 Mb. Note that
-\fBgreenspline\fP is fully 64-bit compliant if compiled as such.
+(2) In all cases, the solution is obtained by inverting a IT(n) x IT(n) double precision matrix for the Green
+function coefficients, where IT(n)
+is the number of data constraints.  Hence, your computer's memory may place restrictions on how large data\"'
+sets you can process with BD(greenspline).  Pre-processing your data with BD(blockmean), BD(blockmedian),
+or BD(blockmode) is recommended to avoid aliasing and may also control the size of IT(n). For information,
+if IT(n) = 1024 then only 8 Mb memory is needed, but for IT(n) = 10240 we need 800 Mb. Note that
+BD(greenspline) is fully 64-bit compliant if compiled as such.
 .br
 (3) The inversion for coefficients can become numerically unstable when data neighbors are very close
 compared to the overall span of the data.  You can remedy this by pre-processing the data, e.g., by
@@ -223,24 +226,25 @@ Tension is generally used to suppress spurious oscillations caused by the minimu
 when rapid gradient changes are present in the data.  The proper amount of tension can only be determined by experimentation.
 Generally, very smooth data (such as potential fields) do not require much, if any tension, while rougher data (such
 as topography) will typically interpolate better with moderate tension.  Make sure you try a range of values before
-choosing your final result.  Note: the regularized spline in tension is only stable for a finite range of \fIscale\fP values;
+choosing your final result.  Note: the regularized spline in tension is only stable for a finite range of IT(scale) values;
 you must experiment to find the valid range and a useful setting.  For more information on tension see the references below.
 .SH "REFERENCES"
-Davis, J. C., 1986, \fIStatistics and Data Analysis in Geology\fP, 2nd Edition, 646 pp., Wiley, New York, 
+Davis, J. C., 1986, IT(Statistics and Data Analysis in Geology), 2nd Edition, 646 pp., Wiley, New York, 
 .br
-Mitasova, H., and L. Mitas, 1993, Interpolation by regularized spline with tension: I. Theory and implementation, \fIMath. Geol., 25\fP, 641\-655.
+Mitasova, H., and L. Mitas, 1993, Interpolation by regularized spline with tension: I. Theory and implementation, IT(Math. Geol.), BD(25), 641\-655.
 .br
-Parker, R. L., 1994, \fIGeophysical Inverse Theory\fP, 386 pp., Princeton Univ. Press, Princeton, N.J.
+Parker, R. L., 1994, IT(Geophysical Inverse Theory), 386 pp., Princeton Univ. Press, Princeton, N.J.
 .br
-Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat altimeter data, \fIGeophys. Res. Lett., 14\fP, 139\-142.
+Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat altimeter data, IT(Geophys. Res. Lett.), BD(14), 139\-142.
 .br
-Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol., 30\fP, 77\-93.
+Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol.\fP, \fB30\fP, 77\-93.
 .br
-Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, 174\fP, 21\-28.
+Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension,\"'
+IT(Geophys. J. Int), BD(174), 21\-28.
 .br
-Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences, 35\fP, 1247\-1254, doi:10.1016/j.cageo.2008.08.012.
+Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences\fP, \fB35\fP, 1247\-1254, doi:10.1016/j.cageo.2008.08.012.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR gmtmath (1),
 .IR nearneighbor (1),
 .IR psxy (1),

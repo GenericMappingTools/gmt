@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.21 2009-11-08 22:47:07 guru Exp $
+ *	$Id: polygon_xover.c,v 1.22 2011-03-15 02:06:37 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 			fprintf (stderr, "Pol %d has negative w/e values.  Run polygon_fixnegwesn\n", P[n_id].h.id);
 			exit(-1);
 		}
-		cont_no = P[n_id].h.continent;	/* Continent number 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (P[n_id].h);	/* Get continent number 1-6 (0 if not a continent) */
 		if (cont_no == EURASIA) eur_id = n_id;	/* blob with Eurasia */
 
 		for (i = 0; i < P[n_id].h.n; i++) {
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 #ifdef TEST
 		if (P[id1].h.id != 3) continue;
 #endif
-		cont_no = P[id1].h.continent;	/* Continent number 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (P[id1].h);	/* Get continent number 1-6 (0 if not a continent) */
 		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 			

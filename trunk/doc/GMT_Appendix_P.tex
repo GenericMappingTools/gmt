@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.18 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.19 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 
@@ -14,15 +14,38 @@
 \section{Running \gmt\ in \emph{isolation mode}}
 \label{sec:isolationmode}
 \index{Isolation mode|(}
-In Chapter~\ref{ch:4} it is described how \GMT\ creates several (temporary) files to communicate between the different commands that make up the script that finally creates a plot. Among those files are:
+In Chapter~\ref{ch:4} it is described how \GMT\ creates several (temporary) files to
+communicate between the different commands that make up the script that finally
+creates a plot. Among those files are:
 \begin{description}
-\item[\filename{.gmtdefaults4}.] This file covers about 100 different settings that influence the layout of your plot, from font sizes to tick lengths and date formats (See Section~\ref{sec:gmtdefaults}). Those settings can be altered by editing the file, or by running the \GMTprog{gmtset} command. A problem may arise when those settings are changed half-way through the script: the next time you run the script it will start with the modified settings and hence might alter your scripts results. It is therefore often necessary to revert to the original \filename{.gmtdefaults4} file. \emph{Isolation mode} avoids that issue.
-\item[\filename{.gmtcommands4}.] This file is created to communicate the command line history from one command to the next (Section~\ref{sec:gmtcommands}) so that shorthands like \Opt{R} or \Opt{J} can be used once it has been set in a previous \GMT\ command.
-The existence of this file makes if impossible to run two \GMT\ scripts simultaneously in the same directory, since those \filename{.gmtcommand4} files may clash (contain different histories) and adversely affect the results of both scripts.
-\item[\filename{.gmt\_bb\_info}.] This file contains the information about the BoundingBox (Section~\ref{sec:eps}) of the \PS\ output. This information too has to be transferred from one \GMT\ command to the next in a script. Again, running two commands simultaneously in the same directory may have disastrous effects on that file.
+\item[\filename{gmt.conf}.] This file covers about 100 different settings
+that influence the layout of your plot, from font sizes to tick lengths and
+date formats (See Section~\ref{sec:gmt.conf}). Those settings can be altered
+by editing the file, or by running the \GMTprog{gmtset} command. A problem may
+arise when those settings are changed half-way through the script: the next
+time you run the script it will start with the modified settings and hence might
+alter your scripts results. It is therefore often necessary to revert to the
+original \filename{gmt.conf} file. \emph{Isolation mode} avoids that issue.
+\item[\filename{.gmtcommands}.] This file is created to communicate the
+command line history from one command to the next (Section~\ref{sec:gmtcommands})
+so that shorthands like \Opt{R} or \Opt{J} can be used once it has been set in
+a previous \GMT\ command.  The existence of this file makes if impossible to run
+two \GMT\ scripts simultaneously in the same directory, since those \filename{.gmtcommand4}
+files may clash (contain different histories) and adversely affect the results of both scripts.
+\item[\filename{.gmt\_bb\_info}.] This file contains the information about the
+BoundingBox (Section~\ref{sec:eps}) of the \PS\ output. This information too
+has to be transferred from one \GMT\ command to the next in a script. Again,
+running two commands simultaneously in the same directory may have disastrous effects on that file.
 \end{description}
 
-A cure to all these woes is the \emph{isolation mode} introduced in \GMT\ version 4.2.2. This mode allows you to run a \GMT\ script without leaving any traces other than the resulting \PS\  or data files, and not altering the \filename{.gmtdefaults4} or \filename{.gmtcommands4} files. Those files will be placed in a temporary directory instead. And if properly set up, this temporary directory will only be used by a single script, even if another \GMT\ script is running simultaneously. This also provides the opportunity to create any other temporary files that the script might create in the same directory.
+A cure to all these woes is the \emph{isolation mode} introduced in \GMT\ version
+4.2.2. This mode allows you to run a \GMT\ script without leaving any traces other
+than the resulting \PS\  or data files, and not altering the \filename{gmt.conf}
+or \filename{.gmtcommands} files. Those files will be placed in a temporary directory
+instead. And if properly set up, this temporary directory will only be used by a
+single script, even if another \GMT\ script is running simultaneously. This also
+provides the opportunity to create any other temporary files that the script might
+create in the same directory.
 
 The example below shows how \emph{isolation mode} works.
 
@@ -30,12 +53,17 @@ The example below shows how \emph{isolation mode} works.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{scripts/GMT_App_P_2}
+\includegraphics[width=\textwidth]{GMT_App_P_2}
 \caption{Example created in isolation mode}
 \label{fig:GMT_App_P_2}
 \end{figure}
 
-The files \filename{.gmtdefaults4} and \filename{.gmtcommands4} are automatically created in the temporary directory \filename{\$GMT\_TMPDIR}. The script is also adjusted such that the temporary grid file \filename{lat.nc} and colormap \filename{lat.cpt} are created in that directory as well. To make things even more easy, \GMT\ now provides a set of handy shell functions in \GMTprog{gmt\_shell\_functions.sh}: simply include that file in the script and the creation and the removal of the temporary directory is reduced to a single command.
+The files \filename{gmt.conf} and \filename{.gmtcommands} are automatically created
+in the temporary directory \filename{\$GMT\_TMPDIR}. The script is also adjusted such
+that the temporary grid file \filename{lat.nc} and colormap \filename{lat.cpt} are created
+in that directory as well. To make things even more easy, \GMT\ now provides a set of
+handy shell functions in \GMTprog{gmt\_shell\_functions.sh}: simply include that file
+in the script and the creation and the removal of the temporary directory is reduced to a single command.
 
 \script{GMT_App_P_2}
 \index{Isolation mode|)}
@@ -50,7 +78,7 @@ to select their current version should the need to switch arises.  You will find
 in the top-level \GMT 4.x directory; install as explained below.
 
 Because \GMT\ 4.x is backwards compatible with the 3.4.x series yet maintains its parameters
-and history in separate hidden files (e.g., \filename{.gmtdefaults4} versus \filename{.gmtdefaults})
+and history in separate files (e.g., \filename{.gmtdefaults4} versus \filename{gmt.conf})
 it is possible to install and use both versions on the same workstation.  To simplify such
 setups we supply the utility \progname{gmtswitch} which simplifies switching back and forth
 between any number of installed \GMT\ 3-versions and \GMT\ 4.x.  Place the \progname{gmtswitch} Bourne
@@ -65,7 +93,7 @@ changes to your environment (the details are shell-dependent but explained by \p
 \begin{enumerate}
 \item \progname{gmtswitch} creates and maintains a symbolic link \filename{this\_gmt} in your home
 directory that will point to a directory with one of the installed GMT versions.
-\item Make sure {\bf \$HOME}/this\_gmt/bin is in your executable {\bf PATH}.
+\item Make sure {\bf \$HOME}/this\_gmt/bin is in your executable \textbf{PATH}.
 \end{enumerate}
 Make those edits, logout, and log and back in again.  The next time you run \progname{gmtswitch}
 you will be able to switch between versions.  Typing \progname{gmtswitch} with no argument will list the

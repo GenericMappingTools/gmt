@@ -1,15 +1,15 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: makespotter.bat,v 1.7 2011-03-03 21:02:51 guru Exp $
+REM	$Id: makespotter.bat,v 1.8 2011-03-15 02:06:37 guru Exp $
 REM
 REM
-REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
+REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
 REM	it under the terms of the GNU General Public License as published by
-REM	the Free Software Foundation; version 2 or any later version.
+REM	the Free Software Foundation; version 2 of the License.
 REM
 REM	This program is distributed in the hope that it will be useful,
 REM	but WITHOUT ANY WARRANTY; without even the implied warranty of

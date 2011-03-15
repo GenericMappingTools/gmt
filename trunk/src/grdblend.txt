@@ -3,37 +3,38 @@
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS
-\fBgrdblend\fP \fIblendfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT GMT_Rgeo_OPT 
-[ OPT(N)\fInodata\fP ] [ OPT(Q) ] [ OPT(Z)\fIscale\fP ] 
+BD(grdblend) IT(blendfile) OPT(G)IT(grdfile) GMT_I_OPT GMT_Rgeo_OPT 
+[ OPT(N)IT(nodata) ] [ OPT(Q) ] [ OPT(Z)IT(scale) ] 
 [ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
-\fBgrdblend\fP reads a listing of grid files and blend parameters and
+BD(grdblend) reads a listing of grid files and blend parameters and
 creates a binary grid file by blending the other grids using cosine-taper weights.
-\fBgrdblend\fP will report if some of the nodes are not filled in with
+BD(grdblend) will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the weighted average value.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIblendfile\fP
+IT(blendfile)
 ASCII file with one record per grid file to include in the blend.  Each record must contain three items, separated by spaces or tabs:
-the gridfile name, the OPT(R)-setting for the interior region, and the relative weight \fIwr\fP.
-In the combined weighting scheme, this grid will be given zero weight outside its domain, weight = \fIwr\fP
+the gridfile name, the OPT(R)-setting for the interior region, and the relative weight IT(wr).
+In the combined weighting scheme, this grid will be given zero weight outside its domain, weight = IT(wr)
 inside the interior region, and a 2-D cosine-tapered weight between those end-members in the boundary strip.
-However, if a negative \fIwr\fP is given then the sense of tapering is inverted (i.e., zero weight inside its
+However, if a negative IT(wr) is given then the sense of tapering is inverted (i.e., zero weight inside its
 domain).  If the inner region should instead exactly match the grid region then specify a - instead of the OPT(R)-setting.
-If the ASCII file is not given \fBgrdblend\fP will read standard input.
+If the ASCII file is not given BD(grdblend) will read standard input.
 .TP
-OPT(G)
-\fIgrdfile\fP is the name of the binary output grid file.
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
 (See GRID FILE FORMATS below).
 #include "explain_-I.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(N)
+OPT(N)IT(nodata)
 No data.  Set nodes with no input grid to this value [Default is NaN].
 .TP
 OPT(Q)
-Create a header-less grid file suitable for use with \fBgrdraster\fP.  Requires that the output grid file
+Create a header-less grid file suitable for use with BD(grdraster).  Requires that the output grid file
 is a native format (i.e., not netCDF).
 #include "explain_-V.txt"
 .TP
@@ -41,9 +42,10 @@ OPT(W)
 Do not blend, just output the weights used for each node.  This option is valid when only one
 input grid is provided [Default makes the blend].
 .TP
-OPT(Z)
-Scale output values by \fIscale\fP before writing to file. [1].
+OPT(Z)IT(scale)
+Scale output values by IT(scale) before writing to file. [1].
 #include "explain_-f.txt"
+#include "explain_help.txt"
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
@@ -62,12 +64,12 @@ piece_4.nc	-R<subregion_4> 1
 Then run
 .br
 .sp
-\fBgrdblend\fP blend.job OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> \fB-V\fP
+BD(grdblend) blend.job OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> BD(-V)
 .SH RESTRICTIONS
 Currently, all grids processed must have the exact same node registration and grid spacing
 as the final output grid.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grd2xyz (1),
 .IR grdedit (1)
 .IR grdraster (1)

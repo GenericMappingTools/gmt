@@ -1,78 +1,76 @@
 #include "common_options.txt"
 .TH PSROSE 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAM_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP/0/0/0
-#define PARAM_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP/0/0/0
+#define PARAM 2BD(p)/9BD(p)/7BD(p)/black
 #define LEN_1	3
-#define SCALE_1	OPT(S)3\fBi\fP
+#define SCALE_1	OPT(S)3BD(i)
 #define LEN_2	5
-#define SCALE_2	OPT(S)5\fBc\fP
+#define SCALE_2	OPT(S)5BD(c)
 .SH NAME
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
-\fBpsrose\fP \fIfile\fP [ OPT(A)\fIsector_width\fP[\fBr\fP] ] 
-[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(D) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(I) ] [ OPT(G)\fIfill\fP ] 
-[ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[\fIwlabel\fP/\fIelabel\fP/\fIslabel\fP/\fInlabel\fP] ] 
-[ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(R)\fIr0\fP/\fIr1\fP/\fIaz_0\fP/\fIaz_1\fP ] [ OPT(S)\fIradial_scale\fP[\fBn\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
-[ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ OPT(Z)\fIscale\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
+BD(psrose) IT(file) [ OPT(A)IT(sector_width)[BD(r)] ] 
+[ GMT_B_OPT ] [ OPT(C)[IT(mode_file)] ] [ OPT(D) ] [ OPT(I) ] [ OPT(G)IT(fill) ] 
+[ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[IT(wlabel)/IT(elabel)/IT(slabel)/IT(nlabel)] ] 
+[ OPT(M)[IT(parameters) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(R)IT(r0)/IT(r1)/IT(az_0)/IT(az_1) ] [ OPT(S)IT(radial_scale)[BD(n)] ] 
+[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ] [ GMT_X_OPT ] 
+[ GMT_Y_OPT ] [ OPT(Z)IT(scale) ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBpsrose\fP reads (length,azimuth) pairs from \fIfile\fP [or standard input] and
-generates \fIPostScript\fP code that will plot a windrose diagram.  Optionally (with OPT(A)), polar histograms
+BD(psrose) reads (length,azimuth) pairs from IT(file) [or standard input] and
+generates IT(PostScript) code that will plot a windrose diagram.  Optionally (with OPT(A)), polar histograms
 may be drawn (sector diagram or rose diagram).  Options include full circle and half circle plots.
-The \fIPostScript\fP code is written to standard output. 
+The IT(PostScript) code is written to standard output. 
+The outline of the windrose is drawn with the same color as BD(MAP_DEFAULT_PEN).
+.SH REQUIRED ARGUMENTS
 .TP
-\fIfile\fP
+IT(file)
 Name of ASCII [or binary, see OPT(b)] data file.  If no file is given, psrose will read standard input.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-Gives the sector width in degrees for sector and rose diagram.  [Default 0 means windrose diagram].  Append \fBr\fP to draw
+OPT(A)IT(sector_width)[BD(r)]
+Gives the sector width in degrees for sector and rose diagram.  [Default 0 means windrose diagram].  Append BD(r) to draw
 rose diagram instead of sector diagram.
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 Remember that "x" here is radial distance and
 "y" is azimuth.  The ylabel may be used to plot a figure caption.
 .TP
-OPT(C)
-Plot vectors showing the principal directions given in the \fImodes\fP file.  If no file is
+OPT(C)[IT(mode_file)]
+Plot vectors showing the principal directions given in the IT(modes) file.  If no file is
 given, compute and plot mean direction.
 .TP
 OPT(D)
 Shift sectors so that they are centered on the bin interval (e.g., first sector is centered on 0 degrees).
 .TP
-OPT(E)
-Sets the viewpoint's azimuth and elevation [180/90]\"'
-.TP
 OPT(F)
 Do not draw the scale length bar [Default plots scale in lower right corner]
 .TP
-OPT(G)
+OPT(G)IT(fill)
 Selects shade, color or pattern for filling the sectors [Default is no fill].
 (See SPECIFYING FILL below).
-#include "explain_-h.txt"
 .TP
 OPT(I)
 Inquire.  Computes statistics needed to specify useful OPT(R).  No plot is generated.
 #include "explain_-K.txt"
 .TP
-OPT(L)
+OPT(L)[IT(wlabel)/IT(elabel)/IT(slabel)/IT(nlabel)]
 Specify labels for the 0, 90, 180, and 270 degree marks.  For full-circle plot the default
 is WEST/EAST/SOUTH/NORTH and for half-circle the default is 90W/90E/-/0.  A - in any entry
 disables that label.  Use OPT(L) with no argument to disable all four labels
 .TP
-OPT(M)
-Specify new arrow attributes tailwidth/headlength/headwidth/r/g/b to change
-the appearance of arrows (Only if OPT(C) is set). [Default is PARAM_SI (or PARAM_US)].
+OPT(M)[IT(parameters)
+Specify new vector attributes vectorwidth/headlength/headwidth/color to change
+the appearance of arrows (Only if OPT(C) is set). [Default is PARAM].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(R)
+OPT(R)IT(r0)/IT(r1)/IT(az_0)/IT(az_1)
 Specifies the 'region' of interest in (r,azimuth) space.  r0 is 0, r1 is max length in units.  For azimuth, specify
 -90/90 for half circle plot or 0/360 for full circle.
 .TP
-OPT(S)
-Specifies radius of circle.  Append \fBn\fP to normalize input radii to go from 0 to 1.
+OPT(S)IT(radial_scale)[BD(n)]
+Specifies radius of circle.  Append BD(n) to normalize input radii to go from 0 to 1.
 .TP
 OPT(T)
 Specifies that the input data is orientation data (has a 180 degree ambiguity) instead of true
@@ -80,19 +78,24 @@ Specifies that the input data is orientation data (has a 180 degree ambiguity) i
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)IT(pen)
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
-OPT(Z)
-Multiply the data radii by \fIscale\fP.  E.g., use OPT(Z)0.001 to convert your data from m to km [Default is no scaling].
+OPT(Z)IT(scale)
+Multiply the data radii by IT(scale).  E.g., use OPT(Z)0.001 to convert your data from m to km [Default is no scaling].
 .TP
 OPT(:)
 Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
@@ -104,8 +107,8 @@ sector interval, radial direction annotated every 50 km, using a light blue shad
 by a solid red pen (width = 0.75 points), draw the mean azimuth, and shown in Portrait orientation, use:
 .br
 .sp
-\fBpsrose\fP fault_segments.az_r OPT(R)0/150/-90/90 OPT(B)50g25:"Fault length":/g30:."Rose diagram":
-SCALE_1 OPT(A)10\fBr\fP OPT(G)lightblue OPT(W)0.75\fBp\fP,red OPT(Z)0.001 OPT(C) OPT(P) OPT(T) OPT(:) | lpr
+BD(psrose) fault_segments.az_r OPT(R)0/150/-90/90 OPT(B)50g25:"Fault length":/g30:."Rose diagram":
+SCALE_1 OPT(A)10BD(r) OPT(G)lightblue OPT(W)0.75BD(p),red OPT(Z)0.001 OPT(C) OPT(P) OPT(T) OPT(:) | lpr
 .br
 .sp
 To plot a full circle wind rose diagram of the data in the file lines.r_az, on a circle of radius = LEN_2 cm, 
@@ -113,12 +116,12 @@ grid going out to radius = 500 units in steps of 100 with a 45 degree sector int
 and shown in landscape [Default] orientation with UNIX timestamp and command line plotted, use:
 .br
 .sp
-\fBpsrose\fP lines.az_r OPT(R)0/500/0/360 SCALE_2 OPT(Bg)100/\fBg\fP45:."Windrose diagram": OPT(W)0.5\fBp\fP OPT(Uc) | lpr
+BD(psrose) lines.az_r OPT(R)0/500/0/360 SCALE_2 OPT(Bg)100/BD(g)45:."Windrose diagram": OPT(W)0.5BD(p) OPT(Uc) | lpr
 .SH BUGS
-No default radial scale and grid settings for polar histograms.  User must run \fBpsrose \-I\fP to find max length in
+No default radial scale and grid settings for polar histograms.  User must run BD(psrose) OPT(I) to find max length in
 binned data set.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR gmtcolors (5),
-.IR gmtdefaults (1),
 .IR pshistogram (1)

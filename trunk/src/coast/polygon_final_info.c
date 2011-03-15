@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.8 2010-05-22 21:19:50 guru Exp $
+ *	$Id: polygon_final_info.c,v 1.9 2011-03-15 02:06:37 guru Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -13,7 +13,6 @@ int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int id, src = -1, np = 0;
-	double area;
 
 	if (argc < 2 || argc > 3) {
 		fprintf(stderr,"usage:  polygon_final_info wvs_polygons.b [src]\n");
@@ -31,9 +30,9 @@ int main (int argc, char **argv)
 			fprintf (stderr, "polygon_final_info: Failed seeking ahead\n");
 			exit (-1);
 		}
-		area = (h.river) ? -h.area : h.area;
+		
 		if (src == -1 || h.source == src)
-			printf ("%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.12g\t%.12g\t%d\t%d\n", h.id, h.n, h.level, h.source, h.greenwich, h.west, h.east, h.south, h.north, area, h.area_res, h.parent, h.ancestor);
+			printf ("%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.12g\t%.12g\t%d\t%d\n", h.id, h.n, h.level, h.source, h.greenwich, h.west, h.east, h.south, h.north, h.area, h.area_res, h.parent, h.ancestor);
 		id++;
 		np += h.n;
 	}

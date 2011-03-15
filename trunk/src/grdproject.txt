@@ -3,14 +3,14 @@
 .SH NAME
 grdproject \- Forward and Inverse map transformation of 2-D grid files 
 .SH SYNOPSIS
-\fBgrdproject\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP GMT_J_OPT
-[ OPT(A)[\fBk|m|n|i|c|p\fP] ] [ OPT(C)[\fIdx/dy\fP] ] [ OPT(D)GMT_inc_OPT ] 
-[ OPT(E)\fIdpi\fP ] [ OPT(F) ] [ OPT(I) ] 
-[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ] [ GMT_Rgeo_OPT ]
-[ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
-[ GMT_V_OPT ]
+BD(grdproject) IT(in_grdfile) OPT(G)IT(out_grdfile) GMT_J_OPT
+[ OPT(A)[BD(c|i|p|e|f|k|M|n)] ] [ OPT(C)[IT(dx/dy)] ] [ OPT(D)GMT_inc_OPT ] 
+[ OPT(E)IT(dpi) ] [ OPT(I) ] 
+[ OPT(Mc)|BD(i)|BD(p) ] [ GMT_Rgeo_OPT ]
+[ OPT(S)[BD(-)]BD(b)|BD(c)|BD(l)|BD(n)[BD(/)IT(threshold)] ]
+[ GMT_V_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
-\fBgrdproject\fP will do one of two things depending whether OPT(I) has been set.  If set, it
+BD(grdproject) will do one of two things depending whether OPT(I) has been set.  If set, it
 will transform a gridded data set from a rectangular coordinate system onto a geographical
 system by resampling the surface at the new nodes.  If not set, it will project a geographical
 gridded data set onto a rectangular grid.  To obtain the value at each new node, its location
@@ -24,77 +24,78 @@ number of nodes, or resolution.  Nodes not constrained by input data are set to 
 .br
 The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid file.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIin_grdfile\fP
+IT(in_grdfile)
 2-D binary grid file to be transformed.
 (See GRID FILE FORMATS below.)
 .TP
-OPT(G)
+OPT(G)IT(out_grdfile)
 Specify the name of the output grid file.
 (See GRID FILE FORMATS below.)
-#include "explain_-J_short.txt"
-.SH OPTIONS
+#include "explain_-J.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
-append \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
-Without OPT(A), the output (or input, see OPT(I)) are in the units specified by \fBMEASURE_UNIT\fP (but see OPT(M)).
+OPT(A)[BD(c|i|p|e|f|k|M|n)]
+Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters [BD(e)].  To specify other units,
+append BD(f) (feet), BD(k) (km), BD(M) (statute mile), BD(n) (nautical mile), BD(i) (inch), BD(c) (cm), or BD(p) (points).
+Without OPT(A), the output (or input, see OPT(I)) are in the units specified by BD(PROJ_LENGTH_UNIT) (but see OPT(M)).
 .TP
-OPT(C)
+OPT(C)[IT(dx/dy)]
 Let projected coordinates be relative to projection center [Default is relative to lower left corner].
 Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
-#include "explain_-I_via_D.txt"
 .TP
-OPT(E)
+OPT(D)GMT_inc_OPT
+Set the grid spacing for the new grid.  Append BD(m) for arc minutes, BD(s) for arc seconds.
+If neither OPT(D) nor OPT(E) are set then we select the same number of output nodes as there
+are input nodes.
+.TP
+OPT(E)IT(dpi)
 Set the resolution for the new grid in dots per inch.
-.TP
-OPT(F)
-Toggle between pixel and gridline node registration [Default is same as input].
 .TP
 OPT(I)
 Do the Inverse transformation, from rectangular to geographical.
 .TP
-OPT(M)
-Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should be the projected measure unit
-[Default is set by \fBMEASURE_UNIT\fP in \.gmtdefaults4].  Cannot be used with OPT(A).
-.TP
-OPT(N)
-Set the number of grid nodes in the new grid.
+OPT(Mc)|BD(i)|BD(p)
+Append BD(c), BD(i), or BD(p) to indicate that cm, inch, or point should be the projected measure unit
+[Default is set by BD(PROJ_LENGTH_UNIT) in BD(gmt.conf)].  Cannot be used with OPT(A).
 #include "explain_-R.txt"
-You may ask to project only a subset of the grid by specifying a smaller input \fIw/e/s/n\fP region
+You may ask to project only a subset of the grid by specifying a smaller input IT(w/e/s/n) region
 [Default is the region given by the grid file].
 #include "explain_-Sint.txt"
 #include "explain_-V.txt"
+#include "explain_nodereg.txt"
+#include "explain_help.txt"
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
-To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
+To transform the geographical grid dbdb5.nc onto a pixel Mercator grid at 300 dpi, run
 .br
 .sp
-\fBgrdproject\fP dbdb5.grd OPT(R)20/50/12/25 OPT(Jm)0.25\fBi\fP OPT(E)300 OPT(F)
-OPT(G)dbdb5_merc.grd 
+BD(grdproject) dbdb5.nc OPT(R)20/50/12/25 OPT(Jm)0.25BD(i) OPT(E)300 OPT(r)
+OPT(G)dbdb5_merc.nc 
 .br
 .sp
-To inversely transform the file topo_tm.grd back onto a geographical grid, use
+To inversely transform the file topo_tm.nc back onto a geographical grid, use
 .br
 .sp
-\fBgrdproject\fP topo_tm.grd OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 OPT(I) OPT(D)5\fBm \-V\fP OPT(G)topo.grd
+BD(grdproject) topo_tm.nc OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 OPT(I) OPT(D)5BD(m) OPT(V) OPT(G)topo.nc
 .br
 .sp
-This assumes, of course, that the coordinates in topo_tm.grd were created with the same projection parameters.
+This assumes, of course, that the coordinates in topo_tm.nc were created with the same projection parameters.
 .br
-To inversely transform the file topo_utm.grd (which is in UTM meters) back to a geographical grid we
+To inversely transform the file topo_utm.nc (which is in UTM meters) back to a geographical grid we
 specify a one-to-one mapping with meter as the measure unit:
 .br
 .sp
-\fBgrdproject\fP topo_utm.grd OPT(R)203/205/60/65 OPT(Ju)5/1:1 OPT(I) OPT(Mm) OPT(G)topo.grd OPT(V)
+BD(grdproject) topo_utm.nc OPT(R)203/205/60/65 OPT(Ju)5/1:1 OPT(I) OPT(Mm) OPT(G)topo.nc OPT(V)
 .br
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular
 geographical boundaries (Mercator is one exception).  In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area than you are interested in.
 .SH "SEE ALSO"
-.IR GMT (1),
-.IR gmtdefaults (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR mapproject (1)

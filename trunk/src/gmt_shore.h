@@ -1,12 +1,12 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.33 2011-03-03 21:02:51 guru Exp $
+ *	$Id: gmt_shore.h,v 1.34 2011-03-15 02:06:36 guru Exp $
  *
- *	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 or any later version.
+ *	the Free Software Foundation; version 2 of the License.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,18 +15,16 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
-
-#ifndef _GMT_SHORE_H
-#define _GMT_SHORE_H
-
 /*
  * Include file for gmt_shore.c
  *
  * Author:	Paul Wessel
- * Date:	12-AUG-1995
- * Revised:	6-NOV-2009
- * Version:	4.5.6
+ * Date:	1-JAN-2010
+ * Version:	5 API
  */
+
+#ifndef _GMT_SHORE_H
+#define _GMT_SHORE_H
 
 #include "netcdf.h"
 
@@ -222,23 +220,5 @@ struct GMT_GSHHS_POL {
 	double *lon;
 	double *lat;
 };
-
-/* Public functions */
-
-EXTERN_MSC void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I);
-EXTERN_MSC GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c);
-EXTERN_MSC GMT_LONG GMT_get_br_bin (GMT_LONG b, struct GMT_BR *c, GMT_LONG *level, GMT_LONG n_levels);
-EXTERN_MSC void GMT_free_polygons (struct GMT_GSHHS_POL *p, GMT_LONG n);
-EXTERN_MSC void GMT_free_shore (struct GMT_SHORE *c);
-EXTERN_MSC void GMT_free_br (struct GMT_BR *c);
-EXTERN_MSC void GMT_shore_cleanup (struct GMT_SHORE *c);
-EXTERN_MSC void GMT_br_cleanup (struct GMT_BR *c);
-EXTERN_MSC GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n, struct GMT_SHORE_SELECT *I);
-EXTERN_MSC GMT_LONG GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, double s, double n);
-EXTERN_MSC GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, GMT_LONG shift, double west, double east, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC GMT_LONG GMT_assemble_br (struct GMT_BR *c, GMT_LONG shift, double edge, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p, GMT_LONG np, GMT_LONG sample, double step, GMT_LONG anti_bin);
-EXTERN_MSC GMT_LONG GMT_set_resolution (char *res, char opt);
-EXTERN_MSC char GMT_shore_adjust_res (char res);
 
 #endif /* _GMT_SHORE_H */

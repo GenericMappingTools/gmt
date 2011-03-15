@@ -3,34 +3,39 @@
 .SH NAME
 grdclip \- Clipping of range in grid files.
 .SH SYNOPSIS
-\fBgrdclip\fP \fIinput_file.grd\fP OPT(G)\fIoutput_file.grd\fP [ OPT(Sa)\fIhigh/above\fP ] 
-[ OPT(Sb)\fIlow/below\fP ] [ GMT_V_OPT ] 
+BD(grdclip) IT(input_file.nc) OPT(G)IT(output_file.nc) [ GMT_Rgeo_OPT ] 
+[ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ GMT_V_OPT ] 
 .SH DESCRIPTION
-\fBgrdclip\fP will set values < \fIlow\fP to \fIbelow\fP and/or values > \fIhigh\fP to \fIabove\fP.  Useful
+BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to IT(above).  Useful
 when you want all of a continent or an ocean to fall into one color or grayshade in image processing,
-or clipping of the range of data values is required.  \fIabove/below\fP can be any number or NaN (Not a Number).
-You must choose at least one of OPT(Sa) or OPT(Sb).
+or clipping of the range of data values is required.  IT(above/below) can be any number or NaN (Not a Number).
+You must choose at least one of OPT(Sa) or OPT(Sb).  Use OPT(R) to only extract a subset of the IT(input_file.nc) file.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinput_file.grd\fP
+IT(input_file.nc)
 The input 2-D binary grid file.
 .TP
-OPT(G)
-\fIoutput_file.grd\fP is the modified output grid file.
-.SH OPTIONS
+OPT(G)IT(output_file.nc)
+IT(output_file.nc) is the modified output grid file.
+.SH OPTIONAL ARGUMENTS
+#include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of IT(input_file.nc) grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be extracted.
 .TP
-OPT(Sa)
-Set all data[i] > \fIhigh\fP to \fIabove\fP.
+OPT(Sa)IT(high/above)
+Set all data[i] > IT(high) to IT(above).
 .TP
-OPT(Sb)
-Set all data[i] < \fIlow\fP to \fIbelow\fP.
+OPT(Sb)IT(low/below)
+Set all data[i] < IT(low) to IT(below).
 #include "explain_-V.txt"
+#include "explain_help.txt"
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
-To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
+To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 .sp
-\fBgrdclip\fP data.grd OPT(G)new_data.grd OPT(Sa)70/NaN OPT(Sb)0/0 OPT(V)
+BD(grdclip) data.nc OPT(G)new_data.nc OPT(Sa)70/NaN OPT(Sb)0/0 OPT(V)
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdlandmask (1),
 .IR grdmask (1),
 .IR grdmath (1),

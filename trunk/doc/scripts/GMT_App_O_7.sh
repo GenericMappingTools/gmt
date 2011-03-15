@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_O_7.sh,v 1.8 2011-02-28 00:58:03 remko Exp $
+#	$Id: GMT_App_O_7.sh,v 1.9 2011-03-15 02:06:29 guru Exp $
 #
 #	Makes Fig 7 for Appendix O (labeled lines)
 #

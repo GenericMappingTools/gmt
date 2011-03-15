@@ -1,76 +1,79 @@
 #include "common_options.txt"
 .TH BLOCKMEAN 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-blockmean \- filter to block average (\fIx,y,z\fP) data by L2 norm
+blockmean \- filter to block average (IT(x),IT(y),IT(z)) data by L2 norm
 .SH SYNOPSIS
-\fBblockmean\fP [ \fIxyz[w]file(s)\fP ] GMT_I_OPT  GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(E) ] [ OPT(F) ] [ GMT_H_OPT ] [ OPT(S)[\fBw|z\fP] ] 
-[ GMT_V_OPT ] [ OPT(W)[\fBio\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
+BD(blockmean) [ IT(xyz[w]file(s)) ] GMT_I_OPT  GMT_Rx_OPT 
+[ OPT(C) ] [ OPT(E) ] [ OPT(S)[BD(m)|BD(n)|BD(s)|BD(w)] ] 
+[ GMT_V_OPT ] [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
+[ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBblockmean\fP reads arbitrarily located (\fIx,y,z\fP) triples [or optionally weighted
-quadruples (\fIx,y,z,w\fP)] from standard input [or \fIxyz[w]file(s)\fP] and writes to
+BD(blockmean) reads arbitrarily located (IT(x),IT(y),IT(z)) triples [or optionally weighted
+quadruples (IT(x),IT(y),IT(z),IT(w))] from standard input [or IT(xyz[w]file(s))] and writes to
 standard output a mean position and value for every non-empty block in a grid region
-defined by the OPT(R) and OPT(I) arguments. Either \fBblockmean\fP, \fBblockmedian\fP,
-or \fBblockmode\fP should be used as a pre-processor before running \fBsurface\fP to
+defined by the OPT(R) and OPT(I) arguments. Either BD(blockmean), BD(blockmedian),
+or BD(blockmode) should be used as a pre-processor before running BD(surface) to
 avoid aliasing short wavelengths.  These routines are also generally useful for
-decimating or averaging (\fIx,y,z\fP) data.  You can modify the precision of the output
-format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file, or you may
+decimating or averaging (IT(x),IT(y),IT(z)) data.  You can modify the precision of the output
+format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file, or you may
 choose binary input and/or output using single or double precision storage.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIxyz[w]file(s)\fP
-3 [or 4] column ASCII file(s) [or binary, see OPT(b)] holding (\fIx,y,z\fP[,\fIw\fP])
-data values.  [\fIw\fP] is an optional weight for the data.  If no file is specified,
-\fBblockmean\fP will read from standard input.
+IT(xyz[w]file(s))
+3 [or 4] column ASCII file(s) [or binary, see OPT(b)] holding (IT(x),IT(y),IT(z)[,IT(w)])
+data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
+BD(blockmean) will read from standard input.
+For details on the GMT common options, see GMT man page.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
 OPT(C)
 Use the center of the block as the output location [Default uses the mean location].
 .TP
 OPT(E)
-Provide Extended report which includes \fBs\fP (the standard deviation of the mean),
-\fBl\fP, the lowest value, and \fBh\fP, the high value for each block. Output order
-becomes \fIx,y,z,s,l,h\fP[,\fIw\fP]. [Default outputs \fIx,y,z\fP[,\fIw\fP].
-See OPT(W) for \fIw\fP output.
-#include "explain_nodereg.txt"
-Each block is the
-locus of points nearest the grid value  location.  For example, with OPT(R)10/15/10/15
-and and OPT(I)1:  with the OPT(F) option 10 <= (\fIx,y\fP) < 11 is one of 25 blocks;
-without it 9.5 <= (\fIx,y\fP) < 10.5 is one of 36 blocks.
-#include "explain_-h.txt"
-Not used with binary data.
+Provide Extended report which includes BD(s) (the standard deviation of the mean),
+BD(l), the lowest value, and BD(h), the high value for each block. Output order
+becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y),IT(z)[,IT(w)].
+See OPT(W) for IT(w) output.
 .TP
-OPT(S)
-Use OPT(Sz) to report the sum of all \fIz\fP-values inside a block, or OPT(Sw) to report the
-sum of weights [Default reports mean value]. If OPT(Sw) is selected and no weights are
-supplied (i.e., no OPT(W) given), then the weight sum will equal the number of points
-inside each block.
+OPT(S)[BD(m)|BD(n)|BD(s)|BD(w)]
+Use OPT(Sn) to report the number of points inside each block, OPT(Ss) to report the sum of all IT(z)-values inside a block, OPT(Sw) to report the
+sum of weights [Default (or OPT(Sm) reports mean value].
 #include "explain_-V.txt"
 .TP
-OPT(W)
-Weighted modifier[s].  Unweighted input and output has 3 columns \fIx,y,z\fP; Weighted
-i/o has 4 columns \fIx,y,z,w\fP.  Weights can be used in input to construct weighted
+OPT(W)[BD(i)|BD(o)]
+Weighted modifier[s].  Unweighted input and output has 3 columns IT(x),IT(y),IT(z); Weighted
+i/o has 4 columns IT(x),IT(y),IT(z),IT(w).  Weights can be used in input to construct weighted
 mean values in blocks.  Weight sums can be reported in output for later combining several
-runs, etc.  Use OPT(W) for weighted i/o, OPT(Wi) for weighted inputonly, OPT(Wo) for
+runs, etc.  Use OPT(W) for weighted i/o, OPT(Wi) for weighted input only, OPT(Wo) for
 weighted output only.  [Default uses unweighted i/o].
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 (or 4 if OPT(Wi) is set)].
 #include "explain_-bo.txt"
 [Default is 3 (or 4 if OPT(Wo) is set)]. OPT(E) adds 3 additional columns.
 #include "explain_-f.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_nodereg.txt"
+Each block is the
+locus of points nearest the grid value  location.  For example, with OPT(R)10/15/10/15
+and OPT(I)1:  with the OPT(r) option 10 <= (IT(x),IT(y)) < 11 is one of 25 blocks;
+without it 9.5 <= (IT(x),IT(y)) < 10.5 is one of 36 blocks.
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 .sp
 To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 .sp
-\fBblockmean\fP hawaii.xyg OPT(R)198/208/18/25 OPT(I)5\fBm\fP > hawaii_5x5.xyg
+BD(blockmean) hawaii.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmedian (1),
 .IR blockmode (1),
-.IR gmtdefaults (1),
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR nearneighbor (1),
 .IR surface (1),
 .IR triangulate (1)

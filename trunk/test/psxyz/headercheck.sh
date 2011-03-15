@@ -1,13 +1,13 @@
-#!/bin/sh
-#	$Id: headercheck.sh,v 1.10 2009-04-17 00:31:30 remko Exp $
+#!/bin/bash
+#	$Id: headercheck.sh,v 1.11 2011-03-15 02:06:46 guru Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
 . ../functions.sh
 header "Test psxyz and operation of -W -G in headers"
 
 ps=headercheck.ps
-psxyz -R-1/10/-1/10/0/1 -JX5/4 -JZ1 -E135/35 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -m -K << EOF > $ps
-> -Ggreen -W1p
+psxyz -R-1/10/-1/10/0/1 -JX5/4 -JZ1 -p135/35 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
+> -Ggreen -W1p,black
 0	0	0
 1	1	0
 > -Gred	-W-
@@ -19,7 +19,7 @@ psxyz -R-1/10/-1/10/0/1 -JX5/4 -JZ1 -E135/35 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cy
 > -G-
 6	6	0
 7	7	0
-> -G+	-Wthin,-
+> -G -Wthin,-
 8	8	0
 9	9	0
 EOF
@@ -29,8 +29,8 @@ cat << EOF > $$.cpt
 3	p100/9	6	-
 6	cyan	9	yellow
 EOF
-psxyz -R -J -JZ -E135/35 -O -Y4.25i -Gred -L -m -B2g1 -C$$.cpt << EOF >> $ps
-> -Ggreen -W+
+psxyz -R -J -JZ -p135/35 -O -Y4.25i -Gred -L -B2g1 -C$$.cpt << EOF >> $ps
+> -Ggreen -W
 0	0	0
 2	2	0
 0	2	0
@@ -39,7 +39,7 @@ psxyz -R -J -JZ -E135/35 -O -Y4.25i -Gred -L -m -B2g1 -C$$.cpt << EOF >> $ps
 4	4	0
 3	3	0
 2	0	0
-> -G+ -W1p,-
+> -G -W1p,-
 0	4	0
 3	6	0
 2	7	0

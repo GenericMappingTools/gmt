@@ -1,0 +1,9 @@
+.TP
+GMT_bi_OPT
+Selects binary input.
+Append BD(s) for single precision [Default is BD(d) (double)].
+Uppercase BD(S) or BD(D) will force byte-swapping.
+Optionally, append IT(ncol), the number of columns in your binary input file
+if it exceeds the columns needed by the program.
+Or append BD(c) if the input file is netCDF. Optionally, append IT(var1)BD(/)IT(var2)BD(/)IT(...) to
+specify the variables to be read.

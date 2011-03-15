@@ -1,12 +1,12 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.76 2011-03-03 21:02:49 guru Exp $
+#  $Id: GNUmakefile,v 1.77 2011-03-15 02:06:28 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; version 2 or any later version.
+#	the Free Software Foundation; version 2 of the License.
 #
 #	This program is distributed in the hope that it will be useful,
 #	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#		 Guru makefile for GMT Version 4.*
+#		 Guru makefile for GMT Version 5.*
 #			GNU make compatible
 #
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
@@ -59,7 +59,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		15-JAN-2010
+#	Date:		12-JUL-2009
 #
 #-------------------------------------------------------------------------------
 #	DEFAULT SETTINGS
@@ -88,12 +88,11 @@ help::
 #!make <target>, where <target> can be:
 #!
 #!update        : Get the latest source via cvs
-#!alltests      : Run all tests and compare to originals
 #!manpages      : Create manpages from text files
 #!usable        : Install-all and run examples & animations
 #!pdfman        : Install PDF version of manpages
-#!pdfdocs       : Install PDF documentation
-#!docs          : Install PDF and HTML documentation
+#!webman        : Install HTML version of manpages
+#!docs          : Install PDF documentation
 #!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
@@ -170,8 +169,8 @@ DOS:
 # FILES from the CVS-distributed master files:
 #-------------------------------------------------------------------------------
 
-FILES =		src/config.mk share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US \
-		src/gmt_version.h src/GMT
+FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
+		src/gmt_version.h
 
 gmtmacros FILES:		$(FILES)
 examples:	FILES
@@ -191,7 +190,8 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 $(FILES):
 		touch $@
 else
-$(FILES):	guru/gmtguru.macros configure config.sub config.guess $(addsuffix .in,$(FILES))
+$(FILES):	guru/gmtguru.macros configure config.sub config.guess \
+		src/config.mk.in share/conf/gmt.conf.in src/gmt_version.h.in
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
 		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_OCTAVE) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_OTHER)
@@ -214,10 +214,7 @@ pdfman: 	share/doc/gmt/pdf/GMT_Manpages.pdf
 share/doc/gmt/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
 		$(SHELL) guru/pdfman.sh -s
 
-docs:		FILES examples animations
-		cd doc ; $(MAKE) all
-
-pdfdocs:	FILES examples animations
+docs pdfdocs:		FILES
 		cd doc ; $(MAKE) pdf
 
 prep_suppl:	clean config
@@ -277,7 +274,7 @@ tar_suppl:	ftpdir
 
 tar_win:	ftpdir
 		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
-		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? \
+		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmt_??.conf \
 			guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
@@ -297,4 +294,5 @@ include Makefile
 #-------------------------------------------------------------------------------
 
 spotless::
-		\rm -rf src/config.mk src/gmt_version.h configure autom4te.cache
+		rm -rf src/config.mk src/gmt_version.h configure autom4te.cache
+		rm -f share/doc/gmt/examples/ex*/*.ps

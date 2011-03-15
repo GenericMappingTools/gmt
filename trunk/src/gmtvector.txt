@@ -1,0 +1,94 @@
+#include "common_options.txt"
+.TH GMTVECTOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtvector \- Basic manipulation of 2-D and 3-D vectors.
+.SH SYNOPSIS
+BD(gmtvector) [ IT(infiles) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
+[ OPT(S)[IT(vector)] ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)] ] [ GMT_V_OPT ] 
+[ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
+.SH DESCRIPTION
+BD(gmtvector) reads either (x, y), (x, y, z), (r, theta) or (lon, lat) [or (lat,lon); see OPT(:)] coordinates
+from the first 2-3 columns on standard input [or IT(infiles)].  If OPT(fg) is selected and only two items are
+read (i.e., lon, lat) then these coordinates are converted to Cartesian three-vectors on the unit sphere.
+Otherwise we expect (r, theta) unless OPT(Ci) is in effect.  If no file is found but the single argument given
+can be interpreted as an x/y[/z], lon/lat, or r/theta vector then we decode it as such.  Several standard vector
+operations (angle between vectors, cross products, vector sums, and vector rotations) can be selected;
+some require a single second vector, provided via OPT(S).  The output vectors will be converted back to (lon, lat) or
+(r, theta) unless OPT(Co) requests (x, y[, z]) Cartesian coordinates.
+.SH REQUIRED ARGUMENTS
+.TP
+IT(infiles)
+One or more ASCII [or binary, see OPT(b)] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
+(if OPT(fg) is given) or (r, theta), or perhaps (x, y[, z]) if OPT(Ci) is given).  If one file is given and it can
+be decoded as lon/lat, r/theta, or x/y[/z] then we do so.  If no file is specified, BD(gmtvector), will read from standard input.
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(C)[BD(i)|BD(o)]
+Select Cartesian coordinates on input and output.  Append BD(i) for input only or BD(o) for output only; otherwise both input and output
+will be assumed to be Cartesian [Default is polar r/theta for 2-D data and geographic lon/lat for 3-D].
+.TP
+OPT(E)
+Convert input geographic coordinates from geodetic to geocentric and output geographic coordinates from
+geocentric to geodetic.  Ignored unless OPT(fg) is in effect, and is bypassed if OPT(C) is selected.
+.TP
+OPT(N)
+Normalize the resultant vectors prior to reporting the output [No normalization].  This only has an effect
+if OPT(Co) is selected.
+.TP
+OPT(S)[IT(vector)]
+Specify a single, secondary vector in the same format as the first vector.  Only required by operations in OPT(T) that
+need two vectors (dot product, cross product, and sum).
+.TP
+OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)]
+Specify the vector transformation of interest.  Append BD(a) for average, BD(b) for the pole of the two points bisector,
+BD(d) for dot product (use BD(D) to
+get angle in degrees between the two vectors), BD(x) for cross-product, BD(s) for vector sum, and BD(r)IT(par)
+for vector rotation.  Here, IT(par) is a single angle for 2-D Cartesian data
+and IT(lon/lat/angle) for a 3-D rotation pole and angle.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+[Default is 2 or 3 input columns].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+Suppose you have a file with lon, lat called points.txt.  You want to compute the spherical angle between each
+of these points and the location 133/34.  Try 
+.br
+.sp
+BD(gmtvector) points.txt OPT(S)133/34 OPT(TD) OPT(fg) > angles.txt
+.br 
+.sp
+To rotate the same points 35 degrees around a pole at 133/34, and output Cartesian 3-D vectors, use
+.br
+.sp
+BD(gmtvector) points.txt OPT(Tr)133/34 OPT(Co) OPT(fg) > reconstructed.txt
+.br 
+.sp
+To compute the cross-product between the two Cartesian vectors 0.5/1/2 and 1/0/0.4, and normalizing the result, try
+.br
+.sp
+BD(gmtvector) 0.5/1/2 OPT(Tx) OPT(S)1/0/0.4 OPT(N) OPT(C) > cross.txt
+.br 
+.sp
+To rotate the 2-D vector, given in polar form as r = 2 and theta = 35, by an angle of 120, try
+.br
+.sp
+BD(gmtvector) 2/35 OPT(Tr)120 > rotated.txt
+.br 
+.sp
+To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
+.br
+.sp
+BD(gmtvector) 123/35 and OPT(S)-155/-30 OPT(Ta) OPT(fg) > midpoint.txt
+.SH ROTATIONS
+For more advanced 3-D rotations as used in plate tectonic reconstructions, see the GMT "spotter" supplement.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR project (1),
+.IR mapproject (1)

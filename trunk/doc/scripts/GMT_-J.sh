@@ -1,58 +1,60 @@
 #!/bin/bash
-#	$Id: GMT_-J.sh,v 1.9 2011-02-28 00:58:02 remko Exp $
+#	$Id: GMT_-J.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
 #
 . functions.sh
 
-pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
-2.5	2.8	16	0	1	BC	GMT PROJECTIONS
-2	2.25	12	0	1	BC	GEOGRAPHIC PROJECTIONS
-0	1.75	11	0	0	BL	CYLINDRICAL
-1.1	1.75	11	0	0	BL	CONICAL
-2	1.75	11	0	0	BL	AZIMUTHAL
-3	1.75	11	0	0	BL	THEMATIC
-4	1.75	11	0	0	BL	OTHER
+pstext -R0/5/0/3 -Jx1i -P -K -F+f+j << EOF > GMT_-J.ps
+2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS
+2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS
+0	1.75	11p,Helvetica		BL	CYLINDRICAL
+1.1	1.75	11p,Helvetica		BL	CONICAL
+2	1.75	11p,Helvetica		BL	AZIMUTHAL
+3	1.75	11p,Helvetica		BL	THEMATIC
+4	1.75	11p,Helvetica		BL	OTHER
+EOF
+pstext -R -J -O -K -F+f8p+jBL << EOF >> GMT_-J.ps
 # Cylindrical
-0	1.35	8	0	0	BL	Basic [E]
-0	1.2	8	0	0	BL	Cassini
-0	1.05	8	0	0	BL	Equidistant
-0	0.9	8	0	0	BL	Mercator [C]
-0	0.75	8	0	0	BL	Miller
-0	0.6	8	0	0	BL	Oblique Mercator [C]
-0	0.45	8	0	0	BL	Stereographic
-0	0.3 	8	0	0	BL	Transverse Mercator [C]
-0	0.15	8	0	0	BL	UTM [C]
+0	1.35	Basic [E]
+0	1.2	Cassini
+0	1.05	Equidistant
+0	0.9	Mercator [C]
+0	0.75	Miller
+0	0.6	Oblique Mercator [C]
+0	0.45	Stereographic
+0	0.3 	Transverse Mercator [C]
+0	0.15	UTM [C]
 # Conical
-1.1	1.35	8	0	0	BL	Albers [E]
-1.1	1.2	8	0	0	BL	Equidistant
-1.1	1.05	8	0	0	BL	Lambert [C]
-1.1	0.9	8	0	0	BL	Polyconic
+1.1	1.35	Albers [E]
+1.1	1.2	Equidistant
+1.1	1.05	Lambert [C]
+1.1	0.9	Polyconic
 # Azimuthal
-2	1.35	8	0	0	BL	Equidistant
-2	1.2	8	0	0	BL	Gnomonic
-2	1.05	8	0	0	BL	Orthographic
-2	0.9	8	0	0	BL	Perspective
-2	0.75	8	0	0	BL	Lambert [E]
-2	0.6	8	0	0	BL	Stereographic [C]
+2	1.35	Equidistant
+2	1.2	Gnomonic
+2	1.05	Orthographic
+2	0.9	Perspective
+2	0.75	Lambert [E]
+2	0.6	Stereographic [C]
 # Thematic
-3	1.35	8	0	0	BL	Eckert IV + VI [E]
-3	1.2	8	0	0	BL	Hammer [E]
-3	1.05	8	0	0	BL	Mollweide [E]
-3	0.9	8	0	0	BL	Robinson
-3	0.75	8	0	0	BL	Sinusoidal [E]
-3	0.6	8	0	0	BL	Winkel Tripel
-3	0.45	8	0	0	BL	Van der Grinten
+3	1.35	Eckert IV + VI [E]
+3	1.2	Hammer [E]
+3	1.05	Mollweide [E]
+3	0.9	Robinson
+3	0.75	Sinusoidal [E]
+3	0.6	Winkel Tripel
+3	0.45	Van der Grinten
 # Other
-4	1.35	8	0	0	BL	Linear
-4	1.2	8	0	0	BL	Logarithmic
-4	1.05	8	0	0	BL	Exponential
-4	0.9	8	0	0	BL	Time
-4	0.75	8	0	0	BL	Polar
+4	1.35	Linear
+4	1.2	Logarithmic
+4	1.05	Exponential
+4	0.9	Time
+4	0.75	Polar
 #
-0.05	2.75	8	0	0	BL	C = Conformal
-0.05	2.6	8	0	0	BL	E = Equal Area
+0.05	2.75	C = Conformal
+0.05	2.6	E = Equal Area
 EOF
 
-psxy -R -J -O -m -Wthinner << EOF >> GMT_-J.ps
+psxy -R -J -O -Wthinner << EOF >> GMT_-J.ps
 >
 2.3	2.75
 2	2.4

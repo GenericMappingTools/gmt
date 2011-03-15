@@ -3,91 +3,87 @@
 .SH NAME
 x2sys_solve \- Determine systematic corrections from crossovers
 .SH SYNOPSIS
-\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP OPT(E)\fImode\fP [ \fICOE_list.d\fP ] 
-[ GMT_V_OPT ] [ OPT(W) ] [ OPT(Z) ] [ GMT_bi_OPT ]
+BD(x2sys_solve) OPT(C)IT(column) OPT(T)IT(TAG) OPT(E)IT(mode) [ IT(COE_list.d) ] [ GMT_V_OPT ] [ OPT(W) ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
-\fBx2sys_solve\fP will use the supplied crossover information to
+BD(x2sys_solve) will use the supplied crossover information to
 solve for systematic corrections that can then be applied per track
 to improve data quality. Several systematic corrections can be solved
 for using a least-squares approach.  Note: Only one data column can be
 processed at the time.
+.SH REQUIRED ARGUMENTS
+.TP
+IT(COE_list.d)
+Name of file with the required crossover columns as produced by BD(x2sys_list).  NOTE: If OPT(bi) is used then the
+first two columns are expected to hold the integer track IDs; otherwise we expect
+those columns to hold the text string names of the two tracks.  If no file is given we will read from IT(stdin).
 #include "explain_tag.txt"
 .TP
-OPT(C)
+OPT(C)IT(column)
 Specify which data column you want to process.  Needed for proper formatting
 of the output correction table and must match the same option used in
-\fBx2sys_list\fP when preparing the input data.
+BD(x2sys_list) when preparing the input data.
 .TP
-OPT(E)
+OPT(E)IT(mode)
 The correction type you wish to model.  Choose among the following functions
-\fIf\fP(\fIp\fP), where \fIp\fP are the \fIm\fP parameters per track that we will fit simultaneously
+IT(f)(IT(p)), where IT(p) are the IT(m) parameters per track that we will fit simultaneously
 using a least squares approach:
 .br
-\fBc\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP (a constant offset); records must contain cruise ID1, ID2, COE.
+BD(c) will fit IT(f)(IT(p)) = IT(a) (a constant offset); records must contain cruise ID1, ID2, COE.
 .br
-\fBd\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP * \fId\fP (linear drift; \fId\fP is distance;
+BD(d) will fit IT(f)(IT(p)) = IT(a) + IT(b) * IT(d) (linear drift; IT(d) is distance;
 records must contain cruise ID1, ID2, d1, d2, COE.
 .br
-\fBg\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP sin(y)^2  (1980-1930 gravity correction);
+BD(g) will fit IT(f)(IT(p)) = IT(a) + IT(b) sin(y)^2  (1980-1930 gravity correction);
 records must contain cruise ID1, ID2, latitude y, COE.
 .br
-\fBh\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP cos(H) + \fIc\fP cos(2H) + \fId\fP sin(H) + \fIe\fP sin(2H) (magnetic heading correction);
+BD(h) will fit IT(f)(IT(p)) = IT(a) + IT(b) cos(H) + IT(c) cos(2H) + IT(d) sin(H) + IT(e) sin(2H) (magnetic heading correction);
 records must contain cruise ID1, ID2, heading H, COE.
 .br
-\fBs\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP * z (a unit scale correction); records must contain cruise ID1, ID2, z1, z2.
+BD(s) will fit IT(f)(IT(p)) = IT(a) * z (a unit scale correction); records must contain cruise ID1, ID2, z1, z2.
 .br
-\fBt\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is the start time of the track);
+BD(t) will fit IT(f)(IT(p)) = IT(a) + IT(b) * (IT(t - t0)) (linear drift; IT(t0) is the start time of the track);
 records must contain cruise ID1, ID2, t1-t0, t2-t0, COE.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
-.TP
-\fICOE_list.d\fP
-Name of file with the required crossover columns as produced by \fBx2sys_list\fP.  NOTE: If OPT(bi) is used then the
-first two columns are expected to hold the integer track IDs; otherwise we expect
-those columns to hold the text string names of the two tracks.
 #include "explain_-V.txt"
 .TP
 OPT(W)
 Means that each input records has an extra column with the composite weight for each crossover record.  These
 are used to obtain a weighted least squares solution [no weights].
-.TP
-OPT(Z)
-For OPT(Ed) and OPT(Et), determine the earliest time or shortest distance for each track, then use these values
-as the local origin for time duration or distance calculations.  The local origin is then included in the correction table
-[Default uses 0].
 #include "explain_-bi.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nc  > faa_coe.txt
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nc  > faa_coe.txt
 .br
-\fBx2sys_solve\fP faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)c > coe_table.txt
+BD(x2sys_solve) faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)c > coe_table.txt
 .br
 .sp
 To fit a faa linear drift with time instead, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nTc  > faa_coe.txt
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nTc  > faa_coe.txt
 .br
-\fBx2sys_solve\fP faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)t > coe_table.txt
+BD(x2sys_solve) faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)t > coe_table.txt
 .br
 .sp
 To estimate heading corrections based on magnetic crossovers associated with the tag MGD77
 from the file COE_data.txt, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(F)nhc > mag_coe.txt
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(F)nhc > mag_coe.txt
 .br
-\fBx2sys_solve\fP mag_coe.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(E)h > coe_table.txt
+BD(x2sys_solve) mag_coe.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(E)h > coe_table.txt
 .br
 .sp
 To estimate unit scale corrections based on bathymetry crossovers, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(F)nz > depth_coe.txt
+BD(x2sys_list) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(F)nz > depth_coe.txt
 .br
-\fBx2sys_solve\fP depth_coe.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(E)s > coe_table.txt
+BD(x2sys_solve) depth_coe.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(E)s > coe_table.txt
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),
 .IR x2sys_cross (1),

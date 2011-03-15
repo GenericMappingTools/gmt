@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.26 2010-03-02 20:21:17 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.27 2011-03-15 02:06:37 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems, n_b_problems;
-	int	n_d_problems, n_a_problems, n_p_problems, ix0 = 0, iy0 = 0, report_mismatch = 0;
+	int	n_d_problems, n_a_problems, n_p_problems, ix0 = 0, iy0 = 0, report_mismatch = 0, cont_no;
 	int	w, e, s, n, ixmin, ixmax, iymin, iymax, last_x = 0, last_y = 0;
 	int	ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
 	struct GMT_XSEGMENT *ylist;
@@ -25,8 +25,8 @@ int main (int argc, char **argv)
 	double dx1, dx2, dy1, dy2, off, cos_a;
 
 	if (argc != 2) {
-		fprintf(stderr,"usage:  polygon_consistency GSHHS_polygons.b > report.lis\n");
-		exit (-1);
+		fprintf(stderr,"usage:  polygon_consistency wvs_polygons.b > report.lis\n");
+		exit(-1);
 	}
 
 	fp = fopen(argv[1], "r");
@@ -34,8 +34,11 @@ int main (int argc, char **argv)
 	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = n_a_problems = n_b_problems = n_p_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
+		if (h.id == 13401)
+			w = 0;
 	
-		if (h.continent == ANTARCTICA) {
+		cont_no = (h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		if (cont_no == ANTARCTICA) {
 			if (h.south > -90.0) ant_trouble = TRUE;
 		}
 		if (h.area < 0 && h.level != 2) fprintf (stderr, "Pol %d has negative area and is level %d\n", h.id, h.level);
@@ -81,7 +84,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (nd) n_d_problems++;
-		if (h.continent == ANTARCTICA) iymin = -M90;
+		if (cont_no == ANTARCTICA) iymin = -M90;
 		if (! (p.x == ix0 && p.y == iy0)) {
 			printf ("%d\tnot closed\n", h.id);
 			n_c_problems++;
@@ -90,7 +93,7 @@ int main (int argc, char **argv)
 			printf ("%d\twesn mismatch.  Should be %.6f/%.6f/%.6f/%.6f\n", h.id, 1e-6 * ixmin, 1e-6 * ixmax, 1e-6 * iymin, 1e-6 * iymax);
 			n_r_problems++;
 		}
-		this_n = (h.continent == ANTARCTICA) ? h.n - 1 : h.n;
+		this_n = (cont_no == ANTARCTICA) ? h.n - 1 : h.n;
 		GMT_init_track (lat, this_n, &ylist);
 		if (!GMT_IS_ZERO (h.east - h.west)) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);

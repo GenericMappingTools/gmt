@@ -1,19 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: hovmuller.sh,v 1.9 2008-02-20 14:43:51 remko Exp $
-
-ps=hovmuller.ps
-opt="--TIME_EPOCH=2000-01-01T --TIME_UNIT=y"
+#	$Id: hovmuller.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for making Hovmuller plots"
 
-awk 'BEGIN{pi=3.1415;for (y=0; y<=3; y+=0.0833333) {for (x=-180; x<=180; x+=10) {print x,y,sin(2*pi*y)*sin(pi/180*x)}}}' /dev/null > tmp.dat
-xyz2grd $opt -R180w/180e/0t/3t -I10/0.0833333 tmp.dat -Gtmp.nc
+ps=hovmuller.ps
+gmtset TIME_EPOCH 2000-01-01T00 TIME_UNIT y
+gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP c FONT_ANNOT_PRIMARY 10p FONT_ANNOT_SECONDARY 12p
+gmtset MAP_ANNOT_ORTHO ""
 
 makecpt -Crainbow -T-1/1/0.05 > tmp.cpt
-grdimage tmp.nc -Ctmp.cpt -JX12c/12cT -B30f10/1O -Bs/1Y $opt --PLOT_DATE_FORMAT=o --TIME_FORMAT_PRIMARY=c --ANNOT_FONT_SIZE_PRIMARY=10p --ANNOT_FONT_SIZE_SECONDARY=12p -E100 > $ps
+awk 'BEGIN{pi=3.1415;for (y=0; y<=3; y+=0.0833333) {for (x=-180; x<=180; x+=10) {print x,y,sin(2*pi*y)*sin(pi/180*x)}}}' /dev/null | \
+	xyz2grd -R-180/180/0/3 -f0x,1t -I10/0.0833333 -Gtmp.nc
+grdimage tmp.nc -Ctmp.cpt -JX12c/12cT -B30f10/1O -Bs/1Y -E100 > $ps
 
-rm -f tmp.* .gmtcommands4
+rm -f tmp.*
 
 pscmp

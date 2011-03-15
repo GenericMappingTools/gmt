@@ -1,7 +1,12 @@
-	$Id: README.imgsrc,v 1.11 2011-03-04 06:47:15 guru Exp $
+	$Id: README.imgsrc,v 1.12 2011-03-15 02:06:37 guru Exp $
 
 Maintained by: W H F Smith
-Distributed under the GNU Public License (see file ../LICENSE.TXT)
+All code files are explicitly distributed under the
+GNU Public License, see file LICENSE.TXT for more details.
+
+==> CHANGES IN GMT 5 <==
+
+img2mercgrd and img2mgrd are now a single C function (and executable).
 
 ==> CHANGES IN GMT 4.4.1 <==
 

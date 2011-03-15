@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_ex_tests.sh,v 1.2 2011-02-28 01:30:43 remko Exp $
+#	$Id: run_ex_tests.sh,v 1.3 2011-03-15 02:06:31 guru Exp $
 #
 #	Test newly created plots for documentation against archive
 #

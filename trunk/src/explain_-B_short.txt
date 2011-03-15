@@ -1,4 +1,0 @@
-.TP
-OPT(B)
-Sets map boundary annotation and tickmark intervals; see the
-\fBpsbasemap\fP man page for all the details.

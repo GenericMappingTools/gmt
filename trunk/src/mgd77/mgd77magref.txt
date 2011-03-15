@@ -3,137 +3,138 @@
 .SH NAME
 mgd77magref \- Evaluate the IGRF or CM4 magnetic field models
 .SH SYNOPSIS
-\fBmgd77magref\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fP\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
-[ OPT(D)\fIDstfile\fP ] [ OPT(E)\fIf107file\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] 
-[ OPT(Sc)|\fBl\fP\fIlow/high\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
+BD(mgd77magref) [ IT(inputfile) ] [ OPT(A)[BD(+a)IT(alt)BD(+t)IT(date)BD(+y)] ] [ OPT(C)IT(cm4file) ] 
+[ OPT(D)IT(Dstfile) ] [ OPT(E)IT(f107file) ] [ OPT(F)IT(flags) ] [ OPT(G) ]
+[ OPT(Sc)|BD(l)IT(low/high) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ]  [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBmgd77magref\fP will evaluate the IGRF or the CM4 geomagnetic models at the specified locations and times.
-.SH OPTIONS
-No space between the option flag and the associated arguments.
+BD(mgd77magref) will evaluate the IGRF or the CM4 geomagnetic models at the specified locations and times.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinputfile\fP
+IT(inputfile)
 Contains the moments in space-time where we want to evaluate the magnetic reference field.  The first two columns must contain
 longitude and latitude (however, see OPT(:) for latitude and longitude instead).  Normally, the third
 and fourth columns must contain altitude (in km) and time, respectively, but if one or both of these are constant
 for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
-file. If no input file is given we read \fIstdin\fP.
+file. If no input file is given we read IT(stdin).
 A note about the CM4 validity domain. The core field of CM4 is valid from 1960-2002.5 but the ionospheric and 
-magnetospheric fields are computed after the \fIDst\fP and \fIF10.7\fP coefficient files. We extended here 
-those coefficient files up to 2007, which means that one can compute external contributions up until 2007 but 
+magnetospheric fields are computed after the IT(Dst) and IT(F10.7) coefficient files. We extended here 
+those coefficient files up to 2006, which means that one can compute external contributions up until 2006 but 
 the Secular Variation will be biased (non reliable). New indices files may be retrieved 
-from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the \fIDst\fP coefficients) and 
-ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The \fIF10.7\fP index file is a MONTHPLT.ABS). 
-NOTE: since the \fIDst\fP files in the .../DST/ directory are still only up to 2007, for GMT4.5.3 we extended the \fIDst\fP
-till April 2010 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
+from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the IT(Dst) coefficients) and 
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The IT(F10.7) index file is a MONTHPLT.ABS). 
+NOTE: since the IT(Dst) files in the .../DST/ directory are still only up to 2006, for GMT4.5.1 we extended the IT(Dst)
+till August 2009 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
 ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
+.SH OPTIONAL ARGUMENTS
+No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP (in km) that should
-apply to all data records [Default expects \fIaltitude\fP to be in the 3rd column of all records].
-Append \fB+t\fP to set a fixed \fItime\fP that should
-apply to all data records [Default expects \fItime\fP to be in the 4th column of all records].
-Finally, append \fB+y\fP to indicate that all times are specified as decimal years [Default is
-ISO \fIdate\fPT\fIcolck\fP format].
+OPT(A)[BD(+a)IT(alt)BD(+t)IT(date)BD(+y)]
+Adjusts how the input record is interpreted.  Append BD(+a) to set a fixed IT(altitude) (in km) that should
+apply to all data records [Default expects IT(altitude) to be in the 3rd column of all records].
+Append BD(+t) to set a fixed IT(time) that should
+apply to all data records [Default expects IT(time) to be in the 4th column of all records].
+Finally, append BD(+y) to indicate that all times are specified as decimal years [Default is
+ISO IT(date)TIT(colck) format].
 .TP
-OPT(C)
+OPT(C)IT(cm4file)
 Specify an alternate CM4 coefficient file [umdl.CM4].
 .TP
-OPT(D)
+OPT(D)IT(Dstfile)
 Specify an alternate file with hourly means of the Dst index for CM4 [Dst_all.wdc].  Alternatively,
 simply specify a single index to apply for all records.
 .TP
-OPT(E)
+OPT(E)IT(f107file)
 Specify an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [F107_mon.plt].  Alternatively,
 simply specify a single flux to apply for all records.
 .TP
-OPT(F)
-Selects output items; \fIflags\fP is a string made up of one or more of these characters:
+OPT(F)IT(flags)
+Selects output items; IT(flags) is a string made up of one or more of these characters:
 .br
-\fBr\fP means output all input columns before adding the items below (all in nTesla).
+BD(r) means output all input columns before adding the items below (all in nTesla).
 .br
-\fBt\fP means list total field.
+BD(t) means list total field.
 .br
-\fBh\fP means list horizontal field.
+BD(h) means list horizontal field.
 .br
-\fBx\fP means list X component.
+BD(x) means list X component.
 .br
-\fBy\fP means list Y component.
+BD(y) means list Y component.
 .br
-\fBz\fP means list Z component.
+BD(z) means list Z component.
 .br
-\fBd\fP means list declination.
+BD(d) means list declination.
 .br
-\fBi\fP means list inclination.
+BD(i) means list inclination.
 .br
 Append one or more number to indicate the requested field contribution(s):
 .br
-\fB0\fP means IGRF field (no combinations allowed)
+BD(0) means IGRF field (no combinations allowed)
 .br
-\fB1\fP means Core field
+BD(1) means Core field
 .br
-\fB2\fP means Lithospheric
+BD(2) means Lithospheric
 .br
-\fB3\fP Primary Magnetospheric field
+BD(3) Primary Magnetospheric field
 .br
-\fB4\fP Induced Magnetospheric field
+BD(4) Induced Magnetospheric field
 .br
-\fB5\fP Primary ionospheric field
+BD(5) Primary ionospheric field
 .br
-\fB6\fP Induced ionospheric field
+BD(6) Induced ionospheric field
 .br
-\fB7\fP Toroidal field
+BD(7) Toroidal field
 .br
-\fB9\fP means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.
+BD(9) means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.
 .br
 Appending several numbers (1-7) will add up the different contributions. For example
-OPT(Ft)/\fB12\fP computes the total field due to Core and Lithospheric sources.
+OPT(Ft)/BD(12) computes the total field due to Core and Lithospheric sources.
 Two special cases are allowed, wich mix which Core field from IGRF and other sources from CM4.
-OPT(Ft)/\fB934\fP computes Core field due to IGRF plus terms 3 and 4 from CM4 (but you can add others).
-OPT(Ft)/\fB934\fP the same as above but output the field components.
-The data is written out in the order they appear in \fIflags\fP [Default is OPT(Frthxyzdi)/\fB1\fP].
+OPT(Ft)/BD(934) computes Core field due to IGRF plus terms 3 and 4 from CM4 (but you can add others).
+OPT(Ft)/BD(934) the same as above but output the field components.
+The data is written out in the order they appear in IT(flags) [Default is OPT(Frthxyzdi)/BD(1)].
 .TP
 OPT(G)
 Specifies that coordinates are geocentric [geodetic].
-#include "explain_-h.txt"
 .TP
 OPT(L)
 Computes J field vectors from certain external sources.
 .br
-\fBr\fP means output all input columns before adding the items below (all in Ampers/m).
+BD(r) means output all input columns before adding the items below (all in Ampers/m).
 .br
-\fBt\fP means list magnitude field.
+BD(t) means list magnitude field.
 .br
-\fBx\fP means list X component.
+BD(x) means list X component.
 .br
-\fBy\fP means list Y component.
+BD(y) means list Y component.
 .br
-\fBz\fP means list Z or current function Psi.
+BD(z) means list Z or current function Psi.
 .br
 Append a number to indicate the requested J contribution:
 .br
-\fB1\fP means Induced Magnetospheric field. 
+BD(1) means Induced Magnetospheric field. 
 .br
-\fB2\fP means Primary ionospheric field. 
+BD(2) means Primary ionospheric field. 
 .br
-\fB3\fP means Induced ionospheric field. 
+BD(3) means Induced ionospheric field. 
 .br
-\fB4\fP means Poloidal field. 
+BD(4) means Poloidal field. 
 .br
 .TP
-OPT(Sc)
+OPT(Sc)IT(low/high)
 Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
 harmonic order [1/13].
 .TP
-OPT(Sl)
+OPT(Sl)IT(low/high)
 Limits the wavelengths of the lithosphere field contribution to the band indicated by the low and high spherical
 harmonic order [14/65].
 #include "explain_-V.txt"
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 4 input columns unless OPT(A) is used].
 #include "explain_-bo.txt"
 [Default is reflected by OPT(F)].
-#include "explain_-m.txt"
+#include "explain_-h.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 .SH TIME SETTINGS
 If binary input files are used then absolute time are stored as time relative to the selected epoch.
 However, since the epoch used is not stored in the data files there can be problems decoding the
@@ -144,13 +145,13 @@ To get the CM4 Total field, Declination and Inclination due to all but lithosphe
 at a one point location and decimal time 2000.0, try
 .br
 .sp
-echo -28 38 0 2000.0 | \fBmgd77magref\fP OPT(A)+y OPT(F)tdi/13456
+echo -28 38 0 2000.0 | BD(mgd77magref) OPT(A)+y OPT(F)tdi/13456
 .br
 .sp
 To do the same as above but at noon (Universal Time) of first May 2001, try
 .br
 .sp
-echo -28 38 0 2001-05-01T12:00:00 | \fBmgd77magref\fP OPT(F)tdi/13456
+echo -28 38 0 2001-05-01T12:00:00 | BD(mgd77magref) OPT(F)tdi/13456
 .br
 .sp
 .SH "SEE ALSO"
@@ -160,8 +161,8 @@ echo -28 38 0 2001-05-01T12:00:00 | \fBmgd77magref\fP OPT(F)tdi/13456
 .IR mgd77manage (1)
 .IR mgd77track (1)
 #include "refs.i"
-"Comprehensive Modeling of the Geomagnetic Field", see
-\fIhttp://denali.gsfc.nasa.gov/cm/\fP.
+Comprehensive Modeling of the Geomagnetic Field, see
+IT(http://denali.gsfc.nasa.gov/cm/).
 .br
-"The International Geomagnetic Reference Field (IGRF)", see
-\fIhttp://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm\fP.
+The International Geomagnetic Reference Field (IGRF), see
+IT(http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm).

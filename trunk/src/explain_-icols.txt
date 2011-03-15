@@ -1,0 +1,2 @@
+.TP
+GMT_i_OPT Select input columns.

@@ -1,38 +1,41 @@
 #include "common_options.txt"
 .TH PS2RASTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
+ps2raster \- Converts one or several IT(PostScript) file(s) to other formats using GhostScript
 .SH SYNOPSIS
-\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP|-] ] [ OPT(C)\fIgs_option\fP ] [ OPT(D)\fIoutdir\fP ] 
-[ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP ] [ OPT(P) ] 
-[ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ]  
-[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] 
-[ OPT(W)[\fB+g\fP][\fB+t\fP\fIdocname\fP][\fB+n\fP\fIlayername\fP][\fB+a\fP\fIaltmode\fP[\fIalt\fP]][\fB+l\fP\fIminLOD/maxLOD\fP][\fB+f\fP\fIminfade/maxfade\fP][\fB+u\fP\fIURL\fP] ]
+BD(ps2raster) IT(psfile(s)) [ OPT(A)[BD(u)[IT(margins)]|-] ] [ OPT(C)IT(gs_option) ] [ OPT(D)IT(outdir) ] 
+[ OPT(E)IT(resolution) ] [ OPT(G)IT(ghost_path) ] [ OPT(L)IT(listfile) ] [ OPT(P) ] 
+[ OPT(Q)[BD(g)|BD(t)][1|2|4] ] [ OPT(S) ]  
+[ OPT(Tb)|BD(e)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t) ] [ OPT(V) ] 
+[ OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)] ]
 .SH DESCRIPTION
-\fBps2raster\fP converts one or more \fIPostScript\fP files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
+BD(ps2raster) converts one or more PS files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
 The size of the resulting images is determined by the BoundingBox (or HiResBoundingBox, if present).
 As an option, a tight (HiRes)BoundingBox may be computed first. As another option, it can compute 
 ESRI type world files used to reference, for instance, tif files and make them be recognized as geotiff.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIpsfiles\fP
-Names of \fIPostScript\fP files to be converted. The output files will have the same name (unless OPT(F) is used) but with the
+IT(psfiles)
+Names of IT(PostScript) files to be converted. The output files will have the same name (unless OPT(F) is used) but with the
 conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  Use
 OPT(D) to redirect the output to a different directory.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
-Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
-GMT-produced time-stamps.  Use OPT(A-) to override any automatic setting of OPT(A) by OPT(W).
+OPT(A)[BD(u)[IT(margins)]|-]
+Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append BD(u) to first remove any
+GMT-produced time-stamps.  Optionally, append extra margins to the bounding box.  Give either one (uniform),
+two (x and y) or four (individual sides) margins; append unit [Default is set by PROJ_LENGTH_UNIT].
+Alternatively, use OPT(A-) to override any automatic setting of OPT(A) by OPT(W).
 .TP
-OPT(C)
+OPT(C)IT(gs_option)
 Specify a single, custom option that will be passed on to GhostScript as is.  Repeat to add several options [none].
 .TP
-OPT(D)
+OPT(D)IT(outdir)
 Sets an alternative output directory (which must exist) [Default is the same directory as the PS files].
 Use OPT(D.) to place the output in the current directory instead.
 .TP
-OPT(E)
+OPT(E)IT(resolution)
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
 .TP
 OPT(F)
@@ -40,14 +43,16 @@ Force the output file name. By default output names are constructed using the
 input names as base, which are appended with an appropriate extension. Use this option
 to provide a different name, but without extension. Extension is still determined automatically.
 .TP
-OPT(G)
+OPT(G)IT(ghost_path)
 Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
 However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
 or give the full path here. (e.g., OPT(G)c:\\programs\\gs\\gs7.05\\bin\\gswin32c).
 .TP
-OPT(L)
-The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
+OPT(L)IT(listfile)
+The IT(listfile) is an ASCII file with the names of the IT(PostScript) files to be converted.
+.TP
+OPT(M)
 .TP
 OPT(N)
 This option is obsolete.
@@ -59,22 +64,22 @@ Force Portrait mode. All Landscape mode plots will be rotated back so that they 
 Portrait mode. This is practical when converting to image formats or preparing EPS or PDF plots for
 inclusion in documents.
 .TP
-OPT(Q)
-Set the anti-aliasing options for \fBg\fPraphics or \fBt\fPext.  Append the size of the subsample
-box (1, 2, or 4) [4].  Default is no anti-aliasing (same as \fIbits\fP = 1).
+OPT(Q)[BD(g)|BD(t)][1|2|4]
+Set the anti-aliasing options for BD(g)raphics or BD(t)ext.  Append the size of the subsample
+box (1, 2, or 4) [4].  Default is no anti-aliasing (same as IT(bits) = 1).
 .TP
 OPT(S)
 Print to standard output the GhostScript command after it has been executed.
 .TP
-OPT(T)
-Sets the output format, where \fBb\fP means BMP, \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
-\fBG\fP means transparent PNG (untouched regions are transparent), \fBm\fP means PPM, and \fBt\fP means TIFF [default is JPEG].
-For \fBbjgt\fP you can append - to get a grayscale image only.
-The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and
-a PDF file.
+OPT(Tb)|BD(e)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t)
+Sets the output format, where BD(b) means BMP, BD(e) means EPS, BD(f) means PDF, BD(F) means multi-page PDF, BD(j) means JPEG, BD(g) means PNG,
+BD(G) means transparent PNG (untouched regions are transparent), BD(m) means PPM, and BD(t) means TIFF [default is JPEG].
+For BD(bjgt) you can append - to get a grayscale image only.
+The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and a PDF file.
+The OPT(TF) creates a multi-page PDF file from the list of input PS or PDF files. It requires OPT(F) option.
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)]
 Write a ESRI type world file suitable to make (e.g) .tif files be recognized as geotiff by
 softwares that know how to do it. Be aware, however, that different results
 are obtained depending on the image contents and if the OPT(B) option has been used or not.
@@ -97,25 +102,25 @@ This option automatically sets OPT(A) OPT(P).
 Use OPT(W+k) to create a minimalist KML file that allows loading the image in
 GoogleEarth. Note that for this option the image must be in geographical
 coordinates. If not, a warning is issued but the KML file is created anyway. Several modifier
-options are available to customize the KML file in the form of \fB+\fP\fIopt\fP strings.
-Append \fB+t\fP\fItitle\fP to set the document title [GMT KML Document],
-\fB+n\fP\fIlayername\fP to set the layer name, and \fB+a\fP\fI/altmode\fP[\fIaltitude\fP] to
+options are available to customize the KML file in the form of BD(+)IT(opt) strings.
+Append BD(+t)IT(title) to set the document title [GMT KML Document],
+BD(+n)IT(layername) to set the layer name, and BD(+a)IT(/altmode)[IT(altitude)] to
 select one of 5 altitude modes recognized by Google Earth that determines the altitude (in m) of the
-image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
-altitude, \fBs\fP append altitude relative to seafloor, and \fBS\fP clamp it to the seafloor.
-Control visibility of the layer with the \fB+l\fP\fIminLOD/maxLOD\fP and \fB+f\fP\fIminfade/maxfade\fP
+image: BD(G) clamped to the ground, BD(g) append altitude relative to ground, BD(a) append absolute
+altitude, BD(s) append altitude relative to seafloor, and BD(S) clamp it to the seafloor.
+Control visibility of the layer with the BD(+l)IT(minLOD/maxLOD) and BD(+f)IT(minfade/maxfade)
 options.  FInally, if you plan to leave the image itself on a server and only distribute the KML,
-use \fB+u\fP\fIURL\fP to prepend the URL to the image reference.
+use BD(+u)IT(URL) to prepend the URL to the image reference.
 See the KML documentation for further explanation (http://code.google.com/apis/kml/documentation/).
 .br
-Further notes on the creation of georeferenced rasters. \fBps2raster\fP can create a georeferenced raster 
-image with a world file OR uses GDAL to convert the GMT \fIPostScript\fP file to geotiff.
+Further notes on the creation of georeferenced rasters. BD(ps2raster) can create a georeferenced raster 
+image with a world file OR uses GDAL to convert the GMT IT(PostScript) file to geotiff.
 GDAL uses Proj.4 for it's projection library. To provide with the information it needs to do 
-the georeferencing, GMT 4.5 embeds a comment near the start of the \fIPostScript\fP file defining the projection 
-using Proj.4 syntax. Users with pre-GMT v4.5 \fIPostScript\fP files, or even non-GMT ps files, can provide the 
-information \fBps2raster\fP requires by manually editing a line into the \fIPostScript\fP file, prefixed with %%PROJ. 
+the georeferencing, GMT 4.5 embeds a comment near the start of the IT(PostScript) file defining the projection 
+using Proj.4 syntax. Users with pre-GMT v4.5 IT(PostScript) files, or even non-GMT ps files, can provide the 
+information BD(ps2raster) requires by manually editing a line into the IT(PostScript) file, prefixed with %%PROJ. 
 .br
-For example the command \fBpscoast\fP OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --BASEMAP_TYPE=inside > cara.ps 
+For example the command BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --BASEMAP_TYPE=inside > cara.ps 
 .br
 adds this comment line 
 .br
@@ -124,59 +129,66 @@ adds this comment line
 where 'merc' is the keyword for the coordinate conversion; the 2 to 5th elements contain the map limits, 
 6 to 9th the map limits in projected coordinates and the rest of the line has the regular proj4 string
 for this projection.
+#include "explain_help.txt"
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
-available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
+available in the original IT(PostScript) file. Choose a resolution that is large enough for the application that
 the image will be used for. For web pages, smaller dpi values suffice, for Word documents and PowerPoint presentations
-a higher dpi value is recommended. \fBps2raster\fP uses the loss-less Flate compression technique when
+a higher dpi value is recommended. BD(ps2raster) uses the loss-less Flate compression technique when
 creating JPEG, PNG and TIFF images.
 .br
 .sp
-EPS is a vector, not a raster format. Therefore, the \fB-E\fP option has no effect on the creation
-of EPS files. Using the option OPT(Te) will remove PageSize commands from the \fIPostScript\fP file and will
+EPS is a vector, not a raster format. Therefore, the BD(-E) option has no effect on the creation
+of EPS files. Using the option OPT(Te) will remove PageSize commands from the IT(PostScript) file and will
 adjust the BoundingBox when the OPT(A) option is used.  Note the original and required BoundingBox is limited
 to integer points, hence Adobe added the optional HiResBoundingBox to add more precision in sizing.  The OPT(A)
 option calculates both and writes both to the EPS file used in the rasterization (and output if OPT(Te) is set).
 .br
 .sp
 Although PDF is also a vector format, the OPT(E) option has an effect on the resolution of pattern fills
-and fonts that are stored as bitmaps in the document. \fBps2raster\fP therefore uses a larger default
-resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options
-are in effect, allowing only loss-less Flate compression of raster images embedded in the \fIPostScript\fP file.
+and fonts that are stored as bitmaps in the document. BD(ps2raster) therefore uses a larger default
+resolution when creating PDF files. In order to obtain high-quality PDF files, the IT(/prepress) options
+are in effect, allowing only loss-less Flate compression of raster images embedded in the IT(PostScript) file.
 .br
 .sp
-Although \fBps2raster\fP was developed as part of the \fBGMT\fP, it can be used to convert \fIPostScript\fP files created
-by nearly any graphics program. However, OPT(Au) is \fBGMT\fP-specific.
+Although BD(ps2raster) was developed as part of the BD(GMT), it can be used to convert IT(PostScript) files created
+by nearly any graphics program. However, OPT(Au) is BD(GMT)-specific.
 .br
 .sp
-See Appendix C of the \fBGMT Technical Reference and Cookbook\fP for more information on how
-\fBps2raster\fP is used to produce graphics that can be inserted into other documents (articles, presentations,
+See Appendix C of the BD(GMT Technical Reference and Cookbook) for more information on how
+BD(ps2raster) is used to produce graphics that can be inserted into other documents (articles, presentations,
 posters, etc.).
 .SH EXAMPLES
 To convert the file psfile.ps to PNG using a tight BoundingBox and rotating it back to normal
 orientation in case it was in Landscape mode:
 .br
 .sp
-\fBps2raster\fP psfile.ps OPT(A) OPT(P) OPT(Tg)
+BD(ps2raster) psfile.ps OPT(A) OPT(P) OPT(Tg)
+.br
+.sp
+To create a 3 pages PDF file from 3 individual PS files
+.br
+.sp
+BD(ps2raster) OPT(TF) OPT(F)abc a.ps b.ps c.ps
 .br
 .sp
 To create a simple linear map with pscoast and convert it to tif with a .tfw
 the tight BoundingBox computation.
 .br
 .sp
-\fBpscoast\fP OPT(JX12cd) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
+BD(pscoast) OPT(JX12cd) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
 .br
 .sp
-\fBps2raster\fP cara OPT(Tt) OPT(W)
+BD(ps2raster) cara OPT(Tt) OPT(W)
 .br
 .sp
 To create a Mercator version of the above example and use GDAL to produce a true geotiff file.
 .br
 .sp
-\fBpscoast\fP OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
+BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
 .br
 .sp
-\fBgdalwarp\fP -s_srs +proj=merc cara.tif carageo.tiff 
+BD(gdalwarp) -s_srs +proj=merc cara.tif carageo.tiff 
 .br
 .sp
 To create a Polar Stereographic geotiff file of Patagonia
@@ -199,12 +211,12 @@ ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 .sp
 (These commands assume that GhostScript can be found in your system's path.)\"'
 .SH BINARY DATA
-\fBGMT\fP programs can produce binary \fIPostScript\fP image data and this is determined by the default setting PS_IMAGE_FORMAT.
-Because \fBps2raster\fP needs to process the input files on a line-by-line basis you need to make sure the
-image format is set to \fIascii\fP and not \fIbin\fP.
+BD(GMT) programs can produce binary IT(PostScript) image data and this is determined by the default setting PS_IMAGE_FORMAT.
+Because BD(ps2raster) needs to process the input files on a line-by-line basis you need to make sure the
+image format is set to IT(ascii) and not IT(bin).
 .SH GHOSTSCRIPT OPTIONS
-Most of the conversions done in \fBps2raster\fP are handled by GhostScript. On most Unixes this program
-is available as \fBgs\fP; for Windows there is a version called \fBgswin32c\fP.
+Most of the conversions done in BD(ps2raster) are handled by GhostScript. On most Unixes this program
+is available as BD(gs); for Windows there is a version called BD(gswin32c).
 GhostScript accepts a rich selection of command-line options that modify its behavior.  Many of these are
 set indirectly by the options available above.  However, hard-core usage may require some users to add additional
 options to fine-tune the result.  Use OPT(S) to examine the actual command used, and add custom options
@@ -212,5 +224,5 @@ via one or more instances of the OPT(C) option.  For instance, to turn on image 
 improving image quality for scaled images at the expense of speed, use OPT(C)-dDOINTERPOLATE.
 See www.ghostscript.com for complete documentation.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR gs (1)

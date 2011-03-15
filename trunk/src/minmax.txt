@@ -3,60 +3,71 @@
 .SH NAME
 minmax \- Find extreme values in data tables
 .SH SYNOPSIS
-\fBminmax\fP [ \fIfiles\fP] [ OPT(C) ] [ OPT(EL)|\fBl\fP|\fBH\fP|\fBh\fP\fIcol\fP ] 
-[ GMT_H_OPT ] [ OPT(I)[\fBp\fP]\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
-[ OPT(S)[\fBx\fP][\fBy\fP] ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
+BD(minmax) [ IT(files)] [ OPT(A)BD(a)|BD(f)|BD(s) ] [ OPT(C) ] [ OPT(EL)|BD(l)|BD(H)|BD(h)IT(col) ] 
+[ OPT(I)[BD(p)]IT(dx)[/IT(dy)[/IT(dz)...] ] 
+[ OPT(S)[BD(x)][BD(y)] ] [ OPT(T)IT(dz)[/IT(col)] ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBminmax\fP reads its standard input [or from files] and finds the
+BD(minmax) reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
 will print warnings if the number of columns vary from record to record.
-As an option, \fBminmax\fP will find the extent of the first \fIn\fP columns rounded
+As an option, BD(minmax) will find the extent of the first IT(n) columns rounded
 up and down to the nearest multiple of the supplied increments.  By default, this output
-will be in the form OPT(R)\fIw/e/s/n\fP which can be used directly in the command line
-for other programs (hence only \fIdx\fP and \fIdy\fP are needed), or the output will be in
+will be in the form OPT(R)IT(w/e/s/n) which can be used directly in the command line
+for other programs (hence only IT(dx) and IT(dy) are needed), or the output will be in
 column form for as many columns as there are increments provided.
-A similar option (OPT(T)) will provide a OPT(T)\fIzmin/zmax/dz\fP string for makecpt.
+A similar option (OPT(T)) will provide a OPT(T)IT(zmin/zmax/dz) string for makecpt.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIxyzfile\fP
+IT(xyzfile)
 ASCII [or binary, see OPT(b)] file(s) holding a fixed number of data columns. 
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)BD(a)|BD(f)|BD(s)
+Specify how the range should be reported.  Choose OPT(Aa) for the range of all files,
+OPT(Af) to report the range for each file separately, and OPT(As) to report the range
+for each segment (in multisegment files) separately.  [Default is OPT(Aa)].
 .TP
 OPT(C)
 Report the min/max values per column in separate columns [Default uses <min/max> format].
 .TP
-OPT(E)
-Returns the record whose column \fIcol\fP contains the minimum (\fBl\fP) or maximum (\fBh\fP)
-value.  Upper case (\fBL|H\fP) works on absolute value of the data.  In case of multiple
-matches, only the first record is returned.
-#include "explain_-h.txt"
+OPT(EL)|BD(l)|BD(H)|BD(h)IT(col)
+Returns the record whose column IT(col) contains the minimum (BD(l)) or maximum (BD(h))
+value.  Upper case (BD(L|H)) works on absolute value of the data.  In case of multiple
+matches, only the first record is returned.  If IT(col) is not specified we default to the
+last column in the data.
 .TP
-OPT(I)
-Report the min/max of the first \fIn\fP columns to the nearest multiple of the provided
-increments (separate the \fIn\fP increments by slashes), and output results in the form OPT(R)\fIw/e/s/n\fP
+OPT(I)[BD(p)]IT(dx)[/IT(dy)[/IT(dz)...]
+Report the min/max of the first IT(n) columns to the nearest multiple of the provided
+increments (separate the IT(n) increments by slashes), and output results in the form OPT(R)IT(w/e/s/n)
 (unless OPT(C) is set).  If only one increment is given we also use it for the second
-column (for backwards compatibility).  To override this behaviour, use OPT(Ip)\fIdx\fP.
+column (for backwards compatibility).  To override this behavior, use OPT(Ip)IT(dx).
 .TP
-OPT(S)
-Add extra space for error bars. Useful together with OPT(I) option and when later plotting with \fBpsxy\fP OPT(E).
+OPT(S)[BD(x)][BD(y)]
+Add extra space for error bars. Useful together with OPT(I) option and when later plotting with BD(psxy) OPT(E).
 OPT(Sx) leaves space for horizontal error bars using the values in third (2) column.
 OPT(Sy) leaves space for vertical error bars using the values in third (2) column.
 OPT(S) or OPT(Sxy) leaves space for both error bars using the values in third and fourth (2 and 3) columns.
 .TP
-OPT(T)
+OPT(T)IT(dz)[/IT(col)]
 Report the min/max of the first (0'th) column to the nearest multiple of \fIdz\fP and output this in
-the form OPT(T)\fIzmin/zmax/dz\fP.  To use another column, append /\fIcol\fP.
-#include "explain_-t.txt"
+the form OPT(T)IT(zmin/zmax/dz).  To use another column, append /IT(col).
 Only works when OPT(I) is selected.
+#include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
-#include "explain_-m.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To find the extreme values in the file ship_gravity.xygd:
 .br
 .sp
-\fBminmax\fP ship_gravity.xygd
+BD(minmax) ship_gravity.xygd
 .br
 .sp
 Output should look like
@@ -69,16 +80,17 @@ To find the extreme values in the file track.xy to the nearest 5 units and use t
 region to draw a line using psxy, run
 .br
 .sp
-\fBpsxy\fP `\fBminmax\fP OPT(I)5 track.xy` track.xy OPT(Jx)1 OPT(B)5 OPT(P) > track.ps
+BD(psxy) `BD(minmax) OPT(I)5 track.xy` track.xy OPT(Jx)1 OPT(B)5 OPT(P) > track.ps
 .br
 .sp
-To find the min and max values for each of the first 4 columns, but rounded to integers, use
+To find the min and max values for each of the first 4 columns, but rounded to integers, and
+return the result individually for each data file, use
 .br
 .sp
-\fBminmax\fP junkfile OPT(C) OPT(I)1/1/1/1
+BD(minmax) profile_*.txt OPT(C) OPT(I)1/1/1/1
 .SH BUGS
 The OPT(I) option does not yet work properly with time series data (e.g., OPT(f)0T).  Thus, such
 variable intervals as months and years are not calculated.  Instead, specify your interval in the
-same units as the current setting of \fBTIME_UNIT\fP.
+same units as the current setting of BD(TIME_UNIT).
 .SH "SEE ALSO"
-.IR GMT (1)
+.IR gmt (1)

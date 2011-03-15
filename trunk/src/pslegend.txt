@@ -1,156 +1,153 @@
 #include "common_options.txt"
 .TH PSLEGEND 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
-#define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
+#define CLEARANCE 4BD(p)/4BD(p)
 .SH NAME
 pslegend \- To plot a map legend
 .SH SYNOPSIS
-\fBpslegend\fP \fItextfile\fP OPT(D)[\fBx\fP]\fIlon\fP/\fIlat\fP/\fIwidth\fP/\fIheight\fP/\fIjust\fP GMT_J_OPT 
-GMT_Rgeo_OPT [ GMT_B_OPT ] [ OPT(C)\fIdx\fP/\fIdy\fP ] [ OPT(F) ] 
-[ OPT(G)\fIfill\fP ] [ GMT_K_OPT ] [ OPT(L)\fIspacing\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(S)[\fIscript\fP] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_c_OPT ]
-[ GMT_Y_OPT ]
+BD(pslegend) IT(textfile) OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)/IT(height)/IT(just) 
+[ GMT_B_OPT ] [ OPT(C)IT(dx)/IT(dy) ] [ OPT(F) ] [ OPT(G)IT(fill) ] [ GMT_J_OPT ] 
+[ GMT_K_OPT ] [ OPT(L)IT(spacing) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ GMT_Rgeo_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBpslegend\fP will make legends that can be overlaid on maps.  It reads specific
-legend-related information from an input file [or stdin].  Because all the elements
-of the legend can already be created with other tools (\fBpsxy\fP, \fBpstext\fP) we
-use those tools by creating a batch job of commands that are executed to make the final
-\fIPostScript\fP overlay.  Because of this process, the option exists to just output the script which
-can then be fine-tuned manually.  Unless otherwise noted, annotations will be made using the
-annotation font and size in effect.
+BD(pslegend) will make legends that can be overlaid on maps.  It reads specific
+legend-related information from an input file [or stdin].  Unless otherwise noted,
+annotations will be made using the primary annotation font and size in effect
+(i.e., FONT_ANNOT_PRIMARY)
+.SH REQUIRED ARGUMENTS
 .TP
-\fItextfile\fP
+IT(textfile)
 This file contains instruction for the layout of items in the legend.  Each legend item is described by
 a unique record.  All records begin with a unique character that is common to all records of the same
 kind.  The order of the legend items is implied by the order of the records.  Ten different record types
 are recognized, and the syntax for each of these records are presented below:
 .sp
 .RS
-\fB#\fP \fIcomment\fP
+BD(#) IT(comment)
 Records starting with # and blank lines are skipped.
 .TP
-\fBB\fP \fIcptname offset height\fP [ \fIoptional arguments\fP ]
-The \fBB\fP record will plot a horizontal color bar, \fBpsscale\fP-style in the middle, starting at \fIoffset\fP from
-the left edge, and of the given \fIheight\fP.  You may add any additional \fPpsscale\fP options from the list:
-OPT(A) OPT(B) OPT(E) OPT(I) OPT(L) OPT(M) OPT(N) OPT(S) and OPT(Z).
+BD(B) IT(cptname offset height) [ IT(optional arguments) ]
+The BD(B) record will plot a horizontal color bar, BD(psscale)-style in the middle, starting at IT(offset) from
+the left edge, and of the given IT(height).  You may add any additional BD(psscale) options from the list:
+OPT(A) OPT(B) OPT(I) OPT(L) OPT(M) OPT(N) OPT(S) OPT(Z) and OPT(p).  See the BD(psscale) man page for details.
 .TP
-\fBC\fP \fItextcolor\fP
-The \fBC\fP record specifies the color with which the remaining text is to be printed.
-\fItextcolor\fP can be in the form \fIr/g/b\fP, \fIc/m/y/k\fP, or a named color.
+BD(C) IT(textcolor)
+The BD(C) record specifies the color with which the remaining text is to be printed.
+IT(textcolor) can be in the form IT(r/g/b), IT(c/m/y/k), or a named color.  Use BD(-) to reset to default color.
 .TP
-\fBD\fP \fIoffset pen\fP
-The \fBD\fP record results in a horizontal line with specified \fIpen\fP across the legend with one quarter of
-the line spacing left blank above and below the line.  Two gaps of \fIoffset\fP units are left blank between
-the horizontal line and the left and right frame sides.
+BD(D) IT(offset pen)
+The BD(D) record results in a horizontal line with specified IT(pen) across the legend with one quarter of
+the line spacing left blank above and below the line.  Two gaps of IT(offset) units are left blank between
+the horizontal line and the left and right frame sides.  If no pen is given we use MAP_GRID_PEN_PRIMARY
 (See SPECIFYING PENS below).
 .TP
-\fBG\fP \fIgap\fP
-The \fBG\fP record specifies a vertical gap of the given length. 
-In addition to the standard units (\fBi\fP, \fBc\fP, \fBp\fP) you may use \fBl\fP for lines.
+BD(G) IT(gap)
+The BD(G) record specifies a vertical gap of the given length. 
+In addition to the standard units (BD(i), BD(c), BD(p)) you may use BD(l) for lines.
+A negative IT(gap) will move the current line upwards (thus closing a gap).
 .TP
-\fBH\fP \fIfontsize\fP|\fB-\fP \fIfont\fP|\fB-\fP header\fP
-The \fBH\fP record plots a centered text string using the specified font parameters.
-Use \fB-\fP to default to \fBHEADER_FONT_SIZE\fP and \fBHEADER_FONT\fP.
+BD(H) IT(fontsize)|BD(-) IT(font)|BD(-) header)
+The BD(H) record plots a centered text string using the specified font parameters.
+Use BD(-) to default to size and type of BD(FONT_TITLE).
 .TP
-\fBI\fP \fIimagefile width justification\fP
+BD(I) IT(imagefile width justification)
 Place an EPS or Sun raster image in the legend justified relative to the current point.  The
-image \fIwidth\fP determines the size of the image on the page.
+image IT(width) determines the size of the image on the page.
 .TP
-\fBL\fP \fIfontsize\fP|\fB-\fP \fIfont\fP|\fB-\fP justification label\fP
-The \fBL\fP record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using
+BD(L) IT(fontsize)|BD(-) IT(font)|BD(-) justification label)
+The BD(L) record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using
 the specified font parameters.
-Use \fB-\fP to default to \fBLABEL_FONT_SIZE\fP and \fBLABEL_FONT\fP.
+Use BD(-) to default to te size and type of BD(FONT_LABEL).
 .TP
-\fBM\fP \fIslon\fP|\fB-\fP \fIslat length\fP \fBf\fP|\fBp\fP [ OPT(R)\fIw/e/s/n\fP OPT(J)\fIparam\fP ]
-Place a map scale in the legend.  Specify \fIslon slat\fP, the point on the map where the scale applies (\fIslon\fP
-is only meaningful for certain oblique projections.  If not needed, you must specify \fB-\fP instead),
-\fIlength\fP, the length of the scale in km (append \fBm\fP or \fBn\fP for miles or nautical miles), and
-\fBf\fP or \fBp\fP for fancy or plain scale.  If the OPT(R) OPT(J) supplied to \fBpslegend\fP is different than the
-projection needed for the scale, supply the optional OPT(R) OPT(J) settings as well.  
-Append \fB+l\fP to the \fIlength\fP to
+BD(M) IT(slon)|BD(-) IT(slat length) BD(f)|BD(p) [ OPT(R)IT(w/e/s/n) OPT(J)IT(param) ]
+Place a map scale in the legend.  Specify IT(slon slat), the point on the map where the scale applies (IT(slon)
+is only meaningful for certain oblique projections.  If not needed, you must specify BD(-) instead),
+IT(length), the length of the scale in km (append BD(m) or BD(n) for miles or nautical miles), and
+BD(f) or BD(p) for fancy or plain scale.  If the OPT(R) OPT(J) supplied to BD(pslegend) is different than the
+projection needed for the scale (or not given at all, i.e., with OPT(Dx)), supply the optional OPT(R) OPT(J) settings as well.  
+Append BD(+l) to the IT(length) to
 select the default label which equals the distance unit (km, miles, nautical miles) and is justified on top of the scale [t].
-Change this by giving your own label (append \fB+l\fP\fIlabel\fP).  Change label justification with \fB+j\fP\fIjustification\fP
-(choose among l(eft), r(ight), t(op), and b(ottom)).  Apply \fB+u\fP to append the unit to all distance annotations along the scale. 
-If you want to place a rectangle behind the scale, specify suitable \fB+p\fP\fIpen\fP and/or \fB+f\fP\fIfill\fP parameters.
-All these \fP+\fP\fImodifiers\fP are appended to \fIlength\fP to make a single string.
+Change this by giving your own label (append BD(+l)IT(label)).  Change label justification with BD(+j)IT(justification)
+(choose among l(eft), r(ight), t(op), and b(ottom)).  Apply BD(+u) to append the unit to all distance annotations along the scale. 
+If you want to place a rectangle behind the scale, specify suitable BD(+p)IT(pen) and/or BD(+f)IT(fill) parameters.
+All these )+)IT(modifiers) are appended to IT(length) to make a single string.
 (See SPECIFYING PENS and SPECIFYING FILL below).
 .TP
-\fBN\fP \fIncolumns\fP
-Change the number of columns in the legend [1]. This only affects the printing of symbols (\fBS\fP) and 
-labels (\fBL\fP).
+BD(N) IT(ncolumns)
+Change the number of columns in the legend [1]. This only affects the printing of symbols (BD(S)) and 
+labels (BD(L)).  The number of columns stay in effect until BD(N) is used again.
 .TP
-\fBS\fP \fIdx1 symbol size fill pen\fP [ \fIdx2 text\fP ]
-Plots the selected symbol with specified size, fill, and outline (see \fBpsxy\fP).
-The symbol is centered at \fIdx1\fP from the left margin of the column,
-with the optional explanatory \fItext\fP starting \fIdx2\fP from the margin, printed with fontsize
-\fBANNOT_FONT_SIZE_PRIMARY\fP and font \fBANNOT_FONT_PRIMARY\fP.
-Use \fB-\fP if no \fIfill\fP or outline (\fIpen\fP) is required.
-When plotting just a symbol, without text, \fIdx2\fP and \fItext\fP can be omitted.
-Two \fBpsxy\fP symbols require special attention: front (f) and vector (v).  You must prepend
+BD(S) IT(dx1 symbol size fill pen) [ IT(dx2 text) ]
+Plots the selected symbol with specified size, fill, and outline (see BD(psxy)).
+The symbol is centered at IT(dx1) from the left margin of the column,
+with the optional explanatory IT(text) starting IT(dx2) from the margin, printed with BD(FONT_ANNOT_PRIMARY).
+Use BD(-) if no IT(fill) or outline (IT(pen)) is required.
+When plotting just a symbol, without text, IT(dx2) and IT(text) can be omitted.
+Two BD(psxy) symbols require special attention: front (BD(f)) and vector (BD(v)).  You must prepend
 the length of the desired item to the rest of the symbol argument; this will be used internally to set the
-correct fault or vector length and will be stripped before passing the arguments to \fBpsxy\fP.
+correct fault or vector length and will be stripped before passing the arguments to BD(psxy).
 .TP
-\fBT\fP \fIparagraph-text\fP
-One or more of these \fBT\fP records with \fIparagraph-text\fP printed with fontsize
-\fBANNOT_FONT_SIZE_PRIMARY\fP and font \fBANNOT_FONT_PRIMARY\fP (aligned and wrapped).
+BD(T) IT(paragraph-text)
+One or more of these BD(T) records with IT(paragraph-text) printed with BD(FONT_ANNOT_PRIMARY).
 To specify special positioning and typesetting arrangements, or to enter a paragraph break, use the
-optional \fB>\fP record.
+optional BD(P) record.
 .TP
-\fBV\fP \fIoffset pen\fP
-The \fBV\fP record draws a vertical line between columns (if more than one) using the selected \fIpen\fP
+BD(V) IT(offset pen)
+The BD(V) record draws a vertical line between columns (if more than one) using the selected IT(pen)
 (See SPECIFYING PENS below).
-\fIoffset\fP is analogous to the offset for the \fBD\fP records but in the vertical direction.
+IT(offset) is analogous to the offset for the BD(D) records but in the vertical direction.
 .TP
-\fB>\fP \fIparagraph-mode-header-for-pstext\fP
-Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-m\fP description).  Note that
-\fBpslegend\fP knows what all those values should be, so normally you can leave the entire record (after >) blank or
+BD(P) IT(paragraph-mode-header-for-pstext)
+Start a new text paragraph by specifying all the parameters needed (see BD(pstext \-M) record description).  Note that
+BD(pslegend) knows what all those values should be, so normally you can leave the entire record (after P) blank or
 leave it out all together.
 If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
-at their default value to \fB-\fP.
+at their default value to BD(-).
 .RE
 .br
 .TP
-OPT(D)
-Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
+OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)/IT(height)/IT(just)
+Positions the legend and specifies its size.  The IT(just) is a 2-char justification string (see BD(pstext))
 that relates the given position to a point on the rectangular legend box.  If you want to specify the position
-in map plot units (i.e., inches or cm), use OPT(Dx).
-#include "explain_-J_short.txt"
-#include "explain_-R.txt"
-.SH OPTIONS
+in map plot units (i.e., inches or cm), use OPT(Dx); in that case the OPT(R) and OPT(J) are optional (provided
+it is an overlay, i.e., we are using OPT(O)).
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(C)
-Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
+OPT(C)IT(dx)/IT(dy)
+Sets the clearance between the legend frame and the internal items [CLEARANCE].
 .TP
 OPT(F)
-Draws a border around the legend using \fBFRAME_PEN\fP.
+Draws a border around the legend using BD(MAP_FRAME_PEN).
 .TP
-OPT(G)
+OPT(G)IT(fill)
 Select fill shade, color or pattern of the legend box [Default is no fill].
 (See SPECIFYING FILL below).
+#include "explain_-J.txt"
 #include "explain_-K.txt"
 .TP
-OPT(L)
+OPT(L)IT(spacing)
 Sets the linespacing factor in units of the current annotation font size [1.1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
-.TP
-OPT(S)
-Instead of writing the \fIPostScript\fP plot [Default], output the \fBGMT\fP script used to make the legend
-to standard output, or optionally to the file \fIscript\fP.
+#include "explain_-R.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
+#include "explain_font.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-\fBpslegend\fP OPT(R)-10/10/-10/10 OPT(JM)6i OPT(G)azure1 OPT(Dx)0.5i/0.5i/5i/3.3i/BL
+BD(pslegend) OPT(R)-10/10/-10/10 OPT(JM)6i OPT(G)azure1 OPT(Dx)0.5i/0.5i/5i/3.3i/BL
 OPT(C)0.1i/0.1i OPT(L)1.2 OPT(F) OPT(B)5f1 << EOF >> map.ps
 .br
 \# Legend test for pslegend
@@ -206,6 +203,8 @@ L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 .br
 G 0.1i
 .br
+P
+.br
 T Let us just try some simple text that can go on a few lines.
 .br
 T There is no easy way to predetermine how many lines will be required,
@@ -217,13 +216,13 @@ EOF
 .SH WINDOWS REMARKS
 Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
 To indicate a plain percentage sign in a batch script you need to repeat it (%%);
-hence the font switching mechanism (@%\fIfont\fP% and @%%) may require twice the
+hence the font switching mechanism (@%IT(font)% and @%%) may require twice the
 number of percent signs.  This only applies to text inside a script or that otherwise
-is processed by DOS.  Data files that are opened and read by \fBpslegend\fP do not need such duplication.
+is processed by DOS.  Data files that are opened and read by BD(pslegend) do not need such duplication.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR gmtcolors (5),
-.IR gmtdefaults (1),
 .IR psbasemap (1),
 .IR pstext (1),
 .IR psxy (1)

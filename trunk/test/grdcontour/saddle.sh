@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: saddle.sh,v 1.1 2010-02-11 02:18:36 remko Exp $
+#	$Id: saddle.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test grdcontour for a problem with saddle points"
+
 ps=saddle.ps
 
-echo "8000    black       10000   red" > t.cpt
 xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF
 29527.5605469
 18648.4960938
@@ -109,8 +109,10 @@ xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF
 11501.3388672
 12617.8066406
 EOF
-grdcontour -Ct.cpt -A- -R -JX4i tmp.nc -W+ -B1g1:."Direct contour": -Dtmp.xyz -K -m > $ps
-psxy -O -X5i -J -R -B1g1:."Via -D then psxy": -Ct.cpt -m tmp.xyz >> $ps
-rm -f .gmtcommands4 t.cpt tmp.xyz tmp.nc
+
+echo "8000 black 10000 red" > tmp.cpt
+grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -W+ -B1g1:."Direct contour": -K > $ps
+grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -D | psxy -O -X5i -J -R -B1g1:."Via -D then psxy": -Ctmp.cpt >> $ps
+rm -f tmp.cpt tmp.nc
 
 pscmp

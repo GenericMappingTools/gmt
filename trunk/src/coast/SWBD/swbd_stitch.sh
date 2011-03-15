@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.18 2009-06-19 22:14:17 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.19 2011-03-15 02:06:37 guru Exp $
 #
 # Usage: swbd_stitch.sh type
 #
@@ -14,7 +14,7 @@ open=""
 for type in c l r; do
 	if [ -f SWBD_open_${type}.d ]; then
 		mkdir -p polc_${type}
-		gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -V -m SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
+		gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -V SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
 		rm -f SWBD_open2_${type}.d
 		while read file; do
 			cat $file >> SWBD_open2_${type}.d

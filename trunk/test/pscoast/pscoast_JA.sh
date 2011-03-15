@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: pscoast_JA.sh,v 1.2 2008-04-04 18:22:28 remko Exp $
+#	$Id: pscoast_JA.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
 # Make sure when fixed it works for all resolutions -D?
 
 ps=pscoast_JA.ps

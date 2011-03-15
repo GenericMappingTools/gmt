@@ -1,94 +1,93 @@
 #include "common_options.txt"
 .TH PSXY 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
-#define CAP_SI 0.25c
+#define PARAMS 2BD(p)/9BD(p)/7BD(p)
+#define CAP 7BD(p)
 #define LEN_1 0.25
 #define LEN_2 5
-#define OPT_1	OPT(Jm)5\fBc \-Sc\fP0.25\fBc\fP
-#define PARAMS_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
-#define CAP_US 0.1i
-#define OPT_2	OPT(JX)6\fBi\fP
+#define OPT_1	OPT(Jm)5BD(c) OPT(Sc)0.25BD(c)
+#define OPT_2	OPT(JX)6BD(i)
 #define LEN_3 0.8
-#define OPT_3	OPT(Jm)0.15\fBi \-Sf\fP0.8\fBi\fP/0.1\fBilt\fP
+#define OPT_3	OPT(Jm)0.15BD(i) OPT(Sf)0.8BD(i)/0.1BD(ilt)
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
-\fBpsxy\fP \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
-[ OPT(A)[\fBm\fP|\fBp\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ]
-[ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ]
-[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
-[ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
-[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ]
-[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] [ GMT_mi_OPT ]
+BD(psxy) IT(files) GMT_J_OPT GMT_Rgeoz_OPT
+[ OPT(A)[BD(m)|BD(p)] ] [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy) ]
+[ OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)] ]
+[ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ]
+[ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)] ] [ GMT_U_OPT ]
+[ GMT_V_OPT ] [ OPT(W)[BD(-)|BD(+)][IT(pen)] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_a_OPT] 
+[ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBpsxy\fP reads (\fIx\fP,\fIy\fP) pairs from \fIfiles\fP [or standard input] and
-generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations on a map.
-If a symbol is selected and no symbol size given, then \fBpsxy\fP will interpret the third column of the
-input data as symbol size.  Symbols whose \fIsize\fP is <= 0 are skipped.
+BD(psxy) reads (IT(x),IT(y)) pairs from IT(files) [or standard input] and
+generates IT(PostScript) code that will plot lines, polygons, or symbols at those locations on a map.
+If a symbol is selected and no symbol size given, then BD(psxy) will interpret the third column of the
+input data as symbol size.  Symbols whose IT(size) is <= 0 are skipped.
 If no symbols are specified then the symbol code (see OPT(S) below)
-must be present as last column in the input.  Multiple segment files may be plotted using the OPT(m) option.
+must be present as last column in the input.
 If OPT(S) is not used, a line connecting the data points will be drawn instead.
 To explicitly close polygons, use OPT(L).  Select a fill with OPT(G).
 If OPT(G) is set, OPT(W) will control whether the polygon outline is drawn or not.
 If a symbol is selected, OPT(G) and OPT(W) determines the fill and outline/no outline, respectively.
-The \fIPostScript\fP code is written to standard output.
+The IT(PostScript) code is written to standard output.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIfiles\fP
-List one or more file-names. If no files are given, \fBpsxy\fP will read standard input.
+IT(files)
+List one or more file-names. If no files are given, BD(psxy) will read standard input.
 Use OPT(T) to ignore all input files, including standard input (see below).
-#include "explain_-J_short.txt"
+#include "explain_-J.txt"
 #include "explain_-R.txt"
-.SH OPTIONS
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
+ OPT(A)[BD(m)|BD(p)]
 By default line segments are drawn as great circle arcs. To draw them as straight lines,
-use the OPT(A) flag. Alternatively, add \fBm\fP to draw the line by first following a meridian,
-then a parallel. Or append \fBp\fP to start following a parallel, then a meridian.
+use the OPT(A) flag. Alternatively, add BD(m) to draw the line by first following a meridian,
+then a parallel. Or append BD(p) to start following a parallel, then a meridian.
 (This can be practical to draw a lines along parallels, for example).
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(C)
+OPT(C)IT(cptfile)
 Give a color palette file.  If OPT(S) is set, let symbol fill color be determined by the
 z-value in the third column.  Additional fields are shifted over by one column
 (optional size would be 4th rather than 3rd field, etc.).
-If OPT(S) is not set, then \fBpsxy\fP expects the user to supply a multisegment line or polygon file
-(requires OPT(m)) where each segment header contains a OPT(Z)\fIval\fP string.  The \fIval\fP
+If OPT(S) is not set, then BD(psxy) expects the user to supply a multisegment file
+where each segment header contains a OPT(Z)IT(val) string.  The IT(val)
 will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
 .TP
-OPT(D)
-Offset the plot symbol or line locations by the given amounts \fIdx/dy\fP [Default is no offset].
-If \fIdy\fP is not given it is set equal to \fIdx\fP.
+OPT(D)IT(dx)/IT(dy)
+Offset the plot symbol or line locations by the given amounts IT(dx/dy) [Default is no offset].
+If IT(dy) is not given it is set equal to IT(dx).
 .TP
-OPT(E)
-Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
+OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)]
+Draw error bars.  Append BD(x) and/or BD(y) to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
-\fIcap\fP parameter indicates the length of the end-cap on the error bars [CAP_SI (or CAP_US)].  Pen
-attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 0.25p, color = black, texture = solid].
-A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
-\fB-\fP will set error pen color and turn off symbol fill.
-If upper case \fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
+IT(cap) parameter indicates the length of the end-cap on the error bars [CAP].  Pen
+attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 1, color = black, style = solid].
+A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
+BD(-) will set error pen color and turn off symbol fill.
+If upper case BD(X) and/or BD(Y) is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
 coordinate is then taken as the median value, and 4 more columns are expected to contain the minimum (0% quantile), the 25%
 quantile, the 75% quantile, and the maximum (100% quantile) values.  The 25-75% box may be filled by using OPT(G).
-If \fBn\fP is appended to \fBX\fP (or \fBY\fP) we draw a notched "box-and-whisker" symbol where the notch width reflects
+If BD(n) is appended to BD(X) (or BD(Y)) we draw a notched "box-and-whisker" symbol where the notch width reflects
 the uncertainty in the median.  Then a 5th extra data column is expected to contain the number of points in the distribution.
 .TP
-OPT(G)
+OPT(G)IT(fill)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
 (See SPECIFYING FILL below).
 .br
-Note when OPT(m) is chosen, \fBpsxy\fP will search for OPT(G) and OPT(W)
-strings in all the subheaders and let any values thus found over-ride the command line settings
-(see OPT(m) below).
-#include "explain_-h.txt"
+Note that BD(psxy) will search for OPT(G) and OPT(W)
+strings in all the segment headers and let any values thus found over-ride the command line settings.
 .TP
-OPT(I)
-Use the supplied \fIintens\fP value (nominally in the -1 to + 1 range) to modulate the fill color by simulating illumination [none].
+OPT(I)IT(intens)
+Use the supplied IT(intens) value (nominally in the -1 to + 1 range) to modulate the fill color by simulating illumination [none].
+#include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
 OPT(L)
 Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
-Also, in concert with OPT(C), OPT(m), and OPT(Z) settings in the headers will use the implied
+Also, in concert with OPT(C) and any OPT(Z) settings in the headers will use the implied
 color for polygon fill [Default is polygon pen color].
 .TP
 OPT(N)
@@ -97,50 +96,51 @@ The option does not apply to lines and polygons which are always clipped to the 
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(S)
-Plot symbols.  If present, \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
-(unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
-If \fIsize\fP is not given it is expected in the third (or 4th if OPT(C) is used) column.  Any
-additional fields are shifted over by one column.
+OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)]
+Plot symbols.  If present, IT(size) is symbol size in the unit set in BD(gmt.conf).
+(unless BD(c), BD(i), or BD(p) is appended).
 If the symbol code (see below) is not given it will be read from the last column in the input data;
 this cannot be used in conjunction with OPT(b).  Optionally, append
-\fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to indicate that the size information in the
-input data is in units of cm, inch, meter, or point, respectively [Default is \fBMEASURE_UNIT\fP].
-Note: if you give both size and symbol via the input file you must use \fBMEASURE_UNIT\fP to
-indicate the units used for the symbol size.
+BD(c), BD(i), or BD(p) to indicate that the size information in the
+input data is in units of cm, inch, or point, respectively [Default is BD(PROJ_LENGTH_UNIT)].
+Note: if you give both size and symbol via the input file you must use BD(PROJ_LENGTH_UNIT) to
+indicate the units used for the symbol size.  If the symbol size is expected via the 3d data column
+then you may convert those values to symbol sizes by appending BD(+s)IT(scale)[/IT(origin)][BD(l)]
+which will compute size = (data - IT(origin)) * IT(scale), where IT(origin) defaults to 0.  If BD(l)
+is appended we take log10 of data and IT(origin) first [IT(origin) then defaults to 1].
 .br
-The uppercase symbols \fBA\fP, \fBC\fP, \fBD\fP, \fBG\fP, \fBH\fP, \fBI\fP, \fBN\fP, \fBS\fP, \fBT\fP
-are normalized to have the same area as a circle with diameter \fIsize\fP,
+The uppercase symbols BD(A), BD(C), BD(D), BD(G), BD(H), BD(I), BD(N), BD(S), BD(T)
+are normalized to have the same area as a circle with diameter IT(size),
 while the size of the corresponding lowercase symbols refers to the diameter of a circumscribed circle.
 Choose between these symbol codes:
 .TP
 OPT(S-)
-x-dash (-).  \fIsize\fP is the length of a short horizontal line segment.
+x-dash (-).  IT(size) is the length of a short horizontal line segment.
 .TP
 OPT(S+)
-plus (+).  \fIsize\fP is diameter of circumscribing circle.
+plus (+).  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sa)
-st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
+st\fBa\fPr.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sb)
-Vertical \fBb\fPar extending from \fIbase\fP to y.  \fIsize\fP is bar width. Append \fBu\fP
-if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
-\fIbase\fP = ymin.  Append \fBb\fP\fIbase\fP to change this value.
+Vertical BD(b)ar extending from IT(base) to y.  IT(size) is bar width. Append BD(u)
+if IT(size) is in x-units [Default is plot-distance units]. By default,
+IT(base) = ymin.  Append BD(b)IT(base) to change this value.
 .TP
 OPT(SB)
-Horizontal \fBb\fPar extending from \fIbase\fP to x.  \fIsize\fP is bar width. Append \fBu\fP
-if \fIsize\fP is in y-units [Default is plot-distance units]. By default,
-\fIbase\fP = xmin.  Append \fBb\fP\fIbase\fP to change this value.
+Horizontal BD(b)ar extending from IT(base) to x.  IT(size) is bar width. Append BD(u)
+if IT(size) is in y-units [Default is plot-distance units]. By default,
+IT(base) = xmin.  Append BD(b)IT(base) to change this value.
 .TP
 OPT(Sc)
-\fBc\fPircle.  \fIsize\fP is diameter of circle.
+BD(c)ircle.  IT(size) is diameter of circle.
 .TP
 OPT(Sd)
-\fBd\fPiamond.  \fIsize\fP is diameter of circumscribing circle.
+BD(d)iamond.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Se)
-\fBe\fPllipse.  Direction (in degrees counter-clockwise from horizontal), major_axis, and minor_axis must
+BD(e)llipse.  Direction (in degrees counter-clockwise from horizontal), major_axis, and minor_axis must
 be found in columns 3, 4, and 5.
 .TP
 OPT(SE)
@@ -150,21 +150,21 @@ unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-d
 a linear projection in which we assume the ellipse axes are given in the same units as OPT(R).
 .TP
 OPT(Sf)
-\fBf\fPront.  OPT(Sf)\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
-If \fIgap\fP is negative, it is interpreted to mean the number of symbols along the front instead.  Append \fIdir\fP to plot symbols
-on the \fBl\fPeft or \fBr\fPight side of the front [Default is centered].  Append \fItype\fP to specify which symbol
-to plot: \fBb\fPox, \fBc\fPircle, \fBf\fPault, \fBs\fPlip, or \fBt\fPriangle.  [Default is fault].
-Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :\fIoffset\fP to offset
+BD(f)ront.  OPT(Sf)IT(gap/size)[IT(dir)][IT(type)][:IT(offset)].  Supply distance gap between symbols and symbol size.
+If IT(gap) is negative, it is interpreted to mean the number of symbols along the front instead.  Append IT(dir) to plot symbols
+on the BD(l)eft or BD(r)ight side of the front [Default is centered].  Append IT(type) to specify which symbol
+to plot: BD(b)ox, BD(c)ircle, BD(f)ault, BD(s)lip, or BD(t)riangle.  [Default is fault].
+Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :IT(offset) to offset
 the first symbol from the beginning of the front by that amount [Default is 0].
 .TP
 OPT(Sg)
-octa\fBg\fPon.  \fIsize\fP is diameter of circumscribing circle.
+octaBD(g)on.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sh)
-\fBh\fPexagon.  \fIsize\fP is diameter of circumscribing circle.
+BD(h)exagon.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Si)
-\fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
+BD(i)nverted triangle.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sj)
 Rotated rectangle.  Direction (in degrees counter-clockwise from horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
@@ -176,62 +176,63 @@ unchanged.)  Furthermore, the dimensions must be given in km instead of plot-dis
 a linear projection in which we assume the dimensions are given in the same units as OPT(R).
 .TP
 OPT(Sk)
-\fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
-<name>.def in (1) the current directory or (2) in ~/.gmt or (3) in \fB$GMT_SHAREDIR\fP/custom.  The symbol as defined
-in that file is of size 1.0 by default; the appended \fIsize\fP will scale symbol accordingly.
+BD(k)ustom symbol.  Append <name>/IT(size), and we will look for a definition file called
+<name>.def in (1) the current directory or (2) in ~/.gmt or (3) in BD($GMT_SHAREDIR)/custom.  The symbol as defined
+in that file is of size 1.0 by default; the appended IT(size) will scale symbol accordingly.
 Users may add their own custom *.def files; see CUSTOM SYMBOLS below.
 .TP
 OPT(Sl)
-\fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.
+BD(l)etter or text string (less than 64 characters).  Give size, and append /IT(string) after the size.
 Note that the size is only approximate; no individual scaling
-is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
-to select a particular font [Default is \fBANNOT_FONT_PRIMARY\fP].
+is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %IT(font)
+to select a particular font [Default is BD(FONT_ANNOT_PRIMARY)].
 .TP
 OPT(Sm)
-\fBm\fPath angle arc, optionally with one or two arrow heads.  The \fIsize\fP is the radius of the arc.
+BD(m)ath angle arc, optionally with one or two arrow heads.  The IT(size) is the radius of the arc.
 Start and stop directions (in degrees counter-clockwise from horizontal) for arc
-must be found in columns 3 and 4.  Use OPT(Smf) to add arrow head at first angle, OPT(Sml) for arrow head at last angle, and OPT(Smb) for both
+must be found in columns 3 and 4.  Use OPT(Smf) to add arrow head at first angle, OPT(Sml) for arrow head at
+last angle, and OPT(Smb) for both
 [Default is no arrow heads].
 .TP
 OPT(Sn)
-pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
+peBD(n)tagon.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sp)
-\fBp\fPoint.  No size needs to be specified (1 pixel is used).
+BD(p)oint.  No size needs to be specified (1 pixel is used).
 .TP
 OPT(Sq)
-\fBq\fPuoted line, i.e., lines with annotations such as contours.
-Append [\fBd\fP|\fBD\fP|\fBf\fP|\fBl\fP|\fBL\fP|\fBn\fP|\fBx\fP|\fBX\fP]\fIinfo\fP[:\fIlabelinfo\fP].
+BD(q)uoted line, i.e., lines with annotations such as contours.
+Append [BD(d)|BD(D)|BD(f)|BD(l)|BD(L)|BD(n)|BD(x)|BD(X)]IT(info)[:IT(labelinfo)].
 #include "explain_contlabel.txt"
 .sp
 .RS
-The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
+The optional IT(labelinfo) controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
 .RE
 #include "explain_labelinfo.txt"
 .TP
 OPT(Sr)
-\fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns
+BD(r)ectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns
 3 and 4.
 .TP
 OPT(Ss)
-\fBs\fPquare.  \fIsize\fP is diameter of circumscribing circle.
+BD(s)quare.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(St)
-\fBt\fPriangle.  \fIsize\fP is diameter of circumscribing circle.
+BD(t)riangle.  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sv)
-\fBv\fPector.  Direction (in degrees counter-clockwise from horizontal) and length must be found in columns 3 and 4.
-\fIsize\fP, if present, will be interpreted as \fIarrowwidth/headlength/headwidth\fP
-[Default unit is PARAMS_SI (or PARAMS_US)].
+BD(v)ector.  Direction (in degrees counter-clockwise from horizontal) and length must be found in columns 3 and 4.
+IT(size), if present, will be interpreted as IT(vectorwidth/headlength/headwidth)
+[Default attributes are PARAMS].
 By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
-append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
-attributes scaled by length/\fInorm\fP.
+append BD(n)IT(norm), where vectors shorter than IT(norm) will have their
+attributes scaled by length/IT(norm).
 To center vector on balance point, use OPT(Svb); to align point with the vector head,
 use OPT(Svh); to align point with the vector tail, use OPT(Svt) [Default].
 To give the head point's coordinates\"'
-instead of direction and length, use OPT(Svs).  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
+instead of direction and length, use OPT(Svs).  Upper case BD(B), BD(H), BD(T), BD(S) will draw a double-headed vector [Default is single head].
 .TP
 OPT(SV)
 Same as OPT(Sv), except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
@@ -239,7 +240,7 @@ be mapped into an angle based on the chosen map projection (OPT(Sv) leaves the d
 unchanged.)
 .TP
 OPT(Sw)
-pie \fBw\fPedge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
+pie BD(w)edge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
 must be found in columns 3 and 4.
 .TP
 OPT(SW)
@@ -247,54 +248,41 @@ Same as OPT(Sw), except azimuths (in degrees east of north) should be given inst
 be mapped into angles based on the chosen map projection (OPT(Sw) leaves the directions unchanged.)
 .TP
 OPT(Sx)
-cross (x).  \fIsize\fP is diameter of circumscribing circle.
+cross (x).  IT(size) is diameter of circumscribing circle.
 .TP
 OPT(Sy)
-y-dash (|).  \fIsize\fP is the length of a short vertical line segment.
+y-dash (|).  IT(size) is the length of a short vertical line segment.
 .TP
 OPT(T)
 Ignore all input files, including standard input. This is the same as specifying /dev/null (or NUL for
 Windows users) as input file. Use this to activate only the options that are not related to plotting
-of lines or symbols, such as \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(T) to terminate a sequence of
-\fBGMT\fP plotting commands without producing any plotting output.
+of lines or symbols, such as BD(psxy) OPT(R) OPT(J) OPT(O) OPT(T) to terminate a sequence of
+BD(GMT) plotting commands without producing any plotting output.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-OPT(W)
-Set pen attributes for lines or the outline of symbols [Defaults: width = 0.25p, color = black, texture = solid].
-A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
-\fB-\fP will set outline pen color and turn off symbol fill.
+OPT(W)[BD(-)|BD(+)][IT(pen)]
+Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, style = solid].
+A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
+BD(-) will set outline pen color and turn off symbol fill.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is the required number of columns given the chosen settings].
+#include "explain_-aspatial.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_-g.txt"
 The OPT(g) option is ignored if OPT(S) is set.
-.TP
-OPT(m)
-Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP
-[Default is '>']. On these segment header records one or more of the following options can be added:
-.br
-OPT(G)\fIfill\fP Use the new \fIfill\fP and turn filling on
-.br
-OPT(G-) Turn filling off
-.br
-OPT(G+) Revert to default fill (none if not set on command line)
-.br
-OPT(W)\fIpen\fP Use the new \fIpen\fP and turn outline on
-.br
-OPT(W-) Turn outline off
-.br
-OPT(W+) Revert to default pen (none if not set on command line)
-.br
-OPT(Z)\fIzval\fP Obtain fill via cpt lookup using z-value \fIzval\fP
-.br
-OPT(ZNaN) Get the NaN color from the cpt file
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
+#include "explain_font.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
@@ -302,109 +290,67 @@ Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickm
 and gridlines every 15 minutes, use
 .br
 .sp
-\fBpsxy\fP DSDP.xy OPT(R)150/154/18/23 OPT_1 OPT(G)red OPT(B)1\fBg\fP15\fBm\fP | lpr
+BD(psxy) DSDP.xy OPT(R)150/154/18/23 OPT_1 OPT(G)red OPT(B)1BD(g)15BD(m) | lpr
 .br
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
 4th column and color based on the depth in the third using the color palette cpt on a linear map, use
 .br
 .sp
-\fBpsxy\fP quakes.xyzm OPT(R)0/1000/0/1000 OPT_2 OPT(Sc) OPT(C)cpt OPT(B)200 > map.ps
+BD(psxy) quakes.xyzm OPT(R)0/1000/0/1000 OPT_2 OPT(Sc) OPT(C)cpt OPT(B)200 > map.ps
 .br
 .sp
 To plot the file trench.xy on a Mercator map, with white triangles with sides LEN_1 inch on the left
 side of the line, spaced every LEN_3 inch, use
 .br
 .sp
-\fBpsxy\fP trench.xy OPT(R)150/200/20/50 OPT_3 OPT(G)white OPT(W) OPT(B)10 | lpr
+BD(psxy) trench.xy OPT(R)150/200/20/50 OPT_3 OPT(G)white OPT(W) OPT(B)10 | lpr
 br
 .sp
 To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given
 by the magnitude in the 4th column, and color based on the third column via the color palette cpt on a linear map, use
 .br
 .sp
-\fBpsxy\fP misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > t.ps
+BD(psxy) misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > t.ps
+.SH SEGMENT HEADER PARSING
+Segment header records may contain one of more of the following options:
+.br
+OPT(G)IT(fill) Use the new IT(fill) and turn filling on
+.br
+OPT(G-) Turn filling off
+.br
+OPT(G) Revert to default fill (none if not set on command line)
+.br
+OPT(W)IT(pen) Use the new IT(pen) and turn outline on
+.br
+OPT(W) Revert to default pen ()MAP_DEFAULT_PENBD( if not set on command line)
+.br
+OPT(W-) Turn outline off
+.br
+OPT(Z)IT(zval) Obtain fill via cpt lookup using z-value IT(zval)
+.br
+OPT(ZNaN) Get the NaN color from the cpt file
 .SH CUSTOM SYMBOLS
-\fBpsxy\fP and \fBpsxyz\fP allows users to define and plot their own custom symbols.
-This is done by encoding the symbol using a simple plotting code described below.  Put
-all the plotting codes for your new symbol in a file whose extension must be .def; you may then address
-the symbol without giving the extension (e.g., the symbol file tsunami.def is used by specifying OPT(Sk)\fItsunami/size\fP.
+BD(psxy) allows users to define and plot their own custom symbols.
+This is done by encoding the symbol using our custom symbol macro code described in Appendix N.
+Put all the macro codes for your new symbol in a file whose extension must be .def; you may then address
+the symbol without giving the extension (e.g., the symbol file tsunami.def is used by specifying OPT(Sk)IT(tsunami/size).
 The definition file can contain any number of plot code records, as well as blank lines and comment lines (starting with #).
-\fBpsxy\fP and \fBpsxyz\fP will look for the definition files in (1) the current directory, (2) the ~/.gmt
-directory, and (3) the \fB$GMT_SHAREDIR\fP/custom directory, in that order.
+BD(psxy) will look for the definition files in (1) the current directory, (2) the ~/.gmt
+directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
-painted and filled with a pattern.  Other standard geometric symbols can also be used. Generate freeform polygons
-by starting with an anchor point (append [ OPT(W)\fIpen\fP ] and [ OPT(G)\fIfill\fP ]
-to indicate pen and fill attributes):
-.br
-	\fIx0	y0\fP	\fBM\fP
-.br
-and draw a straight line from the current point to the next point with
-.br
-	\fIx	y\fP	\fBD\fP
-.br
-or add an arc by using
-.br
-	\fIxc	yc	r	dir1	dir2\fP	\fBA\fP
-.br
-When a record other than the \fBD\fP or \fBA\fP is encountered, the polygon is closed and considered complete.
-The optional pen and fill setting hardwires particular values for this feature.  If not present the polygon's\"'
-characteristics are determined by the command line settings for pen and fill.  To deactivate fill or outline
-for any given polygon, give OPT(G\-) or OPT(W\-).  To add other geometric shapes
-to your custom symbol, add any number of the following plot code records (each accepts the optional
-[ OPT(W)\fIpen\fP ] and [ OPT(G)\fIfill\fP ] at the end):
-.br
-.sp
-circle:	\fIx	y	size\fP	\fBc\fP
-.br
-cross:	\fIx	y	size\fP	\fBx\fP
-.br
-diamond:	\fIx	y	size\fP	\fBd\fP
-.br
-ellipse:	\fIx	y	dir	major	minor\fP	\fBe\fP
-.br
-hexagon:	\fIx	y	size\fP	\fBh\fP
-.br
-invtriangle:	\fIx	y	size\fP	\fBi\fP
-.br
-letter:	\fIx	y	size	string\fP	\fBl\fP
-.br
-octagon:	\fIx	y	size\fP	\fBg\fP
-.br
-pentagon:	\fIx	y	size\fP	\fBn\fP
-.br
-plus:	\fIx	y	size\fP	\fB+\fP
-.br
-rect:	\fIx	y	xwidth	ywidth\fP	\fBr\fP
-.br
-square:	\fIx	y	size\fP	\fBs\fP
-.br
-star:	\fIx	y	size\fP	\fBa\fP
-.br
-triangle:	\fIx	y	size\fP	\fBt\fP
-.br
-wedge:	\fIx	y	radius	dir1	dir2\fP	\fBw\fP
-.br
-x-dash:	\fIx	y	size\fP	\fB-\fP
-.br
-y-dash:	\fIx	y	size\fP	\fBy\fP
-.br
-.sp
-When designing your symbol, the \fIx, y\fP and other dimensions are relative to a symbol of size 1, and all the
-dimensions will be scaled by the actual symbol size chosen at run-time.  To design a symbol, make a grid paper
-with \fBpsbasemap \-R\fP-0.5/0.5/-0.5/0.5 OPT(JX)4\fBi\fP OPT(Ba)0.1\gBg\gP0.05 OPT(P) > grid.ps and
-draw your symbol, centering it on (0,0).  For examples of symbols, see the set supplied with \fBGMT\fP in
-\fB$GMT_SHAREDIR\fP/custom.
+painted and filled with a pattern.  Other standard geometric symbols can also be used.
 .SH BUGS
 The OPT(N) option does not adjust the BoundingBox information so you may
-have to post-process the \fIPostScript\fP output with \fBps2raster -A\fP to obtain
+have to post-process the IT(PostScript) output with BD(ps2raster -A) to obtain
 the correct BoundingBox.
 .br
-\fBpsxy\fP cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
+BD(psxy) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
 make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
 will combine to give the desired effect when filled; to draw outline use the original polygon.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
+.IR gmt.conf (5),
 .IR gmtcolors (5),
 .IR psbasemap (1),
 .IR psxyz (1)

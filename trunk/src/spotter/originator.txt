@@ -3,87 +3,81 @@
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
 .SH SYNOPSIS
-\fBoriginator\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
-OPT(F)\fIhs_file\fP 
-[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(L)[\fIflag\fP] ] [ OPT(N)\fIupper_age\fP ] [ OPT(Q)\fIr/t\fP ] 
-[ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ OPT(Z) ] [ GMT_t_OPT ] 
-[ GMT_bi_OPT ]
+BD(originator) [IT(infile(s))] OPT(E)IT(rotfile) 
+OPT(F)IT(hs_file) 
+[ OPT(D)IT(d_km) ] [ OPT(L)[IT(flag)] ] [ OPT(N)IT(upper_age) ] [ OPT(Q)IT(r/t) ] 
+[ OPT(S)[IT(n_hs)] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)IT(maxdist) ] [ OPT(Z) ]
+[ GMT_bi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
-\fBoriginator\fP reads (longitude, latitude, height, radius, crustal_age) records from \fIinfiles\fP 
-[or standard input] and uses the given Absolute Plate Motion (APM) stage
-poles and the list of hotspot locations to determine the most likely origin (hotspot)
+BD(originator) reads (longitude, latitude, height, radius, crustal_age) records from IT(infiles) 
+[or standard input] and uses the given Absolute Plate Motion (APM) stage or total reconstruction
+rotation file and the list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount.  It does so by calculating flowlines back in time and determining
 the closest approach to all hotspots.  The output consists of the input records with
-four additional fields added for each of the \fIn_hs\fP closest hotspots.  The four fields
+four additional fields added for each of the IT(n_hs) closest hotspots.  The four fields
 are the hotspot id (e.g., HWI), the stage id of the flowline segment that came closest,
 the pseudo-age of the seamount, and the closest distance to the hotspot (in km).
 See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_age) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinfile(s)\fP
+IT(infile(s))
 Seamount data file(s) to be analyzed.  If not given, standard input is read.
 #include "euler.txt"
 #include "hotspot.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(C)
-Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
-File format is similar to the stage pole format except that the \fItstart\fP column
-is not present (assumed to be 0 Ma).
-.TP
-OPT(D)
+OPT(D)IT(d_km)
 Sets the flowline sampling interval in km.  [Default is 5].
-#include "explain_-h.txt"
 .TP
-OPT(L)
+OPT(L)[IT(flag)]
 Output closest approach for nearest hotspot only (ignores OPT(S)).
-Choose OPT(Lt) for (\fItime, dist, z\fP) [Default], OPT(Lw) for (\fIomega, dist, z\fP),
-and OPT(Ll) for (lon, lat, time, dist, z).  Normally, \fIdist\fP is in km; use
-upper case modifiers \fBTWL\fP to get \fIdist\fP in spherical degrees.
+Choose OPT(Lt) for (IT(time), IT(dist), IT(z)) [Default], OPT(Lw) for (IT(omega), IT(dist), IT(z)),
+and OPT(Ll) for (lon, lat, time, dist, z).  Normally, IT(dist) is in km; use
+upper case modifiers BD(TWL) to get IT(dist) in spherical degrees.
 .TP
-OPT(N)
+OPT(N)IT(upper_age)
 Set the maximum age to extend the oldest stage back in time [no extension].
 .TP
-OPT(Q)
+OPT(Q)IT(r/t)
 .TP
-INput files only has (\fIx,y,z\fP); specify constant values for \fIr,t\fP that
+INput files only has (IT(x),IT(y),IT(z)); specify constant values for IT(r),IT(t) that
 will be implied for each record.
-OPT(S)
+OPT(S)[IT(n_hs)]
 Set the number of closest hotspots to report [Default is 1].
 .TP
 OPT(T)
 Truncate seamount ages exceeding the upper age set with OPT(N) [no truncation].
 #include "explain_-V.txt"
 .TP
-OPT(W)
-Only report those seamounts whose flowlines came within \fImaxdist\fP to any hotspot
+OPT(W)IT(maxdist)
+Only report those seamounts whose flowlines came within IT(maxdist) to any hotspot
 [Default reports all seamounts].
 .TP
 OPT(Z)
 Use the hotspot ID number rather than the name tag in output records.
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 5 input columns].
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points
 in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of possible hotspots,
 and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
-\fBoriginator\fP seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
+BD(originator) seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
 .br
 .sp
-.SH COORDINATES
-Data coordinates are assumed to be geodetic and will automatically be converted to geocentric
-before spherical rotations are performed.  We convert back to geodetic coordinates for output.
-Note: If your data already are geocentric, you can avoid the conversion by using --ELLIPSOID=sphere.
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR project (1),
 .IR grdrotater (1),
 .IR grdspotter (1),
+.IR project (1),
 .IR mapproject (1),
 .IR backtracker (1),
 .IR hotspotter (1)

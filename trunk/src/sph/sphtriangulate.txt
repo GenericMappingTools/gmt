@@ -1,76 +1,79 @@
 #include "common_options.txt"
 .TH SPHTRIANGULATE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN 15
-#define SCALE \fB\-JM\fP15\fBc\fP
+#define SCALE OPT(JM)15BD(c)
 .SH NAME
 sphtriangulate \- Perform optimal Delaunay triangulation or Voronoi construction of spherical data
 .SH SYNOPSIS
-\fBsphtriangulate\fP \fIinfiles\fP [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ GMT_H_OPT ] [ OPT(L)\fIunit\fP ] 
-[ OPT(N)\fInfile\fP ] [ OPT(Q)\fBd\fP|\fBv\fP ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
+BD(sphtriangulate) IT(infiles) [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ OPT(L)IT(unit) ] 
+[ OPT(N)IT(nfile) ] [ OPT(Q)BD(d)|BD(v) ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-\fBsphtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
+BD(sphtriangulate) reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
 performs a spherical Delaunay triangulation, i.e., it find how the points should be connected to give
 the most equilateral triangulation possible on the sphere.  Optionally, you may choose OPT(Qv) which
 will do further processing to obtain the Voronoi polygons.  Normally, either set of polygons will
-be written as fillable multi-segment output; use OPT(T) to write unique arcs instead.
+be written as fillable segment output; use OPT(T) to write unique arcs instead.
 As an option, compute the area of each triangle or polygon.  The algorithm used is STRIPACK.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIinfiles\fP
-Data files with the point coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
-.SH OPTIONS
+IT(infiles)
+Data files with the point coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+.SH OPTIONAL ARGUMENTS
 .TP
-.B \-A
+OPT(A)
 Compute the area of the spherical triangles (OPT(Qd)) or polygons (OPT(Qv)) and write the areas (in chosen
-units; see OPT(L)) in the multisegment output headers [no areas calculated].
+units; see OPT(L)) in the output segment headers [no areas calculated].
 .TP
-.B \-C
+OPT(C)
 For large data set you can save some memory (at the expense of more processing) by only storing one form of
 location coordinates (geographic or Cartesian 3-D vectors) at any given time, translating from one form to
 the other when necessary [Default keeps both arrays in memory].
 .TP
-.B \-D
+OPT(D)
 Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
 equals the first point in the segment.  Requires OPT(m) [Default uses all points].
-#include "explain_-h.txt"
 .TP
-.B \-L
-Specify the unit used for distance and area calculations.  Choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile),
-\fBn\fP (nautical mile), or \fBd\fP (spherical degree).  A spherical approximation is used unless
-\fBELLIPSOID\fP is set to an actual ellipsoid.  When degree is selected the areas are given in steradians.
+OPT(L)IT(unit)
+Specify the unit used for distance and area calculations.  Choose among BD(e) (m), BD(k) (km), BD(m) (mile),
+BD(n) (nautical mile), or BD(d) (spherical degree).  A spherical approximation is used unless
+BD(PROJ_ELLIPSOID) is set to an actual ellipsoid.  When degree is selected the areas are given in steradians.
 .TP
-.B \-N
+OPT(N)IT(nfile)
 Write the information pertaining to each polygon (for Delaunay: the three node number and the triangle area;
 for Voronoi the unique node lon, lat and polygon area) to a separate file [Default puts this information in
 the segment headers of the output file].  Required if binary output is needed.
 .TP
-.B \-Q
+BD(d)|BD(v)
 Select between BD(d)elaunay or BD(v)oronoi mode [Delaunay].
 .TP
-.B \-T
+OPT(T)
 Write the unique arcs of the construction [Default writes fillable triangles or polygons].
-When used with OPT(A) we store arc length in the segment header in chosen unit (see OPT(L)).
+When used with OPT(A) we store arc lenght in the segment header in chosen unit (see OPT(L)).
 #include "explain_-V.txt"
-#include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
-#include "explain_-m.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
 #include "explain_precision.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
 To triangulate the points in the file testdata.txt, and
-make a Voronoi diagram via \fBpsxy\fP, use
+make a Voronoi diagram via BD(psxy), use
 .br
 .sp
-\fBsphtriangulate\fP testdata.txt \fB\-Qv\fP | psxy \fB\-Rg \-JG\fP30/30/6i \fB\-M \-L \-P \-W\fP1p \fB\-B\fP0g30 | gv \-
+BD(sphtriangulate) testdata.txt OPT(Qv) | BD(psxy) OPT(Rg) OPT(JG)30/30/6i OPT(m) OPR(L) OPT(P) OPT(W)1p OPT(B)0g30 | gv \-
 .br
 .sp
 To compute the optimal Delaunay triangulation network based on the multiple segment file globalnodes.d
 and save the area of each triangle in the header record, try
 .br
 .sp
-\fBsphtriangulate\fP globalnodes.d \fB\-M \-Qd \-A\fP > global_tri.d
+BD(sphtriangulate) globalnodes.d OPT(m) OPT(Qd) OPT(A) > global_tri.d
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR triangulate (1)
@@ -78,4 +81,4 @@ and save the area of each triangle in the header record, try
 .IR sphdistance (1)
 .SH REFERENCES
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and Voronoi Diagram on the Surface of a Sphere, 
-\fIAMC Trans. Math. Software, 23\fP (3), 416\-434.
+IT(AMC Trans. Math. Software), BD(23)(3), 416\-434.

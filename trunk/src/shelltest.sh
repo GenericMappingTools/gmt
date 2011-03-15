@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: shelltest.sh,v 1.6 2010-06-21 23:55:21 guru Exp $
+#	$Id: shelltest.sh,v 1.7 2011-03-15 02:06:37 guru Exp $
 #
 # Testing gmt_shell_functions
 

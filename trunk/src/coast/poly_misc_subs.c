@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.4 2009-06-10 20:04:44 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.5 2011-03-15 02:06:37 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -90,13 +90,14 @@ void crude_free_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N
 
 void area_init ()
 {	/* Initializes GMT projection parameters to the -JA settings */
-	gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS-1;
-	project_info.projection = GMT_LAMB_AZ_EQ;
-	project_info.unit = GMT_M;
-	project_info.pars[3] = 39.3700787401574814;
-	project_info.region = 1;
-	gmtdefs.line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
-	project_info.degree[0] = project_info.degree[1] = TRUE;
+	GMT->current.setting.proj_ellipsoid = GMT_N_ELLIPSOIDS-1;
+	GMT->current.proj.projection = GMT_LAMB_AZ_EQ;
+	GMT->current.proj.unit = GMT_M;
+	GMT->current.proj.pars[3] = 39.3700787401574814;
+	GMT->current.proj.rotated = FALSE;
+	GMT->current.setting.map_line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
+	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 }
 
 double area_size (double x[], double y[], int n, int *sign)
@@ -122,17 +123,17 @@ double area_size (double x[], double y[], int n, int *sign)
 	lon /= n;
 	lat /= n;
 		
-	project_info.pars[0] = lon;
-	project_info.pars[1] = lat;
+	GMT->current.proj.pars[0] = lon;
+	GMT->current.proj.pars[1] = lat;
 	GMT_err_fail (GMT_map_setup (west, east, south, north), "");
 	
-	ix = 1.0 / project_info.x_scale;
-	iy = 1.0 / project_info.y_scale;
+	ix = 1.0 / GMT->current.proj.scale[GMT_X];
+	iy = 1.0 / GMT->current.proj.scale[GMT_Y];
 	
 	for (i = 0; i < n; i++) {
 		GMT_geo_to_xy (x[i], y[i], &xx, &yy);
-		x[i] = (xx - project_info.x0) * ix;
-		y[i] = (yy - project_info.y0) * iy;
+		x[i] = (xx - GMT->current.proj.origin[GMT_X]) * ix;
+		y[i] = (yy - GMT->current.proj.origin[GMT_Y]) * iy;
 	}
 	
 	size = area (x, y, n);

@@ -1,9 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: test-JXd.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
+#	$Id: test-JXd.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
 
-psbasemap="psbasemap --PLOT_DEGREE_FORMAT=dddF --LABEL_FONT_SIZE=16p --BASEMAP_AXES=WeSn"
-psxy=psxy
+psbasemap="psbasemap --FORMAT_GEO_MAP=dddF --FONT_LABEL=16p --MAP_FRAME_AXES=WeSn"
 
 plot1 () {
    $psbasemap -R -JX$1 -B20f10g20:Longitude:/20f10g20:Latitude: -O -K $2
@@ -11,15 +10,13 @@ plot1 () {
 }
 
 annot () {
-   $psxy -R -J -O -K -W2p/red -Gyellow <<%
+   psxy -R -J -O -K -W2p,red -Gyellow <<%
 -40 0
 40 0
 40 -40
 -40 -40
 %
-   pstext -R -J -O -K <<%
-0 2 20 0 1 BC -JX$1
-%
+   pstext -R -J -F+f20p,Helvetica-Bold+jBC -O -K <<< "0 2 -JX$1"
 }
 
 . ../functions.sh
@@ -32,7 +29,5 @@ plot1 8cd/8c -X12c >> $ps
 plot1 8c/8cd -Y-11c >> $ps
 plot1 8cd/8cd -X-12c >> $ps
 psxy /dev/null -R -J -O >> $ps
-
-rm -f .gmtcommands4
 
 pscmp

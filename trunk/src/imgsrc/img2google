@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.22 2009-11-06 06:43:01 guru Exp $
+#	$Id: img2google,v 1.23 2011-03-15 02:06:37 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -151,7 +151,7 @@ grdgradient $$.tile.nc $V -A340 -G$$.nc
 grdmath $$.nc 12000 DIV = $$.tile_grad.nc
 psclip $R -Jx1id -Y0 -X0 -P -K -N /dev/null $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 --PAPER_MEDIA=Custom_${W}ix${H}i > $$.ps
 #Set up (0,0) to match the even LL corner
-off=`gmtmath -Q $INC 2 MUL NEG =`
+off=`gmtmath -Q $INC 2 MUL 60 DIV NEG =`
 if [ X"$C" = "X" ]; then	# No clipping, just lay down image
 	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y$off -X$off -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 else	# Use GSHHS high clip path to only show ocean areas

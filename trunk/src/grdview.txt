@@ -3,163 +3,166 @@
 #define LEN_1	1.5
 #define LEN_2	20
 #define LEN_3	6
-#define SCALE1	OPT(Jl)18/24/1.5\fBc\fP
-#define ZSCALE1	OPT(Jz)0.05\fBc\fP
-#define SCALE2	OPT(Jx)10.0\fBc\fP
-#define SCALE3 OPT(JM)6\fBi\fP
+#define SCALE1	OPT(Jl)18/24/1.5BD(c)
+#define ZSCALE1	OPT(Jz)0.05BD(c)
+#define SCALE2	OPT(Jx)10.0BD(c)
+#define SCALE3 OPT(JM)6BD(i)
 .SH NAME
 grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grid file
 .SH SYNOPSIS
-\fBgrdview\fP \fIrelief_file\fP GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ GMT_E_OPT ] 
-[ OPT(G)\fIdrapefile\fP | OPT(G)\fIgrd_r\fP,\fIgrd_g\fP,\fIgrd_b\fP ] [ OPT(I)\fIintensfile\fP ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
-[ OPT(L)[\fIflags\fP] ] [ OPT(N)\fIlevel\fP[/\fIcolor\fP] ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(Q)\fItype\fP[\fBg\fP] ] [ GMT_Rgeoz_OPT ] [ OPT(S)\fIsmooth\fP ] 
-[ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fItype/pen\fP ] [ GMT_X_OPT ]
-[ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ]
+BD(grdview) IT(relief_file) GMT_J_OPT 
+[ GMT_B_OPT ] [ OPT(C)IT(cptfile)]
+[ OPT(G)IT(drapefile) | OPT(G)IT(grd_r),IT(grd_g),IT(grd_b) ] [ OPT(I)IT(intensfile) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
+[ OPT(L)[IT(flags)] ] [ OPT(N)IT(level)[/IT(color)] ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(Q)IT(type)[BD(g)] ] [ GMT_Rgeoz_OPT ] [ OPT(S)IT(smooth) ] 
+[ OPT(T)[BD(s)][BD(o)[IT(pen)]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)BD(type)IT(pen) ] [ GMT_X_OPT ]
+[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBgrdview\fP reads a 2-D grid file and produces a 3-D perspective plot by 
+BD(grdview) reads a 2-D grid file and produces a 3-D perspective plot by 
 drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
 to a rasterimage.  Options include draping a data set on top of a surface, plotting of contours on top of the
 surface, and apply artificial illumination based on intensities provided in a separate grid file.
+.SH REQUIRED ARGUMENTS
 .TP
-\fIrelief_file\fP
+IT(relief_file)
 2-D gridded data set to be imaged (the relief of the surface).
 (See GRID FILE FORMAT below.)
-#include "explain_-J_short.txt"
+#include "explain_-J.txt"
 #include "explain_-Jz.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
-#include "explain_-B_short.txt"
+#include "explain_-B.txt"
 .TP
-OPT(C)
+OPT(C)IT(cptfile)
 name of the color palette file.  Must be present if you want (1) mesh plot with
 contours (OPT(Qm)), or (2) shaded/colored perspective image (OPT(Qs) or OPT(Qi)).
 For OPT(Qs): You can specify that you want to skip a z-slice by setting red = -; to
-use a pattern give red = \fBP|p\fP\fIdpi/pattern\fP[:\fBF\fP\fIr/g/b\fP[\fBB\fP\fIr/g/b\fP]].
-#include "explain_-E.txt"
+use a pattern give red = BD(P|p)IT(dpi/pattern)[:BD(F)IT(color)[BD(B)IT(color)]].
 .TP
-OPT(G)
-Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].
-Note that OPT(Jz) and OPT(N) always refers to the \fIrelief_file\fP.  The \fIdrapefile\fP only provides
+OPT(G)IT(drapefile) | OPT(G)IT(grd_r),IT(grd_g),IT(grd_b)
+Drape the image in IT(drapefile) on top of the relief provided by IT(relief_file). [Default is IT(relief_file)].
+Note that OPT(Jz) and OPT(N) always refers to the IT(relief_file).  The IT(drapefile) only provides
 the information pertaining to colors, which is looked-up via the cpt file (see OPT(C)).  Alternatively, give
 three grid files separated by commas.  These files must contain the red, green, and blue colors directly (in 0-255 range)
-and no cpt file is needed.  The \fIdrapefile\fP may be of higher resolution than the \fIrelief_file\fP.
+and no cpt file is needed.  The IT(drapefile) may be of higher resolution than the IT(relief_file).
 .TP
-OPT(I)
+OPT(I)IT(intensfile)
 Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
 #include "explain_-K.txt"
 .TP
-OPT(L)
-Boundary condition \fIflags\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of
-x or y or both, or \fIflags\fP may be \fIg\fP indicating geographical conditions (x and y are
+OPT(L)[IT(flags)]
+Boundary condition IT(flags) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of
+x or y or both, or IT(flags) may be IT(g) indicating geographical conditions (x and y are
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
-If no \fIflags\fP are set, use bilinear rather than the default bicubic resampling when draping is required.
+If no IT(flags) are set, use bilinear rather than the default bicubic resampling when draping is required.
 .TP
-OPT(N)
-Draws a plane at this z-level.  If the optional \fIcolor\fP is provided, the frontal facade between
+OPT(N)IT(level)[/IT(color)]
+Draws a plane at this z-level.  If the optional IT(color) is provided, the frontal facade between
 the plane and the data perimeter is colored.  See OPT(Wf) for setting the pen used for the outline.
 (See SPECIFYING COLOR below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-OPT(Q)
-Select one of four settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /\fIcolor\fP for a different mesh paint [white].
-2. Specify \fBs\fP for surface plot, and optionally append \fBm\fP to have mesh lines drawn on top of surface.
-3. Specify \fBi\fP for image plot, and optionally append the effective dpi resolution for the rasterization [100].
-4. Specify \fBc\fP.  Same as OPT(Qi) but will make nodes with z = NaN transparent,
-using the colormasking feature in \fIPostScript\fP Level 3 (the PS device must support PS Level 3).
-For any of these choices, you may force a monochrome image by appending \fBg\fP.  Colors are then
+OPT(Q)IT(type)[BD(g)]
+Select one of four settings: 1. Specify BD(m) for mesh plot [Default], and optionally append /IT(color) for a different mesh paint [white].
+2. Specify BD(s) for surface plot, and optionally append BD(m) to have mesh lines drawn on top of surface.
+3. Specify BD(i) for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+4. Specify BD(c).  Same as OPT(Qi) but will make nodes with z = NaN transparent,
+using the colormasking feature in IT(PostScript) Level 3 (the PS device must support PS Level 3).
+For any of these choices, you may force a monochrome image by appending BD(g).  Colors are then
 converted to shades of gray using the (television) YIQ transformation.
 #include "explain_-R.txt"
+#include "explain_-Rz.txt"
 This option may be used to indicate the range used for the 3-D axes [Default is
-region given by the \fIrelief_file\fP].  You may ask for a larger
-\fIw/e/s/n\fP region to have more room between the image and the axes.  A smaller region
-than specified in the \fIrelief_file\fP will result in a subset of the grid.
+region given by the IT(relief_file)].  You may ask for a larger
+IT(w/e/s/n) region to have more room between the image and the axes.  A smaller region
+than specified in the IT(relief_file) will result in a subset of the grid.
 .TP
-OPT(S)
-Smooth the contours before plotting (see \fBgrdcontour\fP) [Default is no smoothing].
+OPT(S)IT(smooth)
+Smooth the contours before plotting (see BD(grdcontour)) [Default is no smoothing].
 .TP
-OPT(T)
+OPT(T)[BD(s)][BD(o)[IT(pen)]]
 Plot image without any interpolation.  This involves converting each node-centered
-bin into a polygon which is then painted separately.  Append \fBs\fP to skip
+bin into a polygon which is then painted separately.  Append BD(s) to skip
 nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.  Optionally, append \fBo\fP to
+interpolating between values is meaningless.  Optionally, append BD(o) to
 draw the tile outlines, and specify a custom pen if the default pen is not to
 your liking.  As this option produces a flat surface it cannot be combined with OPT(JZ) or OPT(Jz).
 (See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
+OPT(W)BD(type)IT(pen)
+.TP
 OPT(Wc)
 Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
-[Default: width = 0.75p, color = black, texture = solid].
+[Default: width = 0.75p, color = black, style = solid].
 (See SPECIFYING PENS below).
 .TP
 OPT(Wm)
-Sets the pen attributes used for the mesh. [Default: width = 0.25p, color = black, texture = solid].
+Sets the pen attributes used for the mesh. [Default: width = 0.25p, color = black, style = solid].
 You must also select OPT(Qm) or OPT(Qsm) for meshlines to be drawn.
 .TP
 OPT(Wf)
-Sets the pen attributes used for the facade. [Default: width = 0.25p, color = black, texture = solid].
+Sets the pen attributes used for the facade. [Default: width = 0.25p, color = black, style = solid].
 You must also select OPT(N) for the facade outline to be drawn.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
-.TP
-OPT(Z)
-Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
+#include "explain_perspective.txt"
+#include "explain_-t.txt"
+#include "explain_help.txt"
 #include "explain_pen.txt"
 #include "explain_color.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
-To make a mesh plot from the file hawaii_grav.grd and drawing the contours
+To make a mesh plot from the file hawaii_grav.nc and drawing the contours
 given in the color palette file hawaii.cpt on a Lambert map
 at LEN_1 cm/degree along the standard parallels 18 and 24, with vertical scale LEN_2 mgal/cm, and
 looking at the surface from SW at 30 degree elevation, run 
 .br
 .sp
-\fBgrdview\fP hawaii_grav.grd SCALE1 OPT(C)hawaii.cpt ZSCALE1 OPT(Qm) OPT(N)-100 OPT(E)225/30 OPT(Wc) > hawaii_grav_image.ps
+BD(grdview) hawaii_grav.nc SCALE1 OPT(C)hawaii.cpt ZSCALE1 OPT(Qm) OPT(N)-100 OPT(p)225/30 OPT(Wc) > hawaii_grav_image.ps
 .br
 .sp
-To create a illuminated color perspective plot of the gridded data set image.grd, using the color
+To create a illuminated color perspective plot of the gridded data set image.nc, using the color
 palette file color.rgb, with linear scaling at 10 cm/x-unit
-and tickmarks every 5 units, with intensities provided by the file intens.grd, and looking from the SE, use
+and tickmarks every 5 units, with intensities provided by the file intens.nc, and looking from the SE, use
 .br
 .sp
-\fBgrdview\fP image.grd SCALE2 OPT(C)color.rgb OPT(Qs) OPT(E)135/30 OPT(I)intens.grd  > image3D.ps
+BD(grdview) image.nc SCALE2 OPT(C)color.rgb OPT(Qs) OPT(p)135/30 OPT(I)intens.nc  > image3D.ps
 .br
 .sp
 To make the same plot using the rastering option with dpi = 50, use
 .br
 .sp
-\fBgrdview\fP image.grd SCALE2 OPT(C)color.rgb OPT(Qi)50 OPT(E)135/30 OPT(I)intens.grd  > image3D.ps
+BD(grdview) image.nc SCALE2 OPT(C)color.rgb OPT(Qi)50 OPT(p)135/30 OPT(I)intens.nc  > image3D.ps
 .br
 .sp
-To create a color \fIPostScript\fP perspective plot of the gridded data set magnetics.grd, using the color
-palette file mag_intens.cpt, draped over the relief given by the file topography.grd, with Mercator map width of LEN_3 inch
-and tickmarks every 1 degree, with intensities provided by the file topo_intens.grd, and looking from the SE, run
+To create a color IT(PostScript) perspective plot of the gridded data set magnetics.nc, using the color
+palette file mag_intens.cpt, draped over the relief given by the file topography.nc, with Mercator map width of LEN_3 inch
+and tickmarks every 1 degree, with intensities provided by the file topo_intens.nc, and looking from the SE, run
 .br
 .sp
-\fBgrdview\fP topography.grd SCALE3 OPT(G)magnetics.grd OPT(C)mag_intens.cpt OPT(Qs) OPT(E)140/30 OPT(I)topo_intens.grd  > draped3D.ps
+BD(grdview) topography.nc SCALE3 OPT(G)magnetics.nc OPT(C)mag_intens.cpt OPT(Qs) OPT(p)140/30 OPT(I)topo_intens.nc  > draped3D.ps
 .br
 .sp
-Given topo.grd and the Landsat image veggies.ras, first run \fBgmt2rgb\fP to get the red, green, and blue grids, and then drape
+Given topo.nc and the Landsat image veggies.ras, first run BD(grd2rgb) to get the red, green, and blue grids, and then drape
 this image over the topography and shade the result for good measure.  The commands are
 .br
 .sp
-\fBgmt2rgb\fP veggies.ras OPT(G)layer_%c.grd
+BD(grd2rgb) veggies.ras OPT(G)layer_%c.nc
 .br
-\fBgrdview\fP topo.grd SCALE3 OPT(Qi) OPT(E)140/30 OPT(I)topo_intens.grd OPT(G)layer_r.grd,layer_g.grd,layer_b.grd > image.ps
+BD(grdview) topo.nc SCALE3 OPT(Qi) OPT(p)140/30 OPT(I)topo_intens.nc OPT(G)layer_r.nc,layer_g.nc,layer_b.nc > image.ps
 .SH REMARKS
-For the OPT(Qs) option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
-vary from polygon to polygon.  To obtain smooth images this way you may resample the grid file(s) using \fBgrdsample\fP or
-use a finer grid size when running gridding programs like \fBsurface\fP or \fBnearneighbor\fP.  Unfortunately,
-this produces huge \fIPostScript\fP files.  The alternative is to use the OPT(Qi) option, which
+For the OPT(Qs) option:  IT(PostScript) provides no way of smoothly varying colors within a polygon, so colors can only
+vary from polygon to polygon.  To obtain smooth images this way you may resample the grid file(s) using BD(grdsample) or
+use a finer grid size when running gridding programs like BD(surface) or BD(nearneighbor).  Unfortunately,
+this produces huge IT(PostScript) files.  The alternative is to use the OPT(Qi) option, which
 computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.
 .SH "SEE ALSO"
-.IR GMT (1),
-.IR gmt2rgb (1),
+.IR gmt (1),
+.IR grd2rgb (1),
 .IR gmtcolors (5),
 .IR grdcontour (1),
 .IR grdimage (1),

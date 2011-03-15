@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_J.sh,v 1.11 2011-02-28 00:58:01 remko Exp $
+#	$Id: GMT_App_J.sh,v 1.12 2011-03-15 02:06:29 guru Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -74,10 +74,8 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-# Here is the $$.r_tr_fns file:
 . functions.sh
-
-trap 'rm -f $$.*; exit 1' 1 2 3 15
+# Here is the $$.r_tr_fns file:
 
 cat << EOF > $$.r_tr_fns
 0	1	1	1
@@ -590,30 +588,30 @@ echo "0.5	0" >> $$.tmp
 #
 #
 #
-gmtset ANNOT_FONT_PRIMARY Times-Roman ANNOT_FONT_SIZE_PRIMARY 10 HEADER_FONT Times-Roman HEADER_FONT_SIZE 14 LABEL_FONT Times-Roman LABEL_FONT_SIZE 12
+gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 psxy $$.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -Wthick > GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -J -O -K -Wthick,- >> GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_1.ps
-pstext -R -J -O << END >> GMT_App_J_1.ps
--0.2	0.3	9	0	4	5	Solid Line:
--0.2	0.2	9	0	4	5	Dotted Line:
--0.2	0.1	9	0	4	5	Dashed Line:
-0.2	0.3	9	0	4	7	Boxcar
-0.2	0.2	9	0	4	7	Gaussian
-0.2	0.1	9	0	4	7	Cosine
+pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_1.ps
+-0.2	0.3	LM	Solid Line:
+-0.2	0.2	LM	Dotted Line:
+-0.2	0.1	LM	Dashed Line:
+0.2	0.3	RM	Boxcar
+0.2	0.2	RM	Gaussian
+0.2	0.1	RM	Cosine
 END
 #
 #
 gmtmath -T0/5/0.01 T SINC = | psxy -R0/5/-0.3/1 -JX4i/2i -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_2.ps
-gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | awk '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps
+gmtmath -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | grep -v '^>' | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | psxy -R -J -O -K -Wthick,- >> GMT_App_J_2.ps
 gmtmath -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_2.ps
-pstext -R -J -O << END >> GMT_App_J_2.ps
-2.2	0.6	9	0	4	5	Solid Line:
-2.2	0.5	9	0	4	5	Dotted Line:
-2.2	0.4	9	0	4	5	Dashed Line:
-3.8	0.6	9	0	4	7	Boxcar
-3.8	0.5	9	0	4	7	Gaussian
-3.8	0.4	9	0	4	7	Cosine
+pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_2.ps
+2.2	0.6	LM	Solid Line:
+2.2	0.5	LM	Dotted Line:
+2.2	0.4	LM	Dashed Line:
+3.8	0.6	RM	Boxcar
+3.8	0.5	RM	Gaussian
+3.8	0.4	RM	Cosine
 END
 #
 #
@@ -623,12 +621,11 @@ END
 cut -f1,2 $$.r_tr_fns | psxy -R -J -P -Ba1f0.2:"Frequency (cycles per filter width)":/a0.2f0.1g1:"Gain":WeSn -K -Wthick > GMT_App_J_3.ps
 cut -f1,3 $$.r_tr_fns | psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
 cut -f1,4 $$.r_tr_fns | psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
-pstext -R -J -O << END >> GMT_App_J_3.ps
-2.2	0.6	9	0	4	5	Solid Line:
-2.2	0.5	9	0	4	5	Dotted Line:
-2.2	0.4	9	0	4	5	Dashed Line:
-3.8	0.6	9	0	4	7	Boxcar
-3.8	0.5	9	0	4	7	Gaussian
-3.8	0.4	9	0	4	7	Cosine
+pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_3.ps
+2.2	0.6	LM	Solid Line:
+2.2	0.5	LM	Dotted Line:
+2.2	0.4	LM	Dashed Line:
+3.8	0.6	RM	Boxcar
+3.8	0.5	RM	Gaussian
+3.8	0.4	RM	Cosine
 END
-rm -f $$.*

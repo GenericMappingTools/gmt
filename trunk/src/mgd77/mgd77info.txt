@@ -3,10 +3,10 @@
 .SH NAME
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
-\fBmgd77info\fP \fINGDC-ids\fP [ OPT(C)[\fBm\fP|\fBe\fP] ] [ OPT(E)[\fBm\fP|\fBe\fP] ] 
-[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP|\fBe\fP|\fBh\fP ] [ OPT(L)[\fBv\fP] ] [ GMT_V_OPT ]
+BD(mgd77info) IT(NGDC-ids) [ OPT(C)[BD(m)|BD(e)] ] [ OPT(E)[BD(m)|BD(e)] ] 
+[ OPT(I)IT(ignore) ] [ OPT(Mf)[IT(item)]|BD(r)|BD(e)|BD(h) ] [ OPT(L)[BD(v)] ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
+BD(mgd77info) reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total
 track distances in km, longitude and latitude range, and the total number of geophysical
 observations.  Optionally, choose instead to see the original MGD77 header meta-data
@@ -14,76 +14,78 @@ section or its individual members.
 .br
 If you need to know which tracks are crossing through a given region and what kinds
 of geophysical observations are available, consider using the x2sys tools to set up
-a tracks index data base (see \fBx2sys_init\fP for more information).
+a tracks index data base (see BD(x2sys_init) for more information).
+.SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(C)
+OPT(C)[BD(m)|BD(e)]
 List abbreviations for all columns present in the MGD77[+] files.
-Append \fBm\fP or \fBe\fP to limit the display to the MGD77 standard or MGD77+ extended set only.
+Append BD(m) or BD(e) to limit the display to the MGD77 standard or MGD77+ extended set only.
 .TP
-OPT(E)
+OPT(E)[BD(m)|BD(e)]
 Give a one-line summary for each cruise listed.
 .TP
-OPT(M)
-List the meta-data (header) and (if present) the MGD77+ history for each cruise.  Append \fBf\fP for
+OPT(Mf)[IT(item)]|BD(r)|BD(e)|BD(h)
+List the meta-data (header) and (if present) the MGD77+ history for each cruise.  Append BD(f) for
 a formatted display.  This will list individual
 parameters and their values, one entry per output line, in a format
 that can be searched using standard UNIX text tools.  Alternatively, append the name of a particular
 parameter (you only need to give enough characters - starting at the beginning - to uniquely identify
 the item).  Give - to display the list of all parameter names.  You may also specify the number of a parameter.
-For the raw, punchcard-formatted MGD77 original header block, append \fBr\fP instead. 
-For the MGD77+ E77 status, append \fBe\fP instead. 
-Finally, for the MGD77+ history, append \fBh\fP instead. 
+For the raw, punchcard-formatted MGD77 original header block, append BD(r) instead. 
+For the MGD77+ E77 status, append BD(e) instead. 
+Finally, for the MGD77+ history, append BD(h) instead. 
 .TP
-OPT(I)
-Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
+OPT(I)IT(ignore)
+Ignore certain data file formats from consideration. Append BD(a|c|t) to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
 .TP
-OPT(L)
+OPT(L)[BD(v)]
 No cruise information is listed.  Instead, we just display a list of the GEODAS institution 2-character codes
-and their names.  Optionally, append \fBv\fP to also display the vessels and their 4-character codes for each
+and their names.  Optionally, append BD(v) to also display the vessels and their 4-character codes for each
 institution.  The following is the list of institutions:
 .br
 #include "mgd77_codes.txt"
 #include "explain_-V.txt"
+#include "explain_help.txt"
 .SH EXAMPLES
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
 .br
 .sp
-\fBmgd77info\fP 01010047 01010008 OPT(E) > listing.lis
+BD(mgd77info) 01010047 01010008 OPT(E) > listing.lis
 .br
 .sp
 To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 OPT(Mr)
+BD(mgd77info) 01010047 OPT(Mr)
 .br
 .sp
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 OPT(Mf) | grep Gravity
+BD(mgd77info) 01010047 OPT(Mf) | grep Gravity
 .br
 .sp
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 OPT(Mf)Magnetics_Sampling_Rate
+BD(mgd77info) 01010047 OPT(Mf)Magnetics_Sampling_Rate
 .br
 .sp
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 .br
 .sp
-\fBmgd77info\fP 01010047 OPT(C)
+BD(mgd77info) 01010047 OPT(C)
 .br
 .sp
 To see the E77 status of all MGD77+ cruises collected by the University of Hawaii, run
 .br
 .sp
-\fBmgd77info\fP 08 OPT(Ia) OPT(Me)
+BD(mgd77info) 08 OPT(Ia) OPT(Me)
 .SH "SEE ALSO"
 .IR mgd77list (1),
 .IR mgd77manage (1),
@@ -91,6 +93,5 @@ To see the E77 status of all MGD77+ cruises collected by the University of Hawai
 .IR mgd77track (1)
 .IR x2sys_init (1)
 #include "refs.i"
-The Marine Geophysical Data Exchange Format - "MGD77", see
-\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
-.br
+The Marine Geophysical Data Exchange Format - MGD77, see
+IT(http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt)

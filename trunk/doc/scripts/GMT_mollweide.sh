@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_mollweide.sh,v 1.5 2011-02-28 00:58:02 remko Exp $
+#	$Id: GMT_mollweide.sh,v 1.6 2011-03-15 02:06:29 guru Exp $
 #
 . functions.sh
 

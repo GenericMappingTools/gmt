@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.35 2011-03-10 17:04:03 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.36 2011-03-15 02:06:46 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -6,7 +6,7 @@ PRE-RELEASE TASKS:
 
 1.  Decide on a future date at which point GMT is to be released.
     Be prepared to change the date if the  bug-fixing workload is
-    too great.  Send email to gmt-team@lists-hawaii.edu and tell
+    too great.  Send email to gmt-team@hawaii.edu and tell
     them the date and ask for updates.
     
 RELEASE TASKS:
@@ -17,7 +17,7 @@ must ensure you do all the steps listed below:
 0.  Make any changes to README, README.WIN32, and Changelog.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
-    Check version number and release data in configure.ac and install_gmt.sh.
+    Check version number and release data in configure.ac
 
 1.  run make latest-config
     get the latest config.sub and config.guess.  Make sure this worked
@@ -33,22 +33,20 @@ must ensure you do all the steps listed below:
 4.  In GMT/ftp, update .message, README.GMT, and VERSION
 
 5.  In GMT/website:
-    a) Update gmt_arrrghh.html, gmt_faq.html, gmt_home.html,
-       gmt_install_form.html, gmt_releases_template.html
-       install_gmt_form.pl, gmt_nav.html
-    b) Clean out prior testing with
-       make clean-local
+    a) Update gmt_arrrghh.html, gmt_faq.html,
+       gmt_install_form.html, gmt_news.html, gmt_releases.html
+    b) create web examples:
+       make web
     c) test the update of ftp and web sites locally:
        make update-version-local
-       if new GSHHS, also do update-gshhs-local
     d) If OK, update the remote TEST ftp and web sites:
-       make update-version-test [and update-gshhs-test]
+       make update-version-test
        Have team members install from these sites.
 
 If still good to go:
 
 6.  Tag the release(s), e.g.
-    cvs -q tag Release_2011_03_10_GMT_4_5_6
+    cvs -q tag Release_2007_10_08_GMT_4_2_1
 
 7.  Prepare the archives:
     make archive >& log
@@ -56,16 +54,14 @@ If still good to go:
 8.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html
 
-9.  Edit the *.iss files and run GMT_winbuild.bat under Parallels which will build
-    the three Windows installers and place them in GMT/ftp.  Also run GSHHS_winbuild.bat
-    if there is a GSHHS update.
+9.  Run GMT_winbuild.bat under Parallels which will build
+    the three Windows installers and place them in GMT/ftp.
 
-10. Release the new GMT version with make update-version-live. For a new GSHHS version,
-    also do update-gshhs-live
+10. Release the new version with make update-version-live.
 
 11. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
-    b) Wait 24 hours, then send email to gmt-help and gmt-group with the Announcement.
+    b) Send email to gmt-help and gmt-group with the Announcement.
 
 #-------------------------------------------------------------------------------
 

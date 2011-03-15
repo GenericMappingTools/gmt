@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: pacific_map_2.sh,v 1.3 2010-07-14 15:11:30 remko Exp $
+#!/bin/bash
+#	$Id: pacific_map_2.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
 
 . ../functions.sh
 header "Test -JG (Pacific 35000 km specific pnt image)"
@@ -28,6 +28,6 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitud
 GRDFILE=etopo2-hawaii.nc
 
 grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $PSFILE.ps
-pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5/5g5${TITLE} -Ia -Na -O --ANNOT_MIN_SPACING=0.5i >> $PSFILE.ps
+pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5/5g5${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $PSFILE.ps
 
 pscmp $PSFILE

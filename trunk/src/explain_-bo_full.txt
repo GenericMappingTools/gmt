@@ -1,0 +1,6 @@
+.TP
+GMT_bo_OPT
+Selects binary output.
+Append BD(s) for single precision [Default is BD(d) (double)].
+Uppercase BD(S) or BD(D) will force byte-swapping.
+Optionally, append IT(ncol), the number of desired columns in your binary output file.

@@ -3,29 +3,30 @@
 .SH NAME
 x2sys_merge \- Merge an updated COEs tables
 .SH SYNOPSIS
-\fBx2sys_merge\fP OPT(A)\fImain_COElist.d\fP OPT(M)\fInew_COElist.d\fP  
+BD(x2sys_merge) OPT(A)IT(main_COElist.d) OPT(M)IT(new_COElist.d)  
 .SH DESCRIPTION
-\fBx2sys_merge\fP will read two crossovers data base and output the contents
+BD(x2sys_merge) will read two crossovers data base and output the contents
 of the main one updated with the COEs in the second one. The second
 file should only contain updated COEs relatively to the first one.
 That is, it MUST NOT contain any new two tracks intersections (This point is
 NOT checked in the code). This program is useful when, for any good reason like
 file editing NAV correction or whatever, one had to recompute only the COEs between
 the edited files and the rest of the database.
+.SH REQUIRED ARGUMENTS
 .TP
-OPT(A)
-Specify the file \fImain_COElist.d\fP with the main crossover error data base.
+OPT(A)IT(main_COElist.d)
+Specify the file IT(main_COElist.d) with the main crossover error data base.
 .TP
-OPT(M)
-Specify the file \fInew_COElist.d\fP with the newly computed crossover error data base.
-.SH OPTIONS
+OPT(M)IT(new_COElist.d)
+Specify the file IT(new_COElist.d) with the newly computed crossover error data base.
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
 .SH EXAMPLES
 To update the main COE_data.txt with the new COEs estimations saved in the smaller COE_fresh.txt, try
 .br
 .sp
-\fBx2sys_merge\fP OPT(A)COE_data.txt OPT(M)COE_fresh.txt > COE_updated.txt
+BD(x2sys_merge) OPT(A)COE_data.txt OPT(M)COE_fresh.txt > COE_updated.txt
 .br
 .sp
 .SH "SEE ALSO"

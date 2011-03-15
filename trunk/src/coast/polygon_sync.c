@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.4 2010-03-01 21:48:40 guru Exp $
+ *	$Id: polygon_sync.c,v 1.5 2011-03-15 02:06:37 guru Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -26,7 +26,7 @@ int main (int argc, char **argv) {
 	}
 	
 #ifdef DEBUG
-	GMT_memtrack_off (GMT_mem_keeper);
+	GMT_memtrack_off (GMT->dbg.mem_keeper);
 #endif
 
 	for (res = 0; res < 5; res++) {
@@ -119,7 +119,7 @@ int main (int argc, char **argv) {
 			P[res][id2].h.north = P[FULL][father].h.north;
 			P[res][id2].h.datelon = P[FULL][father].h.datelon;
 			P[res][id2].h.source = P[FULL][father].h.source;
-			P[res][id2].h.ancestor = P[FULL][father].h.id;
+			P[res][id2].h.greenwich += (P[FULL][father].h.id << 1);
 			pol_writeheader (&P[res][id2].h, fp);
 			if (pol_fwrite (P[res][id2].p, P[res][id2].h.n, fp) != P[res][id2].h.n) {
 				fprintf(stderr,"polygon_xover:  ERROR  writing %d points from file %s.\n", P[res][id2].h.n, file);
@@ -137,7 +137,7 @@ int main (int argc, char **argv) {
 	for (res = 1; res < 5; res++) GMT_free ((void*)level[res]);
 	
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	GMT_memtrack_on (GMT->dbg.mem_keeper);
 #endif
 	GMT_end (argc, argv);
 	

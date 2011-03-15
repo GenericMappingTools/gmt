@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.60 2009-05-17 19:30:14 guru Exp $
+#	$Id: gmtguru.macros.orig,v 1.61 2011-03-15 02:06:31 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for the main GNUmakefile
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -27,7 +27,7 @@
 #
 AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
 GMT_SHARED_LIBS	=# --enable-shared	# --enable-shared for shared; empty for static libraries
-GMT_US		= --enable-US		# --enable-US for inch; empty for cm
+GMT_US		=# --enable-US		# --enable-US for inch; empty for cm
 GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 GMT_NETCDF	=# --enable-netcdf=$(NETCDFHOME)	# Change if your netcdf can not be found automatically
@@ -46,9 +46,9 @@ GMT_UNIVERSAL	=# --enable-universal	# Make universal binaries under OS X
 GMT_DIST	=# --prefix=/usr/local/gmt 		# Uncomment for alternate installation path for machine-independent files (man, web)
 GMT_EXDIST	=# --exec_prefix=/usr/local/gmt/linux	# Uncomment for alternate installation path for executables
 
-# Specify any options in GMT_OTHER that are not already mentioned above
+# Specify any options in GMT_OTHER that are not already mentioned above, e.g. --enable-eps
 
-GMT_OTHER	=# --enable-eps		# Enable EPS output, or any of the other options
+GMT_OTHER	= --disable-xgrid --disable-mex		# Do not compile things that depend on X11 or Matlab/Octave
 
 # Choose the correct preprocessing command for your system (this is for man page processing only).
 # 'configure' already knows how to deal with the ones listed below.

@@ -1,4 +1,4 @@
-/*	$Id: submeca.h,v 1.10 2011-01-02 20:09:36 guru Exp $
+/*	$Id: submeca.h,v 1.11 2011-03-15 02:06:37 guru Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.

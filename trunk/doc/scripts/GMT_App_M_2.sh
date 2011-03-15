@@ -1,10 +1,10 @@
 #!/bin/bash
-#	$Id: GMT_App_M_2.sh,v 1.2 2011-02-28 00:58:00 remko Exp $
+#	$Id: GMT_App_M_2.sh,v 1.3 2011-03-15 02:06:29 guru Exp $
 #
 . functions.sh
 ps=GMT_App_M_2.ps
 
-gmtset ANNOT_FONT_SIZE 10p MEASURE_UNIT cm
+gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
 # Set up color palette with named annotations
 

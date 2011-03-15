@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: time_testing_6.sh,v 1.8 2010-06-21 23:55:22 guru Exp $
+#	$Id: time_testing_6.sh,v 1.9 2011-03-15 02:06:46 guru Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -15,8 +15,8 @@ header "Test time conversions (abs & rel time)"
 ps=time_testing_6.ps
 
 grdmath -R0/90/0/90 -I1 X Y ADD = $$.nc
-grdcontour $$.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d  -Bpa7Rf1d/10 -Bsa1O/10 -P --PLOT_DATE_FORMAT="-o-yy" --ANNOT_FONT_SIZE_PRIMARY="+9p" > $ps
+grdcontour $$.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d  -Bpa7Rf1d/10 -Bsa1O/10 -P --FORMAT_DATE_MAP="-o-yy" --FONT_ANNOT_PRIMARY=9p > $ps
 
-rm -f $$.* .gmtcommands*
+rm -f $$.*
 
 pscmp

@@ -1,9 +1,9 @@
 %------------------------------------------
-%	$Id: GMT_Quick_reference.tex,v 1.18 2011-01-02 20:09:05 guru Exp $
+%	$Id: GMT_Quick_reference.tex,v 1.19 2011-03-15 02:06:29 guru Exp $
 %
 %	The GMT Documentation Project
-%	Copyright 2000-2011.
-%	Paul Wessel and Walter H. F. Smith
+%	Copyright (c) 2000-2011.
+%	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 %------------------------------------------
 %
 \documentclass{article}
@@ -71,6 +71,8 @@
 
 \par SAMPLING OF 1-D AND 2-D DATA:\par 
 
+\par 	gmtdp		Line reduction using the Douglas-Peucker algorithm\par 
+
 \par 	grdsample	Resample a 2-D gridded data onto new grid\par 
 
 \par 	grdtrack	Sampling of 2-D data along 1-D track\par 
@@ -93,7 +95,9 @@
 
 \par 	gmtdefaults	List the current default settings\par 
 
-\par 	gmtset	Command-line editing of parameters in the \filename{.gmtdefaults4} file\par 
+\par 	gmtset	Command-line editing of parameters in the \filename{gmt.conf} file\par 
+
+\par 	gmtwhich	Find full path to specified data files\par 
 
 \par 	grdinfo	Get information about the content of grid files\par 
 
@@ -106,6 +110,10 @@
 \par 	gmtconvert	Convert table data from one format to another\par 
 
 \par 	gmtselect	Select table data subsets based on multiple spatial criteria\par 
+
+\par 	gmtspatial	Geospatial operations on lines and polygons\par 
+
+\par 	gmtstitch	Join segments into more complete lines or polygons\par 
 
 \par 	grd2xyz	Convert 2-D gridded data to table data\par 
 
@@ -169,6 +177,10 @@
 
 \par \par 
 
+\par	 gmt2kml	Convert GMT data tables to KML files for Google Earth\par
+
+\par	 kml2gmt	Extract GMT data from a Google Earth KML file\par
+
 \par	 ps2raster	Crop and convert PostScript files to raster images, EPS, and PDF\par
 
 \par \par 
@@ -177,11 +189,9 @@
 
 \par \Opt{B}{\it xtick}[{\it :text:}][{\it /ytick}[{\it :text:}]][{\it /ztick}[{\it :text:}]][{\it WESNZwesnz+}][{\it :.title:}]	Tickmarks\par 
 
-\par \Opt{H}{\it [n\_headers]}	Input/output ASCII tables have header record[s]\par 
+\par \Opt{J} Map projection.  Give \underline{width} or use lower case code and specify map \underline{scale}\par 
 
-\par \Opt{J} Map projection.  Give \underline{width} or use lower case code and specify map \underline{scale\par 
-
-}\par 	\Opt{JA}{\it lon0/lat0/width}	Lambert azimuthal equal area\par 
+\par 	\Opt{JA}{\it lon0/lat0/width}	Lambert azimuthal equal area\par 
 
 \par 	\Opt{JB}{\it lon0/lat0/lat1/lat2/width}	Albers conic equal area\par 
 
@@ -249,10 +259,22 @@
 
 \par \Opt{X}{\it off} \Opt{Y}{\it off}	Shift lower left corner of plot [1/1]\par 
 
-\par \Opt{:}	Expect {\it y}/{\it x} input rather than {\it x}/{\it y\par 
+\par \Opt{a}{\it name=col,}	Set aspatial column associations\par 
 
-}\par \Opt{c}{\it copies}	Set number of plot copies [1]\par 
+\par \Opt{c}{\it copies}	Set number of plot copies [1]\par 
 
+\par \Opt{f}{\it info}	Specifies the data format on a per column basis  \par
 
+\par \Opt{g}{\it info}	Identify data gaps based on supplied criteria  \par
+
+\par \Opt{h}{\it [n\_headers]}	Input/output ASCII tables have header record[s]\par 
+
+\par \Opt{p}{\it azim/elev}[{it zlevel}][{\bf +}{\it lon0/lat0}[/{\it z0}]][{\bf +v}{\it x0/y0}]	Perspective views\par
+
+\par \Opt{s}[{\bf r}]	Controls output of records where {\it z} is NaN	\par
+
+\par \Opt{t}[{\it trans}]	Sets layer PDF transparency  \par
+
+\par \Opt{:}	Expect {\it y}/{\it x} input rather than {\it x}/{\it y}\par 
 
 \end{document}

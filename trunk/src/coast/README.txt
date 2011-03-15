@@ -1,4 +1,4 @@
-#	$Id: README.txt,v 1.5 2010-11-02 03:47:08 guru Exp $
+#	$Id: README.txt,v 1.6 2011-03-15 02:06:37 guru Exp $
 
 README for coast supplement:
 
@@ -13,7 +13,7 @@ all the source files.  I believe the following to be true:
    Most of the segment_*.c programs deal with these segments.
    Basically, most coastlines where chopped into smaller pieces
    and these have to be spliced back together.  This was made
-   harder by pieces not fitting quite back, thus necessitating
+   harder by pieces not fitting quite back, thus necessetating
    much processing.
 2. Once segments were clean and spliced together, we wrote out
    a binary database of polygons.  Each polygon had a header and
@@ -134,7 +134,7 @@ polygon_to_gshhs.c
 	COnvert polygons to the GSHHS database format
 polygon_update.c:
 	Update data base by (1) deleting listed polygons and (2) updating others
-	from pol/polygon.# ascii tables.
+	from pol/polygon.# ascii tabes.
 polygon_xover.c:
 	Determine crossovers between all pairs of polygons.  The causes must be
 	examined manually and resolved so that there are no crossovers when you
@@ -178,7 +178,7 @@ poly_misc_subs.c:
 	Subroutines for misc polygon operations.
 
 The makefile will create a libcoast.a out of those four files.
-The makefile will do a lot of the steps.  One should study the makefile
+The makefile will do alot of the steps.  One should study the makefile
 and see what the options are.  For instance, to bin all the polygons
 after the cleaning is completed one can do "make bin".
 While most of this code might compile under Windows there is no guarantee

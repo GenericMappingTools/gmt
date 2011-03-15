@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.37 2011-03-08 19:20:16 guru Exp $
+	$Id: README.GMT,v 1.38 2011-03-15 02:06:31 guru Exp $
 
 Dear potential GMT users-
 
-Version 4.5.6 of GMT has recently been released.
+Version 4.5.1 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -19,7 +19,7 @@ you will need are:
 
 GMT_src.tar.bz2		All source code
 GMT_share.tar.bz2	Support run-time files (patterns, cpt)
-GSHHS_coast.tar.bz2	Basic GSHHS 2.1.1 coastlines
+GSHHS_coast.tar.bz2	Basic GSHHS 2.0.1 coastlines
 install_gmt		Bourne shell install script
 
 In addition, you may want
@@ -30,12 +30,12 @@ GSHHS_high.tar.bz2	High resolution GSHHS coastline files
 GSHHS_full.tar.bz2	Full resolution GSHHS coastline files
 
 Finally, we also provide the optional Delaunay triangulation
-routine of Shewchuk.  As it is not GNU licensed it is kept
+routine of Shewchuck.  As it is not GNU licensed it is kept
 in a separate archive:
 
-GMT_triangle.tar.bz2		Shewchuk triangulation source code
+GMT_triangle.tar.bz2		Shewchuck triangulation source code
 
-The install_gmt.sh Bourne script can be used after manual ftp as well.
+The install_gmt Bourne script can be used after manual ftp as well.
 Place script in the same directory as the archives and run.
 
 For new installers of GMT under Windows:

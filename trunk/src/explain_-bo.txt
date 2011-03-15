@@ -1,6 +1,2 @@
 .TP
-OPT(bo)
-Selects binary output.
-Append \fBs\fP for single precision [Default is \fBd\fP (double)].
-Uppercase \fBS\fP or \fBD\fP will force byte-swapping.
-Optionally, append \fIncol\fP, the number of desired columns in your binary output file.
+GMT_bo_OPT Selects binary output.

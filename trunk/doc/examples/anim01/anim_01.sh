@@ -1,10 +1,10 @@
 #!/bin/bash
 #               GMT ANIMATION 01
-#               $Id: anim_01.sh,v 1.4 2011-02-28 00:58:03 remko Exp $
+#               $Id: anim_01.sh,v 1.5 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
-# Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
+# Unix progs:   printf, mkdir, rm, mv, echo, convert, cat
 #
 # 1. Initialization
 # 1a) Assign movie parameters
@@ -14,14 +14,14 @@ width=4i
 height=2i
 dpi=125
 n_frames=18
-name=../`basename $0 '.sh'`
+name=`basename $0 '.sh'`
 # 1b) Do frame-independent calculations and setup
 angle_step=`gmtmath -Q 360 $n_frames DIV =`
 angle_inc=`gmtmath -Q $angle_step 10 DIV =`
-gmtset DOTS_PR_INCH $dpi
+gmtset PS_DPI $dpi
 psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i \
 	-Ba90g90f30:,-\\312:/a0.5f0.1g1WSne -Glightgreen \
-	--PAPER_MEDIA=Custom_${width}x${height} --ANNOT_FONT_SIZE=+9p > $$.map.ps
+	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.map.ps
 # 2. Main frame loop
 mkdir -p $$
 frame=0
@@ -39,12 +39,12 @@ while [ $frame -le $n_frames ]; do
 	fi
 	#	Plot red dot at current angle and annotate
 	sin=`gmtmath -Q $angle SIND =`
-	echo $angle $sin | psxy -R -J -O -K -Sc0.1i -Gred >> $$.ps
-	echo $angle | awk '{printf "0 1.6 14 0 1 LT a = %3.3d\n", $1}' \
-		| pstext -R -J -O -K -N -Dj0.1i/0.05i >> $$.ps
+	psxy -R -J -O -K -Sc0.1i -Gred >> $$.ps <<< "$angle $sin"
+	printf "0 1.6 a = %3.3d" $angle | pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
+		-N -Dj0.1i/0.05i >> $$.ps
 	psxy -R -J -O -T >> $$.ps
 	if [ $# -eq 0 ]; then
-		mv $$.ps $name.ps
+		mv $$.ps ../$name.ps
 		gmt_cleanup .gmt
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi
@@ -77,5 +77,4 @@ with a 0.2 second pause between frames, set to repeat forever.
 </HTML>
 END
 # 4. Clean up temporary files
-gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt

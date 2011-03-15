@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Test psxy lines with -g
 . ../functions.sh
 ps=new_gaps.ps
@@ -20,15 +20,15 @@ psxy -R -J -O -K -Sc0.1i -Gred $$.d >> $ps
 # Test -g in x
 psxy -R -J -O -K -X3.5i -B5g1WSne $$.d -W2p -gx1.5 >> $ps
 psxy -R -J -O -K -Sc0.1i -Gred $$.d >> $ps
-echo "0 10 18 0 0 LT -gx1.5" | pstext -R -J -O -K -Wwhite,o0.25p -Dj0.1i/0.1i >> $ps
+pstext -R -J -F+f18p+jTL -O -K -Gwhite -W -Dj0.1i >> $ps <<< "0 10 -gx1.5"
 # Test -g in y
 psxy -R -J -O -K -X-3.5i -B5g1WSne -Y-3.5i $$.d -W2p -gy1.5 >> $ps
 psxy -R -J -O -K -Sc0.1i -Gred $$.d >> $ps
-echo "0 10 18 0 0 LT -gy1.5" | pstext -R -J -O -K -Wwhite,o0.25p -Dj0.1i/0.1i >> $ps
+pstext -R -J -F+f18p+jTL -O -K -Gwhite -W -Dj0.1i >> $ps <<< "0 10 -gy1.5"
 # Test -g in d
 psxy -R -J -O -K -X3.5i -B5g1WSne $$.d -W2p -gd1.5 >> $ps
 psxy -R -J -O -K -Sc0.1i -Gred $$.d >> $ps
-echo "0 10 18 0 0 LT -gd1.5" | pstext -R -J -O -Wwhite,o0.25p -Dj0.1i/0.1i >> $ps
+pstext -R -J -F+f18p+jTL -O -Gwhite -W -Dj0.1i >> $ps <<< "0 10 -gd1.5"
 
 pscmp
 rm -f $$.*

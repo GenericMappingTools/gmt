@@ -62,7 +62,8 @@ static void getBaseName(fileName, baseName)
     *stop = '\0';
 }
 
-Widget createView (fileName, parent, args, nargs)
+Widget createView (GMT,fileName, parent, args, nargs)
+	struct GMT_CTRL *GMT;
 	String fileName;
 	Widget parent;
 	Arg    args[];
@@ -76,7 +77,7 @@ Widget createView (fileName, parent, args, nargs)
 
   /* Read in grid to be viewed */
   strcpy(theView.fileName, fileName);
-  theView.grid = CreateGMTGrid();
+  theView.grid = CreateGMTGrid(GMT);
   Trace("Reading grid file...");
   ReadGridFromFile(theView.grid, fileName, &err);
   if (err) {

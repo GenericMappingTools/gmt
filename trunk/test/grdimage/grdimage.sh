@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 #
-#	$Id: grdimage.sh,v 1.10 2010-06-21 23:55:22 guru Exp $
-
-ps=grdimage.ps
-grdimage=grdimage" $VERBOSE t.nc -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
-grdcontour=grdcontour" t.nc -Ct.cpt -J -R -O"
+#	$Id: grdimage.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for grid and pixel plots"
+
+ps=grdimage.ps
+grdimage="grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p"
+grdcontour="grdcontour t.nc -Ct.cpt -J -R -O"
+
 makegrd () {
 xyz2grd -I1 -Gt.nc $* <<%
 0 0 0.0
@@ -23,9 +24,9 @@ xyz2grd -I1 -Gt.nc $* <<%
 }
 
 label () {
-pstext -R -J -N -O -K <<%
--1.4 1.5 10 0 0 BR xyz2grd $1
--1.4 1 10 0 0 BR grdimage $2
+pstext -R -J -N -F+f10p+jBR -O -K <<%
+-1.4 1.5 xyz2grd $1
+-1.4 1.0 grdimage $2
 %
 }
 
@@ -52,12 +53,12 @@ $grdimage -E50 -O -K -R-1/3/-1/3 -X4c ; $grdcontour $2
 makecpt -Crainbow -T-0.1/2.5/0.2 > t.cpt
 makegrd -R0/2/0/2
 
-plots "-P -X4c -Y24c" -K " " > $ps
+plots "-P -X4c -Y24c" -K "" > $ps
 
-makegrd -R-0.5/2.5/-0.5/2.5 -F
+makegrd -R-0.5/2.5/-0.5/2.5 -r
 
-plots "-O -X-12c -Y-4c" " " -F >> $ps
+plots "-O -X-12c -Y-4c" "" -r >> $ps
 
-rm -f t.nc t.cpt .gmtcommands4
+rm -f t.nc t.cpt
 
 pscmp

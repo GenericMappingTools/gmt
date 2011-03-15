@@ -3,137 +3,138 @@
 .SH NAME
 grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
-\fBgrdfft\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(A)\fIazimuth\fP ] 
-[ OPT(C)\fIzlevel\fP ] [ OPT(D)[\fIscale\fP\fB|g\fP] ] [ OPT(E)[\fBx|y\fP][\fBw\fP] ] 
-[ OPT(F)[\fBx\fP|\fBy\fP]\fIparams\fP ] [ OPT(I)[\fIscale\fP\fB|g\fP] ] [ OPT(L) ] [ OPT(M) ] 
-[ OPT(N)\fIstuff\fP ] [ OPT(S)\fIscale\fP ] [ OPT(T)\fIte/rl/rm/rw/ri\fP ] [ GMT_V_OPT ]
+BD(grdfft) IT(in_grdfile) OPT(G)IT(out_grdfile) [ OPT(A)IT(azimuth) ] 
+[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)] ] 
+[ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L) ] 
+[ OPT(N)IT(stuff) ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdfft\fP will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
+BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
 is provided to scale the data before writing the new values to an output file.  The
 horizontal dimensions of the grid are assumed to be in meters.  Geographical grids
-may be used by specifying the OPT(M) option that scales degrees to meters.  If you
-have grids with dimensions in km, you could change this to meters using \fBgrdedit\fP
-or scale the output with \fBgrdmath\fP.
+may be used by specifying the OPT(f) option that scales degrees to meters.  If you
+have grids with dimensions in km, you could change this to meters using BD(grdedit)
+or scale the output with BD(grdmath).
+.SH REQUIRED ARGUMENTS
 .TP
-\fIin_grdfile\fP
+IT(in_grdfile)
 2-D binary grid file to be operated on.
 (See GRID FILE FORMATS below).
 .TP
-OPT(G)
+OPT(G)IT(out_grdfile)
 Specify the name of the output grid file.
 (See GRID FILE FORMATS below).
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(A)
-Take the directional derivative in the \fIazimuth\fP direction measured in degrees CW from north.
+OPT(A)IT(azimuth)
+Take the directional derivative in the IT(azimuth) direction measured in degrees CW from north.
 .TP
-OPT(C)
-Upward (for \fIzlevel\fP > 0) or downward (for \fIzlevel\fP < 0) continue the field \fIzlevel\fP meters.
+OPT(C)IT(zlevel)
+Upward (for IT(zlevel) > 0) or downward (for IT(zlevel) < 0) continue the field IT(zlevel) meters.
 .TP
-OPT(D)
+OPT(D)[IT(scale)BD(|g)]
 Differentiate the field, i.e., take d(field)/dz.  This is equivalent to multiplying by kr in the frequency
-domain (kr is radial wave number).  Append a scale to multiply by (kr * \fIscale\fP) instead.  Alternatively,
-append \fBg\fP to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
+domain (kr is radial wave number).  Append a scale to multiply by (kr * IT(scale)) instead.  Alternatively,
+append BD(g) to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
 [Default is no scale].
 .TP
-OPT(E)
-Estimate power spectrum in the radial direction.  Place \fBx\fP or \fBy\fP immediately after OPT(E) to
+OPT(E)[BD(x|y)][BD(w)]
+Estimate power spectrum in the radial direction.  Place BD(x) or BD(y) immediately after OPT(E) to
 compute the spectrum in the x or y direction instead.  No grid file is created; f (i.e., frequency or wave number),
 power[f], and 1 standard deviation in power[f] are written to stdout.
-Append \fBw\fP to write wavelength instead of frequency.
+Append BD(w) to write wavelength instead of frequency.
 .TP
-OPT(F)
-Filter the data.  Place \fBx\fP or \fBy\fP immediately after OPT(F) to filter \fIx\fP or \fIy\fP direction only; default is isotropic.
+OPT(F)[BD(x)|BD(y)]IT(params)
+Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic.
 Choose between a cosine-tapered band-pass, a Gaussian band-pass filter, or a Butterworth band-pass filter.
-Cosine-taper: Specify four wavelengths \fIlc\fP/\fIlp\fP/\fIhp\fP/\fIhc\fP in correct units (see OPT(M)) to design a bandpass filter: wavelengths greater than 
-\fIlc\fP or less than \fIhc\fP will be cut, wavelengths greater than \fIlp\fP and less than \fIhp\fP will be 
-passed, and wavelengths in between will be cosine-tapered.  E.g., OPT(F)1000000/250000/50000/10000 OPT(M) 
+Cosine-taper: Specify four wavelengths IT(lc)/IT(lp)/IT(hp)/IT(hc) in correct units (see OPT(fg)) to design a bandpass filter: wavelengths greater than 
+IT(lc) or less than IT(hc) will be cut, wavelengths greater than IT(lp) and less than IT(hp) will be 
+passed, and wavelengths in between will be cosine-tapered.  E.g., OPT(F)1000000/250000/50000/10000 OPT(fg) 
 will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
-a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., OPT(Fx)-/-/50/10 
-will lowpass \fIx\fP, passing wavelengths > 50 and rejecting wavelengths < 10.  OPT(Fy)1000/250/-/- will highpass \fIy\fP, 
-passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append \fIlo\fP/\fIhi\fP, the two wavelengths in correct units
-(see OPT(M)) to design a bandpass filter.  At the given wavelengths the Gaussian filter weights will be 0.5. To make
-a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., OPT(F)-/30
+a highpass or lowpass filter, give hyphens (-) for IT(hp)/IT(hc) or IT(lc)/IT(lp).  E.g., OPT(Fx)-/-/50/10 
+will lowpass IT(x), passing wavelengths > 50 and rejecting wavelengths < 10.  OPT(Fy)1000/250/-/- will highpass IT(y), 
+passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append IT(lo)/IT(hi), the two wavelengths in correct units
+(see OPT(fg)) to design a bandpass filter.  At the given wavelengths the Gaussian filter weights will be 0.5. To make
+a highpass or lowpass filter, give a hyphen (-) for the IT(hi) or IT(lo) wavelength, respectively.  E.g., OPT(F)-/30
 will lowpass the data using a Gaussian filter with half-weight at 30, while OPT(F)400/- will highpass the data.
-Butterworth band-pass: Append \fIlo\fP/\fIhi\fP/\fIorder\fP, the two wavelengths in correct units
-(see OPT(M)) and the filter order (an integer) to design a bandpass filter.  At the given wavelengths the Butterworth filter weights will be 0.5. To make
-a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., OPT(F)-/30/2
+Butterworth band-pass: Append IT(lo)/IT(hi)/IT(order), the two wavelengths in correct units
+(see OPT(fg)) and the filter order (an integer) to design a bandpass filter.  At the given wavelengths the Butterworth filter weights will be 0.5. To make
+a highpass or lowpass filter, give a hyphen (-) for the IT(hi) or IT(lo) wavelength, respectively.  E.g., OPT(F)-/30/2
 will lowpass the data using a 2nd-order Butterworth filter, with half-weight at 30, while OPT(F)400/-/2 will highpass the data.
 .TP
-OPT(I)
+OPT(I)[IT(scale)BD(|g)]
 Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
-in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * \fIscale\fP) instead.
-Alternatively, append \fBg\fP to indicate that your data set is gravity anomalies in mGal and output should be geoid
+in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * IT(scale)) instead.
+Alternatively, append BD(g) to indicate that your data set is gravity anomalies in mGal and output should be geoid
 heights in meters.  [Default is no scale].
 .TP
 OPT(L)
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
 .TP
-OPT(M)
-Map units.  Choose this option if your grid file is a geographical grid and you want to convert
-degrees into meters.  If the data are close to either pole, you should consider
-projecting the grid file onto a rectangular coordinate system using \fBgrdproject\fP.
-.TP
-OPT(N)
+OPT(N)IT(stuff)
 Choose or inquire about suitable grid dimensions for FFT.
 OPT(Nf) will force the FFT to use the dimensions of the data.
 OPT(Nq) will inQuire about more suitable dimensions.
-OPT(N)\fInx/ny\fP will do FFT on array size \fInx/ny\fP (Must be >= grid file size).
+OPT(N)IT(nx/ny) will do FFT on array size IT(nx/ny) (Must be >= grid file size).
 Default chooses dimensions >= data which optimize speed, accuracy of FFT.
 If FFT dimensions > grid file dimensions, data are extended and tapered to zero.
 .TP
-OPT(S)
-Multiply each element by \fIscale\fP in the space domain (after the frequency domain operations).
+OPT(S)IT(scale)
+Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
 [Default is 1.0].
 .TP
-OPT(T)
+OPT(T)IT(te/rl/rm/rw/ri)
 Compute the isostatic compensation from the topography load (input grid file) on an elastic plate
-of thickness \fIte\fP.  Also append densities for load, mantle, water, and infill in SI units.
-If \fIte\fP == 0 then the Airy response is returned.  OPT(T) implicitly sets OPT(L).
+of thickness IT(te).  Also append densities for load, mantle, water, and infill in SI units.
+If IT(te) == 0 then the Airy response is returned.  OPT(T) implicitly sets OPT(L).
 #include "explain_-V.txt" 
+#include "explain_help.txt"
 #include "explain_grd_inout.txt"
+.SH CONSIDERATIONS
+netCDF COARDS grids will automatically be recognized as geographic. For other grids geographical grids
+were you want to convert degrees into meters, select OPT(fg).  If the data are close to either pole,
+you should consider projecting the grid file onto a rectangular coordinate system using BD(grdproject).
 .SH EXAMPLES
-To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a level 800 m above sealevel:
+To upward continue the sea-level magnetic anomalies in the file mag_0.nc to a level 800 m above sealevel:
 .br
 .sp
-\fBgrdfft\fP mag_0.grd OPT(C)800 OPT(V) OPT(G)mag_800.grd 
+BD(grdfft) mag_0.nc OPT(C)800 OPT(V) OPT(G)mag_800.nc 
 .br
 .sp
-To transform geoid heights in m (geoid.grd) on a geographical grid to free-air gravity anomalies in mGal:
+To transform geoid heights in m (geoid.nc) on a geographical grid to free-air gravity anomalies in mGal:
 .br
 .sp
-\fBgrdfft\fP geoid.grd OPT(Dg) OPT(V) OPT(G)grav.grd
+BD(grdfft) geoid.nc OPT(Dg) OPT(V) OPT(G)grav.nc
 .br
 .sp
-To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical (in micro-radians) in the
+To transform gravity anomalies in mGal (faa.nc) to deflections of the vertical (in micro-radians) in the
 038 direction, we must first integrate gravity to get geoid, then take the directional derivative, and
 finally scale radians to micro-radians:
 .br
 .sp
-\fBgrdfft\fP faa.grd OPT(Ig)38 OPT(S)1e6 OPT(V) OPT(G)defl_38.grd
+BD(grdfft) faa.nc OPT(Ig)38 OPT(S)1e6 OPT(V) OPT(G)defl_38.nc
 .br
 .sp
 Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
 compute these as mGal/m^2 by differentiating twice:
 .br
 .sp
-\fBgrdfft\fP gravity.grd OPT(D) OPT(D) OPT(V) OPT(G)grav_2nd_derivative.grd
+BD(grdfft) gravity.nc OPT(D) OPT(D) OPT(V) OPT(G)grav_2nd_derivative.nc
 .br
 .sp
 The first order gravity anomaly (in mGal) due to the compensating surface caused 
-by the topography load topo.grd (in m) on a 20 km thick elastic plate, assumed to 
+by the topography load topo.nc (in m) on a 20 km thick elastic plate, assumed to 
 be 4 km beneath the observation level can be computed as
 .br
 .sp
-\fBgrdfft\fP topo.grd OPT(T)20000/2800/3330/1030/2300 OPT(S)0.022 OPT(C)4000 OPT(G)comp_faa.grd
+BD(grdfft) topo.nc OPT(T)20000/2800/3330/1030/2300 OPT(S)0.022 OPT(C)4000 OPT(G)comp_faa.nc
 .br
 .sp
 where 0.022 is the scale needed for the first term in Parker's expansion for\"'
 computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR gmt (1),
 .IR grdedit (1),
 .IR grdmath (1),
 .IR grdproject (1)

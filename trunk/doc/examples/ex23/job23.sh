@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 23
-#		$Id: job23.sh,v 1.19 2011-02-28 00:58:03 remko Exp $
+#		$Id: job23.sh,v 1.20 2011-03-15 02:06:31 guru Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
@@ -38,21 +38,22 @@ grdcontour dist.nc -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J \
 # For each of the cities, plot great circle arc to Rome with psxy
 
 while read clon clat city; do
-	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest/red >> $ps
+	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest,red >> $ps
 done < cities.d
 
 # Plot red squares at cities and plot names:
 psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
-$AWK '{print $1, $2, 12, 0, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> $ps
+$AWK '{print $1, $2, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 \
+	-F+f12p,Courier-Bold,red+j -N >> $ps
 # Place a yellow star at Rome
 echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
 # Sample the distance grid at the cities and use the distance in km for labels
 
 grdtrack -Gdist.nc cities.d \
-	| $AWK '{printf "%s %s 12 0 1 CT %d\n", $1, $2, int($NF+0.5)}' \
-	| pstext -R -J -O -D0/-0.2i -N -Wwhite,o -C0.02i/0.02i >> $ps
+	| $AWK '{printf "%s %s %d\n", $1, $2, int($NF+0.5)}' \
+	| pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
 
 # Clean up after ourselves:
 
-rm -f cities.d dist.nc .gmt*
+rm -f cities.d dist.nc

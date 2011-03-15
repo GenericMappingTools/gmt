@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.8 2011-01-03 01:50:33 guru Exp $
+#  $Id: manpages.mk,v 1.9 2011-03-15 02:06:36 guru Exp $
 #
-#	Copyright (c) 1991-2011 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,22 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#	GNUmakefile to create manpages for GMT Version 4.x
+#	GNUmakefile to create manpages for GMT Version 5.x
 #	
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
-#	This makefile spells out how to create manpages (*.1, *.3)
+#	This makefile spells out how to create manpages (*.1, *.3, *.5)
 #	out of text files *.txt. Dependencies are automatically created.
+#	It also has the rule on how to create the gmt_{suppl}.[ch] files.
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
 #	Date:		24-SEP-2007
 #-------------------------------------------------------------------------------
 SUFFIXES:	.1 .3 .5 .txt
+
+$(API_H) $(API_C):	$(GMTSRCDIR)make_gmtapi.sh
+	sh $(GMTSRCDIR)make_gmtapi.sh $(FUNCS_O) $(FUNCSPS_O)
 
 DEP1=$(MAN1:.1=.dep)
 DEP3=$(MAN3:.3=.dep)
@@ -59,4 +63,4 @@ $(DEP5):	%.dep:	%.txt
 manpages:	$(MAN1) $(MAN3) $(MAN5)
 
 spotless::
-		\rm -f *.1 *.3 *.5 *.dep
+		\rm -f *.1 *.3 *.5 *.dep $(API_H) $(API_C)

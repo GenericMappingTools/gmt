@@ -1,9 +1,9 @@
-#	$Id: split.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#	$Id: split.cpt,v 1.2 2011-03-15 02:06:31 guru Exp $
 #
 # Split colors that has black around midpoint
 # Designed by P. Wessel, SOEST
-# COLOR_MODEL = RGB
--1	128	128	255	-0.5	0	0	128
--0.5	0	0	128	0	0	0	0
-0	0	0	0	0.5	128	0	0
-0.5	128	0	0	1.0	255	128	128
+#
+-1	128/128/255	-0.5	0/0/128
+-0.5	0/0/128		0	0/0/0
+0	0/0/0		0.5	128/0/0
+0.5	128/0/0		1	255/128/128

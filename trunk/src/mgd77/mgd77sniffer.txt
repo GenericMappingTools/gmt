@@ -3,18 +3,15 @@
 .SH NAME
 mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
-\fBmgd77sniffer\fP \fINGDC-ids\fP [ OPT(A)\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP ] [ OPT(C)\fImaxspd\fP ] 
-[ OPT(D)\fBd\fP|\fBe\fP|\fBE\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP[\fIr\fP] ] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
-[ OPT(G)\fIfieldabbrev\fP,\fIgrid\fP ] [ GMT_H_OPT ] [ OPT(I)\fIfieldabbrev\fP,\fIrec1\fP,\fIrecN\fP ] 
-[ OPT(K) ] [ OPT(L)\fIcustom limits file\fP ] [ OPT(N) ]
-[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
-[ GMT_Rgeo_OPT ] [ OPT(S)\fBd\fP|\fBs\fP|\fBt\fP ] 
-[ OPT(T)\fIgap\fP ] [ GMT_V_OPT ] [ OPT(W)\fBc\fP|\fBg\fP|\fBo\fP|\fBs\fP|\fBt\fP|\fBv\fP|\fBx\fP ] [ GMT_bo_OPT ]
-
-
+BD(mgd77sniffer) IT(NGDC-ids) [ OPT(A)IT(fieldabbrev),IT(scale),IT(offset) ] [ OPT(C)IT(maxspd) ] 
+[ OPT(D)BD(d)|BD(e)|BD(E)|BD(f)|BD(l)|BD(m)|BD(s)|BD(v)[IT(r)] ] [ OPT(g)IT(fieldabbrev),IT(imggrid),IT(scale),IT(mode) ] 
+[ OPT(G)IT(fieldabbrev),IT(grid) ] [ OPT(H) ] [ OPT(I)IT(fieldabbrev),IT(rec1),IT(recN) ] 
+[ OPT(K) ] [ OPT(L)IT(custom-limits-file) ] [ OPT(N) ]
+[ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ]
+[ GMT_Rgeo_OPT ] [ OPT(S)BD(d)|BD(s)|BD(t) ] 
+[ OPT(T)IT(gap) ] [ GMT_V_OPT ] [ OPT(W)BD(c)|BD(g)|BD(o)|BD(s)|BD(t)|BD(v)|BD(x) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-
-\fBmgd77sniffer\fP scans old (pre-Y2K) and new format ASCII MGD77 files for errors using point-by-point
+BD(mgd77sniffer) scans old (pre-Y2K) and new format ASCII MGD77 files for errors using point-by-point
 sanity checking, along-track detection of excessive slopes, and optional comparison of
 cruise data with global gravity and predicted bathymetry grids. Detected data problems are output
 by default as verbose descriptions of each detected error, often resulting in multiple messages per 
@@ -22,25 +19,24 @@ scanned record. Data problems are optionally output (OPT(De) option) using a com
 (see E77 ERROR FORMAT description below). Default error thresholds are derived from histograms of
 all MGD77 geophysical data collected between 1952 and January, 2006. Thresholds are adjustable with
 the OPT(L) option.
-#include "explain_ncid.txt"
-
 .SH REQUIREMENTS
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along with the supplemental GMT
 packages x2sys and mgd77. See http://gmt.soest.hawaii.edu for GMT details. Grids for comparison with
 cruise data may be downloaded via the web.
-
-.SH OPTIONS
+.SH REQUIRED ARGUMENTS
+#include "explain_ncid.txt"
+.SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)
+OPT(A)IT(fieldabbrev),IT(scale),IT(offset)
 Apply scale factor and DC adjustment to specified data field. Allows adjustment of cruise data prior
 to along-track analysis. CAUTION: data must be thoroughly examined before applying these global data
 adjustments. May not be used for multiple cruises.
 .TP
-OPT(C)
+OPT(C)IT(maxspd)
 Set maximum ship speed in m/s, or knots with OPT(N) option. Ship speeds exceeding 10 m/s (~20 knots)
 are flagged as excessive by default.
 .TP
-OPT(D)
+OPT(D)BD(d)|BD(e)|BD(E)|BD(f)|BD(l)|BD(m)|BD(s)|BD(v)[IT(r)]
 Suppress default warning output and only dump cruise data row-by-row such as values, gradients,
 grid-cruise differences, E77 error summaries for each record, re-created MGD77 records
 or sniffer limits. Append r to include all records (default omits records where navigation errors were detected).
@@ -50,18 +46,18 @@ OPT(Dd)
 output differences between cruise and grid data. Requires OPT(G) option. Output columns include: 
 .br
 .sp
-\fIlat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]\fP
+IT(lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...])
 .br
 .sp
 Note: grid values are subtracted from cruise data so a positive difference implies cruise > grid.
-For multiple grid comparison, \fIcruiseZ gridZ diff\fP are repeated for each grid comparison in command line order.
+For multiple grid comparison, IT(cruiseZ gridZ diff) are repeated for each grid comparison in command line order.
 .br
 .sp
 OPT(De)
 output E77 error classification format. Error output is divided into (1) a header containing
 information globally applicable to the cruise and (2) individual error records summarizing all
 errors encountered in each cruise record. mgd77sniffer writes E77 directly to <ngdc_id.e77>
-file handle. See \fBE77 ERROR FORMAT\fP below for additional details.
+file handle. See BD(E77 ERROR FORMAT) below for additional details.
 .br
 .sp
 OPT(DE)
@@ -75,7 +71,7 @@ on instrument sampling rate, so ds is included for each geophysical observation.
 columns include: 
 .br
 .sp
-\fId[twt] ds d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds d[msd] ds d[gobs] ds d[eot] ds d[faa] ds\fP
+IT(d[twt] ds d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds d[msd] ds d[gobs] ds d[eot] ds d[faa] ds)
 .br
 .sp
 OPT(Dl)
@@ -83,7 +79,7 @@ display mgd77sniffer limits. Customize this output to create a custom limits fil
 the OPT(L) option. No additional arguments are required. Output columns include:
 .br
 .sp
-\fIfieldabbrev min max maxSlope maxArea\fP
+IT(fieldabbrev min max maxSlope maxArea)
 .br
 .sp
 OPT(Dm)
@@ -94,7 +90,7 @@ OPT(Dn)
 output distance to coast for each record. Requires OPT(Gnav) or OPT(gnav) option. Output columns include: 
 .br
 .sp
-\fIlat lon dist distToCoast\fP
+IT(lat lon dist distToCoast)
 .br
 .sp
 OPT(Ds)
@@ -102,42 +98,42 @@ output calculated gradients for speed and geophysical fields. Gradients correspo
 selected in the OPT(S) option (spatial derivatives by default). Output columns include:
 .br
 .sp
-\fIspeed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]\fP
+IT(speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa])
 .br
 .sp
-See \fBMGD77 FIELD INFO\fP below for field and abbreviations descriptions.
+See BD(MGD77 FIELD INFO) below for field and abbreviations descriptions.
 .br
 .sp
 OPT(Dv)
 display values for the twelve position and geophysical fields for each MGD77 data record (in this order):
 .br
 .sp
-\fIlat lon twt depth mtf1 mtf2 mag diur msens gobs eot faa\fP
+IT(lat lon twt depth mtf1 mtf2 mag diur msens gobs eot faa)
 .br
 .sp
-See below for \fBMGD77 FIELD INFO\fP.
+See below for BD(MGD77 FIELD INFO).
 .TP
-OPT(g)
+OPT(g)IT(fieldabbrev),IT(imggrid),IT(scale),IT(mode)
 Compare cruise data to the specified grid in Sandwell/Smith Mercator format. Requires a valid MGD77 field abbreviation (see 
-\fBMGD77 FIELD INFO\fP below) followed by a comma, the path (if not in current directory)
+BD(MGD77 FIELD INFO) below) followed by a comma, the path (if not in current directory)
 and grid filename, a scale to multiply the data (1 or 0.1), and mode which stand for the following:
 (0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
 and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
 .TP
-OPT(G)
+OPT(G)IT(fieldabbrev),IT(grid)
 Compare cruise data to the specified grid. Requires a valid MGD77 field abbreviation (see 
-\fBMGD77 FIELD INFO\fP below) followed by a comma, then the path (if not in current directory)
+BD(MGD77 FIELD INFO) below) followed by a comma, then the path (if not in current directory)
 and grid filename. Multiple grid comparison is supported by using separate OPT(g) or OPT(G) calls for each 
-grid. See \fBGRID FILE INFO\fP below.
+grid. See BD(GRID FILE INFO) below.
 .br
 .sp
 Grid comparison activates several additional error checks. (1) Re-weighted Least Squares 
 Regression of ship versus grid data determines slope and DC shift, which when differing
 from expected 1 and 0, respectively, may indicate incorrectly scaled ship data, including
 incorrect units or instrument drift as well as erroneous gravity tie-in. (2) Accumulated ship
-grid offsets are computed along-track and excessive offsets are flagged according to \fImaxArea\fP
-threshold (use OPT(L) option to adjust \fImaxArea\fP). Warning: predicted bathymetry grids are
+grid offsets are computed along-track and excessive offsets are flagged according to IT(maxArea)
+threshold (use OPT(L) option to adjust IT(maxArea)). Warning: predicted bathymetry grids are
 constrained by cruise data so grids and cruise data are not always independent. Comparison of
 cruise bathymetry with predicted bathymetry grids also activates a "navigation crossing over land"
 check.
@@ -145,7 +141,7 @@ check.
 .sp
 .TP
 OPT(H)
-(with OPT(G)|\fBg\fP only) disable (or force) decimation during RLS analysis of ship and gridded data.
+(with OPT(G)|BD(g) only) disable (or force) decimation during RLS analysis of ship and gridded data.
 By default mgd77sniffer analyses both the full and decimated data sets then reports RLS statistics for the
 higher correlation regression.
 .br
@@ -158,7 +154,7 @@ OPT(Hd) to disable data decimation (equivalent to -H with no argument).
 .sp
 OPT(Hf) to force data decimation.
 .TP
-OPT(I)
+OPT(I)IT(fieldabbrev),IT(rec1),IT(recN)
 Append a field abbreviation and the first and last record in a range of records that should
 be flagged as bad (and set to NaN prior to the analysis). Repeat as many times as needed.
 May not be used for multiple cruises.
@@ -169,7 +165,7 @@ majority of navigation fixes are erroneously flagged bad, which can happen when 
 first navigation fix is extremely erroneous. Caution! This will affect sniffer output and
 should only be attempted after careful manual navigation review.
 .TP
-OPT(L)
+OPT(L)IT(custom-limits-file)
 Override mgd77sniffer default error detection limits. Supply path and filename to
 the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are
 ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO.
@@ -205,7 +201,7 @@ Flag regression statistics that are outside the specified confidence level.
 #include "explain_-Q.txt"
 #include "explain_-Rgeo.txt"
 .TP
-OPT(S)
+OPT(S)BD(d)|BD(s)|BD(t)
 Specify gradient type for along-track excessive slope checking.
 .br
 OPT(Sd)
@@ -219,24 +215,25 @@ survey track, e.g. mGal/km.
 OPT(St) Calculate time gradients (dz/dt)  [default]. Output is given in geophysical units
 per second along the survey track, e.g. mGal/sec.
 .TP
-OPT(T)
+OPT(T)IT(gap)
 Adjusts mgd77sniffer gap handling. By default, data gaps greater than 5 km are skipped. Set to
 zero to de-activate gap skipping.
 .TP
-OPT(W)
+OPT(W)BD(c)|BD(g)|BD(o)|BD(s)|BD(t)|BD(v)|BD(x)
 Print out only certain warning types for verbose error messages. Comma delimit any combination of
-\fBc|g|o|s|t|v|x\fP: where (\fBc\fP) type code warnings, (\fBg\fP)radient out of range, (\fBo\fP)ffsets
-from grid (requires OPT(G)|\fBg\fP), (\fBs\fP)peed out of range, (\fBt\fP)ime warnings, (\fBv\fP)alue out of 
-range, (\fBx\fP) warning summaries. By default ALL warning messages are printed.Not compatible with any
+BD(c|g|o|s|t|v|x): where (BD(c)) type code warnings, (BD(g))radient out of range, (BD(o))ffsets
+from grid (requires OPT(G)|BD(g)), (BD(s))peed out of range, (BD(t))ime warnings, (BD(v))alue out of 
+range, (BD(x)) warning summaries. By default ALL warning messages are printed.Not compatible with any
 OPT(D) options.
 #include "explain_-V.txt"
 .TP
 OPT(b)
-output binary data for OPT(D)d|f|s|v option.  Append \fBs\fP for single and \fBd\fB for double
+output binary data for OPT(D)d|f|s|v option.  Append BD(s) for single and BD(d) for double
 precision [Default is double].
+#include "explain_help.txt"
 
 .SH MGD77 FIELD INFO
-\fIField                   Abbreviation            Units\fP
+IT(Field                   Abbreviation            Units)
 .br
 Two-way Travel Time     twt                     sec
 .br
@@ -287,14 +284,14 @@ the OPT(G) option to compare cruise depth with grid values.
 
 .SH E77 ERROR FORMAT
 .TP
-\fBHeader\fP
+BD(Header)
 Information pertaining to an entire cruise, such as NGDC and survey institution identification codes,
 cruise examination time, two-way travel time corrector information, data precision warnings, as well as 
 systematic scales, DC shifts and correlation coefficients from global grid comparisons are reported as
 E77 header information.
 .br
 .sp
-\fBSample\fP
+BD(Sample)
 .br
 \('## Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066\"'
 .br
@@ -328,19 +325,19 @@ Y-W-08010039-mag-10: Integer precision
 .br
 .sp
 .TP
-\fBError Record\fP
+BD(Error Record)
 Individual error records have strict format. Included is a time or distance column followed by record number,
 a formatted error code string, and finally a verbose description of errors detected in the record. Three error
 classes are encoded into the error code string with different alphabetic characters representing unique error
 types. See below for error code format description.
 .br
 .sp
-\fBFormat\fP
+BD(Format)
 .br
 <time/distance> <record number> <error code string> <description>
 .br
 .sp
-\fBSample\fP
+BD(Sample)
 .br
 \('## Errata: Data\"'
 .br
@@ -348,7 +345,7 @@ Y	08010039	1975-05-10T22:16:05.88	74	C-0-0	 NAV: excessive speed
 .br
 .sp
 .TP
-\fBError Code Description\fP
+BD(Error Code Description)
 Each of the three error classes is separated by a dash '-' and described by a
 combination of alphabetic characters or 0 signifying no detected problems.
 .br
@@ -356,7 +353,7 @@ combination of alphabetic characters or 0 signifying no detected problems.
 Error classes: NAV-VAL-GRAD
 .br
 .sp
-\fBError Class Descriptions\fP
+BD(Error Class Descriptions)
 .br
 NAV (navigation):
 .br
@@ -437,19 +434,19 @@ described by alphabetic characters for each of the 24 numeric fields in MGD77 fo
 To scan for excessive values or gradients, try
 .br
 .sp
-\fBmgd77sniffer\fP 08010001
+BD(mgd77sniffer) 08010001
 .br
 .sp
 To dump cruise gradients, try
 .br
 .sp
-\fBmgd77sniffer\fP 08010001 -Ds
+BD(mgd77sniffer) 08010001 -Ds
 .br
 .sp
 To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try
 .br
 .sp
-\fBmgd77sniffer\fP 08010001 OPT(G)depth,/data/GRIDS/etopo5_hdr.i2 OPT(g)faa,/data/GRIDS/grav.11.2.img,0.1,1
+BD(mgd77sniffer) 08010001 OPT(G)depth,/data/GRIDS/etopo5_hdr.i2 OPT(g)faa,/data/GRIDS/grav.11.2.img,0.1,1
 .br
 .sp
 .SH "SEE ALSO"
@@ -457,6 +454,5 @@ To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2
 .IR mgd77track (1)
 .IR x2sys_init (1)
 #include "refs.i"
-The Marine Geophysical Data Exchange Format - "MGD77", see
-\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
-.br
+The Marine Geophysical Data Exchange Format - MGD77, see
+IT(http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt)

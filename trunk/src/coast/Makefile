@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.79 2011-02-27 08:51:13 guru Exp $
+#	$Id: Makefile,v 1.80 2011-03-15 02:06:37 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -30,9 +30,10 @@ include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-PREV_VERSION	= 2.1.0
-# These are the values to use for the next GMT version 4.5.6
-GSHHS_DATA_VERSION	= 2.1.1
+PREV_VERSION	= 1.10
+# These are the values to use for the next GMT version 4.5.1
+VERSION			= 4.4
+GSHHS_DATA_VERSION	= 2.0.1
 GSHHS_PROG_VERSION	= 1.12
 
 # Douglas-Peucker parameters:
@@ -51,6 +52,7 @@ include coast.dep
 
 PROGS_H	= shore.h wvs.h
 
+SUBS_O	= poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
 PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o polygon_close.o  \
 	  lines_to_bins.o man_fix.o man_fix2.o polygon_bincount.o gshhs_to_polygon.o polygon_to_shape.o \
 	  polygon_checkarea.o polygon_consistency.o polygon_deldups.o polygon_compare.o \
@@ -92,22 +94,22 @@ info:		info_f info_h info_i info_l info_c
 
 set_new:
 		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
-
+		
 set_old:
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_coast.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_high.tar.bz2
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_full.tar.bz2
-
+		
 delete:		
-		\rm res_?/binned_*_?.{bin,seg,pt,pol,ndid}
+		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
 
-build-gshhs:	update
+build-gshhs:
 		mkdir -p gshhs
-		polygon_to_gshhs res_f/GSHHS_f_polygons.b > gshhs/gshhs_f.b
-		polygon_to_gshhs res_h/GSHHS_h_polygons.b > gshhs/gshhs_h.b
-		polygon_to_gshhs res_i/GSHHS_i_polygons.b > gshhs/gshhs_i.b
-		polygon_to_gshhs res_l/GSHHS_l_polygons.b > gshhs/gshhs_l.b
-		polygon_to_gshhs res_c/GSHHS_c_polygons.b > gshhs/gshhs_c.b
+		polygon_to_gshhs res_f/v${VERSION}_final_f_dbase.b > gshhs/gshhs_f.b
+		polygon_to_gshhs res_h/v${VERSION}_final_h_dbase.b > gshhs/gshhs_h.b
+		polygon_to_gshhs res_i/v${VERSION}_final_i_dbase.b > gshhs/gshhs_i.b
+		polygon_to_gshhs res_l/v${VERSION}_final_l_dbase.b > gshhs/gshhs_l.b
+		polygon_to_gshhs res_c/v${VERSION}_final_c_dbase.b > gshhs/gshhs_c.b
 		polygon_to_gshhs -l wdb/wdb_f_borders.b > gshhs/wdb_borders_f.b
 		polygon_to_gshhs -l wdb/wdb_h_borders.b > gshhs/wdb_borders_h.b
 		polygon_to_gshhs -l wdb/wdb_i_borders.b > gshhs/wdb_borders_i.b
@@ -119,58 +121,30 @@ build-gshhs:	update
 		polygon_to_gshhs -l wdb/wdb_l_rivers.b > gshhs/wdb_rivers_l.b
 		polygon_to_gshhs -l wdb/wdb_c_rivers.b > gshhs/wdb_rivers_c.b
 
-shape-gshhs:	update
+shape-gshhs:
 		mkdir -p GSHHS_shp GSHHS_shp/f GSHHS_shp/h GSHHS_shp/i GSHHS_shp/l GSHHS_shp/c
-		polygon_to_shape res_f/GSHHS_f_polygons.b GSHHS_f
-		polygon_to_shape res_h/GSHHS_h_polygons.b GSHHS_h
-		polygon_to_shape res_i/GSHHS_i_polygons.b GSHHS_i
-		polygon_to_shape res_l/GSHHS_l_polygons.b GSHHS_l
-		polygon_to_shape res_c/GSHHS_c_polygons.b GSHHS_c
-		rm -rf GSHHS_?_L?.gmt
-		mv GSHHS_f_L[1-4].* GSHHS_shp/f
-		mv GSHHS_h_L[1-4].* GSHHS_shp/h
-		mv GSHHS_i_L[1-4].* GSHHS_shp/i
-		mv GSHHS_l_L[1-4].* GSHHS_shp/l
-		mv GSHHS_c_L[1-4].* GSHHS_shp/c
+		polygon_to_shape res_f/v${VERSION}_final_f_dbase.b GSHHS_f
+		polygon_to_shape res_h/v${VERSION}_final_h_dbase.b GSHHS_h
+		polygon_to_shape res_i/v${VERSION}_final_i_dbase.b GSHHS_i
+		polygon_to_shape res_l/v${VERSION}_final_l_dbase.b GSHHS_l
+		polygon_to_shape res_c/v${VERSION}_final_c_dbase.b GSHHS_c
+		mv GSHHS_f_L[1-4]/* GSHHS_shp/f
+		mv GSHHS_h_L[1-4]/* GSHHS_shp/h
+		mv GSHHS_i_L[1-4]/* GSHHS_shp/i
+		mv GSHHS_l_L[1-4]/* GSHHS_shp/l
+		mv GSHHS_c_L[1-4]/* GSHHS_shp/c
 		cp GSHHS+WDBII/README.TXT GSHHS_shp
-		cp GSHHS+WDBII/ChangeLog GSHHS_shp
 		zip -r -q -v -9 GSHHS_shp_$(GSHHS_DATA_VERSION).zip GSHHS_shp/*
-
-shape-wdbii:
-		mkdir -p WDBII_shp WDBII_shp/f WDBII_shp/h WDBII_shp/i WDBII_shp/l WDBII_shp/c
-		polygon_to_shape wdb/wdb_f_borders.b WDBII_border_f -o
-		polygon_to_shape wdb/wdb_h_borders.b WDBII_border_h -o
-		polygon_to_shape wdb/wdb_i_borders.b WDBII_border_i -o
-		polygon_to_shape wdb/wdb_l_borders.b WDBII_border_l -o
-		polygon_to_shape wdb/wdb_c_borders.b WDBII_border_c -o
-		rm -rf WDBII_border_?_L?.gmt
-		mv WDBII_border_f_L[1-3].* WDBII_shp/f
-		mv WDBII_border_h_L[1-3].* WDBII_shp/h
-		mv WDBII_border_i_L[1-3].* WDBII_shp/i
-		mv WDBII_border_l_L[1-3].* WDBII_shp/l
-		mv WDBII_border_c_L[1-3].* WDBII_shp/c
-		polygon_to_shape wdb/wdb_f_rivers.b WDBII_river_f -i
-		polygon_to_shape wdb/wdb_h_rivers.b WDBII_river_h -i
-		polygon_to_shape wdb/wdb_i_rivers.b WDBII_river_i -i
-		polygon_to_shape wdb/wdb_l_rivers.b WDBII_river_l -i
-		polygon_to_shape wdb/wdb_c_rivers.b WDBII_river_c -i
-		rm -rf WDBII_river_[fhilc]_L[1-4].gmt
-		mv WDBII_river_f_L[1-3].* WDBII_shp/f
-		mv WDBII_river_h_L[1-3].* WDBII_shp/h
-		mv WDBII_river_i_L[1-3].* WDBII_shp/i
-		mv WDBII_river_l_L[1-3].* WDBII_shp/l
-		mv WDBII_river_c_L[1-3].* WDBII_shp/c
-		cp GSHHS+WDBII/README.TXT WDBII_shp
-		zip -r -q -v -9 WDBII_shp_$(GSHHS_DATA_VERSION).zip WDBII_shp/*
+		rm -rf GSHHS_[fhilc]_L[1-4] GSHHS_[fhilc]_L[1-4].gmt
 
 # Make archive targets:
 
 tar-gshhs:
 		cp GSHHS+WDBII/README.TXT gshhs
-		COPYFILE_DISABLE=true  tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b gshhs/README.TXT
+		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b gshhs/README.TXT
 		rm -f gshhs/README.TXT
 		cd $(rootdir)/src; \
-		COPYFILE_DISABLE=true  tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
 		cp GSHHS+WDBII/README.TXT gshhs
@@ -193,7 +167,7 @@ coast.o:	$(PROGS_H)
 
 lib:		$(LIB)
 
-$(LIB):		poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
+$(LIB):		$(SUBS_O)
 		$(AR) cvr $@ $?
 		$(RANLIB) $@
 

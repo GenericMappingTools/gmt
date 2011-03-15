@@ -3,76 +3,78 @@
 .SH NAME
 img2google \- Create Google Earth KML overlay tiles from bathymetry Mercator img grid 
 .SH SYNOPSIS
-\fBimg2google\fP GMT_Rgeo_OPT [ \fIimgfile\fP ] [ OPT(A)\fImode\fP[\fIaltitude\fP ] ] [ OPT(C) ] 
-[ OPT(F)\fIfademin/fademax\fP ] [ OPT(G)\fIprefix\fP ] [ OPT(L)\fILODmin/LODmax\fP ] [ OPT(N)\fIlayername\fP ] 
-[ OPT(T)\fIdoctitle\fP ] [ OPT(U)\fIURL\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
+BD(img2google) GMT_Rgeo_OPT [ IT(imgfile) ] [ OPT(A)IT(mode)[IT(altitude)] ] [ OPT(C) ] 
+[ OPT(F)IT(fademin/fademax) ] [ OPT(G)IT(prefix) ] [ OPT(L)IT(LODmin/LODmax) ] [ OPT(N)IT(layername) ] 
+[ OPT(T)IT(doctitle) ] [ OPT(U)IT(URL) ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
-\fBimg2google\fP reads a 1x1 minute Mercator surface relief img file and creates a
+BD(img2google) reads a 1x1 minute Mercator surface relief img file and creates a
 Google Earth overlay KML file and associated PNG tile for the specified region.  If no input file is given we
 use topo.11.1.img.
+.SH REQUIRED ARGUMENTS
 #include "explain_-Rgeo.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
-\fIimgfile\fP
+IT(imgfile)
 An img format bathymetry/topography file such as those created by Sandwell and Smith.  If this
 files does not exist in the current directory and the user has set the environment variable 
-\fB$GMT_DATADIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_DATADIR\fP.
+BD($GMT_DATADIR), then BD(img2mercgrd) will try to find IT(imgfile) in BD($GMT_DATADIR).
 .TP
-OPT(A)
+OPT(A)IT(mode)[IT(altitude)]
 Selects one of 5 altitude modes recognized by Google Earth that determines the altitude (in m) of the
-image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
-altitude, \fBs\fP append altitude relative to seafloor, and \fBS\fP clamp it to the seafloor [Default].
+image: BD(G) clamped to the ground, BD(g) append altitude relative to ground, BD(a) append absolute
+altitude, BD(s) append altitude relative to seafloor, and BD(S) clamp it to the seafloor [Default].
 .TP
 OPT(C)
 Turn on clipping so that only portions below sea level will be visible in the image [no clipping].
 .TP
-OPT(F)
+OPT(F)IT(fademin/fademax)
 Sets the distance over which the geometry fades, from fully opaque to fully transparent. These ramp values,
 expressed in screen pixels, are applied at the minimum and maximum end of the LOD (visibility) limits, respectively.
 [no fading (0/0)].
 .TP
-OPT(G)
+OPT(G)IT(prefix)
 Specify the prefix for the output image file (the extensions are set automatically). Default uses
-the naming topoN|S\fI<north>\fPE|W<\fIwest\fP>.
+the naming topoN|SIT(<north>)E|W<IT(west)>.
 .TP
-OPT(L)
+OPT(L)IT(LODmin/LODmax)
 Measurement in screen pixels that represents the minimum limit of the visibility range for a given Region
 Google Earth calculates the size of the Region when projected onto screen space. Then it computes the square
 root of the Region's area (if, for example, the Region is square and the viewpoint is directly above the Region,
 and the Region is not tilted, this measurement is equal to the width of the projected Region). If this
-measurement falls within the limits defined by \fILODmin\fP and \fILODmax\fP (and if the region is in view),
+measurement falls within the limits defined by IT(LODmin) and IT(LODmax) (and if the region is in view),
 the Region is active. If this limit is not reached, the associated geometry is considered to be too far from
-the user's viewpoint to be drawn. \fILODmax\fP represents the maximum limit of the visibility range for a given
+the user's viewpoint to be drawn. IT(LODmax) represents the maximum limit of the visibility range for a given
 Region. A value of −1, the default, indicates "active to infinite size." [always active].
 .TP
-OPT(N)
-Append the layername of the image (use quotes if strings contain spaces) [topoN|S\fI<north>\fPE|W<\fIwest\fP>].
+OPT(N)IT(layername)
+Append the layername of the image (use quotes if strings contain spaces) [topoN|SIT(<north>)E|W<IT(west)>].
 .TP
-OPT(T)
+OPT(T)IT(doctitle)
 Append the document title (use quotes if strings contain spaces) ["Predicted bathymetry"].
 .TP
-OPT(U)
+OPT(U)IT(URL)
 By default, images are referenced locally relative to the KML file.  Specify an URL to prepend a server address
 to the image name reference [local].
 #include "explain_-V.txt"
 .TP
 OPT(Z)
-Uses zip (which must be installed) to create a *.kmz file for easy distribution; append \fB+\fP
+Uses zip (which must be installed) to create a *.kmz file for easy distribution; append BD(+)
 to delete the KML and PNG file after zipping [No zipping].
+#include "explain_help.txt"
 .SH EXAMPLES
 To create a 10x10 degree Google Earth KML tile for the region OPT(R)170/180/20/30 using the default
-\fItopo.11.1.img\fP and output naming convention, try
+IT(topo.11.1.img) and output naming convention, try
 .br
 .sp
-\fBimg2google\fP OPT(R)170/180/20/30
+BD(img2google) OPT(R)170/180/20/30
 .br
 .sp
 To make the same tile with the previous
-\fItopo.10.1.img\fP, run in verbose mode, clip so only oceanic areas are visible, name the output oldimage, 
+IT(topo.10.1.img), run in verbose mode, clip so only oceanic areas are visible, name the output oldimage, 
 specify the KML metadata directly (including setting the image altitude to 10 km), and make a single *.kmz file, try
 .br
 .sp
-\fBimg2google\fP \fItopo.10.1.img\fP OPT(R)170/180/20/30 OPT(A)\fBA\fP10000 OPT(C) OPT(G)\fIoldimage\fP
+BD(img2google) IT(topo.10.1.img) OPT(R)170/180/20/30 OPT(A)BD(A)10000 OPT(C) OPT(G)IT(oldimage)
 OPT(N)"My KML title" OPT(T)"My KML title" OPT(U)http://my.server.com/images OPT(V) OPT(Z)
 .br
 .sp

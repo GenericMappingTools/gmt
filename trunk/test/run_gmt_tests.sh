@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.14 2010-02-16 15:30:43 remko Exp $
+#!/bin/bash
+#	$Id: run_gmt_tests.sh,v 1.15 2011-03-15 02:06:38 guru Exp $
 #
 #	test script for GMT/test directory
 #
@@ -12,9 +12,9 @@ echo "--------------------------------------------------------------------------
 echo "Script:                      Purpose                                    STATUS"
 
 # Get all directories below GMT/test and filter out the CVS directories
-
+# PW: For now exclude supplements since they are not ported yet
 if [ $# -eq 0 ] ; then
-   dirs=`find . -mindepth 1 -maxdepth 1 -type d -print | grep -v CVS`
+   dirs=`find . -mindepth 1 -maxdepth 1 -type d -print | egrep -v 'CVS|meca|mgd77'`
 else
    dirs=$*
 fi
@@ -33,8 +33,7 @@ for dir in $dirs; do
 	# Look for Bourne shell scripts
 	list=`ls *.sh 2> /dev/null`
 	for script in $list; do
-		sh $script
-		rm -f .gmtdefaults4 .gmtcommands4
+		bash $script
 	done
 done
 cd $here

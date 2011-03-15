@@ -3,7 +3,7 @@
 # NB Octal codes used for accented characters require
 # ISOLatin1+ CHAR_ENCODING (see gmtdefaults)
 #
-#	$Id: sg.d,v 1.2 2010-11-02 02:10:26 guru Exp $
+#	$Id: sg.d,v 1.3 2011-03-15 02:06:35 guru Exp $
 #----------------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
 M	1	Faoilleach	Fao	F

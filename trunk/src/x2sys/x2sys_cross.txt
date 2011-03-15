@@ -1,54 +1,49 @@
 #include "common_options.txt"
 .TH X2SYS_CROSS 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-\fBx2sys_cross\fP \- Find and compute crossover errors
+BD(x2sys_cross) \- Find and compute crossover errors
 .SH SYNOPSIS
-\fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
-[ OPT(Il)|\fBa\fP|\fBc\fP ] 
-[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP ] [ OPT(L) ] 
-[ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
-[ GMT_V_OPT ] [ OPT(W)\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
+BD(x2sys_cross) IT(track(s)) OPT(T)IT(TAG) 
+[ OPT(A)IT(combi.lis) ] [ OPT(Il)|BD(a)|BD(c) ] 
+[ GMT_J_OPT ] 
+[ OPT(Qe)|BD(i) ] [ OPT(Sl)|BD(u)|BD(h)IT(speed) ] 
+[ GMT_V_OPT ] [ OPT(W)IT(size) ] [ OPT(Z) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
+BD(x2sys_cross) is used to determine all intersections between ("external cross-overs") or within
 ("internal cross-overs") tracks (Cartesian or geographic), and report the time, position, distance along track,
 heading and speed along each track segment, and the crossover error (COE) and mean values for all observables.
 The names of the tracks are passed on the command line.
-By default, \fBx2sys_cross\fP will look for both external and internal COEs.  As an option,
+By default, BD(x2sys_cross) will look for both external and internal COEs.  As an option,
 you may choose to project all data using one of the map-projections prior to calculating the COE.
+.SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(I)
-Sets the interpolation mode for estimating values at the crossover. Choose among:
-.br
-\fBl\fP Linear interpolation [Default].
-.br
-\fBa\fP Akima spline interpolation.
-.br
-\fBc\fP Cubic spline interpolation.
-.br
-#include "explain_-J_short.txt"
-.TP
-OPT(K)
-Only process the pair-combinations found in the file \fIcombi.lis\fP
+OPT(A)IT(combi.lis)
+Only process the pair-combinations found in the file IT(combi.lis)
 [Default process all possible combinations among the specified files].
 .TP
-OPT(L)
-Output results using the old XOVER format [Default is x2sys format].
-This option should only be used with *.gmt-formatted MGD77 files.  See
-the GMT mgg supplement for file description; see \fIWessel\fP [1989] for
-details on the XOVER format.
+OPT(Il)|BD(a)|BD(c)
+Sets the interpolation mode for estimating values at the crossover. Choose among:
+.br
+BD(l) Linear interpolation [Default].
+.br
+BD(a) Akima spline interpolation.
+.br
+BD(c) Cubic spline interpolation.
+.br
+#include "explain_-J.txt"
 .TP
-OPT(Q)
-Append \fBe\fP for external COEs only, and \fBi\fP for internal
+OPT(Qe)|BD(i)
+Append BD(e) for external COEs only, and BD(i) for internal
 COEs only [Default is all COEs].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give IT(xmin/xmax/ymin/ymax).  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
-OPT(S)
+OPT(Sl)|BD(u)|BD(h)IT(speed)
 Defines window of track speeds.  If speeds are outside this window we do not
 calculate a COE. Specify
 .br
@@ -61,22 +56,23 @@ will not be computed (i.e., set to NaN) [Default calculates headings regardless 
 .br
 #include "explain_-V.txt"
 .TP
-OPT(W)
+OPT(W)IT(size)
 Give the maximum number of data points on
 either side of the crossover to use in the spline interpolation [3].
 .TP
-OPT(2)
+OPT(Z)
 Report the values of each track at the crossover [Default reports the crossover value and the mean value].
 #include "explain_-bo.txt"
+#include "explain_help.txt"
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
 OPT(bo) is set).  When ASCII is chosen, the output format depends on
 whether or not old-style XOVER output (OPT(L)) has been selected [See
-the \fBx_over\fP man page for more details].
+the BD(x_over) man page for more details].
 If ASCII, then the first record contains the name of the tag used, the second
 records specifies the exact command line used for this run, and the third
 record contains the names of each column.  For each track pair, there will be
-a multisegment header record containing the two file names and their start/stop/dist
+a segment header record containing the two file names and their start/stop/dist
 information (start/stop is absolute time or NaN if unavailable while dist is the
 total track length),
 whereas subsequent records have the data for each COE encountered.  The fields
@@ -91,27 +87,27 @@ that tend to introduce wild oscillations in the interpolation.
 If track_a and track_b are passed on the command line, then the COE value is Value
 (track_a) - Value (track_b).
 .SH PRECISION AND FORMAT
-The output format of individual columns are controlled by \fBD_FORMAT\fP except for
-geographic coordinates (\fBOUTPUT_DEGREE_FORMAT\fP) and absolute calendar time
-(\fBOUTPUT_DATE_FORMAT\fP, \fBOUTPUT_CLOCK_FORMAT\fP).  Make sure these are set to
+The output format of individual columns are controlled by BD(FORMAT_FLOAT_OUT) except for
+geographic coordinates (BD(FORMAT_GEO_OUT)) and absolute calendar time
+(BD(FORMAT_DATE_OUT), BD(FORMAT_CLOCK_OUT)).  Make sure these are set to
 give you enough significant digits to achieve the desired precision.
 .SH EXAMPLES
 To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
-output in the old XOVER format, using the tag GMT, try
+using the tag GMT, try
 .br
 .sp
-\fBx2sys_cross\fP c2104.gmt OPT(L) OPT(T)GMT > c2104.d
+BD(x2sys_cross) c2104.gmt OPT(T)GMT > c2104.d
 .br
 .sp
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
+BD(x2sys_cross) A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
 .SH REFERENCES
 Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package. IT(Computers and Geosciences), BD(36), 348-354.
 .br
-Wessel, P. (1989), XOVER: A cross-over error detector for track data, \fIComputers and Geosciences, 15\fP(3), 333-346.
+Wessel, P. (1989), XOVER: A cross-over error detector for track data, IT(Computers and Geosciences), BD(15)(3), 333-346.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR x2sys_binlist (1),

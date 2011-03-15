@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.59 2011-03-06 03:28:42 guru Exp $
+#  $Id: Makefile,v 1.60 2011-03-15 02:06:46 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		3-MAR-2011
+#	Date:		20-SEPT-2009
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ include gmtsite.macros			# Site-specific settings determined by webmaster
 #-------------------------------------------------------------------------------
 
 help::
-	@grep '^#!' Makefile | cut -c3-
+	@grep '^#!' makefile | cut -c3-
 #!-------------------- MAKE HELP FOR WEBSITE --------------------
 #!
 #!make <target>, where <target> can be:
@@ -56,7 +56,7 @@ help::
 #!clean-test		: Empty the remote test directories
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
-
+		
 # Place stuff in the GMT website/www directory:
 
 www/gmt/examples/ex01/example_01_100dpi.png:	../share/doc/gmt/examples/ex01/example_01.ps
@@ -87,7 +87,6 @@ update-www-live:	update-www-local
 #	First completely remove the live www files then copy them from the www-local files
 		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
 		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
-		scp -r www/5 $(WEBSERVER):$(LIVEWWWDIR)
 		scp www/index.html $(WEBSERVER):$(LIVEWWWDIR)
 #	Update the Perl script in the CGI bin dir
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
@@ -96,7 +95,6 @@ update-www-test:	update-www-local
 #	First completely remove the test www files then copy then from the www-local files
 		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
-		scp -r www/5 $(WEBSERVER2):$(LIVEWWWDIR2)
 		scp www/index.html $(WEBSERVER2):$(LIVEWWWDIR2)
 #	For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
@@ -122,12 +120,11 @@ update-www-test:	update-www-local
 
 update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01_100dpi.png
 		mkdir -p www/gmt
-		cp -f ../guru/install_gmt.sh www/gmt
 		cp -f gmt.html www/index.html
 		cp -f gmt_*.php gmt_*.html www/gmt
 		rm -f www/gmt/gmt_releases_template.html
 		cp -f newgmtguru www/gmt
-		cp -f *.gif *.ico linux.jpg osx.jpg unix.jpg vista.jpg www/gmt
+		cp -f *.gif linux.jpg osx.jpg unix.jpg vista.jpg www/gmt
 		cp -f gmt_*.png ../registration/gmt_usage.jpg www/gmt
 		cp -f soest_*.png www/gmt
 		cp -f ../src/README.TRIANGLE www/gmt
@@ -135,7 +132,7 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		cp -R -f ../share/doc www/gmt
 		rm -rf www/gmt/doc/gmt/examples
 		rm -rf www/gmt/doc/gmt/tutorial
-		for ex in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do \
+		for ex in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29; do \
 			cd www/gmt/examples/ex$$ex; \
 			if [ -f example_$$ex.ps ]; then \
 				zip -r example_$$ex.zip example_$$ex.ps;\
@@ -144,8 +141,6 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		done
 		cp -R -f contrib www/gmt
 		rm -f www/gmt/examples/ex??/example_*.ps
-		mkdir -p www/5
-		cp -f gmt5.html www/5/index.html
 		find www -name '.*' -exec rm -f {} \;
 		rm -f www/gmt/contrib/*.sh
 
@@ -161,21 +156,20 @@ update-ftp-live:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*GMT* $(LIVEFTPDIR)/install_gmt.sh $(LIVEFTPDIR)/VERSION'
+	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*GMT* $(LIVEFTPDIR)/install_gmt $(LIVEFTPDIR)/VERSION'
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
-	scp ../guru/install_gmt.sh $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
-	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in install32 install64 pdf_install; do \
-		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe)" >> gmt_server_job.sh; \
+	for p in basic gdal pdf; do \
+		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -203,21 +197,20 @@ update-ftp-test:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*GMT* $(LIVEFTPDIR2)/install_gmt.sh $(LIVEFTPDIR2)/VERSION'
+	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*GMT* $(LIVEFTPDIR2)/install_gmt $(LIVEFTPDIR2)/VERSION'
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
-	scp ../guru/install_gmt.sh $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
-	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in install32 install64 pdf_install; do \
-		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe)" >> gmt_server_job.sh; \
+	for p in basic gdal pdf; do \
+		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -225,7 +218,7 @@ update-ftp-test:
 	rm -f gmt_server_job.sh
 
 update-gshhs-test:
-#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
+	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
 	scp ../ftp/GSHHS*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GSHHS*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
@@ -247,19 +240,17 @@ update-ftp-local:
 	fi
 	rm -rf ftp
 	mkdir -p ftp/windows ftp/contrib
-	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt.sh > ftp/install_gmt.sh
+	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > ftp/install_gmt
 	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
 	cp -f ../ftp/GMT*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
-	cp -f ../ftp/netcdf-3.6.3_win.zip ftp/windows
-	cp -f ../ftp/Whale-watching_symbols_for_GMT.zip ftp/contrib
 	for p in doc share src suppl triangle; do \
 		\rm -f ftp/GMT_$$p.tar.bz2; \
 		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
-	for p in install32 install64 pdf_install; do \
-		rm -f windows/GMT_$$p.exe; \
-		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT_$${p}.exe); \
+	for p in basic gdal pdf; do \
+		rm -f windows/GMT_$$p_install.exe; \
+		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
 
 update-gshhs-local:
@@ -283,7 +274,7 @@ clean-local:
 clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
 	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
-
+	
 netcdf: ../ftp/netcdf.tar.bz2
 
 ../ftp/netcdf.tar.bz2:
@@ -313,5 +304,5 @@ www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/gmt/html/GMT_
 	mkdir -p www/gmt
 	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk '{print $$1}' | tr '/:' '  ' | awk '{printf "sXCHAPTER1LINKXdoc/gmt/html/GMT_Docs/%sXg\n", $$NF}' > /tmp/tmp.sed)
 	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
-
-
+	
+	
