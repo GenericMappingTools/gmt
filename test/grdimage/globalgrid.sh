@@ -2,7 +2,7 @@
 #
 # Check if we can wrap global grids over longitude
 #
-#	$Id: globalgrid.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
+#	$Id: globalgrid.sh,v 1.11 2011-03-15 04:25:05 remko Exp $
 
 . ../functions.sh
 header "Test grdimage for wrapping global grids"
@@ -22,7 +22,7 @@ R3=-R15/360/-90/90
 R4=-R-165/195/-90/90
 
 makecpt -Crainbow -T-1/1/0.1 > tmp.cpt
-makegrid -R0/360/-90/90 -F
+makegrid -R0/360/-90/90 -r
 $plot $R1 -Y6.5i -K > $ps
 $plot $R2 -Y-2i -O -K >> $ps
 $plot $R3 -Y-2i -O -K >> $ps

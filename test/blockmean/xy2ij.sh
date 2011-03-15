@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: xy2ij.sh,v 1.12 2011-03-15 02:06:38 guru Exp $
+#	$Id: xy2ij.sh,v 1.13 2011-03-15 04:25:05 remko Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -25,8 +25,8 @@ cat << EOF > pixel.d
 EOF
 # blockman uses GMT_x|y_to_i|j to determine which tiles
 # Using -C gives tile centers via (i,j) -> (x,y)
-blockmean -R0/5/0/5 -I1 -F -C pixel.d > pixel_ij.d
-blockmean -R0/5/0/5 -I1 -F pixel.d > pixel_xy.d
+blockmean -R0/5/0/5 -I1 -r -C pixel.d > pixel_ij.d
+blockmean -R0/5/0/5 -I1 -r pixel.d > pixel_xy.d
 
 # Do gridline registration with a similar data set (mostly offset by 0.5)
 cat << EOF > grid.d
