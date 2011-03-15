@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.13 2011-03-15 02:06:38 guru Exp $
+#	$Id: functions.sh,v 1.14 2011-03-15 03:23:16 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -41,8 +41,8 @@ LANG=C
 
 # Extend executable and library path to use the current version
 srcdir=`cd ../../src;pwd`
-export PATH=$srcdir:$PATH
-export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
+export PATH=$srcdir:$srcdir/meca:$srcdir/mgd77:$PATH
+export LD_LIBRARY_PATH=$srcdir:$srcdir/meca:$srcdir/mgd77:${LD_LIBRARY_PATH:-/usr/lib}
 
 # Make sure to cleanup at end
 trap "\rm -f .gmt* gmt.conf" EXIT
