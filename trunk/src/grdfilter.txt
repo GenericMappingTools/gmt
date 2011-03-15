@@ -37,7 +37,7 @@ IT(flag) = 3:  grid (x,y) in degrees, IT(width) in km, dx scaled by cosine(y), C
 .br
 IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calculation.
 .br
-IT(flag) = 5:  grid (x,y) in Mercator -Jm1 img units, IT(width) in km, Spherical distance calculation.
+IT(flag) = 5:  grid (x,y) in Mercator OPT(Jm)1 img units, IT(width) in km, Spherical distance calculation.
 .TP
 OPT(F)IT(<filtertype><width>)[IT(mode)]
 Sets the filter type.  Choose among convolution and non-convolution filters.  Use any
@@ -57,7 +57,7 @@ Non-convolution filters are:
 (BD(m)) Median: Returns median value.
 .br
 (BD(p)) Maximum likelihood probability (a mode estimator): Return modal value.
-If more than one mode is found we return their average value.  Append - or + to
+If more than one mode is found we return their average value.  Append BD(-) or BD(+) to
 the filter width if you rather want to return the smallest or largest of the modal
 values.
 .br
