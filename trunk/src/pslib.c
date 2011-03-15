@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.241 2011-03-15 02:24:40 guru Exp $
+ *	$Id: pslib.c,v 1.242 2011-03-15 03:11:09 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -2911,7 +2911,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		psl_bulkcopy (PSL, "PSL_text", "v 1.10.2.3 ");
+		psl_bulkcopy (PSL, "PSL_text", "v 1.11 ");
 		PSL->internal.text_init = TRUE;
 	}
 
