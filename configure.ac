@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.107 2011-03-15 02:06:28 guru Exp $
+dnl $Id: configure.ac,v 1.108 2011-03-17 17:26:36 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.107 $)
+AC_REVISION($Revision: 1.108 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -637,9 +637,6 @@ CFLAGS=$ac_save_CFLAGS
 if test "X$enable_debug" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
 	CFLAGS="-g $CFLAGS"
-	if test "$os" = "Darwin"; then
-		DSYMUTIL="dsymutil"
-	fi
 else
 	AC_MSG_RESULT(no)
 	if test "$GCC" = "yes" || test "$os" = "Linux" || test "$os" = "AIX"; then
@@ -796,6 +793,9 @@ AC_MSG_CHECKING(if shared libraries are requested)
 if test "$enable_shared" = "yes" ; then
 	AC_MSG_RESULT(yes)
 	rpath="$rpath"':$(libdir)'
+	if test "X$enable_debug" = "Xyes" && test "$os" = "Darwin"; then
+		DSYMUTIL="dsymutil"
+	fi
 else
 	AC_MSG_RESULT(no)
 	LIBEXT='a'
