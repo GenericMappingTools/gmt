@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.463 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_support.c,v 1.464 2011-03-18 06:12:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -470,8 +470,6 @@ const char * GMT_strerror (GMT_LONG err)
 			return "GRD98 grid file has wrong magic number";
 		case GMT_GRDIO_GRD98_BADLENGTH:
 			return "GRD98 grid file has wrong length";
-		case GMT_GRDIO_GRD98_COMPLEX:
-			return "GRD98 grid file cannot hold complex data";
 		case GMT_GRDIO_RI_OLDBAD:
 			return "Use grdedit -A on your grid file to make region and increments compatible";
 		case GMT_GRDIO_RI_NEWBAD:
