@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.3 2011-03-18 17:50:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -68,6 +68,7 @@ EXTERN_MSC void GMT_grd_do_scaling (float *grid, GMT_LONG nm, double scale, doub
 EXTERN_MSC GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double wesn[], double xinc, double yinc, GMT_LONG node_offset);
 EXTERN_MSC GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG registration);
 EXTERN_MSC void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G);
+EXTERN_MSC GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off);
 
 #ifdef _PSLIB_H
 /* gmt_plot.c prototyopes only included if pslib has been included */

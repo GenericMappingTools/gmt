@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.45 2011-03-18 06:12:30 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.46 2011-03-18 17:50:11 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -256,7 +256,7 @@ GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 	char *tChar = NULL;
 	float *tFloat = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;
-	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
+	GMT_LONG j, j2, width_in, height_in, i_0_out, inc, off;
 	GMT_LONG i, kk, ij, width_out, *k = NULL;
 	GMT_LONG piping = FALSE, swap_all = FALSE, is_float = FALSE;
 	long long_offset;	/* For fseek only */
@@ -277,17 +277,13 @@ GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 			
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	i_0_out = pad[XLO];		/* Edge offset in output */
-	
-	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
-		width_out *= 2;
-		i_0_out = 2 * i_0_out + (complex - 1);
-		inc = 2;
-	}
+	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	tLong  = GMT_memory (C, CNULL, header->nx, int);
 	tShort = (short *)tLong;	tChar  = (char *)tLong;	tFloat  = (float *)tLong;
@@ -355,7 +351,7 @@ GMT_LONG mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *g
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	GMT_LONG is_float = FALSE, check, *k = NULL;
-	GMT_LONG i2, kk, err, j, j2, width_out, height_out, inc = 1, off = 0;
+	GMT_LONG i2, kk, err, j, j2, width_out, height_out, inc, off;
 	GMT_LONG first_col, last_col, first_row, last_row, i, ij, width_in;
 	
 	int *tLong = NULL;
@@ -372,11 +368,11 @@ GMT_LONG mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *g
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 	
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
-	if (complex) { inc = 2; off = complex - 1; }
 	
 	GMT_memcpy (header->wesn, wesn, 4, double);
 	

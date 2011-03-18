@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.93 2011-03-18 06:12:30 guru Exp $
+ *	$Id: gmt_nc.c,v 1.94 2011-03-18 17:50:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -417,7 +417,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
 	int ncid, ndims;
 	GMT_LONG first_col, last_col, first_row, last_row, check, *k = NULL;
-	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc = 1, err;
+	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc, off, err;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp = NULL;
 	EXTERN_MSC GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex);
@@ -430,17 +430,14 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		return (NC_ENOTNC);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	i_0_out = pad[XLO];		/* Edge offset in output */
-	if (complex) {	/* Need twice as much space and load every 2nd cell */
-		width_out *= 2;
-		i_0_out = 2 * i_0_out + (complex - 1);
-		inc = 2;
-	}
+	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Open the NetCDF file */
 
@@ -502,7 +499,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG i, j, inc = 1, off = 0, nr_oor = 0, err, width_in, width_out, height_out;
+	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out;
 	GMT_LONG first_col, last_col, first_row, last_row, *k = NULL;
 	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;
@@ -534,13 +531,11 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
-
-	complex %= 64;	/* grd Header is always written */
-	if (complex) { inc = 2; off = complex - 1; }
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
 	header->nx = (int)width_out;

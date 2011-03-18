@@ -22,7 +22,7 @@ IT(in_grdfile)
 (See GRID FILE FORMATS below).
 .TP
 OPT(G)IT(out_grdfile)
-Specify the name of the output grid file.
+Specify the name of the output grid file or the 1-D spectrum file (see OPT(E)).
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
@@ -42,7 +42,7 @@ append BD(g) to indicate that your data are geoid heights in meters and output s
 OPT(E)[BD(x|y)][BD(w)]
 Estimate power spectrum in the radial direction.  Place BD(x) or BD(y) immediately after OPT(E) to
 compute the spectrum in the x or y direction instead.  No grid file is created; f (i.e., frequency or wave number),
-power[f], and 1 standard deviation in power[f] are written to stdout.
+power[f], and 1 standard deviation in power[f] are written to file set by OPT(G) [stdout].
 Append BD(w) to write wavelength instead of frequency.
 .TP
 OPT(F)[BD(x)|BD(y)]IT(params)

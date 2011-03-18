@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.29 2011-03-18 06:55:08 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.30 2011-03-18 17:50:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,7 +214,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	GMT_LONG width_out;			/* Width of row as return (may include padding) */
 	GMT_LONG height_in;			/* Number of columns in subregion */
-	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG i, j, j_gmt, i_0_out;		/* Misc. counters */
 	GMT_LONG *k = NULL;			/* Array with indices */
 	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
@@ -232,18 +232,14 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	i_0_out = pad[XLO];		/* Left (xmin) column offset in output */
-
-	if (complex) {	/* Need twice as much output space since we load into every 2nd cell */
-		width_out *= 2;
-		i_0_out = 2 * i_0_out + (complex - 1);
-		inc = 2;
-	}
+	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Because of the 40x40 blocks we read the entire file and only use what we need */
 
@@ -306,8 +302,8 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	GMT_LONG width_out;			/* Width of row as return (may include padding) */
 	GMT_LONG height_out;			/* Number of columns in subregion */
-	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	GMT_LONG off = 0;			/* Complex array offset: 0 for real, 1 for imaginary */
+	GMT_LONG inc;				/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG off;				/* Complex array offset: 0 for real, 1 for imaginary */
 	GMT_LONG i, j, i2, j2;			/* Misc. counters */
 	GMT_LONG *k = NULL;			/* Array with indices */
 	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y, ij;	/* Misc. counters */
@@ -327,11 +323,11 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
-	if (complex) { inc = 2; off = complex - 1; }
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
 

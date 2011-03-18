@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.140 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.141 2011-03-18 17:50:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1552,4 +1552,27 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G)
 		n++;
 	}
 	if (n == 0) G->header->z_min = G->header->z_max = C->session.d_NaN;
+}
+
+GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off)
+{	/* Sets complex-related parameters based on the input complex variable:
+	 * If complex & 64 then we do not want to write a header [output only; only some formats]
+	 * complex = 0 means real data
+	 * complex = 1 means get/put real component of complex array
+	 * complex = 2 means get/put imag component of complex array
+	 * TRUE is return if we wish to write the grid header (normally TRUE).
+	 */
+	
+	GMT_LONG do_header = TRUE;
+	if (complex & 64) {	/* Want no header, adjust complex */
+		complex %= 64;
+		do_header = FALSE;
+	}
+	if (complex) {
+		*inc = 2; *off = complex - 1;
+	}
+	else {
+		*inc = 1; *off = 0;
+	}
+	return (do_header);
 }

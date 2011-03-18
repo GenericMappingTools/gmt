@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.878 2011-03-18 06:12:30 guru Exp $
+	$Id: ChangeLog,v 1.879 2011-03-18 17:50:11 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -12,6 +12,8 @@
 	* gmt_nc.c:		---"---
 	* gmt_cdf.c:		---"---
 	* gmt_customio.c:		---"---
+	* gmt_grdio.c:		Added GMT_init_complex to centralize setting of stride (1 or 2)
+				and offset (0 = real, 1 = imag).
 
 2011-03-14	pwessel
 	* GMT5 branch merged to the trunk and pruned of GMT 4 files.  We now have a
