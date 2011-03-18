@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.28 2011-03-18 06:12:30 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.29 2011-03-18 06:55:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -266,7 +266,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
-				ij = inc * (((j_gmt - first_row) + pad[YHI]) * width_out + (col - first_col)) + i_0_out;
+				ij = (((j_gmt - first_row) + pad[YHI]) * width_out + inc * (col - first_col)) + i_0_out;
 				grid[ij] = (z[j][i] == 0.0) ? C->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
 				if (GMT_is_fnan (grid[ij])) continue;
 				header->z_min = MIN (header->z_min, (double)grid[ij]);

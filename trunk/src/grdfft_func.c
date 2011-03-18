@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdfft_func.c,v 1.3 2011-03-18 06:55:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1152,7 +1152,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
-	set_grid_radix_size (GMT, Ctrl, Grid, &workc);		/* This also allocates work array workc */
+	set_grid_radix_size (GMT, Ctrl, Grid, &workc);		/* This also sets the new pads and allocates work array workc */
 
 	/* Now read data into the real positions in the padded radix grid */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
@@ -1247,7 +1247,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_fourt (GMT, Grid->data, narray, 2, 1, 1, workc);
 
 		Ctrl->S.scale *= (2.0 / Grid->header->nm);
-		for (i = 0; i < Grid->header->nm; i+= 2) Grid->data[i] *= (float)Ctrl->S.scale;
+		for (i = 0; i < Grid->header->size; i+= 2) Grid->data[i] *= (float)Ctrl->S.scale;
 
 		/* The data are in the middle of the padded array:  */
 
