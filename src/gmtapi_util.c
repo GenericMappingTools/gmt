@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.33 2011-03-18 06:12:30 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.34 2011-03-18 06:21:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1113,8 +1113,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	 * If the grid->data array is NULL it will be allocated for you.
 	 */
 	
-	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, error;
-	GMT_LONG complex_grid, complex_mode, reset, size, done = 1;
+	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, error, complex_mode, reset, size, done = 1;
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
@@ -1128,7 +1127,6 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	if (S->status && !reset) return (GMT_Report_Error (API, GMT_READ_ONCE));	/* Already read this resources before, so fail unless overridden by mode */
 	S->alloc_mode = TRUE;
 	mode -= reset;			/* Remove GMT_IO_RESET bit, if set */
-	complex_grid = (mode & GMT_GRID_COMPLEX_REAL || mode & GMT_GRID_COMPLEX_IMAG);	/* TRUE if we wish to read one component of a complex grid */
 	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	
@@ -1159,7 +1157,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				if (size > G->header->size) return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
 			}
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading grid from file %s\n", (char *)(*S->ptr));
-			if (GMT_err_pass (API->GMT, GMT_read_grd (API->GMT, (char *)(*S->ptr), G->header, G->data, S->wesn, API->GMT->current.io.pad, (GMT_LONG)complex_grid), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
+			if (GMT_err_pass (API->GMT, GMT_read_grd (API->GMT, (char *)(*S->ptr), G->header, G->data, S->wesn, API->GMT->current.io.pad, complex_mode), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
 			G->alloc_mode = GMT_ALLOCATED;
 			break;
 			
@@ -1302,8 +1300,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 
 GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode, struct GMT_GRID *G)
 {	/* Writes out a single grid to destination */
-	GMT_LONG item, row, col, ij, ijp, ij_orig, error, complex_grid;
-	GMT_LONG i0, i1, j0, j1, complex_mode, done = 1;
+	GMT_LONG item, row, col, ij, ijp, ij_orig, error, i0, i1, j0, j1, complex_mode, done = 1;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -1316,7 +1313,6 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	S = API->object[item];	/* The current object whose data we will export */
 	if (S->status && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
 	mode &= (GMT_IO_RESET - 1);	/* Remove GMT_IO_RESET bit, if set */
-	complex_grid = (mode & GMT_GRID_COMPLEX_REAL || mode & GMT_GRID_COMPLEX_IMAG);	/* TRUE if we wish to write one component of a complex grid */
 	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	switch (S->method) {
@@ -1328,7 +1324,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			}
 			else {
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "Writing grid to file %s\n", (char *)(*S->ptr));
-				if (GMT_err_pass (API->GMT, GMT_write_grd (API->GMT, (char *)(*S->ptr), G->header, G->data, S->wesn, API->GMT->current.io.pad, (GMT_LONG)complex_grid), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
+				if (GMT_err_pass (API->GMT, GMT_write_grd (API->GMT, (char *)(*S->ptr), G->header, G->data, S->wesn, API->GMT->current.io.pad, complex_mode), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
 			}
 			break;
 			
