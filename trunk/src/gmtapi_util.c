@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.32 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.33 2011-03-18 06:12:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1317,7 +1317,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	if (S->status && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
 	mode &= (GMT_IO_RESET - 1);	/* Remove GMT_IO_RESET bit, if set */
 	complex_grid = (mode & GMT_GRID_COMPLEX_REAL || mode & GMT_GRID_COMPLEX_IMAG);	/* TRUE if we wish to write one component of a complex grid */
-	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if read complex, and 2 if imag complex */
+	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	switch (S->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */

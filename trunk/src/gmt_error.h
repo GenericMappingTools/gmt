@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.15 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_error.h,v 1.16 2011-03-18 06:12:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,6 @@
 #define GMT_GRDIO_GRD98_YINC		-159
 #define GMT_GRDIO_GRD98_BADMAGIC	-160
 #define GMT_GRDIO_GRD98_BADLENGTH	-161
-#define GMT_GRDIO_GRD98_COMPLEX		-162
 #define GMT_GRDIO_ESRI_NONSQUARE	-164
 #define GMT_GRDIO_RI_OLDBAD		-165
 #define GMT_GRDIO_RI_NEWBAD		-166

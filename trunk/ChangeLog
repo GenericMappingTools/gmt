@@ -1,10 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.877 2011-03-17 17:26:36 guru Exp $
+	$Id: ChangeLog,v 1.878 2011-03-18 06:12:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2011-03-17	pwessel
 	* configure.ac:		Only set DSYMUTIL when using shared libraries.
+	* gmt_mgg_header2.c:	Now supports correct padding and complex setting
+	* gmt_agc_io.c:		Handle new complex choice of 0,1,2
+	* gmt_esri_io.c:	---"---
+	* gmt_agc_io.c:		---"---
+	* gmt_nc.c:		---"---
+	* gmt_cdf.c:		---"---
+	* gmt_customio.c:		---"---
 
 2011-03-14	pwessel
 	* GMT5 branch merged to the trunk and pruned of GMT 4 files.  We now have a

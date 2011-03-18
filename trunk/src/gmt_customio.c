@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.94 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_customio.c,v 1.95 2011-03-18 06:12:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -196,9 +196,9 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col, first_row, last_row, inc = 1;
 	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, n2;
@@ -235,7 +235,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	i_0_out = pad[XLO];		/* Edge offset in output */
 	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
 		width_out *= 2;
-		i_0_out *= 2;
+		i_0_out = 2 * i_0_out + (complex - 1);	/* Offset for real or imaginary */
 		inc = 2;
 	}
 
@@ -282,9 +282,12 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to write  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to remove on w, e, s, n of grid, respectively */
-	/* complex:	Must be FALSE for rasterfiles.    If 64 is added we write no header */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
+	/* 		If 64 is added we write no header */
 
-	GMT_LONG i, i2, inc = 1, kk, ij, check, *k = NULL;
+	GMT_LONG i, i2, inc = 1, off = 0, kk, ij, check, *k = NULL;
 	GMT_LONG j, j2, width_in, width_out, height_out, n2;
 	GMT_LONG first_col, last_col, first_row, last_row, do_header = TRUE;
 
@@ -322,7 +325,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		complex %= 64;
 		do_header = FALSE;
 	}
-	if (complex) inc = 2;
+	if (complex) { inc = 2; off = complex - 1; }
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -342,7 +345,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
 		ij = j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) {
-			kk = inc * (ij + k[i]);
+			kk = inc * (ij + k[i]) + off;
 			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
@@ -535,9 +538,9 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col, first_row, last_row, word, bit, err;
 	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, inc = 1, mx;
@@ -559,7 +562,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	check = !GMT_is_dnan (header->nan_value);
-	mx = (GMT_LONG) ceil (header->nx / 32.0);
+	mx = (GMT_LONG) ceil (header->nx / 32.0);	/* Whole multiple of 32-bit integers */
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
@@ -570,7 +573,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	i_0_out = pad[XLO];		/* Edge offset in output */
 	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
 		width_out *= 2;
-		i_0_out *= 2;
+		i_0_out = 2 * i_0_out + (complex - 1);
 		inc = 2;
 	}
 	tmp = GMT_memory (C, NULL, mx, unsigned int);
@@ -619,11 +622,11 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc.   If 64 is added we write no header*/
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		If 64 is added we write no header*/
 
-	GMT_LONG j, j2, width_in, width_out, height_out, mx, word, bit, err, inc = 1;
+	GMT_LONG j, j2, width_in, width_out, height_out, mx, word, bit, err, inc = 1, off = 0;
 	GMT_LONG i, i2, first_col, last_col, first_row, last_row, *k = NULL;
 	GMT_LONG kk, ij, check = FALSE, do_header = TRUE;
 	unsigned int *tmp = NULL, ival;
@@ -647,7 +650,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		complex %= 64;
 		do_header = FALSE;
 	}
-	if (complex) inc = 2;
+	if (complex) { inc = 2; off = complex - 1; }
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -660,7 +663,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = inc * (j2 * width_in + i2);
+			ij = inc * (j2 * width_in + i2) + off;
 			if (GMT_is_fnan (grid[ij])) {
 				if (check) grid[ij] = (float)header->nan_value;
 			}
@@ -685,7 +688,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		GMT_memset (tmp, mx, unsigned int);
 		ij = j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) {
-			kk = inc * (ij + k[i]);
+			kk = inc * (ij + k[i]) + off;
 			word = i / 32;
 			bit = i % 32;
 			ival = (unsigned int) irint ((double)grid[kk]);
@@ -818,9 +821,9 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
@@ -865,7 +868,7 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 
 	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
 		width_out *= 2;
-		i_0_out *= 2;
+		i_0_out = 2 * i_0_out + (complex - 1);
 		inc = 2;
 	}
 
@@ -917,15 +920,17 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc.  If 64 is added we write no header */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
+	/*		If 64 is added we write no header */
 
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	GMT_LONG width_out;		/* Width of row as return (may include padding) */
 	GMT_LONG height_out;		/* Number of columns in subregion */
 	GMT_LONG inc = 1;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG off = 0;		/* Offset in complex array: 0 for real part, 1 for imaginary */
 	GMT_LONG i, j, i2, j2, err;	/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
@@ -959,7 +964,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 		complex %= 64;
 		do_header = FALSE;
 	}
-	if (complex) inc = 2;
+	if (complex) { inc = 2; off = complex - 1; }
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
@@ -968,7 +973,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2) * inc;
+			ij = (j2 * width_in + i2) * inc + off;
 			if (GMT_is_fnan (grid[ij])) {
 				if (check) grid[ij] = (float)header->nan_value;
 			}
@@ -997,7 +1002,7 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])], type);
+		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])+off], type);
 		if (GMT_fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1147,13 +1152,51 @@ GMT_LONG GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (header->type);
 }
 
+GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
+{
+	/* Reads the header of a Surfer 6 gridfile */
+	/* if (GMT_fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
+
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
+	if (GMT_fread ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)h->wesn, sizeof (struct srf_header6) - ((long)h->wesn - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
+{
+	/* Reads the header of a Surfer 7 gridfile */
+
+	if (GMT_fseek (fp, 3*sizeof(int), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
+	/* if (GMT_fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
+
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
+	if (GMT_fread ((void *)h->id2, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->len_g, 3*sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)&h->x_min, 8*sizeof (double), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)h->id3, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->len_d, sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
+{
+	/* if (GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_WRITE_FAILED); */
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must write it in parts */
+	if (GMT_fwrite ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite ((void *)h->wesn, sizeof (struct srf_header6) - ((long)h->wesn - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	return (GMT_NOERROR);
+}
+
 GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	FILE *fp = NULL;
 	struct srf_header6 h6;
 	struct srf_header7 h7;
-	GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
-	GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
 	char id[5];
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
@@ -1209,7 +1252,6 @@ GMT_LONG GMT_srf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	FILE *fp = NULL;
 	struct srf_header6 h;
-	GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
 
 	if (!strcmp (header->name, "="))	/* Write to pipe */
 	{
@@ -1238,54 +1280,14 @@ GMT_LONG GMT_srf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
-{
-	/* Reads the header of a Surfer 6 gridfile */
-	/* if (GMT_fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
-
-	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
-	if (GMT_fread ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread ((void *)h->wesn, sizeof (struct srf_header6) - ((long)h->wesn - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-
-	return (GMT_NOERROR);
-}
-
-GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
-{
-	/* Reads the header of a Surfer 7 gridfile */
-
-	if (GMT_fseek (fp, 3*sizeof(int), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
-	/* if (GMT_fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
-
-	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread ((void *)h->id2, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
-	if (GMT_fread ((void *)&h->len_g, 3*sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread ((void *)&h->x_min, 8*sizeof (double), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread ((void *)h->id3, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
-	if (GMT_fread ((void *)&h->len_d, sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-
-	return (GMT_NOERROR);
-}
-
-GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
-{
-	/* if (GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_WRITE_FAILED); */
-	/* UPDATE: Because srf_header6 is not 64-bit aligned we must write it in parts */
-	if (GMT_fwrite ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED); 
-	if (GMT_fwrite ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite ((void *)h->wesn, sizeof (struct srf_header6) - ((long)h->wesn - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	return (GMT_NOERROR);
-}
-
 GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
 {	/* header:     	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
@@ -1334,7 +1336,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	if (complex) {	/* Need twice as much output space since we load every 2nd cell */
 		width_out *= 2;
-		i_0_out *= 2;
+		i_0_out = 2 * i_0_out + (complex - 1);
 		inc = 2;
 	}
 	if ( (last_row - first_row + 1) != header->ny) {    /* We have a sub-region */
@@ -1392,15 +1394,16 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesnn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
 	GMT_LONG width_out;		/* Width of row as return (may include padding) */
 	GMT_LONG height_out;		/* Number of columns in subregion */
 	GMT_LONG inc = 1;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG off = 0;		/* Offset in complex array: 0 for real part, 1 for imaginary */
 	GMT_LONG i, j, i2, j2;		/* Misc. counters */
 	GMT_LONG *k = NULL;		/* Array with indices */
 	GMT_LONG type;			/* Data type */
@@ -1431,7 +1434,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 	complex %= 64;
-	if (complex) inc = 2;
+	if (complex) { inc = 2; off = complex - 1; }
 
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
@@ -1440,7 +1443,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2);
+			ij = inc * (j2 * width_in + i2) + off;
 			if (GMT_is_fnan (grid[ij])) 
 				grid[ij] = (float)header->nan_value;
 			else {
@@ -1472,7 +1475,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = last_row + pad[YHI]; j < height_out; j++, j2--) {
 		ij = j2 * width_in + i2;
-		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])], type);
+		for (i = 0; i < width_out; i++) GMT_encode (C, tmp, i, grid[inc*(ij+k[i])+off], type);
 		if (GMT_fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1553,15 +1556,19 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
-	/*		Note: The file has only real values, we simply allow space in the array */
-	/*		for imaginary parts when processed by grdfft etc. */
+	/* complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 	GMT_LONG i, j, nBand, subset;
 	char strR[128]; 
 
+	if (complex) {
+		GMT_report (C, GMT_MSG_FATAL, "ERROR: gdalread does not handle complex yet.\n");
+		return (-1);
+	}
 	/* Allocate new control structures */
 	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
@@ -1642,6 +1649,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 }
 
 GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex) {
+	GMT_report (C, GMT_MSG_FATAL, "ERROR: Unable to write gdal files.\n");
 	return (GMT_NOERROR);
 }
 #endif
