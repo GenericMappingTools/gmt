@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.3 2011-03-18 06:55:08 guru Exp $
+ *	$Id: grdfft_func.c,v 1.4 2011-03-18 17:50:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -584,7 +584,7 @@ GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	return (FALSE);
 }
 
-GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, GMT_LONG give_wavelength, struct K_XY *K)
+GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, GMT_LONG give_wavelength, char *file, struct K_XY *K)
 {
 	/* This is modeled on the 1-D case, using the following ideas:
 	 *	In 1-D, we ensemble average over samples of length L = 
@@ -668,7 +668,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		S->coord[GMT_Y][k] = power[k];
 		S->coord[GMT_Y][k] = eps_pow * power[k];
 	}
-	if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, NULL, (void *)D))) return (error);
+	if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, (void **)&file, (void *)D))) return (error);
 	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
 	GMT_free (GMT, power);
 	return (2);	/* Number of parameters used */
@@ -946,12 +946,12 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	
 	GMT_message (GMT, "\tin_grdfile is the input netCDF grid file\n");
 	GMT_message (GMT, "\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G filename for output netCDF grid file\n");
+	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D spectrum (see -E)\n");
 	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m]\n");
-	GMT_message (GMT, "\t-E Estimate spEctrum of r [x] [y].  Write f, power[f], 1 std dev(power[f]) to stdout.\n");
-	GMT_message (GMT, "\t   Append w to write wavelength instead of frequency.\n");
+	GMT_message (GMT, "\t-E Estimate spEctrum of r [x] [y].  Write f, power[f], 1 std dev(power[f]) to output file\n");
+	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
 	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:.\n");
 	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
@@ -1111,7 +1111,6 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->N.n_user_set && (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0), "GMT SYNTAX ERROR -N option:  nx2 and/or ny2 <= 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "GMT SYNTAX ERROR -S option:  scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->G.file, "GMT SYNTAX ERROR -E option:  -G ignored (stdout used for ASCII output)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1233,21 +1232,21 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Butterworth filter...");
 				do_filter (Grid, &f_info, &K);
 				break;
-			case SPECTRUM:	/* This currently writes a table to stdout, hence -G is not used */
+			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "spectrum...");
-				par_count += do_spectrum (GMT, Grid, &Ctrl->par[par_count], Ctrl->E.give_wavelength, &K);
+				par_count += do_spectrum (GMT, Grid, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
 				break;
 		}
 	}
 
-	if (Ctrl->G.file) {	/* Since -E does not use it yet */
+	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
 
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "inverse FFT...");
 
 		GMT_fourt (GMT, Grid->data, narray, 2, 1, 1, workc);
 
 		Ctrl->S.scale *= (2.0 / Grid->header->nm);
-		for (i = 0; i < Grid->header->size; i+= 2) Grid->data[i] *= (float)Ctrl->S.scale;
+		for (i = 0; i < Grid->header->size; i++) Grid->data[i] *= (float)Ctrl->S.scale;
 
 		/* The data are in the middle of the padded array:  */
 
