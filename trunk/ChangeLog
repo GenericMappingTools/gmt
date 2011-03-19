@@ -1,9 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.880 2011-03-18 18:00:58 guru Exp $
+	$Id: ChangeLog,v 1.881 2011-03-19 04:21:00 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2011-03-18	pwessel
+	* pstext_func.c:	Added -E to use text for setting up clipping only.
+	* gmt_support.c:	Added +e to contlabel options to use text for setting up clipping only
+				and delay plotting the text until psclip -Ct.  Affects grdcontour,
+				pscontour, and psxy -Sq text placement.
+	* psclip_func.c:	Added -Ct to terminate text-based clip path and plot the text.
 	* grdfft_func.c:	Let -E optionally use -G to set output file name [Default is stdout].
 	* gmt_grdio.c:		Added GMT_init_complex to centralize setting of stride (1 or 2)
 				and offset (0 = real, 1 = imag).

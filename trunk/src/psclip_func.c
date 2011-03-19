@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: psclip_func.c,v 1.3 2011-03-19 04:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,6 +32,7 @@
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
 		GMT_LONG active;
+		GMT_LONG mode;	/* 1 if we are to plot text previously used to set a clip path */
 	} C;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -60,7 +61,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psclip synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psclip %s [API] - To set up polygonal clip paths\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psclip -C [-K] [-O]  OR\n");
+	GMT_message (GMT, "usage: psclip -C[t] [-K] [-O]  OR\n");
 	GMT_message (GMT, "\tpsclip <xy-files> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT);
@@ -69,6 +70,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-C Means stop existing clip-path.  -R, -J are not required\n");
+	GMT_message (GMT, "\t   Append t to plot text previously used to build a clip path.\n");
 	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -106,6 +108,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 
 			case 'C':	/* Turn clipping off */
 				Ctrl->C.active = TRUE;
+				if (opt->arg[0] == 't') Ctrl->C.mode = 1;
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
 				Ctrl->N.active = TRUE;
@@ -177,7 +180,19 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plotinit (API, PSL, options);
 
 	if (Ctrl->C.active && !GMT->current.map.frame.plot) {	/* Just undo previous clip-path, no basemap needed */
-		PSL_endclipping (PSL);
+		if (Ctrl->C.mode) {
+			PSL_comment (PSL, "Turn label clipping off:\n");
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2);	/* This turns clipping OFF if it was ON in the first place */
+#if 0
+				form = 8;
+				if (G->curved_text)
+					PSL_plottextpath (P, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, form);
+				else
+#endif
+				PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);
+		}
+		else
+			PSL_endclipping (PSL);
 		GMT_plotend (GMT, PSL);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
@@ -190,7 +205,13 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	if (Ctrl->C.active) {	/* Undo previous clip-path and draw basemap */
-		PSL_endclipping (PSL);
+		if (Ctrl->C.mode) {
+			PSL_comment (PSL, "Turn label clipping off:\n");
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2);	/* This turns clipping OFF if it was ON in the first place */
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);
+		}
+		else
+			PSL_endclipping (PSL);
 		GMT_map_basemap (GMT, PSL);
 	}
 

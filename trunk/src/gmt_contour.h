@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.52 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_contour.h,v 1.53 2011-03-19 04:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -111,6 +111,7 @@ struct GMT_CONTOUR {
 	GMT_LONG label_type;		/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	GMT_LONG data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
 	GMT_LONG debug;			/* TRUE of we want to draw helper lines/points */
+	GMT_LONG delay;			/* TRUE of we want to delay the actual annotation plotting until later */
 	GMT_LONG n_segments;		/* The number of segments */
 	GMT_LONG n_alloc;		/* How many allocated so far */
 	char file[BUFSIZ];		/* File with crossing lines, if specified */
