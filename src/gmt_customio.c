@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.96 2011-03-18 17:50:11 guru Exp $
+ *	$Id: gmt_customio.c,v 1.97 2011-03-19 18:58:47 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1537,13 +1537,14 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG i, j, nBand, subset;
 	char strR[128]; 
 
-	if (complex) {
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: gdalread does not handle complex yet.\n");
-		return (-1);
-	}
 	/* Allocate new control structures */
 	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
+
+	if (complex) {
+		to_gdalread->Z.active = 1;		/* Force reading into a compex array */
+		to_gdalread->Z.complex = (int)complex;
+	}
 
 	to_gdalread->C.active = 1;		/* Force info in grid node registration */
 	subset = GMT_is_subset (header, wesn);	/* We have a Sub-region demand */
