@@ -13,6 +13,11 @@ the unit or % to indicate a percentage of the label font size [15%].
 BD(+d)
 Turns on debug which will draw helper points and lines to illustrate the workings of the quoted line setup.
 .TP
+BD(+e)
+Delay the plotting of the text.  This is used to build a clip path based on the text, then lay down other
+overlays while that clip path is in effect, then turning of clipping with psclip OPT(Ct)  which finally
+plots the original text.
+.TP
 BD(+f)IT(font)
 Sets the desired font [Default BD(FONT_ANNOT_PRIMARY) with its size changed to 9p].
 (See SPECIFYING FONTS below).

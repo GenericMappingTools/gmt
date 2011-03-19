@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.3 2011-03-19 04:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -967,7 +967,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_contlabel_plot (GMT, PSL, &Ctrl->contour);
 		GMT_contlabel_free (GMT, &Ctrl->contour);
 
-		GMT_map_clip_off (GMT, PSL);
+		if (!Ctrl->contour.delay) GMT_map_clip_off (GMT, PSL);
 
 		GMT_map_basemap (GMT, PSL);
 

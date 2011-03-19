@@ -5,7 +5,7 @@ pstext \- To plot text strings on maps
 .SH SYNOPSIS
 BD(pstext) IT(textfile) GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
-[ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
+[ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)] ] [ OPT(E) ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
 [ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[IT(color),][BD(o)|BD(O)|BD(c)|BD(C)[IT(pen)]] ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_a_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
@@ -65,6 +65,11 @@ Use BD(-Dj) to offset the text away from the point instead (i.e. the text justif
 will determine the direction of the shift).  Optionally, append BD(v) which will draw a line
 from the original point to the shifted point; append a IT(pen) to change the attributes for this line.
 (See SPECIFYING PENS below).
+.TP
+OPT(E)
+Delay the actual plotting of the text and instead use text (and OPT(C)) to build clip paths and turn
+clipping on.  This clipping can then be turned off later and the text may be finally plotted using
+psclip OPT(Ct).
 .TP
 OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]]
 By default, text will be placed horizontally, using the primary annotation font attributes (BD(FONT_ANNOT_PRIMARY)), and

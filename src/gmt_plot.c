@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.298 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_plot.c,v 1.299 2011-03-19 04:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,6 @@ void GMT_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 void GMT_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode);
 void GMT_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode);
 void GMT_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode);
-void GMT_textpath_init (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[]);
 void GMT_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush);
 void GMT_define_PS_items (struct GMT_CTRL *C, struct PSL_CTRL *P, GMT_LONG axis, GMT_LONG below, GMT_LONG ortho);
 void GMT_define_baselines (struct PSL_CTRL *P);
@@ -2307,6 +2306,7 @@ void GMT_grid_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GRD_HEADER
 
 	GMT_free (C, work_x);
 	GMT_free (C, work_y);
+	C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
 }
 
 void GMT_map_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, double rgb[], GMT_LONG flag)
@@ -2333,6 +2333,7 @@ void GMT_map_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, double rgb[], GMT_
 
 	GMT_free (C, work_x);
 	GMT_free (C, work_y);
+	C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
 }
 
 void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
@@ -2341,6 +2342,7 @@ void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 
 	PSL_comment (P, "Deactivate Map clip path\n");
 	PSL_endclipping (P);
+	C->current.ps.clip = -1;		/* Tell GMT that clipping was turned off */
 }
 
 void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
@@ -2349,6 +2351,7 @@ void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 
 	PSL_comment (P, "Deactivate Grid clip path\n");
 	PSL_endclipping (P);
+	C->current.ps.clip = -1;		/* Tell GMT that clipping was turned off */
 }
 
 void GMT_setfill (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_FILL *fill, GMT_LONG outline)
@@ -3462,6 +3465,10 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (C, P, G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (C, P, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
+		if (G->delay) {					/* Leave clipping and do not plot text yet - delayed until psclip -Ct */
+			C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
+			return;
+		}
 		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */
 		GMT_contlabel_plotlabels (C, P, G, 0);		/* Now plot labels where they go directly */
 	}

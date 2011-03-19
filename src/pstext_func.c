@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: pstext_func.c,v 1.3 2011-03-19 04:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,6 +29,10 @@
 #include "pslib.h"
 #include "gmt.h"
 
+#define PSTEXT_CLIP		1
+#define PSTEXT_PLOT		2
+#define PSTEXT_TERMINATE	3
+
 struct PSTEXT_CTRL {
 	struct A {	/* -A */
 		GMT_LONG active;
@@ -45,6 +49,9 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
+	struct E {	/* -E */
+		GMT_LONG active;
+	} E;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
 		GMT_LONG active;
 		struct GMT_FONT font;
@@ -242,7 +249,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 
 	GMT_message (GMT, "pstext %s [API] - To plot text on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pstext <txtfile> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]] [-E]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<fill>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[<fill>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -284,6 +291,8 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t-D Adds <add_x>,<add_y> to the text origin AFTER projecting with -J. [0/0]\n");
 	GMT_message (GMT, "\t   Use -Dj to move text origin away from point (direction determined by text's justification)\n");
 	GMT_message (GMT, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>\n");
+	GMT_message (GMT, "\t-E Use text and -C to set and initialize a clip path.  No text is plotted.\n");
+	GMT_message (GMT, "\t   See psclip -Ct to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
 	GMT_message (GMT, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_message (GMT, "\t   +a<angle> specifies the baseline angle for all text [0]\n");
 	GMT_message (GMT, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s]\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
@@ -293,6 +302,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t   data file in the order given on the -F option.\n");
 	GMT_message (GMT, "\t-G Paints the box underneath the text with specified color [Default is no paint]\n");
 	GMT_explain_options (GMT, "K");
+	GMT_message (GMT, "\t-L lists the font-numbers and font-names available, then exits.\n");
 	GMT_message (GMT, "\t-M Paragraph text mode [Default is single item mode]\n");
 	GMT_message (GMT, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
 	GMT_message (GMT, "\t   followed by lines with one or more paragraphs of text.\n");
@@ -363,6 +373,9 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				j = sscanf (&opt->arg[k], "%[^/]/%s", txt_a, txt_b);
 				Ctrl->D.dx = GMT_to_inch (GMT, txt_a);
 				Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
+				break;
+			case 'E':
+				Ctrl->E.active = TRUE;
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
@@ -461,6 +474,10 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->G.active && !Ctrl->W.active, "Warning: -T requires -W and/or -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT_abs (Ctrl->Q.mode) > 1, "GMT SYNTAX ERROR -Q option: Use l or u for lower/upper-case.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->E.active, "GMT SYNTAX ERROR -E option: Cannot be used with -M.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->G.active, "GMT SYNTAX ERROR -E option: Cannot be used with -G.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->W.active, "GMT SYNTAX ERROR -E option: Cannot be used with -W.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->D.line, "GMT SYNTAX ERROR -E option: Cannot be used with -D...v<pen>.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -498,14 +515,15 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, mode;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, mode, n_alloc, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
+	double offset[2], *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
 	char text[BUFSIZ], buffer[BUFSIZ], pjust_key[5], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
-	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL;
+	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 #ifdef GMT_COMPAT
 	char this_size[GMT_LONG_TEXT], this_font[GMT_LONG_TEXT], just_key[5], txt_f[GMT_LONG_TEXT];
 	GMT_LONG is_old_format = GMTAPI_NOTSET;
@@ -561,6 +579,12 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
+	if (Ctrl->E.active) {
+		n_alloc = GMT_SMALL_CHUNK;
+		(void)GMT_malloc3 (GMT, c_angle, c_x, c_y, n_alloc, 0, double);
+		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
+	}
+	
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
@@ -773,7 +797,6 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			PSL_setfont (PSL, T.font.id);
 			GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
 			if (T.boxflag & 3) {	/* Plot the box beneath the text */
-				double offset[2];
 				if (T.space_flag) {	/* Meant % of fontsize */
 					offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
 					offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
@@ -790,10 +813,23 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else
 				curr_txt = in_txt;
 			mode = GMT_setfont (GMT, PSL, &T.font);
-			PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, mode);
-			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
-				GMT_setpen (GMT, PSL, &T.vecpen);
-				PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
+			if (Ctrl->E.active) {
+				if (m <= n_alloc) {
+					n_alloc = GMT_malloc3 (GMT, c_angle, c_x, c_y, m, n_alloc, double);
+					c_txt = GMT_memory (GMT, c_txt, n_alloc, char *);
+				}
+				c_angle[m] = T.paragraph_angle;
+				c_txt[m] = strdup (curr_txt);
+				c_x[m] = plot_x;
+				c_y[m] = plot_y;
+				m++;
+			}
+			else {	
+				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, mode);
+				if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
+					GMT_setpen (GMT, PSL, &T.vecpen);
+					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
+				}
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}
@@ -808,8 +844,25 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	 	GMT_free (GMT, paragraph);
 	}
-
-	if (!(Ctrl->N.active || Ctrl->Z.active)) GMT_map_clip_off (GMT, PSL);
+	if (Ctrl->E.active && m) {
+		GMT_LONG form;
+		GMT_textpath_init (GMT, PSL, &Ctrl->W.pen, Ctrl->W.pen.rgb, &Ctrl->W.pen, Ctrl->G.fill.rgb);
+		form = (T.boxflag & 4) ? 16 : 0;
+		if (Ctrl->C.percent) {	/* Meant % of fontsize */
+			offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
+			offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
+		}
+		else {
+			offset[0] = T.x_space;
+			offset[1] = T.y_space;
+		}
+		PSL_plottextclip (PSL, c_x, c_y, m, T.font.size, c_txt, c_angle, T.block_justify, offset, form);	/* This turns clipping ON */
+		GMT_free (GMT, c_angle);
+		GMT_free (GMT, c_x);
+		GMT_free (GMT, c_y);
+		GMT_free (GMT, c_txt);
+	}
+	else if (!(Ctrl->N.active || Ctrl->Z.active)) GMT_map_clip_off (GMT, PSL);
 
 	GMT->current.map.is_world = old_is_world;
 
