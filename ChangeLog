@@ -1,8 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.881 2011-03-19 04:21:00 guru Exp $
+	$Id: ChangeLog,v 1.882 2011-03-19 19:05:44 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
+2011-03-19	jluis
+	* gmt_gdalread.c	Add code to do pixel interleaving of char arrays.
+				Handle new complex choice of 0,1,2
+	* gmt_gdalread.h	Add two members to the GDALREAD_CTRL struct to deal with Pixel 
+				interleaving and put data into complex arrays 
+	* gmt_customio.c	GMT_gdal_read_grd now handles the complex case too.
+
 2011-03-18	pwessel
 	* pstext_func.c:	Added -E to use text for setting up clipping only.
 	* gmt_support.c:	Added +e to contlabel options to use text for setting up clipping only
