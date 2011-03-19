@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.12 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_gdalread.h,v 1.13 2011-03-19 18:52:40 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,6 +33,9 @@ struct GDALREAD_CTRL {
 	struct GD_F {	/* Force pixel-reg info in ouput 'hdr' field */
 		int active;
 	} F;
+	struct GD_I {	/* Interleaving by pixel (only for char data) */
+		int active;
+	} I;
 	struct GD_L {	/* Left-Right flip */
 		int active;
 	} L;
@@ -54,6 +57,10 @@ struct GDALREAD_CTRL {
 		int active;
 		char *region;
 	} R;
+	struct GD_Z {	/* Tell to store data in a complex array */
+		int active;
+		int complex; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	} Z;
 	struct GD_r {	/* Sub-region in row/column coords */
 		int active;
 		char *region;
