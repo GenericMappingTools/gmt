@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.98 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_customio.c,v 1.99 2011-03-21 19:42:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1541,7 +1541,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
-	if (complex) {
+	if (complex_mode) {
 		to_gdalread->Z.active = 1;		/* Force reading into a compex array */
 		to_gdalread->Z.complex = (int)complex_mode;
 	}

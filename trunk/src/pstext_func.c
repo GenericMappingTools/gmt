@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.3 2011-03-19 04:21:00 guru Exp $
+ *	$Id: pstext_func.c,v 1.4 2011-03-21 19:42:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,9 +49,6 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
-	struct E {	/* -E */
-		GMT_LONG active;
-	} E;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
 		GMT_LONG active;
 		struct GMT_FONT font;
@@ -61,6 +58,7 @@ struct PSTEXT_CTRL {
 	} F;
 	struct G {	/* -G<fill> */
 		GMT_LONG active;
+		GMT_LONG mode;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
@@ -249,7 +247,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 
 	GMT_message (GMT, "pstext %s [API] - To plot text on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pstext <txtfile> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]] [-E]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<fill>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[<fill>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -291,8 +289,6 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t-D Adds <add_x>,<add_y> to the text origin AFTER projecting with -J. [0/0]\n");
 	GMT_message (GMT, "\t   Use -Dj to move text origin away from point (direction determined by text's justification)\n");
 	GMT_message (GMT, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>\n");
-	GMT_message (GMT, "\t-E Use text and -C to set and initialize a clip path.  No text is plotted.\n");
-	GMT_message (GMT, "\t   See psclip -Ct to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
 	GMT_message (GMT, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_message (GMT, "\t   +a<angle> specifies the baseline angle for all text [0]\n");
 	GMT_message (GMT, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s]\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
@@ -301,6 +297,8 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_message (GMT, "\t   data file in the order given on the -F option.\n");
 	GMT_message (GMT, "\t-G Paints the box underneath the text with specified color [Default is no paint]\n");
+	GMT_message (GMT, "\t   Alternatively, append c to set clip paths based on text (and -C).  No text is plotted.\n");
+	GMT_message (GMT, "\t   See psclip -Ct to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L lists the font-numbers and font-names available, then exits.\n");
 	GMT_message (GMT, "\t-M Paragraph text mode [Default is single item mode]\n");
@@ -374,9 +372,6 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				Ctrl->D.dx = GMT_to_inch (GMT, txt_a);
 				Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				break;
-			case 'E':
-				Ctrl->E.active = TRUE;
-				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
 				pos = 0;
@@ -403,7 +398,9 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				break;
 			case 'G':
 				Ctrl->G.active = TRUE;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (opt->arg[0] == 'c' && !opt->arg[1])
+					Ctrl->G.mode = TRUE;
+				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -474,10 +471,9 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->G.active && !Ctrl->W.active, "Warning: -T requires -W and/or -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT_abs (Ctrl->Q.mode) > 1, "GMT SYNTAX ERROR -Q option: Use l or u for lower/upper-case.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->E.active, "GMT SYNTAX ERROR -E option: Cannot be used with -M.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->G.active, "GMT SYNTAX ERROR -E option: Cannot be used with -G.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->W.active, "GMT SYNTAX ERROR -E option: Cannot be used with -W.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->D.line, "GMT SYNTAX ERROR -E option: Cannot be used with -D...v<pen>.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "GMT SYNTAX ERROR -Gc option: Cannot be used with -M.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "GMT SYNTAX ERROR -Gc option: Cannot be used with -W.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "GMT SYNTAX ERROR -Gc option: Cannot be used with -D...v<pen>.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -579,7 +575,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
-	if (Ctrl->E.active) {
+	if (Ctrl->G.mode) {
 		n_alloc = GMT_SMALL_CHUNK;
 		(void)GMT_malloc3 (GMT, c_angle, c_x, c_y, n_alloc, 0, double);
 		c_txt = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -813,7 +809,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else
 				curr_txt = in_txt;
 			mode = GMT_setfont (GMT, PSL, &T.font);
-			if (Ctrl->E.active) {
+			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
 					n_alloc = GMT_malloc3 (GMT, c_angle, c_x, c_y, m, n_alloc, double);
 					c_txt = GMT_memory (GMT, c_txt, n_alloc, char *);
@@ -844,7 +840,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	 	GMT_free (GMT, paragraph);
 	}
-	if (Ctrl->E.active && m) {
+	if (Ctrl->G.mode && m) {
 		GMT_LONG form;
 		GMT_textpath_init (GMT, PSL, &Ctrl->W.pen, Ctrl->W.pen.rgb, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		form = (T.boxflag & 4) ? 16 : 0;
