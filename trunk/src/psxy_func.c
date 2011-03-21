@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: psxy_func.c,v 1.3 2011-03-21 21:49:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -669,8 +669,10 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 
 	if (S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || (not_line && !Ctrl->N.active)) {
-		GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
-		clip_set = TRUE;
+		if (!S.G.delay) {
+			GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+			clip_set = TRUE;
+		}
 	}
 	if (penset_OK) GMT_setpen (GMT, PSL, &current_pen);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.242 2011-03-15 03:11:09 remko Exp $
+ *	$Id: pslib.c,v 1.243 2011-03-21 21:49:59 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -2297,10 +2297,10 @@ PSL_LONG PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 		PSL_definteger (PSL, "PSL_just", (PSL_LONG)justify);
 		PSL_defunits (PSL, "PSL_gap_x", offset[0]);
 		PSL_defunits (PSL, "PSL_gap_y", offset[1]);
-		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+		/* if (justify > 1) { */	/* Only Lower Left (1) is already justified - all else must move */
 			PSL_deftextdim (PSL, "-H", fontsize, label[0]);			/* Get and set total string height */
 			PSL_command (PSL, "/PSL_height edef\n");
-		}
+		/* } */
 	}
 
 	/* Set these each time */
@@ -2381,10 +2381,10 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	PSL_defunits (PSL, "PSL_gap_x", offset[0]);
 	PSL_defunits (PSL, "PSL_gap_y", offset[1]);
 
-	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
+	/* if (justify > 1) { */	/* Only Lower Left (1) is already justified - all else must move */
 		PSL_deftextdim (PSL, "-H", fontsize, label[0]);			/* Get and set total string height */
 		PSL_command (PSL, "/PSL_height edef\n");
-	}
+	/* } */
 
 	PSL_command (PSL, "%ld PSL_straight_text_labels\n", mode);
 	return (PSL_NO_ERROR);
