@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdmath_func.c,v 1.3 2011-03-21 20:00:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2948,7 +2948,6 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(opt->arg), (void **)&G_in)) Return (GMT_DATA_READ_ERROR);	/* Get subset only */
 		}
 		GMT_memcpy (info.G->header, G_in->header, 1, struct GRD_HEADER);
-		GMT_grd_setpad (info.G->header, GMT->current.io.pad);	/* Assign default pad */
 		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 	}

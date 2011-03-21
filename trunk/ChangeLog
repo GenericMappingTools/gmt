@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.883 2011-03-21 18:36:46 guru Exp $
+	$Id: ChangeLog,v 1.884 2011-03-21 20:00:12 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2011-03-21	pwessel
 	* dbase/grdraster_func.c:	Better testing and return of errors.
+	* gmt_grdio.c:		Assign default pad in GMT_create_grid.
 
 2011-03-19	jluis
 	* gmt_gdalread.c	Add code to do pixel interleaving of char arrays.

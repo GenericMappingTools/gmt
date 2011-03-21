@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: surface_func.c,v 1.3 2011-03-21 20:00:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1812,7 +1812,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_RI_prepare (GMT, C.Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, C.Grid->header, 1), Ctrl->G.file);
-	GMT_grd_setpad (C.Grid->header, GMT->current.io.pad);	/* Assign default pad */
 	GMT_set_grddim (GMT, C.Grid->header);
 
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {

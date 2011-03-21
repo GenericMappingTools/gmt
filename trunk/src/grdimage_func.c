@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdimage_func.c,v 1.3 2011-03-21 20:00:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -446,7 +446,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Grid_orig[k]->header->nx = from_gdalread->RasterXsize;
 			Grid_orig[k]->header->ny = from_gdalread->RasterYsize;
 			Grid_orig[k]->header->registration = (int)from_gdalread->hdr[6];
-			GMT_grd_setpad (Grid_orig[k]->header, GMT->current.io.pad);	/* Assign default pad */
 			GMT_set_grddim (GMT, Grid_orig[k]->header);		/* Update all dimensions (nm, size, etc.) */
 		}
 	}
@@ -585,7 +584,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		for (k = 0; k < n_grids; k++) {
 			if (!Grid_proj[k]) Grid_proj[k] = GMT_create_grid (GMT);
-			GMT_grd_setpad (Grid_proj[k]->header, GMT->current.io.pad);			/* Assign default pad */
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header);
 			grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;	/* Force pixel if dpi is set */
 			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Grid_proj[k], 0.0, 0.0, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
@@ -601,7 +599,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				nx_proj = Intens_orig->header->nx;
 				ny_proj = Intens_orig->header->ny;
 			}
-			GMT_grd_setpad (Intens_proj->header, GMT->current.io.pad);			/* Assign default pad */
 			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Intens_proj, 0.0, 0.0, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);

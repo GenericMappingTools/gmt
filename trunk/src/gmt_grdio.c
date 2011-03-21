@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.142 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.143 2011-03-21 20:00:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1448,6 +1448,7 @@ struct GMT_GRID *GMT_create_grid (struct GMT_CTRL *C)
 
 	G = GMT_memory (C, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
+	GMT_grd_setpad (G->header, C->current.io.pad);	/* Use the system pad setting by default */
 
 	return (G);
 }
