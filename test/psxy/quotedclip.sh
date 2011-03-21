@@ -1,10 +1,10 @@
 #!/bin/bash
-#	$Id: quotedclip.sh,v 1.1 2011-03-21 21:49:59 guru Exp $
+#	$Id: quotedclip.sh,v 1.2 2011-03-21 23:59:31 guru Exp $
 #
 # Check clip path and delayed text using -Sq:+e
 
 . ../functions.sh
-header "Test psxy for quoted lines with clipping and delayed text"
+header "Test psxy quoted lines with clipping and delayed text"
 
 ps=quotedclip.ps
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.6 2011-03-21 21:49:59 guru Exp $
+ *	$Id: pstext_func.c,v 1.7 2011-03-21 23:59:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,6 +560,8 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
+	if (Ctrl->G.mode) GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that wil outlive this process */
+	
 	GMT_plotinit (API, PSL, options);
 
 	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
