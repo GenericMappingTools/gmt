@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.64 2011-03-18 17:50:11 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.65 2011-03-21 18:36:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -212,12 +212,12 @@ GMT_LONG GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the complex array
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 *
@@ -235,7 +235,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	float *tmp = NULL;
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -284,12 +284,12 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the complex array
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
@@ -327,7 +327,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	}
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];

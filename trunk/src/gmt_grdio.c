@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.141 2011-03-18 17:50:11 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.142 2011-03-21 18:36:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -441,13 +441,13 @@ GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER 
 	return ((*C->session.updateinfo[header->type]) (C, header));
 }
 
-GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
@@ -457,7 +457,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	expand = GMT_padspace (header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
 
-	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex));
+	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 	
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
 		header->nx -= (int)(pad[XLO] + pad[XHI]);
@@ -475,13 +475,13 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* file:	File name
 	 * header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
@@ -498,7 +498,7 @@ GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	GMT_grd_set_units (C, header);
 	
 	GMT_grd_do_scaling (grid, header->size, 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
-	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex));
+	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
 }
 
 GMT_LONG GMT_grd_data_size (struct GMT_CTRL *C, GMT_LONG format, double *nan_value)
@@ -1554,22 +1554,22 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G)
 	if (n == 0) G->header->z_min = G->header->z_max = C->session.d_NaN;
 }
 
-GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off)
-{	/* Sets complex-related parameters based on the input complex variable:
-	 * If complex & 64 then we do not want to write a header [output only; only some formats]
-	 * complex = 0 means real data
-	 * complex = 1 means get/put real component of complex array
-	 * complex = 2 means get/put imag component of complex array
+GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex_mode, GMT_LONG *inc, GMT_LONG *off)
+{	/* Sets complex-related parameters based on the input complex_mode variable:
+	 * If complex_mode & 64 then we do not want to write a header [output only; only some formats]
+	 * complex_mode = 0 means real data
+	 * complex_mode = 1 means get/put real component of complex array
+	 * complex_mode = 2 means get/put imag component of complex array
 	 * TRUE is return if we wish to write the grid header (normally TRUE).
 	 */
 	
 	GMT_LONG do_header = TRUE;
-	if (complex & 64) {	/* Want no header, adjust complex */
-		complex %= 64;
+	if (complex_mode & 64) {	/* Want no header, adjust complex_mode */
+		complex_mode %= 64;
 		do_header = FALSE;
 	}
-	if (complex) {
-		*inc = 2; *off = complex - 1;
+	if (complex_mode) {
+		*inc = 2; *off = complex_mode - 1;
 	}
 	else {
 		*inc = 1; *off = 0;

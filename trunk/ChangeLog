@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.882 2011-03-19 19:05:44 jluis Exp $
+	$Id: ChangeLog,v 1.883 2011-03-21 18:36:46 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
+2011-03-21	pwessel
+	* dbase/grdraster_func.c:	Better testing and return of errors.
+
 2011-03-19	jluis
 	* gmt_gdalread.c	Add code to do pixel interleaving of char arrays.
 				Handle new complex choice of 0,1,2

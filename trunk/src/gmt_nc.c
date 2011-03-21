@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.94 2011-03-18 17:50:12 guru Exp $
+ *	$Id: gmt_nc.c,v 1.95 2011-03-21 18:36:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -400,12 +400,12 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the complex array
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 *
@@ -420,23 +420,23 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc, off, err;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp = NULL;
-	EXTERN_MSC GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex);
+	EXTERN_MSC GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode);
 
 	/* Check type: is file in old NetCDF format or not at all? */
 
 	if (GMT_grdformats[header->type][0] == 'c')
-		return (GMT_cdf_read_grd (C, header, grid, wesn, pad, complex));
+		return (GMT_cdf_read_grd (C, header, grid, wesn, pad, complex_mode));
 	else if (GMT_grdformats[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	width_out *= inc;			/* Possibly doubled if complex_mode is TRUE */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Open the NetCDF file */
@@ -488,18 +488,18 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the complex array
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out;
+	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out, node;
 	GMT_LONG first_col, last_col, first_row, last_row, *k = NULL;
 	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;
@@ -531,7 +531,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -558,7 +558,9 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
-				value = grid[inc*(ij+k[i])+off];
+				node = inc*(ij+k[i])+off;
+				if (node < 0 || node > header->size) fprintf (stderr, "Outside bounds\b");
+				value = grid[node];
 				if (GMT_is_fnan (value))
 					tmp_f[i] = (float)header->nan_value;
 				else if (fabs(value) > FLT_MAX) {

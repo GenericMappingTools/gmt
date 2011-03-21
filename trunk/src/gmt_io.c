@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.226 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_io.c,v 1.227 2011-03-21 18:36:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5236,8 +5236,12 @@ GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
 	 * settings in gmt.conf.  Here we just rule out things
 	 * that we are sure of. */
 
-	GMT_LONG i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0;
+	GMT_LONG i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0, len;
 
+	if (!text) return (TRUE);	/* NULL pointer */
+	if (!(len = strlen (text)))  return (TRUE);	/* Blank string */
+	if (isalpha ((int)text[0])) return (TRUE);	/* Numbers cannot start with letters */
+	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || isdigit ((int)text[0]))) return (TRUE);	/* Numbers must be [+|-][.][<digits>] */
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that should never appear in any number */
 		if (text[i] < 43) return (TRUE);	/* ASCII 0-42 */
