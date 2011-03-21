@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.95 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_nc.c,v 1.96 2011-03-21 20:00:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -559,7 +559,9 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
 				node = inc*(ij+k[i])+off;
-				if (node < 0 || node > header->size) fprintf (stderr, "Outside bounds\b");
+				if (node < 0 || node > header->size) {
+					fprintf (stderr, "Outside bounds\n");
+				}
 				value = grid[node];
 				if (GMT_is_fnan (value))
 					tmp_f[i] = (float)header->nan_value;
