@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.3 2011-03-19 04:21:00 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.4 2011-03-21 21:14:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -853,7 +853,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (make_plot) {
 		GMT_plotinit (API, PSL, options);
 		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
 	}
 
 	for (c = 0; c < n_contours; c++) {	/* For each contour value cval */

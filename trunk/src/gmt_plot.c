@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.299 2011-03-19 04:21:00 guru Exp $
+ *	$Id: gmt_plot.c,v 1.300 2011-03-21 21:14:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -588,6 +588,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 	GMT_LONG do_tick;		/* TRUE unless we are dealing with bits of weeks */
 	GMT_LONG form;			/* TRUE for outline font */
 	GMT_LONG ortho = FALSE;	/* TRUE if annotations are orthogonal to axes */
+	GMT_LONG need_txt;		/* TRUE if we are annotating anything on this axis */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double tick_len[6];		/* Ticklengths for each of the 6 axis items */
 	double x, sign, len, t_use;	/* Misc. variables */
@@ -627,9 +628,9 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 		PSL_comment (P, below ? "Start of front z-axis\n" : "Start of back z-axis\n");
 	PSL_setorigin (P, x0, y0, 0.0, PSL_FWD);
 
-	/* Create PostScript definitions of various lengths and font sizes */
-
-	GMT_define_PS_items (C, P, axis, below, ortho);
+	for (k = need_txt = 0; annotate && k < GMT_TICK_UPPER; k++) if (A->item[k].active && !GMT_IS_ZERO (A->item[k].interval)) need_txt = TRUE;
+	
+	if (need_txt) GMT_define_PS_items (C, P, axis, below, ortho);	/* Create PostScript definitions of various lengths and font sizes */
 
 	PSL_comment (P, "Axis tick marks and annotations\n");
 	GMT_setpen (C, P, &C->current.setting.map_frame_pen);
@@ -678,7 +679,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 				PSL_plotsegment (P, 0.0, x, tick_len[k], x);
 		}
 
-		do_annot = (k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
+		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
 		if (do_annot) {	/* Then do annotations too - here just set text height/width parameters in PostScript */
 
 			annot_pos = GMT_lower_axis_item (k);					/* 1 means lower annotation, 0 means upper (close to axis) */
@@ -708,7 +709,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 	
 	/* Here, PSL_AH0, PSL_AH1, and PSL_LH have been defined.  We may now set the y offsets for text baselines */
 
-	GMT_define_baselines (P);
+	if (need_txt)  GMT_define_baselines (P);
 
 	/* Now do annotations, if requested */
 
