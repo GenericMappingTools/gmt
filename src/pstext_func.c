@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.4 2011-03-21 19:42:40 guru Exp $
+ *	$Id: pstext_func.c,v 1.5 2011-03-21 20:10:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -792,7 +792,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			PSL_setfont (PSL, T.font.id);
 			GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
-			if (T.boxflag & 3) {	/* Plot the box beneath the text */
+			if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
 				if (T.space_flag) {	/* Meant % of fontsize */
 					offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
 					offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;

@@ -85,7 +85,7 @@ softwares that know how to do it. Be aware, however, that different results
 are obtained depending on the image contents and if the OPT(B) option has been used or not.
 The trouble with the OPT(B) option is that it creates a frame and very likely its annotations. 
 That introduces pixels outside the map data extent, and therefore the map extents estimation will be wrong.
-To avoid this problem use --BASEMAP_TYPE=inside option which plots all annotations and ticks
+To avoid this problem use --MAP_FRAME_TYPE=inside option which plots all annotations and ticks
 inside the image and therefore does not compromise the coordinate computations. Pay attention also to 
 the cases when the plot has any of the sides with whites only because than the algorithm will fail 
 miserably as those whites will be eaten by the GhostScript. In that case you really must use OPT(B)
@@ -120,7 +120,7 @@ the georeferencing, GMT 4.5 embeds a comment near the start of the IT(PostScript
 using Proj.4 syntax. Users with pre-GMT v4.5 IT(PostScript) files, or even non-GMT ps files, can provide the 
 information BD(ps2raster) requires by manually editing a line into the IT(PostScript) file, prefixed with %%PROJ. 
 .br
-For example the command BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --BASEMAP_TYPE=inside > cara.ps 
+For example the command BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --MAP_FRAME_TYPE=inside > cara.ps 
 .br
 adds this comment line 
 .br
@@ -176,7 +176,7 @@ To create a simple linear map with pscoast and convert it to tif with a .tfw
 the tight BoundingBox computation.
 .br
 .sp
-BD(pscoast) OPT(JX12cd) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
+BD(pscoast) OPT(JX12cd) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --MAP_FRAME_TYPE=inside > cara.ps
 .br
 .sp
 BD(ps2raster) cara OPT(Tt) OPT(W)
@@ -185,7 +185,7 @@ BD(ps2raster) cara OPT(Tt) OPT(W)
 To create a Mercator version of the above example and use GDAL to produce a true geotiff file.
 .br
 .sp
-BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --BASEMAP_TYPE=inside > cara.ps
+BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --MAP_FRAME_TYPE=inside > cara.ps
 .br
 .sp
 BD(gdalwarp) -s_srs +proj=merc cara.tif carageo.tiff 
@@ -194,7 +194,7 @@ BD(gdalwarp) -s_srs +proj=merc cara.tif carageo.tiff
 To create a Polar Stereographic geotiff file of Patagonia
 .br
 .sp
-pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --BASEMAP_TYPE=inside > patagonia.ps
+pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
 .br
 .sp
 ps2raster patagonia.ps -Tt -W+g -V 
@@ -203,7 +203,7 @@ ps2raster patagonia.ps -Tt -W+g -V
 To create a simple KMZ file for use in Google Earth, try
 .br
 .sp
-grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --BASEMAP_TYPE=inside > tile.ps
+grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
 .br
 .sp
 ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V 
