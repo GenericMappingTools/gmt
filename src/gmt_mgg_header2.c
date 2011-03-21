@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.46 2011-03-18 17:50:11 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.47 2011-03-21 18:36:46 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -9,7 +9,7 @@
  * 1) GRD98 can now support pixel grids since 11/24/2006.
  * 2) Learned that 1/x_inc and 1/y_inc are stored as integers.  This means
  *    GRD98 imposes restrictions on x_inc & y_inc.
- * 3) Added full support for padding and complex on 3/17/2011
+ * 3) Added full support for padding and complex_mode on 3/17/2011
  */
 
 #include "gmt_mgg_header2.h"
@@ -247,7 +247,7 @@ GMT_LONG mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex)
+GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
@@ -277,12 +277,12 @@ GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 			
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	width_out *= inc;			/* Possibly doubled if complex_mode is TRUE */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	tLong  = GMT_memory (C, CNULL, header->nx, int);
@@ -347,7 +347,7 @@ GMT_LONG mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 	return (GMT_NOERROR);
 }
 
-GMT_LONG mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex)
+GMT_LONG mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	GMT_LONG is_float = FALSE, check, *k = NULL;
@@ -368,7 +368,7 @@ GMT_LONG mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *g
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
 	
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
