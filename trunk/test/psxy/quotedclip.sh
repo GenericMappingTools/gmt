@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: quotedclip.sh,v 1.3 2011-03-22 01:10:46 guru Exp $
+#	$Id: quotedclip.sh,v 1.4 2011-03-22 02:28:13 guru Exp $
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths
@@ -11,7 +11,7 @@ ps=quotedclip.ps
 
 psbasemap -R0/10/0/10 -JX15c/10c -Ggray70 -K -P -B0:."Clip path from straight text": --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
 
-psxy -R -J -W1p,black -Sqn1:+Lh+e+s18 -O -K << EOF >> $ps
+psxy -R -J -W1p,red -Sqn1:+Lh+e+s18 -O -K << EOF >> $ps
 > "The quick brown fox jumps over the lazy dog"
 0 8
 10 5
