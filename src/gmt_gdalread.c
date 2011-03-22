@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.17 2011-03-19 18:56:53 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.18 2011-03-22 00:01:40 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -272,10 +272,14 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
-			if (!complex)
-				Ctrl->Float.data = GMT_memory (C, NULL, n_alloc, float);
-			else
-				Ctrl->Float.data = GMT_memory (C, NULL, 2 * n_alloc, float);
+			if (prhs->fpointer.active)	/* We have a pointer with already allocated memory ready to use */
+				Ctrl->Float.data = prhs->fpointer.grd;
+			else {
+				if (!complex)
+					Ctrl->Float.data = GMT_memory (C, NULL, n_alloc, float);
+				else
+					Ctrl->Float.data = GMT_memory (C, NULL, 2 * n_alloc, float);
+			}
 			break;
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "gdalread: Unsupported data type\n");
