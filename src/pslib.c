@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.244 2011-03-22 02:22:38 guru Exp $
+ *	$Id: pslib.c,v 1.245 2011-03-22 02:24:11 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1427,7 +1427,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
-		psl_bulkcopy (PSL, "PSL_label", "v 1.15 ");		/* Place code for label line annotations and clipping */
+		psl_bulkcopy (PSL, "PSL_label", "v 1.16 ");		/* Place code for label line annotations and clipping */
 		PSL_command (PSL, "%%%%EndProlog\n\n");
 
 		PSL_command (PSL, "%%%%BeginSetup\n");
@@ -2912,7 +2912,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		psl_bulkcopy (PSL, "PSL_text", "v 1.11 ");
+		psl_bulkcopy (PSL, "PSL_text", "v 1.12 ");
 		PSL->internal.text_init = TRUE;
 	}
 
