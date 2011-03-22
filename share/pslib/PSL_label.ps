@@ -1,4 +1,4 @@
-%-	$Id: PSL_label.ps,v 1.15 2011-03-15 02:06:35 guru Exp $
+%-	$Id: PSL_label.ps,v 1.16 2011-03-22 02:22:38 guru Exp $
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
 %-
@@ -432,7 +432,7 @@ end
 % PSL_straight_text_labels deals with straight text labels w/wo textboxes (rect or rounded).
 % Because only the (x,y) location of each label is needed we can do all the labels
 % in one (or two, for clipping) call to PSL_straight_text_labels.
-% Subroutines of this function are alled PSL_ST_*
+% Subroutines of this function are called PSL_ST_*
 
 /PSL_straight_text_labels
 {		% This will create a total clip path for all the labels in PSL_txt
@@ -529,3 +529,4 @@ end
 } def
 
 /PSL_clip_on false def
+/PSL_nclip 0 def
