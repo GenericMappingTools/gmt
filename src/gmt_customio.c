@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.99 2011-03-21 19:42:40 guru Exp $
+ *	$Id: gmt_customio.c,v 1.100 2011-03-22 00:03:35 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1558,6 +1558,10 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		to_gdalread->p.pad = (int)pad[XLO];
 	}
 
+	/* Tell gmt_gdalread that we already have the memory allocated and send in the *grid pointer */
+	to_gdalread->fpointer.active = 1;
+	to_gdalread->fpointer.grd = grid;
+
 	if (GMT_gdalread (C, header->name, to_gdalread, from_gdalread)) {
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -1570,8 +1574,10 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		header->z_max = from_gdalread->hdr[5];
 	}
 
-	if (from_gdalread->Float.active)
-		grid = GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
+	if (from_gdalread->Float.active) {
+		if (!to_gdalread->fpointer.active)
+			grid = GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
+	}
 	else {
 		/* Convert everything else do float */
 		nBand = 0;		/* Need a solution to RGB or multiband files */
@@ -1602,12 +1608,9 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	}
 	header->nan_value = C->session.f_NaN;
 
-	GMT_free (C, to_gdalread);
-	if (from_gdalread->ColorMap == NULL) GMT_free (C, from_gdalread->ColorMap);
-
 	if (from_gdalread->UInt8.active)
 		GMT_free (C, from_gdalread->UInt8.data);
-	else if (from_gdalread->Float.active)
+	else if ( from_gdalread->Float.active && !to_gdalread->fpointer.active )	/* Do not release the *grid pointer */
 		GMT_free (C, from_gdalread->Float.data);
 	else if (from_gdalread->UInt16.active)
 		GMT_free (C, from_gdalread->UInt16.data);
@@ -1616,6 +1619,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	else if (from_gdalread->Int32.active)
 		GMT_free (C, from_gdalread->Int32.data);
 
+	GMT_free (C, to_gdalread);
+	if (from_gdalread->ColorMap == NULL) GMT_free (C, from_gdalread->ColorMap);
 	GMT_free (C, from_gdalread);
 
 	return (GMT_NOERROR);
