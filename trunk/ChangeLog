@@ -1,14 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.888 2011-03-22 01:10:46 guru Exp $
+	$Id: ChangeLog,v 1.889 2011-03-22 15:34:27 remko Exp $
 -----------------------------------------------------------------------------------------
 
------------------------------------------------------------------------------------------
+2011-03-22	remko
+	* gmt_plot.c:		Make sure PSL_* text/dimensions are set when plotting
+				no annotation but still a plot title
+
 2011-03-21	jluis
-	* gmt_gdalread.h	Add a new member to GDALREAD_CTRL struct to host the pointer 
+	* gmt_gdalread.h:	Add a new member to GDALREAD_CTRL struct to host the pointer 
 				to the pre-allocated grid array.
-	* gmt_gdalread.c	Use pre-allocated *grid array if it was transmitted. Note that
+	* gmt_gdalread.c:	Use pre-allocated *grid array if it was transmitted. Note that
 				in this case there is no test if pre-allocated mem is enough.
-	* gmt_customio.c	GMT_gdal_read_grd sends in the pre-allocated *grid array.
+	* gmt_customio.c:	GMT_gdal_read_grd sends in the pre-allocated *grid array.
 
 2011-03-21	pwessel
 	* dbase/grdraster_func.c:	Better testing and return of errors.
@@ -17,11 +20,11 @@
 				no text will actually be plotted (e.g., -G0g5).
 
 2011-03-19	jluis
-	* gmt_gdalread.c	Add code to do pixel interleaving of char arrays.
+	* gmt_gdalread.c:	Add code to do pixel interleaving of char arrays.
 				Handle new complex choice of 0,1,2
-	* gmt_gdalread.h	Add two members to the GDALREAD_CTRL struct to deal with Pixel 
+	* gmt_gdalread.h:	Add two members to the GDALREAD_CTRL struct to deal with Pixel 
 				interleaving and put data into complex arrays 
-	* gmt_customio.c	GMT_gdal_read_grd now handles the complex case too.
+	* gmt_customio.c:	GMT_gdal_read_grd now handles the complex case too.
 
 2011-03-18	pwessel
 	* pstext_func.c:	Added -Gc to use text for setting up clipping only.
