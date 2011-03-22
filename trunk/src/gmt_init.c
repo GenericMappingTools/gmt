@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.462 2011-03-22 21:44:40 remko Exp $
+ *	$Id: gmt_init.c,v 1.463 2011-03-22 22:27:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1073,6 +1073,9 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 		case 'E':
 #endif
 		case 'p': error += C->common.p.active == 0; break;
+#ifdef GMT_COMPAT
+		case 'm': break;
+#endif
 #ifdef GMT_COMPAT
 		case 'S':
 #endif
