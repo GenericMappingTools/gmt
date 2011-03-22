@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: quotedclip.sh,v 1.4 2011-03-22 02:28:13 guru Exp $
+#	$Id: quotedclip.sh,v 1.5 2011-03-22 16:37:13 remko Exp $
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths
@@ -37,6 +37,8 @@ gmtmath -T200/335/5 -N3/0 -o1,2 T -C1 COSD -C2 SIND -Ca 5 MUL 10 ADD -C1 5 SUB =
 psxy -R -J -W1p,red -Sqn1:+Lh+c0+s18+v+e -O -K t.txt >> $ps
 
 psxy -R -J -L -Gorange -W0.5p -O -K box.txt >> $ps
+
+rm -f box.txt t.txt
 
 psclip -Cc -O >> $ps
 
