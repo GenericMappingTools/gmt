@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: pscoast_func.c,v 1.3 2011-03-22 21:35:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -567,7 +567,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	clobber_background = (Ctrl->G.active && Ctrl->S.active);
 	recursive = (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active) || clipping);
 	paint_polygons = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active);
-
+	
 	if (GMT->common.R.wesn[XLO] > 360.0) {
 		GMT->common.R.wesn[XLO] -= 360.0;
 		GMT->common.R.wesn[XHI] -= 360.0;
@@ -610,6 +610,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_LONG id = 0;
 		char header[BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
+		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
