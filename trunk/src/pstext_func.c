@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.7 2011-03-21 23:59:30 guru Exp $
+ *	$Id: pstext_func.c,v 1.8 2011-03-22 21:15:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	if (Ctrl->G.mode) GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that wil outlive this process */
+	/* if (Ctrl->G.mode) GMT->current.ps.clip = +1; */	/* Signal that this program initiates clipping that wil outlive this process */
 	
 	GMT_plotinit (API, PSL, options);
 
@@ -855,6 +855,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			offset[1] = T.y_space;
 		}
 		PSL_plottextclip (PSL, c_x, c_y, m, T.font.size, c_txt, c_angle, T.block_justify, offset, form);	/* This turns clipping ON */
+		PSL_command (PSL, "/PSL_nclip PSL_nclip 1 add def\n");
 		GMT_free (GMT, c_angle);
 		GMT_free (GMT, c_x);
 		GMT_free (GMT, c_y);

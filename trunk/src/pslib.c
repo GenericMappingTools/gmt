@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.245 2011-03-22 02:24:11 guru Exp $
+ *	$Id: pslib.c,v 1.246 2011-03-22 21:15:39 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -633,7 +633,7 @@ PSL_LONG PSL_plotbitimage_ (double *x, double *y, double *xsize, double *ysize, 
 PSL_LONG PSL_endclipping (struct PSL_CTRL *PSL)
 {
 	/* Return to original clipping path */
-	PSL_command (PSL, "cliprestore\n");
+	PSL_command (PSL, "PSL_nclip {cliprestore} repeat /PSL_nclip 0 def\n");	/* Undo all levels of clipping  and reset clip count */
 	PSL_comment (PSL, "Clipping is currently OFF\n");
 #if 0
 	/* Since we no longer use gsave/grestore, these resets are no longer necessary */
@@ -675,6 +675,7 @@ PSL_LONG PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
 		PSL_command (PSL, (flag & 4) ? "eoclip\n" : "eoclip N\n");
+		PSL_command (PSL, "/PSL_nclip PSL_nclip 1 add def\n");	/* Increase clip count */
 		PSL_comment (PSL, "End of clip path.  Clipping is currently ON\n");
 	}
 	return (PSL_NO_ERROR);
@@ -2340,9 +2341,8 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 
 	if (mode & 2) {	/* Flag to terminate clipping */
 		PSL_comment (PSL, "If clipping is active, terminate it\n");
-		PSL_command (PSL, "PSL_clip_on {cliprestore /PSL_clip_on false def} if\n");
-		PSL_command (PSL, "PSL_nclip {cliprestore} repeat\n");
-		return (PSL_NO_ERROR);
+		/* PSL_command (PSL, "PSL_clip_on {cliprestore /PSL_clip_on false def} if\n"); */
+		return (PSL_endclipping (PSL));
 	}
 	if (mode & 8) {		/* Flag to place text already defined in PSL arrays */
 		PSL_command (PSL, "%ld PSL_straight_text_labels\n", mode);
