@@ -1,9 +1,21 @@
 /*--------------------------------------------------------------------
- *    The GMT-system: A relative of grdfft
+ *	$Id: gravfft.c,v 1.2 2011-03-22 21:46:04 jluis Exp $
  *
+ *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 of the License.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Author:      Joaquim Luis
  * Date:        09-OCT-1994
  * Updated:	28-Feb-1999
  *         	05-SEP-2002
