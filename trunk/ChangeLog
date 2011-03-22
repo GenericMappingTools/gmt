@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.889 2011-03-22 15:34:27 remko Exp $
+	$Id: ChangeLog,v 1.890 2011-03-22 21:45:42 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-22	remko
+	* gmt_init.c:		Fixed erroneous way of scanning symbol option -Sm
 	* gmt_plot.c:		Make sure PSL_* text/dimensions are set when plotting
 				no annotation but still a plot title
 
@@ -52,10 +53,12 @@
 	  working GMT5 module in the repository.
 	* pslib.c:		Changed versions of PSL_prologue/label.ps to match the
 				new numbers after the merge back to the trunk.
+
 -----------------------------------------------------------------------------------------
 2011-03-10	pwessel
 	* GMT 4.5.6 finalized and released.  GMT cvs archive moved to GMT4.
 -----------------------------------------------------------------------------------------
+
 2011-03-08	pwessel
 	* configure.ac:		Check for bad 64-bit qsort under earlier OS X did not work.
 				Needed to add -fno-common to CFLAGS under OS X Tiger

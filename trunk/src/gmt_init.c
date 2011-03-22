@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.461 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_init.c,v 1.462 2011-03-22 21:44:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6275,20 +6275,22 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
 		}
 	}
-	else if (text[0] == 'm') {	/* mathangle gets separate treatment since m gets confused by meter in some tests */
+	else if (text[0] == 'm') {	/* mathangle gets separate treatment because of modifiers */
 		k = (strchr ("bfl", text[1])) ? 2 : 1;	/* Skip the modifier b, f, or l */
 		n = sscanf (text, "%c", &symbol_type);
-		if (text[k] == '\0') {	/* No size nor unit */
+		if (!text[k]) {	/* No size nor unit */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			col_off++;
 		}
-		else if (strchr ("CcIiMmPp", (int) text[k])) {	/* No size given, only unit information */
+		else if (strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			if ((p->u = gmt_get_unit (C, text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 			col_off++;
 		}
+		else
+			p->size_x = p->given_size_x = GMT_to_inch (C, &text[k]);
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
 		n = sscanf (text, "%c", &symbol_type);
@@ -6297,7 +6299,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		if (text[1] && (p->u = gmt_get_unit (C, text[1])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 		col_off++;
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || text[1] == '\0')) {	/* Symbol, but no size given (size assumed given on command line) */
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {	/* Symbol, but no size given (size assumed given on command line) */
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
@@ -6557,7 +6559,6 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 					k = 1;
 					break;
 			}
-			p->size_x = p->given_size_x = p->size_y = p->given_size_y = GMT_to_inch (C, &text[k]);
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
 			break;
