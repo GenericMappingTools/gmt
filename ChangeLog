@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.886 2011-03-22 00:11:34 jluis Exp $
+	$Id: ChangeLog,v 1.887 2011-03-22 00:12:06 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2011-03-19	jluis
+2011-03-21	jluis
 	* gmt_gdalread.h	Add a new member to GDALREAD_CTRL struct to host the pointer 
 				to the pre-allocated grid array.
 	* gmt_gdalread.c	Use pre-allocated *grid array if it was transmitted. Note that
