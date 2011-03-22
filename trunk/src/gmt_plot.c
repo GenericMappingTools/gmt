@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.300 2011-03-21 21:14:52 guru Exp $
+ *	$Id: gmt_plot.c,v 1.301 2011-03-22 02:22:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3466,8 +3466,9 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (C, P, G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (C, P, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
-		if (G->delay) {					/* Leave clipping and do not plot text yet - delayed until psclip -Ct */
+		if (G->delay) {					/* Leave clipping and do not plot text yet - delayed until psclip -Cc|s */
 			C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
+			PSL_command (P, "/PSL_nclip PSL_nclip 1 add def\n");
 			return;
 		}
 		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */

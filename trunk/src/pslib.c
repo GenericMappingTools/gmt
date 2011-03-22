@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.243 2011-03-21 21:49:59 guru Exp $
+ *	$Id: pslib.c,v 1.244 2011-03-22 02:22:38 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -2341,6 +2341,7 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	if (mode & 2) {	/* Flag to terminate clipping */
 		PSL_comment (PSL, "If clipping is active, terminate it\n");
 		PSL_command (PSL, "PSL_clip_on {cliprestore /PSL_clip_on false def} if\n");
+		PSL_command (PSL, "PSL_nclip {cliprestore} repeat\n");
 		return (PSL_NO_ERROR);
 	}
 	if (mode & 8) {		/* Flag to place text already defined in PSL arrays */
