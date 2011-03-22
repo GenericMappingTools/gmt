@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: clipannot.sh,v 1.1 2011-03-21 21:14:53 guru Exp $
+#	$Id: clipannot.sh,v 1.2 2011-03-22 18:41:32 guru Exp $
 
 . ../functions.sh
 header "Test grdcontour for clip path set by annotations"
@@ -20,7 +20,7 @@ psxy -R -J -O -K -W1p,red << EOF >> $ps
 10	8.2
 EOF
 psbasemap -R -J -O -K -B0g0.2 >> $ps
-psclip -Ct -O -K  >> $ps
+psclip -Cs -O -K  >> $ps
 psbasemap -R -J -O -B2WSne:."Delayed Annotations": >> $ps
 rm -f tmp.nc
 
