@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.887 2011-03-22 00:12:06 jluis Exp $
+	$Id: ChangeLog,v 1.888 2011-03-22 01:10:46 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -24,11 +24,12 @@
 	* gmt_customio.c	GMT_gdal_read_grd now handles the complex case too.
 
 2011-03-18	pwessel
-	* pstext_func.c:	Added -E to use text for setting up clipping only.
+	* pstext_func.c:	Added -Gc to use text for setting up clipping only.
 	* gmt_support.c:	Added +e to contlabel options to use text for setting up clipping only
-				and delay plotting the text until psclip -Ct.  Affects grdcontour,
+				and delay plotting the text until psclip -Cs|c.  Affects grdcontour,
 				pscontour, and psxy -Sq text placement.
-	* psclip_func.c:	Added -Ct to terminate text-based clip path and plot the text.
+	* psclip_func.c:	Added -Cc|s to terminate text-based clip path and plot the text for
+				either curved or straight text paths.
 	* grdfft_func.c:	Let -E optionally use -G to set output file name [Default is stdout].
 	* gmt_grdio.c:		Added GMT_init_complex to centralize setting of stride (1 or 2)
 				and offset (0 = real, 1 = imag).

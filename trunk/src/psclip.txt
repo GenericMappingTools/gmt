@@ -11,7 +11,7 @@ BD(psclip) IT(xyfiles) GMT_J_OPT GMT_Rgeoz_OPT
 [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ] [ GMT_colon_OPT ]
 .br
 .sp
-BD(psclip) OPT(C)[BD(t)] [ GMT_K_OPT ] [ GMT_O_OPT ]
+BD(psclip) OPT(C)[BD(c)|BD(s)] [ GMT_K_OPT ] [ GMT_O_OPT ]
 .SH DESCRIPTION
 BD(psclip) reads (x,y) file(s) [or standard input] and draws polygons that are
 activated as clipping paths.  Several files may be read to create complex paths
@@ -32,8 +32,9 @@ standard input is read.
 .TP
 OPT(C)
 Mark end of existing clip path.  No input file or projection information are needed.
-Append BD(t) to plot text previously used to lay down a clip path (e.g., via contouring,
-pstext, or psxy OPT(Sq)).
+Append BD(c) (for curved text) or BD(s) (for straight text) to plot text previously used to lay down a
+clip path (e.g., via contouring, pstext, or psxy OPT(Sq)).  The curved text option (OPT(Cc)) is only
+required if psxy OPT(Sq) was run with the BD(+v) modifier.
 Also supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
 #include "explain_-J.txt"
 #include "explain_-R.txt"
