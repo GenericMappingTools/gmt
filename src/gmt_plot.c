@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.303 2011-03-22 21:15:38 guru Exp $
+ *	$Id: gmt_plot.c,v 1.304 2011-03-22 22:20:54 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -408,7 +408,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 	GMT_LONG do_tick;		/* TRUE unless we are dealing with bits of weeks */
 	GMT_LONG form;			/* TRUE for outline font */
 	GMT_LONG ortho = FALSE;	/* TRUE if annotations are orthogonal to axes */
-	GMT_LONG need_txt;		/* TRUE if we are annotating anything on this axis */
+	GMT_LONG need_txt = FALSE;		/* TRUE if we are annotating anything on this axis */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double tick_len[6];		/* Ticklengths for each of the 6 axis items */
 	double x, sign, len, t_use;	/* Misc. variables */
@@ -448,8 +448,9 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 		PSL_comment (P, below ? "Start of front z-axis\n" : "Start of back z-axis\n");
 	PSL_setorigin (P, x0, y0, 0.0, PSL_FWD);
 
-	need_txt = A->label[0] && annotate && !GMT_axis_is_geo (C, axis);
-	for (k = 0; !need_txt && annotate && k < GMT_TICK_UPPER; k++) if (A->item[k].active && !GMT_IS_ZERO (A->item[k].interval)) need_txt = TRUE;
+	if (annotate && !GMT_axis_is_geo (C, axis)) {
+		for (need_txt = A->label[0], k = 0; !need_txt && k < GMT_TICK_UPPER; k++) if (A->item[k].active) need_txt = TRUE;
+	}
 	
 	if (need_txt) GMT_define_PS_items (C, P, axis, below, ortho);	/* Create PostScript definitions of various lengths and font sizes */
 
