@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: allsymbinch.sh,v 1.2 2011-03-15 02:06:46 guru Exp $
+#	$Id: allsymbinch.sh,v 1.3 2011-03-22 16:37:13 remko Exp $
 #
 # Plot psxy symbols under INCH default unit
 
 . ../functions.sh
 header "Test psxy symbols for INCH environment"
 
-ps=inch.ps
+ps=allsymbinch.ps
 
 psxy all_psxy_symbols.txt -R0/4/0/6 -B1g1WSne:."PROJ_LENGTH_UNIT=inch": -Jx1.25i -Sc1i -W0.25p,blue,. -P -K --PROJ_LENGTH_UNIT=inch -Xc -Yc -i0,1 > $ps
 psxy all_psxy_symbols.txt -R -J -S -Gred -W1p -O --PROJ_LENGTH_UNIT=inch >> $ps
