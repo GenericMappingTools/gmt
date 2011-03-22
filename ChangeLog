@@ -1,8 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.885 2011-03-21 21:14:52 guru Exp $
+	$Id: ChangeLog,v 1.886 2011-03-22 00:11:34 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
+2011-03-19	jluis
+	* gmt_gdalread.h	Add a new member to GDALREAD_CTRL struct to host the pointer 
+				to the pre-allocated grid array.
+	* gmt_gdalread.c	Use pre-allocated *grid array if it was transmitted. Note that
+				in this case there is no test if pre-allocated mem is enough.
+	* gmt_customio.c	GMT_gdal_read_grd sends in the pre-allocated *grid array.
+
 2011-03-21	pwessel
 	* dbase/grdraster_func.c:	Better testing and return of errors.
 	* gmt_grdio.c:		Assign default pad in GMT_create_grid.
