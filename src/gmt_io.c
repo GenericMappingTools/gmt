@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.227 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_io.c,v 1.228 2011-03-22 19:30:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1111,9 +1111,10 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 					bad_record = TRUE;
 				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;
 			}
-			else					/* Successful decode, assign to array */
+			else {					/* Successful decode, assign to array */
 				gmt_convert_col (C->current.io.col[GMT_IN][col_no], val);
 				C->current.io.curr_rec[col_pos] = val;
+			}
 			col_no++;		/* Goto next field to keep */
 		}
 		col_no += GMT_assign_aspatial_cols (C);	/* Fill in any columns given via aspatial OGR/GMT values */
