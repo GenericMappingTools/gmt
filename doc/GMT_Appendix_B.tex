@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.39 2011-03-15 02:06:28 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.40 2011-03-22 15:46:42 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright (c) 2000-2011.
@@ -47,9 +47,8 @@ keeping more than one profile in a file.  Such files are called
 just outlined except that they have segment headers interspersed with
 data records that signal the start of a segment.
 The segment headers may be of any format, but all must have the same
-character in the first column.  When using such files, you must
-specify the \Opt{m} option.  The unique character is by default
-'$>$', but you can override that by modifying the {\bf IO\_SEGMENT\_MARKER}
+character in the first column.  The unique character is by default
+'$>$', but you can override that by modifying the \textbf{IO\_SEGMENT\_MARKER}
 default setting.  Programs can examine the segment headers to see if they
 contain \Opt{D} for a distance value, \Opt{W} and \Opt{G} options for specifying pen and
 fill attributes for individual segments, \Opt{Z} to change
@@ -74,10 +73,8 @@ segment headers are assumed to be records where all the fields equal
 NaN.  The format and number of fields are specified with the \Opt{b} option.
 Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
 where \textbf{s} designates single precision (default is \textbf{d} for double) and
-\emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}] 
-(the programs know how many columns to write, unless you use \Opt{m}, in which
-case we need to know the number of output columns up front).  If you need
-to swap the byte-order on either input or output you must use upper case
+\emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}].
+If you need to swap the byte-order on either input or output you must use upper case
 \textbf{S} or \textbf{D} instead.
 
 \subsection{NetCDF tables}
