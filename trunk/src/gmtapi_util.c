@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.34 2011-03-18 06:21:12 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.35 2011-03-23 23:37:38 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1966,11 +1966,11 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup ((char *)(*resource));
 				if (family == GMT_IS_GRID && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids so access can work */
-				if (GMT_access (API->GMT, file, F_OK)) {	/* For input we can check if the file exists. */
+				if (GMT_access (API->GMT, file, F_OK) && strncmp(file,"http",4)) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_report (API->GMT, GMT_MSG_FATAL, "File %s not found\n", file);
 					return (GMT_Report_Error (API, GMT_FILE_NOT_FOUND));
 				}
-				if (GMT_access (API->GMT, file, R_OK)) {	/* Found it but we cannot read. */
+				if (GMT_access (API->GMT, file, R_OK) && strncmp(file,"http",4)) {	/* Found it but we cannot read. */
 					GMT_report (API->GMT, GMT_MSG_FATAL, "Not permitted to read file %s\n", file);
 					return (GMT_Report_Error (API, GMT_BAD_PERMISSION));
 				}
