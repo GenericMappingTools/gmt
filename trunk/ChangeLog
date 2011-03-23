@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.890 2011-03-22 21:45:42 remko Exp $
+	$Id: ChangeLog,v 1.891 2011-03-23 23:42:44 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-23	jluis
+	* gmt_grdio.c:		Do not test if file exist for files imported via GDAL and 
+				that are located elsewhere on the Web (name starting by 'http'). 
+				With this we can import files directly via their URL
+	* gmtapi_util.c:	---"---
 
 2011-03-22	remko
 	* gmt_init.c:		Fixed erroneous way of scanning symbol option -Sm
