@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.143 2011-03-21 20:00:13 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.144 2011-03-23 23:37:38 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,8 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
+			if (val != 22 || strncmp(tmp,"http",4))		/* Do not try path stuff with Web files (accessed via GDAL) */
+				if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
 			strcpy (header->name, tmp);
