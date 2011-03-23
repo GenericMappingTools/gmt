@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.18 2011-03-22 00:01:40 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.19 2011-03-23 16:01:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -253,7 +253,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			if (nBands == 4 && do_BIP) {	/* Assume fourth band holds the alpha channel */
 				nRGBA = 4;
 			}
-			else if (nBands < 3 || nBands > 4) {
+			else if (nBands < 3 || nBands > 4 && do_BIP) {
 				GMT_message (C, "gdalread: BIP request ignored since n of bands is not 3 or 4\n");
 				do_BIP = FALSE;
 			}
@@ -304,7 +304,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	mVector = GMT_memory(C, NULL, nY, GMT_LONG);
 	for (m = 0; m < nY; m++) mVector[m] = m*nX;
-	nVector = GMT_memory(C, NULL, nX, GMT_LONG);
+	/*nVector = GMT_memory(C, NULL, nX+4*pad, GMT_LONG);*/	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	for ( i = 0; i < nBands; i++ ) {
@@ -334,24 +334,27 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 		switch ( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
+				/* ACtivate/fix when we apply the no-padding for images
 				for (n = 0; n < nXSize; n++)
 					if (do_BIP)
 						nVector[n] = n * nRGBA + i_x_nXYSize;
 					else
 						nVector[n] = n;
+				*/
 				Ctrl->UInt8.active = TRUE;
-				if (fliplr) {
+				if (fliplr) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
-						nn = m * nXSize + i_x_nXYSize;
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
 					}
 				}
 				else
 					for (m = 0; m < nYSize; m++) {
-						nn = m * nXSize + i_x_nXYSize;
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
-							Ctrl->UInt8.data[nVector[n]] = tmp[mVector[m]+n];
+							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
+							/*Ctrl->UInt8.data[nVector[n] + i_x_nXYSize] = tmp[mVector[m]+n];*/
 					}
 				break;
 			case GDT_Int16:
