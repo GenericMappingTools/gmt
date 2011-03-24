@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.892 2011-03-24 14:17:52 remko Exp $
+	$Id: ChangeLog,v 1.893 2011-03-24 23:52:52 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-24	jluis
+	* gmt_grdio.c:		Do more extensive tests to see if a file is in the internet 
+				or is compressed and accessed via GDAL.
+	* gmtapi_util.c:	Add GMT_check_url_name() function to test if file resides 
+				in internet or is compressed and accessed via GDAL.
 
 2011-03-24	remko
 	* grdraster_func.c:	Exit load_rasinfo with proper error message. Skip garbled
