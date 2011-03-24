@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.144 2011-03-23 23:37:38 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.145 2011-03-24 23:44:56 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (val != 22 || strncmp(tmp,"http",4))		/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (val != 22 || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
@@ -1577,4 +1577,20 @@ GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex_mode, GMT_LONG *
 		*inc = 1; *off = 0;
 	}
 	return (do_header);
+}
+
+GMT_LONG GMT_check_url_name (char *fname) {
+	/* File names starting as below should not be tested for existance or reading permitions as they
+	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
+	   the conditions holds true, returns TRUE. All cases are read via GDAL support. */
+	if ( !strncmp(fname,"http:",5)        || 
+		!strncmp(fname,"ftp:",4)      || 
+		!strncmp(fname,"/vsizip/",8)  || 
+		!strncmp(fname,"/vsigzip/",9) || 
+		!strncmp(fname,"/vsimem/",8)  || 
+		!strncmp(fname,"/vsitar/",8) )
+
+		return (TRUE);
+	else
+		return (FALSE);
 }
