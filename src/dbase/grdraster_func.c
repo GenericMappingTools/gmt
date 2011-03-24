@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.4 2011-03-24 14:17:18 remko Exp $
+ *	$Id: grdraster_func.c,v 1.5 2011-03-24 20:54:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -672,7 +672,8 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
-			case '<':	/* Input files */
+			case '<':	/* Input text as data description */
+			case '#':	/* Input ID number as data set selection */
 				Ctrl->In.active = TRUE;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
