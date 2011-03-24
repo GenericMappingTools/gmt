@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.60 2011-03-15 02:06:35 guru Exp $
+#	$Id: Makefile,v 1.61 2011-03-24 17:52:14 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,7 +171,7 @@ $(LIBPS_O) $(PSLDEMO_O):	$(PS_H)
 # Additional unusual dependancies
 
 blockmean.o blockmedian.o blockmode.o:	block_subs.h
-gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c gmt_esri_io.c
+gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c gmt_esri_io.c gmt_gdalread.c
 gmt_grdio.o:	gmt_grdformats.h
 gmt_init.o:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_unique.h \
 		gmt_keycases.h gmt_keywords.h gmt_media_name.h gmt_media_size.h
