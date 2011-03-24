@@ -1,4 +1,4 @@
-#	$Id: grdraster.info,v 1.6 2011-03-15 02:06:31 guru Exp $
+#	$Id: grdraster.info,v 1.7 2011-03-24 14:14:09 remko Exp $
 #
 # This file contains information on rasterfiles which are readable with grdraster.
 # This file must be named grdraster.info.  At run time, grdraster will look for
@@ -21,7 +21,7 @@
 # -R<w>/<e>/<s>/<n> describes the range of the raster in the usual GMT -R manner.
 # -I<x_inc>/<y_inc> describes the sampling interval in the usual GMT -I manner.
 # GorP is either G or P, indicating Grid or Pixel registration.  Optionally, you
-#	can append G (Geographic) or C (Cartesian) to explicity set this attribute
+#	can append G (Geographic) or C (Cartesian) to explicitly set this attribute
 #	which would otherwise be guessed based on the x/y range
 # type is one of the following, indicating the kind of data stored in the raster:
 #	b	bit data, either 0 or 1, one bit per data value.
