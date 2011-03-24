@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.78 2011-03-24 12:43:17 remko Exp $
+#  $Id: GNUmakefile,v 1.79 2011-03-24 21:00:04 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ all:		FILES
 alltests:	extests tests doctests
 
 extests:
-		@cd share/doc/gmt/examples ; $(MAKE) $@
+		@cd doc/examples ; $(MAKE) $@
 
 tests:
 		@cd test ; sh run_gmt_tests.sh
@@ -138,7 +138,7 @@ doctests:
 
 cleantests:
 		@cd doc ; $(MAKE) clean
-		@cd share/doc/gmt/examples ; $(MAKE) clean
+		@cd doc/examples ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
 # Cleaning
@@ -206,12 +206,12 @@ latest-config:
 
 install-doc::	webman pdfman docs
 
-webman:		share/doc/gmt/html/man/blockmean.html
-share/doc/gmt/html/man/blockmean.html:	guru/webman.sh src/blockmean.1
+webman:		doc/html/man/blockmean.html
+doc/html/man/blockmean.html:	guru/webman.sh src/blockmean.1
 		$(SHELL) guru/webman.sh -s
 
-pdfman: 	share/doc/gmt/pdf/GMT_Manpages.pdf
-share/doc/gmt/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
+pdfman: 	doc/pdf/GMT_Manpages.pdf
+doc/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
 		$(SHELL) guru/pdfman.sh -s
 
 docs pdfdocs:		FILES
@@ -257,7 +257,7 @@ tar_share:	ftpdir
 tar_doc:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis > tmp.lis
-		ls share/doc/gmt/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
+		ls doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
@@ -295,4 +295,4 @@ include Makefile
 
 spotless::
 		rm -rf src/config.mk src/gmt_version.h configure autom4te.cache
-		rm -f share/doc/gmt/examples/ex*/*.ps
+		rm -f doc/examples/ex*/*.ps
