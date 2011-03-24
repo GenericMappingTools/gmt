@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.87 2011-03-15 02:06:28 guru Exp $
+#	$Id: Makefile,v 1.88 2011-03-24 21:00:04 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -150,9 +150,9 @@ install-man uninstall-man:
 		$(MAKE) TARGET=$@ $(SUPPL)
 
 install-doc::
-		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
+		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
 			mkdir -p $(docdir); \
-			cp -pr $(rootdir)/share/doc/gmt/{html,pdf,examples,tutorial} $(docdir); \
+			cp -pr $(rootdir)/doc/{html,pdf,examples,tutorial} $(docdir); \
 			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
@@ -168,8 +168,8 @@ uninstall-doc:
 # Run examples with the binaries from the src directory, not the installation directory.
 
 examples run-examples animations run-animations:
-		@if [ -d share/doc/gmt/examples ]; then \
-			cd share/doc/gmt/examples; $(MAKE) $@; \
+		@if [ -d doc/examples ]; then \
+			cd doc/examples; $(MAKE) $@; \
 		else \
 			echo "examples directory not installed"; \
 		fi
@@ -182,7 +182,7 @@ spotless::
 		\rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ $(SUPPL)
 		cd src ; $(MAKE) $@
-		cd share/doc/gmt/examples ; $(MAKE) $@
+		cd doc/examples ; $(MAKE) $@
 
 distclean:	spotless
 
