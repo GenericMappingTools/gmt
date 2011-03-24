@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.891 2011-03-23 23:42:44 jluis Exp $
+	$Id: ChangeLog,v 1.892 2011-03-24 14:17:52 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-24	remko
+	* grdraster_func.c:	Exit load_rasinfo with proper error message. Skip garbled
+				records instead of stop reading grdraster.info file.
+				Do not exit program on empty info file when printing syntax.
 
 2011-03-23	jluis
 	* gmt_grdio.c:		Do not test if file exist for files imported via GDAL and 
