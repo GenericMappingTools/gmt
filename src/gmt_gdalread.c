@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.19 2011-03-23 16:01:53 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.20 2011-03-24 17:53:05 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -250,11 +250,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	switch ( GDALGetRasterDataType(hBand) ) {
 		case GDT_Byte:
 			Ctrl->UInt8.data = GMT_memory (C, NULL, n_alloc, unsigned char);
-			if (nBands == 4 && do_BIP) {	/* Assume fourth band holds the alpha channel */
+			if (nBands == 4 && do_BIP)	/* Assume fourth band holds the alpha channel */
 				nRGBA = 4;
-			}
-			else if (nBands < 3 || nBands > 4 && do_BIP) {
-				GMT_message (C, "gdalread: BIP request ignored since n of bands is not 3 or 4\n");
+			else if (nBands != 3 && do_BIP) {
+				GMT_message (C, "gdalread: BIP request ignored since number of bands is not 3 or 4\n");
 				do_BIP = FALSE;
 			}
 			break;
