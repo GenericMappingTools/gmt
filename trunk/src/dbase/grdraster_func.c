@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.5 2011-03-24 20:54:20 guru Exp $
+ *	$Id: grdraster_func.c,v 1.6 2011-03-25 12:57:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -566,12 +566,16 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			expected_size = (GMT_LONG)(ceil (GMT_get_nm (rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125) + rasinfo[nfound].skip);
 		else
 			expected_size = (GMT_LONG)(GMT_get_nm (rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
-		if (STAT (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path), &F)) {	/* Inquiry about file failed somehow */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Unable to stat file %s - Skipping it.\n", rasinfo[nfound].h.remark);
+		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
+			strcpy (rasinfo[nfound].h.remark, path);
+			STAT (path, &F);
+		}
+		else {	/* Inquiry about file failed somehow */
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
 			continue;
 		}
-		else
-			delta = (GMT_LONG)F.st_size - expected_size;
+
+		delta = (GMT_LONG)F.st_size - expected_size;
 		if (delta == GRD_HEADER_SIZE)
 			rasinfo[nfound].skip = GRD_HEADER_SIZE;	/* Must skip GMT grd header */
 		else if (delta) {
