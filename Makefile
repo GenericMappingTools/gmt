@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.89 2011-03-25 01:32:31 remko Exp $
+#	$Id: Makefile,v 1.90 2011-03-25 02:13:42 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,8 @@ install-doc::
 		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
 			mkdir -p $(docdir); \
 			cp -pr $(rootdir)/doc/{html,pdf,examples,tutorial} $(docdir); \
-			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
+			rm -rf $(docdir)/examples/{orig,tests,*.ps,*.pdf,*.png} \
+				$(docdir)/{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
 		fi
