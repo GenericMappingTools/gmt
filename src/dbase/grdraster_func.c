@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.7 2011-03-25 13:11:54 remko Exp $
+ *	$Id: grdraster_func.c,v 1.8 2011-03-25 20:03:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,7 +49,7 @@ struct GRDRASTER_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct T {	/* -T<output_table> */
 		GMT_LONG active;
@@ -689,7 +689,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.inc[GMT_X], &Ctrl->I.inc[GMT_Y])) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -705,10 +705,10 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	}
 
 	/* Check that arguments were valid:  */
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, &Ctrl->I.inc[GMT_X], &Ctrl->I.inc[GMT_Y], NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR -I option.  You must specify only one raster file ID.\n");
 #ifndef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "GMT SYNTAX ERROR:  You must select only one of -G or -T.\n");
@@ -722,9 +722,9 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 
 GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, k, ksize = 0, iselect, imult, jmult, nrasters, ij_offset;
+	GMT_LONG i, j, k, ksize = 0, iselect, imult, jmult, nrasters;
 	GMT_LONG irasstart, jrasstart, n_nan, iras, jras, ij, ijras, jseek;
-	GMT_LONG error = FALSE, firstread, nm, nmask = 0;
+	GMT_LONG error = FALSE, firstread, nmask = 0;
 
 	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN];
 	unsigned char *ubuffer = NULL;
@@ -758,10 +758,6 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
-
-	GMT_memset (&myras, 1, struct GRDRASTER_INFO);
-	Grid = GMT_create_grid (GMT);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 	if (!(nrasters = load_rasinfo (GMT, &rasinfo, MY_ENDIAN))) Return (EXIT_FAILURE);
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %ld data sets in grdraster.info\n", nrasters);
@@ -812,37 +808,35 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_message (GMT, "ERROR:  No raster with text %s in grdraster.info\n", tselect);
 		error++;
 	}
-	else
+	else {
+		GMT_memset (&myras, 1, struct GRDRASTER_INFO);
 		myras = rasinfo[j];
+	}
 
 #ifdef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
 	if (!Ctrl->G.active) Ctrl->T.active = TRUE;
 #endif
 
-	if (error) {
-		GMT_free_grid (GMT, &Grid, FALSE);
-		Return (EXIT_FAILURE);
-	}
+	if (error) Return (EXIT_FAILURE);
 
 	/* OK, here we have a recognized dataset ID */
 
-	Grid->header->wesn[XLO] = GMT->common.R.wesn[XLO];
-	Grid->header->wesn[XHI] = GMT->common.R.wesn[XHI];
-	Grid->header->wesn[YLO] = GMT->common.R.wesn[YLO];
-	Grid->header->wesn[YHI] = GMT->common.R.wesn[YHI];
+	Grid = GMT_create_grid (GMT);
+	GMT_grd_init (GMT, Grid->header, options, FALSE);
+
+	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = (myras.geo) ? GMT_IS_LON : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = (myras.geo) ? GMT_IS_LAT : GMT_IS_FLOAT;
 
 	/* Everything looks OK so far.  If (Ctrl->I.active) verify that it will work, else set it.  */
 	if (Ctrl->I.active) {
-		Grid->header->inc[GMT_X] = Ctrl->I.xinc;
-		Grid->header->inc[GMT_Y] = Ctrl->I.yinc;
+		GMT_memcpy (Grid->header->inc, Ctrl->I.inc, 2, double);
 		tol = 0.01 * myras.h.inc[GMT_X];
-		imult = irint(Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
+		imult = irint (Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
 		if (imult < 1 || fabs(Grid->header->inc[GMT_X] - imult * myras.h.inc[GMT_X]) > tol) error++;
 		tol = 0.01 * myras.h.inc[GMT_Y];
-		jmult = irint(Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
+		jmult = irint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
 			GMT_message (GMT, "ERROR:  Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
@@ -850,8 +844,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	else {
-		Grid->header->inc[GMT_X] = myras.h.inc[GMT_X];
-		Grid->header->inc[GMT_Y] = myras.h.inc[GMT_Y];
+		GMT_memcpy (Grid->header->inc,  myras.h.inc, 2, double);
 		imult = jmult = 1;
 	}
 
@@ -878,10 +871,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Now Enforce that wesn will fit inc[GMT_X], inc[GMT_Y].  Set nx, ny but reset later based on G or P  */
 	tol = 0.01 * Grid->header->inc[GMT_X];
-	Grid->header->nx = irint((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
+	Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
 	if (fabs ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) - Grid->header->inc[GMT_X] * Grid->header->nx) > tol) error++;
 	tol = 0.01 * Grid->header->inc[GMT_Y];
-	Grid->header->ny = irint((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
+	Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
 	if (fabs ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) - Grid->header->inc[GMT_Y] * Grid->header->ny) > tol) error++;
 	if (error) {	/* Must cleanup and give warning */
 		Grid->header->wesn[XLO] = floor (Grid->header->wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
@@ -930,7 +923,8 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid->header->registration = myras.h.registration;
 	Grid->header->z_min = DBL_MAX;
 	Grid->header->z_max = -DBL_MAX;
-	Grid->header->xy_off = 0.5 * Grid->header->registration;
+	GMT_set_grddim (GMT, Grid->header);
+	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
 	grdlatorigin = GMT_row_to_y (0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
@@ -947,13 +941,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (i = 0; i < Grid->header->nx; i++) x[i] = GMT_col_to_x (i, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-		ij_offset = 0;
 		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_REC))) Return (error);			/* Enables data output and sets access mode */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-	} else {	/* Need entire grid */
-		nm = GMT_get_nm (Grid->header->nx, Grid->header->ny);
-		Grid->data = GMT_memory (GMT, NULL, nm, float);
-		ij_offset = Grid->header->nx;
+	} else {	/* Need an entire (padded) grid */
+		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);			/* Enables data output and sets access mode */
 	}
 
@@ -980,8 +971,8 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Reading from raster %s\n", myras.h.remark);
 	if (myras.swap_me) GMT_report (GMT, GMT_MSG_NORMAL, "Data from %s will be byte-swapped\n", myras.h.remark);
 
-	if (myras.type == 'b') {
-		if ( (GMT_fread((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
+	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
+		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
 			GMT_message (GMT, "ERROR:  Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
@@ -989,15 +980,17 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		for (j = 0, jras = jrasstart; j < Grid->header->ny; j++, jras += jmult) {
 			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
 				/* This entire row is outside the raster:  */
-				for (i = 0, ij = j * ij_offset; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
+				for (i = 0; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
 			}
 			else {
 				iras = irasstart;
 				ijras = jras * myras.h.nx;
-				for (i = 0, ij = j * ij_offset; i < Grid->header->nx; i++, ij++) {
+				
+				for (i = 0; i < Grid->header->nx; i++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
 					if (iras < 0 || iras >= myras.h.nx) {
 						Grid->data[ij] = GMT->session.f_NaN;
@@ -1012,7 +1005,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					iras += imult;
 				}
 			}
-			if (Ctrl->T.active) {
+			if (Ctrl->T.active) {	/* Just dump the row as xyz triplets */
 				out[1] = y;
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
@@ -1027,9 +1020,10 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		firstread = TRUE;
 		for (j = 0, jras = jrasstart; j < Grid->header->ny; j++, jras += jmult) {
 			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
 				/* This entire row is outside the raster:  */
-				for (i = 0, ij = j * ij_offset; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
+				for (i = 0; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
 			}
 			else {
@@ -1075,7 +1069,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						break;
 				}
 				iras = irasstart;
-				for (i = 0, ij = j * ij_offset; i < Grid->header->nx; i++, ij++) {
+				for (i = 0; i < Grid->header->nx; i++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
 					if (iras < 0 || iras >= myras.h.nx) {
 						Grid->data[ij] = GMT->session.f_NaN;
@@ -1089,7 +1083,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					iras += imult;
 				}
 			}
-			if (Ctrl->T.active) {
+			if (Ctrl->T.active) {	/* Just dump the row as xyz triplets */
 				out[1] = y;
 				for (i = 0; i < Grid->header->nx; i++) {
 					out[0] = x[i];
@@ -1109,13 +1103,12 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING - Your grid file is entirely full of NaNs.\n");
 
-	if (Ctrl->T.active) {
+	if (Ctrl->T.active)
 		GMT_free (GMT, x);
-	}
-	else {
-		if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-	}
+	else if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid))
+		Return (GMT_DATA_WRITE_ERROR);
+
+	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
