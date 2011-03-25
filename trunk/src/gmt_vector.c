@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.38 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_vector.c,v 1.39 2011-03-25 22:32:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -615,7 +615,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	}
 	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 0, n_tmp, double);
 
-	/* Destroy old alocated memory and put the knew none in place */
+	/* Destroy old alocated memory and put the new none in place */
 	GMT_free (C, lon);
 	GMT_free (C, lat);
 	*a_lon = lon_tmp;

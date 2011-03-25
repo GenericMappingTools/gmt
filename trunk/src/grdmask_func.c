@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdmask_func.c,v 1.4 2011-03-25 22:32:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ GMT_LONG GMT_grdmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Sets <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
 	GMT_message (GMT, "\t   Optionally, use -Ni (inside) or -NI (inside+edge) to set polygon ID:\n");
-	GMT_message (GMT, "\t     a) If OGR/GMT files, get polygon ID via -a for 2nd (z) column.\n");
+	GMT_message (GMT, "\t     a) If OGR/GMT files, get polygon ID via -a for Z column.\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-L<label>) as polygon IDs.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
 	GMT_dist_syntax (GMT, 'S', "Sets search radius to identify inside points.");
@@ -349,7 +349,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					ID += 1.0;
 
-				if (resample)  S->n_rows = GMT_fix_up_path (GMT, &x, &y, S->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
+				if (resample) S->n_rows = GMT_fix_up_path (GMT, &x, &y, S->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
 				for (row = 0; row < Grid->header->ny; row++) {
 
 					yy = GMT_grd_row_to_y (row, Grid->header);
@@ -375,7 +375,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							side_h = GRDMASK_OUTSIDE;	/* Init to same status */
 							while (side_h == GRDMASK_OUTSIDE && seg_h < D->table[tbl]->n_segments && (H = D->table[tbl]->segment[seg_h]) && H->ogr && H->ogr->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
 								/* Must check if point is inside this hole polygon */
-								if (resample)  H->n_rows = GMT_fix_up_path (GMT, &H->coord[GMT_X], &H->coord[GMT_Y], H->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
+								if (resample) H->n_rows = GMT_fix_up_path (GMT, &H->coord[GMT_X], &H->coord[GMT_Y], H->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
 								side_h = GMT_inonout (GMT, xx, yy, H);
 								seg_h++;	/* Move to next polygon */
 							}
