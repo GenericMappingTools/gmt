@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.228 2011-03-22 19:30:37 guru Exp $
+ *	$Id: gmt_io.c,v 1.229 2011-03-25 12:57:25 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -490,6 +490,17 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	 * current directory, home directory and $C->session.USERDIR (default ~/.gmt)
 	 */
 
+	/* If a full path is given, we only look for that file directly */
+
+#ifdef WIN32
+	if (stem[0] == DIR_DELIM || stem[1] == ':') {
+#else
+	if (stem[0] == DIR_DELIM) {
+#endif
+		if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
+		return (NULL);	/* No file found, give up */
+	}
+
 	/* In isolation mode (when C->session.TMPDIR is defined), we first look there */
 
 	if (C->session.TMPDIR) {
@@ -536,6 +547,14 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 		}
 		return (NULL);	/* Cannot read, give up */
 	}
+
+	/* If we got here and a full path is given, we give up */
+
+#ifdef WIN32
+	if (stem[0] == DIR_DELIM || stem[1] == ':') return (NULL);
+#else
+	if (stem[0] == DIR_DELIM) return (NULL);
+#endif
 
 	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories */
 
