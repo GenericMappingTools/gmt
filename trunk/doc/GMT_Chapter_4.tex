@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.132 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.133 2011-03-25 12:58:22 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -2083,26 +2083,27 @@ simply reports back how many bad records were skipped during reading; see Sectio
 
 \GMT\ relies on several environment parameters, in particular to find data files and program settings.
 \begin{description}
-	\item [\$GMT\_SHAREDIR] points to the \GMT\ share directory where all run-time support files
+\item [\$GMT\_SHAREDIR] points to the \GMT\ share directory where all run-time support files
 	such as coastlines, custom symbols, \PS\ macros, color tables, and much more reside.  If this
 	parameter is not set it defaults to the share sub-directory selected during the \GMT\
-	install process (e.g., your answer to question C.9 on the web install form).  If no selection
-	was made the ultimate default is the share directory under the \GMT\ installation directory.
-	\item [\$GMT\_DATADIR] points to one or more directories where large and/or widely used data files can
+	install process (i.e., your answer to question C.9 on the web install form, or specified by the
+	option \filename{--datarootdir} in the \filename{configure} step of the installation), which normally
+	is the share directory under the \GMT\ installation directory.
+\item [\$GMT\_DATADIR] points to one or more directories where large and/or widely used data files can
 	be placed.  All \GMT\ programs look in these directories when a file is specified on the
 	command line and it is not present in the current directory.  This allows maintainers to
 	consolidate large data files and to simplify scripting that use these files since the absolute path need not be specified.
-	Separate multiple directories with colons; under Windows you use semi-colons.  Any directory
-	name that ends in ``*'' will be search recursively [not under Windows].
-	\item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
+	Separate multiple directories with colons (:); under Windows you use semi-colons (;).  Any directory
+	name that ends in ``*'' will be search recursively (not under Windows).
+\item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
 	(e.g., an alternate \filename{coastline.conf} file, preferred default settings in \filename{gmt.conf},
 	custom symbols and color palettes, and
 	shorthands for gridfile extensions via \filename{.gmt\_io}).  Users may also place their own
 	data files in this directory as \GMT\ programs will search for files given on the command
 	line in both {\bf \$GMT\_DATADIR} and {\bf \$GMT\_USERDIR}.
-	\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the three files
+\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the three files
 	\filename{.gmtcommands}, \filename{gmt.conf} and \filename{.gmt\_bb\_info}.  If not set
 	then these files are written to the current directory. See Appendix~\ref{app:P} for more on
 	the use of {\bf \$GMT\_TMPDIR}.
 \end{description}
-	
+Note that files whose full path is given will never be searched for in any of these directories.
