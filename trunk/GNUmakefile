@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.83 2011-03-25 16:08:03 remko Exp $
+#  $Id: GNUmakefile,v 1.84 2011-03-25 16:17:21 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -89,10 +89,10 @@ help::
 #!
 #!update        : Get the latest source via cvs
 #!manpages      : Create manpages from text files
-#!usable        : Install-all and run examples & animations
-#!pdfman        : Install PDF version of manpages
-#!webman        : Install HTML version of manpages
-#!docs          : Install PDF documentation
+#!usable        : Install software, data, manpages and run examples & animations
+#!pdfman        : Create PDF version of manpages
+#!webman        : Create HTML version of manpages
+#!docs          : Create PDF documentation
 #!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
@@ -204,6 +204,10 @@ latest-config:
 
 docs pdfdocs:	$(FILES)
 		cd doc ; $(MAKE) pdf
+pdfman:		$(FILES)
+		cd doc ; $(MAKE) man
+webman:		$(FILES)
+		cd doc ; $(MAKE) htman
 
 prep_suppl:	clean config
 
