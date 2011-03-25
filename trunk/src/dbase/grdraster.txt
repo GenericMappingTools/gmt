@@ -9,7 +9,7 @@ BD(grdraster) [ IT(filenumber) | IT("text pattern") ] GMT_Rgeo_OPT
 .SH DESCRIPTION
 BD(grdraster) reads a file called IT(grdraster.info) from the current
 working directory, the directories pointed to by the environment variables
-BD($GMT_DATADIR) and BD($GMT_USERDIR), or in BD($GMT_SHAREDIR)/dbase
+BD($GMT_USERDIR) and BD($GMT_DATADIR), or in BD($GMT_SHAREDIR)/dbase
 (in that order).  The file IT(grdraster.info) defines binary
 arrays of data stored in scan-line format in data files.  Each file is given
 a IT(filenumber) in the info file.  BD(grdraster) figures out how to
