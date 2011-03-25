@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_atan.sh,v 1.11 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_atan.sh,v 1.12 2011-03-25 00:56:04 remko Exp $
 #
 . functions.sh
 
-grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -N -fg -G$$.t.nc
+grdgradient -A45 ../tutorial/us.nc -N -fg -G$$.t.nc
 grd2xyz -Z $$.t.nc > $$.d
 cp $$.d save.d
 pshistogram $$.d -R-0.75/0.75/0/20 -JX1.5/1 -B0.5/5f5WSne -W0.01 -P -K -Gblack -Z1 > GMT_atan.ps
@@ -26,7 +26,7 @@ psxy -R -J -O -K -Wthinnest << EOF >> GMT_atan.ps
 0	-1
 0	1
 EOF
-grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -Nt -fg -G$$.tt.nc
+grdgradient -A45 ../tutorial/us.nc -Nt -fg -G$$.tt.nc
 grd2xyz -Z $$.tt.nc > $$.d
 cp $$.d save.d
 pshistogram $$.d -R-0.75/0.75/0/5 -JX1.5/1 -B0.5/2f1WSne -W0.01 -O  -K -Gblack -X1.85 -Z1 >> GMT_atan.ps
