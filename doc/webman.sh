@@ -1,12 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.47 2011-03-25 01:32:31 remko Exp $
+#	 $Id: webman.sh,v 1.1 2011-03-25 15:55:02 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
 #	Author:	Paul Wessel and Remko Scharroo
 #	Date:	22-JUN-2007
-#	Version: 1.3 Bourne shell
 #
 #	Uses groff -T html + alot of sed and awk...
 #	Assumes a cvs update has occured so files are fresh.
@@ -28,7 +27,9 @@ fi
 
 echo "Creating HTML man pages ..."
 
-mkdir -p doc/html/man $tmp
+mkdir -p html/man $tmp
+
+cd ..
 
 # Make a list of all manpages
 grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $tmp/pages.lis
@@ -64,13 +65,13 @@ grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%><b>%s</b>%%><b><A NAME=%c%s%
 
 while read f; do
 	prog=`basename $f|cut -d. -f1`
-	rm -f doc/html/man/$prog.html
+	html=doc/html/man/$prog.html
 	[ $gush = 1 ] && echo "Making $prog.html"
 	grep -v "${prog}<" $tmp/pages.w0.sed > $tmp/pages.t0.sed
 	if [ "X$prog" = "Xgmtdefaults" ]; then
-		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.def.sed -f $tmp/pages.all.sed > doc/html/man/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.def.sed -f $tmp/pages.all.sed > $html
 	else
-		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.all.sed > doc/html/man/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.all.sed > $html
 	fi
 done < $tmp/pages.lis
 

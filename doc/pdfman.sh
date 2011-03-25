@@ -1,12 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.18 2011-03-25 01:32:31 remko Exp $
+#	 $Id: pdfman.sh,v 1.1 2011-03-25 15:55:02 remko Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #
 #	Author:	Paul Wessel and Remko Scharroo
 #	Date:	29-JUN-2007
-#	Version: 1.2 Bourne shell
 #
 #	Uses groff -man
 #	Assumes a cvs update has occured so files are fresh.
@@ -28,7 +27,9 @@ fi
 
 echo "Creating PDF man pages ..."
 
-mkdir -p doc/pdf $tmp
+mkdir -p pdf $tmp
+
+cd ..
 
 man2pdf () {
 	rm -f $tmp/$1.ps
