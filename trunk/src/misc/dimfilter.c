@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.15 2011-03-15 02:06:37 guru Exp $
+ * $Id: dimfilter.c,v 1.16 2011-03-25 22:17:42 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -62,7 +62,7 @@ struct DIMFILTER_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -213,7 +213,7 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -264,8 +264,8 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
 	if (!Ctrl->Q.active) {
-		GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, NULL, &Ctrl->I.active);
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+		GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "GMT SYNTAX ERROR -D option:  Choose from the range 0-4\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "GMT SYNTAX ERROR -F option:  Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
@@ -427,10 +427,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
 
-		if (Ctrl->I.active) {
-			inc[0] = Ctrl->I.xinc;
-			inc[1] = Ctrl->I.yinc;
-		}
+		if (Ctrl->I.active)
+			GMT_memcpy (inc, Ctrl->I.inc, 2, double);
 		else
 			GMT_memcpy (inc, Gin->header->inc, 2, double);
 
@@ -450,7 +448,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc[0], inc[1], !one_or_zero), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc, !one_or_zero), Ctrl->G.file);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */
@@ -470,7 +468,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE						
 		if (Ctrl->S.active) {
 			Sout = GMT_create_grid (GMT);
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc[0], inc[1], !one_or_zero), Ctrl->S.file);
+			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
 			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 		}
 #endif	

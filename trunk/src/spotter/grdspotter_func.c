@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -136,7 +136,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct L {	/* -Lfile */
 		GMT_LONG active;
@@ -302,7 +302,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -367,10 +367,10 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0, "GMT SYNTAX ERROR -I.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I.  Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "GMT SYNTAX ERROR -G:  Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "GMT SYNTAX ERROR -Z:  Must give name of topo gridfile\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "GMT SYNTAX ERROR:  Must specify both -L and -Q if one is present\n");
@@ -531,7 +531,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, G->header, options, FALSE);	/* Initialize grid structure */
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, GMT->common.r.active), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	G->data = GMT_memory (GMT, NULL, G->header->size, float);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
@@ -841,7 +841,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_grd_init (GMT, DI->header, options, FALSE);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, DI, Z->header->wesn, Z->header->inc[GMT_X], G->header->inc[GMT_Y], Z->header->registration), Ctrl->D.file);
+			GMT_err_fail (GMT, GMT_init_newgrid (GMT, DI, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->D.file);
 			DI->data = GMT_memory (GMT, NULL, PA->header->size, float);
 		}
 		if (Ctrl->PA.active) {
@@ -849,7 +849,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_grd_init (GMT, PA->header, options, FALSE);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, PA, Z->header->wesn, Z->header->inc[GMT_X], G->header->inc[GMT_Y], Z->header->registration), Ctrl->PA.file);
+			GMT_err_fail (GMT, GMT_init_newgrid (GMT, PA, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->PA.file);
 			PA->data = GMT_memory (GMT, NULL, PA->header->size, float);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Compute DI and/or PA grids\n");

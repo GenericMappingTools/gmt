@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.151 2011-03-15 02:06:37 guru Exp $
+ *	$Id: x2sys.c,v 1.152 2011-03-25 22:17:42 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -981,7 +981,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 
 	GMT_memset (B, 1, struct X2SYS_BIX);
 	GMT_memset (unit, 4, char);
-	B->bin_x = B->bin_y = 1.0;
+	B->inc[GMT_X] = B->inc[GMT_Y] = 1.0;
 	B->wesn[XLO] = 0.0;	B->wesn[XHI] = 360.0;	B->wesn[YLO] = -90.0;	B->wesn[YHI] = +90.0;
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
 	B->periodic = sfile[0] = suffix[0] = 0;
@@ -1038,7 +1038,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 					if (p[2] == 'd') geodetic = 2;
 					break;
 				case 'I':
-					if (GMT_getinc (C, &p[2], &B->bin_x, &B->bin_y)) {
+					if (GMT_getinc (C, &p[2], B->inc)) {
 						GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
@@ -1150,8 +1150,8 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 
 void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, GMT_LONG alloc)
 {
-	B->i_bin_x = 1.0 / B->bin_x;
-	B->i_bin_y = 1.0 / B->bin_y;
+	B->i_bin_x = 1.0 / B->inc[GMT_X];
+	B->i_bin_y = 1.0 / B->inc[GMT_Y];
 	B->nx_bin = irint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
 	B->ny_bin = irint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
 	B->nm_bin = B->nx_bin * B->ny_bin;

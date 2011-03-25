@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.3 2011-03-25 22:17:43 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,8 +247,8 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	x2sys_bix_init (GMT, &B, TRUE);
 	nav_flag = (1 << s->x_col) + (1 << s->y_col);	/* For bins just cut by track but no points inside the bin */
-	jump_180 = irint (180.0 / B.bin_x);
-	jump_360 = irint (360.0 / B.bin_x);
+	jump_180 = irint (180.0 / B.inc[GMT_X]);
+	jump_360 = irint (360.0 / B.inc[GMT_X]);
 
 	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
@@ -339,7 +339,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				X[1].x = data[s->x_col][j];	X[1].y = data[s->y_col][j];	X[1].d = hypot (dx, data[s->y_col][j] - data[s->y_col][j-1]);
 				nx = 2;
 				for (bj = MIN (last_bin_j, this_bin_j) + 1; bj <= MAX (last_bin_j, this_bin_j); bj++) {	/* If we go in here we know dy is non-zero */
-					y = B.wesn[YLO] + bj * B.bin_y;
+					y = B.wesn[YLO] + bj * B.inc[GMT_Y];
 					del_y = y - data[s->y_col][j-1];
 					del_x = del_y * dx / (data[s->y_col][j] - data[s->y_col][j-1]);
 					x = data[s->x_col][j-1] + del_x;
@@ -351,7 +351,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 				}
 				for (bi = start_i; bi <= end_i; bi++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
-					x = B.wesn[XLO] + bi * B.bin_x;
+					x = B.wesn[XLO] + bi * B.inc[GMT_X];
 					if (s->geographic && x >= 360.0) x -= 360.0;
 					del_x = x - data[s->x_col][j-1];
 					if (fabs (del_x) > 180.0) del_x = copysign (360.0 - fabs (del_x), -del_x);
@@ -400,8 +400,8 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		fprintf (GMT->session.std[GMT_OUT], "> %s\n", trk_name[i]);
 		for (ij = 0; ij < B.nm_bin; ij++) {
 			if (B.binflag[ij] == 0) continue;
-			x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.bin_x;
-			y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.bin_y;
+			x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
+			y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
 			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], x, 0);
 			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], y, 1);

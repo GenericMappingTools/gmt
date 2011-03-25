@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -53,7 +53,7 @@ struct XYZ2GRD_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
 		GMT_LONG active;
@@ -195,7 +195,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -225,7 +225,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "GMT SYNTAX ERROR option -S:  Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */
@@ -252,7 +252,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 #endif
 	if (do_grid) {
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "GMT SYNTAX ERROR option -G:  Must specify output file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
@@ -425,7 +425,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	no_data_f = (float)Ctrl->N.value;
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, GMT->common.r.active), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	
 	if (Ctrl->A.active) {
 		switch (Ctrl->A.mode) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdsample_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ struct GRDSAMPLE_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct L {	/* -L<flag> */
 		GMT_LONG active;
@@ -137,7 +137,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -152,7 +152,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
 				if (jj == 0) jj = ii;
 				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
-				GMT_getinc (GMT, format, &Ctrl->I.xinc, &Ctrl->I.yinc);
+				GMT_getinc (GMT, format, Ctrl->I.inc);
 				break;
 #endif
 			case 'Q':	/* Interpolation mode */
@@ -189,7 +189,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0), 
 					"GMT SYNTAX ERROR -Q:  threshold must be in [0,1] range\n");
@@ -197,7 +197,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active, 
 					"GMT SYNTAX ERROR:  Only one of -r, -T may be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), 
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), 
 					"GMT SYNTAX ERROR -I:  Must specify positive increments\n");
 	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -242,10 +242,8 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	Gout = GMT_create_grid (GMT);
 	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 
-	if (Ctrl->I.active) {
-		Gout->header->inc[GMT_X] = Ctrl->I.xinc;
-		Gout->header->inc[GMT_Y] = Ctrl->I.yinc;
-	}
+	if (Ctrl->I.active)
+		GMT_memcpy (Gout->header->inc, Ctrl->I.inc, 2, double);
 	else
 		GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,7 +40,7 @@ struct GRDINFO_CTRL {
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
 		GMT_LONG status;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct M {	/* -M */
 		GMT_LONG active;
@@ -137,7 +137,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 					Ctrl->I.status = 1;
 				else {	/* Report -R to nearest given multiple increment */
 					Ctrl->I.status = 2;
-					if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+					if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 						GMT_inc_syntax (GMT, 'I', 1);
 						n_errors++;
 					}
@@ -168,7 +168,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, n_files == 0, "GMT SYNTAX ERROR: Must specify one or more input files\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "GMT SYNTAX ERROR -T: Must specify a positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == 2 && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), "GMT SYNTAX ERROR -I: Must specify a positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == 2 && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I: Must specify a positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "GMT SYNTAX ERROR -M: Not compatible with -I or -T\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "GMT SYNTAX ERROR -L: Not compatible with -I or -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "GMT SYNTAX ERROR: Only one of -I -T can be specified\n");
@@ -482,10 +482,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (global_zmax == +DBL_MAX) global_zmax = GMT->session.d_NaN;
 
 	if (Ctrl->C.active && (Ctrl->I.active && Ctrl->I.status == 2)) {
-		global_xmin = floor (global_xmin / Ctrl->I.xinc) * Ctrl->I.xinc;
-		global_xmax = ceil  (global_xmax / Ctrl->I.xinc) * Ctrl->I.xinc;
-		global_ymin = floor (global_ymin / Ctrl->I.yinc) * Ctrl->I.yinc;
-		global_ymax = ceil  (global_ymax / Ctrl->I.yinc) * Ctrl->I.yinc;
+		global_xmin = floor (global_xmin / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
+		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
+		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
+		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		GMT_fprintf (GMT->session.std[GMT_OUT], "%" GMT_LL "d\t", n_grds);
 		GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], global_xmin, 0);	GMT_fputs ("\t", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], global_xmax, 0);	GMT_fputs ("\t", GMT->session.std[GMT_OUT]);
@@ -506,10 +506,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
 	}
 	else if ((Ctrl->I.active && Ctrl->I.status == 2)) {
-		global_xmin = floor (global_xmin / Ctrl->I.xinc) * Ctrl->I.xinc;
-		global_xmax = ceil  (global_xmax / Ctrl->I.xinc) * Ctrl->I.xinc;
-		global_ymin = floor (global_ymin / Ctrl->I.yinc) * Ctrl->I.yinc;
-		global_ymax = ceil  (global_ymax / Ctrl->I.yinc) * Ctrl->I.yinc;
+		global_xmin = floor (global_xmin / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
+		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
+		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
+		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		GMT_fprintf (GMT->session.std[GMT_OUT], "-R");
 		GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], global_xmin, 0);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);
 		GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], global_xmax, 0);	GMT_fputs ("/", GMT->session.std[GMT_OUT]);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ struct SEGY2GRD_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct L {	/* -L */
 		GMT_LONG active;
@@ -188,7 +188,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -249,10 +249,10 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 		}
 	}
 	
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR.  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
 
@@ -307,7 +307,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, GMT->common.r.active), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 
 	/* Decode grd information given, if any */
 

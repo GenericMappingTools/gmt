@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.17 2011-03-15 02:06:37 guru Exp $
+ *    $Id: sph2grd.c,v 1.18 2011-03-25 22:17:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct L {	/* -L<lc>/<lp>/<hp>/<hc> or -L<lo>/<hi> */
 		GMT_LONG active;
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 					break;
 				case 'I':
 					Ctrl->I.active = TRUE;
-					if (GMT_getinc (&argv[i][2], &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+					if (GMT_getinc (&argv[i][2], Ctrl->I.inc)) {
 						GMT_inc_syntax ('I', 1);
 						error++;
 					}
@@ -162,7 +162,7 @@ int main (int argc, char **argv)
 		exit (EXIT_FAILURE);
 	}
 	
-	GMT_check_lattice (&Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (n_files > 1) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input coefficient file\n", GMT->init.progname);
@@ -184,7 +184,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
 		error++;
 	}
-	if (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0) {
+	if (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n", GMT->init.progname);
 		error++;
 	}
@@ -212,8 +212,8 @@ int main (int argc, char **argv)
 	}
 	GMT_fclose (fp);
 	
-	header.x_inc = Ctrl->I.xinc;
-	header.y_inc = Ctrl->I.yinc;
+	header.x_inc = Ctrl->I.inc[GMT_X];
+	header.y_inc = Ctrl->I.inc[GMT_Y];
 	header.registration = GMT->common.r.active;
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);

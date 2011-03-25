@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,7 @@ struct GRDFILTER_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct N {	/* -Np|i|r */
 		GMT_LONG active;
@@ -302,7 +302,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 				break;
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -335,14 +335,14 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 		}
 	}
 	
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 5, "GMT SYNTAX ERROR -D option:  Choose from the range 0-5\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "GMT SYNTAX ERROR: -F option is required:\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "GMT SYNTAX ERROR -F option:  filter fullwidth must be nonzero:\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass, "GMT SYNTAX ERROR -F option:  Highpass filtering requires original -R -I\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -406,10 +406,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Gout = GMT_create_grid (GMT);
 	/* Use the -R region for output if set; otherwise match grid domain */
 	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
-	if (Ctrl->I.active) {
-		inc[0] = Ctrl->I.xinc;
-		inc[1] = Ctrl->I.yinc;
-	}
+	if (Ctrl->I.active)
+		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
 	else
 		GMT_memcpy (inc, Gin->header->inc, 2, double);
 	if (!full_360) {
@@ -425,7 +423,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc[0], inc[1], !one_or_zero), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc, !one_or_zero), Ctrl->G.file);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if new grid spacing is a multiple of old spacing */

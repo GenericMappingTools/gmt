@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.8 2011-03-25 20:03:30 guru Exp $
+ *	$Id: grdraster_func.c,v 1.9 2011-03-25 22:17:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -359,7 +359,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		i += 2;
 		strncpy(buf, &rasinfo[nfound].h.command[i], (size_t)j-i);
 		buf[j-i]='\0';
-		if (GMT_getinc (GMT, buf, &rasinfo[nfound].h.inc[GMT_X], &rasinfo[nfound].h.inc[GMT_Y]) ) {
+		if (GMT_getinc (GMT, buf, rasinfo[nfound].h.inc) ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (-I string conversion error).\n");
 			continue;
 		}
@@ -689,7 +689,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.inc[GMT_X], &Ctrl->I.inc[GMT_Y])) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -705,7 +705,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	}
 
 	/* Check that arguments were valid:  */
-	GMT_check_lattice (GMT, &Ctrl->I.inc[GMT_X], &Ctrl->I.inc[GMT_Y], NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,7 +81,7 @@ struct XYZOKB_CTRL {
 	} D;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct F {	/* -F<grdfile> */
 		GMT_LONG active;
@@ -301,7 +301,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -505,7 +505,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		Gout = GMT_create_grid (GMT);
 		GMT_grd_init (GMT, Gout->header, options, FALSE);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, FALSE), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);
 	
 		GMT_boundcond_param_prep (GMT, Gout, &edgeinfo);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);

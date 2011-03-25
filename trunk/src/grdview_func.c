@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdview_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,20 +217,20 @@ GMT_LONG quick_idist (struct GMT_CTRL *GMT, GMT_LONG x1, GMT_LONG y1, GMT_LONG x
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
 }
 
-GMT_LONG get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, double y_bottom, double xinc, double yinc, double dx2, double dy2) {
+GMT_LONG get_side (struct GMT_CTRL *GMT, double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
 	/* Figure out on what side this point sits on */
 
 	double del_x, del_y;
 	GMT_LONG side;
 
 	del_x = x - x_left;
-	if (del_x > dx2) del_x = xinc - del_x;
+	if (del_x > inc2[GMT_X]) del_x = inc[GMT_X] - del_x;
 	del_y = y - y_bottom;
-	if (del_y > dy2) del_y = yinc - del_y;
+	if (del_y > inc2[GMT_Y]) del_y = inc[GMT_Y] - del_y;
 	if (del_x < del_y) /* Cutting N-S gridlines */
-		side = ((x-x_left) > dx2) ? 1 : 3;
+		side = ((x-x_left) > inc2[GMT_X]) ? 1 : 3;
 	else /* Cutting E-W gridlines */
-		side = ((y-y_bottom) > dy2) ? 2 : 0;
+		side = ((y-y_bottom) > inc2[GMT_Y]) ? 2 : 0;
 	return (side);
 }
 
@@ -568,7 +568,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG PS_colormask_off = 0, way, *edge = NULL;
 
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_SMALL, z_ave;
-	double dx2, dy2, take_out, wesn[4], z_val, x_pixel_size, y_pixel_size;
+	double inc2[2], take_out, wesn[4], z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
 	double *z = NULL, *v = NULL, *xx = NULL, *yy = NULL, *xval = NULL, *yval = NULL;
@@ -794,7 +794,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_boundcond_set (GMT, Topo, &edgeinfo);
 
-	dx2 = 0.5 * Z->header->inc[GMT_X];	dy2 = 0.5 * Z->header->inc[GMT_Y];
+	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
 	for (j = 0; j < Topo->header->ny - 1; j++) {	/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
 		ij = GMT_IJP (Topo->header, j, 0);
@@ -910,7 +910,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->I.active && Ctrl->T.skip && GMT_is_fnan (Intens->data[k])) continue;
 			GMT_get_rgb_from_z (GMT, P, Topo->data[k], fill.rgb);
 			if (Ctrl->I.active) GMT_illuminate (GMT, Intens->data[k], fill.rgb);
-			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - dx2, xval[col] + dx2, yval[row] - dy2, yval[row] + dy2);
+			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			GMT_setfill (GMT, PSL, &fill, Ctrl->T.outline);
 			GMT_geo_polygon (GMT, PSL, xx, yy, n);
 			GMT_free (GMT, xx);
@@ -1255,9 +1255,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (saddle) {	/* Must deal with this separately */
 
 						this_point = this_cont->first_point;
-						entry_side = get_side (GMT, this_point->x, this_point->y, x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
+						entry_side = get_side (GMT, this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 						while (this_point->next_point) this_point = this_point->next_point;	/* Go to end */
-						exit_side  = get_side (GMT, this_point->x, this_point->y, x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
+						exit_side  = get_side (GMT, this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 
 
 						if (MIN (Z->data[ij+ij_inc[1]], Z->data[ij+ij_inc[3]]) > MAX (Z->data[ij], Z->data[ij+ij_inc[2]])) {
@@ -1312,8 +1312,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								}
 								ncont = k;
 
-								entry_side = get_side (GMT, xcont[0], ycont[0], x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
-								exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
+								entry_side = get_side (GMT, xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+								exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (entry_side == bad_side[p][0] || entry_side == bad_side[p][1]) continue;
 								if (exit_side == bad_side[p][0] || exit_side == bad_side[p][1]) continue;
@@ -1322,7 +1322,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 								next_up = (this_cont->next_cont) ? this_cont->next_cont->value : DBL_MAX;
 
-								exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
+								exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (way == 0 || next_side == entry_side) {	/* Just hook up */
 									copy_points_fw (GMT, x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
@@ -1406,8 +1406,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							}
 							ncont = k;
 
-							entry_side = get_side (GMT, xcont[0], ycont[0], x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
-							exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc[GMT_X], Z->header->inc[GMT_Y], dx2, dy2);
+							entry_side = get_side (GMT, xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+							exit_side  = get_side (GMT, xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *    $Id: minmax_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -212,7 +212,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.inc[0], &Ctrl->I.inc[1], NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 	if (Ctrl->I.active && !special && Ctrl->I.ncol == 1) {		/* Special case of dy = dx if not given */
 		Ctrl->I.inc[1] = Ctrl->I.inc[0];
 		Ctrl->I.ncol = 2;

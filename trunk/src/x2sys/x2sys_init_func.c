@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.2 2011-03-15 02:06:38 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.3 2011-03-25 22:17:43 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -191,7 +191,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				if (opt->arg[0]) GMT_getinc (GMT, opt->arg, &Ctrl->I.inc[GMT_X], &Ctrl->I.inc[GMT_Y]);
+				if (opt->arg[0]) GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
 				break;
 			case 'm':
 				Ctrl->m.active = TRUE;

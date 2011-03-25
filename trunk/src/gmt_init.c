@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.464 2011-03-25 12:56:57 remko Exp $
+ *	$Id: gmt_init.c,v 1.465 2011-03-25 22:17:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1549,7 +1549,7 @@ GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 	return (n);
 }
 
-void GMT_check_lattice (struct GMT_CTRL *C, double *x_inc, double *y_inc, GMT_LONG *pixel, GMT_LONG *active)
+void GMT_check_lattice (struct GMT_CTRL *C, double *inc, GMT_LONG *pixel, GMT_LONG *active)
 {	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.
 	 */
@@ -1557,8 +1557,8 @@ void GMT_check_lattice (struct GMT_CTRL *C, double *x_inc, double *y_inc, GMT_LO
 
 	/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
 	if (!active || *active == FALSE) {	/* -I not set separately */
-		*x_inc = C->current.io.grd_info.grd.inc[GMT_X];
-		*y_inc = C->current.io.grd_info.grd.inc[GMT_Y];
+		GMT_memcpy (inc, C->current.io.grd_info.grd.inc, 2, double);
+		inc[GMT_Y] = C->current.io.grd_info.grd.inc[GMT_Y];
 	}
 	if (pixel) {	/* An pointer not NULL was passed that indicates grid registration */
 		/* If a -F like option was set then toggle grid setting, else use grid setting */
@@ -2766,10 +2766,12 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.map_polar_cap[1] = 0.0;
 			}
 			else {
+				double inc[2];
 				i = sscanf (lower_value, "%[^/]/%s", txt_a, txt_b);
 				if (i != 2) error = TRUE;
 				error = GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, txt_a, GMT_IS_LAT, &C->current.setting.map_polar_cap[0]), txt_a);
-				error += GMT_getinc (C, txt_b, &C->current.setting.map_polar_cap[1], &dval);
+				error += GMT_getinc (C, txt_b, inc);
+				C->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:

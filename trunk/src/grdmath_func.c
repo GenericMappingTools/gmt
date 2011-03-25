@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.3 2011-03-21 20:00:13 guru Exp $
+ *	$Id: grdmath_func.c,v 1.4 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 	} Out;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct M {	/* -M */
 		GMT_LONG active;
@@ -173,7 +173,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 			
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -190,7 +190,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (missing_equal) {
 		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  Usage is <operations> = [outfile]\n");
@@ -200,7 +200,7 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  -I requires the -R option\n");
 		n_errors++;
 	}
-	if (Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0)) {
+	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
 		n_errors++;
 	}
@@ -2953,7 +2953,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, info.G, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, GMT->common.r.active), Ctrl->Out.file);
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, info.G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->Out.file);
 	}
 	else {
 		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  Expression must contain at least one grid file or -R, -I\n");

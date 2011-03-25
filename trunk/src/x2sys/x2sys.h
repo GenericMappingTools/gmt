@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.57 2011-03-15 02:06:37 guru Exp $
+ *	$Id: x2sys.h,v 1.58 2011-03-25 22:17:43 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,9 +188,8 @@ struct X2SYS_FILE_INFO {
 
 struct X2SYS_BIX {
 	/* Information for the track binindex setup */
-	double wesn[4];	/* Left/Right/Bottom/Top edge of region */
-	double bin_x;		/* Spacing between x bins */
-	double bin_y;		/* Spacing between y bins */
+	double wesn[4];		/* Left/Right/Bottom/Top edge of region */
+	double inc[2];		/* Spacing between x and y bins */
 	double i_bin_x;		/* 1/dx */
 	double i_bin_y;		/* 1/dy */
 	double time_gap;	/* We have a data-gap if two records differ by this amount in time */

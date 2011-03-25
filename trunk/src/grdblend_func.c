@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *    $Id: grdblend_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ struct GRDBLEND_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
 		GMT_LONG active;
@@ -312,7 +312,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -343,10 +343,10 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR -R:  Must specify region\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0, "GMT SYNTAX ERROR -I:  Must specify positive dx, dy\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I:  Must specify positive dx, dy\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
 	if ((err = GMT_grd_get_format (GMT, Ctrl->G.file, &(S->header), FALSE)) != GMT_NOERROR){
 		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); n_errors++;
@@ -394,8 +394,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	n_fill = n_tot = 0;
 
-	S.header.inc[GMT_X] = Ctrl->I.xinc;
-	S.header.inc[GMT_Y] = Ctrl->I.yinc;
+	GMT_memcpy (S.header.inc, Ctrl->I.inc, 2, double);
 	
 	GMT_RI_prepare (GMT, &S.header);	/* Ensure -R -I consistency and set nx, ny */
 
@@ -430,7 +429,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_grd_init (GMT, Grid->header, options, FALSE);
 
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, S.header.registration), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration), Ctrl->G.file);
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);	/* Memory for the entire padded grid */
 	}
 	else {

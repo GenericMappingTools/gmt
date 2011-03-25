@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.465 2011-03-19 04:21:00 guru Exp $
+ *	$Id: gmt_support.c,v 1.466 2011-03-25 22:17:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1348,11 +1348,10 @@ GMT_LONG GMT_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 #define GMT_INC_IS_EXACT	64
 #define GMT_INC_UNITS		31
 
-GMT_LONG GMT_getinc (struct GMT_CTRL *C, char *line, double *dx, double *dy)
+GMT_LONG GMT_getinc (struct GMT_CTRL *C, char *line, double inc[])
 {	/* Special case of getincn use where n is two. */
 
 	GMT_LONG n;
-	double inc[2];
 
 	/* Syntax: -I<xinc>[m|s|e|f|k|k|M|n|+|=][/<yinc>][m|s|e|f|k|k|M|n|+|=]
 	 * Units: d = arc degrees
@@ -1370,9 +1369,8 @@ GMT_LONG GMT_getinc (struct GMT_CTRL *C, char *line, double *dx, double *dy)
 	if (!line) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getinc\n"); GMT_exit (EXIT_FAILURE); }
 
 	n = GMT_getincn (C, line, inc, 2);
-	*dx = inc[GMT_X] ; *dy = inc[GMT_Y];
 	if (n == 1) {	/* Must copy y info from x */
-		*dy = *dx;
+		inc[GMT_Y] = inc[GMT_X];
 		C->current.io.inc_code[GMT_Y] = C->current.io.inc_code[GMT_X];	/* Use exact inc codes for both x and y */
 	}
 
