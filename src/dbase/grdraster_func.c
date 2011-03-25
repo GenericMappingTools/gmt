@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.6 2011-03-25 12:57:44 remko Exp $
+ *	$Id: grdraster_func.c,v 1.7 2011-03-25 13:11:54 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -571,7 +571,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			STAT (path, &F);
 		}
 		else {	/* Inquiry about file failed somehow */
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
 			continue;
 		}
 
