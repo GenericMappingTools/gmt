@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.16 2011-03-15 02:06:37 guru Exp $
+#		$Id: Makefile,v 1.17 2011-03-25 14:36:18 remko Exp $
 #
 #	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 5
@@ -32,7 +32,7 @@ PROGS_MEX	= $(PROGS_C:.c=.$(MEX_EXT))
 all:		$(PROGS_MEX)
 
 install:	all
-		$(INSTALL) -d $(MEX_XDIR)
+		$(INSTALL_DIR) $(MEX_XDIR)
 		if [ -w $(MEX_XDIR) ] ; then \
 			$(INSTALL) $(PROGS_MEX) $(MEX_XDIR); \
 		else \

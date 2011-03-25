@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2011-03-15 02:06:37 guru Exp $
+#	$Id: Makefile,v 1.40 2011-03-25 14:36:18 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ uninstall:
 		cd $(bindir); \rm -f $(PROGS)
 
 install-man:	$(MAN1)
-		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)

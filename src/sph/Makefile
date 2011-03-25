@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2011-03-15 02:06:37 guru Exp $
+#	$Id: Makefile,v 1.22 2011-03-25 14:36:18 remko Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -36,13 +36,13 @@ all:		$(PROGS)
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 644 $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBAPI) $(libdir); fi \
+			$(INSTALL_DIR) $(libdir) ; \
+			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(includedir)/gmt; \
-			$(INSTALL) -m 644 $(API_H) $(includedir)/gmt; \
+			$(INSTALL_DIR) $(includedir)/gmt; \
+			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
@@ -60,7 +60,7 @@ uninstall:
 		fi
 
 install-man:	$(MAN1)
-		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)

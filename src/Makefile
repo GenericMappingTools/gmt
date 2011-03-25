@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.61 2011-03-24 17:52:14 remko Exp $
+#	$Id: Makefile,v 1.62 2011-03-25 14:36:17 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,16 +107,16 @@ psldemo.ps:	$(PSLDEMO)
 		$(PSLDEMO) > $@
 
 install:	all
-		$(INSTALL) -d $(bindir)
+		$(INSTALL_DIR) $(bindir)
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 644 $(LIBGMT:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBGMT) $(libdir); fi \
+			$(INSTALL_DIR) $(libdir) ; \
+			$(INSTALL_DATA) $(LIBGMT:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBGMT) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(includedir)/gmt ; \
-			$(INSTALL) -m 644 $(GMT_H) $(PS_H) $(PS_I) $(includedir)/gmt; \
+			$(INSTALL_DIR) $(includedir)/gmt ; \
+			$(INSTALL_DATA) $(GMT_H) $(PS_H) $(PS_I) $(includedir)/gmt; \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
@@ -142,10 +142,10 @@ uninstall:
 		fi
 
 install-man:	$(MAN1) $(MAN3) $(MAN5)
-		$(INSTALL) -d $(mandir)/man1 $(mandir)/man3 $(mandir)/man5
-		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
-		$(INSTALL) -m 644 $(MAN3) $(mandir)/man3
-		$(INSTALL) -m 644 $(MAN5) $(mandir)/man5
+		$(INSTALL_DIR) $(mandir)/man1 $(mandir)/man3 $(mandir)/man5
+		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
+		$(INSTALL_DATA) $(MAN3) $(mandir)/man3
+		$(INSTALL_DATA) $(MAN5) $(mandir)/man5
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
