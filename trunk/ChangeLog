@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.896 2011-03-25 16:08:03 remko Exp $
+	$Id: ChangeLog,v 1.897 2011-03-25 20:03:30 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-25	pwessel
+	* grdraster_func.c:	Make sure grid header is fully initialized.  Also needed
+				to do padded ij calculations, and free the grid.
 
 2011-03-25	remko
 	* GMT_Chapter_4.tex:	Make clear that files with full path names will not be searched
