@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.17 2009-02-13 22:19:17 remko Exp $
+#	 $Id: pdfman.sh,v 1.18 2011-03-25 01:32:31 remko Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #
@@ -28,7 +28,7 @@ fi
 
 echo "Creating PDF man pages ..."
 
-mkdir -p share/doc/gmt/pdf $tmp
+mkdir -p doc/pdf $tmp
 
 man2pdf () {
 	rm -f $tmp/$1.ps
@@ -41,7 +41,7 @@ man2pdf () {
 		groff -man $f >> $tmp/$1.ps
 	done
 	echo "Converting $1.ps to $1.pdf"
-	ps2pdf $tmp/$1.ps share/doc/gmt/pdf/$1.pdf
+	ps2pdf $tmp/$1.ps doc/pdf/$1.pdf
 }
 
 # Convert all program manuals to PS and PDF

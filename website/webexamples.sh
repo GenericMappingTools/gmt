@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.26 2011-03-15 02:06:46 guru Exp $
+#	 $Id: webexamples.sh,v 1.27 2011-03-25 01:32:31 remko Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -175,11 +175,11 @@ while [ $i -le $n_examples ]; do
 
 #	Extract Bourne shell example script and rename
 
-	cp -f $TOP/share/doc/gmt/examples/$dir/job${number}.sh job${number}.sh.txt
+	cp -f $TOP/doc/examples/$dir/job${number}.sh job${number}.sh.txt
 
 #	Copy over the example PS file
 
-	cp -f $TOP/share/doc/gmt/examples/$dir/example_${number}.ps .
+	cp -f $TOP/doc/examples/$dir/example_${number}.ps .
 
 #	TMP FIX FOR EX19 SINCE GS IS FUCKED
 	if [ $number -eq 19 ]; then
@@ -213,7 +213,7 @@ cat << EOF >> gmt_example_${number}.html
 <p>
 <A HREF="job${number}.sh.txt"><IMG SRC="../../gmt_script.gif" ALT="RETURN">View GMT script.</A>
 <A HREF="example_${number}.zip"><IMG SRC="../../gmt_ps.gif" ALT="RETURN">Download zipped PostScript file.</A>
-<A HREF="../../gmt_examples.html"><IMG SRC="../../doc/gmt/html/gmt_back.gif" ALT="RETURN">Back</A>
+<A HREF="../../gmt_examples.html"><IMG SRC="../../doc/html/gmt_back.gif" ALT="RETURN">Back</A>
 </BODY>
 </HTML>
 EOF

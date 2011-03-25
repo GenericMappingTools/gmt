@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.88 2011-03-24 21:00:04 remko Exp $
+#	$Id: Makefile,v 1.89 2011-03-25 01:32:31 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ install-doc::
 		fi
 
 uninstall-doc:
-		@if [ ! $(rootdir)/share/doc = $(docdir) ]; then \
+		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
 			\rm -rf $(docdir); \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing deleted"; \

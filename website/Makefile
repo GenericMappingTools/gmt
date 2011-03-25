@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.60 2011-03-15 02:06:46 guru Exp $
+#  $Id: Makefile,v 1.61 2011-03-25 01:32:31 remko Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -59,10 +59,10 @@ help::
 		
 # Place stuff in the GMT website/www directory:
 
-www/gmt/examples/ex01/example_01_100dpi.png:	../share/doc/gmt/examples/ex01/example_01.ps
+www/gmt/examples/ex01/example_01_100dpi.png:	../doc/examples/ex01/example_01.ps
 	sh webexamples.sh -s
 
-../share/doc/gmt/examples/ex01/example_01.ps:	../share/doc/gmt/examples/ex01/job01.sh
+../doc/examples/ex01/example_01.ps:	../doc/examples/ex01/job01.sh
 	( cd ..; $(MAKE) -f GNUmakefile examples)
 
 #---------------------------------------------------------------------------
@@ -128,10 +128,8 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		cp -f gmt_*.png ../registration/gmt_usage.jpg www/gmt
 		cp -f soest_*.png www/gmt
 		cp -f ../src/README.TRIANGLE www/gmt
-		rm -r -f www/gmt/doc
-		cp -R -f ../share/doc www/gmt
-		rm -rf www/gmt/doc/gmt/examples
-		rm -rf www/gmt/doc/gmt/tutorial
+		rm -r -f www/gmt/doc/*
+		cp -R -f doc/html doc/pdf www/gmt/doc
 		for ex in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29; do \
 			cd www/gmt/examples/ex$$ex; \
 			if [ -f example_$$ex.ps ]; then \
@@ -300,9 +298,9 @@ hitmap:
 ../registration/gmt_usage.jpg:		../registration/GMT_old_unique_sites.d
 		(cd ../registration; GMT_usage_map.sh map)
 
-www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/gmt/html/GMT_Docs/GMT_Docs.html
+www/gmt/gmt_releases.html:	gmt_releases_template.html ../doc/html/GMT_Docs/GMT_Docs.html
 	mkdir -p www/gmt
-	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk '{print $$1}' | tr '/:' '  ' | awk '{printf "sXCHAPTER1LINKXdoc/gmt/html/GMT_Docs/%sXg\n", $$NF}' > /tmp/tmp.sed)
+	(cd www/gmt; grep -H "scientists since 1988" ../../../doc/html/GMT_Docs/*.html | awk '{print $$1}' | tr '/:' '  ' | awk '{printf "s:CHAPTER1LINK:doc/html/GMT_Docs/%s:g\n", $$NF}' > /tmp/tmp.sed)
 	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
 	
 	
