@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.463 2011-03-22 22:27:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.464 2011-03-25 12:56:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4875,6 +4875,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.USERDIR = CNULL;
 	}
 
+#ifdef GMT_COMPAT
 	/* Check if obsolete GMT_CPTDIR was specified */
 
 	if ((this = getenv ("GMT_CPTDIR")) != CNULL) {	/* GMT_CPTDIR was set */
@@ -4882,6 +4883,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: System-wide color tables are in %s/cpt.\n", C->session.SHAREDIR);
 		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", C->session.USERDIR);
 	}
+#endif
 
 	/* Determine GMT_DATADIR (data directories) */
 
