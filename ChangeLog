@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.894 2011-03-25 00:17:06 remko Exp $
+	$Id: ChangeLog,v 1.895 2011-03-25 12:58:43 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-25	remko
+	* GMT_Chapter_4.tex:	Make clear that files with full path names will not be searched
+				for in other places.
+	* grdraster.txt:	Wrong order mentioned of GMT_USERDIR and GMT_DATADIR
+	* grdraster_func.c:	Also look in GMT_SHAREDIR/dbase for data files.
+	* gmt_io.c (GMT_get{user,data}path):	Do not look any further when full path is given.
 
 2011-03-24	jluis
 	* gmt_grdio.c:		Do more extensive tests to see if a file is in the internet 
