@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.79 2011-03-24 21:00:04 remko Exp $
+#  $Id: GNUmakefile,v 1.80 2011-03-25 00:17:06 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -258,8 +258,7 @@ tar_doc:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis > tmp.lis
 		ls doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples,tutorial}.lis >> tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
