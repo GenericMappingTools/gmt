@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2011-03-15 02:06:37 guru Exp $
+#	$Id: Makefile,v 1.19 2011-03-25 14:36:17 remko Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -30,13 +30,13 @@ all:		$(PROGS) $(PROGS_API)
 install:	all
 		$(INSTALL) $(PROGS_API) $(PROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 644 $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBAPI) $(libdir); fi \
+			$(INSTALL_DIR) $(libdir) ; \
+			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(includedir)/gmt; \
-			$(INSTALL) -m 644 $(API_H) $(includedir)/gmt; \
+			$(INSTALL_DIR) $(includedir)/gmt; \
+			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
@@ -49,7 +49,7 @@ uninstall:
 		cd $(includedir)/gmt; \rm -f $(API_H)
 
 install-man:	$(MAN1)
-		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)

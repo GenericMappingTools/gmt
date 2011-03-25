@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.29 2011-03-15 02:06:37 guru Exp $
+#       $Id: Makefile,v 1.30 2011-03-25 14:36:18 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -34,8 +34,8 @@ all:		$(PROGS)
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL) -d $(includedir)/gmt; \
-			$(INSTALL) -m 644 $(API_H) $(includedir)/gmt; \
+			$(INSTALL_DIR) $(includedir)/gmt; \
+			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
 
 uninstall:
@@ -45,7 +45,7 @@ uninstall:
 		fi
 
 install-man:	$(MAN1)
-		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
