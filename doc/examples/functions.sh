@@ -17,7 +17,7 @@ fi
 LANG=C
 
 # Extend executable and library path to use the current version
-srcdir=`cd ../../../../../src;pwd`
+srcdir=`cd ../../../src;pwd`
 export PATH=$srcdir:$PATH
 export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
 

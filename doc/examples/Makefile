@@ -16,8 +16,9 @@ extests tests:	examples animations
 	run_ex_tests.sh
 
 clean spotless:
-	rm -f $(EX) $(ANIM)
+	rm -f *.ps *.png *.pdf *.tex
 
+$(EX) $(ANIM):	functions.sh
 example_01.ps: ex01/job01.sh ex01/osu91a1f_16.nc
 	cd ex01 ; ./job01.sh
 example_02.ps: ex02/job02.sh ex02/HI_geoid2.nc ex02/HI_topo2.nc

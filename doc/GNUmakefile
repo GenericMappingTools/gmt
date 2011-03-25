@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.46 2011-03-24 20:48:01 remko Exp $
+#	$Id: GNUmakefile,v 1.47 2011-03-25 00:40:32 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -230,6 +230,10 @@ run_app:
 # The RGB prints should not be cropped.
 $(RGBPS):	scripts/GMT_RGBchart.sh
 	cd scripts ; bash GMT_RGBchart.sh $(word 3,$(subst _, ,$*))
+
+# How to create the examples and animations:
+examples/%.ps:
+	cd examples ; $(MAKE) examples animations
 
 # How to run the scripts in the scripts directory to make PS files
 scripts/%.ps:	scripts/%.sh scripts/functions.sh

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.80 2011-03-25 00:17:06 remko Exp $
+#  $Id: GNUmakefile,v 1.81 2011-03-25 00:40:32 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -294,4 +294,3 @@ include Makefile
 
 spotless::
 		rm -rf src/config.mk src/gmt_version.h configure autom4te.cache
-		rm -f doc/examples/ex*/*.ps
