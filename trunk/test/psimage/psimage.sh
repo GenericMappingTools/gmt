@@ -18,7 +18,7 @@ cat > $$.in <<%
 0 4 :FredByellow
 1 4 :FyellowBred
 %
-psxy -R0/3/0/5 -Jx1.5i -Gp128/../../share/doc/gmt/examples/ex16/circuit.ras -P -K > $ps <<%
+psxy -R0/3/0/5 -Jx1.5i -Gp128/../../doc/examples/ex16/circuit.ras -P -K > $ps <<%
 0 0
 2 0
 3 1

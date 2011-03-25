@@ -1,6 +1,6 @@
 #	Information for installing GMT 5.x
 #
-#		$Id: README,v 1.65 2011-03-15 02:06:28 guru Exp $
+#		$Id: README,v 1.66 2011-03-25 01:32:31 remko Exp $
 #
 #	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
 #
@@ -367,7 +367,7 @@ include the man directory that holds the desired gmt man pages.
 7. Documentation
 ____________________
 
-In the directory share/doc/gmt/html you will find html files for online
+In the directory doc/html you will find html files for online
 browsing of GMT documentation (Cookbook) and manual pages.
 The Documentation also contains the GMT_Tutorial.pdf
 file which is a short course in how to use GMT.  It can be
@@ -378,7 +378,7 @@ pages locally for added speed.  The subdirectories
 contain both HTML and PDF versions of the cookbook, and
 HTML versions of the manual pages.  All users need to do
 is to add a browser bookmark to the top-level file
-share/doc/gmt/html/gmt_services.html.
+doc/html/gmt_services.html.
 To install all documentation in your chosen directory, type
 
 	make install-doc
@@ -452,7 +452,7 @@ src directory using
 Before running programs, there are a few things you should do/know:
 
   - Read carefully the documentation for the gmt system.  This can be
-    found as both PDF and HTML files in the share/doc/gmt directory.
+    found as both PDF and HTML files in the doc directory.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read

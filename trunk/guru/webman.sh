@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.46 2009-02-13 22:19:17 remko Exp $
+#	 $Id: webman.sh,v 1.47 2011-03-25 01:32:31 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -28,7 +28,7 @@ fi
 
 echo "Creating HTML man pages ..."
 
-mkdir -p share/doc/gmt/html/man $tmp
+mkdir -p doc/html/man $tmp
 
 # Make a list of all manpages
 grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $tmp/pages.lis
@@ -64,13 +64,13 @@ grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%><b>%s</b>%%><b><A NAME=%c%s%
 
 while read f; do
 	prog=`basename $f|cut -d. -f1`
-	rm -f share/doc/gmt/html/man/$prog.html
+	rm -f doc/html/man/$prog.html
 	[ $gush = 1 ] && echo "Making $prog.html"
 	grep -v "${prog}<" $tmp/pages.w0.sed > $tmp/pages.t0.sed
 	if [ "X$prog" = "Xgmtdefaults" ]; then
-		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.def.sed -f $tmp/pages.all.sed > share/doc/gmt/html/man/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.def.sed -f $tmp/pages.all.sed > doc/html/man/$prog.html
 	else
-		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.all.sed > share/doc/gmt/html/man/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.all.sed > doc/html/man/$prog.html
 	fi
 done < $tmp/pages.lis
 

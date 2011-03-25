@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.170 2011-03-15 02:06:31 guru Exp $
+#	$Id: install_gmt.sh,v 1.171 2011-03-25 01:32:31 remko Exp $
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
@@ -347,7 +347,7 @@ if a different mount point or a symbolic link is set.
 GMT can use the environment variable \$GMT_SHAREDIR to point to the right place.
 If users see a different location for the shared data files, specify it here.
 (It will be used only to remind you at the end of the installation to set
-the enronment variable \$GMT_SHAREDIR).
+the environment variable \$GMT_SHAREDIR).
 
 EOF
 GMT_sharedir=`get_def_answer "Enter value of GMT_SHAREDIR selection" "$GMT_share"`
@@ -1309,7 +1309,7 @@ fi
 # Run examples with /src as binary path in case the user did
 # not have permission to place files in GMT_bin
 
-if [ -d share/doc/gmt/examples ] && [ "$GMT_run_examples" = "y" ]; then
+if [ -d doc/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
 	$GMT_make run-examples || exit
