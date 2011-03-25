@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.47 2011-03-25 00:40:32 remko Exp $
+#	$Id: GNUmakefile,v 1.48 2011-03-25 00:56:04 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
 RGBPS=	scripts/GMT_RGBchart_a4.ps scripts/GMT_RGBchart_letter.ps scripts/GMT_RGBchart_tabloid.ps
 
 # PS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (with comments)
-DOSPS0=scripts/GMT_App_P_1.ps scripts_App_P_2.ps scripts/App_M_2.ps
+DOCPS0=scripts/GMT_App_P_1.ps scripts/GMT_App_P_2.ps scripts/GMT_App_M_2.ps
 
 # PS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
 DOCPS1=scripts/GMT_App_K_1.ps scripts/GMT_App_K_2.ps scripts/GMT_App_K_3.ps scripts/GMT_App_K_4.ps \
@@ -135,7 +135,7 @@ DOCIMG=	fig/JLuis.png fig/Scharroo.png fig/Smith.png fig/Wessel.png \
 	fig/gimp-panel.png fig/gimp-sliders.png fig/hsv-cone.png
 
 # All PS, EPS, PDF and PNG files for GMT_Docs
-DOCPS=	$(DOCPS1) $(DOCPS2) $(ALLPS) $(RGBPS)
+DOCPS=	$(DOCPS0) $(DOCPS1) $(DOCPS2) $(ALLPS) $(RGBPS)
 DOCEPS= $(IS_EPS)
 DOCPDF= $(DOCPS:.ps=.pdf) $(DOCEPS:.eps=.pdf) $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf)
 DOCPNG=	$(DOCPDF:.pdf=.png)
