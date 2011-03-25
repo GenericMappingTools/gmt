@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.171 2011-03-25 01:32:31 remko Exp $
+#	$Id: install_gmt.sh,v 1.172 2011-03-25 01:50:41 remko Exp $
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
@@ -337,7 +337,7 @@ the /manX will be appended automatically, so do not answer /usr/man/man1.
 
 EOF
 GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_prefix/man"`
-GMT_doc=`get_def_answer "Directory for GMT doc pages?" "$GMT_prefix/share"`
+GMT_doc=`get_def_answer "Directory for GMT doc pages?" "$GMT_prefix/share/doc/gmt"`
 
 cat << EOF >&2
 
@@ -1296,7 +1296,7 @@ fi
 if [ $write_doc -eq 1 ]; then
 	if [ -d share/doc ]; then
 		$GMT_make install-doc || exit
-		echo "All users should add $GMT_doc/gmt/gmt_services.html to their browser bookmarks" >&2
+		echo "All users should add $GMT_doc/html/gmt_services.html to their browser bookmarks" >&2
 	fi
 else
 	echo "You do not have write permission to create $GMT_doc" >&2
