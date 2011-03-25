@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.895 2011-03-25 12:58:43 remko Exp $
+	$Id: ChangeLog,v 1.896 2011-03-25 16:08:03 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-25	remko
@@ -8,6 +8,9 @@
 	* grdraster.txt:	Wrong order mentioned of GMT_USERDIR and GMT_DATADIR
 	* grdraster_func.c:	Also look in GMT_SHAREDIR/dbase for data files.
 	* gmt_io.c (GMT_get{user,data}path):	Do not look any further when full path is given.
+	* doc/Makefile:		Introduced to take care of documentation installation
+	* guru/*man.sh:		Moved to doc directory
+	* guru/GMT_www.lis:	Now also includes PDF documentation (in addition to HTML)
 
 2011-03-24	jluis
 	* gmt_grdio.c:		Do more extensive tests to see if a file is in the internet 

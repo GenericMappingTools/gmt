@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.82 2011-03-25 01:50:41 remko Exp $
+#  $Id: GNUmakefile,v 1.83 2011-03-25 16:08:03 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -202,16 +202,6 @@ latest-config:
 		curl "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" -s -R -o config.sub
 		curl "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" -s -R -o config.guess
 
-install-doc::	webman pdfman docs
-
-webman:		doc/html/man/blockmean.html
-doc/html/man/blockmean.html:	guru/webman.sh src/blockmean.1
-		$(SHELL) guru/webman.sh -s
-
-pdfman: 	doc/pdf/GMT_Manpages.pdf
-doc/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
-		$(SHELL) guru/pdfman.sh -s
-
 docs pdfdocs:	$(FILES)
 		cd doc ; $(MAKE) pdf
 
@@ -254,9 +244,7 @@ tar_share:	ftpdir
 
 tar_doc:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis > tmp.lis
-		ls doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples,tutorial}.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples,tutorial,www}.lis > tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
