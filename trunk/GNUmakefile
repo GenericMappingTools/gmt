@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.81 2011-03-25 00:40:32 remko Exp $
+#  $Id: GNUmakefile,v 1.82 2011-03-25 01:50:41 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,11 +115,11 @@ site:		usable install-doc
 
 archive:	site create tar_all
 
-manpages:	FILES
+manpages:	$(FILES)
 		cd src ; $(MAKE) $@
 		$(MAKE) TARGET=$@ insuppl
 
-all:		FILES
+all:		$(FILES)
 		cd src ; $(MAKE) $@
 
 #-------------------------------------------------------------------------------
@@ -172,9 +172,7 @@ DOS:
 FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
 		src/gmt_version.h
 
-gmtmacros FILES:		$(FILES)
-examples:	FILES
-animations:	FILES
+gmtmacros examples animations FILES:		$(FILES)
 
 fresh:
 		rm -f $(FILES)
@@ -214,7 +212,7 @@ pdfman: 	doc/pdf/GMT_Manpages.pdf
 doc/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
 		$(SHELL) guru/pdfman.sh -s
 
-docs pdfdocs:		FILES
+docs pdfdocs:	$(FILES)
 		cd doc ; $(MAKE) pdf
 
 prep_suppl:	clean config
