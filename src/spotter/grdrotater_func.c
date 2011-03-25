@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -540,7 +540,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, G_rot->header, options, FALSE);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_rot, GMT->common.R.wesn, G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->registration), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_rot, GMT->common.R.wesn, G->header->inc, G->header->registration), Ctrl->G.file);
 	
 	G_rot->data = GMT_memory (GMT, NULL, G_rot->header->size, float);
 	grd_x = GMT_memory (GMT, NULL, G_rot->header->nx, double);

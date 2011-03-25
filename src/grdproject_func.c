@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdproject_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,7 +43,7 @@ struct GRDPROJECT_CTRL {
 	} C;
 	struct D {	/* -Ddx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} D;
 	struct E {	/* -E<dpi> */
 		GMT_LONG active;
@@ -161,7 +161,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				break;
 			case 'D':	/* Grid spacings */
 				Ctrl->D.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->D.xinc, &Ctrl->D.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->D.inc)) {
 					GMT_inc_syntax (GMT, 'D', 1);
 					n_errors++;
 				}
@@ -186,7 +186,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
 				if (jj == 0) jj = ii;
 				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
-				GMT_getinc (GMT, format, &Ctrl->D.xinc, &Ctrl->D.yinc);
+				GMT_getinc (GMT, format, Ctrl->D.inc);
 				break;
 #endif
 			case 'S':	/* Interpolation mode */
@@ -224,14 +224,14 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = TRUE;
 
 
-	GMT_check_lattice (GMT, &Ctrl->D.xinc, &Ctrl->D.yinc, &GMT->common.r.active, &Ctrl->D.active);
+	GMT_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.active, &Ctrl->D.active);
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "GMT SYNTAX ERROR:  Can specify only one of -A and -M\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "GMT SYNTAX ERROR:  Must specify only one of -D or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.xinc <= 0.0 || Ctrl->D.yinc < 0.0), "GMT SYNTAX ERROR -D option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "GMT SYNTAX ERROR -D option.  Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "GMT SYNTAX ERROR -E option.  Must specify positive dpi\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), "GMT SYNTAX ERROR -S option:  threshold must be in [0,1] range\n");
 
@@ -406,7 +406,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			use_nx = Rect->header->nx;
 			use_ny = Rect->header->ny;
 		}
-		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Geo, Ctrl->D.xinc, Ctrl->D.yinc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Geo, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Geo->header);
 		Geo->data = GMT_memory (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, TRUE);
@@ -463,15 +463,15 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->A.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
-				Ctrl->D.xinc *= inv_scale;
-				Ctrl->D.yinc *= inv_scale;
+				Ctrl->D.inc[GMT_X] *= inv_scale;
+				Ctrl->D.inc[GMT_Y] *= inv_scale;
 			}
-			Ctrl->D.xinc *= GMT->current.proj.scale[GMT_X];
-			Ctrl->D.yinc *= GMT->current.proj.scale[GMT_Y];
+			Ctrl->D.inc[GMT_X] *= GMT->current.proj.scale[GMT_X];
+			Ctrl->D.inc[GMT_Y] *= GMT->current.proj.scale[GMT_Y];
 		}
 		else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Convert from inch to whatever */
-			Ctrl->D.xinc *= unit_to_inch;
-			Ctrl->D.yinc *= unit_to_inch;
+			Ctrl->D.inc[GMT_X] *= unit_to_inch;
+			Ctrl->D.inc[GMT_Y] *= unit_to_inch;
 		}
 		if (set_n) {
 			use_nx = Geo->header->nx;
@@ -489,7 +489,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
-		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Rect, Ctrl->D.xinc, Ctrl->D.yinc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Rect, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
 		GMT_grd_project (GMT, Geo, Rect, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);

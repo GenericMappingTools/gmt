@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdvector_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,7 @@ struct GRDVECTOR_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -184,9 +184,9 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 					n_errors++;
 				}
 				break;
-			case 'I':	/* Only use gridnodes Ctrl->I.xinc,Ctrl->I.yinc apart */
+			case 'I':	/* Only use gridnodes Ctrl->I.inc[GMT_X],Ctrl->I.inc[GMT_Y] apart */
 				Ctrl->I.active = TRUE;
-				if (GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc)) {
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -251,10 +251,10 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 		}
 	}
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc <= 0.0 || Ctrl->I.yinc <= 0.0), "GMT SYNTAX ERROR -I option:  Must specify positive increments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option:  Must specify positive increments\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "GMT SYNTAX ERROR -S option:  Scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "GMT SYNTAX ERROR -Sl option:  Length must be positive\n");
 	if (Ctrl->Q.active && Ctrl->Q.norm > 0.0) shrink_properties = TRUE;
@@ -379,21 +379,19 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
         if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
 
-	if (Ctrl->I.xinc != 0.0 && Ctrl->I.yinc != 0.0) {
+	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {
 		struct GRD_HEADER tmp_h;
 		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GRD_HEADER);
-		tmp_h.inc[GMT_X] = Ctrl->I.xinc;
-		tmp_h.inc[GMT_Y] = Ctrl->I.yinc;
+		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
-		Ctrl->I.xinc = tmp_h.inc[GMT_X];
-		Ctrl->I.yinc = tmp_h.inc[GMT_Y];
-		d_row = irint (Ctrl->I.yinc / Grid[0]->header->inc[GMT_Y]);
-		d_col = irint (Ctrl->I.xinc / Grid[0]->header->inc[GMT_X]);
-		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.yinc) * Ctrl->I.yinc;
-		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.yinc;
+		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
+		d_row = irint (Ctrl->I.inc[GMT_Y] / Grid[0]->header->inc[GMT_Y]);
+		d_col = irint (Ctrl->I.inc[GMT_X] / Grid[0]->header->inc[GMT_X]);
+		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
+		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
 		row_0 = irint ((Grid[0]->header->wesn[YHI] - tmp) / Grid[0]->header->inc[GMT_Y]);
-		tmp = floor (Grid[0]->header->wesn[XLO] / Ctrl->I.xinc) * Ctrl->I.xinc;
-		if (tmp < Grid[0]->header->wesn[XLO]) tmp += Ctrl->I.xinc;
+		tmp = floor (Grid[0]->header->wesn[XLO] / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
+		if (tmp < Grid[0]->header->wesn[XLO]) tmp += Ctrl->I.inc[GMT_X];
 		col_0 = irint ((tmp - Grid[0]->header->wesn[XLO]) / Grid[0]->header->inc[GMT_X]);
 	}
 

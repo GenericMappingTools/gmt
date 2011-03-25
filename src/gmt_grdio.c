@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.145 2011-03-24 23:44:56 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.146 2011-03-25 22:17:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1503,7 +1503,7 @@ GMT_LONG GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRI
 	return (FALSE);
 }
 
-GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double xinc, double yinc, GMT_LONG registration)
+GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double inc[], GMT_LONG registration)
 {	/* Does the dirty work of initializing the Grid header and make sure all is correct:
  	 * Make sure -R -I is compatible.
 	 * Set all the dimension parameters and pad info. Programs that need to set up a grid from
@@ -1511,7 +1511,7 @@ GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wes
 	GMT_LONG status;
 	
 	GMT_memcpy (Grid->header->wesn, wesn, 4, double);
-	Grid->header->inc[GMT_X] = xinc;	Grid->header->inc[GMT_Y] = yinc;
+	GMT_memcpy (Grid->header->inc, inc, 2, double);
 	Grid->header->registration = (int)registration;
 	GMT_RI_prepare (C, Grid->header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */

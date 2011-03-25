@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.3 2011-03-25 22:17:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -44,7 +44,7 @@ struct GRD2RGB_CTRL {
 	} G;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
-		double xinc, yinc;
+		double inc[2];
 	} I;
 	struct L {	/* -L<layer> */
 		GMT_LONG active;
@@ -289,7 +289,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
-				GMT_getinc (GMT, opt->arg, &Ctrl->I.xinc, &Ctrl->I.yinc);
+				GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
 				Ctrl->I.active = TRUE;
 				break;
 			case 'L':	/* Select one layer */
@@ -324,12 +324,12 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 	/* Check that the options selected are mutually consistent */
 
-	GMT_check_lattice (GMT, &Ctrl->I.xinc, &Ctrl->I.yinc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input raster file\n");
 		n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !Ctrl->W.active, "GMT SYNTAX ERROR:  Must specify -Idx/dy\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.xinc == 0.0 || Ctrl->I.yinc == 0.0), "GMT SYNTAX ERROR:  increments must be positive\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] == 0.0 || Ctrl->I.inc[GMT_Y] == 0.0), "GMT SYNTAX ERROR:  increments must be positive\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->W.size != 3 && Ctrl->W.size != 4, "GMT SYNTAX ERROR: byte_per_pixel must be either 3 or 4\n");
 		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.nx, &Ctrl->W.ny);
 
@@ -442,7 +442,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Assign default dx = dy = 1\n");
-			Ctrl->I.xinc = Ctrl->I.yinc = 1.0;
+			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;
 		}
 		if (!GMT->common.R.active) {	/* R not given, provide default */
 			GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
@@ -451,13 +451,13 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		Grid->header->nx = GMT_get_n (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Ctrl->I.xinc, Grid->header->registration);
-		Grid->header->ny = GMT_get_n (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.yinc, Grid->header->registration);
+		Grid->header->nx = GMT_get_n (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Ctrl->I.inc[GMT_X], Grid->header->registration);
+		Grid->header->ny = GMT_get_n (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], Grid->header->registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
 			Grid->header->nx = (int)Ctrl->W.nx;
 			Grid->header->ny = (int)Ctrl->W.ny;
-			Ctrl->I.xinc = GMT_get_inc (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Grid->header->nx, Grid->header->registration);
-			Ctrl->I.yinc = GMT_get_inc (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
+			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Grid->header->nx, Grid->header->registration);
+			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
 		}
 		if (header.width != Grid->header->nx) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, Grid->header->nx);
@@ -468,7 +468,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.xinc, Ctrl->I.yinc, GMT->common.r.active), "stdout");
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 

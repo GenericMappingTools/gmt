@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+/* $Id: img2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -272,7 +272,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG ij, in_ID, out_ID, status, *ix = NULL;
 	
 	double west, east, south, north, wesn[4], toplat, botlat, dx;
-	double south2, north2, rnavgsq, csum, dsum, left, bottom;
+	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
 	
 	short int *row = NULL;
 	
@@ -381,6 +381,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	toplat = GMT_img_ypix_to_lat (0.0, &imgcoord);
 	botlat = GMT_img_ypix_to_lat ((double)imgcoord.nyrow, &imgcoord);
 	dx = 1.0 / ((double)imgcoord.nx360 / 360.0);
+	inc[GMT_X] = inc[GMT_Y] = dx * navg;
+	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Expects %s to be %ld by %ld pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < Merc->header->wesn[YHI]) {
@@ -401,8 +403,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	north2 = wesn[YHI] = GMT_img_ypix_to_lat ((double)jinstart, &imgcoord);
 	south2 = wesn[YLO] = GMT_img_ypix_to_lat ((double)jinstop,  &imgcoord);
 
-	iinstart = navg * (GMT_LONG)floor (wesn[XLO]/(dx*navg));
-	iinstop  = navg * (GMT_LONG)ceil  (wesn[XHI]/(dx*navg));
+	iinstart = navg * (GMT_LONG)floor (wesn[XLO]/inc[GMT_X]);
+	iinstop  = navg * (GMT_LONG)ceil  (wesn[XHI]/inc[GMT_X]);
 	/* iinstart <= ipixelcol < iinstop, but modulo all with imgcoord.nx360  */
 	/* Reset left and right edges of user area:  */
 	wesn[XLO] = iinstart * dx;
@@ -423,10 +425,10 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->C.active) {
 		GMT_LONG equator;
 		equator = irint (GMT_img_lat_to_ypix (0.0, &imgcoord));
-		wesn[XLO] = iinstart * navg * dx;
-		wesn[XHI] = wesn[XLO] + Merc->header->nx * navg * dx;
-		wesn[YHI] = (imgcoord.nyrow - jinstart - equator) * navg * dx;
-		wesn[YLO] = wesn[YHI] - Merc->header->ny * navg * dx;
+		wesn[XLO] = iinstart * inc[GMT_X];
+		wesn[XHI] = wesn[XLO] + Merc->header->nx * inc[GMT_X];
+		wesn[YHI] = (imgcoord.nyrow - jinstart - equator) * inc[GMT_Y];
+		wesn[YLO] = wesn[YHI] - Merc->header->ny * inc[GMT_Y];
 		left = bottom = 0.0;
 		if (wesn[XHI] > 360.0) {
 			wesn[XHI] -= 360.0;
@@ -435,9 +437,9 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {
 		wesn[XLO] = 0.0;
-		wesn[XHI] = Merc->header->nx * navg * dx;
+		wesn[XHI] = Merc->header->nx * inc[GMT_X];
 		wesn[YLO] = 0.0;
-		wesn[YHI] = Merc->header->ny * navg * dx;
+		wesn[YHI] = Merc->header->ny * inc[GMT_Y];
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
@@ -459,7 +461,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Now malloc some space for float grd array, integer pixel index, and short integer data buffer.  */
 
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, navg * dx, navg * dx, TRUE), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, TRUE), Ctrl->G.file);
 	Merc->data = GMT_memory (GMT, NULL, Merc->header->size, float);
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, short int);
 	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, GMT_LONG);

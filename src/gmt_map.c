@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.267 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_map.c,v 1.268 2011-03-25 22:17:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6005,11 +6005,11 @@ GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n,
 
 /* Routines to transform grdfiles to/from map projections */
 
-GMT_LONG GMT_grdproject_init (struct GMT_CTRL *C, struct GMT_GRID *G, double x_inc, double y_inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
+GMT_LONG GMT_grdproject_init (struct GMT_CTRL *C, struct GMT_GRID *G, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
 {
-	if (x_inc > 0.0 && y_inc > 0.0) {
-		G->header->nx = (int)GMT_get_n (G->header->wesn[XLO], G->header->wesn[XHI], x_inc, offset);
-		G->header->ny = (int)GMT_get_n (G->header->wesn[YLO], G->header->wesn[YHI], y_inc, offset);
+	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
+		G->header->nx = (int)GMT_get_n (G->header->wesn[XLO], G->header->wesn[XHI], inc[GMT_X], offset);
+		G->header->ny = (int)GMT_get_n (G->header->wesn[YLO], G->header->wesn[YHI], inc[GMT_Y], offset);
 		G->header->inc[GMT_X] = GMT_get_inc (G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, offset);
 		G->header->inc[GMT_Y] = GMT_get_inc (G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, offset);
 	}
