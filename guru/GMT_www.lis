@@ -1,3 +1,4 @@
+doc/Makefile
 doc/html/index.html
 doc/html/gmt_services.html
 doc/html/gmt_man.html
@@ -79,3 +80,11 @@ doc/html/man/triangulate.html
 doc/html/man/xyz2grd.html
 doc/html/GMT_Docs
 doc/html/GMT_Tutorial
+doc/pdf/GMT_API.pdf
+doc/pdf/GMT_Docs.pdf
+doc/pdf/GMT_Manpages.pdf
+doc/pdf/GMT_Manpages_suppl.pdf
+doc/pdf/GMT_RGBchart_a4.pdf
+doc/pdf/GMT_RGBchart_letter.pdf
+doc/pdf/GMT_RGBchart_tabloid.pdf
+doc/pdf/GMT_Tutorial.pdf
