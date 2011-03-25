@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.48 2011-03-25 00:56:04 remko Exp $
+#	$Id: GNUmakefile,v 1.49 2011-03-25 16:08:03 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -21,7 +21,7 @@
 #	make all	: same as : make pdf html
 #	make pdf	: Create GMT_Docs.pdf, GMT_Tutorial.pdf and GMT_API.pdf
 #	make html	: Create GMT_Docs.html, GMT_Tutorial.html and GMT_API.html
-#	make install	: same as : make all
+#	make install	: make all; and then install in place
 #
 #	All the above commands prepare all the necessary graphs and text to be included.
 #	Make sure, however, that the examples are already made by running "make examples"
@@ -150,13 +150,15 @@ DOCTEX= \
 	GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex \
 	GMT_Frontmatter.tex $(DOCPS0:.ps=.tex) $(DOCPS1:.ps=.tex) $(EX_PS:.ps=.tex) $(AN_PS:.ps=.tex) $(DEF_TEX) $(ALLTEX)
 
-all install:	pdf html
+all:	pdf html
+install::	all
 
 # Shortcut, just to preprocess all required files
-ps:		$(DOCPS) $(TUTPS) $(APIPS)
-prepro:		$(DOCTEX) $(DOCPS) $(DOCPDF) $(DOCPNG) $(DOCIMG) \
-		$(TUTTEX) $(TUTPS) $(TUTPDF) $(TUTPNG) \
-		$(APITEX) $(APIPS) $(APIPDF) $(APIPNG)
+prep prepro:	prep-ps prep-pdf prep-png prep-tex $(DOCIMG)
+prep-ps:	$(DOCPS) $(TUTPS) $(APIPS)
+prep-pdf:	$(DOCPDF) $(TUTPDF) $(APIPDF)
+prep-png:	$(DOCPNG) $(TUTPNG) $(APIPNG)
+prep-tex:	$(DOCTEX) $(TUTTEX) $(APITEX)
 
 # Test if plots are OK
 tests doctests:	ps
@@ -180,15 +182,17 @@ spotless:	clean
 	\rm -f GMT_version.tex
 
 # Shortcuts, just to do a couple of things
-pdf:	docs tutorial api
+pdf:	docs tutorial api man
 docs:	pdf/GMT_Docs.pdf
 tutorial: pdf/GMT_Tutorial.pdf
 api:	pdf/GMT_API.pdf
+man:	pdf/GMT_Manpages.pdf
 
-html:	htdocs httutorial htapi
+html:	htdocs httutorial htapi htman
 htdocs:	html/GMT_Docs.html
 httutorial: html/GMT_Tutorial.html
 htapi:	html/GMT_API.html
+htman:	html/man/blockmean.html
 
 # Convert the PS files of the examples and animations to PS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait.
@@ -277,6 +281,7 @@ pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCIMG) $(DOCTEX)
 	\mv GMT_Docs.pdf $@
 	\ln -f scripts/GMT_RGBchart_*.pdf pdf
 	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
+
 pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	$(PDFLATEX) GMT_Tutorial
@@ -296,6 +301,9 @@ pdf/GMT_API.pdf:	$(APIPDF) $(APITEX)
 	$(PDFLATEX) GMT_API
 	\mv GMT_API.pdf $@
 	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
+
+pdf/GMT_Manpages.pdf:	pdfman.sh ../src/blockmean.1
+	bash pdfman.sh -s
 
 html/GMT_Docs.html:	$(DOCPNG) $(DOCIMG) $(DOCTEX)
 	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Docs{-js.tex,1.tmp}
@@ -322,3 +330,8 @@ html/GMT_API.html:	$(APIPNG) $(APITEX)
 	$(SEDIMG) GMT_API.html > $@
 	\mv GMT_API.css html
 	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_API{-js.tex,1.tmp}
+
+html/man/blockmean.html:	webman.sh ../src/blockmean.1
+	bash webman.sh -s
+
+include Makefile

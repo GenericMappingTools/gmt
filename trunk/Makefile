@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.90 2011-03-25 02:13:42 remko Exp $
+#	$Id: Makefile,v 1.91 2011-03-25 16:08:03 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ suppl:		gmtmacros
 		cd src ; $(MAKE) libs
 		$(MAKE) TARGET=all $(SUPPL)
 
-install-suppl suppl-install:	gmtmacros
+install-suppl:	gmtmacros
 		cd src ; $(MAKE) libs
 		$(MAKE) TARGET=install $(SUPPL)
 
@@ -150,21 +150,10 @@ install-man uninstall-man:
 		$(MAKE) TARGET=$@ $(SUPPL)
 
 install-doc::
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
-			mkdir -p $(docdir); \
-			cp -pr $(rootdir)/doc/{html,pdf,examples,tutorial} $(docdir); \
-			rm -rf $(docdir)/examples/{orig,tests,*.ps,*.pdf,*.png} \
-				$(docdir)/{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
-		else \
-			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
-		fi
+		cd doc ; $(MAKE) install
 
 uninstall-doc:
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
-			\rm -rf $(docdir); \
-		else \
-			echo "Install doc directory the same as distribution doc directory - nothing deleted"; \
-		fi
+		cd doc ; $(MAKE) uninstall
 
 # Run examples with the binaries from the src directory, not the installation directory.
 
