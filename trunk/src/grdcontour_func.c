@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.6 2011-03-22 21:15:38 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.7 2011-03-26 20:52:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -843,6 +843,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				two_only = TRUE;
 			}
 		}
+		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
 		D = GMT_create_dataset (GMT, n_tables, 0, 3, 0);	/* An empty table */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);

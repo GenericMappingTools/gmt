@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: psmask_func.c,v 1.4 2011-03-26 20:52:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -570,8 +570,8 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (make_plot) GMT_plotinit (API, PSL, options);
 
-	if (Ctrl->C.active) {	/* Just undo previous clip-path */
-		PSL_endclipping (PSL);
+	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
+		PSL_endclipping (PSL, 1);
 		GMT_map_basemap (GMT, PSL);
 		GMT_report (GMT, GMT_MSG_NORMAL, "clipping off!\n");
 	}

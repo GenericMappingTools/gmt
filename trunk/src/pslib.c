@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.247 2011-03-26 18:34:17 guru Exp $
+ *	$Id: pslib.c,v 1.248 2011-03-26 20:52:08 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -630,24 +630,37 @@ PSL_LONG PSL_plotbitimage_ (double *x, double *y, double *xsize, double *ysize, 
 }
 #endif
 
-PSL_LONG PSL_endclipping (struct PSL_CTRL *PSL)
+PSL_LONG PSL_endclipping (struct PSL_CTRL *PSL, PSL_LONG n)
 {
-	/* Return to original clipping path */
-	PSL_command (PSL, "PSL_nclip {cliprestore} repeat /PSL_nclip 0 def\n");	/* Undo all levels of clipping  and reset clip count */
-	PSL_comment (PSL, "Clipping is currently OFF\n");
-#if 0
-	/* Since we no longer use gsave/grestore, these resets are no longer necessary */
-	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1.0;	/* Reset to -1 so PSL_setcolor will update the current paint */
-	PSL->current.linewidth = -1.0;			/* Reset to -1 so PSL_setlinewidth will update the current width */
-	PSL->current.offset = -1.0;			/* Reset to -1 so PSL_setdash will update the current pattern */
-#endif
+	/* n > 0 means restore regular polygon clipping n times
+	 * n < 0 means restore textpath clipping |n| times
+	 * n == PSL_ALL_CLIP_TXT restores all current textpath clippings.
+	 * n == PSL_ALL_CLIP_POL restores all current polygon clippings.
+	 */
+	
+	if (n == PSL_ALL_CLIP_TXT) {	/* Undo all recorded levels of text clipping paths */
+		PSL_command (PSL, "PSL_nclip_txt {cliprestore} repeat /PSL_nclip_txt 0 def\n");	/* Undo all levels of text clipping and reset clip count */
+		PSL_comment (PSL, "Text clipping is currently OFF\n");
+	}
+	else if (n == PSL_ALL_CLIP_POL) {	/* Undo all recorded levels of polygon clipping paths */
+		PSL_command (PSL, "PSL_nclip_pol {cliprestore} repeat /PSL_nclip_pol 0 def\n");	/* Undo all levels of polygon clipping and reset clip count */
+		PSL_comment (PSL, "Polygon clipping is currently OFF\n");
+	}
+	else if (n > 0) {	/* Undo mode levels of polygon clipping paths */
+		PSL_command (PSL, "%ld {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol %ld sub def\n", n, n);	/* Undo mode levels of polygon clipping and reduce clip count */
+		PSL_comment (PSL, "Polygon clipping reduced by %ld levels\n", n);
+	}
+	else if (n < 0) { 	/* Undo |mode| levels of text clipping paths */
+		PSL_command (PSL, "%ld {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt %ld sub def\n", -n, -n);	/* Undo |mode| levels of text clipping and reduce clip count */
+		PSL_comment (PSL, "Text clipping reduced by %ld levels\n", -n);
+	}
 	return (PSL_NO_ERROR);
 }
 
 #ifdef FORT_BIND
 /* fortran interface */
-PSL_LONG PSL_endclipping_ (void) {
-	return (PSL_endclipping (PSL_FORTRAN));
+PSL_LONG PSL_endclipping_ (PSL_LONG *mode) {
+	return (PSL_endclipping (PSL_FORTRAN, *mode));
 }
 #endif
 
@@ -666,7 +679,7 @@ PSL_LONG PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG
 	 */
 
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
-		PSL_comment (PSL, "Start of clip path\n");
+		PSL_comment (PSL, "Start of polygon clip path\n");
 		PSL_command (PSL, "clipsave\n");
 	}
 
@@ -675,8 +688,8 @@ PSL_LONG PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
 		PSL_command (PSL, (flag & 4) ? "eoclip\n" : "eoclip N\n");
-		PSL_command (PSL, "/PSL_nclip PSL_nclip 1 add def\n");	/* Increase clip count */
-		PSL_comment (PSL, "End of clip path.  Clipping is currently ON\n");
+		PSL_command (PSL, "/PSL_nclip_pol PSL_nclip_pol 1 add def\n");	/* Increase polygon clip count */
+		PSL_comment (PSL, "End of polygon clip path.  Polygon clipping is currently ON\n");
 	}
 	return (PSL_NO_ERROR);
 }
@@ -2340,10 +2353,7 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	PSL_LONG i = 0, j, k;
 
 	if (mode & 2) {	/* Flag to terminate clipping */
-		PSL_comment (PSL, "If clipping is active, terminate it\n");
-		/* PSL_command (PSL, "PSL_clip_on {cliprestore /PSL_clip_on false def} if\n"); */
-		PSL_command (PSL, "/PSL_n_txtclip PSL_n_txtclip 1 sub def\n");	/* Decrease textclip counter */
-		return (PSL_endclipping (PSL));
+		return (PSL_endclipping (PSL, -1));	/* Decrease textbased clipping by one level */
 	}
 	if (mode & 8) {		/* Flag to place text already defined in PSL arrays */
 		PSL_command (PSL, "%ld PSL_straight_text_labels\n", mode);
@@ -2388,7 +2398,7 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 		PSL_command (PSL, "/PSL_height edef\n");
 	/* } */
 
-	PSL_command (PSL, "/PSL_n_txtclip PSL_n_txtclip 1 add def\n");	/* Increase textclip counter */
+	PSL_command (PSL, "/PSL_nclip_txt PSL_nclip_txt 1 add def\n");	/* Increase textclip counter */
 	PSL_command (PSL, "%ld PSL_straight_text_labels\n", mode);
 	return (PSL_NO_ERROR);
 }

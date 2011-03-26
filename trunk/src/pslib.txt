@@ -675,9 +675,13 @@ this is the last segment.  Thus, for a single path, IT(flag) = PSL_PEN_DRAW_AND_
 .RE
 .br
 .sp
-BD(long PSL_endclipping) (ARG(struct PSL_CTRL,*P))
+BD(long PSL_endclipping) (ARG(struct PSL_CTRL,*P), ARG(long,mode))
 .RS 5
-Resets the clip path to what it was before the previous call to BD(PSL_beginclipping).
+Depending on the IT(mode) it restores the clip path.  The IT(mode) values
+can be: -IT(n) will restore IT(n) levels of text-based clipping, IT(n) will
+restore IT(n) levels of polygon clipping, PSL_ALL_CLIP_TXT will undo all
+levels of text-based clipping, and PSL_ALL_CLIP_POL will undo all levels of
+polygon-based clipping.
 .RE
 .SH MISCELLANEOUS FUNCTIONS
 Here are functions used to issue comments or to pass custom PS commands directly to the output PS file.

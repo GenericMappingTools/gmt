@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.897 2011-03-25 20:03:30 guru Exp $
+	$Id: ChangeLog,v 1.898 2011-03-26 20:52:07 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-26	pwessel
+	* pslib.c:		Added 2nd argument to PSL_endclipping to indicate how
+				many levels to restore and what kind of clipping (txt/poly).
+	* PSL_label.ps:		Two new counters (PSL_nclip_pol and PSL_nclip_txt) added.
+	* psclip_func.c:	Extended -C option to handle the various kinds of clipping
+				restore that may be required.
+	* grdcontour_func.c:	For -D must turn on -mo explicitly (like pscontour/pscoast)
 
 2011-03-25	pwessel
 	* grdraster_func.c:	Make sure grid header is fully initialized.  Also needed
