@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.5 2011-03-22 21:15:38 guru Exp $
+ *	$Id: psclip_func.c,v 1.6 2011-03-26 18:34:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -185,13 +185,16 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plotinit (API, PSL, options);
 
 	if (Ctrl->C.active && !GMT->current.map.frame.plot) {	/* Just undo previous clip-path, no basemap needed */
-		PSL_endclipping (PSL);
-		if (Ctrl->C.mode) PSL_comment (PSL, "Turn text path clipping off:\n");
-		/* PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2); */	/* This turns clipping OFF if it was ON in the first place */
-		if (Ctrl->C.mode == 1)
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-		else if (Ctrl->C.mode == 2)
-			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+		if (Ctrl->C.mode) {
+			PSL_comment (PSL, "Turn text path clipping off:\n");
+			PSL_command (PSL, "PSL_n_txtclip {cliprestore} repeat /PSL_n_txtclip 0 def\n");	/* Undo all levels of clipping  and reset clip count */
+			if (Ctrl->C.mode == 1)
+				PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
+			else if (Ctrl->C.mode == 2)
+				PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+		}
+		else
+			PSL_endclipping (PSL);
 		GMT_plotend (GMT, PSL);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
@@ -204,13 +207,16 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	if (Ctrl->C.active) {	/* Undo previous clip-path and draw basemap */
-		PSL_endclipping (PSL);
-		if (Ctrl->C.mode) PSL_comment (PSL, "Turn text path clipping off:\n");
-		/* PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 2); */	/* This turns clipping OFF if it was ON in the first place */
-		if (Ctrl->C.mode == 1)
-			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-		else if (Ctrl->C.mode == 2)
-			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+		if (Ctrl->C.mode) {
+			PSL_comment (PSL, "Turn text path clipping off:\n");
+			PSL_command (PSL, "PSL_n_txtclip {cliprestore} repeat /PSL_n_txtclip 0 def\n");	/* Undo all levels of clipping  and reset clip count */
+			if (Ctrl->C.mode == 1)
+				PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
+			else if (Ctrl->C.mode == 2)
+				PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+		}
+		else
+			PSL_endclipping (PSL);
 		GMT_map_basemap (GMT, PSL);
 	}
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#       $Id: ogrtest.sh,v 1.3 2011-03-15 04:30:03 remko Exp $
+#       $Id: ogrtest.sh,v 1.4 2011-03-26 18:34:17 guru Exp $
 #
 # Test grdmask for proper handling of perimeter and holes [OGR].
 
@@ -17,7 +17,7 @@ EOF
 grdimage mask.nc -Cmask.cpt -Jx800id -P -Ba10sf5sWSne -K -Xc > $ps
 psxy -Rmask.nc -J -O -K pentagon.gmt -W0.25p,white >> $ps
 # 2. make an ID grid from a multipolygon file with IDs set to CPT entries
-grdmask -R-3/8/-3/5 -I0.1 -r multihole.gmt -a2=ID -Ni -GID.nc
+grdmask -R-3/8/-3/5 -I0.1 -r multihole.gmt -aZ=ID -Ni -GID.nc
 cat << EOF > mask.cpt
 0	blue	1	- ;B
 1	green	2	- ;G
