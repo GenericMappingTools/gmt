@@ -1,4 +1,4 @@
-%-	$Id: PSL_label.ps,v 1.16 2011-03-22 02:22:38 guru Exp $
+%-	$Id: PSL_label.ps,v 1.17 2011-03-26 20:52:07 guru Exp $
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
 %-
@@ -529,4 +529,5 @@ end
 } def
 
 /PSL_clip_on false def
-/PSL_nclip 0 def
+/PSL_nclip_pol 0 def	% The depth of polygon clipping in effect
+/PSL_nclip_txt 0 def	% The depth of textpath clipping in effect

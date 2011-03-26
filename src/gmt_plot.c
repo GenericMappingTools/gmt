@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.305 2011-03-26 18:34:17 guru Exp $
+ *	$Id: gmt_plot.c,v 1.306 2011-03-26 20:52:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2152,7 +2152,7 @@ void GMT_map_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, double rgb[], GMT_
 
 	GMT_free (C, work_x);
 	GMT_free (C, work_y);
-	C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
+	C->current.ps.clip = +1;	/* Tell GMT that polygon clipping was increased by one level */
 }
 
 void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
@@ -2160,8 +2160,8 @@ void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 	/* Restores the original clipping path for the plot */
 
 	PSL_comment (P, "Deactivate Map clip path\n");
-	PSL_endclipping (P);
-	C->current.ps.clip = -1;		/* Tell GMT that clipping was turned off */
+	PSL_endclipping (P, 1);		/* Reduce polygon clipping by one level */
+	C->current.ps.clip = -1;	/* Communicate this to GMT */
 }
 
 void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
@@ -2169,8 +2169,8 @@ void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 	/* Restores the clipping path that existed prior to GMT_grid_clip_path was called */
 
 	PSL_comment (P, "Deactivate Grid clip path\n");
-	PSL_endclipping (P);
-	C->current.ps.clip = -1;		/* Tell GMT that clipping was turned off */
+	PSL_endclipping (P, 1);		/* Reduce polygon clipping by one level */
+	C->current.ps.clip = -1;	/* Communicate this to GMT */
 }
 
 void GMT_setfill (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_FILL *fill, GMT_LONG outline)
@@ -3284,11 +3284,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (C, P, G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (C, P, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
-		if (G->delay) {					/* Leave clipping and do not plot text yet - delayed until psclip -Cc|s */
-			/* C->current.ps.clip = +1; */		/* Tell GMT that clipping was turned on */
-			PSL_command (P, "/PSL_n_txtclip PSL_n_txtclip 1 add def\n");
-			return;
-		}
+		if (G->delay) return;				/* Leave clipping on and do not plot text yet - delayed until psclip -Cc|s */
 		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */
 		GMT_contlabel_plotlabels (C, P, G, 0);		/* Now plot labels where they go directly */
 	}
@@ -3448,7 +3444,10 @@ struct EPS *GMT_epsinfo (struct GMT_CTRL *C)
 	}
 
 	/* Lower or increase clip level based on C->current.ps.clip (-1, 0 or +1) */
-	new->clip_level += (int)C->current.ps.clip;
+	if (GMT_abs (C->current.ps.clip) == PSL_ALL_CLIP_POL)	/* Special case where we reset all polygon clip levels */
+		new->clip_level = 0;
+	else
+		new->clip_level += (int)C->current.ps.clip;
 
 	/* Estimates the bounding box for this overlay */
 

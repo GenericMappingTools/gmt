@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.65 2011-03-15 02:06:36 guru Exp $
+ *	$Id: pslib.h,v 1.66 2011-03-26 20:52:08 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -176,6 +176,11 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 #define PSL_ABS			1
 
+/* Clipping types */
+
+#define PSL_ALL_CLIP_TXT	0	/* Terminates all textpath-based clipping */
+#define PSL_ALL_CLIP_POL	INT_MAX	/* Terminates all textpath-based clipping */
+
 /* PSL error codes */
 
 #define PSL_NO_ERROR		 0	/* No errors, all is OK */
@@ -333,7 +338,7 @@ EXTERN_MSC PSL_LONG PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y,
 EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG absolute, double xyorigin[], double page_size[], struct EPS *eps);
 EXTERN_MSC PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL);
-EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P);
+EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P, PSL_LONG mode);
 EXTERN_MSC PSL_LONG PSL_endplot (struct PSL_CTRL *P, PSL_LONG lastpage);
 EXTERN_MSC PSL_LONG PSL_endsession (struct PSL_CTRL *P);
 EXTERN_MSC PSL_LONG PSL_plotarc (struct PSL_CTRL *P, double x, double y, double radius, double az1, double az2, PSL_LONG type);

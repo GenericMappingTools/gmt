@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdview_func.c,v 1.4 2011-03-26 20:52:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1145,7 +1145,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		if (!Ctrl->Q.mask){
-			PSL_endclipping (PSL);
+			PSL_endclipping (PSL, 1);	/* Undo mask clipping */
 			GMT_free (GMT, top_jp);
 			GMT_free (GMT, bottom_jp);
 		}
