@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.51 2011-03-27 14:29:23 remko Exp $
+#	$Id: GNUmakefile,v 1.52 2011-03-27 14:46:27 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -170,7 +170,7 @@ clean-png:
 
 spotless:	clean
 	\rm -f GMT_version.tex
-	\rm -rf html/man pdf
+	\rm -rf html/man html/index.html pdf
 
 # Shortcuts, just to do a couple of things
 pdf:	docs tutorial api man
@@ -178,7 +178,7 @@ docs:	pdf/GMT_Docs.pdf
 tutorial: pdf/GMT_Tutorial.pdf
 api:	pdf/GMT_API.pdf
 man:	pdf/GMT_Manpages.pdf
-html:	html/man/blockmean.html
+html:	html/man/blockmean.html html/index.html
 
 # Convert the PS files of the examples and animations to PS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait.
@@ -288,5 +288,7 @@ pdf/GMT_Manpages.pdf:	pdfman.sh ../src/blockmean.1
 
 html/man/blockmean.html:	webman.sh ../src/blockmean.1
 	bash webman.sh -s
+html/index.html:
+	ln -f html/gmt_services.html $@
 
 include Makefile
