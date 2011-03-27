@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.46 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_grd.h,v 1.47 2011-03-27 20:48:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -52,6 +52,7 @@ struct GRD_HEADER {
 	int registration;		/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
 	GMT_LONG type;			/* Grid format */
+	GMT_LONG bits;			/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	GMT_LONG complex_mode;		/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
 	GMT_LONG mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
 	GMT_LONG nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
