@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.229 2011-03-25 12:57:25 remko Exp $
+ *	$Id: gmt_io.c,v 1.230 2011-03-27 14:27:59 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3926,9 +3926,9 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	int i, k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
-	if ((i = (GMT_LONG)t - (GMT_LONG)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
+	if ((i = (int)((GMT_LONG)t - (GMT_LONG)in_string - 1)) < 0) return (FALSE);	/* No leading space/tab possible */
 	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
-	i += strlen (pattern) + 1;	/* Position of argument */
+	i += (int)strlen (pattern) + 1;	/* Position of argument */
 	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
 		i++;	/* Skip passed first quote */
 		for (k = i; k < strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
