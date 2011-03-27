@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.49 2011-03-25 16:08:03 remko Exp $
+#	$Id: GNUmakefile,v 1.50 2011-03-27 03:46:35 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -161,7 +161,7 @@ prep-png:	$(DOCPNG) $(TUTPNG) $(APIPNG)
 prep-tex:	$(DOCTEX) $(TUTTEX) $(APITEX)
 
 # Test if plots are OK
-tests doctests:	ps
+tests doctests:	prep-ps
 	@cd scripts ; bash run_doc_tests.sh
 
 # Cleanup, before or after
