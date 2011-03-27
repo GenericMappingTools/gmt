@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.9 2011-03-27 18:22:33 remko Exp $
+ *	$Id: gmt_esri_io.c,v 1.10 2011-03-27 19:00:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -213,8 +213,13 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		header->wesn[XLO] += inc2;	header->wesn[XHI] -= inc2;	/* Grid reg */
 		header->wesn[YLO] += inc2;	header->wesn[YHI] -= inc2; 
 		header->inc[GMT_X] = header->inc[GMT_Y] = 0.008333333333333333;
-		header->nan_value = 9999;	/* This is for SRTM30, which is different from GTOPO30 (shit) */
+		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
+		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
+			header->nan_value = -9999;
+		else
+			header->nan_value = 9999;
 		header->z_min = 16;		/* Temp pocket to store number of bits */
+		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
 
