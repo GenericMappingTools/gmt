@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.5 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.6 2011-03-27 00:21:57 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,10 +33,116 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);	/* Just get first line */
 	GMT_fclose (C, fp);
-	if (strncmp (record, "ncols ", 6)) return (-1);	/* Not this kind of file */
+	//if (strncmp (record, "ncols ", 6)) return (-1);	/* Not this kind of file */
+	if ( strncmp (record, "ncols ", 6) ) {
+		char *file;
 
-	header->type = GMT_grd_format_decoder (C, "aa");
+		/* If it got here, see if a companion .hdr file exists (must test upper & lower cases names) */
+		file = strdup(header->name);
+		GMT_chop_ext(file);
+		if ( isupper(header->name[strlen(header->name) - 1]) )
+			strcat (file, ".HDR");
+		else
+			strcat (file, ".hdr");
+
+		if ( !GMT_access (C, file, F_OK) ) {	/* Final test. First line must have the BYTEORDER keyword */
+			if ((fp = GMT_fopen (C, file, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+			not_used = GMT_fgets (C, record, BUFSIZ, fp);	/* Just get first line */
+			GMT_fclose (C, fp);
+			if ( strncmp (record, "BYTEORDER", 4) ) {free(file);	return (-1);}
+			sscanf (record, "%*s %s", header->remark);	/* Store the endianess flag temporarely here */
+			strcpy (header->command, file);
+			free (file);
+		}
+		else {
+			free (file);
+			return (-1);	/* Not this kind of file */
+		}
+	}
+
+	header->type = GMT_grd_format_decoder (C, "ei");
 	return (header->type);
+}
+
+GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
+{
+	int nB;
+	char record[BUFSIZ], *not_used = NULL;
+	FILE *fp = NULL;
+
+	if ((fp = GMT_fopen (C, header->command, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+
+	header->registration = GMT_GRIDLINE_REG;
+	header->z_scale_factor = 1.0;
+	header->z_add_offset   = 0.0;
+
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);		/* BYTEORDER */ 
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);		/* LAYOUT */
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %d", &header->ny) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NROWS record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %d", &header->nx) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NCOLS record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %d", &nB) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NBANDS record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	if (nB != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Cannot read file with number of Bands != 1 \n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->z_min) != 1) {	/* Store it temporarily there. It will be wiped out when z_min is updated */
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NBITS record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	if ( header->z_min != 16 && header->z_min != 32 ) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: This data type (%.0f bits) is not supported\n", header->z_min);
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);		/* BANDROWBYTES  */ 
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);		/* TOTALROWBYTES */
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);		/* BANDGAPBYTES  */
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->wesn[XLO]) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding ULXMAP record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->wesn[YHI]) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding ULYMAP record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding XDIM record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	not_used = GMT_fgets (C, record, BUFSIZ, fp);
+	if (sscanf (record, "%*s %lf", &header->inc[GMT_Y]) != 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding YDIM record\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+			
+	GMT_fclose (C, fp);
+
+	header->wesn[XHI] = header->wesn[XLO] + (header->nx - 1 + header->registration) * header->inc[GMT_X];
+	header->wesn[YLO] = header->wesn[YHI] - (header->ny - 1 + header->registration) * header->inc[GMT_Y];
+
+	GMT_err_fail (C, GMT_grd_RI_verify (C, header, 1), header->name);
+
+	return (GMT_NOERROR);
 }
 
 GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
@@ -47,7 +153,15 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	header->registration = GMT_GRIDLINE_REG;
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
-	
+
+	if ( header->remark[0] == 'M' || header->remark[0] == 'I' ) {	/* We are dealing with a ESRI .hdr file */
+		GMT_LONG error;
+		if ((error = read_esri_info_hdr (C, header))) 		/* Continue the work someplace else */
+			return (error);
+		else
+			return (GMT_NOERROR);
+	}
+
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->nx) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding ncols record\n");
@@ -55,7 +169,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	}
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->ny) != 1) {
-		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding ncols record\n");
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding nrows record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);
@@ -174,12 +288,25 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG col, width_out, height_in, ii, kk, in_nx, inc, off;
 	GMT_LONG first_col, last_col, first_row, last_row, n_left;
 	GMT_LONG row, row2, col2, ij, width_in, check, error, *k = NULL;
+	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
+	char *r_mode;
+	short int *tmp16 = NULL;
 	float value, *tmp = NULL;
 	FILE *fp = NULL;
-	
+
+	if ( header->remark[0] == 'M' || header->remark[0] == 'I' ) {	/* We are dealing with a ESRI .hdr file */
+		r_mode = "rb";
+		if ( header->remark[0] == 'M' ) swap = TRUE;
+		nBits = (int)header->z_min;	/* We had that as a temp pocket */
+		is_binary = TRUE;
+	}
+	else {
+		r_mode = C->current.io.r_mode;
+	}
+
 	if (!strcmp (header->name, "="))	/* Read from pipe */
 		fp = C->session.std[GMT_IN];
-	else if ((fp = GMT_fopen (C, header->name, C->current.io.r_mode)) != NULL) {
+	else if ((fp = GMT_fopen (C, header->name, r_mode)) != NULL) {
 		if ((error = read_esri_info (C, fp, header))) return (error);
 	}
 	else
@@ -192,42 +319,85 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	tmp = GMT_memory (C, NULL, header->nx, float);
+	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
+		tmp = GMT_memory (C, NULL, header->nx, float);
+	else
+		tmp16 = GMT_memory (C, NULL, header->nx, short int);
 
-	n_left = header->nm;
+	if (is_binary) {
 
-	/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids.
-	 * NaNs are not allowed; they are represented by a nodata_value instead. */
-	col = row = 0;		/* For the entire file */
-	col2 = row2 = 0;	/* For the inside region */
-	check = !GMT_is_dnan (header->nan_value);
-	in_nx = header->nx;
-	header->nx = (int)width_in;
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
-	while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
-		tmp[col] = value;	/* Build up a single input row */
-		col++;
-		if (col == in_nx) {	/* End of input row */
-			if (row >= first_row && row <= last_row) {	/* We want a piece (or all) of this row */
-				ij = GMT_IJP (header, row2, 0);	/* First out index for this row */
-				for (ii = 0; ii < width_in; ii++) {
-					kk = inc * (ij + ii) + off;
-					grid[kk] = (check && tmp[k[ii]] == header->nan_value) ? C->session.f_NaN : tmp[k[ii]];
-					if (GMT_is_fnan (grid[kk])) continue;
-					/* Update z_min, z_max */
+		if ( (last_row - first_row + 1) != header->ny)		/* We have a sub-region */
+			if (GMT_fseek (fp, (long) (first_row * header->nx * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+
+		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
+		for (row = first_row; row <= last_row; row++) {
+			if (nBits == 32) {		/* Get one row */
+				if (GMT_fread (tmp, 4, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+			}
+			else {
+				if (GMT_fread (tmp16, 2, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+			}
+			ij = (row + pad[YHI]) * width_out + i_0_out;
+			for (col = 0; col < width_in; col++) {
+				kk = ij + inc * col;
+				if (nBits == 32) {
+					grid[kk] = tmp[k[col]];
+				}
+				else {
+					if (swap) grid[kk] = (float)GMT_swab2(tmp16[k[col]]);
+					else	  grid[kk] = (float)tmp16[k[col]];
+				}
+				if ( grid[kk] == header->nan_value ) 
+					grid[kk] = C->session.f_NaN;
+				else {		 /* Update z_min, z_max */
 					header->z_min = MIN (header->z_min, (double)grid[kk]);
 					header->z_max = MAX (header->z_max, (double)grid[kk]);
 				}
-				row2++;
 			}
-			col = 0, row++;
 		}
-		n_left--;
+
+		if (nBits == 16) GMT_free (C, tmp16);
+		header->remark[0] = 0;		/* Clean the trace of this under the table usage */ 
 	}
-	if (n_left) {
-		GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
-		return (GMT_GRDIO_READ_FAILED);
+
+	else {		/* ASCII */
+
+		n_left = header->nm;
+
+		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids.
+	 	* NaNs are not allowed; they are represented by a nodata_value instead. */
+		col = row = 0;		/* For the entire file */
+		col2 = row2 = 0;	/* For the inside region */
+		check = !GMT_is_dnan (header->nan_value);
+		in_nx = header->nx;
+		header->nx = (int)width_in;
+		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
+			tmp[col] = value;	/* Build up a single input row */
+			col++;
+			if (col == in_nx) {	/* End of input row */
+				if (row >= first_row && row <= last_row) {	/* We want a piece (or all) of this row */
+					ij = GMT_IJP (header, row2, 0);	/* First out index for this row */
+					for (ii = 0; ii < width_in; ii++) {
+						kk = inc * (ij + ii) + off;
+						grid[kk] = (check && tmp[k[ii]] == header->nan_value) ? C->session.f_NaN : tmp[k[ii]];
+						if (GMT_is_fnan (grid[kk])) continue;
+						/* Update z_min, z_max */
+						header->z_min = MIN (header->z_min, (double)grid[kk]);
+						header->z_max = MAX (header->z_max, (double)grid[kk]);
+					}
+					row2++;
+				}
+				col = 0, row++;
+			}
+			n_left--;
+		}
+		if (n_left) {
+			GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 	}
+
 	GMT_fclose (C, fp);
 	GMT_free (C, k);
 	GMT_free (C, tmp);
