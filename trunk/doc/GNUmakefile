@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.52 2011-03-27 14:46:27 remko Exp $
+#	$Id: GNUmakefile,v 1.53 2011-03-27 17:03:39 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ PDFLATEX=pdflatex --interaction=batchmode
 
 # PS and TEX files used by all documents
 ALLPS=	fig/GMT_covertext.eps scripts/GMT_coverlogo.ps
-ALLTEX=	GMT_version.tex GMT_macros.tex GMT_Cover.tex GMT_tex4ht_macros.cfg
+ALLTEX=	GMT_version.tex GMT_macros.tex GMT_Cover.tex
 
 # PS, PDF and TEX files used to make Tutorial
 TUTPS=	fig/GMT_Environment.eps scripts/GMT_pstext_clearance.ps scripts/GMT_pstext_justify.ps \

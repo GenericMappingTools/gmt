@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.64 2011-03-25 14:36:18 remko Exp $
+#	$Id: Makefile,v 1.65 2011-03-27 17:03:39 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -29,7 +29,6 @@ FUNCS_O		= mgd77convert_func.o mgd77info_func.o mgd77list_func.o mgd77path_func.
 LIBMGD77_API_H	= gmt_mgd77.h
 LIB_H		= mgd77.h mgd77_IGF_coeffs.h mgd77_init.h mgd77_recalc.h mgd77magref.h mgd77defaults.h mgd77_functions.h cm4_functions.h
 LIB_O		= mgd77.o
-LIB		= libgmt_mgd77.$(LIBEXT)
 
 PROGS_H		= mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h mgd77_codes.h mgd77_e77.h
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -39,15 +38,15 @@ MAN1		= $(PROGS_O:.o=.1)
 #	software targets
 #-------------------------------------------------------------------------------
 
-all:		$(LIB) $(PROGS)
+all:		$(PROGS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! . -ef $(includedir) ]; then \
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(LIB_H) $(API_H) $(includedir)/gmt; \
 		fi
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! . -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir); \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
@@ -60,11 +59,11 @@ install:	all
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! . -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(LIB_H) $(API_H);\
 		fi
-		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libgmt_mgd77.{a,$(SL),$(SL_VERSION)}; \
+		if [ ! . -ef $(libdir) ]; then \
+			cd $(libdir); \rm -f $(LIBAPI) $(LIBAPI:.$(LIBEXT)=.a); \
 		fi
 
 install-man:	$(MAN1)

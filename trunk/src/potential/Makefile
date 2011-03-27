@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2011-03-25 14:36:18 remko Exp $
+#	$Id: Makefile,v 1.4 2011-03-27 17:03:39 remko Exp $
 #
 #	makefile for potential directory
 #
@@ -27,25 +27,28 @@ all:		$(PROGS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! . -ef $(includedir) ]; then \
+			$(INSTALL_DIR) $(includedir)/gmt; \
+			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
+		fi
+		if [ ! . -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir) ; \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
 		fi
-		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL_DIR) $(includedir)/gmt; \
-			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
-		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f $(LIBAPI:.$(LIBEXT)=).$(SL) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION); \
-			$(LN_S) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION) $(LIBAPI:.$(LIBEXT)=).$(SL); \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)}; \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).{$(SL_VERSION),$(SL)}; \
 		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(API_H);\
+		fi
+		if [ ! .. -ef $(libdir) ]; then \
+			cd $(libdir); \rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.62 2011-03-25 14:36:17 remko Exp $
+#	$Id: Makefile,v 1.63 2011-03-27 17:03:39 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,14 +109,14 @@ psldemo.ps:	$(PSLDEMO)
 install:	all
 		$(INSTALL_DIR) $(bindir)
 		$(INSTALL) $(ALLPROGS) $(bindir)
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! . -ef $(includedir) ]; then \
+			$(INSTALL_DIR) $(includedir)/gmt ; \
+			$(INSTALL_DATA) $(GMT_H) $(PS_H) $(PS_I) $(includedir)/gmt; \
+		fi
+		if [ ! . -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir) ; \
 			$(INSTALL_DATA) $(LIBGMT:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBGMT) $(libdir); fi \
-		fi
-		if [ ! $(includedir) = $(srcdir) ]; then \
-			$(INSTALL_DIR) $(includedir)/gmt ; \
-			$(INSTALL_DATA) $(GMT_H) $(PS_H) $(PS_I) $(includedir)/gmt; \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
@@ -134,11 +134,11 @@ install:	all
 
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)
-		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(LIBGMT) $(LIBGMT:.$(LIBEXT)=.a); \
+		if [ ! . -ef $(includedir) ]; then \
+			cd $(includedir)/gmt; \rm -f $(GMT_H) $(PS_H) $(PS_I); \
 		fi
-		if [ ! $(includedir) = $(srcdir) ]; then \
-			cd $(includedir); \rm -f $(GMT_H) $(PS_H) $(PS_I); \
+		if [ ! . -ef $(libdir) ]; then \
+			cd $(libdir); \rm -f $(LIBGMT) $(LIBGMT:.$(LIBEXT)=.a); \
 		fi
 
 install-man:	$(MAN1) $(MAN3) $(MAN5)

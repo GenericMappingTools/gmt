@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.54 2011-03-25 14:36:18 remko Exp $
+#	$Id: Makefile,v 1.55 2011-03-27 17:03:39 remko Exp $
 #
 #		Makefile for GMT x2sys supplements
 #
@@ -21,7 +21,6 @@ include $(GMTSRCDIR)common.mk
 INCLUDES	= -I$(srcdir) -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
 
 API_O		= gmt_x2sys.o
-API_H		= $(API_O:.o=.h)
 FUNCS_O		= x2sys_init_func.o x2sys_put_func.o x2sys_get_func.o x2sys_binlist_func.o x2sys_datalist_func.o \
 		  x2sys_cross_func.o x2sys_list_func.o x2sys_report_func.o x2sys_solve_func.o x2sys_merge_func.o
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -38,11 +37,11 @@ all:		$(PROGS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(LIB_H) $(API_H) $(includedir)/gmt; \
 		fi
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir); \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
@@ -55,10 +54,10 @@ install:	all
 
 uninstall:	
 		cd $(bindir); \rm -f $(PROGS)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(LIB_H) $(API_H);\
 		fi
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(libdir) ]; then \
 			cd $(libdir); \rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
 		fi
 

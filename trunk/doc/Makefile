@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2011-03-27 15:13:39 remko Exp $
+#	$Id: Makefile,v 1.3 2011-03-27 17:03:39 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,18 +29,18 @@
 include ../src/config.mk	# GMT-specific settings determined by user & configure
 
 install::
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
+		@if [ . -ef $(docdir) ]; then \
+			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
+		else \
 			mkdir -p $(docdir); \
 			cp -pr html pdf examples tutorial $(docdir); \
 			rm -rf $(docdir)/examples/{orig,tests,*.ps,*.pdf,*.png} \
 				{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
-		else \
-			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
 		fi
 
 uninstall:
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
-			\rm -rf $(docdir); \
-		else \
+		@if [ . -ef $(docdir) ]; then \
 			echo "Install doc directory the same as distribution doc directory - nothing deleted"; \
+		else \
+			\rm -rf $(docdir); \
 		fi

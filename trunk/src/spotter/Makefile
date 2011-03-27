@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2011-03-25 14:36:18 remko Exp $
+#	$Id: Makefile,v 1.36 2011-03-27 17:03:39 remko Exp $
 #
 #		Makefile for GMT 5 spotter supplements
 #
@@ -39,11 +39,11 @@ all:		$(PROGS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir); \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
@@ -56,11 +56,11 @@ install:	all
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS)
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(API_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f libgmt_spotter.{a,$(SL),$(SL_VERSION)}; \
+			cd $(libdir); rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)
