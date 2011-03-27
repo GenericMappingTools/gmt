@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.8 2011-03-27 16:15:53 jluis Exp $
+ *	$Id: gmt_esri_io.c,v 1.9 2011-03-27 18:22:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -348,6 +348,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	char *r_mode;
 	short int *tmp16 = NULL;
 	unsigned int *ui = NULL;
+	unsigned short *us = NULL;
 	float value, *tmp = NULL;
 	FILE *fp = NULL;
 
@@ -399,14 +400,17 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 				kk = ij + inc * col;
 				if (nBits == 32) {
 					if (swap) {
-						ui = (unsigned int *)&tmp[k[col]];	/* These 2 lines do the swab */
+						ui = (unsigned int *)&tmp[k[col]];	/* These 2 lines do the swap */
 						*ui = GMT_swab4 (*ui);
 					}
 					grid[kk] = tmp[k[col]];
 				}
 				else {
-					if (swap) grid[kk] = (float)GMT_swab2(tmp16[k[col]]);
-					else	  grid[kk] = (float)tmp16[k[col]];
+					if (swap) {
+						us = (unsigned short *)&tmp16[k[col]];	/* These 2 lines do the swap */
+						*us = GMT_swab2 (*us);
+					}
+					grid[kk] = tmp16[k[col]];
 				}
 				if ( grid[kk] == header->nan_value ) 
 					grid[kk] = C->session.f_NaN;
