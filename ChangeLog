@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.898 2011-03-26 20:52:07 guru Exp $
+	$Id: ChangeLog,v 1.899 2011-03-27 00:24:35 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-27	jluis
+	* gmt_esri_io.c:	Extend the ESRI format t$o also read ESRI .HDR format. 
+				That is a raw binary + a .hdr ascii header file.
 
 2011-03-26	pwessel
 	* pslib.c:		Added 2nd argument to PSL_endclipping to indicate how
