@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.12 2011-03-27 20:48:18 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.13 2011-03-27 23:33:09 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,11 +49,13 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	GMT_fclose (C, fp);
 	if (strncmp (record, "ncols ", 6) ) {	/* Failed to find "ncols"; probably a binary file */
 		char *file, *not_used = NULL;
+		size_t name_len;
 
 		/* If it got here, see if a companion .hdr file exists (must test upper & lower cases names) */
 		file = strdup (header->name);
 		GMT_chop_ext (file);
-		if ( isupper (header->name[strlen(header->name) - 1]) )
+		name_len = strlen (header->name);
+		if ( isupper (header->name[name_len - 1]) )
 			strcat (file, ".HDR");
 		else
 			strcat (file, ".hdr");
@@ -63,20 +65,35 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			not_used = GMT_fgets (C, record, BUFSIZ, fp);	/* Just get first line */
 			GMT_fclose (C, fp);
 			if (strncmp (record, "BYTEORDER", 4) ) { free (file);	return (-1);}
-			sscanf (record, "%*s %s", header->remark);	/* Store the endianess flag temporarely here */
+			sscanf (record, "%*s %s", header->remark);	/* Store the endianess flag temporarily here */
 			strcpy (header->command, file);
 			free (file);
 		}
-		else {	/* No header file; see if filename contains w/e/s/n information, e.g.  W|ExxxN|Syy.dem */
+		else {	/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem 
+			   for GTOPO30 (e.g W020N90.DEM) or N|SxxxW|Eyy.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
 			size_t len;
-			while (GMT_chop_ext (file));
+
+			while (GMT_chop_ext (file));	/* Remove all extensions so we know exactly where to look */
 			len = strlen (file);
 			if ((file[len-3] == 'N' || file[len-3] == 'n' || file[len-3] == 'S' || file[len-3] == 's') &&
 				(file[len-7] == 'W' || file[len-7] == 'w' || file[len-7] == 'E' || file[len-7] == 'e')) {
         			/* It is a GTOPO30 or SRTM30 source file without a .hdr companion. */
-				header->remark[0] = 'B';
+        			/* see http://dds.cr.usgs.gov/srtm/version1/SRTM30/GTOPO30_Documentation */
+				header->remark[0] = 'B';		/* GTOPO30 & SRTM30 are Big Endians */
+				header->remark[1] = '0';		/* Flag to let us know the file type */
 				strcpy (header->command, file);		/* Store the file name with all extensions removed.
 								   	We'll use this to create header from file name info */
+			}
+			else if ( ((header->name[name_len - 1] == 't') || (header->name[name_len - 1] == 'T')) && 
+				((strstr (header->name, ".hgt") || strstr (header->name, ".HGT"))) ) {
+				/* Possibly a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
+				if ((file[len-4] == 'E' || file[len-4] == 'e' || file[len-4] == 'W' || file[len-4] == 'w') &&
+					(file[len-7] == 'N' || file[len-7] == 'n' || file[len-7] == 'S' || file[len-7] == 's')) {
+					header->remark[0] = 'B';	/* SRTM1|3 are Big Endians */
+					header->remark[1] = '1';	/* Flag to let us know the file type */
+					strcpy (header->command, file);	/* Store the file name with all extensions removed.
+								   	We'll use this to create header from file name info */
+				}
 			}
 			else {	/* Cannot do anything with this data */
 				free (file);
@@ -91,6 +108,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
+	/* Parse the contents of a .HDR file */
 	int nB;
 	char record[BUFSIZ], *not_used = NULL;
 	FILE *fp = NULL;
@@ -186,7 +204,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		else
 			return (GMT_NOERROR);
 	}
-	else if ( header->remark[0] == 'B' ) {		/* A GTOPO30 or SRTM30 file */
+	else if ( header->remark[0] == 'B' && header->remark[1] == '0' ) {	/* A GTOPO30 or SRTM30 file */
 		size_t len = strlen (header->command);
 		double inc2;
 
@@ -205,7 +223,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 			header->nx = 4800;
 			header->ny = 6000;
 		}
-		else {
+		else {	/* Antarctica tiles cover 30 degrees of latitude and 60 degrees of longitude each have 3,600 rows and 7,200 columns */
 			header->wesn[YLO] = -90; 
 			header->wesn[XHI] = header->wesn[XLO] + 60; 
 			header->nx = 7200;
@@ -219,6 +237,29 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		else
 			header->nan_value = 9999;
 		header->bits = 16;		/* Temp pocket to store number of bits */
+		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
+		return (GMT_NOERROR);
+	}
+	else if ( header->remark[0] == 'B' && header->remark[1] == '1' ) {	/* A SRTM3 or SRTM1 file */
+		size_t len = strlen (header->command);
+		struct STAT F;
+
+		header->wesn[XLO] = atof (&header->command[len-3]);
+		if ( header->command[len-4] == 'W' || header->command[len-4] == 'W' ) header->wesn[XLO] *= -1; 
+		c = header->command[len-4];
+		header->command[len-4] = '\0';
+		header->wesn[YLO] = atof (&header->command[len-6]);
+		header->command[len-3] = c;		/* Reset because this function is called at least twice */
+		if ( header->command[len-7] == 'S' || header->command[len-7] == 's' ) header->wesn[YLO] *= -1; 
+		header->wesn[YHI] = header->wesn[YLO] + 1; 
+		header->wesn[XHI] = header->wesn[XLO] + 1; 
+		header->nan_value = -32768;
+		header->bits = 16;		/* Temp pocket to store number of bits */
+		STAT (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
+		if (F.st_size < 3e6)		/* Actually the true size is 2884802 */
+			header->inc[GMT_X] = header->inc[GMT_Y] = 3.0 * GMT_SEC2DEG;	/* 3 arc seconds */
+		else
+			header->inc[GMT_X] = header->inc[GMT_Y] = 1.0 * GMT_SEC2DEG;	/* 1 arc second  */
 		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
@@ -357,9 +398,11 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	float value, *tmp = NULL;
 	FILE *fp = NULL;
 
-	if ( header->remark[0] ) {	/* We are dealing with a ESRI .hdr file */
+	if ( header->remark[0] ) {	/* We are dealing with a ESRI .hdr file or GTOPO30, SRTM30, SRTM1|3 */
 		r_mode = "rb";
-		if ( (header->remark[0] == 'M' || header->remark[0] == 'B') && MY_ENDIAN == 'L' ) swap = TRUE;
+		if ( ((header->remark[0] == 'M' || header->remark[0] == 'B') && (MY_ENDIAN == 'L')) ||
+			((header->remark[0] == 'L') && (MY_ENDIAN == 'B')) ) 
+			swap = TRUE;
 		nBits = header->bits;
 		is_binary = TRUE;
 	}
@@ -428,6 +471,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 		if (nBits == 16) GMT_free (C, tmp16);
 		header->remark[0] = 0;		/* Clean the trace of this under the table usage */ 
+		if (header->remark[1]) header->remark[1]= 0;
 	}
 	else {		/* ASCII */
 		n_left = header->nm;
