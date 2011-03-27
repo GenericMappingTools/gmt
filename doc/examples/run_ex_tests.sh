@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_ex_tests.sh,v 1.4 2011-03-25 02:17:33 remko Exp $
+#	$Id: run_ex_tests.sh,v 1.5 2011-03-27 14:00:44 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -26,13 +26,13 @@ touch fail_count.d
 for o in $origs ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps tests/$f.png 2>&1`
+	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> fail_count.d
 	elif test `echo 40 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
         	echo "[PASS]"
-        	rm -f tests/$f.png
+        	rm -f $f.png
 	else
         	echo "[FAIL]"
 		echo $f: RMS Error = $rms >> fail_count.d
