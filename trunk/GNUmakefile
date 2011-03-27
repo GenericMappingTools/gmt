@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.84 2011-03-25 16:17:21 remko Exp $
+#  $Id: GNUmakefile,v 1.85 2011-03-27 14:46:27 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,7 +207,7 @@ docs pdfdocs:	$(FILES)
 pdfman:		$(FILES)
 		cd doc ; $(MAKE) man
 webman:		$(FILES)
-		cd doc ; $(MAKE) htman
+		cd doc ; $(MAKE) html
 
 prep_suppl:	clean config
 
