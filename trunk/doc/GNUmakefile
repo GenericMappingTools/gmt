@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.50 2011-03-27 03:46:35 remko Exp $
+#	$Id: GNUmakefile,v 1.51 2011-03-27 14:29:23 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -14,19 +14,19 @@
 #
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
-#		GNU Makefile for GMT Documentation
+#		GNU Makefile for GMT Documentation by gurus only
 #
 #	The following commands are available to create all the GMT documentation
 #
 #	make all	: same as : make pdf html
-#	make pdf	: Create GMT_Docs.pdf, GMT_Tutorial.pdf and GMT_API.pdf
-#	make html	: Create GMT_Docs.html, GMT_Tutorial.html and GMT_API.html
+#	make pdf	: Create PDF versions of documentation and man pages
+#	make html	: Create HTML version of man pages
 #	make install	: make all; and then install in place
 #
 #	All the above commands prepare all the necessary graphs and text to be included.
 #	Make sure, however, that the examples are already made by running "make examples"
 #	
-#	make prepro	: Only create the prerequisites.
+#	make prep	: Only prepare the prerequisites.
 #
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
@@ -37,34 +37,27 @@
 include ../src/config.mk
 
 .SUFFIXES:	.eps .pdf .tex .ps .sh
+.PHONY:	pdf html all install
 
 # Papersize
 PAPER=a4
 
-# LaTeX commands
+# LaTeX command
 PDFLATEX=pdflatex --interaction=batchmode
-HTLATEX=htlatex
-HTLATEX_OPT="GMT_tex4ht_macros,xhtml,mathml,fn-in"
-SEDIMG=sed -E 's:src="(scripts|fig|ppt)/:src="images/:g'
-
-# PNG resolution
-PNGRES=100
 
 # PS and TEX files used by all documents
 ALLPS=	fig/GMT_covertext.eps scripts/GMT_coverlogo.ps
 ALLTEX=	GMT_version.tex GMT_macros.tex GMT_Cover.tex GMT_tex4ht_macros.cfg
 
-# PS, PDF, PNG and TEX files used to make Tutorial
+# PS, PDF and TEX files used to make Tutorial
 TUTPS=	fig/GMT_Environment.eps scripts/GMT_pstext_clearance.ps scripts/GMT_pstext_justify.ps \
 	scripts/GMT_nearneighbor.ps scripts/GMT_atan.ps $(ALLPS)
 TUTPDF=$(TUTPS:.ps=.pdf)
-TUTPNG=$(TUTPS:.ps=.png)
 TUTTEX=GMT_Tutorial.tex $(ALLTEX)
 
-# PS, PDF, PNG and TEX files used to make API documentation
+# PS, PDF and TEX files used to make API documentation
 APIPS=
 APIPDF=$(APIPS:.ps=.pdf)
-APIPNG=$(APIPS:.ps=.png)
 APITEX=GMT_API.tex $(ALLTEX)
 
 # PS files to be converted from example PS files
@@ -134,11 +127,9 @@ DOCIMG=	fig/JLuis.png fig/Scharroo.png fig/Smith.png fig/Wessel.png \
 	ppt/formatpicture.png ppt/rendering.png \
 	fig/gimp-panel.png fig/gimp-sliders.png fig/hsv-cone.png
 
-# All PS, EPS, PDF and PNG files for GMT_Docs
+# All PS, EPS and PDF files for GMT_Docs
 DOCPS=	$(DOCPS0) $(DOCPS1) $(DOCPS2) $(ALLPS) $(RGBPS)
-DOCEPS= $(IS_EPS)
-DOCPDF= $(DOCPS:.ps=.pdf) $(DOCEPS:.eps=.pdf) $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf)
-DOCPNG=	$(DOCPDF:.pdf=.png)
+DOCPDF= $(DOCPS:.ps=.pdf) $(IS_EPS:.eps=.pdf) $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf)
 
 # All TEX files needed for GMT_Docs
 DOCTEX= \
@@ -154,10 +145,9 @@ all:	pdf html
 install::	all
 
 # Shortcut, just to preprocess all required files
-prep prepro:	prep-ps prep-pdf prep-png prep-tex $(DOCIMG)
+prep prepro:	prep-ps prep-pdf prep-tex $(DOCIMG)
 prep-ps:	$(DOCPS) $(TUTPS) $(APIPS)
 prep-pdf:	$(DOCPDF) $(TUTPDF) $(APIPDF)
-prep-png:	$(DOCPNG) $(TUTPNG) $(APIPNG)
 prep-tex:	$(DOCTEX) $(TUTTEX) $(APITEX)
 
 # Test if plots are OK
@@ -176,10 +166,11 @@ clean:
 	\rm -rf GMT_Docs GMT_Tutorial GMT_API
 
 clean-png:
-	\rm -f fig/GMT_*.png scripts/*.png
+	\rm -f fig/GMT_*.png scripts/*.png examples/*.png
 
 spotless:	clean
 	\rm -f GMT_version.tex
+	\rm -rf html/man pdf
 
 # Shortcuts, just to do a couple of things
 pdf:	docs tutorial api man
@@ -187,33 +178,20 @@ docs:	pdf/GMT_Docs.pdf
 tutorial: pdf/GMT_Tutorial.pdf
 api:	pdf/GMT_API.pdf
 man:	pdf/GMT_Manpages.pdf
-
-html:	htdocs httutorial htapi htman
-htdocs:	html/GMT_Docs.html
-httutorial: html/GMT_Tutorial.html
-htapi:	html/GMT_API.html
-htman:	html/man/blockmean.html
+html:	html/man/blockmean.html
 
 # Convert the PS files of the examples and animations to PS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait.
 # The extra FONTPATH options is only needed for example 31, but we do it here for all.
 $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf):	%.pdf: %.ps
 	ps2raster -Au -P -Tf -C-sFONTPATH=$(FONTPATH) $*.ps
-$(EX_PS:.ps=.png) $(AN_PS:.ps=.png):    %.png: %.ps
-	ps2raster -Au -P -Tg -E$(PNGRES) -C-sFONTPATH=$(FONTPATH) $*.ps
 
 %.pdf: %.ps
 	ps2raster -A -P -Tf $*.ps
 
-%.png: %.ps
-	ps2raster -A -P -Tg -E$(PNGRES) $*.ps
-
 # To convert EPS to PDF
 %.pdf:	%.eps
 	ps2raster -P -Tf $*.eps
-
-%.png:  %.eps
-	ps2raster -P -Tg -E$(PNGRES) $*.eps
 
 # Graphics of Appendices F, J, N, O need special attention. One script makes several PS and PDF files.
 $(APP_F_PS):	scripts/GMT_App_F.sh
@@ -278,6 +256,7 @@ pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCIMG) $(DOCTEX)
 	makeindex -s GMT.ist GMT_Docs.idx
 	$(PDFLATEX) GMT_Docs
 	$(PDFLATEX) GMT_Docs
+	mkdir -p pdf
 	\mv GMT_Docs.pdf $@
 	\ln -f scripts/GMT_RGBchart_*.pdf pdf
 	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
@@ -289,6 +268,7 @@ pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
 	makeindex -s GMT.ist GMT_Tutorial.idx
 	$(PDFLATEX) GMT_Tutorial
 	$(PDFLATEX) GMT_Tutorial
+	mkdir -p pdf
 	\mv GMT_Tutorial.pdf $@
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
@@ -299,37 +279,12 @@ pdf/GMT_API.pdf:	$(APIPDF) $(APITEX)
 	makeindex -s GMT.ist GMT_API.idx
 	$(PDFLATEX) GMT_API
 	$(PDFLATEX) GMT_API
+	mkdir -p pdf
 	\mv GMT_API.pdf $@
 	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
 pdf/GMT_Manpages.pdf:	pdfman.sh ../src/blockmean.1
 	bash pdfman.sh -s
-
-html/GMT_Docs.html:	$(DOCPNG) $(DOCIMG) $(DOCTEX)
-	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Docs{-js.tex,1.tmp}
-	$(HTLATEX) GMT_Docs $(HTLATEX_OPT)
-	\mkdir -p html/images
-	$(SEDIMG) GMT_Docs.html > $@
-	\mv GMT_Docs.css html
-	\ln -f $(DOCPNG) $(DOCIMG) html/images
-	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Docs{-js.tex,1.tmp}
-
-html/GMT_Tutorial.html:	$(TUTPNG) $(TUTTEX)
-	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Tutorial{-js.tex,1.tmp}
-	$(HTLATEX) GMT_Tutorial $(HTLATEX_OPT)
-	\mkdir -p html/images
-	$(SEDIMG) GMT_Tutorial.html > $@
-	\mv GMT_Tutorial.css html
-	\ln -f $(TUTPNG) html/images
-	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_Tutorial{-js.tex,1.tmp}
-
-html/GMT_API.html:	$(APIPNG) $(APITEX)
-	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_API{-js.tex,1.tmp}
-	$(HTLATEX) GMT_API $(HTLATEX_OPT)
-	\mkdir -p html/images
-	$(SEDIMG) GMT_API.html > $@
-	\mv GMT_API.css html
-	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi,4ct,4tc,css,html,idv,lg,tmp,xref} GMT_API{-js.tex,1.tmp}
 
 html/man/blockmean.html:	webman.sh ../src/blockmean.1
 	bash webman.sh -s
