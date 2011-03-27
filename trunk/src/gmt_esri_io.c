@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.6 2011-03-27 00:21:57 jluis Exp $
+ *	$Id: gmt_esri_io.c,v 1.7 2011-03-27 01:27:18 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,7 +33,6 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);	/* Just get first line */
 	GMT_fclose (C, fp);
-	//if (strncmp (record, "ncols ", 6)) return (-1);	/* Not this kind of file */
 	if ( strncmp (record, "ncols ", 6) ) {
 		char *file;
 
