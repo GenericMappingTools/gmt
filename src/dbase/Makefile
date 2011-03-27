@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2011-03-25 14:36:17 remko Exp $
+#	$Id: Makefile,v 1.28 2011-03-27 17:03:39 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -16,7 +16,6 @@ DEFINES		= $(SWAP)
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 API_O		= gmt_dbase.o
-API_H		= $(API_O:.o=.h)
 FUNCS_O		= grdraster_func.o
 
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -30,24 +29,29 @@ all:		$(PROGS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
-		if [ ! $(libdir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(libdir) ]; then \
 			$(INSTALL_DIR) $(libdir) ; \
 			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
 		fi
-		if [ ! $(includedir) = $(srcdir) ]; then \
+		if [ ! .. -ef $(includedir) ]; then \
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f $(LIBAPI:.$(LIBEXT)=).$(SL) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION); \
-			$(LN_S) $(LIBAPI:.$(LIBEXT)=).$(SL_VERSION) $(LIBAPI:.$(LIBEXT)=).$(SL); \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)}; \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).{$(SL_VERSION),$(SL)}; \
 		fi
 
 uninstall:
-		cd $(bindir); rm -f $(PROGS)
-		cd $(includedir)/gmt; rm -f $(API_H)
+		cd $(bindir); \rm -f $(PROGS)
+		if [ ! .. -ef $(includedir) ]; then \
+			cd $(includedir)/gmt; \rm -f $(API_H);\
+		fi
+		if [ ! .. -ef $(libdir) ]; then \
+			cd $(libdir); \rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
+		fi
 
 install-man:	$(MAN1)
 		$(INSTALL_DATA) $(MAN1) $(mandir)/man1
