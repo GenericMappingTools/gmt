@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.465 2011-03-25 22:17:38 guru Exp $
+ *	$Id: gmt_init.c,v 1.466 2011-03-27 14:34:46 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7515,7 +7515,9 @@ void GMT_setmode (struct GMT_CTRL *C, int i_or_o)
 /* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
    defined as macro, implemented as a function. */
 int GMT_message (struct GMT_CTRL *C, char *format, ...) {
+#ifdef GMT_MATLAB
 	char line[BUFSIZ];
+#endif
 	va_list args;
 	va_start (args, format);
 #ifdef GMT_MATLAB
