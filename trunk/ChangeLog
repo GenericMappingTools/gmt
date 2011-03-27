@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.902 2011-03-27 16:03:11 jluis Exp $
+	$Id: ChangeLog,v 1.903 2011-03-27 16:18:09 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-27	remko
@@ -9,6 +9,8 @@
 2011-03-27	jluis
 	* gmt_esri_io.c:	Extend the ESRI format to also read ESRI .HDR format. 
 				That is a raw binary + a .hdr ascii header file.
+				It knows also how to deal with plain GTOPO30 and SRTM30
+				raw binary files (that, is without companion .hdr file)
 	* gmt_io.c:		Add extra test ' && c != EOF' to GMT_fgets to avoid potential 
 				infinite while loop when called on a binary file.
 
