@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.230 2011-03-27 14:27:59 jluis Exp $
+ *	$Id: gmt_io.c,v 1.231 2011-03-27 15:58:48 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -180,7 +180,7 @@ char *GMT_fgets (struct GMT_CTRL *C, char *str, GMT_LONG size, FILE *stream)
 	 */
 	if (!(str[size-2] == '\n' || str[size-2] == '\0')) {	/* Only got part of a record */
 		int c, n = 0;
-		while ((c = fgetc (stream)) != '\n') n++;	/* Read char-by-char until newline is consumed */
+		while ((c = fgetc (stream)) != '\n' && c != EOF) n++;	/* Read char-by-char until newline is consumed */
 		GMT_report (C, GMT_MSG_FATAL, "Long input record (%ld bytes) was truncated to first %ld bytes!\n", size+n, size);
 	}
 	return (result);
