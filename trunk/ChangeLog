@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.901 2011-03-27 14:46:27 remko Exp $
+	$Id: ChangeLog,v 1.902 2011-03-27 16:03:11 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-27	remko
@@ -9,6 +9,8 @@
 2011-03-27	jluis
 	* gmt_esri_io.c:	Extend the ESRI format to also read ESRI .HDR format. 
 				That is a raw binary + a .hdr ascii header file.
+	* gmt_io.c:		Add extra test ' && c != EOF' to GMT_fgets to avoid potential 
+				infinite while loop when called on a binary file.
 
 2011-03-26	pwessel
 	* pslib.c:		Added 2nd argument to PSL_endclipping to indicate how
