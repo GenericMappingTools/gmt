@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.10 2011-03-27 19:00:51 remko Exp $
+ *	$Id: gmt_esri_io.c,v 1.11 2011-03-27 19:52:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -381,6 +381,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
+	width_out *= inc;		/* Possibly twice if complex is TRUE */
 
 	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
 		tmp = GMT_memory (C, NULL, header->nx, float);
@@ -417,7 +418,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 					}
 					grid[kk] = tmp16[k[col]];
 				}
-				if ( grid[kk] == header->nan_value ) 
+				if (grid[kk] == header->nan_value) 
 					grid[kk] = C->session.f_NaN;
 				else {		 /* Update z_min, z_max */
 					header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -435,7 +436,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		n_left = header->nm;
 
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids.
-	 	* NaNs are not allowed; they are represented by a nodata_value instead. */
+	 	 * NaNs are not allowed; they are represented by a nodata_value instead. */
 		col = row = 0;		/* For the entire file */
 		col2 = row2 = 0;	/* For the inside region */
 		check = !GMT_is_dnan (header->nan_value);

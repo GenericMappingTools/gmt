@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.31 2011-03-21 18:36:46 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.32 2011-03-27 19:52:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	width_out *= inc;			/* Possibly twice if complex is TRUE */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Because of the 40x40 blocks we read the entire file and only use what we need */
