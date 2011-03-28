@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.231 2011-03-27 15:58:48 jluis Exp $
+ *	$Id: gmt_io.c,v 1.232 2011-03-28 20:28:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4049,6 +4049,8 @@ void GMT_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GM
 		if (G->value[k]) S->ogr->value[k] = strdup (G->value[k]);
 		S->ogr->dvalue[k] = G->dvalue[k];
 	}
+	S->ogr->pol_mode = G->pol_mode;
+	
 }
 
 void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from)

@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.908 2011-03-28 19:07:44 guru Exp $
+	$Id: ChangeLog,v 1.909 2011-03-28 20:28:49 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-28	pwessel
@@ -8,6 +8,8 @@
 	* misc/gmt2kml.txt:	Explain how pen needs to be set.
 	* pscontour_func.c:	Got wrong contour level when some segments along edges were skipped.
 				Now use same z-slop (small) as in grdcontour_func.c
+	* gmt_support.c:	Not not handle cases like zmin color zmax - [i.e., repeat the color],
+				causing strange color ramps.
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
