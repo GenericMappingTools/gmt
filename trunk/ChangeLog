@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.909 2011-03-28 20:28:49 guru Exp $
+	$Id: ChangeLog,v 1.910 2011-03-28 20:32:01 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-28	pwessel
@@ -10,6 +10,8 @@
 				Now use same z-slop (small) as in grdcontour_func.c
 	* gmt_support.c:	Not not handle cases like zmin color zmax - [i.e., repeat the color],
 				causing strange color ramps.
+	* gmt_io.c:		The polygon status from OGR headers (@H, @P) did not get copied into
+				the polygon structure headers.
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
