@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: time_testing_2.sh,v 1.6 2011-03-15 02:06:46 guru Exp $
+#	$Id: time_testing_2.sh,v 1.7 2011-03-28 21:15:47 guru Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -16,7 +16,6 @@
 header "Test time conversions (rel time & j2000)"
 
 cat << EOF > $$.answer
->
 2000-01-01T12:00:00	0
 2000-01-02T00:00:00	0.125
 2000-01-02T12:00:00	0.25

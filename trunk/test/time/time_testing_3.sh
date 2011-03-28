@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: time_testing_3.sh,v 1.6 2011-03-15 02:06:46 guru Exp $
+#	$Id: time_testing_3.sh,v 1.7 2011-03-28 21:15:47 guru Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -16,7 +16,6 @@ sample1d -I0.5 << EOF > $$.d
 4	1
 EOF
 cat << EOF > $$.answer
->
 1970-01-01T00:00:00.0	0
 1970-01-01T00:00:00.5	0.125
 1970-01-01T00:00:01.0	0.25
