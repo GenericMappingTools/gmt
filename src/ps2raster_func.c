@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.3 2011-03-28 15:38:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,6 +59,8 @@
 #define KML_ABS				2
 #define KML_SEAFLOOR_REL	3
 #define KML_SEAFLOOR_ABS	4
+
+#define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
 
 struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
@@ -386,8 +388,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				}
 				break;
 			case 'C':	/* Append extra custom GS options */
-				if (Ctrl->C.arg[0]) strcat (Ctrl->C.arg, " ");	/* Append to list of extra GS options */
-				strcat (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
+				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
 				Ctrl->D.active = TRUE;
@@ -433,8 +434,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				Ctrl->Q.on[mode] = TRUE;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				sprintf (text, "%s%ld", anti, Ctrl->Q.bits[mode]);
-				if (Ctrl->C.arg[0]) strcat (Ctrl->C.arg, " ");	/* Append to list of extra GS options */
-				strcat (Ctrl->C.arg, text);			/* Append to list of extra GS options */
+				add_to_list (Ctrl->C.arg, text);	/* Append to list of extra GS options */
 				break;
 			case 'S':	/* Write the GS command to STDOUT */
 				Ctrl->S.active = TRUE;
@@ -464,6 +464,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 							break;
 						case 'G':	/* PNG (transparent) */
 							Ctrl->T.device = GS_DEV_TPNG;
+							add_to_list (Ctrl->C.arg, "-dMaxBitmap=100000000");	/* Add this as GS option to fix bug in GS */
 							break;
 						case 'm':	/* PPM */
 							Ctrl->T.device = GS_DEV_PPM;
@@ -642,10 +643,8 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		for (k = n_alloc = 0; k < Ctrl->In.n_files; k++) n_alloc += (strlen (ps_names[k]) + 1);
 		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
-		strcpy (all_names_in, ps_names[0]);	free ((void *)ps_names[0]);
-		for (k = 1; k < Ctrl->In.n_files; k++) {
-			strcat (all_names_in, " ");
-			strcat (all_names_in, ps_names[k]);
+		for (k = 0; k < Ctrl->In.n_files; k++) {
+			add_to_list (all_names_in, ps_names[k]);
 			free ((void *)ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + BUFSIZ, char);
@@ -1110,7 +1109,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 				}
 				out_file[pos_ext] = '\0';
-				strcat(kml_file, out_file);
+				strcat (kml_file, out_file);
 				out_file[pos_ext] = '.';	/* Reset the extension */
 			}
 			else

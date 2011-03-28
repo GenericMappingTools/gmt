@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.904 2011-03-27 23:36:35 jluis Exp $
+	$Id: ChangeLog,v 1.905 2011-03-28 15:38:33 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-28	remko
+	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
 
 2011-03-27	remko
 	* doc/html/index.html:	Now created (linked) out of gmt_services.html
