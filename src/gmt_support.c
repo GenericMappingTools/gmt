@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.466 2011-03-25 22:17:40 guru Exp $
+ *	$Id: gmt_support.c,v 1.467 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8588,7 +8588,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 #ifdef PS_MACRO
-	struct STAT buf;
+	struct GMT_STAT buf;
 #endif
 
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
@@ -8596,7 +8596,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 
 	GMT_getsharepath (C, "custom", name, ".def", file);
 #ifdef PS_MACRO
-	if (STAT (file, &buf)) {
+	if (GMT_STAT (file, &buf)) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Could not find custom symbol %s\n", name);
 		GMT_exit (EXIT_FAILURE);
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.13 2011-03-27 23:33:09 jluis Exp $
+ *	$Id: gmt_esri_io.c,v 1.14 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -242,7 +242,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	}
 	else if ( header->remark[0] == 'B' && header->remark[1] == '1' ) {	/* A SRTM3 or SRTM1 file */
 		size_t len = strlen (header->command);
-		struct STAT F;
+		struct GMT_STAT F;
 
 		header->wesn[XLO] = atof (&header->command[len-3]);
 		if ( header->command[len-4] == 'W' || header->command[len-4] == 'W' ) header->wesn[XLO] *= -1; 
@@ -255,7 +255,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
 		header->nan_value = -32768;
 		header->bits = 16;		/* Temp pocket to store number of bits */
-		STAT (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
+		GMT_STAT (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
 		if (F.st_size < 3e6)		/* Actually the true size is 2884802 */
 			header->inc[GMT_X] = header->inc[GMT_Y] = 3.0 * GMT_SEC2DEG;	/* 3 arc seconds */
 		else

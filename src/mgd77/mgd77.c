@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.264 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77.c,v 1.265 2011-03-28 17:39:42 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -478,7 +478,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 {	/* Applies to MGD77 files */
 	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ], *not_used = NULL;
 	int i, sequence, err, n_eols, c, n;
-	struct STAT buf;
+	struct GMT_STAT buf;
 
 	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
 
@@ -486,7 +486,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 
 	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
-		if (STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
+		if (GMT_STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			GMT_message (C, "%s: Unable to stat file %s\n", C->init.progname, F->path);
 			GMT_exit (EXIT_FAILURE);
 		}

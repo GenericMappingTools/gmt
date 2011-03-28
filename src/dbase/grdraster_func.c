@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.9 2011-03-25 22:17:42 guru Exp $
+ *	$Id: grdraster_func.c,v 1.10 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -206,7 +206,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 	double global_lon, lon_tol;
 	char path[BUFSIZ], buf[GRD_REMARK_LEN], dir[GRD_REMARK_LEN], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
-	struct STAT F;
+	struct GMT_STAT F;
 
 	/* Find and open the file grdraster.info */
 
@@ -568,7 +568,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			expected_size = (GMT_LONG)(GMT_get_nm (rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
 			strcpy (rasinfo[nfound].h.remark, path);
-			STAT (path, &F);
+			GMT_STAT (path, &F);
 		}
 		else {	/* Inquiry about file failed somehow */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
