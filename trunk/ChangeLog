@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.907 2011-03-28 18:24:05 guru Exp $
+	$Id: ChangeLog,v 1.908 2011-03-28 19:07:44 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-28	pwessel
-	* *.[ch]:		Replace STAT with GMT_STAT to avoid nameclashes on some systems.
+	* *.[ch]:		Replace STAT with GMT_STAT to avoid name clashes on some systems.
 	* misc/gmt2kml_func.c	Ensure pen is given in points and >= 1 in width.
 	* misc/gmt2kml.txt:	Explain how pen needs to be set.
+	* pscontour_func.c:	Got wrong contour level when some segments along edges were skipped.
+				Now use same z-slop (small) as in grdcontour_func.c
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
