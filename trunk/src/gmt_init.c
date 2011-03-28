@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.466 2011-03-27 14:34:46 jluis Exp $
+ *	$Id: gmt_init.c,v 1.467 2011-03-28 22:34:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1457,9 +1457,12 @@ int compare_cols (const void *point_1, const void *point_2)
 
 GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 {
-	/* Routine will decode the -i<col>|<colrange>,... arguments */
+	/* Routine will decode the -i<col>|<colrange>[l][s<scale>][o<offset>],... arguments */
 
-	char copy[BUFSIZ], p[BUFSIZ], *c = NULL, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char copy[BUFSIZ], p[BUFSIZ], *c = NULL;
+#ifdef GMT_COMPAT
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+#endif
 	GMT_LONG i, k = 0, start = -1, stop = -1, pos = 0, convert;
 	double scale, offset;
 
@@ -1471,15 +1474,31 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		convert = 0, scale = 0.0, offset = 0.0;
+
+		if ((c = strchr (p, 'o'))) {	/* Look for offset */
+			c[0] = '\0';	/* Wipe out the 'o' so that next scan terminates there */
+			convert =| 1;
+			offset = atof (&c[1]);
+		}
 		if ((c = strchr (p, 's'))) {	/* Look for scale factor */
-			c[0] = '\0';	/* Wipe out the 's' so that next process of reading columns terminates there */
+			c[0] = '\0';	/* Wipe out the 's' so that next scan terminates there */
+#ifdef GMT_COMPAT
 			i = strlen (p) - 1;
 			convert = (p[i] == 'l') ? 2 : 1;
 			i = sscanf (&c[1], "%[^/]/%[^l]", txt_a, txt_b);
 			if (i == 0) GMT_report (C, GMT_MSG_FATAL, "-i...s contains bad scale info\n");
 			scale = atof (txt_a);
 			if (i == 2) offset = atof (txt_b);
+#else
+			convert =| 1;
+			scale = atof (&c[1]);
+#endif
 		}
+		if ((c = strchr (p, 'l'))) {	/* Look for log indicator */
+			c[0] = '\0';	/* Wipe out the 's' so that next scan terminates there */
+			convert = 2;
+		}
+
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3 */
