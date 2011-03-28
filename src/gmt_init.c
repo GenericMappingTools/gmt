@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.467 2011-03-28 22:34:28 remko Exp $
+ *	$Id: gmt_init.c,v 1.468 2011-03-28 23:13:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1174,10 +1174,11 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	else
 		C->common.R.oblique = FALSE;
 	i = pos = 0;
+	GMT_memset (p, 6, double);
 	while ((GMT_strtok (string, "/", &pos, text))) {
 		if (i > 5) {
 			error++;
-			return (error);		/* Have to break out here to avoid segv on *p[6]  */
+			return (error);		/* Have to break out here to avoid segv on p[6]  */
 		}
 		/* Figure out what column corresponds to a token to get col_type[GMT_IN] flag  */
 		if (i > 3)
@@ -1477,7 +1478,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 
 		if ((c = strchr (p, 'o'))) {	/* Look for offset */
 			c[0] = '\0';	/* Wipe out the 'o' so that next scan terminates there */
-			convert =| 1;
+			convert |= 1;
 			offset = atof (&c[1]);
 		}
 		if ((c = strchr (p, 's'))) {	/* Look for scale factor */
@@ -1490,7 +1491,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 			scale = atof (txt_a);
 			if (i == 2) offset = atof (txt_b);
 #else
-			convert =| 1;
+			convert |= 1;
 			scale = atof (&c[1]);
 #endif
 		}
