@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.2 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.3 2011-03-28 18:24:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -212,7 +212,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -O and -K to organize features into groups.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_pen_syntax (GMT, 'W', "Specify pen attributes for lines and polygons [Default is solid line of unit thickness].");
-	GMT_message (GMT, "\t   Use -W- to turn off polygon outlines.\n");
+	GMT_message (GMT, "\t   Give width in pixels and append p.  Use -W- to turn off polygon outlines.\n");
 	GMT_message (GMT, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
 	GMT_message (GMT, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit]\n");
 	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be active [always active]\n");
@@ -463,6 +463,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "GMT SYNTAX ERROR.  -S takes scales > 0.0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "GMT SYNTAX ERROR.  -Q takes transparencies in range 0-1\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "GMT SYNTAX ERROR.  -N+ not valid for lines and polygons\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "GMT SYNTAX ERROR.  -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
