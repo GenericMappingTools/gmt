@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.910 2011-03-28 20:32:01 guru Exp $
+	$Id: ChangeLog,v 1.911 2011-03-28 22:34:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-28	remkko
+	* gmt_init.c:		New format of -i option: -i<cols>[l][s<scale>][o<offset][,...].
+	* common_options.txt, explain_-icols_full.txt, gmt_synopsis.h:	---"---
 
 2011-03-28	pwessel
 	* *.[ch]:		Replace STAT with GMT_STAT to avoid name clashes on some systems.

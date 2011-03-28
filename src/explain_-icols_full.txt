@@ -2,6 +2,7 @@
 GMT_i_OPT
 Select specific data columns for input, in arbitrary order.  Columns not listed will be skipped.
 Give columns (or column ranges) separated by commas [Default reads all columns in order].
-To each column, optionally add BD(s)IT(scale)/IT(offset)[BD(l)], to apply a given scale and then
-an offset to the input values before further processing; the optional BD(l) first takes the BD(log10)
-of the input values.
+To each column, optionally add any of the following, in this order:
+BD(l) takes the BD(log10) of the input values first;
+BD(s)IT(scale), subsequently multiplies by a given scale factor;
+BD(o)IT(offset), finally adds a given offset.
