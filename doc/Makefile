@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.4 2011-03-28 21:38:13 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,7 +35,7 @@ install::
 			mkdir -p $(docdir); \
 			cp -pr html pdf examples tutorial $(docdir); \
 			rm -rf $(docdir)/examples/{orig,tests,*.ps,*.pdf,*.png} \
-				{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
+				$(docdir)/{*,*/*,*/*/*}/{CVS,.gmt*,.cvs*}; \
 		fi
 
 uninstall:
