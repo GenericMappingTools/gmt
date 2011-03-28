@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.36 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.37 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,7 +115,7 @@
 #define y1(x) _y1(x)
 #define yn(n,x) _yn(n,x)
 #define strdup(s) _strdup(s)
-#define STAT _stat
+#define GMT_STAT _stat
 #if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in uix */
 #define strtok_r strtok_s
 #endif
@@ -261,7 +261,7 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 #undef FLOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 #define NO_FCNTL	/* fcntl.h does not exist here */
-#define STAT _stat
+#define GMT_STAT _stat
 
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 
@@ -330,8 +330,8 @@ EXTERN_MSC int getuid (void);
 #include <fcntl.h>
 #endif
 
-#ifndef STAT
-#define STAT stat
+#ifndef GMT_STAT
+#define GMT_STAT stat
 #endif
 
 #endif /* _GMT_NOTUNIX_H */

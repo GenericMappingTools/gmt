@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.905 2011-03-28 15:38:33 remko Exp $
+	$Id: ChangeLog,v 1.906 2011-03-28 17:39:42 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-28	pwessel
+	* *.[ch]:		Replace STAT with GMT_STAT to avoid nameclashes on some systems.
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG

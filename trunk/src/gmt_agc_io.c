@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.32 2011-03-27 19:52:52 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.33 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,10 +115,10 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	FILE *fp = NULL;
 	GMT_LONG nx, ny, predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
-	struct STAT buf;
+	struct GMT_STAT buf;
 
 	if (!strcmp (file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 	if (GMT_fread ((void *)recdata, sizeof(float), (size_t)RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	

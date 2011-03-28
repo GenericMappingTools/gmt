@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+/* $Id: img2grd_func.c,v 1.4 2011-03-28 17:39:42 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -316,8 +316,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (! (Ctrl->I.active || Ctrl->D.active)) {
 		GMT_LONG min;
 		double lat = 0.0;
-		struct STAT buf;
-		if (STAT (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+		struct GMT_STAT buf;
+		if (GMT_STAT (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 		switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72 or 80 */
 			case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:

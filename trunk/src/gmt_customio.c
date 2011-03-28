@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.100 2011-03-22 00:03:35 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.101 2011-03-28 17:39:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -478,11 +478,11 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	GMT_LONG nm, mx, status, size;
 	double item_size;
-	struct STAT buf;
+	struct GMT_STAT buf;
 	struct GRD_HEADER t_head;
 	
 	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (STAT (header->name, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (GMT_STAT (header->name, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	strcpy (t_head.name, header->name);
 	if ((status = GMT_native_read_grd_info (C, &t_head))) return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0) return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
