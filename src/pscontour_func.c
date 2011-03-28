@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.6 2011-03-26 20:52:07 guru Exp $
+ *	$Id: pscontour_func.c,v 1.7 2011-03-28 19:07:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,14 +157,14 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double **xc, double **yc, double **zc, GMT_LONG **v, GMT_LONG **cindex)
+GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, GMT_LONG **v, GMT_LONG **cindex)
 {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
 	 
-	GMT_LONG i, j, k, k2, i1, nx, n_alloc, *vout, *cind;
-	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, small = 1.0e-6, *xout, *yout, *zout;
+	GMT_LONG i, j, k, k2, i1, nx, n_alloc, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
 
 	xx[0] = x[ind[0]];	yy[0] = y[ind[0]];	zz[0] = z[ind[0]];
 	xx[1] = x[ind[1]];	yy[1] = y[ind[1]];	zz[1] = z[ind[1]];
@@ -187,40 +187,48 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_
 	n_alloc = 2 * nx;
 	xout = GMT_memory (GMT, NULL, n_alloc, double);
 	yout = GMT_memory (GMT, NULL, n_alloc, double);
+	ztmp = GMT_memory (GMT, NULL, n_alloc, double);
 	zout = GMT_memory (GMT, NULL, n_alloc, double);
 	vout = GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
+	ctmp = GMT_memory (GMT, NULL, nx, GMT_LONG);
 	cind = GMT_memory (GMT, NULL, nx, GMT_LONG);
 
 	/* Fill out array zout which holds the nx contour levels */
 
 	k = k2 = 0;
 	while (i <= j) {
-		zout[k2] = zout[k2+1] = P[i].val;
-		cind[k++] = i;
+		ztmp[k2] = ztmp[k2+1] = P[i].val;
+		ctmp[k++] = i;
 		k2 += 2;
 		i++;
 	}
 
 	/* Loop over the contour levels and determine the line segments */
 
-	for (k = k2 = j = 0; k < nx; k++, k2 += 2) {
-		for (i = 0; i < 3; i++) if (zz[i] == zout[k2]) zz[i] += small;	/* Refuse to go through nodes */
+	for (k = k2 = j = n_ok = 0; k < nx; k++, k2 += 2) {
+		ok = FALSE;
+		for (i = 0; i < 3; i++) if (zz[i] == ztmp[k2]) zz[i] += small;	/* Refuse to go through nodes */
 		for (i = 0; i < 3; i++) {	/* Try each side in turn 0-1, 1-2, 2-0 */
 			i1 = (i == 2) ? 0 : i + 1;
-			if ((zout[k2] >= zz[i] && zout[k2] < zz[i1]) || (zout[k2] <= zz[i] && zout[k2] > zz[i1])) {
+			if ((ztmp[k2] >= zz[i] && ztmp[k2] < zz[i1]) || (ztmp[k2] <= zz[i] && ztmp[k2] > zz[i1])) {
 				dz = zz[i1] - zz[i];
-				if (dz == 0.0) {	/* Contour goes along ende */
+				if (dz == 0.0) {	/* Contour goes along edge */
 					xout[j] = xx[i];	yout[j] = yy[i];
 				}
 				else {
-					frac = (zout[k2] - zz[i]) / dz;
+					frac = (ztmp[k2] - zz[i]) / dz;
 					xout[j] = xx[i] + frac * (xx[i1] - xx[i]);
 					yout[j] = yy[i] + frac * (yy[i1] - yy[i]);
 				}
+				zout[j] = ztmp[k2];
 				vout[j++] = i;	/* Keep track of the side number */
+				ok = TRUE;	/* Wish to add this segment */
 			}
 		}
-		if (j%2) j--;	/* Contour went through a single vertex only, skip this */
+		if (j%2)
+			j--;	/* Contour went through a single vertex only, skip this */
+		else if (ok)
+			cind[n_ok++] = ctmp[k];
 	}
 
 	nx = j / 2;	/* Since j might have changed */
@@ -237,6 +245,8 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_
 		GMT_free (GMT, vout);
 		GMT_free (GMT, cind);
 	}
+	GMT_free (GMT, ztmp);
+	GMT_free (GMT, ctmp);
 	return (nx);
 }
 
@@ -598,7 +608,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	int *ind = NULL;
 	
-	double xx[3], yy[3], zz[3], xout[5], yout[5], xyz[2][3], rgb[4];
+	double xx[3], yy[3], zz[3], xout[5], yout[5], xyz[2][3], rgb[4], z_range, small;
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
 	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
 
@@ -890,6 +900,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
+	z_range = xyz[1][GMT_Z] - xyz[0][GMT_Z];
+	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
+
 	for (i = ij = 0; i < np; i++, ij += 3) {	/* For all triangles */
 
 		k = ij;
@@ -897,7 +910,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		xx[1] = x[ind[k]];	yy[1] = y[ind[k]];	zz[1] = z[ind[k++]];
 		xx[2] = x[ind[k]];	yy[2] = y[ind[k]];	zz[2] = z[ind[k]];
 
-		nx = get_triangle_crossings (GMT, cont, n_contours, x, y, z, &ind[ij], &xc, &yc, &zc, &vert, &cind);
+		nx = get_triangle_crossings (GMT, cont, n_contours, x, y, z, &ind[ij], small, &xc, &yc, &zc, &vert, &cind);
 
 		if (Ctrl->I.active) {	/* Must color the triangle slices according to cpt file */
 
