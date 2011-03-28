@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.467 2011-03-28 17:39:42 guru Exp $
+ *	$Id: gmt_support.c,v 1.468 2011-03-28 20:28:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2045,13 +2045,17 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			}
 			if (X->model & GMT_HSV) {
 				if (GMT_gethsv (C, clo, X->range[n].hsv_low)) error++;
-				if (GMT_gethsv (C, chi, X->range[n].hsv_high)) error++;
+				if (!strcmp (chi, "-"))	/* Duplicate first color */
+					GMT_memcpy (X->range[n].hsv_high, X->range[n].hsv_low, 4, double);
+				else if (GMT_gethsv (C, chi, X->range[n].hsv_high)) error++;
 				GMT_hsv_to_rgb (C, X->range[n].rgb_low,  X->range[n].hsv_low);
 				GMT_hsv_to_rgb (C, X->range[n].rgb_high, X->range[n].hsv_high);
 			}
 			else {
 				if (GMT_getrgb (C, clo, X->range[n].rgb_low)) error++;
-				if (GMT_getrgb (C, chi, X->range[n].rgb_high)) error++;
+				if (!strcmp (chi, "-"))	/* Duplicate first color */
+					GMT_memcpy (X->range[n].rgb_high, X->range[n].rgb_low, 4, double);
+				else if (GMT_getrgb (C, chi, X->range[n].rgb_high)) error++;
 				GMT_rgb_to_hsv (C, X->range[n].rgb_low,  X->range[n].hsv_low);
 				GMT_rgb_to_hsv (C, X->range[n].rgb_high, X->range[n].hsv_high);
 			}

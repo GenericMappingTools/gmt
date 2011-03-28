@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: psscale_func.c,v 1.3 2011-03-28 20:28:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "psscale %s [API] - To create grayscale or colorscale for maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psscale -D<xpos/ypos/length/width>[h] [-A[a|l|c]] [-C<cpt_file>] [-E[b|f][<length>]] [%s] [-I[<max_intens>|<low_i>/<high_i>]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [-K] [-L[i][<gap>]] [-M] [-N<dpi>] [-O] [-P]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N<dpi>] [-O] [-P]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-Q] [-S] [-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-Z<zfile>] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 

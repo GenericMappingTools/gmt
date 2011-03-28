@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.4 2011-03-25 22:32:45 guru Exp $
+ *	$Id: grdmask_func.c,v 1.5 2011-03-28 20:28:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -215,7 +215,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	float mask_val[3];
 	
-	double distance, xx, yy, x0, y0, ID, *x = NULL, *y = NULL;
+	double distance, xx, yy, x0, y0, ID, xtmp;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -301,17 +301,17 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];		/* Current segment */
-			x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
 			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constrains */
 				for (k = 0; k < S->n_rows; k++) {
-					if (GMT_y_is_outside (y[k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
-					if (GMT_x_is_outside (GMT, &x[k], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
+					if (GMT_y_is_outside (S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
+					xtmp = S->coord[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
+					if (GMT_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
-					col_0 = GMT_grd_x_to_col (x[k], Grid->header);
+					col_0 = GMT_grd_x_to_col (xtmp, Grid->header);
 					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = GMT_grd_y_to_row (y[k], Grid->header);
+					row_0 = GMT_grd_y_to_row (S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GRDMASK_INSIDE];	/* This is the nearest node */
@@ -329,7 +329,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							ij = GMT_IJP (Grid->header, row, col);
 							x0 = GMT_grd_col_to_x (col, Grid->header);
 							y0 = GMT_grd_row_to_y (row, Grid->header);
-							distance = GMT_distance (GMT, x[k], y[k], x0, y0);
+							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], x0, y0);
 							if (distance > Ctrl->S.radius) continue;
 							Grid->data[ij] = mask_val[GRDMASK_INSIDE];	/* The inside value */
 						}
@@ -349,7 +349,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					ID += 1.0;
 
-				if (resample) S->n_rows = GMT_fix_up_path (GMT, &x, &y, S->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
+				if (resample) S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
 				for (row = 0; row < Grid->header->ny; row++) {
 
 					yy = GMT_grd_row_to_y (row, Grid->header);
