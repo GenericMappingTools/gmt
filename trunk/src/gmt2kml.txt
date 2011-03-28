@@ -115,7 +115,8 @@ this allows you, with OPT(O), OPT(K), to group features into folders within the 
 OPT(W)-|IT(pen)
 Set pen attributes for lines or polygon outlines.  Append pen attributes to use
 [Defaults: width = 1, color = black, style = solid].  Optionally, use OPT(W-) to
-turn off polygon outline
+turn off polygon outline.  Note that for KML the pen width is given as integer pixel
+widths so you must specify pen width as \fIn\fP\fBp\fP, where \fIn\fP is an integer.
 (See SPECIFYING PENS below).
 .TP
 OPT(Z)IT(args)

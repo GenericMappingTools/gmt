@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.906 2011-03-28 17:39:42 guru Exp $
+	$Id: ChangeLog,v 1.907 2011-03-28 18:24:05 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-28	pwessel
 	* *.[ch]:		Replace STAT with GMT_STAT to avoid nameclashes on some systems.
+	* misc/gmt2kml_func.c	Ensure pen is given in points and >= 1 in width.
+	* misc/gmt2kml.txt:	Explain how pen needs to be set.
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
