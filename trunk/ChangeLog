@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.911 2011-03-28 22:34:28 remko Exp $
+	$Id: ChangeLog,v 1.912 2011-03-29 00:38:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-28	remkko
@@ -16,6 +16,8 @@
 				causing strange color ramps.
 	* gmt_io.c:		The polygon status from OGR headers (@H, @P) did not get copied into
 				the polygon structure headers.
+	* gmt_init.c:		Temp array double p[6] in -R parsing was not initialized and could have
+				junk for the zmin/zmax values (the others get set directly).
 
 2011-03-28	remko
 	* ps2raster_func.c:	Automatically add GS option -dMaxBitmap=100000000 with -TG
