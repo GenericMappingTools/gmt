@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.14 2011-03-28 17:39:42 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.15 2011-03-30 01:28:26 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,13 +60,23 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		else
 			strcat (file, ".hdr");
 
-		if (!GMT_access (C, file, F_OK)) {	/* Final test. First line must have the BYTEORDER keyword */
+		if (!GMT_access (C, file, F_OK)) {	/* Now, if first line has BYTEORDER or ncols keywords we are in the game */
 			if ((fp = GMT_fopen (C, file, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 			not_used = GMT_fgets (C, record, BUFSIZ, fp);	/* Just get first line */
 			GMT_fclose (C, fp);
-			if (strncmp (record, "BYTEORDER", 4) ) { free (file);	return (-1);}
-			sscanf (record, "%*s %s", header->remark);	/* Store the endianess flag temporarily here */
-			strcpy (header->command, file);
+
+			if (!strncmp (record, "BYTEORDER", 4) ) {
+				sscanf (record, "%*s %s", header->remark);	/* Store the endianess flag temporarily here */
+				strcpy (header->command, file);
+			}
+			else if (!strncmp (record, "ncols ", 6) ) {	/* Ah. A Arc/Info float binary file with a separate .hdr */
+				strcpy (header->command, file);
+				header->remark[0] = 'L';	/* If is truly 'L' or 'B' we'll find only when parsing the whole header */
+				header->remark[1] = '2';	/* Flag to let us know the file type */
+			}
+			else
+				{ free (file);	return (-1);}	/* Cannot do anything with this data */
+
 			free (file);
 		}
 		else {	/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem 
@@ -192,6 +202,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 {
 	int c;
 	char record[BUFSIZ], *not_used = NULL;
+	FILE *fp2 = NULL, *fpBAK = NULL;
 
 	header->registration = GMT_GRIDLINE_REG;
 	header->z_scale_factor = 1.0;
@@ -263,6 +274,13 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
+	else if ( (header->remark[0] == 'L' || header->remark[0] == 'B') && header->remark[1] == '2' ) {	/* A Arc/Info BINARY file */
+		if ((fp2 = GMT_fopen (C, header->command, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+		/* To use the same parsing header code as in the ASCII file case where header and data are in the
+		   same file, we will swap the file pointers and undo the swap at the end of this function */
+		fpBAK = fp;	/* Copy of the input argument '*fp' */
+		fp = fp2;
+	}
 
 	not_used = GMT_fgets (C, record, BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->nx) != 1) {
@@ -308,6 +326,25 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	header->wesn[YHI] = header->wesn[YLO] + (header->ny - 1 + header->registration) * header->inc[GMT_Y];
 
 	GMT_err_fail (C, GMT_grd_RI_verify (C, header, 1), header->name);
+
+	if (fpBAK) {		/* Case of Arc/Info binary file with a separate header file. We still have things to do. */
+		char tmp[16];
+		/* Read an extra record containing the endianess info */
+		not_used = GMT_fgets (C, record, BUFSIZ, fp);
+		if (sscanf (record, "%*s %s", tmp) != 1) {
+			GMT_report (C, GMT_MSG_FATAL, "Arc/Info BINARY Grid: Error decoding endianess record\n");
+			return (GMT_GRDIO_READ_FAILED);
+		}
+		if (tmp[0] == 'L') 
+			header->remark[0] = 'L'; 
+		else 
+			header->remark[0] = 'B'; 
+
+		header->bits = 32;	/* Those float binary files */
+		/* Ok, now as mentioned above undo the file pointer swapping (point again to data file) */
+		fp = fpBAK;
+		GMT_fclose (C, fp2);
+	}
 
 	return (GMT_NOERROR);
 }
