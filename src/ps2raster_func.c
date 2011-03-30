@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.3 2011-03-28 15:38:33 remko Exp $
+ *	$Id: ps2raster_func.c,v 1.4 2011-03-30 00:37:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -301,7 +301,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -B is that it creates a frame and very likely its annotations and\n");
 	GMT_message (GMT, "\t   that introduces pixels outside the map data extent. As a consequence,\n");
 	GMT_message (GMT, "\t   the map extents estimation will be wrong. To avoid this problem, use\n");
-	GMT_message (GMT, "\t   the --BASEMAP_TYPE=inside option which plots all annotations related\n");
+	GMT_message (GMT, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotations related\n");
 	GMT_message (GMT, "\t   stuff inside the image and does not compromise the coordinate.\n");
 	GMT_message (GMT, "\t   computations. The world file naming follows the convention of jamming\n");
 	GMT_message (GMT, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
