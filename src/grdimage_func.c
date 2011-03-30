@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.4 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdimage_func.c,v 1.5 2011-03-30 15:32:11 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -263,13 +263,20 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {} else
 #endif
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb, "GMT SYNTAX ERROR:  Must specify color palette table\n");
-	n_errors += GMT_check_condition (GMT, !(n_files == 1 || n_files == 3), "GMT SYNTAX ERROR:  Must specify one (or three) input file(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "GMT SYNTAX ERROR -I option:  Must specify intensity file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0, "GMT SYNTAX ERROR -E option:  dpi must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, "GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), "GMT SYNTAX ERROR -S option:  threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, 
+					"GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb &&!Ctrl->D.active, 
+					"GMT SYNTAX ERROR:  Must specify color palette table\n");
+	n_errors += GMT_check_condition (GMT, !(n_files == 1 || n_files == 3), 
+					"GMT SYNTAX ERROR:  Must specify one (or three) input file(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, 
+					"GMT SYNTAX ERROR -I option:  Must specify intensity file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0, 
+					"GMT SYNTAX ERROR -E option:  dpi must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
+					"GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), 
+					"GMT SYNTAX ERROR -S option:  threshold must be in [0,1] range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
