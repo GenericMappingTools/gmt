@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.914 2011-03-30 03:58:42 guru Exp $
+	$Id: ChangeLog,v 1.915 2011-03-30 15:34:28 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2011-03-30	jluis
 	* gmt_esri_io.c:	Also detects the Arc/Info float binary format (GRIDFLOAT)
+	* grdimage_func.c:	Overzealous -C testing prevented the usage of an image via -Dr 
 
 2011-03-29	pwessel
 	* surface_func.c:	Improved gridding of pixel-registered grids by temporarily adding
