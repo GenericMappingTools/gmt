@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.147 2011-03-28 17:39:42 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.148 2011-03-30 03:58:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -356,10 +356,12 @@ GMT_LONG GMT_padspace (struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, s
 	double wesn2[4];
 	
 	/* First copy over original settings to the Pad structure */
-	GMT_memset (P, 1, struct GRD_PAD);						/* Initialize to zero */
-	GMT_memcpy (P->pad, pad, 4, GMT_LONG);						/* Duplicate the pad */
-	if (!wesn || (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) return (FALSE);	/* No subset requested */
-	GMT_memcpy (P->wesn, wesn, 4, double);						/* Copy the subset boundaries */
+	GMT_memset (P, 1, struct GRD_PAD);					/* Initialize to zero */
+	GMT_memcpy (P->pad, pad, 4, GMT_LONG);					/* Duplicate the pad */
+	if (!wesn) return (FALSE);						/* No subset requested */
+	if (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]) return (FALSE);	/* Subset not set */
+	if (wesn[XLO] == header->wesn[XLO] && wesn[XHI] == header->wesn[XHI] && wesn[YLO] == header->wesn[YLO] && wesn[YHI] == header->wesn[YHI]) return (FALSE);	/* Subset equals whole area */
+	GMT_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (FALSE);	/* No padding requested */
 	
 	/* Determine if data exist for a pad on all four sides.  If not we give up */

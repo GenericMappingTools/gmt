@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.4 2011-03-25 22:17:41 guru Exp $
+ *	$Id: surface_func.c,v 1.5 2011-03-30 03:58:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -159,6 +159,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double small;			/* Let data point coincide with node if distance < C->small */
 	double coeff[2][12];		/* Coefficients for 12 nearby points, constrained and unconstrained  */
 	double relax_old, relax_new;	/* Coefficients for relaxation factor to speed up convergence */
+	double wesn_orig[4];		/* Original -R domain as we might have shifted it due to -r */
 	struct SURFACE_DATA  *data;
 	struct SURFACE_BRIGGS *briggs;
 	struct GMT_GRID *Grid;			/* The final grid */
@@ -734,6 +735,13 @@ GMT_LONG write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, cha
 
 	v2 = GMT_memory (GMT, NULL, C->Grid->header->size, float);
 	index = C->ij_sw_corner;
+	if (GMT->common.r.active) {	/* Pixel registration request. Reset limits to the original extents */
+		GMT_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
+		C->Grid->header->registration = GMT_PIXEL_REG;
+		/* Must reduce nx,ny by 1 to exclude the extra padding for pixel grids */
+		C->Grid->header->nx--;	C->nx--;
+		C->Grid->header->ny--;	C->ny--;
+	}
 	for (i = 0; i < C->nx; i++, index += C->my) {
 		for (j = 0; j < C->ny; j++) {
 			k = GMT_IJP (C->Grid->header, j, i);
@@ -1718,6 +1726,10 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 					Ctrl->S.unit = 's';
 				}
 #endif
+				if (!strchr ("sm ", Ctrl->S.unit)) {
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option: Unrecognized unit %c\n", Ctrl->S.unit);
+					n_errors++;
+				}
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
@@ -1764,10 +1776,8 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 
 GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = FALSE, key, greenwich = FALSE;
+	GMT_LONG error = FALSE, key, one = 1, greenwich = FALSE;
 	
-	double wesn_back[4];
-
 	struct GMT_TABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct SURFACE_INFO C;
@@ -1803,10 +1813,12 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
 
-	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of shrinking area by x_inc(y_inc) / 2 */
-		GMT_memcpy (wesn_back, C.Grid->header->wesn, 4, double);
-		C.Grid->header->wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	C.Grid->header->wesn[XHI] -= Ctrl->I.inc[GMT_X] / 2.0;
-		C.Grid->header->wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	C.Grid->header->wesn[YHI] -= Ctrl->I.inc[GMT_Y] / 2.0;
+	GMT_memcpy (C.wesn_orig, C.Grid->header->wesn, 4, double);	/* Save original region in case of -r */
+	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offset area by x_inc(y_inc) / 2 */
+		C.Grid->header->wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	C.Grid->header->wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
+		C.Grid->header->wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	C.Grid->header->wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;
+		one++;	/* Just so we can report correct nx,ny for the grid; internally it is the same until output */
+		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reduce nx,ny by 1 when we write result */
 	}
 	
 	GMT_RI_prepare (GMT, C.Grid->header);	/* Ensure -R -I consistency and set nx, ny */
@@ -1836,8 +1848,9 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->Q.active) {
-		sprintf (C.format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_message (GMT, C.format, C.Grid->header->wesn[XLO], C.Grid->header->wesn[XHI], C.Grid->header->wesn[YLO], C.Grid->header->wesn[YHI], C.nx-1, C.ny-1);
+		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING:  Your grid dimensions are mutually prime.\n");
 	if ((C.grid == 1 && GMT->current.setting.verbose >= GMT_MSG_NORMAL) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
@@ -1927,11 +1940,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, C.iu);
 	if (C.set_low) GMT_free (GMT, C.lower);
 	if (C.set_high) GMT_free (GMT, C.upper);
-
-	if (GMT->common.r.active) {	/* Pixel registration request. Reset limits to the original extents */
-		GMT_memcpy (C.Grid->header->wesn, wesn_back, 4, double);
-		C.Grid->header->registration = GMT_PIXEL_REG;
-	}
 
 	if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
