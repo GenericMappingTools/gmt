@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.912 2011-03-29 00:38:47 guru Exp $
+	$Id: ChangeLog,v 1.913 2011-03-30 01:30:40 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-03-30	jluis
+	* gmt_esri_io.c:	Also detects the Arc/Info float binary format (GRIDFLOAT)
 
 2011-03-28	remkko
 	* gmt_init.c:		New format of -i option: -i<cols>[l][s<scale>][o<offset][,...].
