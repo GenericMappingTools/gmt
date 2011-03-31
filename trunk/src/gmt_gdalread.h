@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.14 2011-03-21 23:59:55 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.15 2011-03-31 17:13:48 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -61,10 +61,14 @@ struct GDALREAD_CTRL {
 		int active;
 		int complex; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
 	} Z;
+	struct GD_cp {	/* Send in a pointer with allocated chars */
+		int active;
+		char *grd;
+	} c_ptr;
 	struct GD_fp {	/* Send in a pointer with allocated floats */
 		int active;
 		float *grd;
-	} fpointer;
+	} f_ptr;
 	struct GD_r {	/* Sub-region in row/column coords */
 		int active;
 		char *region;
