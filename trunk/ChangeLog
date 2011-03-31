@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.915 2011-03-30 15:34:28 jluis Exp $
+	$Id: ChangeLog,v 1.916 2011-03-31 17:46:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-03-31	pwessel
+	* ps2raster_func.c:	Added modifier +o<foldername> to generate a KML snipped in
+				a named folder without the KML header and trailer.  Used to
+				build multi-component KML files in association with gmt2kml.
+				
 2011-03-30	jluis
 	* gmt_esri_io.c:	Also detects the Arc/Info float binary format (GRIDFLOAT)
 	* grdimage_func.c:	Overzealous -C testing prevented the usage of an image via -Dr 

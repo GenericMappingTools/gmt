@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.4 2011-03-30 00:37:04 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.5 2011-03-31 17:46:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,6 +114,7 @@ struct PS2RASTER_CTRL {
 	} T;
 	struct W {	/* -W -- for world file production */
 		GMT_LONG active;
+		GMT_LONG folder;
 		GMT_LONG warp;
 		GMT_LONG kml;
 		GMT_LONG mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
@@ -122,6 +123,7 @@ struct PS2RASTER_CTRL {
 		char *doctitle;		/* Name of KML document */
 		char *overlayname;	/* Name of the image overlay */
 		char *URL;		/* URL of remote site */
+		char *foldername;	/* Name of KML folder */
 		double altitude;
 	} W;
 };
@@ -180,6 +182,10 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				if (C->W.overlayname) free (C->W.overlayname);	/* Already set, free then reset */
 				C->W.overlayname = strdup (&p[1]);
 				break;
+			case 'o':	/* Produce a KML overlay as a folder subset */
+				C->W.folder = TRUE;
+				C->W.foldername = strdup (&p[1]);
+				break;
 			case 't':	/* Set KML document title */
 				if (C->W.doctitle) free (C->W.doctitle);	/* Already set, free then reset */
 				C->W.doctitle = strdup (&p[1]);
@@ -212,6 +218,7 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C->W.doctitle = strdup ("GMT KML Document");
 	C->W.overlayname = strdup ("GMT Image Overlay");
+	C->W.foldername = strdup ("GMT Image Folder");
 
 	return ((void *)C);
 }
@@ -224,6 +231,7 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	if (C->L.file) free ((void *)C->L.file);
 	free ((void *)C->W.doctitle);
 	free ((void *)C->W.overlayname);
+	free ((void *)C->W.foldername);
 	if (C->W.URL) free ((void *)C->W.URL);
 	GMT_free (GMT, C);
 }
@@ -236,7 +244,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
 	GMT_message (GMT, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_message (GMT, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|t] [%s]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[-W[+g][+k][+t<title>][+n<name>][+a<mode>[<alt]][+l<lodmin>/<lodmax>][+f<minfade>/<maxfade>][+<URL>]]\n\n");
+	GMT_message (GMT, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -314,9 +322,6 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   in geographical coordinates. If not, a warning is issued but the\n");
 	GMT_message (GMT, "\t   KML file is created anyway.\n");
 	GMT_message (GMT, "\t   Several modifiers allow you to specify the content in the KML file:\n");
-	GMT_message (GMT, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"]\n");
-	GMT_message (GMT, "\t   +n<layername> sets the name of this particular layer\n");
-	GMT_message (GMT, "\t     [\"GMT Image Overlay\"]\n");
 	GMT_message (GMT, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
 	GMT_message (GMT, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
 	GMT_message (GMT, "\t      G clamped to the ground [Default]\n");
@@ -324,12 +329,17 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      A Append absolute altitude (in m)\n");
 	GMT_message (GMT, "\t      s Append altitude (in m) relative to seafloor\n");
 	GMT_message (GMT, "\t      S clamped to the seafloor\n");
+	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
+	GMT_message (GMT, "\t     to transparent [no fading]\n");
 	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
 	GMT_message (GMT, "\t     active [always active]. Image goes inactive when there are fewer\n");
 	GMT_message (GMT, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
 	GMT_message (GMT, "\t     -1 means never invisible.\n");
-	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
-	GMT_message (GMT, "\t     to transparent [no fading]\n");
+	GMT_message (GMT, "\t   +n<layername> sets the name of this particular layer\n");
+	GMT_message (GMT, "\t     [\"GMT Image Overlay\"]\n");
+	GMT_message (GMT, "\t   +o<foldername> sets the name of this particular folder\n");
+	GMT_message (GMT, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
+	GMT_message (GMT, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"]\n");
 	GMT_message (GMT, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
 	GMT_message (GMT, "\t     KML [local file]\n");
 
@@ -1121,8 +1131,13 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s for writing\n", kml_file);
 			}
 			else {
-				fprintf (fpw, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-				fprintf (fpw, "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n");
+				if (Ctrl->W.folder) {	/* Control KML overlay vs full file */
+					fprintf (fpw, "<Folder>\n\t<name>%s</name>\n", Ctrl->W.foldername);
+				}
+				else {
+					fprintf (fpw, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+					fprintf (fpw, "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n");
+				}
 				fprintf (fpw, "<Document>\n\t<name>%s</name>\n", Ctrl->W.doctitle);
 				fprintf (fpw, "\t<GroundOverlay>\n\t\t<name>%s</name>\n", Ctrl->W.overlayname);
 				fprintf (fpw, "\t\t<Icon>\n");
@@ -1156,7 +1171,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				fprintf (fpw, "\t\t</Region>\n");
 				fprintf (fpw, "\t</GroundOverlay>\n");
-				fprintf (fpw, "</Document>\n</kml>\n");
+				if (Ctrl->W.folder)	/* Control KML overlay vs full file */
+					fprintf (fpw, "</Folder>\n");
+				else
+					fprintf (fpw, "</Document>\n</kml>\n");
 				fclose (fpw);
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Wrote KML file %s\n", kml_file);
 			}
