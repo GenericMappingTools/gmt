@@ -7,7 +7,7 @@ BD(ps2raster) IT(psfile(s)) [ OPT(A)[BD(u)[IT(margins)]|-] ] [ OPT(C)IT(gs_optio
 [ OPT(E)IT(resolution) ] [ OPT(G)IT(ghost_path) ] [ OPT(L)IT(listfile) ] [ OPT(P) ] 
 [ OPT(Q)[BD(g)|BD(t)][1|2|4] ] [ OPT(S) ]  
 [ OPT(Tb)|BD(e)|BD(f)|BD(F)|BD(j)|BD(g)|BD(G)|BD(m)|BD(t) ] [ OPT(V) ] 
-[ OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)] ]
+[ OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+o)IT(foldername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)] ]
 .SH DESCRIPTION
 BD(ps2raster) converts one or more PS files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
@@ -79,7 +79,7 @@ The EPS format can be combined with any of the other formats. For example, OPT(T
 The OPT(TF) creates a multi-page PDF file from the list of input PS or PDF files. It requires OPT(F) option.
 #include "explain_-V.txt"
 .TP
-OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)]
+OPT(W)[BD(+g)][BD(+t)IT(docname)][BD(+n)IT(layername)][BD(+o)IT(foldername)][BD(+a)IT(altmode)[IT(alt)]][BD(+l)IT(minLOD/maxLOD)][BD(+f)IT(minfade/maxfade)][BD(+u)IT(URL)]
 Write a ESRI type world file suitable to make (e.g) .tif files be recognized as geotiff by
 softwares that know how to do it. Be aware, however, that different results
 are obtained depending on the image contents and if the OPT(B) option has been used or not.
@@ -109,8 +109,11 @@ select one of 5 altitude modes recognized by Google Earth that determines the al
 image: BD(G) clamped to the ground, BD(g) append altitude relative to ground, BD(a) append absolute
 altitude, BD(s) append altitude relative to seafloor, and BD(S) clamp it to the seafloor.
 Control visibility of the layer with the BD(+l)IT(minLOD/maxLOD) and BD(+f)IT(minfade/maxfade)
-options.  FInally, if you plan to leave the image itself on a server and only distribute the KML,
-use BD(+u)IT(URL) to prepend the URL to the image reference.
+options.  Finally, if you plan to leave the image itself on a server and only distribute the KML,
+use BD(+u)IT(URL) to prepend the URL to the image reference.  If you are building a multi-component
+KML file then you can issue a KML snipped without the KML header and trailer by using the
+BD(+o)IT(foldername) modification; it will enclose the image and associated KML code within a
+KML folder of the specified name.
 See the KML documentation for further explanation (http://code.google.com/apis/kml/documentation/).
 .br
 Further notes on the creation of georeferenced rasters. BD(ps2raster) can create a georeferenced raster 
