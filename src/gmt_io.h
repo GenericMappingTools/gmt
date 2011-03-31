@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.92 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_io.h,v 1.93 2011-03-31 00:37:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -489,6 +489,24 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 	GMT_LONG alloc_mode;		/* Allocation info [0] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 	struct GMT_TEXT_TABLE **table;	/* Pointer to array of tables */
+};
+
+
+/* These container is used to pass user images in from the GDAL bridge */
+
+struct GMT_IMAGE {	/* Single container for a user image of data */
+	GMT_LONG id;			/* The internal number of the data set */
+	GMT_LONG n_rows;		/* Number of rows in this image */
+	GMT_LONG n_columns;		/* Number of columns in this image */
+	GMT_LONG n_bands;		/* Number of bands in a 1,3|4-D image [1] */
+	GMT_LONG dim;			/* Allocated length of longest C or Fortran dim */
+	GMT_LONG shape;			/* 0 = C (rows) and 1 = Fortran (cols) */
+	GMT_LONG type;			/* Data type, e.g. GMTAPI_FLOAT */
+	GMT_LONG registration;     	/* 0 for gridline and 1 for pixel registration  */
+	GMT_LONG size;			/* Byte length of data */
+	GMT_LONG alloc_mode;		/* Allocation info [0] */
+	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
+	void *data;			/* Opaque pointer to actual image */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */

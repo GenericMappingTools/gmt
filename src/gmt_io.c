@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.232 2011-03-28 20:28:49 guru Exp $
+ *	$Id: gmt_io.c,v 1.233 2011-03-31 00:37:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5208,6 +5208,20 @@ void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
 	GMT_free (C, (*data)->table);
 	for (k = 0; k < 2; k++) if ((*data)->file[k]) free ((void *)(*data)->file[k]);
 	GMT_free (C, *data);
+}
+
+struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
+{	/* Allocates space for a new image container. */
+	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
+	return (I);
+}
+
+void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_image)
+{	/* By taking a reference to the image pointer we can set it to NULL when done */
+	if (!(*I)) return;	/* Nothing to deallocate */
+	if ((*I)->data && free_image) GMT_free (C, (*I)->data);
+	GMT_free (C, *I);
+	*I = NULL;
 }
 
 struct GMT_MATRIX *GMT_create_matrix (struct GMT_CTRL *C)
