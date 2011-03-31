@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.102 2011-03-31 04:07:06 remko Exp $
+ *	$Id: gmt_customio.c,v 1.103 2011-03-31 17:15:12 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1561,8 +1561,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	}
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *grid pointer */
-	to_gdalread->fpointer.active = 1;
-	to_gdalread->fpointer.grd = grid;
+	to_gdalread->f_ptr.active = 1;
+	to_gdalread->f_ptr.grd = grid;
 
 	if (GMT_gdalread (C, header->name, to_gdalread, from_gdalread)) {
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
@@ -1577,7 +1577,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	}
 
 	if (from_gdalread->Float.active) {
-		if (!to_gdalread->fpointer.active)
+		if (!to_gdalread->f_ptr.active)
 			grid = GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
 	}
 	else {
@@ -1612,7 +1612,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	if (from_gdalread->UInt8.active)
 		GMT_free (C, from_gdalread->UInt8.data);
-	else if ( from_gdalread->Float.active && !to_gdalread->fpointer.active )	/* Do not release the *grid pointer */
+	else if ( from_gdalread->Float.active && !to_gdalread->f_ptr.active )	/* Do not release the *grid pointer */
 		GMT_free (C, from_gdalread->Float.data);
 	else if (from_gdalread->UInt16.active)
 		GMT_free (C, from_gdalread->UInt16.data);
