@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.6 2011-03-25 22:17:39 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.7 2011-03-31 00:37:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -138,6 +138,8 @@ EXTERN_MSC void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *s
 EXTERN_MSC void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data);
 EXTERN_MSC GMT_LONG GMT_free_palette (struct GMT_CTRL *C, struct GMT_PALETTE **P);
+EXTERN_MSC struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C);
+EXTERN_MSC void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_image);
 EXTERN_MSC struct GMT_MATRIX *GMT_create_matrix (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, GMT_LONG free_matrix);
 EXTERN_MSC struct GMT_VECTOR *GMT_create_vector (struct GMT_CTRL *C, GMT_LONG n_cols);
