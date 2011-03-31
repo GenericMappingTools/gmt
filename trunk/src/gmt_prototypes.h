@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.9 2011-03-31 17:25:09 jluis Exp $
+ *	$Id: gmt_prototypes.h,v 1.10 2011-03-31 19:49:46 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,6 +57,8 @@ EXTERN_MSC GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_
 #ifdef USE_GDAL
 EXTERN_MSC GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, 
 			GMT_LONG *pad, GMT_LONG complex);		/* Function to read true images via GDAL */
+GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I);
+
 #endif
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG alloc_data);
