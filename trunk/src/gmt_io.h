@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.94 2011-03-31 03:04:31 jluis Exp $
+ *	$Id: gmt_io.h,v 1.95 2011-03-31 03:29:30 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -507,7 +507,7 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	GMT_LONG alloc_mode;		/* Allocation info [0] */
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the image */
 	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
-	void *data;			/* Opaque pointer to actual image */
+	char *data;			/* Opaque pointer to actual image */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */
