@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.4 2011-03-26 20:52:07 guru Exp $
+ *	$Id: pscoast_func.c,v 1.5 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -815,7 +815,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "%c Shore Bin # %ld, Level %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Shore Bin # %ld, Level %ld", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -873,7 +873,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "%c River Bin # %ld, Level %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "River Bin # %ld, Level %ld", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -933,7 +933,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "%c Border Bin # %ld, Level %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Border Bin # %ld, Level %ld", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];

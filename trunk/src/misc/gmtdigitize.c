@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.34 2011-03-15 02:06:37 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.35 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -544,16 +544,16 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank segment header */
-					sprintf (GMT->current.io.segment_header, "%c %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], n_segments);
+					sprintf (GMT->current.io.segment_header, "%ld", n_segments);
 				}
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
 					not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
 					GMT_chop (line);
-					sprintf (GMT->current.io.segment_header, "%c %ld %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], n_segments, line);
+					sprintf (GMT->current.io.segment_header, "%ld %s", Gn_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
-				if (GMT->current.setting.verbose) GMT_message (GMT, "%s", GMT->current.io.segment_header);
+				if (GMT->current.setting.verbose) GMT_message (GMT, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
 				last_xmap = -DBL_MAX;
 				last_ymap = -DBL_MAX;
 				n_segments++;

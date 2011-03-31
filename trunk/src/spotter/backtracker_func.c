@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: backtracker_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -485,10 +485,10 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (make_path) {	/* Asked for paths, now write out several multiple segment tracks */
 			if (Ctrl->S.active) {
 				out[3] = (double)n_points;	/* Put the seamount id number in 4th column and use -L in header */
-				sprintf (GMT->current.io.segment_header, "> %s %s %g %g -L%ld\n", type, dir, in[GMT_X], in[GMT_Y], n_points);
+				sprintf (GMT->current.io.segment_header, "%s %s %g %g -L%ld", type, dir, in[GMT_X], in[GMT_Y], n_points);
 			}
 			else
-				sprintf (GMT->current.io.segment_header, "> %s %s %g %g\n", type, dir, in[GMT_X], in[GMT_Y]);
+				sprintf (GMT->current.io.segment_header, "%s %s %g %g", type, dir, in[GMT_X], in[GMT_Y]);
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 			
 			if (Ctrl->F.active) {	/* Must generate intermediate points in time, then rotatate each adjusted location */

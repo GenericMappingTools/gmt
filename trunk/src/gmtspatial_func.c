@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.3 2011-03-31 23:03:20 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -947,7 +947,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 											if (S2->header)
 												strcpy (GMT->current.io.segment_header, S2->header);
 											else
-												sprintf (GMT->current.io.segment_header, "> New segment\n");
+												sprintf (GMT->current.io.segment_header, "New segment");
 											GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 											first = FALSE;
 										}
@@ -958,7 +958,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 										if (S2->header)
 											strcpy (GMT->current.io.segment_header, S2->header);
 										else
-											sprintf (GMT->current.io.segment_header, "> New segment\n");
+											sprintf (GMT->current.io.segment_header, "New segment");
 										GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 										first = FALSE;
 									}
@@ -977,7 +977,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 												if (S2->header)
 													strcpy (GMT->current.io.segment_header, S2->header);
 												else
-													sprintf (GMT->current.io.segment_header, "> New segment\n");
+													sprintf (GMT->current.io.segment_header, "New segment");
 												GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 												first = FALSE;
 											}

@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -608,7 +608,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
 		}
 
-		sprintf (GMT->current.io.segment_header, "%c Possibly a composite segment; see comments for individual segment headers\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
+		sprintf (GMT->current.io.segment_header, "Possibly a composite segment; see comments for individual segment headers");
 		
 		p_first_x = p_last_x = p_dummy_x;
 		p_first_y = p_last_y = p_dummy_y;

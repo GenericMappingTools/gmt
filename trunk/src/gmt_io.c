@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.233 2011-03-31 00:37:05 jluis Exp $
+ *	$Id: gmt_io.c,v 1.234 2011-03-31 23:03:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -240,7 +240,7 @@ GMT_LONG GMT_gap_detected (struct GMT_CTRL *C)
 GMT_LONG GMT_set_gap (struct GMT_CTRL *C) {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	C->current.io.status = GMT_IO_GAP;
 	C->current.io.seg_no++;
-	sprintf (C->current.io.segment_header, "%c Data gap detected\n", C->current.setting.io_seg_marker[GMT_IN]);
+	sprintf (C->current.io.segment_header, "Data gap detected via -g; Segment header inserted");
 	return (0);
 }
 
@@ -269,7 +269,7 @@ GMT_LONG GMT_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	if (!C->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
 		if (n_NaN == n_read) {
 			C->current.io.status = GMT_IO_SEGMENT_HEADER;
-			strcpy (C->current.io.segment_header, "> Binary segment header\n");
+			strcpy (C->current.io.segment_header, "Binary segment header");
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 			C->current.io.seg_no++;
 			C->current.io.pt_no = 0;
@@ -1031,12 +1031,35 @@ GMT_LONG GMT_assign_aspatial_cols (struct GMT_CTRL *C)
 	return (n);
 }
 
+GMT_LONG gmt_trim_line (struct GMT_CTRL *C, char *line, GMT_LONG add_linefeed) {
+	/* Get rid of trailing \r \n \t and spaces */
+	GMT_LONG i, len = strlen (line);
+#ifndef _WIN32
+	if (len >= (BUFSIZ-1)) {
+		GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+#endif
+	for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Chop off trailing whitespace and CR/LF */
+	if (add_linefeed) line[++i] = '\n';	/* Append linefeed \n at end */
+	line[++i] = '\0';			/* Now have clean C string with [\n]\0 at end */
+	return (i);				/* Return length of clean string */
+}
+
+GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
+	GMT_LONG i = 0;
+	/* Trim trailing junk and return position of first non-space/tab/> part of segment header */
+	(void)gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space; do not add linefeed */
+	while (line[i] && (line[i] == ' ' || line[i] == '\t' || line[i] == C->current.setting.io_seg_marker[GMT_IN])) i++;
+	return (i);
+}
+
 /* This is the lowest-most input function in GMT.  All ASCII table data are read via
  * GMT_ascii_input.  Changes here affect all programs that read such data. */
 
 GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG i, pos, col_no, in_col, col_pos, len, n_convert, n_use;
+	GMT_LONG i, pos, col_no, in_col, col_pos, n_convert, n_use;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag;
 	char line[BUFSIZ], *p = NULL, token[BUFSIZ];
 	double val, **ptr = (double **)data;
@@ -1084,7 +1107,8 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			C->current.io.status = GMT_IO_SEGMENT_HEADER;
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
-			strcpy (C->current.io.segment_header, line);
+			i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
+			strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
 			return (0);
 		}
 
@@ -1099,16 +1123,7 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 
 		/* First chop off trailing whitespace and commas */
 
-		len = strlen (line);
-#ifndef _WIN32
-		if (len >= (BUFSIZ-1)) {
-			GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
-			GMT_exit (EXIT_FAILURE);
-		}
-#endif
-
-		for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);
-		line[++i] = '\n';	line[++i] = '\0';	/* Now have clean C string with \n\0 at end */
+		i = gmt_trim_line (C, line, TRUE);	/* Eliminate DOS endings and trailing white space, add linefeed */
 
 		bad_record = set_nan_flag = FALSE;
 		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
@@ -1170,7 +1185,7 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 
 GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG len, i;
+	GMT_LONG i;
 	char line[BUFSIZ], *p, **ptr = (char **)data;
 
 	/* GMT_ascii_textinput will read one text line and return it, setting
@@ -1207,7 +1222,8 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 		C->current.io.status = GMT_IO_SEGMENT_HEADER;
 		C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 		C->current.io.seg_no++;
-		strcpy (C->current.io.segment_header, line);
+		i = GMT_trim_segheader (C, line);	/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
+		strcpy (C->current.io.segment_header, &line[i]);
 		*n = 1;
 		return (0);
 	}
@@ -1216,16 +1232,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 
 	/* First chop off trailing whitespace and commas */
 
-	len = strlen (line);
-#ifndef _WIN32
-	if (len >= (BUFSIZ-1)) {
-		GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-#endif
-
-	for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);
-	line[++i] = '\n';	line[++i] = '\0';	/* Now have clean C string with \n\0 at end */
+	i = gmt_trim_line (C, line, TRUE);	/* Eliminate DOS endings and trailing white space */
 
 	strcpy (C->current.io.current_record, line);
 
@@ -1729,19 +1736,19 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 	GMT_LONG i;
 	
 	if (!C->current.io.multi_segments[GMT_OUT]) return;	/* No output segments requested */
-	if (C->common.b.netcdf[GMT_OUT]) return;		/* No such thing */
-	if (C->common.b.active[GMT_OUT])
+	if (C->common.b.netcdf[GMT_OUT]) return;		/* netCDF has no segment header concept */
+	if (C->common.b.active[GMT_OUT])			/* Binary native file uses all NaNs */
 		for (i = 0; i < n; i++) C->current.io.output (C, fp, 1, &C->session.d_NaN);
-	else if (C->current.io.segment_header[0] == '\0')	/* Most likely binary input with NaN-headers */
+	else if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
 		fprintf (fp, "%c\n", C->current.setting.io_seg_marker[GMT_OUT]);
 	else
-		fprintf (fp, "%s", C->current.io.segment_header);
+		fprintf (fp, "%c %s\n", C->current.setting.io_seg_marker[GMT_OUT], C->current.io.segment_header);
 }
 
 void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt)
 {
 	/* Output ASCII segment header; skip if mode is binary.
-	 * ASCII header is expected to contain newline (\n) */
+	 * We append a newline (\n) if not is present */
 
 	if (!C->current.io.io_header[GMT_OUT]) return;	/* No output headers requested */
 	if (C->common.b.active[GMT_OUT]) return;	/* Cannot write a binary header */
@@ -1756,7 +1763,7 @@ void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt)
 void GMT_write_textrecord (struct GMT_CTRL *C, FILE *fp, char *txt)
 {
 	/* Output ASCII segment header; skip if mode is binary.
-	 * ASCII header is expected to contain newline (\n) */
+	 * We append a newline (\n) if not is present */
 
 	if (C->common.b.active[GMT_OUT]) return;		/* Cannot write text records if binary output */
 	if (!txt || !txt[0]) return;				/* Skip blank lines */
@@ -4030,6 +4037,35 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 	}
 }
 
+void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
+{	/* Write out segment-level OGR/GMT header metadata */
+	GMT_LONG k, col;
+	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"}, *quote[6] = {"", "", "\"", "\"", "", ""};
+	char buffer[BUFSIZ];
+
+	if (!C->common.a.n_aspatial) return;	/* No aspatial fields */
+	buffer[0] = 0;
+	for (k = 0; k < C->common.a.n_aspatial; k++) {
+		if (k) strcat (buffer, " ");
+		switch (C->common.a.col[k]) {
+			case GMT_IS_D:	/* Format -D<distance> */
+			case GMT_IS_G:	/* Format -G<fill> */
+			case GMT_IS_T:	/* Format -T<text> */
+			case GMT_IS_W:	/* Format -W<pen> */
+			case GMT_IS_Z:	/* Format -Z<value> */
+				col = -C->common.a.col[k] - 1;	/* So -3 becomes 2 etc */
+				strcat (buffer, sflag[col]);
+				strcat (buffer, S->ogr->value[k]);
+				break;
+			default:	/* Regular column cases are skipped */
+				break;
+		}
+	}
+	if (S->header) { strcat (buffer, " "); strcat (buffer, S->header); }	/* Append rest of previous header */
+	free ((void *)S->header);
+	S->header = strdup (buffer);
+}
+
 void GMT_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_LONG n_aspatial)
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	if (S->ogr) return;	/* Already allocated */
@@ -4293,9 +4329,10 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 			if (ascii && C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_fputs (table->header[k], fp);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
+			if (table->segment[seg]->ogr) GMT_build_segheader_from_ogr (C, fp, table->segment[seg]);	/* We have access to OGR metadata */
 			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
 			GMT_write_segmentheader (C, fp, table->segment[seg]->n_columns);
-			if (table->segment[seg]->ogr || C->common.a.output) GMT_write_ogr_segheader (C, fp, table->segment[seg]);
+			if (table->segment[seg]->ogr && C->common.a.output) GMT_write_ogr_segheader (C, fp, table->segment[seg]);
 		}
 		if (table->segment[seg]->mode == 1) continue;	/* Skip after writing segment header */
 		if (table->segment[seg]->range) {save = C->current.io.geo.range; C->current.io.geo.range = table->segment[seg]->range; }	/* Segment-specific formatting */

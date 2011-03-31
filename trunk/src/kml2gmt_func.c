@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -209,10 +209,10 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			first = FALSE;
 		}
 		if (name[0] || description[0]) {
-			sprintf (GMT->current.io.segment_header, "%c", GMT->current.setting.io_seg_marker[GMT_OUT]);
-			if (name[0]) { strcat (GMT->current.io.segment_header, " -L\""); strcat (GMT->current.io.segment_header, name); strcat (GMT->current.io.segment_header, "\""); }
-			if (description[0]) { strcat (GMT->current.io.segment_header, " -D\""); strcat (GMT->current.io.segment_header, description); strcat (GMT->current.io.segment_header, "\""); }
-			strcat (GMT->current.io.segment_header, "\n");
+			GMT->current.io.segment_header[0] = 0;
+			if (name[0]) { strcat (GMT->current.io.segment_header, "-L\""); strcat (GMT->current.io.segment_header, name); strcat (GMT->current.io.segment_header, "\""); }
+			if (name[0] && description[0]) strcat (GMT->current.io.segment_header, " ");
+			if (description[0]) { strcat (GMT->current.io.segment_header, "-D\""); strcat (GMT->current.io.segment_header, description); strcat (GMT->current.io.segment_header, "\""); }
 		}
 		
 		if (!strstr (line, "<coordinates>")) continue;
