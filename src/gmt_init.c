@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.468 2011-03-28 23:13:11 guru Exp $
+ *	$Id: gmt_init.c,v 1.469 2011-03-31 23:03:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1252,6 +1252,14 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		if (s[1] == 'G') C->common.a.clip = TRUE;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = TRUE;
+		if (C->current.setting.io_seg_marker[GMT_OUT] != '>') {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
+			C->current.setting.io_seg_marker[GMT_OUT] = '>';
+		}
+	}
+	else if (C->current.setting.io_seg_marker[GMT_IN] != '>') {
+		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
+		C->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
 	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -106,11 +106,11 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				S[1]->coord[GMT_Y][k] = D->tri[ij+1];
 				S[1]->coord[GMT_Z][k] = D->tri[ij+2];
 				S[1]->coord[3][k] = area_triangle * R2;
-				sprintf (segment_header, "%c Triangle: %ld %d-%d-%d Area: %g\n", GMT->current.setting.io_seg_marker[GMT_OUT], k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %ld %d-%d-%d Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
 				S[0]->header = strdup (segment_header);
 			}
 			else {
-				sprintf (segment_header, "%c Triangle: %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], k);
+				sprintf (segment_header, "Triangle: %ld", k);
 				S[0]->header = strdup (segment_header);
 			}
 			for (i = 0; i < 3; i++) {	/* Write out the three vertices */
@@ -155,7 +155,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			S[0]->coord[GMT_X][0] = lon[arc[i].begin];	S[0]->coord[GMT_Y][0] = lat[arc[i].begin];
 			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-			sprintf (segment_header, "%c Arc: %d-%d Length: %g\n", GMT->current.setting.io_seg_marker[GMT_OUT], arc[i].begin, arc[i].end, dist);
+			sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
@@ -256,11 +256,11 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 				S[1]->coord[GMT_X][node] = lon[node];
 				S[1]->coord[GMT_Y][node] = lat[node];
 				S[1]->coord[GMT_Z][node] = area_km2;
-				sprintf (segment_header, "%c Pol: %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], node);
+				sprintf (segment_header, "Pol: %ld", node);
 				S[0]->header = strdup (segment_header);
 			}
 			else {
-				sprintf (segment_header, "%c Pol: %ld %g %g Area: %g\n", GMT->current.setting.io_seg_marker[GMT_OUT], node, lon[node], lat[node], area_km2);
+				sprintf (segment_header, "Pol: %ld %g %g Area: %g", node, lon[node], lat[node], area_km2);
 				S[0]->header = strdup (segment_header);
 			}
 			
@@ -294,7 +294,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 			S[0]->coord[GMT_X][0] = V->lon[arc[i].end];	S[1]->coord[GMT_Y][0] = V->lat[arc[i].end];
 			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[1]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-			sprintf (segment_header, "%c Arc: %d-%d Length: %g\n", GMT->current.setting.io_seg_marker[GMT_OUT], arc[i].begin, arc[i].end, dist);
+			sprintf (segment_header, "Arc: %d-%d Length: %g", arc[i].begin, arc[i].end, dist);
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);

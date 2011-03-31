@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: psxyz_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -530,6 +530,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
 
 			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF (GMT)) {	/* Process segment headers */
+				PSL_comment (PSL, "%s\n", GMT->current.io.segment_header);
 				change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 				if (Ctrl->I.active) {
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);

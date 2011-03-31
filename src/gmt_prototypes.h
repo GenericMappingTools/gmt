@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.10 2011-03-31 19:49:46 jluis Exp $
+ *	$Id: gmt_prototypes.h,v 1.11 2011-03-31 23:03:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -159,6 +159,7 @@ EXTERN_MSC double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, stru
 EXTERN_MSC void GMT_set_seg_minmax (struct GMT_LINE_SEGMENT *S);
 EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *C, GMT_LONG mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from);
+EXTERN_MSC GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line);
 
 /* gmt_proj.c: */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -960,7 +960,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Write segment header between each cruise */
-			sprintf (GMT->current.io.segment_header, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], list[argno]);
+			sprintf (GMT->current.io.segment_header, "%s\n", list[argno]);
 			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;

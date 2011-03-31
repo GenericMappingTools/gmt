@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.36 2011-03-24 23:43:59 jluis Exp $
+ *	$Id: gmtapi_util.c,v 1.37 2011-03-31 23:03:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2230,7 +2230,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 	 * The double array OR text string is returned via the pointer *record.
 	 */
 
-	GMT_LONG get_next_record = FALSE, status, retval = 0, col, n_nan, ij, *p = NULL;
+	GMT_LONG get_next_record = FALSE, status, retval = 0, col, n_nan, ij, i, *p = NULL;
 	char *t_record = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_TEXTSET *DT = NULL;
@@ -2366,7 +2366,8 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 						*record = (void *)t_record;
 						API->GMT->current.io.status = 0;
 						if (t_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Segment header */
-							strcpy (API->GMT->current.io.segment_header, t_record);
+							i = GMT_trim_segheader (API->GMT, t_record);
+							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
 							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 						}
 						retval = 1;

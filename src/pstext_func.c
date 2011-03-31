@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.9 2011-03-26 18:34:17 guru Exp $
+ *	$Id: pstext_func.c,v 1.10 2011-03-31 23:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -591,7 +591,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (GMT_REC_IS_SEG_HEADER (GMT)) {
-				line = &GMT->current.io.segment_header[1];
+				line = GMT->current.io.segment_header;
 				skip_text_records = FALSE;
 				if (n_processed) {	/* Must output what we got */
 					GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
