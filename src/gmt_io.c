@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.234 2011-03-31 23:03:20 guru Exp $
+ *	$Id: gmt_io.c,v 1.235 2011-04-01 00:58:04 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4040,7 +4040,7 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
 {	/* Write out segment-level OGR/GMT header metadata */
 	GMT_LONG k, col;
-	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"}, *quote[6] = {"", "", "\"", "\"", "", ""};
+	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"};
 	char buffer[BUFSIZ];
 
 	if (!C->common.a.n_aspatial) return;	/* No aspatial fields */
