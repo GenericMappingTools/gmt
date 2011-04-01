@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.63 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.64 2011-04-01 21:21:43 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -41,7 +41,7 @@ include common.mk	# Dependencies
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
 INCLUDES	= $(NETCDF_INC) $(GDAL_INC)
 
-DEMOS_O		= testgmt5.o testgmtio.o testio.o GMT.o
+DEMOS_O		= testgmt5.o testgmtio.o testio.o gmt.o
 DEMOS		= $(DEMOS_O:.o=$(EXE))
 
 PSLDEMO_O	= psldemo.o
@@ -78,7 +78,7 @@ ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS) $(DEMOS) $(GMT_COMPAT_PROGS)
 
 CONFIGS		= config.mk gmt_version.h gmt_notposix.h
 
-MAN1		= GMT.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 \
+MAN1		= gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 \
 		  $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 MAN3		= pslib.3
 MAN5		= gmtcolors.5 gmt.conf.5
@@ -183,7 +183,7 @@ gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o \
 gmt_io.o gmt_map.o gmt_nc.o gmt_plot.o gmt_proj.o gmt_shore.o gmt_stat.o \
 gmt_support.o gmt_vector.o gmtapi_util.o:	gmt_internals.h
 gmtapi_util.o:	gmtapi_errstr.h
-GMT.o:		gmt_prognames.h gmt_progcases.h
+gmt.o:		gmt_prognames.h gmt_progcases.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in config.mk
@@ -233,7 +233,7 @@ libgmt.$(SL):	libgmt.a libpsl.$(SL)
 testgmt5$(EXE):		testgmt5.o
 testio$(EXE):		testio.o
 testgmtio$(EXE):	testgmtio.o
-GMT$(EXE):		GMT.o
+gmt$(EXE):		gmt.o
 
 blockmean$(EXE):	blockmean.o
 blockmedian$(EXE):	blockmedian.o
