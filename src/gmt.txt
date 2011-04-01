@@ -42,7 +42,7 @@ BD(grd2rgb)		Convert Sun rasterfile or grid to r, g, b grids
 .br
 BD(gmtconvert)	Convert between ASCII and binary 1-D tables
 .br
-BD(gmtdp)	Line reduction using the Douglas-Peucker algorithm
+BD(gmtdp)		Line reduction using the Douglas-Peucker algorithm
 .br
 BD(gmtdefaults)	List the current default settings
 .br
@@ -54,7 +54,7 @@ BD(gmtset)		Set individual default parameters
 .br
 BD(gmtselect)		Extract data subsets based on spatial criteria
 .br
-BD(gmtspatial)		Geospatial operations on lines and polygons
+BD(gmtspatial)	Geospatial operations on lines and polygons
 .br
 BD(gmtstitch)		Join individual lines whose end points match within tolerance
 .br
