@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.468 2011-03-28 20:28:49 guru Exp $
+ *	$Id: gmt_support.c,v 1.469 2011-04-01 03:43:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1510,8 +1510,8 @@ GMT_LONG GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *u
 	/* Extract the distance unit, if any */
 
 	last = strlen (line) - 1;
-	if (strchr (GMT_LEN_UNITS GMT_OPT("c"), (int)copy [last])) {	/* Got a valid distance unit */
-		*unit = copy [last];
+	if (strchr (GMT_LEN_UNITS GMT_OPT("c"), (int)copy[last])) {	/* Got a valid distance unit */
+		*unit = copy[last];
 #ifdef GMT_COMPAT
 		if (*unit == 'c') {
 			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning: Unit c is deprecated; use s instead\n");
@@ -1520,8 +1520,8 @@ GMT_LONG GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *u
 #endif
 		copy[last] = '\0';	/* Chop off the unit */
 	}
-	else if (!strchr ("0123456789.", (int)copy [last])) {	/* Got an invalid distance unit */
-		GMT_report (C, GMT_MSG_FATAL, "Invalid distance unit (%c). Choose among %s\n", (int)copy [last], GMT_LEN_UNITS_DISPLAY);
+	else if (!strchr ("0123456789.", (int)copy[last])) {	/* Got an invalid distance unit */
+		GMT_report (C, GMT_MSG_FATAL, "Invalid distance unit (%c). Choose among %s\n", (int)copy[last], GMT_LEN_UNITS_DISPLAY);
 		return (-1);
 	}
 	else if (start == 1 || GMT_is_geographic (C, GMT_IN))	/* Indicated a spherical calculation mode (-|+) or -fg but appended no unit; default to meter */

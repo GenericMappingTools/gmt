@@ -3,7 +3,7 @@
 .SH NAME
 gmtspatial \- Geospatial operations on polygons
 .SH SYNOPSIS
-BD(gmtspatial) IT(infiles) [ OPT(C) ] [ OPT(D)[IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
+BD(gmtspatial) IT(infiles) [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
 [ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u) ] 
 [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -20,8 +20,8 @@ OPT(C)
 Clips polygons to the map region, including map boundary to the polygon as needed.  The
 result is a closed polygon (see OPT(T) for truncation instead).  Requires OPT(R).
 .TP
-OPT(D)[IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)]
-Check for duplicates among the input lines or polygons, or, if IT(file) is given, check if the input features
+OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)]
+Check for duplicates among the input lines or polygons, or, if IT(file) is given via BD(+f), check if the input features
 already exist among the features in IT(file).  We consider the cases of exact (same number and coordinates)
 and approximate matches (average distance between nearest points of two features is less than a threshold).
 We also consider that some features may have been reversed.  Features are considered approximate matches

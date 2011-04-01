@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.38 2011-04-01 02:25:43 jluis Exp $
+ *	$Id: gmtapi_util.c,v 1.39 2011-04-01 03:43:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1666,8 +1666,10 @@ GMT_LONG GMTAPI_Import_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TEXTSET *C = NULL;
 	struct GMT_GRID    *G = (struct GMT_GRID *)(*data);	/* Since we may already have read the header */
-	struct GMT_IMAGE   *I = (struct GMT_IMAGE *)(*data);	/* Since we may already have read the header */
 	struct GMT_PALETTE *P = NULL;
+#ifdef USE_GDAL
+	struct GMT_IMAGE   *I = (struct GMT_IMAGE *)(*data);	/* Since we may already have read the header */
+#endif
 	
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));			/* GMT_Create_Session has not been called */
 	if (!API->registered[GMT_IN]) return (GMT_Report_Error (API, GMT_NO_INPUT));		/* No sources registered yet */
@@ -2883,6 +2885,9 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 	struct GMT_PALETTE **P = NULL;
 	struct GMT_MATRIX  **M = NULL;
 	struct GMT_VECTOR  **V = NULL;
+#ifdef USE_GDAL
+	struct GMT_IMAGE **I = NULL;
+#endif
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	if (!(*X)) return (GMT_OK);	/* Nothing to do */
@@ -2906,6 +2911,12 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 		 	P = (struct GMT_PALETTE **)X;
 			error = GMTAPI_Destroy_CPT (API, mode, P);
 			break;
+#ifdef USE_GDAL
+		case GMT_IS_IMAGE:
+		 	I = (struct GMT_IMAGE **)X;
+			error = GMTAPI_Destroy_Image (API, mode, I);
+			break;
+#endif
 			
 		/* Also allow destoying of intermediate vector and matrix containers */
 		case GMT_IS_MATRIX:
