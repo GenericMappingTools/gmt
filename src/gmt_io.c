@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.237 2011-04-01 19:50:05 guru Exp $
+ *	$Id: gmt_io.c,v 1.238 2011-04-01 23:20:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3543,36 +3543,6 @@ GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *s, GMT_LONG expectation, doubl
 	return (GMT_scanf (C, s, expectation, val));
 }
 
-GMT_LONG GMT_extract_option (struct GMT_CTRL *C, char *line, char option, char *arg)
-{
-	GMT_LONG i = 0, j0, j;
-	char *p = NULL, pattern_space[4], pattern_tab[4];
-
-	arg[0] = '\0';	/* Remove previous argument */
-	sprintf (pattern_space, " -%c", option);
-	sprintf (pattern_tab,  "\t-%c", option);
-	if ((p = strstr (line, pattern_space)) || (p = strstr (line, pattern_tab)))	/* Get argument specified with -<option> option */
-		i = p + 3 - line;	/* Start of argument */
-	else
-		return (-1);
-	if ((p = strchr (&line[i], '\"'))) {	/* Gave several words as argument */
-		for (j0 = j = i + 1; line[j] != '\"'; j++);
-		if (line[j] == '\"') {	/* Found the matching quote */
-			strncpy (arg, &line[j0], (size_t)(j-j0));
-			arg[j-j0] = '\0';
-		}
-		else {			/* Missing the matching quote */
-			sscanf (&line[i], "%s", arg);
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Argument (%s) not terminated by matching quote\n", arg);
-		}
-	}
-	else if (line[i] == ' ' || line[i] == '\t')	/* No argument, return NULL */
-		arg[0] = '\0';
-	else				/* Scan the argument until next white space */
-		sscanf (&line[i], "%s", arg);
-	return (GMT_NOERROR);
-}
-
 GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TEXT_TABLE **table)
 {
 	/* Reads an entire segment text data set into memory */
@@ -3836,7 +3806,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 	
 	if (!header || !header[0]) return (0);
 
-	if (!GMT_extract_option (C, header, 'G', line)) {	/* Found a potential -G option */
+	if (GMT_parse_segment_item (C, header, "-G", line)) {	/* Found a potential -G option */
 		test_fill = def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
 			fill->rgb[0] = fill->rgb[1] = fill->rgb[2] = -1.0, fill->use_pattern = FALSE;
@@ -3857,7 +3827,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 		}
 		/* Failure is OK since -Gjunk may appear in text strings - we then do nothing (hence no else clause) */
 	}
-	if (P && !GMT_extract_option (C, header, 'Z', line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
+	if (P && GMT_parse_segment_item (C, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", (size_t)3))	{	/* Got -ZNaN */
 			GMT_get_fill_from_z (C, P, C->session.d_NaN, fill);
 			*use_fill = TRUE;
@@ -3875,7 +3845,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 
 	if (processed == 2) GMT_report (C, GMT_MSG_FATAL, "Warning: segment header has both -G and -Z options\n");	/* Giving both -G and -Z is a problem */
 
-	if (!GMT_extract_option (C, header, 'W', line)) {	/* Found a potential -W option */
+	if (GMT_parse_segment_item (C, header, "-W", line)) {	/* Found a potential -W option */
 		test_pen = def_pen;	/* Set test pen to the default, may be overruled later */
 		if (line[0] == '-') {	/* Turn outline OFF */
 			*pen = def_pen;	/* Set pen to default */
@@ -3929,21 +3899,20 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	 * if found, extracts the argument and returns it via out_string.  Function
 	 * return TRUE if the pattern was found and FALSE otherwise.
 	 * out_string must be allocated and have space for the copying */
-	char *t = NULL;
-	int i, k;
+	char *t = NULL, q;
+	GMT_LONG k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
-	if ((i = (int)((GMT_LONG)t - (GMT_LONG)in_string - 1)) < 0) return (FALSE);	/* No leading space/tab possible */
-	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
-	i += (int)strlen (pattern) + 1;	/* Position of argument */
-	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
-		i++;	/* Skip passed first quote */
-		for (k = i; k < strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
-		strncpy (out_string, &in_string[i], (size_t)(k - i));
-		out_string[k-i] = '\0';	/* Terminate string */
+	k = (GMT_LONG)t - (GMT_LONG)in_string;	/* Position of pattern in in_string */
+	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (FALSE);	/* Option not first or preceeded by whitespace */
+	t += 2;	/* Position of the argument */
+	if (t[0] == '\"' || t[0] == '\'') {	/* Quoted argument, must find terminal quote */
+		for (k = 1, q = t[0]; k < strlen (t) && t[k] != q; k++);	/* Find next quote */
+		strncpy (out_string, &t[1], (size_t)(--k));
+		out_string[k] = '\0';	/* Terminate string */
 	}
 	else	/* No quote, just one word */
-		sscanf (&in_string[i], "%s", out_string);
+		sscanf (t, "%s", out_string);
 	return (TRUE);
 }
 
@@ -4043,7 +4012,7 @@ void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE
 	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"};
 	char buffer[BUFSIZ];
 
-	if (!C->common.a.n_aspatial) return;	/* No aspatial fields */
+	if (C->common.a.output || C->common.a.n_aspatial == 0) return;	/* Either input was not OGR or there are no aspatial fields */
 	buffer[0] = 0;
 	for (k = 0; k < C->common.a.n_aspatial; k++) {
 		if (k) strcat (buffer, " ");
@@ -4197,13 +4166,13 @@ GMT_LONG GMT_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 			GMT_set_seg_minmax (T->segment[seg]);	/* Make sure min/max are set per polygon */
 
 		}
-		/* OK, they are all polygons.  Determine any polygon holes */
+		/* OK, they are all polygons.  Determine any polygon holes: if a point is fully inside another polygon (not on the edge) */
 		for (seg1 = 0; seg1 < T->n_segments; seg1++) {	/* For each segment in the table */
 			for (seg2 = seg1 + 1; seg2 < T->n_segments; seg2++) {	/* For each segment in the table */
-				if (GMT_inonout (C, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2])) {
+				if (GMT_inonout (C, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2]) == GMT_IS_INSIDE) {
 					T->segment[seg1]->ogr->pol_mode = GMT_IS_HOLE;
 				}
-				if (GMT_inonout (C, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1])) {
+				if (GMT_inonout (C, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1]) == GMT_IS_INSIDE) {
 					T->segment[seg2]->ogr->pol_mode = GMT_IS_HOLE;
 				}
 			}
@@ -4935,7 +4904,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			}
 			n_read++;
 			if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header records */
-				if (!GMT_extract_option (C, C->current.io.segment_header, 'D', line)) {	/* Found a potential -D<dist> option in the header */
+				if (GMT_parse_segment_item (C, C->current.io.segment_header, "-D", line)) {	/* Found a potential -D<dist> option in the header */
 					if (sscanf (line, "%lg", &d) == 1) T->segment[seg]->dist = d;	/* If readable, assign it to dist, else leave as zero */
 				}
 			}
