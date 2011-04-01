@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.148 2011-03-30 03:58:42 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.149 2011-04-01 02:27:36 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -360,7 +360,8 @@ GMT_LONG GMT_padspace (struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, s
 	GMT_memcpy (P->pad, pad, 4, GMT_LONG);					/* Duplicate the pad */
 	if (!wesn) return (FALSE);						/* No subset requested */
 	if (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]) return (FALSE);	/* Subset not set */
-	if (wesn[XLO] == header->wesn[XLO] && wesn[XHI] == header->wesn[XHI] && wesn[YLO] == header->wesn[YLO] && wesn[YHI] == header->wesn[YHI]) return (FALSE);	/* Subset equals whole area */
+	if (wesn[XLO] == header->wesn[XLO] && wesn[XHI] == header->wesn[XHI] && wesn[YLO] == header->wesn[YLO] && wesn[YHI] == header->wesn[YHI]) 
+		return (FALSE);	/* Subset equals whole area */
 	GMT_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (FALSE);	/* No padding requested */
 	
@@ -725,17 +726,20 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 			switch (entry) {
 				case 0:
 					GMT_memset (h->x_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
+						"GMT WARNING: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->x_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 1:
 					GMT_memset (h->y_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
+						"GMT WARNING: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->y_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 2:
 					GMT_memset (h->z_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
+						"GMT WARNING: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->z_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 3:
@@ -745,11 +749,13 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					h->z_add_offset = atof (ptr);
 					break;
 				case 5:
-					if (strlen(ptr) >= GRD_TITLE_LEN) GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN);
+					if (strlen(ptr) >= GRD_TITLE_LEN) GMT_report (C, GMT_MSG_FATAL, 
+						"GMT WARNING: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN);
 					strncpy (h->title, ptr, (size_t)GRD_TITLE_LEN);
 					break;
 				case 6:
-					if (strlen(ptr) >= GRD_REMARK_LEN) GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN);
+					if (strlen(ptr) >= GRD_REMARK_LEN) GMT_report (C, GMT_MSG_FATAL, 
+						"GMT WARNING: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN);
 					strncpy (h->remark, ptr, (size_t)GRD_REMARK_LEN);
 					break;
 				default:
@@ -1596,3 +1602,109 @@ GMT_LONG GMT_check_url_name (char *fname) {
 	else
 		return (FALSE);
 }
+
+#ifdef USE_GDAL
+GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
+	struct GDALREAD_CTRL *to_gdalread = NULL;
+	struct GD_CTRL *from_gdalread = NULL;
+
+
+	/* Allocate new control structures */
+	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
+	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
+
+	to_gdalread->M.active = 1;	/* Get metadata only */
+
+	if (C->common.R.active) {	/* Must confirm the need/effect of this */
+		char strR [128]; 
+		sprintf (strR, "-R%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
+							    C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
+		/*to_gdalread->R.region = strR;		Do not use this yet. Probably should only apply with referenced images */
+	}
+
+	if (GMT_gdalread (C, file, to_gdalread, from_gdalread)) {
+		GMT_report (C, GMT_MSG_FATAL, "ERROR reading image with gdalread.\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	if ( strcmp(from_gdalread->band_field_names[0].DataType, "Byte") ) {
+		GMT_report (C, GMT_MSG_FATAL, "Using data type other than byte (unsigned char) is not implemented\n");
+		return (EXIT_FAILURE);
+	}
+
+	I->n_bands = from_gdalread->RasterCount;
+	I->header->inc[GMT_X] = from_gdalread->hdr[7];
+	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
+	I->header->nx = from_gdalread->RasterXsize;
+	I->header->ny = from_gdalread->RasterYsize;
+	I->header->registration = (int)from_gdalread->hdr[6];
+
+	/*GMT_set_grddim (C, I->header);*/		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
+	I->header->mx = GMT_grd_get_nxpad (I->header, I->header->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
+	I->header->my = GMT_grd_get_nypad (I->header, I->header->pad);
+	I->header->nm = GMT_grd_get_nm (I->header);		/* Sets the number of actual data items */
+	I->header->size = GMT_grd_get_size (C, I->header);	/* Sets the nm items needed to hold this array */
+	I->header->xy_off = 0.5 * I->header->registration;
+
+	GMT_free (C, to_gdalread);
+	GMT_free (C, from_gdalread);
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, GMT_LONG *pad, GMT_LONG complex_mode)
+{	/* file:	- IGNORED -
+	 * image:	array with final image
+	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
+	 * padding:	# of empty rows/columns to add on w, e, s, n of image, respectively
+	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 *		Note: The file has only real values, we simply allow space in the array
+	 *		for imaginary parts when processed by grdfft etc.
+	 */
+
+	GMT_LONG expand;
+	struct GRD_PAD P;
+	struct GDALREAD_CTRL *to_gdalread = NULL;
+	struct GD_CTRL *from_gdalread = NULL;
+
+	expand = GMT_padspace (I->header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
+
+	/*GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, image, P.wesn, P.pad, complex_mode));*/
+
+	/* Allocate new control structures */
+	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
+	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
+	to_gdalread->F.active = 1;	/* Force PIX reg info */
+
+	if (C->common.R.active) {
+		char strR [128]; 
+		sprintf (strR, "-R%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
+							    C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
+		/*to_gdalread->R.region = strR;*/
+	}
+
+	to_gdalread->p.active = to_gdalread->p.pad = 0;
+
+	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
+	to_gdalread->c_ptr.active = 1;
+	to_gdalread->c_ptr.grd = I->data;
+
+	if (GMT_gdalread (C, file, to_gdalread, from_gdalread)) {
+		GMT_report (C, GMT_MSG_FATAL, "ERROR reading image with gdalread.\n");
+		return (GMT_GRDIO_READ_FAILED);
+	}
+
+	if (expand) {	/* Must undo the region extension and reset nx, ny */
+		I->header->nx -= (int)(pad[XLO] + pad[XHI]);
+		I->header->ny -= (int)(pad[YLO] + pad[YHI]);
+		GMT_memcpy (I->header->wesn, wesn, 4, double);
+		I->header->nm = GMT_get_nm (I->header->nx, I->header->ny);
+		GMT_setnval (I->header->BC, 4, GMT_BC_IS_DATA);
+	}
+	GMT_grd_setpad (I->header, pad);	/* Copy the pad to the header */
+
+	GMT_free (C, to_gdalread);
+	GMT_free (C, from_gdalread);
+
+	return (GMT_NOERROR);
+}
+#endif
