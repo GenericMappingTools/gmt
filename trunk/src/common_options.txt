@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: common_options.txt,v 1.26 2011-03-28 22:34:28 remko Exp $
+ *	$Id: common_options.txt,v 1.27 2011-04-01 21:53:54 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -69,8 +69,8 @@
 #define GMT_g_OPT	OPT(g)[BD(a)]BD(x)|BD(y)|BD(d)|BD(X)|BD(Y)|BD(D)|[IT(col)]BD(z)[+|-]IT(gap)[BD(u)]
 #define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(nrec)]
 #define GMT_ho_OPT	OPT(ho)[IT(nrec)]
-#define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)][BD(,)IT(...)]
-#define GMT_o_OPT	OPT(o)IT(cols)[BD(,)IT(...)]
+#define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)],IT(...)]
+#define GMT_o_OPT	OPT(o)IT(cols)[,IT(...)]
 #define GMT_p_OPT	OPT(p)IT(azim)/IT(elev)[/IT(zlevel)][BD(+w)IT(lon0)/IT(lat0)[/IT(z0)]][BD(+v)IT(x0)/IT(y0)]
 #define GMT_r_OPT	OPT(r)
 #define GMT_s_OPT	OPT(s)[IT(cols)][BD(r)]
@@ -82,7 +82,7 @@
 #define GMT_SCALE	OPT(L)[BD(f)][BD(x)]IT(lon0)/IT(lat0)[/IT(slon)]/IT(slat)/IT(length)[BD(e)|BD(f)|BD(k)|BD(M)|BD(n)][BD(+l)IT(label)][BD(+j)IT(just)][BD(+p)IT(pen)][BD(+f)IT(fill)][BD(+u)] ]
 
 /* Option for limiting features from GSHHS */
-#define GMT_A_OPT	OPT(A)IT(min_area)[IT(/min_level/max_level)][BD(+r)|BD(l)][BD(p)IT(percent)]
+#define GMT_A_OPT	OPT(A)IT(min_area)[/IT(min_level)/IT(max_level)][BD(+r)|BD(l)][BD(p)IT(percent)]
 
 /* Argument to *contour programs */
 #define GMT_CONTG	OPT(G)[BD(d)|BD(f)|BD(n)|BD(l)|BD(L)|BD(x)|BD(X)]IT(params)
