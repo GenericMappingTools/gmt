@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.917 2011-03-31 23:03:20 guru Exp $
+	$Id: ChangeLog,v 1.918 2011-04-01 02:34:29 jluis Exp $
 -----------------------------------------------------------------------------------------
+				
+2011-04-01	jluis
+	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
+	* gmt_grdio.[ch]	in the new IMAGE container. (Still very crude and probably buggy) 
 
 2011-03-31	pwessel
 	* ps2raster_func.c:	Added modifier +o<foldername> to generate a KML snipped in
