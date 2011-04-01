@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.3 2011-03-31 23:03:20 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.4 2011-04-01 03:43:11 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -515,9 +515,9 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "gmtspatial %s - Geospatial operations on lines and polygons\n\n", GMT_VERSION);
 #ifdef PW_TESTING
-	GMT_message (GMT, "usage: gmtspatial <infiles> [-C] [-D[<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]] [-E+|-]\n\t[-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]] [%s]\n", GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: gmtspatial <infiles> [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]] [-E+|-]\n\t[-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]] [%s]\n", GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #else
-	GMT_message (GMT, "usage: gmtspatial <infiles> [-C] [-D[<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]] [-E+|-]\n\t[-I[i|e]] [%s] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: gmtspatial <infiles> [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]] [-E+|-]\n\t[-I[i|e]] [%s] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_Rgeo_OPT);
 #endif
 	GMT_message (GMT, "\t[-Su|i] [-T[<cpol>]] [-V[l]] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -529,7 +529,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Clips polygons to the given region box (requires -R), yielding a closed polygon.\n");
 	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e. lines), see -T.\n");
-	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> if given.\n");
+	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> (if given).\n");
 	GMT_message (GMT, "\t   Near-duplicates have a min point separation less than <dmax> [0] and closeness\n");
 	GMT_message (GMT, "\t   (mean separation/length ratio) less than <cmax> [0.01].\n");
 	GMT_message (GMT, "\t   If near-duplicates has lengths that differ by <sfact> then they are subset/supersets [2].\n");
@@ -568,8 +568,8 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_files[2] = {0, 0}, n, n_errors = 0;
-	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN], *p = NULL;
+	GMT_LONG n_files[2] = {0, 0}, pos, n, n_errors = 0;
+	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN], p[GMT_LONG_TEXT];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -590,31 +590,31 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				break;
 			case 'D':	/* Look for duplications */
 				Ctrl->D.active = TRUE;
-				if ((p = strstr (opt->arg, "+a"))) {	/* Gave a new +a<dmax> value */
-					GMT_message (GMT, "+a not implemented yet\n");
-					Ctrl->D.I.a_threshold = atof ((char *)(p+2));
-				}
-				if ((p = strstr (opt->arg, "+d"))) {	/* Gave a new +d<dmax> value */
-					Ctrl->D.mode = GMT_get_distance (GMT, (char *)(p+2), &(Ctrl->D.I.d_threshold), &(Ctrl->D.unit));
-				}
-				if ((p = strstr (opt->arg, "+C"))) {	/* Gave a new +C<dmax> value; use median separation */
-					Ctrl->D.I.c_threshold = atof ((char *)(p+2));
-					Ctrl->D.I.mode = 1;
-				}
-				if ((p = strstr (opt->arg, "+c"))) {	/* Gave a new +c<dmax> value */
-					Ctrl->D.I.c_threshold = atof ((char *)(p+2));
-				}
-				if ((p = strstr (opt->arg, "+s"))) {	/* Gave a new +s<fact> value */
-					Ctrl->D.I.s_threshold = atof ((char *)(p+2));
-				}
-				if ((p = strstr (opt->arg, "+p"))) {	/* Consider only inside projections */
-					Ctrl->D.I.inside = 1;
-				}
-				if (opt->arg[0] && opt->arg[0] != '+') {	/* Gave a file name */
-					p = strchr (opt->arg, '+');	/* Must shield filename from the +options */
-					if (p) *p = '\0';	/* Temporarily truncate the string */
-					Ctrl->D.file = strdup (opt->arg);
-					if (p) *p = '+';	/* Un-truncate the string */
+				pos = 0;
+				while (GMT_strtok (opt->arg, "+", &pos, p)) {
+					switch (p[0]) {
+						case 'a':	/* Gave a new +a<dmax> value */
+							GMT_message (GMT, "+a not implemented yet\n");
+							Ctrl->D.I.a_threshold = atof (&p[1]);
+							break;
+						case 'd':	/* Gave a new +d<dmax> value */
+							Ctrl->D.mode = GMT_get_distance (GMT, &p[1], &(Ctrl->D.I.d_threshold), &(Ctrl->D.unit));
+							break;
+						case 'C':	/* Gave a new +C<dmax> value */
+							Ctrl->D.I.mode = 1;	/* Median instead of mean */
+						case 'c':	/* Gave a new +c<dmax> value */
+							Ctrl->D.I.c_threshold = atof (&p[1]);
+							break;
+						case 's':	/* Gave a new +s<fact> value */
+							Ctrl->D.I.s_threshold = atof (&p[1]);
+							break;
+						case 'p':	/* Consider only inside projections */
+							Ctrl->D.I.inside = 1;
+							break;
+						case 'f':	/* Gave a file name */
+							Ctrl->D.file = strdup (&p[1]);
+							break;
+					}
 				}
 				break;
 			case 'E':	/* Orient polygons */
