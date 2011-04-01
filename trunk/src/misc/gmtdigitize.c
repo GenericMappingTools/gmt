@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.35 2011-03-31 23:03:21 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.36 2011-04-01 02:55:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -550,7 +550,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_message (GMT, "Enter segment header: ");
 					not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
 					GMT_chop (line);
-					sprintf (GMT->current.io.segment_header, "%ld %s", Gn_segments, line);
+					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
 				if (GMT->current.setting.verbose) GMT_message (GMT, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
