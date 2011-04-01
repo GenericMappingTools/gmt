@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: psimage_func.c,v 1.3 2011-04-01 04:25:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -255,12 +255,29 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
+{	/* Returns TRUE if it is a EPS file; FALSE otherwise */
+	FILE *fp = NULL;
+	char c[4];
+	
+	if ((fp = GMT_fopen (GMT, file, "r"))) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
+		return (EXIT_FAILURE);
+	}
+	if (GMT_fread ((void *)c, (size_t)1, (size_t)4, fp) != (size_t)4) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
+		return (EXIT_FAILURE);
+	}
+	GMT_fclose (GMT, fp);
+	return (!strncmp (c, "%!PS", 4));	/* TRUE if matching, FALSE otherwise */
+}
+
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1;
-	GMT_LONG error = FALSE, free_GMT = FALSE;
+	GMT_LONG error = FALSE, free_GMT = FALSE, EPS = FALSE;
 
 	double x, y, wesn[4];
 
@@ -271,6 +288,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct PSIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+#ifdef USE_GDAL
+	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
+#endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -295,12 +315,32 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
-	
-	if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading image file %s!\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
-	}
 
+	EPS = file_is_eps (GMT, Ctrl->In.file);	/* Determine if this is an EPS file */
+	
+	if (EPS) {	/* Read an EPS file */
+		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading EPS file %s!\n", Ctrl->In.file);
+			Return (EXIT_FAILURE);
+		}
+	}
+	else  {	/* Read a raster image */
+#ifdef USE_GDAL
+		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) Return (GMT_DATA_READ_ERROR);
+		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		picture = (unsigned char *)I->data;
+		header.width = I->header->nx;
+		header.height = I->header->ny;
+		header.depth = I->n_bands * 8;
+#else	
+		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading raster image file %s!\n", Ctrl->In.file);
+			Return (EXIT_FAILURE);
+		}
+#endif
+	}
+	
 	if (Ctrl->M.active && header.depth == 24) {
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
@@ -383,6 +423,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, PSL, -1, 0.0);
 	GMT_plotend (GMT, PSL);
 
+#ifdef USE_GDAL
+	if (!EPS) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
+#endif
 	if (free_GMT)
 		GMT_free (GMT, picture);
 	else
