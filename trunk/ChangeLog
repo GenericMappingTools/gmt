@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.919 2011-04-01 19:50:05 guru Exp $
+	$Id: ChangeLog,v 1.920 2011-04-01 22:02:02 guru Exp $
 -----------------------------------------------------------------------------------------
 				
 2011-04-01	pwessel
@@ -10,6 +10,7 @@
 	* grdmath_func.c:	---"---
 	* spotter/grdpmodeler_func.c:	---"---
 	* spotter/grdrotater_func.c:	---"---
+	* gmt.{c,txt}:		Renamed from upper case GMT.{c,txt}
 
 2011-04-01	jluis
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
