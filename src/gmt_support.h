@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.56 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_support.h,v 1.57 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,6 +24,11 @@
 #define GMT_LONG_TYPE	2
 #define GMT_FLOAT_TYPE	3
 #define GMT_DOUBLE_TYPE	4
+
+/* Return codes from GMT_inonout */
+#define GMT_OUTSIDE	0
+#define GMT_ONEDGE	1
+#define GMT_INSIDE	2
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {

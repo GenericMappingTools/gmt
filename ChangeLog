@@ -1,7 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.918 2011-04-01 02:34:29 jluis Exp $
+	$Id: ChangeLog,v 1.919 2011-04-01 19:50:05 guru Exp $
 -----------------------------------------------------------------------------------------
 				
+2011-04-01	pwessel
+	* gmt_support.c:	Now let GMT_inonout handle polygons with holes so the main
+				code need not be concerned outer than skipping the holes.
+	* gmtselect_func.c:	Now use GMT_inonout with no extra checks.
+	* grdmask_func.c:	---"---
+	* grdmath_func.c:	---"---
+	* spotter/grdpmodeler_func.c:	---"---
+	* spotter/grdrotater_func.c:	---"---
+
 2011-04-01	jluis
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
 	* gmt_grdio.[ch]	in the new IMAGE container. (Still very crude and probably buggy) 

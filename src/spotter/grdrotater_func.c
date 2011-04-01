@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.4 2011-04-01 19:50:05 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -560,10 +560,9 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_loop (G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
 		if (not_global) {
-			inside = seg = 0;
-			while (seg < pol->n_segments && !inside) {	/* Use degrees since function expects it */
-				inside = (GMT_inonout_sphpol (GMT, grd_x[col], grd_y[row], pol->segment[seg]) > 0);
-				seg++;
+			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
+				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
+				inside = (GMT_inonout (GMT, grd_x[col], grd_y[row], pol->segment[seg]) > 0);
 			}
 			if (!inside) continue;	/* Outside the polygon(s) */
 		}

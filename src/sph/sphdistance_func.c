@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.4 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -490,7 +490,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (row = n_row; row <= s_row; row++) {	/* For each scanline intersecting this polygon */
 			for (ii = w_col; ii <= e_col; ii++) {	/* March along the scanline */
 				col = (ii >= 0) ? ii : ii + nx1;
-				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);
+				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
 				Grid->data[ij] = (Ctrl->E.active) ? (float)node : (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);

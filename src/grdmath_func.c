@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.4 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdmath_func.c,v 1.5 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1293,24 +1293,28 @@ void grd_INRANGE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 	}
 }
 
-void grd_INSIDE_GEO (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
+void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
+/*OPERATOR: INSIDE 1 1 1 when inside or on polygon(s) in A, else 0.  */
 {	/* Suitable for geographic (lon, lat) data and polygons */
 	GMT_LONG row, col, node, P, inside;
-	struct GMT_TABLE *polygon = NULL;
+	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_LINE_SEGMENT *S = NULL;
 
 	GMT_set_cols (GMT, GMT_IN, 2);
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
 	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&(info->ASCII_file), (void **)&D)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator INSIDE_GEO reading file %s!\n", info->ASCII_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT_DATA_READ_ERROR;
 		return;
 	}
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
-	polygon = D->table[0];	/* Only one table in a single file */
+	T = D->table[0];	/* Only one table in a single file */
 	GMT_grd_padloop (info->G, row, col, node) {	/* Visit each node */
-		for (P = inside = 0; !inside && P < polygon->n_segments; P++) {
-			inside = GMT_inonout_sphpol (GMT, (double)info->grd_x[col], (double)info->grd_y[row], polygon->segment[P]);
+		for (P = inside = 0; !inside && P < T->n_segments; P++) {
+			S = T->segment[P];
+			if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
+			inside = GMT_inonout (GMT, (double)info->grd_x[col], (double)info->grd_y[row], S);
 		}
 		stack[last]->data[node] = (float)((inside) ? 1.0 : 0.0);
 	}
@@ -1318,43 +1322,6 @@ void grd_INSIDE_GEO (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT
 	/* Free memory used for pol */
 
 	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
-}
-
-void grd_INSIDE_XY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
-{	/* Version for Cartesian data */
-	GMT_LONG row, col, node, P, inside;
-	struct GMT_TABLE *polygon;
-	struct GMT_DATASET *D = NULL;
-
-	GMT_set_cols (GMT, GMT_IN,  2);
-	if (GMT_Get_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&(info->ASCII_file), (void **)&D)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in operator INSIDE_XY reading file %s!\n", info->ASCII_file);
-		info->error = GMT_DATA_READ_ERROR;
-		return;
-	}
-	polygon = D->table[0];	/* Only one table in a single file */
-
-	GMT_grd_padloop (info->G, row, col, node) {	/* Visit each node */
-		for (P = inside = 0; !inside && P < polygon->n_segments; P++) {
-			if (info->grd_y[row] < polygon->segment[P]->min[GMT_Y] || info->grd_y[row] > polygon->segment[P]->max[GMT_Y]) continue;	/* Outside y range */
-			if (info->grd_x[col] < polygon->segment[P]->min[GMT_X] || info->grd_x[col] > polygon->segment[P]->max[GMT_X]) continue;	/* Outside x range */
-			inside = GMT_non_zero_winding (GMT, (double)info->grd_x[col], (double)info->grd_y[row], polygon->segment[P]->coord[GMT_X], polygon->segment[P]->coord[GMT_Y], polygon->segment[P]->n_rows);	/* Must test */
-		}
-		stack[last]->data[node] = (float)((inside) ? 1.0 : 0.0);
-	}
-
-	/* Free memory used for pol */
-
-	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
-}
-
-void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
-/*OPERATOR: INSIDE 1 1 1 when inside or on polygon(s) in A, else 0.  */
-{
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO)	/* Geographic data */
-		grd_INSIDE_GEO (GMT, info, stack, constant, factor, last);
-	else					/* Cartesian data */
-		grd_INSIDE_XY (GMT, info, stack, constant, factor, last);
 }
 
 void grd_INV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
