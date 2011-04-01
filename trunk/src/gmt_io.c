@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.235 2011-04-01 00:58:04 remko Exp $
+ *	$Id: gmt_io.c,v 1.236 2011-04-01 02:24:12 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5250,6 +5250,8 @@ void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
 struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
+	I->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
+	GMT_grd_setpad (I->header, C->current.io.pad);	/* Use the system pad setting by default */
 	return (I);
 }
 
