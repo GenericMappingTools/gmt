@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.6 2011-03-30 22:38:00 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.7 2011-04-01 02:33:51 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -394,6 +394,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {
+		struct GMT_IMAGE *I = NULL;
 		/* One more test though */
 		if (Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR cannot use -D and -I options.\n");
@@ -403,6 +404,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = FALSE;
 		}
+
+		/* Just a testing line to import images via GDAL. Data and header are all in the I(mage) container
+		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, 
+			(void **)&(Ctrl->In.file[0]), (void **)&I)) Return (GMT_DATA_READ_ERROR);
+		*/
 
 		/* Allocate new control structures */
 		to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
