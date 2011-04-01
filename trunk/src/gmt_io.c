@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.236 2011-04-01 02:24:12 jluis Exp $
+ *	$Id: gmt_io.c,v 1.237 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4200,10 +4200,10 @@ GMT_LONG GMT_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 		/* OK, they are all polygons.  Determine any polygon holes */
 		for (seg1 = 0; seg1 < T->n_segments; seg1++) {	/* For each segment in the table */
 			for (seg2 = seg1 + 1; seg2 < T->n_segments; seg2++) {	/* For each segment in the table */
-				if (GMT_inonout_sphpol (C, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2])) {
+				if (GMT_inonout (C, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2])) {
 					T->segment[seg1]->ogr->pol_mode = GMT_IS_HOLE;
 				}
-				if (GMT_inonout_sphpol (C, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1])) {
+				if (GMT_inonout (C, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1])) {
 					T->segment[seg2]->ogr->pol_mode = GMT_IS_HOLE;
 				}
 			}
@@ -5018,6 +5018,8 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 				T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
 				T->segment[seg]->n_rows++;
 			}
+			/* If this is a hole then set link from previous segment to this one */
+			if (seg && T->segment[seg]->ogr && T->segment[seg]->ogr->pol_mode == GMT_IS_HOLE) T->segment[seg-1]->next = T->segment[seg];
 		}
 
 		/* Reallocate to free up some memory */

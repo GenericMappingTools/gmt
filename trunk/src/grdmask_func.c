@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.5 2011-03-28 20:28:50 guru Exp $
+ *	$Id: grdmask_func.c,v 1.6 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,9 +29,6 @@
 #include "gmt.h"
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
-#define GRDMASK_OUTSIDE		0
-#define GRDMASK_ONEDGE		1
-#define GRDMASK_INSIDE		2
 
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
@@ -66,8 +63,8 @@ void *New_grdmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->A.step = 0.1;			/* In degrees */
-	C->N.mask[GRDMASK_INSIDE] = 1.0;	/* Default inside value */
+	C->A.step = 0.1;		/* In degrees */
+	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
 	return ((void *)C);
 }
 
@@ -208,7 +205,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE, resample = FALSE;
-	GMT_LONG side_h, seg_h, row, col, side, d_col = 0, d_row = 0, col_0, row_0;
+	GMT_LONG row, col, side, d_col = 0, d_row = 0, col_0, row_0;
 	GMT_LONG tbl, seg, mode, n_pol = 0, k, ij;
 	
 	char seg_label[GMT_TEXT_LEN];
@@ -219,7 +216,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL, *H = NULL;
+	struct GMT_LINE_SEGMENT *S = NULL;
 	struct GRDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
@@ -260,11 +257,11 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely outside the polygons will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GRDMASK_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GRDMASK_OUTSIDE]);
+			(GMT_is_fnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GRDMASK_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GRDMASK_INSIDE]);
+			(GMT_is_fnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on the polygons boundary will be set to ");
-			(GMT_is_fnan (Ctrl->N.mask[GRDMASK_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GRDMASK_ONEDGE]);
+			(GMT_is_fnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
 
@@ -287,7 +284,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Initialize all nodes (including pad) to the 'outside' value */
 
-	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GRDMASK_OUTSIDE];
+	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2))) Return (error);
 	mode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
@@ -297,6 +294,15 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
+
+	if (!Ctrl->S.active && resample) {	/* Resample all polygons to desired resolution, once and for all */
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
+				S = D->table[tbl]->segment[seg];	/* Current segment */
+				S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+			}
+		}
+	}
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
@@ -314,11 +320,11 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					row_0 = GMT_grd_y_to_row (S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
-					Grid->data[ij] = mask_val[GRDMASK_INSIDE];	/* This is the nearest node */
+					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
 					if (Grid->header->registration == GMT_GRIDLINE_REG && (col_0 == 0 || col_0 == (Grid->header->nx-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
 						col = (col_0 == 0) ? Grid->header->nx-1 : 0;
 						ij = GMT_IJP (Grid->header, row_0, col);
-						Grid->data[ij] = mask_val[GRDMASK_INSIDE];	/* This is also the nearest node */
+						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
 					}
 					if (Ctrl->S.radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
@@ -331,13 +337,13 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							y0 = GMT_grd_row_to_y (row, Grid->header);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], x0, y0);
 							if (distance > Ctrl->S.radius) continue;
-							Grid->data[ij] = mask_val[GRDMASK_INSIDE];	/* The inside value */
+							Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
 						}
 					}
 				}
 			}
 			else if (S->n_rows > 2) {	/* assign 'inside' to nodes if they are inside given polygon */
-				if (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE) continue;	/* Polygon is hole; deal with those separately when inside a polygon */
+				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for polygon IDs in the data headers */
 					if (S->ogr)	/* OGR data */
 						ID = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
@@ -349,12 +355,11 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					ID += 1.0;
 
-				if (resample) S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
 				for (row = 0; row < Grid->header->ny; row++) {
 
 					yy = GMT_grd_row_to_y (row, Grid->header);
 					
-					/* First check if point is outside, then there is no need to assign value */
+					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
 					
 					if (periodic) {	/* Containing annulus test */
 						if (S->pole != +1 && yy > S->max[GMT_Y]) continue;	/* No N polar cap and beyond north */
@@ -363,31 +368,15 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					else if (yy < S->min[GMT_Y] || yy > S->max[GMT_Y])	/* Cartesian case */
 						continue;
 
+					/* Here we will have to consider the x coordinates as well */
 					for (col = 0; col < Grid->header->nx; col++) {
 						xx = GMT_grd_col_to_x (col, Grid->header);
-						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next */
-						
-						/* Here, point is inside or on the polygon edge */
-
-						if (GMT->current.io.OGR) {	/* Must check for and skip if inside a hole */
-							seg_h = seg + 1;	/* The following polygon */
-							
-							side_h = GRDMASK_OUTSIDE;	/* Init to same status */
-							while (side_h == GRDMASK_OUTSIDE && seg_h < D->table[tbl]->n_segments && (H = D->table[tbl]->segment[seg_h]) && H->ogr && H->ogr->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
-								/* Must check if point is inside this hole polygon */
-								if (resample) H->n_rows = GMT_fix_up_path (GMT, &H->coord[GMT_X], &H->coord[GMT_Y], H->n_rows, Ctrl->A.step, Ctrl->A.mode);	/* Want to resample the path */
-								side_h = GMT_inonout (GMT, xx, yy, H);
-								seg_h++;	/* Move to next polygon */
-							}
-							if (side_h == GRDMASK_INSIDE) continue;		/* Inside one of the holes, hence outside polygon; go to next perimeter polygon */
-							if (side_h == GRDMASK_ONEDGE) side = side_h;	/* On path of one of the holes, hence on polygon path; update side */
-						}
-						
+						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 
 						ij = GMT_IJP (Grid->header, row, col);
 						
-						if (Ctrl->N.mode%2 && side == GRDMASK_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
+						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (float)ID : mask_val[side];
 					}
 					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %ld scanning row %5.5ld\r", n_pol, row);

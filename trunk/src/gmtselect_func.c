@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.3 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -413,7 +413,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 
 GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, k, err, n_minimum = 2, n_read = 0, n_pass = 0, mode, plain_xy;
+	GMT_LONG i, j, k, err, n_minimum = 2, n_read = 0, n_pass = 0, mode;
 	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
 	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, row, col;
 	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
@@ -613,7 +613,6 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 	}
-	plain_xy = (do_project || !GMT_is_geographic (GMT, GMT_IN));
 	
 	/* Now we are ready to take on some input values */
 
@@ -674,29 +673,17 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
 		}
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
+			if (do_project) {	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
+				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+			}
 			inside = FALSE;
 			for (i = 0; i < pol->n_segments && !inside; i++) {	/* Check each polygon until we find that our point is inside */
-				if (plain_xy) {	/* Non-geographic (or projected lon/lat); use Cartesian testing */
-					if (yy < pol->segment[i]->min[GMT_Y] || yy > pol->segment[i]->max[GMT_Y]) continue;	/* Outside polygon's y-range */
-					if (xx < pol->segment[i]->min[GMT_X] || xx > pol->segment[i]->max[GMT_X]) continue;	/* Outside polygon's x-range */
-					/* Here we must do the full Cartesian polygon check */
-
-					inside = (GMT_non_zero_winding (GMT, xx, yy, pol->segment[i]->coord[GMT_X], pol->segment[i]->coord[GMT_Y], pol->segment[i]->n_rows) >= Ctrl->E.inside[F_ITEM]);
-				}
-				else {	/* Lon-lat data; do spherical testing */
-					if (pol->segment[i]->pole) {	/* Special testing for polar caps */
-						if (pol->segment[i]->pole == +1 && yy < pol->segment[i]->min[GMT_Y]) continue;	/* Below a N-polar cap */
-						if (pol->segment[i]->pole == -1 && yy > pol->segment[i]->max[GMT_Y]) continue;	/* Above a S-polar cap */
-					}
-					else {
-						if (yy < pol->segment[i]->min[GMT_Y] || yy > pol->segment[i]->max[GMT_Y]) continue;	/* Outside polygon's y-range */
-						xx = lon - 360.0;
-						while (xx < pol->segment[i]->min[GMT_X]) xx += 360.0;	/* Wind to the east of the west boundary */
-						if (xx > pol->segment[i]->max[GMT_X]) continue;		/* Outside polygon's longitude-range */
-					}
-					/* Here we must do the full spherical polygon check */
-					inside = (GMT_inonout_sphpol (GMT, xx, yy, pol->segment[i]) >= Ctrl->E.inside[F_ITEM]);
-				}
+				if (GMT_polygon_is_hole (pol->segment[i])) continue;	/* Holes are handled within GMT_inonout */
+				inside = (GMT_inonout (GMT, xx, yy, pol->segment[i]) >= Ctrl->E.inside[F_ITEM]);
+			}
+			if (do_project) {	/* Reset input type for GMT_inonout to do Cartesian mode */
+				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+				GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 			}
 			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
 		}
@@ -755,7 +742,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (yy < ymin || yy > ymax) continue;
 						if (xx < xmin || xx > xmax) continue;
 
-						/* Must compare with polygon */
+						/* Must compare with polygon; holes are handled explicitly via the levels */
 
 						if ((side = GMT_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < Ctrl->E.inside[N_ITEM]) continue;	/* Outside polygon */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.469 2011-04-01 03:43:11 guru Exp $
+ *	$Id: gmt_support.c,v 1.470 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5394,7 +5394,7 @@ GMT_LONG GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const
 	return (GMT_OUTSIDE_POLYGON);	/* Nothing triggered the tests; we are outside */
 }
 
-GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+GMT_LONG GMT_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions */
 	GMT_LONG side;
 
@@ -5412,6 +5412,31 @@ GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_L
 		if (x < S->min[GMT_X] || x > S->max[GMT_X]) return (GMT_OUTSIDE_POLYGON);	/* Point outside, no need to assign value */
 		side = GMT_non_zero_winding (C, x, y, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
 	}
+	return (side);
+}
+
+GMT_LONG GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+{	/* Front end for both spherical and Cartesian in-on-out functions.
+ 	 * Knows to check for polygons with holes as well. */
+	GMT_LONG side, side_h;
+	struct GMT_LINE_SEGMENT *H = NULL;
+
+	if ((side = GMT_inonout_sub (C, x, y, S)) <= GMT_ONEDGE) return (side);	/* Outside polygon or on perimeter, we are done */
+	
+	/* Here, point is inside the polygon perimeter. See if there are holes */
+
+	if (C->current.io.OGR && (H = S->next)) {	/* Must check for and skip if inside a hole */		
+		side_h = GMT_OUTSIDE;	/* We are outside a hole until we are found to be inside it */
+		while (side_h == GMT_OUTSIDE && H && H->ogr && H->ogr->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
+			/* Must check if point is inside this hole polygon */
+			side_h = GMT_inonout_sub (C, x, y, H);
+			H = H->next;	/* Move to next polygon hole */
+		}
+		if (side_h == GMT_INSIDE) side = GMT_OUTSIDE;	/* Inside one of the holes, hence outside polygon; go to next perimeter polygon */
+		if (side_h == GMT_ONEDGE) side = GMT_ONEDGE;	/* On path of one of the holes, hence on polygon path; update side */
+	}
+	
+	/* Here, point is inside or on edge, we return the value */
 	return (side);
 }
 

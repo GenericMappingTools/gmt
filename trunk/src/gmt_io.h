@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.95 2011-03-31 03:29:30 jluis Exp $
+ *	$Id: gmt_io.h,v 1.96 2011-04-01 19:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,6 +83,8 @@
 /* These are polygon modes */
 #define GMT_IS_PERIMETER	0
 #define GMT_IS_HOLE		1
+
+#define GMT_polygon_is_hole(S) (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE)
 
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
@@ -418,6 +420,7 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 	char *header;			/* Segment header (if applicable) */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
+	struct GMT_LINE_SEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
 };
 
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
