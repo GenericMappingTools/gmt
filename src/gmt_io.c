@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.238 2011-04-01 23:20:48 guru Exp $
+ *	$Id: gmt_io.c,v 1.239 2011-04-02 01:38:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3698,18 +3698,50 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	return (0);
 }
 
-void GMT_set_seg_minmax (struct GMT_LINE_SEGMENT *S)
+void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {
-	GMT_LONG k, row;
-	for (k = 0; k < S->n_columns; k++) {	/* Initialize */
-		S->min[k] = DBL_MAX;
-		S->max[k] = -DBL_MAX;
+	GMT_LONG col, xcol = -1, j, row, quad_no, quad[4] = {FALSE, FALSE, FALSE, FALSE}, range[2] = {2, 0};
+	double xmin[2], xmax[2], x;
+	for (col = 0; col < S->n_columns; col++) {	/* Initialize */
+		S->min[col] = DBL_MAX;
+		S->max[col] = -DBL_MAX;
+		if (C->current.io.col_type[GMT_IN][col] == GMT_IS_LON) xcol = col;
 	}
+	if (xcol >= 0) {xmin[0] = xmin[1] = DBL_MAX; xmax[0] = xmax[1] = -DBL_MAX;}
 	for (row = 0; row < S->n_rows; row++) {
-		for (k = 0; k < S->n_columns; k++) {
-			if (S->coord[k][row] < S->min[k]) S->min[k] = S->coord[k][row];
-			if (S->coord[k][row] > S->max[k]) S->max[k] = S->coord[k][row];
+		for (col = 0; col < S->n_columns; col++) {
+			if (col == xcol) {	/* Longitude requires more work */
+				/* We must keep separate min/max for both Dateline and Greenwich conventions */
+				x = S->coord[col][row];
+				for (j = 0; j < 2; j++) {
+					GMT_lon_range_adjust (C, range[j], &x);	/* Set -180/180, then 0-360 range */
+					xmin[j] = MIN (x, xmin[j]);
+					xmax[j] = MAX (x, xmax[j]);
+				}
+				quad_no = (GMT_LONG)floor (x/90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
+				if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
+				quad[quad_no] = TRUE;
+			}
+			else {
+				if (S->coord[col][row] < S->min[col]) S->min[col] = S->coord[col][row];
+				if (S->coord[col][row] > S->max[col]) S->max[col] = S->coord[col][row];
+			}
 		}
+	}
+	if (xcol >= 0) {	/* Finalize longitude range settings */
+		GMT_LONG n_quad;
+		n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
+		if (quad[0] && quad[3])	/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
+			j = 0;
+		else if (quad[1] && quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
+			j = 1;
+		else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
+			j = ((xmax[0] - xmin[0]) < (xmax[1] - xmin[1])) ? 0 : 1;
+		else					/* Either will do, use default settings */
+			j = (C->current.io.geo.range == 0) ? 1 : 0;
+		S->min[xcol] = xmin[j];	S->max[xcol] = xmax[j];
+		if (S->min[xcol] > S->max[xcol]) S->min[xcol] -= 360.0;
+		if (S->min[xcol] < 0.0 && S->max[xcol] < 0.0) S->min[xcol] += 360.0, S->max[xcol] += 360.0;
 	}
 }
 
@@ -3728,7 +3760,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
 	}
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
-		GMT_set_seg_minmax (S);
+		GMT_set_seg_minmax (C, S);
 		for (k = 0; k < T->n_columns; k++) {
 			if (S->min[k] < T->min[k]) T->min[k] = S->min[k];
 			if (S->max[k] > T->max[k]) T->max[k] = S->max[k];
@@ -3868,29 +3900,30 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 
 void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 {
-	GMT_LONG i = 0, j, j0;
-	char *p = NULL;
+	GMT_LONG i = 0, k, j, j0, done;
+	char *p = NULL, q[2] = {'\"', '\''};
+
+	if (GMT_parse_segment_item (C, line, "-L", label)) return;	/* Found -L */
 
 	label[0] = '\0';	/* Remove previous label */
 	if (!line || !line[0]) return;	/* Line is empty */
-	if ((p = strstr (line, " -L")) || (p = strstr (line, "	-L")))	/* Get label specified with -L option */
-		i = p + 3 - line;
-	else {								/* Bypass seg-marker, whitespace and pick first word */
-		while (line[i] && (line[i] == C->current.setting.io_seg_marker[GMT_IN] || line[i] == ' ' || line[i] == '\t')) i++;
-	}
-	if ((p = strchr (&line[i], '\"'))) {	/* Gave several words as label */
-		for (j0 = j = i + 1; line[j] != '\"'; j++);
-		if (line[j] == '\"') {	/* Found the matching quote */
-			strncpy (label, &line[j0], (size_t)(j-j0));
-			label[j-j0] = '\0';
+	while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;	/* Bypass whitespace */
+
+	for (k = done = 0; k < 2; k++) {
+		if ((p = strchr (&line[i], q[k]))) {	/* Gave several double/single-quoted words as label */
+			for (j0 = j = i + 1; line[j] != q[k]; j++);
+			if (line[j] == q[k]) {	/* Found the matching quote */
+				strncpy (label, &line[j0], (size_t)(j-j0));
+				label[j-j0] = '\0';
+				done = TRUE;
+			}
+			else {			/* Missing the matching quote */
+				sscanf (&line[i], "%s", label);
+				GMT_report (C, GMT_MSG_FATAL, "Warning: Label (%s) not terminated by matching quote\n", label);
+			}
 		}
-		else {			/* Missing the matching quote */
-			sscanf (&line[i], "%s", label);
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Label (%s) not terminated by matching quote\n", label);
-		}
 	}
-	else
-		sscanf (&line[i], "%s", label);
+	if (!done) sscanf (&line[i], "%s", label);
 }
 
 GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string)
@@ -4163,7 +4196,7 @@ GMT_LONG GMT_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 			}
 			GMT_alloc_ogr_seg (C, T->segment[seg], T->ogr->n_aspatial);	/* Copy over any feature-specific values */
 			T->segment[seg]->ogr->pol_mode = GMT_IS_PERIMETER;
-			GMT_set_seg_minmax (T->segment[seg]);	/* Make sure min/max are set per polygon */
+			GMT_set_seg_minmax (C, T->segment[seg]);	/* Make sure min/max are set per polygon */
 
 		}
 		/* OK, they are all polygons.  Determine any polygon holes: if a point is fully inside another polygon (not on the edge) */
@@ -4990,7 +5023,8 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			/* If this is a hole then set link from previous segment to this one */
 			if (seg && T->segment[seg]->ogr && T->segment[seg]->ogr->pol_mode == GMT_IS_HOLE) T->segment[seg-1]->next = T->segment[seg];
 		}
-
+		GMT_set_seg_minmax (C, T->segment[seg]);
+		
 		/* Reallocate to free up some memory */
 
 		GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);

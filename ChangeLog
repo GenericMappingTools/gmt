@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.920 2011-04-01 22:02:02 guru Exp $
+	$Id: ChangeLog,v 1.921 2011-04-02 01:38:00 guru Exp $
 -----------------------------------------------------------------------------------------
 				
 2011-04-01	pwessel
@@ -11,6 +11,8 @@
 	* spotter/grdpmodeler_func.c:	---"---
 	* spotter/grdrotater_func.c:	---"---
 	* gmt.{c,txt}:		Renamed from upper case GMT.{c,txt}
+	* gmtspatial_func.c:	Preliminary support via -N to report which polygon contains a
+				given input feature.
 
 2011-04-01	jluis
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
