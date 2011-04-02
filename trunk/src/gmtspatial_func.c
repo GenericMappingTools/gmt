@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.5 2011-04-01 21:21:43 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.6 2011-04-02 01:38:01 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -669,6 +669,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 					Ctrl->N.file = strdup (opt->arg);
 					continue;
 				}
+				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
 				pos = 0;
 				while (GMT_strtok (s, "+", &pos, p)) {
 					switch (p[0]) {
@@ -676,6 +677,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 							Ctrl->N.all = TRUE;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
+							Ctrl->N.mode = 1;
 							Ctrl->N.start = (p[1]) ? atoi (&p[1]) - 1 : -1;	/* We increment before use */
 							break;
 						case 'z':	/* Gave a new +s<fact> value */
@@ -1183,9 +1185,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	}
 	
-	if (Ctrl->N.active) {	/* Look for the polygons that contain the given features */
+	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		GMT_LONG tbl, seg, seg2, ID, row, first, last, n, np;
-		char seg_label[GMT_TEXT_LEN];
+		char seg_label[GMT_TEXT_LEN], record[BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
@@ -1193,20 +1195,24 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->N.file, (void **)&C)) Return ((error = GMT_DATA_READ_ERROR));
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC))) Return (error);				/* Enables data output and sets access mode */
 		T = C->table[0];	/* Only one input file so only one table */
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %ld :\n", seg2);
-			if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for polygon IDs in the data headers */
+			if (Ctrl->N.mode == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
-					ID = GMT_get_aspatial_value (GMT, GMT_IS_Z, S2);
+					ID = (GMT_LONG)GMT_get_aspatial_value (GMT, GMT_IS_Z, S2);
+				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
+					ID = atoi (seg_label);
 				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
-					ID = atof (seg_label);
+					ID = atoi (seg_label);
 				else
 					GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
 			}
-			else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
+			else	/* Increment running polygon ID */
 				ID++;
 		
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -1214,18 +1220,16 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					S = D->table[tbl]->segment[seg];
 					if (S->n_rows == 0) continue;
 					if (Ctrl->N.all) { first = 0; last = S->n_rows - 1; np = S->n_rows; } else { first = last = S->n_rows / 2; np = 1; }
-					for (row = first; row <= last; row++) {	/* Check one or all points if they are inside */
+					for (row = first, n = 0; row <= last; row++) {	/* Check one or all points if they are inside */
 						n += (GMT_inonout (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], S2) == GMT_INSIDE);
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					/* Here we are inside; make a note */
-					S->id = ID;
+					sprintf (record, "%s from table %ld segment %ld is inside polygon # %ld", kind[Ctrl->N.all], tbl, seg, ID);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
 				}
 			}
 		}
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->Out.file, (void *)D)) Return ((error = GMT_DATA_WRITE_ERROR));
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&C);
