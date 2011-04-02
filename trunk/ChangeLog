@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.921 2011-04-02 01:38:00 guru Exp $
+	$Id: ChangeLog,v 1.922 2011-04-02 21:37:14 guru Exp $
 -----------------------------------------------------------------------------------------
 				
+2011-04-02	pwessel
+	* gmtspatial_func.c:	Support via -N to report which polygon contains a
+				given input feature.  Several modifiers controls how the
+				polygon IDs are obtained and how we report the results.
+
 2011-04-01	pwessel
 	* gmt_support.c:	Now let GMT_inonout handle polygons with holes so the main
 				code need not be concerned outer than skipping the holes.
@@ -11,8 +16,6 @@
 	* spotter/grdpmodeler_func.c:	---"---
 	* spotter/grdrotater_func.c:	---"---
 	* gmt.{c,txt}:		Renamed from upper case GMT.{c,txt}
-	* gmtspatial_func.c:	Preliminary support via -N to report which polygon contains a
-				given input feature.
 
 2011-04-01	jluis
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them

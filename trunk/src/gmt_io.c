@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.239 2011-04-02 01:38:00 guru Exp $
+ *	$Id: gmt_io.c,v 1.240 2011-04-02 21:37:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3936,6 +3936,7 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	GMT_LONG k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
+	if (!out_string) return (TRUE);	/* If NULL is passed as out_string then we just return TRUE if we find the option */
 	k = (GMT_LONG)t - (GMT_LONG)in_string;	/* Position of pattern in in_string */
 	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (FALSE);	/* Option not first or preceeded by whitespace */
 	t += 2;	/* Position of the argument */
