@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.39 2011-04-01 03:43:11 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.40 2011-04-02 21:37:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2365,6 +2365,7 @@ GMT_LONG GMT_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direct
 	API->io_mode[direction] = mode;
 	API->io_enabled[direction] = TRUE;	/* OK to access resources */
 	API->GMT->current.io.ogr = GMTAPI_NOTSET;
+	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled\n", GMT_direction[direction]);
 
 	return (GMT_Report_Error (API, GMT_OK));	/* Return status */

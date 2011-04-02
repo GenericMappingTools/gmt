@@ -4,7 +4,7 @@
 gmtspatial \- Geospatial operations on polygons
 .SH SYNOPSIS
 BD(gmtspatial) IT(infiles) [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
-[ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)] ] 
+[ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -51,11 +51,15 @@ Measure the area of all polygons or length of line segments.  Use OPT(M+) to app
 [Default simply writes the area to stdout].  For polygons we also compute the centroid location while for line data we compute the
 mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).
 .TP
-OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)]
-Determine if one (or more, with BD(+a)) points of each feature in the input data are inside any of the polygons
+OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)]
+Determine if one (or all, with BD(+a)) points of each feature in the input data are inside any of the polygons
 given in the IT(pfile).  If inside, then report which polygon it is; the polygon ID is either taken from the
 aspatial value assigned to Z, the segment header (first OPT(Z), then OPT(L) are scanned), or it is assigned the
-running number that is initialized to IT(start) [0].
+running number that is initialized to IT(start) [0].  By default the input segment that are found to be inside
+a polygon are written to stdout with the polygon ID encoded in the segment header as OPT(Z)IT(ID).  Alternatively,
+append BD(+r) to just report which polygon contains a feature or BD(+z) to have the IDs added as an extra data
+column on output.  Segments that fail to be inside a polygon are not written out.  If more than one polygon contains
+the same segment we skip the second (and further) scenario.
 #include "explain_-Rgeo.txt"
 Clips polygons to the map region, including map boundary to the polygon as needed.  The
 result is a closed polygon.
