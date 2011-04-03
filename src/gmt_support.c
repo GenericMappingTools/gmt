@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.470 2011-04-01 19:50:05 guru Exp $
+ *	$Id: gmt_support.c,v 1.471 2011-04-03 07:57:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6837,6 +6837,38 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
 
 	/* Wind up *pos to next non-separating character */
 	while (string[i] && strchr (sep, (int)string[i])) i++;
+	*pos = i;
+
+	return 1;
+}
+
+GMT_LONG GMT_strtok2 (const char *string, const char *sep, GMT_LONG *pos, char *token)
+{
+	/* Reentrant replacement for strtok that uses no static variables.
+	 * Breaks string into tokens separated by one of more separator
+	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
+	 * strtok, always pass the original string as first argument.
+	 * Returns 1 if it finds a token and 0 if no more tokens left.
+	 * pos is updated and token is returned.  char *token must point
+	 * to memory of length >= strlen (string).
+	 * string is not changed by GMT_strtok.
+	 */
+
+	GMT_LONG i, j, string_len;
+
+	string_len = strlen (string);
+
+	token[0] = 0;	/* Initialize token to NULL in case we are at end */
+
+	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
+
+	/* Search for next non-separating character */
+	i = *pos; j = 0;
+	while (string[i] && !strchr (sep, (int)string[i])) token[j++] = string[i++];
+	token[j] = 0;	/* Add terminating \0 */
+
+	/* Increase *pos to next non-separating character */
+	if (string[i] && strchr (sep, (int)string[i])) i++;
 	*pos = i;
 
 	return 1;

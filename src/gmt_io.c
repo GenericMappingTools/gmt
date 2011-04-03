@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.240 2011-04-02 21:37:14 guru Exp $
+ *	$Id: gmt_io.c,v 1.241 2011-04-03 07:57:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -718,9 +718,10 @@ GMT_LONG ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GM
 
 	n_alloc = (S->value) ? BUFSIZ : 0;	/* Prevent alloc a second time */
 	strcpy (buffer, record);
-	while ((GMT_strtok (buffer, "|", &pos, p))) {
+	while ((GMT_strtok2 (buffer, "|", &pos, p))) {
 		if (col == n_alloc) {
 			S->value = GMT_memory (C, S->value, n_alloc + GMT_TINY_CHUNK, char *);
+			GMT_memset (&S->value[n_alloc], GMT_TINY_CHUNK, char *);	/* Explicitly set new items to NULL */
 			S->dvalue = GMT_memory (C, S->dvalue, n_alloc += GMT_TINY_CHUNK, double);
 		}
 		if (S->value[col]) free ((void *)S->value[col]);	/* Free previous item */
@@ -4058,7 +4059,7 @@ void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE
 			case GMT_IS_Z:	/* Format -Z<value> */
 				col = -C->common.a.col[k] - 1;	/* So -3 becomes 2 etc */
 				strcat (buffer, sflag[col]);
-				strcat (buffer, S->ogr->value[k]);
+				strcat (buffer, S->ogr->value[C->common.a.ogr[k]]);
 				break;
 			default:	/* Regular column cases are skipped */
 				break;
@@ -4073,6 +4074,7 @@ void GMT_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, GMT_LONG
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	if (S->ogr) return;	/* Already allocated */
 	S->ogr = GMT_memory (C, NULL, 1, struct GMT_OGR_SEG);
+	S->ogr->n_aspatial = n_aspatial;
 	if (n_aspatial) {
 		S->ogr->value = GMT_memory (C, NULL, n_aspatial, char *);
 		S->ogr->dvalue = GMT_memory (C, NULL, n_aspatial, double);
@@ -4089,7 +4091,7 @@ void GMT_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GM
 		S->ogr->dvalue[k] = G->dvalue[k];
 	}
 	S->ogr->pol_mode = G->pol_mode;
-	
+	S->ogr->n_aspatial = G->n_aspatial;
 }
 
 void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from)
@@ -4097,8 +4099,8 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, s
 	GMT_LONG k;
 	
 	if (!S_from->ogr) return;	/* No data */
-	GMT_alloc_ogr_seg (C, S_to, C->common.a.n_aspatial);
-	for (k = 0; k < C->common.a.n_aspatial; k++) {
+	GMT_alloc_ogr_seg (C, S_to, S_from->ogr->n_aspatial);
+	for (k = 0; k < S_from->ogr->n_aspatial; k++) {
 		if (S_from->ogr->value[k]) S_to->ogr->value[k] = strdup (S_from->ogr->value[k]);
 		S_to->ogr->dvalue[k] = S_from->ogr->dvalue[k];
 	}
@@ -5166,7 +5168,7 @@ void GMT_free_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	GMT_LONG k, n;
 	n = (C->current.io.OGR) ? C->current.io.OGR->n_aspatial : C->common.a.n_aspatial; 
 	if (n) {
-		for (k = 0; k < n; k++) if (S->ogr->value[k]) free ((void *)S->ogr->value[k]);
+		for (k = 0; S->ogr->value && k < n; k++) if (S->ogr->value[k]) free ((void *)S->ogr->value[k]);
 		GMT_free (C, S->ogr->value);
 		GMT_free (C, S->ogr->dvalue);
 	}

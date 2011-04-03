@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.23 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_common.h,v 1.24 2011-04-03 07:57:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -41,7 +41,7 @@
 #define GMT_GAP_IN_PDIST	9
 #define GMT_GAP_IN_DDIST	10
 
-#define MAX_ASPATIAL 10		/* No more than 10 aspatial options in -a */
+#define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
 struct GMT_COMMON {
 	/* Structure with all information given via the common GMT command-line options -R -J .. */
