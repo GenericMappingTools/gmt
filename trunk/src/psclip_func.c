@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.7 2011-03-26 20:52:07 guru Exp $
+ *	$Id: psclip_func.c,v 1.8 2011-04-03 07:57:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -265,21 +265,30 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];		/* Current segment */
-					x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
+					if (D->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
+						x = GMT_memory (GMT, NULL, S->n_rows, double);
+						y = GMT_memory (GMT, NULL, S->n_rows, double);
+					}
+					else {	/* Reuse input arrays */
+						x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
+					}
 
 					for (i = 0; i < S->n_rows; i++) {
-						GMT_geo_to_xy (GMT, x[i], y[i], &x0, &y0);
+						GMT_geo_to_xy (GMT, S->coord[GMT_X][i], S->coord[GMT_Y][i], &x0, &y0);
 						x[i] = x0; y[i] = y0;
 					}
 					PSL_beginclipping (PSL, x, y, S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
+					if (D->alloc_mode == GMT_READONLY) {	/* Free temp arrays */
+						GMT_free (GMT, x);	GMT_free (GMT, y);
+					}
 				}
 			}
 			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 		}
-		/* Finish up the composite polygon clip path */
-		PSL_beginclipping (PSL, x, y, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
+		/* Finalize the composite polygon clip path */
+		PSL_beginclipping (PSL, NULL, NULL, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
 	}
 
 	GMT_plane_perspective (GMT, PSL, -1, 0.0);

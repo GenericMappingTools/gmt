@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.96 2011-04-01 19:50:05 guru Exp $
+ *	$Id: gmt_io.h,v 1.97 2011-04-03 07:57:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -286,6 +286,7 @@ struct GMT_OGR {	/* Struct with all things GMT/OGR for a table*/
 
 struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 	GMT_LONG pol_mode;		/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+	GMT_LONG n_aspatial;		/* @T: The number of aspatial fields */
 	char **value;			/* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
 };

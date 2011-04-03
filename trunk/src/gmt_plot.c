@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.306 2011-03-26 20:52:07 guru Exp $
+ *	$Id: gmt_plot.c,v 1.307 2011-04-03 07:57:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3563,8 +3563,12 @@ void GMT_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 	/* Polar caps need special treatment in that we must add a detour to the pole.
 	 * However, we do not want to draw that detour as a line, only use for fill. */
 	
-	GMT_LONG n = S->n_rows, outline, add_pole = TRUE;
+	GMT_LONG n = S->n_rows, outline, add_pole = TRUE, holes;
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
+	
+	holes = (S->next != NULL);	/* TRUE if we have a perimeter with holes to follow */
+	if (holes) GMT_report (C, GMT_MSG_FATAL, "Painting polygons with holes not implemented yet\n");
+	if (GMT_polygon_is_hole (S)) return;	/* Holes are handled below once a perimeter is passed */
 
 	if (S->pole == 0 || GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0)) add_pole = FALSE;	/* Not a polar cap or no fill requested */
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
