@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.922 2011-04-02 21:37:14 guru Exp $
+	$Id: ChangeLog,v 1.923 2011-04-04 00:12:45 guru Exp $
 -----------------------------------------------------------------------------------------
 				
+2011-04-03	pwessel
+	* grdfilter_func.c:	The -Nr option failed to set nodes to NaN.
+
 2011-04-02	pwessel
 	* gmtspatial_func.c:	Support via -N to report which polygon contains a
 				given input feature.  Several modifiers controls how the
