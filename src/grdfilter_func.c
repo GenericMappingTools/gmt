@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.4 2011-04-04 00:12:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -353,7 +353,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG n_in_median, n_nan = 0, i_west, i_east, j_s_pole, j_n_pole, tid = 0;
-	GMT_LONG j_origin, col_out, row_out, half_nx, i_orig = 0, n_bad = 0;
+	GMT_LONG j_origin, col_out, row_out, half_nx, i_orig = 0, n_bad = 0, skip_if_NaN;
 	GMT_LONG col_in, row_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level;
 	GMT_LONG filter_type, one_or_zero = 1, GMT_n_multiples = 0, *i_origin = NULL;
 	GMT_LONG error = FALSE, fast_way, slow = FALSE, same_grid = FALSE, nx_wrap = 0;
@@ -623,12 +623,12 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			wt_sum = value = 0.0;
 			n_in_median = n_bad = 0;
 			ij_out = GMT_IJP (Gout->header, row_out, col_out);	/* Node of current output point */
-			if (Ctrl->N.mode == NAN_REPLACE && GMT_is_fnan (Gin->data[ij_out])) continue;	/* Since output will be NaN we bypass the filter loop */
+			skip_if_NaN = (Ctrl->N.mode == NAN_REPLACE && GMT_is_fnan (Gin->data[ij_out]));	/* Since output will be NaN we bypass the filter loop */
 
 			/* Now loop over the filter domain and collect those points that should be considered by the filter operation */
 			
 			i_west_used = i_east_used = FALSE;
-			for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {	/* Possible columns to consider on both sides of input point */
+			for (ii = -F.x_half_width; !skip_if_NaN && ii <= F.x_half_width; ii++) {	/* Possible columns to consider on both sides of input point */
 				col_in = i_origin[col_out] + ii;	/* Input column to consider */
 				if (spherical) {	/* Must guard against wrapping around the globe */
 					if (col_in < 0) col_in += nx_wrap;	/* "Left" of west means we might reappear in the east */
@@ -710,7 +710,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Now we have done the convolution and we can get the value  */
 
-			if (Ctrl->N.mode == NAN_REPLACE && GMT_is_fnan (Gin->data[ij_out])) {
+			if (skip_if_NaN) {
 				Gout->data[ij_out] = GMT->session.f_NaN;
 				n_nan++;
 			}
