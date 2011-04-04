@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.4 2011-04-04 02:50:15 jluis Exp $
+ *	$Id: psimage_func.c,v 1.5 2011-04-04 17:42:52 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -260,7 +260,7 @@ GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
 	FILE *fp = NULL;
 	char c[4];
 	
-	if ((fp = GMT_fopen (GMT, file, "r"))) {
+	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (EXIT_FAILURE);
 	}
