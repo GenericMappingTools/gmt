@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.21 2011-03-31 17:18:04 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.22 2011-04-04 15:00:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,14 +34,14 @@ int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	bGotNodata, metadata_only = FALSE;
-	int	do_BIP = FALSE;	/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
+	int	bGotNodata, metadata_only;
+	int	do_BIP;	/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 3;	/* 3 for RGB only and 4 for RGB with alpha channel (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */ 
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
-	GMT_LONG	pixel_reg = FALSE, correct_bounds = FALSE, fliplr = FALSE;
+	GMT_LONG	pixel_reg, correct_bounds, fliplr;
 	GMT_LONG	n, m, nn, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, n_commas, n_dash, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
@@ -73,23 +73,14 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		whichBands = calloc(nn, sizeof(GMT_LONG));
 		nReqBands = gdal_decode_columns (prhs->B.bands, whichBands, nn);
 	}
-	if (prhs->C.active)
-		correct_bounds = TRUE;
 
-	if (prhs->F.active)
-		pixel_reg = TRUE;
+	correct_bounds = prhs->C.active;
+	pixel_reg = prhs->F.active;
+	do_BIP = prhs->I.active;
+	fliplr = prhs->L.active;
+	metadata_only = prhs->M.active;
 
-	if (prhs->I.active)
-		do_BIP = TRUE;
-
-	if (prhs->L.active)
-		fliplr = TRUE;
-
-	if (prhs->M.active)
-		metadata_only = TRUE;
-
-	if (prhs->p.active)
-		pad = prhs->p.pad;
+	if (prhs->p.active) pad = prhs->p.pad;
 
 	if (prhs->R.active) {
 		got_R = TRUE;
