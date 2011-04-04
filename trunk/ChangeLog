@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.924 2011-04-04 02:06:53 jluis Exp $
+	$Id: ChangeLog,v 1.925 2011-04-04 15:01:35 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-04	jluis
@@ -28,6 +28,9 @@
 	* gmtapi_util.c:	First cut of functions to read images via GDAL and store them
 	* gmt_grdio.[ch]	in the new IMAGE container. (Still very crude and probably buggy) 
 
+2011-03-31	remko
+	* grdedit_func.c:	Do functionality of -T before -R
+
 2011-03-31	pwessel
 	* ps2raster_func.c:	Added modifier +o<foldername> to generate a KML snipped in
 				a named folder without the KML header and trailer.  Used to
@@ -50,7 +53,7 @@
 
 2011-03-28	pwessel
 	* *.[ch]:		Replace STAT with GMT_STAT to avoid name clashes on some systems.
-	* misc/gmt2kml_func.c	Ensure pen is given in points and >= 1 in width.
+	* misc/gmt2kml_func.c:	Ensure pen is given in points and >= 1 in width.
 	* misc/gmt2kml.txt:	Explain how pen needs to be set.
 	* pscontour_func.c:	Got wrong contour level when some segments along edges were skipped.
 				Now use same z-slop (small) as in grdcontour_func.c

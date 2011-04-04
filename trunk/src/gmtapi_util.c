@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.40 2011-04-02 21:37:14 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.41 2011-04-04 15:01:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1184,7 +1184,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
 			if (!I->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
-				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->n_bands, char);
+				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->n_bands, unsigned char);
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
@@ -1217,7 +1217,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating grid data from GMT_GRID memory location\n");
 			if (!I->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I->header->size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which may include padding */
-				I->data = GMT_memory (API->GMT, NULL, I->header->size, char);
+				I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
 			}
 			I->alloc_mode = GMT_ALLOCATED;
 			if (!S->region && !GMT_grd_pad_status (I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
@@ -1278,7 +1278,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
 			GMT_set_grddim (API->GMT, I->header);	/* Set all dimensions */
-			I->data = GMT_memory (API->GMT, NULL, I->header->size, char);
+			I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
 			GMT_grd_loop (I, row, col, ij) {
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				I->data[ij] = (char)GMTAPI_get_val (M->data, ij_orig, M->type);
@@ -1299,7 +1299,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
 				return (GMT_Report_Error (API, GMT_NOT_A_VALID_IO_ACCESS));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from user memory location\n");
-			I->data = (char *)(M->data);
+			I->data = (unsigned char *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			I->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			if (!GMTAPI_need_grdpadding (API->GMT, I->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
@@ -1320,7 +1320,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
 				return (GMT_Report_Error (API, GMT_NOT_A_VALID_IO_ACCESS));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from user read-only memory location\n");
-			I->data = (char *)(M->data);
+			I->data = (unsigned char *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			I->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			break;

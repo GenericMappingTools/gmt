@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.7 2011-04-01 02:33:51 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.8 2011-04-04 15:01:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -394,7 +394,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {
-		struct GMT_IMAGE *I = NULL;
 		/* One more test though */
 		if (Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR cannot use -D and -I options.\n");
