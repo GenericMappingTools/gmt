@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.12 2011-04-02 01:38:00 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.13 2011-04-04 02:50:46 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -398,6 +398,7 @@ EXTERN_MSC GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, doubl
 EXTERN_MSC GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, GMT_LONG n_path);
 EXTERN_MSC GMT_LONG GMT_set_cpt_path (struct GMT_CTRL *C, char *cpt_file, char *table);
 EXTERN_MSC GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *start, char *token);
+EXTERN_MSC GMT_LONG GMT_strtok2 (const char *string, const char *sep, GMT_LONG *pos, char *token);
 EXTERN_MSC GMT_LONG GMT_getmodopt (const char *string, const char *sep, GMT_LONG *pos, char *token);
 EXTERN_MSC GMT_LONG GMT_verify_expectations (struct GMT_CTRL *C, GMT_LONG wanted, GMT_LONG got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h);
