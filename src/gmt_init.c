@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.469 2011-03-31 23:03:20 guru Exp $
+ *	$Id: gmt_init.c,v 1.470 2011-04-04 02:02:44 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4927,7 +4927,11 @@ void GMT_set_env (struct GMT_CTRL *C)
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
 
 	if ((this = getenv ("GMT_TMPDIR")) != CNULL) {	/* GMT_TMPDIR was set */
+#ifdef WIN32
+		if (access (this, R_OK+W_OK)) {		/* Adding the +X_OK makes Win 64 bits version crash */
+#else
 		if (access (this, R_OK+W_OK+X_OK)) {
+#endif
 			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
 			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			C->session.TMPDIR = CNULL;
