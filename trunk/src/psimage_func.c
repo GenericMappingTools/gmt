@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.3 2011-04-01 04:25:49 guru Exp $
+ *	$Id: psimage_func.c,v 1.4 2011-04-04 02:50:15 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -327,12 +327,13 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else  {	/* Read a raster image */
 #ifdef USE_GDAL
 		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) Return (GMT_DATA_READ_ERROR);
+		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) 
+			Return (GMT_DATA_READ_ERROR);
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		picture = (unsigned char *)I->data;
 		header.width = I->header->nx;
 		header.height = I->header->ny;
-		header.depth = I->n_bands * 8;
+		header.depth = (int)(I->n_bands * 8);
 #else	
 		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading raster image file %s!\n", Ctrl->In.file);
