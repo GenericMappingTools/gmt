@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.923 2011-04-04 00:12:45 guru Exp $
+	$Id: ChangeLog,v 1.924 2011-04-04 02:06:53 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-04	jluis
+	* gmt_init.c:		Apply a workaround to the test of  access to 'GMT_TMPDIR' that
+				made the Win 64 bits version crash when that env variable was set.
 				
 2011-04-03	pwessel
 	* grdfilter_func.c:	The -Nr option failed to set nodes to NaN.
