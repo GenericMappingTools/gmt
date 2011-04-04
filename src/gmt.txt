@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-GMT \- The Generic Mapping Tools data processing and display software package
+gmt \- The Generic Mapping Tools data processing and display software package
 .SH INTRODUCTION
 BD(GMT) is a collection of public-domain Unix tools that allows you to manipulate
 x,y and x,y,z data sets (filtering, trend fitting, gridding, projecting, etc.)
@@ -12,10 +12,10 @@ addition to over 30 common map projections.  The processing and display routines
 within BD(GMT) are completely general and will handle any (x,y) or (x,y,z) data
 as input.
 .SH SYNOPSIS
-BD(GMT) is also a wrapper program that can start any of the programs:
+BD(gmt) is a wrapper program that can start any of the programs:
 .br
 .sp
-BD(GMT) module module-options
+BD(gmt) module module-options
 .br
 .sp
 where module is the name of a BD(GMT) program and the options are those that pertain to
@@ -212,7 +212,7 @@ for all GMT programs.  No space between the option flag and the associated argum
 #include "explain_grd_input.txt"
 .SH "SEE ALSO"
 Look up the individual man pages for more details and full syntax.
-Run BD(GMT) without options
+Run BD(gmt) without options
 to list all GMT programs and to show all installation directories.
 Information is also available on the BD(GMT) home page gmt.soest.hawaii.edu
 #include "refs.i"

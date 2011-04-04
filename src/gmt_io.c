@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.241 2011-04-03 07:57:20 guru Exp $
+ *	$Id: gmt_io.c,v 1.242 2011-04-04 17:10:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -718,7 +718,7 @@ GMT_LONG ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GM
 
 	n_alloc = (S->value) ? BUFSIZ : 0;	/* Prevent alloc a second time */
 	strcpy (buffer, record);
-	while ((GMT_strtok2 (buffer, "|", &pos, p))) {
+	while ((GMT_strtok1 (buffer, '|', &pos, p))) {
 		if (col == n_alloc) {
 			S->value = GMT_memory (C, S->value, n_alloc + GMT_TINY_CHUNK, char *);
 			GMT_memset (&S->value[n_alloc], GMT_TINY_CHUNK, char *);	/* Explicitly set new items to NULL */
