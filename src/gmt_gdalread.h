@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.15 2011-03-31 17:13:48 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.16 2011-04-04 15:01:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -44,7 +44,7 @@ struct GDALREAD_CTRL {
 	} M;
 	struct GD_P {	/* Preview mode */
 		int active;
-		char	*jump;
+		char *jump;
 	} P;
 	struct GD_p {	/* Pad array in output */
 		int active;
@@ -63,7 +63,7 @@ struct GDALREAD_CTRL {
 	} Z;
 	struct GD_cp {	/* Send in a pointer with allocated chars */
 		int active;
-		char *grd;
+		unsigned char *grd;
 	} c_ptr;
 	struct GD_fp {	/* Send in a pointer with allocated floats */
 		int active;
