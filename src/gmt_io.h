@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.99 2011-04-05 00:48:41 jluis Exp $
+ *	$Id: gmt_io.h,v 1.100 2011-04-05 22:45:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,7 +84,7 @@
 #define GMT_IS_PERIMETER	0
 #define GMT_IS_HOLE		1
 
-#define GMT_polygon_is_hole(S) (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE)
+#define GMT_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
 
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
@@ -412,6 +412,7 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 	GMT_LONG pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	GMT_LONG mode;			/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	GMT_LONG range;			/* 0 = use default lon adjustment, -1 = negative longs, +1 = positive lons */
+	GMT_LONG pol_mode;		/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
 	GMT_LONG n_alloc;		/* The current allocation length of each coord */
 	double dist;			/* Distance from a point to this feature */
 	double *min;			/* Minimum coordinate for each column */
