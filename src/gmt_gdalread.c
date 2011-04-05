@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.22 2011-04-04 15:00:51 remko Exp $
+ *	$Id: gmt_gdalread.c,v 1.23 2011-04-05 00:51:41 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -706,7 +706,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	if (raster_count > 0)
 		Ctrl->ColorInterp = GDALGetColorInterpretationName( GDALGetRasterColorInterpretation(hBand) );
 	else
-		Ctrl->ColorInterp = strdup ("nikles");
+		Ctrl->ColorInterp = NULL;
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the first band NoData Value */
