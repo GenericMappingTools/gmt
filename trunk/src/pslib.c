@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.249 2011-03-26 20:54:44 guru Exp $
+ *	$Id: pslib.c,v 1.250 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1436,7 +1436,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", "v 1.28 ");	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", "v 1.29 ");	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, "");
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
@@ -1568,7 +1568,7 @@ PSL_LONG PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n
 		psl_patch (PSL, x, y, n);	/* Small polygons can use the patch function */
 	else {
 		PSL_plotline (PSL, x, y, n, PSL_MOVE);	/* No stroke or close path yet; see next line */
-		PSL_command (PSL, "fs os\n");		/* Close polygon and stroke/fill as set by PSL_setfill */
+		PSL_command (PSL, "FO\n");		/* Close polygon and stroke/fill as set by PSL_setfill */
 	}
 
 	return (PSL_NO_ERROR);
@@ -2545,7 +2545,7 @@ PSL_LONG PSL_plotparagraphbox (struct PSL_CTRL *PSL, double x, double y, double 
 		PSL_comment (PSL, "PSL_path:\n");
 		PSL_command (PSL, "XL YT M XL YB L XR YB L XR YT L\n");
 	}
-	PSL_command (PSL, "fs os U\n");
+	PSL_command (PSL, "FO U\n");
 	PSL_comment (PSL, "End PSL box beneath text block:\n");
 
 	return (PSL_NO_ERROR);
@@ -3331,7 +3331,7 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			A = D2R * (angle[i]+sign[i]*da*(1.0-0.5*shape));	s = sin (A);	c = cos (A);
 			xv = r * c - xl;	yv = r * s - yl;
 			PSL_plotpoint (PSL, xv, yv, PSL_REL);
-			PSL_command (PSL, "P fs os\n");
+			PSL_command (PSL, "P FO\n");
 		}
 	}
 	PSL_command (PSL, "U \n");

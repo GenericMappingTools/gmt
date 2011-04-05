@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.470 2011-04-04 02:02:44 jluis Exp $
+ *	$Id: gmt_init.c,v 1.471 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -609,6 +609,7 @@ void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 	}
 	GMT_message (C, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
 	GMT_message (C, "%s +d turns on debug which draws helper points and lines.\n", pad);
+	GMT_message (C, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
 	GMT_message (C, "%s +f sets specified label font [Default is %s].\n", pad, GMT_putfont (C, C->current.setting.font_annot[0]));
 	GMT_message (C, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
 	GMT_message (C, "%s +j<just> sets label justification [Default is CM].\n", pad);

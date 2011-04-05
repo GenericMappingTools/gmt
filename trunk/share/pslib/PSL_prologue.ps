@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.28 2011-03-15 02:06:35 guru Exp $
+%-	$Id: PSL_prologue.ps,v 1.29 2011-04-05 18:48:45 guru Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -37,45 +37,47 @@
 % Outline off or on
 /O0 {/os {N} def}!
 /O1 {/os {P S} def}!
+% Set both fill and outline
+/FO {fs os}!
 % Star: radius xc yc
-/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR fs os}!
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
 % Box: height width xll yll
-/Sb {M dup 0 D exch 0 exch D neg 0 D fs os}!
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
 % Rounded box: height width radius xll yll
 /SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
-  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR fs os}!
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 % Circle: radius xc yc
-/Sc {N 3 -1 roll 0 360 arc fs os}!
+/Sc {N 3 -1 roll 0 360 arc FO}!
 % Diamond: radius xc yc
-/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D fs os}!
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
 % Ellipse: major minor angle xc yc
-/Se {N MS T R scale 0 0 1 0 360 arc MR fs os}!
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
 % Octagon: radius xc yc
-/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR fs os}!
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
 % Hexagon: radius xc yc
-/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR fs os}!
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
 % Inverted triangle: radius xc yc
-/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR fs os}!
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 % Rotated rectangle: height width angle xc yc
-/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR fs os}!
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 % Pentagon: radius xc yc
-/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR fs os}!
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
 % Dot: radius xc yc
 /Sp {N 3 -1 roll 0 360 arc F}!
 % Patch fill: x1 y1 ... xn yn n
-/SP {M {D} repeat fs os}!
+/SP {M {D} repeat FO}!
 % Rectangle: height width xc yc
-/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D fs os}!
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 % Square: radius xc yc
-/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D fs os}!
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 % Triangle: radius xc yc
-/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR fs os}!
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 % Single-headed vector
-/SV {0 exch M 0 D D D D D 0 D fs os}!
+/SV {0 exch M 0 D D D D D 0 D FO}!
 % Double-headed vector
-/Sv {0 0 M D D 0 D D D D D 0 D D fs os}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
 % Pie Wedge: radius angle1 angle2 xc yc
-/Sw {2 copy M 5 2 roll arc fs os}!
+/Sw {2 copy M 5 2 roll arc FO}!
 % Cross: radius xc yc
 /Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 % Y-dash: radius xc yc

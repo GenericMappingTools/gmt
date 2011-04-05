@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.472 2011-04-04 17:10:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.473 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3284,7 +3284,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				G->debug = TRUE;
 				break;
 
-			case 'e':	/* Just lay down txxt info; Delay actual label plotting until a psclip -Ct call */
+			case 'e':	/* Just lay down text info; Delay actual label plotting until a psclip -C call */
 				G->delay = TRUE;
 				break;
 

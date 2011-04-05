@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+*    $Id: gmtvector_func.c,v 1.3 2011-04-05 18:48:46 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -372,9 +372,9 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (n == 0) Return (EXIT_FAILURE);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
 			if (n == 2)
-				GMT_normalize3v (GMT, vector_2);
-			else
 				GMT_normalize2v (GMT, vector_2);
+			else
+				GMT_normalize3v (GMT, vector_2);
 			Ctrl->C.active[GMT_OUT] = TRUE;	/* Since we just want to return the angle */
 		}
 	}
@@ -386,9 +386,9 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (n == 0) Return (EXIT_FAILURE);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize before we turn dot-product into angle */
 			if (n == 2)
-				GMT_normalize3v (GMT, vector_1);
-			else
 				GMT_normalize2v (GMT, vector_1);
+			else
+				GMT_normalize3v (GMT, vector_1);
 		}
 		Din = GMT_create_dataset (GMT, 1, 1, 3, 1);
 		for (k = 0; k < n; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];

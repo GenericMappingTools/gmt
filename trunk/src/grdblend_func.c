@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *    $Id: grdblend_func.c,v 1.4 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,11 +40,20 @@
 
 #include "gmt.h"
 
+#define BLEND_UPPER	0
+#define BLEND_LOWER	1
+#define BLEND_FIRST	2
+#define BLEND_LAST	3
+
 struct GRDBLEND_CTRL {
 	struct G {	/* -G<grdfile> */
 		GMT_LONG active;
 		char *file;
 	} G;
+	struct C {	/* -C */
+		GMT_LONG active;
+		GMT_LONG mode;
+	} C;
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
 		double inc[2];
@@ -261,7 +270,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdblend %s [API] - Blend several partially over-lapping grid files onto one grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdblend [<blendfile>] -G<grdfile> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-N<nodata>] [-Q] [%s] [-W] [-Z<scale>]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W] [-Z<scale>]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -274,6 +283,11 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t-C Clobber modes; no blending takes places as output node is determinde by the mode:\n");
+	GMT_message (GMT, "\t   f The first input grid determines the final value.\n");
+	GMT_message (GMT, "\t   l The lowest input grid value determines the final value.\n");
+	GMT_message (GMT, "\t   o The last input grid overrides any previous value.\n");
+	GMT_message (GMT, "\t   u The highest input grid value determines the final value.\n");
 	GMT_message (GMT, "\t-N Set value for nodes without constraints [Default is NaN]\n");
 	GMT_message (GMT, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file]\n");
 	GMT_message (GMT, "\t   Output grid must be in native binary format (i.e., not netCDF).\n");
@@ -306,6 +320,19 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 			/* Processes program-specific parameters */
 
+			case 'C':	/* Clobber mode */
+				Ctrl->C.active = TRUE;
+				switch (opt->arg[0]) {
+					case 'u': Ctrl->C.mode = BLEND_UPPER; break;
+					case 'l': Ctrl->C.mode = BLEND_LOWER; break;
+					case 'f': Ctrl->C.mode = BLEND_FIRST; break;
+					case 'o': Ctrl->C.mode = BLEND_LAST; break;
+					default:
+						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C option:  Modifiers are f|l|o|u only\n");
+						n_errors++;
+						break;
+				}
+				break;
 			case 'G':	/* Output filename */
 				Ctrl->G.file = strdup (opt->arg);
 				Ctrl->G.active = TRUE;
@@ -467,17 +494,30 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				kk = pcol - blend[k].out_i0;					/* kk is the local column variable for this grid */
 				if (GMT_is_fnan (blend[k].z[kk])) continue;			/* NaNs do not contribute */
-				if (pcol <= blend[k].in_i0)					/* Left cosine-taper weight */
-					wt_x = 0.5 * (1.0 - cos ((pcol - blend[k].out_i0 + S.header.xy_off) * blend[k].wxl));
-				else if (pcol >= blend[k].in_i1)					/* Right cosine-taper weight */
-					wt_x = 0.5 * (1.0 - cos ((blend[k].out_i1 - pcol + S.header.xy_off) * blend[k].wxr));
-				else								/* Inside inner region, weight = 1 */
-					wt_x = 1.0;
-				wt = wt_x * blend[k].wt_y;					/* Actual weight is 2-D cosine taper */
-				if (blend[k].invert) wt = blend[k].weight - wt;			/* Invert the sense of the tapering */
-				z[col] += (float)(wt * blend[k].z[kk]);				/* Add up weighted z*w sum */
-				w += wt;							/* Add up the weight sum */
-				m++;								/* Add up the number of contributing grids */
+				if (Ctrl->C.active) {	/* Clobber; just use the lastest grid as the final word */
+					switch (Ctrl->C.mode) {
+						case BLEND_FIRST: if (m) continue; break;	/* Already set */
+						case BLEND_UPPER: if (m && blend[k].z[kk] <= z[col]) continue; break;	/* Already has a higher value; else set below */
+						case BLEND_LOWER: if (m && blend[k].z[kk] >- z[col]) continue; break;	/* Already has a lower value; else set below */
+						/* Last case BLEND_LAST is always TRUE in that we always update z[col] */
+					}
+					z[col] = blend[k].z[kk];					/* Just pick this grid's value */
+					w = 1.0;							/* Set weights to 1 */
+					m = 1;								/* Pretend only one grid came here */
+				}
+				else {	/* Do the weighted blending */ 
+					if (pcol <= blend[k].in_i0)					/* Left cosine-taper weight */
+						wt_x = 0.5 * (1.0 - cos ((pcol - blend[k].out_i0 + S.header.xy_off) * blend[k].wxl));
+					else if (pcol >= blend[k].in_i1)					/* Right cosine-taper weight */
+						wt_x = 0.5 * (1.0 - cos ((blend[k].out_i1 - pcol + S.header.xy_off) * blend[k].wxr));
+					else								/* Inside inner region, weight = 1 */
+						wt_x = 1.0;
+					wt = wt_x * blend[k].wt_y;					/* Actual weight is 2-D cosine taper */
+					if (blend[k].invert) wt = blend[k].weight - wt;			/* Invert the sense of the tapering */
+					z[col] += (float)(wt * blend[k].z[kk]);				/* Add up weighted z*w sum */
+					w += wt;							/* Add up the weight sum */
+					m++;								/* Add up the number of contributing grids */
+				}
 			}
 
 			if (m) {	/* OK, at least one grid contributed to an output value */

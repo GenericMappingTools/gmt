@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.5 2011-03-31 23:03:21 guru Exp $
+ *	$Id: pscoast_func.c,v 1.6 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -504,7 +504,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 
 			if (k0 == -1 && fill) {	/* At start level: done nesting, time to paint the assembled swiss cheese polygon */
 				GMT_setfill (GMT, PSL, &fill[p[k].fid], FALSE);
-				PSL_command (PSL, "fs os\n");
+				PSL_command (PSL, "FO\n");
 			}
 		}
 	}

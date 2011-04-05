@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.4 2011-04-01 19:50:05 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.5 2011-04-05 18:48:46 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -313,9 +313,6 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		age = (Ctrl->T.active) ? Ctrl->T.value : G_age->data[node];
 		if (GMT_is_dnan (age)) continue;	/* No crustal age */
 		if ((k = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
-		if (grd_y[row] < -40.0) {
-			d = 8.0;
-		}
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
 				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat);
