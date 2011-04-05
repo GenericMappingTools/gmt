@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.8 2011-04-04 15:01:35 remko Exp $
+ *	$Id: grdimage_func.c,v 1.9 2011-04-05 00:47:58 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -390,7 +390,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
 
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {
@@ -471,8 +471,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Get/calculate a color palette file */
 
 	if (!Ctrl->In.do_rgb) {
-		if (Ctrl->C.active) {
-			if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
+		if (Ctrl->C.active) {		/* Read palette file */
+			if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) 
+				Return (GMT_DATA_READ_ERROR);
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
@@ -503,7 +504,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->D.active) {
 #endif
 		for (k = 0; k < n_grids; k++) {
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[k]), (void **)&Grid_orig[k])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[k]), 
+				(void **)&Grid_orig[k])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		}
 #ifdef USE_GDAL
 	}
@@ -511,10 +513,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->In.do_rgb) {	/* Must ensure all three grids are coregistered */
 		if (!GMT_grd_same_region (Grid_orig[0], Grid_orig[1])) error++;
 		if (!GMT_grd_same_region (Grid_orig[0], Grid_orig[2])) error++;
-		if (!(Grid_orig[0]->header->inc[GMT_X] == Grid_orig[1]->header->inc[GMT_X] && Grid_orig[0]->header->inc[GMT_X] == Grid_orig[2]->header->inc[GMT_X])) error++;
+		if (!(Grid_orig[0]->header->inc[GMT_X] == Grid_orig[1]->header->inc[GMT_X] && Grid_orig[0]->header->inc[GMT_X] == 
+			Grid_orig[2]->header->inc[GMT_X])) error++;
 		if (!(Grid_orig[0]->header->nx == Grid_orig[1]->header->nx && Grid_orig[0]->header->nx == Grid_orig[2]->header->nx)) error++;
 		if (!(Grid_orig[0]->header->ny == Grid_orig[1]->header->ny && Grid_orig[0]->header->ny == Grid_orig[2]->header->ny)) error++;
-		if (!(Grid_orig[0]->header->registration == Grid_orig[1]->header->registration && Grid_orig[0]->header->registration == Grid_orig[2]->header->registration)) error++;
+		if (!(Grid_orig[0]->header->registration == Grid_orig[1]->header->registration && Grid_orig[0]->header->registration == 
+			Grid_orig[2]->header->registration)) error++;
 		if (error) {
 			GMT_report (GMT, GMT_MSG_FATAL, "The r, g, and b grids are not congruent\n");
 			Return (EXIT_FAILURE);
@@ -569,7 +573,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 #endif
 		for (k = 0; k < n_grids; k++) {
-			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file[k]), (void **)&Grid_orig[k])) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
+			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file[k]), 
+				(void **)&Grid_orig[k])) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
 		}
 #ifdef USE_GDAL
 	}
@@ -581,9 +586,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read intensity file\n");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->I.file), (void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->I.file), 
+			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->I.file), (void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->I.file), 
+			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
 		if (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
@@ -686,7 +693,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							index = GMT_NAN - 3;	/* Ensures no illumination done later */
 						}
 						else {				/* Set color, let index = 0 so illuminate test will work */
-							rgb[k] = GMT_is255 (Grid_proj[k]->data[node]);	if (rgb[k] < 0.0) rgb[k] = 0.0; else if (rgb[k] > 1.0) rgb[k] = 1.0;	/* Clip */
+							rgb[k] = GMT_is255 (Grid_proj[k]->data[node]);
+							if (rgb[k] < 0.0) rgb[k] = 0.0; else if (rgb[k] > 1.0) rgb[k] = 1.0;	/* Clip */
 							index = 0;
 						}
 					}
@@ -702,7 +710,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					bitimage_8[byte++] = GMT_u255 (GMT_YIQ (rgb));
 				else {
 					for (k = 0; k < 3; k++) bitimage_24[byte++] = i_rgb[k] = GMT_u255 (rgb[k]);
-					if (Ctrl->Q.active && index != GMT_NAN - 3) rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = TRUE;	/* Keep track of all r/g/b combinations used except for NaN */
+					if (Ctrl->Q.active && index != GMT_NAN - 3) /* Keep track of all r/g/b combinations used except for NaN */
+						rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = TRUE;
 				}
 			}
 		}
@@ -719,7 +728,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					bitimage_24[0] = (unsigned char)(k >> 16);
 					bitimage_24[1] = (unsigned char)((k >> 8) & 255);
 					bitimage_24[2] = (unsigned char)(k & 255);
-					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: transparency color reset from %s to color %d/%d/%d\n", GMT_putrgb (GMT, P->patch[GMT_NAN].rgb), (int)bitimage_24[0], (int)bitimage_24[1], (int)bitimage_24[2]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: transparency color reset from %s to color %d/%d/%d\n", 
+						GMT_putrgb (GMT, P->patch[GMT_NAN].rgb), (int)bitimage_24[0], (int)bitimage_24[1], (int)bitimage_24[2]);
 					for (k = 0; k < 3; k++) P->patch[GMT_NAN].rgb[k] = GMT_is255 (bitimage_24[k]);	/* Set new NaN color */
 				}	
 			}
