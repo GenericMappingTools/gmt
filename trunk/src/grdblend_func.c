@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.4 2011-04-05 18:48:46 guru Exp $
+ *    $Id: grdblend_func.c,v 1.5 2011-04-05 19:03:34 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -279,7 +279,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Relative weights are <weight> inside the given -R and cosine taper to 0 at actual grid -R.\n");
 	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
-	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D binary data set\n");
+	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -467,8 +467,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->Z.active) GMT_report (GMT, GMT_MSG_NORMAL, "Output data will be scaled by %g\n", Ctrl->Z.scale);
 
-	S.header.z_min = DBL_MAX;	/* These will be updated in the loop below */
-	S.header.z_max = -DBL_MAX;
+	S.header.z_min = DBL_MAX;	S.header.z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	wrap_x = (GMT_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = irint (360.0 / S.header.inc[GMT_X]);
 
@@ -480,8 +479,8 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		for (col = 0; col < S.header.nx; col++) {	/* For each output node on the current row */
 
-			w = 0.0;
-			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid */
+			w = 0.0;	/* Reset weight */
+			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid; m will be the number of contributing grids to this node  */
 				if (blend[k].outside) continue;					/* This grid is currently outside the s/n range */
 				if (wrap_x) {	/* Special testing for periodic x coordinates */
 					pcol = col + nx_360;
@@ -494,7 +493,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				kk = pcol - blend[k].out_i0;					/* kk is the local column variable for this grid */
 				if (GMT_is_fnan (blend[k].z[kk])) continue;			/* NaNs do not contribute */
-				if (Ctrl->C.active) {	/* Clobber; just use the lastest grid as the final word */
+				if (Ctrl->C.active) {	/* Clobber; update z[col] according to selected mode */
 					switch (Ctrl->C.mode) {
 						case BLEND_FIRST: if (m) continue; break;	/* Already set */
 						case BLEND_UPPER: if (m && blend[k].z[kk] <= z[col]) continue; break;	/* Already has a higher value; else set below */
