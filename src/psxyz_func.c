@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.4 2011-04-05 18:48:46 guru Exp $
+ *	$Id: psxyz_func.c,v 1.5 2011-04-05 19:16:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -857,7 +857,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-				if (GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
+				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
 				n = L->n_rows;				/* Number of points in this segment */
 
