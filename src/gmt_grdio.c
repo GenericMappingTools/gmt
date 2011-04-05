@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.149 2011-04-01 02:27:36 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.150 2011-04-05 00:50:18 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1632,6 +1632,9 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	}
 
 	I->n_bands = from_gdalread->RasterCount;
+	I->ColorInterp  = from_gdalread->ColorInterp;		/* Must find out how to release this mem */
+	I->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
+	I->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->nx = from_gdalread->RasterXsize;
@@ -1682,7 +1685,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 		/*to_gdalread->R.region = strR;*/
 	}
 
-	to_gdalread->p.active = to_gdalread->p.pad = 0;
+	to_gdalread->p.active = to_gdalread->p.pad = (int)C->current.io.pad[0];	/* Only 'square' padding allowed */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	to_gdalread->c_ptr.active = 1;
@@ -1692,6 +1695,8 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading image with gdalread.\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
+
+	I->ColorMap = from_gdalread->ColorMap;
 
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
 		I->header->nx -= (int)(pad[XLO] + pad[XHI]);
