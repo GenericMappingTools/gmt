@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.3 2011-04-05 22:45:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
 	GMT_message (GMT, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
-	GMT_message (GMT, "\t   Note: -S requires -m and ASCII input data [Output all segments].\n");
+	GMT_message (GMT, "\t   To match OGR aspatial values, use name=value.\n");
 	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
 	GMT_explain_options (GMT, "VaC0Dfghios:.");
 	
@@ -224,11 +224,11 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG last_row, n_rows, out_col, n_out_seg = 0, error = 0;
 	GMT_LONG tbl, seg, col, row, n_cols_in, n_cols_out, out_seg = 0;
 	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_LONG match = FALSE, warn = FALSE;
+	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item;
 	
 	double *val = NULL;
 
-	char *method[2] = {"concatenated", "pasted"};
+	char *method[2] = {"concatenated", "pasted"}, *p = NULL;
 	
 	struct GMTCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL};	/* Pointer to GMT multisegment table(s) in and out */
@@ -297,6 +297,16 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (warn) GMT_report (GMT, GMT_MSG_NORMAL, "Some requested columns are outside the range of some tables and will be skipped.\n");
 	
+	if (Ctrl->S.active && GMT->current.io.ogr == 1 && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
+		EXTERN_MSC GMT_LONG get_ogr_id (struct GMT_OGR *G, char *name);
+		*p = 0;	/* Skip the = sign */
+		if ((ogr_item = get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMTAPI_NOTSET) {
+			ogr_match = TRUE;
+			p++;
+			strcpy (Ctrl->S.pattern, p);	/* Move the value over to the start */
+		}
+	}
+	
 	/* We now know the exact number of segments and columns and an upper limit on total records.
 	 * Allocate data set with a single table with those proportions. This copies headers as well */
 	
@@ -310,7 +320,10 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
 			if (Ctrl->L.active) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
+				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = TRUE;	/* Extend a true match on a perimeter to the trailing holes */
+				else if (ogr_match)	/* Compare to aspatial value */
+					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
+				else match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
 				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && seg != Ctrl->Q.seg) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

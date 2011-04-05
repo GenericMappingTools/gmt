@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.242 2011-04-04 17:10:35 guru Exp $
+ *	$Id: gmt_io.c,v 1.243 2011-04-05 22:45:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4043,14 +4043,15 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 
 void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
 {	/* Write out segment-level OGR/GMT header metadata */
-	GMT_LONG k, col;
+	GMT_LONG k, col, n, space = FALSE;
 	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"};
 	char buffer[BUFSIZ];
 
-	if (C->common.a.output || C->common.a.n_aspatial == 0) return;	/* Either input was not OGR or there are no aspatial fields */
+	if (C->common.a.output) return;		/* Input was not OGR (but output will be) */
+	n = (S->ogr && S->ogr->n_aspatial) ? S->ogr->n_aspatial : C->common.a.n_aspatial;
+	if (n == 0) return;	/* Either input was not OGR or there are no aspatial fields */
 	buffer[0] = 0;
-	for (k = 0; k < C->common.a.n_aspatial; k++) {
-		if (k) strcat (buffer, " ");
+	for (k = 0; k < n; k++) {
 		switch (C->common.a.col[k]) {
 			case GMT_IS_D:	/* Format -D<distance> */
 			case GMT_IS_G:	/* Format -G<fill> */
@@ -4058,12 +4059,18 @@ void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE
 			case GMT_IS_W:	/* Format -W<pen> */
 			case GMT_IS_Z:	/* Format -Z<value> */
 				col = -C->common.a.col[k] - 1;	/* So -3 becomes 2 etc */
+				if (space) strcat (buffer, " ");
 				strcat (buffer, sflag[col]);
 				strcat (buffer, S->ogr->value[C->common.a.ogr[k]]);
+				space = TRUE;
 				break;
 			default:	/* Regular column cases are skipped */
 				break;
 		}
+	}
+	if (GMT_polygon_is_hole (S)) {		/* Indicate this is a polygon hole [Default is perimeter] */
+		if (space) strcat (buffer, " ");
+		strcat (buffer, "-Ph");
 	}
 	if (S->header) { strcat (buffer, " "); strcat (buffer, S->header); }	/* Append rest of previous header */
 	free ((void *)S->header);
@@ -4091,7 +4098,6 @@ void GMT_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GM
 		S->ogr->dvalue[k] = G->dvalue[k];
 	}
 	S->ogr->pol_mode = G->pol_mode;
-	S->ogr->n_aspatial = G->n_aspatial;
 }
 
 void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from)
@@ -4104,6 +4110,7 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, s
 		if (S_from->ogr->value[k]) S_to->ogr->value[k] = strdup (S_from->ogr->value[k]);
 		S_to->ogr->dvalue[k] = S_from->ogr->dvalue[k];
 	}
+	S_to->ogr->pol_mode = S_from->ogr->pol_mode;
 }
 
 GMT_LONG GMT_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
@@ -5023,8 +5030,9 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 				T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
 				T->segment[seg]->n_rows++;
 			}
+			if (GMT_parse_segment_item (C, T->segment[seg]->header, "-Ph", NULL)) T->segment[seg]->pol_mode = GMT_IS_HOLE;
 			/* If this is a hole then set link from previous segment to this one */
-			if (seg && T->segment[seg]->ogr && T->segment[seg]->ogr->pol_mode == GMT_IS_HOLE) T->segment[seg-1]->next = T->segment[seg];
+			if (seg && GMT_polygon_is_hole (T->segment[seg])) T->segment[seg-1]->next = T->segment[seg];
 		}
 		GMT_set_seg_minmax (C, T->segment[seg]);
 		

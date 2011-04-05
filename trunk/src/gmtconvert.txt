@@ -61,7 +61,9 @@ OPT(S)[BD(~)]IT("search string")
 Only output those segments whose header record contains the specified text string.  To reverse the search,
 i.e., to output segments whose headers do IT(not) contain the specified pattern, use OPT(S~).
 Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
-Cannot be used with OPT(Q).
+Cannot be used with OPT(Q).  For matching segments based on aspatial values (via OGR/GMT format), give the
+search string as IT(varname)=IT(value) and we will compare IT(value) against the value of IT(varname) for
+each segment.
 .TP
 OPT(T)
 Suppress the writing of segment headers on output.
