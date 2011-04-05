@@ -1,6 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.925 2011-04-04 15:01:35 remko Exp $
+	$Id: ChangeLog,v 1.926 2011-04-05 18:48:45 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-06	pwessel
+	* psxy[z]_func.c:	Can not properly paint polygons with holes as indicated by
+				OGR/GMT data files.
+
+2011-04-05	pwessel
+	* grdblend_func.c:	New option -C (clobber mode) which only lets one input grid
+				to determine the values for a node; no weighting/tapering takes
+				place.  Four clobber modes are (f) first grid, (o) last grid
+				overrides all, (l) lower value, and (u) upper value.
 
 2011-04-04	jluis
 	* gmt_init.c:		Apply a workaround to the test of  access to 'GMT_TMPDIR' that

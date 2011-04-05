@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
+ *	$Id: psxyz_func.c,v 1.4 2011-04-05 18:48:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -857,6 +857,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+				if (GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
 				n = L->n_rows;				/* Number of points in this segment */
 
@@ -896,9 +897,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				if (polygon) {
 					GMT_plane_perspective (GMT, PSL, -1, 0.0);
-					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
+					for (i = 0; i < n; i++) {
+						GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &x_1, &y_1);
+						L->coord[GMT_X][i] = x_1;	L->coord[GMT_Y][i] = y_1;
+					}
 					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					PSL_plotpolygon (PSL, xp, yp, n);
+					GMT_geo_polygons (GMT, PSL, L);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					/* Note that this always be plotted in the XY-plane */
