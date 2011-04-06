@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.308 2011-04-05 18:48:46 guru Exp $
+ *	$Id: gmt_plot.c,v 1.309 2011-04-06 02:44:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3684,15 +3684,14 @@ void GMT_geo_polygon (struct GMT_CTRL *C, struct PSL_CTRL *P, double *lon, doubl
 	if (outline) GMT_geo_line (C, P, lon, lat, n);
 }
 
-void GMT_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S)
+void GMT_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S, GMT_LONG add_pole)
 {
 	/* Polar caps need special treatment in that we must add a detour to the pole.
 	 * However, we do not want to draw that detour as a line, only use for fill. */
 	
-	GMT_LONG n = S->n_rows, outline, add_pole = TRUE;
+	GMT_LONG n = S->n_rows;
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
 	
-	if (S->pole == 0 || GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0)) add_pole = FALSE;	/* Not a polar cap or no fill requested */
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
 		double step = C->current.setting.map_line_step / C->current.proj.scale[GMT_X] / C->current.proj.M_PR_DEG;
 		n += 2;	/* Add new first and last point to connect to the pole */
@@ -3704,40 +3703,64 @@ void GMT_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 		GMT_memcpy (&plon[1], S->coord[GMT_X], S->n_rows, double);
 		GMT_memcpy (&plat[1], S->coord[GMT_Y], S->n_rows, double);
 		n = GMT_fix_up_path (C, &plon, &plat, n, step, 0);
-		outline = P->current.outline;
-		P->current.outline = FALSE;	/* Turns off outline for now */
-		PSL_command (P, "O0\n");	/* Temporarily switch off outline */
 	}
 	GMT_geo_polygon (C, P, plon, plat, n);	/* Plot filled polygon [no outline if add_pole is true] */
 	if (add_pole) {		/* Delete what we made */
-		P->current.outline = outline;	/* Reset outline to what it was */
-		if (P->current.outline) {
-			PSL_command (P, "O1\n");	/* Switch on outline */
-			GMT_geo_line (C, P, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
-		}
 		GMT_free (C, plon);
 		GMT_free (C, plat);
 	}
 }
 
 void GMT_geo_polygons (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S)
-{	/* Deal with polygons that might be composed of a perimeter and one or more holes */
+{	/* Deal with plotting of one or more polygons that may wrap across the map.
+ 	 * Multi-polygons occer if composed of a perimeter and one or more holes.
+ 	 * This is marked by S->next being set to point to the next hole.
+	 * Also, if the perimeter is a polar cap we must add a helping line that
+	 * connects to the pole but this line should not be drawn.  This is why
+	 * we must lay down path twice (once for fill; once for line) since the
+	 * two paths are not the same.
+	 */
 	struct GMT_LINE_SEGMENT *S2 = NULL;
+	GMT_LONG add_pole, outline;
 	
-	if (S->next == NULL) {				/* TRUE if there are no holes */
-		GMT_geo_polygon_segment (C, P, S);	/* Just lay down perimeter and return */
+	add_pole = (S->pole && !GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0));	/* TRUE if a polar cap AND fill was requested */
+	if (add_pole) {	/* Must do fill and outline separately */
+		PSL_comment (P, "Perimeter polygon and polar cap\n");
+		outline = P->current.outline;	/* Keep a copy of what we wanted */
+		P->current.outline = FALSE;	/* Turns off outline for now (if set) */
+		PSL_command (P, "O0\n");	/* Temporarily switch off outline in the PS */
+	}
+	else
+		PSL_comment (P, "Perimeter polygon\n");
+	if (S->next == NULL) {				/* No holes following this perimeter */
+		GMT_geo_polygon_segment (C, P, S, add_pole);	/* Lay down perimeter, add pole excursion if add_pole == TRUE */
+		P->current.outline = outline;		/* Reset outline to what it was before */
+		if (P->current.outline) {		/* Switch on outline again and redraw lines */
+			PSL_command (P, "O1\n");	/* Turn outline on in the PS again */
+			GMT_geo_line (C, P, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);	/* Draw the outline only */
+		}
 		return;
 	}
 	
 	/* Here we must lay down the perimeter and then the holes.  */
 	
 	PSL_command (P, "/FO {P}!\n");			/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
-	GMT_geo_polygon_segment (C, P, S);		/* First lay down perimeter */
+	GMT_geo_polygon_segment (C, P, S, add_pole);	/* First lay down perimeter */
 	for (S2 = S->next; S2->next; S2 = S2->next) {	/* Process all the holes except the last one */
-		GMT_geo_polygon_segment (C, P, S2);	/* Add this hole to the path */
+		PSL_comment (P, "Hole polygon\n");
+		GMT_geo_polygon_segment (C, P, S2, FALSE);	/* Add this hole to the path */
 	}
 	PSL_command (P, "/FO {fs os}!\n");		/* Reset FO to its original settings */
-	GMT_geo_polygon_segment (C, P, S2);		/* Lay down final hole and fill/stroke combined polygon */
+	GMT_geo_polygon_segment (C, P, S2, FALSE);		/* Lay down final hole and fill/stroke combined polygon */
+	if (add_pole) {
+		PSL_comment (P, "Perimeter polygon and polar cap outline\n");
+		P->current.outline = outline;		/* Reset outline to what it was */
+		if (P->current.outline) {
+			PSL_command (P, "O1\n");	/* Switch on outline again and redraw lines */
+			PSL_comment (P, "Hole polygons outline\n");
+			for (S2 = S; S2; S2 = S2->next) GMT_geo_line (C, P, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows);
+		}
+	}
 }
 
 void GMT_geo_ellipse (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double lat, double major, double minor, double azimuth)
