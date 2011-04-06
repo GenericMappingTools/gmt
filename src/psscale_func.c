@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.3 2011-03-28 20:28:50 guru Exp $
+ *	$Id: psscale_func.c,v 1.4 2011-04-06 20:22:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -981,12 +981,10 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-#ifdef GMT_CPT2	
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = TRUE;
 		GMT_report (GMT, GMT_MSG_NORMAL, "CPT is for categorical data.");
 	}
-#endif
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
 

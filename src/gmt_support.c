@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.474 2011-04-06 18:48:17 guru Exp $
+ *	$Id: gmt_support.c,v 1.475 2011-04-06 20:22:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1784,10 +1784,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	 */
 
 	GMT_LONG n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0, color_model, id, k;
-	GMT_LONG gap, error = FALSE, close_file = FALSE, check_headers = TRUE;
-#ifdef GMT_CPT2
-	GMT_LONG n_cat_records = 0;
-#endif
+	GMT_LONG gap, error = FALSE, close_file = FALSE, check_headers = TRUE, n_cat_records = 0;
 	double dz;
 	char T0[GMT_TEXT_LEN], T1[GMT_TEXT_LEN], T2[GMT_TEXT_LEN], T3[GMT_TEXT_LEN], T4[GMT_TEXT_LEN];
 	char T5[GMT_TEXT_LEN], T6[GMT_TEXT_LEN], T7[GMT_TEXT_LEN], T8[GMT_TEXT_LEN], T9[GMT_TEXT_LEN];
@@ -2002,12 +1999,11 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			X->has_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
-#ifdef GMT_CPT2
 			if (nread == 3) {	/* Categorical cpt records with key color label */
 				X->range[n].label = GMT_memory (C, NULL, strlen (T2) + 1, char);
 				if (T2[0] == ';') strcpy (X->range[n].label, &T2[1]); else strcpy (X->range[n].label, T2);
 				X->range[n].z_high = X->range[n].z_low;
-				if (GMT_is_pattern (T1)) {	/* Gave pattern fill */
+				if (GMT_is_pattern (C, T1)) {	/* Gave pattern fill */
 					X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 					if (GMT_getfill (C, T1, X->range[n].fill)) {
 						GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", T1);
@@ -2021,9 +2017,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				n_cat_records++;
 				X->categorical = TRUE;
 			}
-			else
-#endif
-			if (nread == 4) {	/* gray shades or color names */
+			else if (nread == 4) {	/* gray shades or color names */
 				GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
 				sprintf (clo, "%s", T1);
 				sprintf (chi, "%s", T3);
@@ -2059,18 +2053,14 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				GMT_rgb_to_hsv (C, X->range[n].rgb_low,  X->range[n].hsv_low);
 				GMT_rgb_to_hsv (C, X->range[n].rgb_high, X->range[n].hsv_high);
 			}
-#ifdef GMT_CPT2
 			if (!X->categorical) {
-#endif
 				dz = X->range[n].z_high - X->range[n].z_low;
 				if (dz == 0.0) {
 					GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Z-slice with dz = 0\n");
 					return (EXIT_FAILURE);
 				}
 				X->range[n].i_dz = 1.0 / dz;
-#ifdef GMT_CPT2
 			}
-#endif
 			/* Is color map continuous, gray or b/w? */
 			if (X->is_gray && !(GMT_is_gray (X->range[n].rgb_low) && GMT_is_gray (X->range[n].rgb_high))) X->is_gray = X->is_bw = FALSE;
 			if (X->is_bw && !(GMT_is_bw(X->range[n].rgb_low) && GMT_is_bw(X->range[n].rgb_high))) X->is_bw = FALSE;
@@ -2110,12 +2100,10 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		GMT_rgb_copy (X->patch[GMT_FGD].hsv, X->range[n-1].hsv_high);
 	}
 
-#ifdef GMT_CPT2
 	if (X->categorical && n_cat_records != n) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Error when decoding %s as categorical cpt file - aborts!\n", cpt_file);
 		return (EXIT_FAILURE);
 	}
-#endif
 	if (error) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Error when decoding %s - aborts!\n", cpt_file);
 		return (EXIT_FAILURE);
@@ -2128,7 +2116,6 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	X->range = GMT_memory (C, X->range, n, struct GMT_LUT);
 	X->n_colors = (int)n;
 
-#ifdef GMT_CPT2
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
 		for (i = 0; i < X->n_colors; i++) {
 			if (i == (X->n_colors-1)) {
@@ -2145,7 +2132,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			X->range[i].i_dz = 1.0 / dz;
 		}
 	}
-#endif
+
 	for (i = annot = 0, gap = FALSE; i < X->n_colors - 1; i++) {
 		if (X->range[i].z_high != X->range[i+1].z_low) gap = TRUE;
 		annot += X->range[i].annot;

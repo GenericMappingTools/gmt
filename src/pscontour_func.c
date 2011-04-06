@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.7 2011-03-28 19:07:45 guru Exp $
+ *	$Id: pscontour_func.c,v 1.8 2011-04-06 20:22:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -650,13 +650,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
 		}
-#ifdef GMT_CPT2
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING:  Categorical data (as implied by CPT file) does not have contours.  Check plot.\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
-			Return (GMT_OK);
+			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
-#endif
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
 

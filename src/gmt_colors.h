@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.39 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_colors.h,v 1.40 2011-04-06 20:22:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,9 +99,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	GMT_LONG is_continuous;		/* TRUE if continuous color tables have been given */
 	GMT_LONG has_pattern;		/* TRUE if cpt file contains any patterns */
 	GMT_LONG skip;			/* TRUE if current z-slice is to be skipped */
-#ifdef GMT_CPT2	
 	GMT_LONG categorical;		/* TRUE if CPT applies to categorical data */
-#endif
 	char **header;			/* Array with all CPT ile header records, if any) */		/* Content not counted by sizeof (struct) */
 };
 
