@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: makecpt_func.c,v 1.3 2011-04-06 23:51:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,7 @@ GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   or filename with custom z-values.  If no -T option is given,\n");
 	GMT_message (GMT, "\t   then the range in the master cptfile will be used.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Do not interpolate color paletter\n");
+	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
 	GMT_message (GMT, "\t   i.e., constant color intervals].\n");
 	GMT_explain_options (GMT, ".");
@@ -287,6 +287,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 
 	if ((error = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, (void **)&file, (void **)&Pin))) Return (error);
+	if (Pin->categorical) Ctrl->W.active = TRUE;	/* Do not want to sample a categorical table */
 
 	/* Set up arrays */
 
