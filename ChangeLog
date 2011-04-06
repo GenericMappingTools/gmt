@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.927 2011-04-05 22:45:56 guru Exp $
+	$Id: ChangeLog,v 1.928 2011-04-06 18:32:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-06	pwessel
+	* kml2gmt_func.c:	Now needed -mo turned on explicitly.
+
+2011-04-05	pwessel
 	* psxy[z]_func.c:	Can not properly paint polygons with holes as indicated by
 				OGR/GMT data files.
 	* gmtconvert_func.c:	The -S option can be -Sname=value to match a named aspatial values
