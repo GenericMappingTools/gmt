@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.473 2011-04-05 18:48:46 guru Exp $
+ *	$Id: gmt_support.c,v 1.474 2011-04-06 18:48:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1938,7 +1938,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 		/* Here we have regular z-slices.  Allowable formats are
 		 *
-		 * kei <fill> <label>	for categorical data
+		 * key <fill> <label>	for categorical data
 		 * z0 - z1 - [LUB] ;<label>
 		 * z0 pattern z1 - [LUB] ;<label>
 		 * z0 r0 z1 r1 [LUB] ;<label>
@@ -2005,7 +2005,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 #ifdef GMT_CPT2
 			if (nread == 3) {	/* Categorical cpt records with key color label */
 				X->range[n].label = GMT_memory (C, NULL, strlen (T2) + 1, char);
-				strcpy (X->range[n].label, T2);
+				if (T2[0] == ';') strcpy (X->range[n].label, &T2[1]); else strcpy (X->range[n].label, T2);
 				X->range[n].z_high = X->range[n].z_low;
 				if (GMT_is_pattern (T1)) {	/* Gave pattern fill */
 					X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
