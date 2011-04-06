@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.133 2011-03-25 12:58:22 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.134 2011-04-06 23:51:12 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1547,14 +1547,14 @@ and it is clear that even if we assigned a numerical value to these categories (
 desert = 1, forest = 2, etc) it would be meaningless to compute average values (what would
 1.5 mean?).  For such data a special format of the CPT files are provided.  Here,
 each category is assigned a unique key, a color or pattern, and an optional
-label (usually the category name).  Keys must be monotonically increasing but do not
-need to be consecutive.  The format is
+label (usually the category name) marked by a leading semi-colon.  Keys must be
+monotonically increasing but do not need to be consecutive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
-key$_1$ &  {\it fill} &  \emph{label} \\ 
+key$_1$ &  {\it fill} &  [;\emph{label}] \\ 
 \ldots & & \\ 
-key$_n$ &  {\it fill} &  \emph{label} \\ 
+key$_n$ &  {\it fill} &  [;\emph{label}] \\ 
 \end{tabular} 
 \end{center}
 

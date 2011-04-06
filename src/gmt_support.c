@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.476 2011-04-06 22:02:04 guru Exp $
+ *	$Id: gmt_support.c,v 1.477 2011-04-06 23:51:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1928,13 +1928,13 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 		/* Here we have regular z-slices.  Allowable formats are
 		 *
-		 * key <fill> <label>	for categorical data
-		 * z0 - z1 - [LUB] ;<label>
-		 * z0 pattern z1 - [LUB] ;<label>
-		 * z0 r0 z1 r1 [LUB] ;<label>
-		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] ;<label>
-		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] ;<label>
-		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] ;<label>
+		 * key <fill> [;<label>]	for categorical data
+		 * z0 - z1 - [LUB] [;<label>]
+		 * z0 pattern z1 - [LUB] [;<label>]
+		 * z0 r0 z1 r1 [LUB] [;<label>]
+		 * z0 r0 g0 b0 z1 r1 g1 b1 [LUB] [;<label>]
+		 * z0 h0 s0 v0 z1 h1 s1 v1 [LUB] [;<label>]
+		 * z0 c0 m0 y0 k0 z1 c1 m1 y1 k1 [LUB] [;<label>]
 		 *
 		 * z can be in any format (float, dd:mm:ss, dateTclock)
 		 */
@@ -1964,9 +1964,8 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 		if (nread <= 0) continue;								/* Probably a line with spaces - skip */
 		if (X->model & GMT_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
-		if (!(X->model & GMT_CMYK) && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
+		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 		GMT_scanf_arg (C, T0, GMT_IS_UNKNOWN, &X->range[n].z_low);
-		if (nread == 3 && GMT_IS_ZERO (X->range[n].z_low - irint (X->range[n].z_low))) error = FALSE;	/* Categorical CPT record with integer key */
 		X->range[n].skip = FALSE;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
@@ -1978,35 +1977,31 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			GMT_rgb_copy (X->range[n].rgb_low,  C->current.setting.ps_page_rgb);	/* If we must paint, use page color */
 			GMT_rgb_copy (X->range[n].rgb_high, C->current.setting.ps_page_rgb);
 		}
-		else if (nread != 3 && GMT_is_pattern (C, T1)) {	/* Gave pattern fill */
+		else if (GMT_is_pattern (C, T1)) {	/* Gave pattern fill */
 			X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 			if (GMT_getfill (C, T1, X->range[n].fill)) {
 				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", T1);
 				return (EXIT_FAILURE);
 			}
-			else if (nread != 4) {
+			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
+				X->range[n].z_high = X->range[n].z_low;
+				n_cat_records++;
+				X->categorical = TRUE;
+			}
+			else if (nread == 4) {
+				GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
+			}
+			else {
 				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
 				return (EXIT_FAILURE);
 			}
-			GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
 			X->has_pattern = TRUE;
 		}
-		else {							/* Shades, RGB, HSV, or CMYK */
-			if (nread == 3) {	/* Categorical cpt records with key color label */
-				X->range[n].label = GMT_memory (C, NULL, strlen (T2) + 1, char);
-				if (T2[0] == ';') strcpy (X->range[n].label, &T2[1]); else strcpy (X->range[n].label, T2);
+		else {						/* Shades, RGB, HSV, or CMYK */
+			if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
 				X->range[n].z_high = X->range[n].z_low;
-				if (GMT_is_pattern (C, T1)) {	/* Gave pattern fill */
-					X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
-					if (GMT_getfill (C, T1, X->range[n].fill)) {
-						GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", T1);
-						return (EXIT_FAILURE);
-					}
-				}
-				else {
-					if (GMT_getrgb (C, T1, X->range[n].rgb_low)) error++;
-					if (GMT_getrgb (C, T1, X->range[n].rgb_high)) error++;
-				}
+				sprintf (clo, "%s", T1);
+				sprintf (chi, "-");
 				n_cat_records++;
 				X->categorical = TRUE;
 			}
@@ -2111,12 +2106,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
 		for (i = 0; i < X->n_colors; i++) {
-			if (i == (X->n_colors-1)) {
-				X->range[i].z_high += 1.0;	/* Upper limit is one up */
-			}
-			else {
-				X->range[i].z_high = X->range[i+1].z_low;
-			}
+			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + 1.0 : X->range[i+1].z_low;
 			dz = X->range[i].z_high - X->range[i].z_low;
 			if (dz == 0.0) {
 				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Z-slice with dz = 0\n");
@@ -2345,6 +2335,7 @@ void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GM
 	GMT_free (C, lut);
 	if (log_mode) GMT_free (C, z_out);
 	P->model = Pin->model;
+	P->categorical = Pin->categorical;
 
 	/* Background, foreground, and nan colors */
 
@@ -2429,7 +2420,19 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 
 		/* Print out one row */
 
-		if (P->model & GMT_HSV) {
+		if (P->categorical) {
+			if (P->model & GMT_HSV)
+				fprintf (fp, format, P->range[i].z_low, GMT_puthsv (C, P->range[i].hsv_low), '\n');
+			else if (P->model & GMT_CMYK) {
+				GMT_rgb_to_cmyk (C, P->range[i].rgb_low, cmyk);
+				fprintf (fp, format, P->range[i].z_low, GMT_putcmyk (C, cmyk), '\n');
+			}
+			else if (P->model & GMT_NO_COLORNAMES)
+				fprintf (fp, format, P->range[i].z_low, GMT_putrgb (C, P->range[i].rgb_low), '\n');
+			else
+				fprintf (fp, format, P->range[i].z_low, GMT_putcolor (C, P->range[i].rgb_low), '\n');
+		}
+		else if (P->model & GMT_HSV) {
 			fprintf (fp, format, P->range[i].z_low, GMT_puthsv (C, P->range[i].hsv_low), '\t');
 			fprintf (fp, format, P->range[i].z_high, GMT_puthsv (C, P->range[i].hsv_high), '\n');
 		}
