@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.5 2011-04-04 17:42:52 jluis Exp $
+ *	$Id: psimage_func.c,v 1.6 2011-04-06 18:08:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -276,12 +276,12 @@ GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
 
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1;
+	GMT_LONG i, j, k, b, n, ij, off, justify, PS_interpolate = 1, PS_transparent = 1;
 	GMT_LONG error = FALSE, free_GMT = FALSE, EPS = FALSE;
 
 	double x, y, wesn[4];
 
-	unsigned char *picture = NULL, *buffer = NULL;
+	unsigned char *picture = NULL, *buffer = NULL, *image;
 
 	struct imageinfo header;
 
@@ -396,6 +396,14 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
+	/* Experimenting with banding */
+	image = GMT_memory (GMT, NULL, 3 * header.height * header.width, unsigned char);
+	off = header.height * header.width;
+	for (j = k = ij = 0; j < header.height; j++) {
+		for (i = 0; i < header.width; i++, ij++) {
+			for (b = 0; b < 3; b++) image[k++] = picture[ij+off*b];
+		}
+	}
 	for (j = 0; j < Ctrl->N.ny; j++) {
 		y = Ctrl->C.y + j * Ctrl->W.height;
 		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %ld times for row %ld\n", Ctrl->N.nx, j);
@@ -411,7 +419,8 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
 			}
 			else
-				PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, PS_transparent * header.width, header.height, PS_interpolate * header.depth);
+				/* PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, PS_transparent * header.width, header.height, PS_interpolate * header.depth); */
+			PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, image, PS_transparent * header.width, header.height, PS_interpolate * 24);
 		}
 	}
 
