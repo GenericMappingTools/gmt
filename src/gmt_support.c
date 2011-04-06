@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.475 2011-04-06 20:22:53 guru Exp $
+ *	$Id: gmt_support.c,v 1.476 2011-04-06 22:02:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1670,13 +1670,6 @@ GMT_LONG GMT_set_cpt_path (struct GMT_CTRL *C, char *CPT_file, char *table)
 	strcpy (stem, table);
 	if ((l = strstr (stem, ".cpt"))) *l = 0;
 	ok = GMT_getsharepath (C, "cpt", stem, ".cpt", CPT_file);
-
-	/* Alternatively, look for GMT_table[.cpt] */
-	if (!ok) {
-		sprintf (stem, "GMT_%s", table);
-		if ((l = strstr (stem, ".cpt"))) *l = 0;
-		ok = GMT_getsharepath (C, "cpt", stem, ".cpt", CPT_file);
-	}
 
 	/* Have we found something? */
 	if (!ok)
