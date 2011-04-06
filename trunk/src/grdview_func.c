@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.4 2011-03-26 20:52:07 guru Exp $
+ *	$Id: grdview_func.c,v 1.5 2011-04-06 20:22:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -609,12 +609,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
 		if (P->is_bw) Ctrl->Q.monochrome = TRUE;
 	}
-#ifdef GMT_CPT2	
 	if (P->categorical && Ctrl->W.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING -W:  Categorical data (as implied by CPT file) does not have contours.  Check plot.\n");
-		Return (EXIT_FAILURE);
+		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING -W:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 	}
-#endif	
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
 	n_drape = (Ctrl->G.image) ? 3 : 1;

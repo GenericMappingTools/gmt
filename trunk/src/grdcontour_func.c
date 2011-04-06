@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.7 2011-03-26 20:52:07 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.8 2011-04-06 20:22:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -695,14 +695,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file */
 		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
-#ifdef GMT_CPT2
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING:  Categorical data (as implied by CPT file) does not have contours.  Check plot.\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
-			Return (GMT_OK);
+			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
-#endif
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
 		(void)GMT_malloc2 (GMT, contour, cont_angle, n_contours, 0, double);
