@@ -1,4 +1,4 @@
-#	$Id: GMT_share_files_ascii.lis,v 1.14 2011-03-15 02:06:31 guru Exp $
+#	$Id: GMT_share_files_ascii.lis,v 1.15 2011-04-06 22:27:18 guru Exp $
 #
 # GMT_share_ascii.lis contains all the ascii files that should go into the
 # GMT_share tar/zip files.  See GMT_share_bin.lis for binary files
@@ -7,30 +7,31 @@ LICENSE.TXT
 share/conf/gmt_cpt.conf
 share/conf/gmt_custom_media.conf
 share/conf/gmt_custom_symbols.conf
-share/cpt/GMT_cool.cpt
-share/cpt/GMT_copper.cpt
-share/cpt/GMT_cyclic.cpt
-share/cpt/GMT_drywet.cpt
-share/cpt/GMT_gebco.cpt
-share/cpt/GMT_globe.cpt
-share/cpt/GMT_gray.cpt
-share/cpt/GMT_haxby.cpt
-share/cpt/GMT_hot.cpt
-share/cpt/GMT_jet.cpt
-share/cpt/GMT_nighttime.cpt
-share/cpt/GMT_no_green.cpt
-share/cpt/GMT_ocean.cpt
-share/cpt/GMT_panoply.cpt
-share/cpt/GMT_paired.cpt
-share/cpt/GMT_polar.cpt
-share/cpt/GMT_rainbow.cpt
-share/cpt/GMT_red2green.cpt
-share/cpt/GMT_relief.cpt
-share/cpt/GMT_sealand.cpt
-share/cpt/GMT_seis.cpt
-share/cpt/GMT_split.cpt
-share/cpt/GMT_topo.cpt
-share/cpt/GMT_wysiwyg.cpt
+share/cpt/categorical.cpt
+share/cpt/cool.cpt
+share/cpt/copper.cpt
+share/cpt/cyclic.cpt
+share/cpt/drywet.cpt
+share/cpt/gebco.cpt
+share/cpt/globe.cpt
+share/cpt/gray.cpt
+share/cpt/haxby.cpt
+share/cpt/hot.cpt
+share/cpt/jet.cpt
+share/cpt/nighttime.cpt
+share/cpt/no_green.cpt
+share/cpt/ocean.cpt
+share/cpt/panoply.cpt
+share/cpt/paired.cpt
+share/cpt/polar.cpt
+share/cpt/rainbow.cpt
+share/cpt/red2green.cpt
+share/cpt/relief.cpt
+share/cpt/sealand.cpt
+share/cpt/seis.cpt
+share/cpt/split.cpt
+share/cpt/topo.cpt
+share/cpt/wysiwyg.cpt
 share/custom/astroid.def
 share/custom/circle.def
 share/custom/cross.def
