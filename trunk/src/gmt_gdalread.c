@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.23 2011-04-05 00:51:41 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.24 2011-04-07 11:26:15 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,13 +36,13 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	const char	*format = NULL;
 	int	bGotNodata, metadata_only;
 	int	do_BIP;	/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
-	int	nRGBA = 3;	/* 3 for RGB only and 4 for RGB with alpha channel (If needed, value is updated bellow) */
+	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */ 
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
 	GMT_LONG	pixel_reg, correct_bounds, fliplr;
-	GMT_LONG	n, m, nn, got_R = FALSE, got_r = FALSE, error = FALSE;
+	GMT_LONG	n, m, nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, n_commas, n_dash, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
@@ -251,6 +251,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				GMT_message (C, "gdalread: BIP request ignored since number of bands is not 3 or 4\n");
 				do_BIP = FALSE;
 			}
+			else
+				nRGBA = 3;
 			break;
 		case GDT_Int16:
 			Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, short int);
@@ -298,7 +300,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	mVector = GMT_memory(C, NULL, nY, GMT_LONG);
 	for (m = 0; m < nY; m++) mVector[m] = m*nX;
-	/*nVector = GMT_memory(C, NULL, nX+4*pad, GMT_LONG);*/	/* For now this will be used only to select BIP ordering */
+	nVector = GMT_memory(C, NULL, nX+4*pad, GMT_LONG);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	for ( i = 0; i < nBands; i++ ) {
@@ -328,13 +330,13 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 		switch ( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
-				/* ACtivate/fix when we apply the no-padding for images
+				/* ACtivate/fix when we apply the no-padding for images*/
 				for (n = 0; n < nXSize; n++)
 					if (do_BIP)
-						nVector[n] = n * nRGBA + i_x_nXYSize;
+						nVector[n] = n * nRGBA + i;
 					else
-						nVector[n] = n;
-				*/
+						nVector[n] = n + i_x_nXYSize;
+				/**/
 				Ctrl->UInt8.active = TRUE;
 				if (fliplr) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
@@ -345,10 +347,11 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				}
 				else
 					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						/*nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;*/
+						off = pad + (pad+m) * (nRGBA * nXSize + 2*pad);
 						for (n = 0; n < nXSize; n++)
-							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
-							/*Ctrl->UInt8.data[nVector[n] + i_x_nXYSize] = tmp[mVector[m]+n];*/
+							/*Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];*/
+							Ctrl->UInt8.data[nVector[n] + off] = tmp[mVector[m]+n];
 					}
 				break;
 			case GDT_Int16:
