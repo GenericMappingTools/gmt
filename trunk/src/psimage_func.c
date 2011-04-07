@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.6 2011-04-06 18:08:52 guru Exp $
+ *	$Id: psimage_func.c,v 1.7 2011-04-07 01:19:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -255,12 +255,15 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
-{	/* Returns TRUE if it is a EPS file; FALSE otherwise */
+#define	RAS_MAGIC	0x59a66a95	/* Sun rasterfile magic number */
+
+GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
+{	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 otherwise */
 	FILE *fp = NULL;
-	char c[4];
+	unsigned char c[4];
+	int j, magic, in[4];
 	
-	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
+	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (EXIT_FAILURE);
 	}
@@ -269,7 +272,12 @@ GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
 		return (EXIT_FAILURE);
 	}
 	GMT_fclose (GMT, fp);
-	return (!strncmp (c, "%!PS", 4));	/* TRUE if matching, FALSE otherwise */
+	if (!strncmp ((char *)c, "%!PS", 4)) return (1);	/* Read an EPS file */
+	/* Here we must check for a Sun rasterfile */
+	for (j = 0; j < 4; j++) in[j] = (int)c[j];
+	magic = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
+	if (magic == RAS_MAGIC) return (2);	/* Read a Sun rasterfile */
+	return (0);	/* Neither */
 }
 
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
@@ -277,11 +285,13 @@ GMT_LONG file_is_eps (struct GMT_CTRL *GMT, char *file)
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, b, n, ij, off, justify, PS_interpolate = 1, PS_transparent = 1;
-	GMT_LONG error = FALSE, free_GMT = FALSE, EPS = FALSE;
+	GMT_LONG error = FALSE, free_GMT = FALSE, known = 0;
 
 	double x, y, wesn[4];
 
 	unsigned char *picture = NULL, *buffer = NULL, *image;
+	
+	char *format[2] = {"EPS", "Sun raster"};
 
 	struct imageinfo header;
 
@@ -316,16 +326,16 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
 
-	EPS = file_is_eps (GMT, Ctrl->In.file);	/* Determine if this is an EPS file */
+	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	
-	if (EPS) {	/* Read an EPS file */
+	if (known) {	/* Read an EPS or Sun raster file */
 		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading EPS file %s!\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading %s file %s!\n", format[known-1], Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
-	else  {	/* Read a raster image */
 #ifdef USE_GDAL
+	else  {	/* Read a raster image */
 		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) 
 			Return (GMT_DATA_READ_ERROR);
@@ -334,15 +344,15 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		header.width = I->header->nx;
 		header.height = I->header->ny;
 		header.depth = (int)(I->n_bands * 8);
-#else	
-		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading raster image file %s!\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
-		}
-#endif
 	}
+#else
+	else {	/* Without GDAL we can only read EPS and Sun raster */
+		GMT_report (GMT, GMT_MSG_FATAL, "Unsupported file format for file %s!\n", Ctrl->In.file);
+		Return (EXIT_FAILURE);
+	}
+#endif
 	
-	if (Ctrl->M.active && header.depth == 24) {
+	if (Ctrl->M.active && header.depth == 24) {	/* Downgrade to grayshade image */
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
@@ -434,7 +444,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plotend (GMT, PSL);
 
 #ifdef USE_GDAL
-	if (!EPS) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
+	if (!known) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
 #endif
 	if (free_GMT)
 		GMT_free (GMT, picture);

@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.930 2011-04-06 23:51:12 guru Exp $
+	$Id: ChangeLog,v 1.931 2011-04-07 01:19:57 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-06	pwessel
 	* kml2gmt_func.c:	Now needed -mo turned on explicitly.
 	* share/cpt/*:		Renamed master cpts from GMT_* to just *.
 	* gmt_support.c:	Now parse categorical color tables.
+	* psimage_func.c:	Use PSL to read EPS & Sun rasters, GDAL for others.
 
 2011-04-05	pwessel
 	* psxy[z]_func.c:	Can not properly paint polygons with holes as indicated by
