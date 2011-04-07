@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.931 2011-04-07 01:19:57 guru Exp $
+	$Id: ChangeLog,v 1.932 2011-04-07 12:27:51 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-07	remko
+	* makecpt_func.c, grd2cpt_func.c:	Use GMT_getsharepath instead of GMT_set_cpt_path.
+	* gmt_support.c:	Removed GMT_set_cpt_path.
 
 2011-04-06	pwessel
 	* kml2gmt_func.c:	Now needed -mo turned on explicitly.

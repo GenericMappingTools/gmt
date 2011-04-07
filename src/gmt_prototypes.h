@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.15 2011-04-05 18:48:46 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.16 2011-04-07 12:27:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -396,7 +396,6 @@ EXTERN_MSC GMT_LONG GMT_just_decode (struct GMT_CTRL *C, char *key, GMT_LONG def
 EXTERN_MSC GMT_LONG GMT_minmaxinc_verify (struct GMT_CTRL *C, double min, double max, double inc, double slop);
 EXTERN_MSC GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double *x, double *y, GMT_LONG n_path);
-EXTERN_MSC GMT_LONG GMT_set_cpt_path (struct GMT_CTRL *C, char *cpt_file, char *table);
 EXTERN_MSC GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *start, char *token);
 EXTERN_MSC GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *token);
 EXTERN_MSC GMT_LONG GMT_getmodopt (const char *string, const char *sep, GMT_LONG *pos, char *token);
