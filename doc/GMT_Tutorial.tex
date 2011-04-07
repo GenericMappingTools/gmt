@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.75 2011-03-22 15:46:42 remko Exp $
+%       $Id: GMT_Tutorial.tex,v 1.76 2011-04-07 00:55:30 guru Exp $
 %
 %       The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -680,7 +680,7 @@ shows a complete list of the options.
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
 \Opt{A} & Suppress line interpolation along great circles \\ \hline
-\Opt{C}{\it cpt} & Let symbol color be determined from $z$-values and the {\it cpt} file \\ \hline
+\Opt{C}{\it CPT} & Let symbol color be determined from $z$-values and the {\it CPT} file \\ \hline
 \Opt{E}[{\bf x}$|${\bf X}][{\bf y}$|${\bf Y}][{\it cap}][/{\it pen}] & Draw selected error bars with specified attributes \\ \hline
 \Opt{G}{\it fill} & Set color for symbol or fill for polygons \\ \hline
 \Opt{L} & Explicitly close polygons \\ \hline
@@ -758,8 +758,8 @@ apply when one (or more) of the following conditions are met:
 \begin{enumerate}
 
 \item If you want the color of each symbol to be determined individually,
-supply a cptfile with the \Opt{C} option and let the 3rd data column
-contain the {\it z}-values to be used with the cptfile.
+supply a CPT file with the \Opt{C} option and let the 3rd data column
+contain the {\it z}-values to be used with the CPT file.
 
 \item If you want the size of each symbol to be determined individually,
 append the size in a separate column.
@@ -924,7 +924,7 @@ and color:
 \end{verbatim}
 }
 
-Apart from comment lines (starting with \#), each record in the cpt file
+Apart from comment lines (starting with \#), each record in the CPT file
 governs the color of a symbol whose {\it z} value falls in the range between
 $z_0$ and $z_1$.  If the colors for the lower and upper levels differ
 then an intermediate color will be linearly interpolated given the $z$
@@ -1433,7 +1433,7 @@ that must be understood.  These are
 \section{Cpt files}
 \index{Color!tables}
 
-The cpt file is discussed in detail in the \GMT\ Technical Reference
+The CPT file is discussed in detail in the \GMT\ Technical Reference
 and Cookbook, Chapter 4.  Please review the format before experimenting
 further.
 
@@ -1447,7 +1447,7 @@ two mechanisms:\
 (several are built-in) and the desired $z$-values at color boundaries
 (\GMTprog{makecpt})
 
-\item Create color tables based on a master cpt color table and the
+\item Create color tables based on a master CPT color table and the
 histogram-equalized distribution of $z$-values in a gridded data file (\GMTprog{grd2cpt})
 
 \end{enumerate}
@@ -1464,7 +1464,7 @@ $z$-values to go with it.  The main options are given below.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C} & Set the name of the master cpt file to use \\ \hline
+\Opt{C} & Set the name of the master CPT file to use \\ \hline
 \Opt{I} & Reverse the sense of the color progression \\ \hline
 \Opt{V} & Run in verbose mode \\ \hline
 \Opt{Z} & Make a continuous rather than discrete table \\ \hline
@@ -1473,7 +1473,7 @@ $z$-values to go with it.  The main options are given below.
 \label{tbl:makecpt}
 \end{table}
 
-To make discrete and continuous color cpt files for data that ranges
+To make discrete and continuous color CPT files for data that ranges
 from -20 to 60, with color changes at every 10, try these two variants:
 
 {\small\begin{verbatim}
@@ -1494,7 +1494,7 @@ and grid-line intervals for the colorbars.)
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it cptfile} & The required cpt file \\ \hline
+\Opt{C}{\it CPT file} & The required CPT file \\ \hline
 \Opt{D}{\it xpos}/{\it ypos}/{\it length}/{\it width}[{\bf h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
         & Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
 \Opt{I}{\it max\_intensity} & Add illumination effects \\ \hline
@@ -1576,7 +1576,7 @@ illumination effect, and transform back the modified RGB values.
 \section{Color images}
 \index{Color!images}
 
-Once a cpt file has been made it is relatively straightforward to generate
+Once a CPT file has been made it is relatively straightforward to generate
 a color image of a gridded data.  Here, we will extract a subset of the
 global 30" DEM (data id 9) from USGS:
 
@@ -1589,7 +1589,7 @@ You can find the grid \filename{us.nc} also in the \filename{tutorial} directory
 of your \GMT{} installation.
 Using \GMTprog{grdinfo} we find that the data ranges from $\sim$1000m to
 \noindent
-$\sim$4300m so we make a cpt file accordingly:
+$\sim$4300m so we make a CPT file accordingly:
 
 {\small\begin{verbatim}
 makecpt -Crainbow -T1000/5000/500 -Z > topo.cpt
@@ -1598,7 +1598,7 @@ makecpt -Crainbow -T1000/5000/500 -Z > topo.cpt
 
 Color images are made with \GMTprog{grdimage} which takes the usual
 common command options (by default the \Opt{R} is taken from the data set)
-and a cptfile; the main other options are
+and a CPT file; the main other options are
 
 \begin{table}[h]
 \small
@@ -1666,7 +1666,7 @@ grdgradient us.nc -Ne0.8 -A100 -M -Gus_i.nc
 \end{verbatim}
 }
 
-Given the cpt file and the two gridded data sets we can
+Given the CPT file and the two gridded data sets we can
 create the shaded relief image:
 
 {\small\begin{verbatim}
@@ -1785,7 +1785,7 @@ In addition, some options may be required:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it cptfile} & The {\it cptfile} is required for color -coded surfaces and for contoured mesh plots \\ \hline
+\Opt{C}{\it CPT file} & The {\it CPT file} is required for color -coded surfaces and for contoured mesh plots \\ \hline
 \Opt{G}{\it drape\_file} & Assign colors using {\it drape\_file} instead of {\it relief\_file} \\ \hline
 \Opt{I}{\it intens\_file} & File with illumination intensities \\ \hline
 \Opt{Qm} & Selects mesh plot \\ \hline
@@ -1803,7 +1803,7 @@ In addition, some options may be required:
 
 Mesh plots work best on smaller data sets.  We again use the small
 subset of the ETOPO5 data over Bermuda and make a quick-and-dirty
-cpt file:
+CPT file:
 
 {\small\begin{verbatim}
 grd2cpt bermuda.nc -Cocean > bermuda.cpt

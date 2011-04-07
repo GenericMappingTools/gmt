@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.26 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.27 2011-04-07 00:55:30 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -16,8 +16,8 @@
 
 In this Appendix, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
-them more intuitive.  \GMT\ allows users to specify colors in cpt
-files in either of these three systems. Interpolation between colors is performed in either RGB or HSV, depending on the specification in the cpt file. Below, we will explain why this all matters.
+them more intuitive.  \GMT\ allows users to specify colors in CPT
+files in either of these three systems. Interpolation between colors is performed in either RGB or HSV, depending on the specification in the CPT file. Below, we will explain why this all matters.
 
 \section{RGB color system}
 Remember your (parents') first color television set? Likely it had three little bright colored squares on it: red, green, and blue. And that is exactly what each color on the tube is made of: varying levels of red, green and blue light. Switch all of them off, $r=g=b=0$, then you have black. All of them at maximum, $r=g=b=255$, creates white. Your computer screen works the same way.
@@ -37,7 +37,7 @@ Are you very web-savvy and work best with hexadecimal color codes as they are us
 
 \begin{figure}
    \includegraphics[angle=90,width=\textwidth]{GMT_RGBchart_a4}
-   \caption{The 555 unique color names that can be used in GMT. Lower, upper, or mixed case, as well as the british
+   \caption{The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as the british
    spelling of ``grey'' are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be found in the
    GMT documentation directory.}
    \label{fig:RGBchart}
@@ -165,7 +165,7 @@ The top row in Figure~\ref{fig:GMT_color_interpolate} illustrates two examples: 
 achieve artificial illumination of colored images (e.g. \Opt{I}
 option in \GMTprog{grdimage}) by changing the saturation \emph{s} and value \emph{v}
 coordinates of the color.  When the intensity is zero (flat illumination), the data
-are colored according to the cpt file.  If the intensity is
+are colored according to the CPT file.  If the intensity is
 non-zero, the color is either lightened or darkened depending on the illumination.
 The color is first converted to HSV (if necessary) and then
 darkened by moving ($s$,$v$) toward (\textbf{COLOR\_HSV\_MIN\_S},

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.21 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.22 2011-04-07 00:55:30 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -110,7 +110,7 @@ the \texttt{setpagedevice} operator.  We recommend you only use
 \index{PostScript@\PS!CMYK and RGB|(}
 
 \item Many color hardcopy devices use CMYK color systems. \GMT\
-\PS\ uses RGB (even if your cpt files are using HSV).
+\PS\ uses RGB (even if your CPT files are using HSV).
 The three coordinates of RGB space can be mapped into three
 coordinates in CMY space, and in theory K (black) is superfluous.
 But it is hard to get CMY inks to mix into a good black or gray,
@@ -264,5 +264,5 @@ problem:  Set your \textbf{COLOR\_MODEL} to HSV using \GMTprog{gmtset}.  Use
 \GMTprog{makecpt} or \GMTprog{grd2cpt} to make a continuous color
 palette spanning the range of your data.  Use the \Opt{Nt}
 option on \GMTprog{grdgradient}.  Try the result, and then play with
-the tuning of the \filename{gmt.conf}, the cpt file, and
+the tuning of the \filename{gmt.conf}, the CPT file, and
 the gradient file.
