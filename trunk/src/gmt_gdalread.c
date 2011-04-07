@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.25 2011-04-07 13:58:56 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.26 2011-04-07 15:43:02 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -332,13 +332,13 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 		switch ( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
-				/* ACtivate/fix when we apply the no-padding for images*/
+				/* This chunk is kind of complicated because we want to take into account several different cases */
 				for (n = 0; n < nXSize; n++)
 					if (do_BIP)
-						nVector[n] = n * nRGBA + i;
-					else
-						nVector[n] = n + i_x_nXYSize;
-				/**/
+						nVector[n] = n * nRGBA + i;	/* Vector for Pixel Interleaving */
+					else 
+						nVector[n] = n + i_x_nXYSize;	/* Vector for Band Sequential */
+
 				Ctrl->UInt8.active = TRUE;
 				if (fliplr) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
@@ -350,10 +350,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				else
 					for (m = 0; m < nYSize; m++) {
 						/*nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;*/
-						off = pad + (pad+m) * (nRGBA * nXSize + 2*pad);
+						off = pad + (pad+m) * (nRGBA * nXSize + 2*pad); /* Remember, nRGBA is variable */
 						for (n = 0; n < nXSize; n++)
-							/*Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];*/
 							Ctrl->UInt8.data[nVector[n] + off] = tmp[mVector[m]+n];
+							/*Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];*/
 					}
 				break;
 			case GDT_Int16:
