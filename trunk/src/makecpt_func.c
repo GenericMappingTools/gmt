@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.3 2011-04-06 23:51:12 guru Exp $
+ *	$Id: makecpt_func.c,v 1.4 2011-04-07 12:27:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -244,7 +244,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double *z = NULL;
 
-	char CPT_file[BUFSIZ], *file = NULL;
+	char CPT_file[BUFSIZ], *file = NULL, *l = NULL;
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -267,12 +267,15 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
-	if (!Ctrl->C.active) {	/* No table specified; set default rainbow table */
+	if (Ctrl->C.active) {
+		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+	}
+	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = TRUE;
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	error += GMT_check_condition (GMT, GMT_set_cpt_path (GMT, CPT_file, Ctrl->C.file), "Error: Could not open file %s\n", Ctrl->C.file);
+	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	/* OK, we can now do the resampling */

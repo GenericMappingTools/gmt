@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.477 2011-04-06 23:51:12 guru Exp $
+ *	$Id: gmt_support.c,v 1.478 2011-04-07 12:27:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1660,23 +1660,6 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			GMT_report (C, GMT_MSG_NORMAL, "y_max adjusted to %g\n", h->wesn[YHI]);
 		}
 	}
-}
-
-GMT_LONG GMT_set_cpt_path (struct GMT_CTRL *C, char *CPT_file, char *table)
-{
-	char stem[BUFSIZ], *l = NULL, *ok = NULL;
-
-	/* Try table[.cpt] */
-	strcpy (stem, table);
-	if ((l = strstr (stem, ".cpt"))) *l = 0;
-	ok = GMT_getsharepath (C, "cpt", stem, ".cpt", CPT_file);
-
-	/* Have we found something? */
-	if (!ok)
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot find colortable %s\n", table);
-	else
-		GMT_report (C, GMT_MSG_NORMAL, "Reading colortable %s\n", CPT_file);
-	return (!ok);
 }
 
 struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)

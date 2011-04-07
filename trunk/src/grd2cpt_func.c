@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.3 2011-04-07 12:27:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -294,7 +294,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG row, col, j, k, ij, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
 	GMT_LONG n_alloc = GMT_TINY_CHUNK, error = FALSE;
 
-	char CPT_file[BUFSIZ], format[BUFSIZ], *file = NULL, **grdfile = NULL;
+	char CPT_file[BUFSIZ], format[BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 
@@ -325,14 +325,15 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	if (!Ctrl->C.active) {	/* Must assign default table [rainbow] */
+	if (Ctrl->C.active) {
+		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+	}
+	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = TRUE;
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	/* Open the specified master color table */
-
-	error += GMT_check_condition (GMT, GMT_set_cpt_path (GMT, CPT_file, Ctrl->C.file), "Error: Could not open file %s\n", Ctrl->C.file);
+	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	if (!Ctrl->E.active) Ctrl->E.levels = 11;	/* Default number of levels */
