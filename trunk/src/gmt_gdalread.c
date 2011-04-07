@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.24 2011-04-07 11:26:15 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.25 2011-04-07 13:58:56 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -245,14 +245,16 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			else
 				Ctrl->UInt8.data = GMT_memory (C, NULL, n_alloc, unsigned char);
 
-			if (nBands == 4 && do_BIP)	/* Assume fourth band holds the alpha channel */
-				nRGBA = 4;
-			else if (nBands != 3 && do_BIP) {
-				GMT_message (C, "gdalread: BIP request ignored since number of bands is not 3 or 4\n");
-				do_BIP = FALSE;
+			if (do_BIP) {
+				if (nBands == 4)	/* Assume fourth band holds the alpha channel */
+					nRGBA = 4;
+				else if (nBands == 3)
+					nRGBA = 3;
+				else {
+					GMT_message (C, "gdalread: BIP request ignored since number of bands is not 3 or 4\n");
+					do_BIP = FALSE;
+				}
 			}
-			else
-				nRGBA = 3;
 			break;
 		case GDT_Int16:
 			Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, short int);
