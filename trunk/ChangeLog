@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.932 2011-04-07 12:27:51 remko Exp $
+	$Id: ChangeLog,v 1.933 2011-04-07 17:59:44 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-07	jluis
+	* gmt_gdalread.c:	Can store images data with BIP or BSQ interleaving.
 
 2011-04-07	remko
 	* makecpt_func.c, grd2cpt_func.c:	Use GMT_getsharepath instead of GMT_set_cpt_path.
