@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.134 2011-04-06 23:51:12 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.135 2011-04-07 00:55:30 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1444,7 +1444,7 @@ the polygon as a \emph{clip path}.  Complex clip paths may require
 more memory than the \PS\ interpreter has been assigned.
 There is therefore the possibility that some \PS\ interpreters
 (especially those supplied with older laserwriters) will run out of memory
-and abort.  Should that occur we recommend that you use a regular grayshade
+and abort.  Should that occur we recommend that you use a regular gray-shade
 fill instead of the patterns.  Installing more memory in your printer
 \emph{may or may not} solve the problem! 
 
@@ -1522,22 +1522,23 @@ transparency effective: change the parameter /AllowTransparency to true in your 
 \section{Color palette tables}
 
 \index{Color!palette tables|(}
-\index{cpt!file|(}
+\index{CPT!file|(}
 
 Several programs, such as those which read 2-D gridded data sets and create
 colored images or shaded reliefs, need to be told what colors to use and
 over what \emph{z}-range each color applies.  This is the purpose of the
-color palette table (cpt-file).  These files may also be used by \GMTprog{psxy}
+color palette table (CPT file).  These files may also be used by \GMTprog{psxy}
 and \GMTprog{psxyz} to plot color-filled symbols.  For most applications, you
-will simply create a cpt-file using the tool \GMTprog{makecpt} which will
+will simply create a CPT file using the tool \GMTprog{makecpt} which will
 take an existing color table and resample it to fit your chosen data
-range, or use \GMTprog{grd2cpt} to build a cpt-file based on the data distribution
-in one or more given grid files.  However, in some situations you will need to make a cpt-file by
+range, or use \GMTprog{grd2cpt} to build a CPT file based on the data distribution
+in one or more given grid files.  However, in some situations you will need to make a CPT file by
 hand or using text tools like \progname{awk} or \progname{perl}.
 
 Color palette tables (CPT) comes in two flavors: (1) Those designed to work with
 categorical data (e.g., data where interpolation of values is undefined) and
-(2) those designed for regular, continuously-varying data.
+(2) those designed for regular, continuously-varying data.  In both cases
+the {\it fill} information follows the format given in Section \ref{sec:fill}.
 
 \subsection{Categorical CPT files}
 
@@ -1575,30 +1576,24 @@ N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
 
 \subsection{Regular CPT files}
 
-Here, the colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
-magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
-here the comment \# COLOR\_MODEL = HSV must be present in the cpt file since there
-are no other way to distinguish between HSV and RGB).  Color names can also be used.
-Using the RGB system\footnote{For CMYK the format obviously involves two extra columns.},
-the format of the cpt-file is: 
+Suitable for continuous data types and allowing for color interpolations, the
+format of the regular CPT files is: 
 
 \begin{center}
-\begin{tabular}{llllllllll}
-z$_0$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_1$ & R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [\textbf{A}] &
-[;\emph{label}] \\ 
-\ldots & & & & & & & & & \\ 
-z$_{n-2}$ &  R$_{min}$ &  G$_{min}$ &  B$_{min}$ &  z$_{n-1}$ &  R$_{max}$ &  G$_{max}$ &  B$_{max}$ &  [{\bf
-A}] & [;\emph{label}]\\
+\begin{tabular}{llllll}
+z$_0$ &  Color$_{min}$  &  z$_1$ & Color$_{max}$ &  [\bf{A}] & [;\emph{label}] \\ 
+\ldots & & & & & \\ 
+z$_{n-2}$ &  Color$_{min}$ &  z$_{n-1}$ &  Color$_{max}$ &  [{\bf A}] & [;\emph{label}] \\
 \end{tabular} 
 \end{center}
 
 Thus, for each ``\emph{z}-slice'', defined as the interval between two boundaries
-(e.g., \emph{z$_0$} to \emph{z$_1$}), the color can be constant (by letting R$_{min}$
-= R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
-linear function of \emph{z}.  The optional flag \textbf{A} is used to indicate annotation
-of the color scale when plotted using \GMTprog{psscale}.  The optional code \textbf{A} may be \textbf{L},
+(e.g., \emph{z$_0$} to \emph{z$_1$}), the color can be constant (by letting Color$_{max}$
+= Color$_{min}$ or -) or a continuous, linear function of \emph{z}.  If patterns are
+used then the second (max) pattern must be set to -.  The optional flag \textbf{A} is used to indicate annotation
+of the color scale when plotted using \GMTprog{psscale}.  The optional flag \textbf{A} may be \textbf{L},
 \textbf{U}, or \textbf{B} to select annotation of the lower, upper, or both limits
-of the particular $z$-slice.  However, the standard \Opt{B} option can be used
+of the particular $z$-slice, respectively.  However, the standard \Opt{B} option can be used
 by \GMTprog{psscale} to affect annotation and ticking of color scales.  The optional
 semicolon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
 place the supplied label instead of formatted \emph{z}-values.
@@ -1609,38 +1604,37 @@ As for categorical tables, the background color (for \emph{z}-values $<$ \emph{z
 file, but can be overridden by the statements
 
 \begin{center}
-\begin{tabular}{llll}
-B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\ 
-F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\ 
-N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
+\begin{tabular}{ll}
+B &  Color$_{back}$ \\ 
+F &  Color$_{fore}$ \\ 
+N &  Color$_{nan}$ \\
 \end{tabular}
 \end{center}
 
 \noindent
-which can be inserted into the beginning or end of the cpt-file.  If
+which can be inserted into the beginning or end of the CPT file.  If
 you prefer the HSV system, set the
 \filename{gmt.conf} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
-grayshades only may replace the \emph{r/g/b} triplets with a single grayshade
+gray-shades only may replace the \emph{r/g/b} triplets with a single gray-shade
 in the 0--255 range.  For CMYK, give four values in the 0--100 range.
 Both the min and max color specifications in one \emph{z}-slice must use
 the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
 same line.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
-\GMTprog{psscale}, and \GMTprog{psxy}) can accept pattern fills instead
-of grayshades.  You must specify the pattern as in Section~\ref{sec:fill} (no
-leading \Opt{G} of course), and only the first (low $z$) is used (we cannot
+\GMTprog{psscale}, \GMTprog{psxy} and \GMTprog{psxyz}) can accept pattern fills instead
+of gray-shades.  You must specify the pattern as in Section~\ref{sec:fill} (no
+leading \Opt{G} of course), and only the first pattern (for low $z$) is used (we cannot
 interpolate between patterns).  
-Finally, some programs let you skip features
-whose $z$-slice in the cptfile has grayshades set to --.  As an example,
-consider
+Finally, some programs let you skip features whose $z$-slice in the CPT file has
+gray-shades set to --.  As an example, consider
 
 \begin{center}
-\begin{tabular}{lllllllll}
+\begin{tabular}{lllll}
 30 &  p200/16 &  80 & -- \\ 
 80 &  -- &  100 &  -- \\
-100 &  200 &  0  &  0  &  200 &  255 &  255  &  0 \\
+100 &  200/0/0  &  200/255/255  &  0 \\
 200 &  yellow &  300 & green  \\ 
 \end{tabular} 
 \end{center}
@@ -1652,7 +1646,7 @@ will linearly yield colors from yellow to green, depending on the actual value
 of $z$.
 
 \index{Color!palette tables|)}
-\index{cpt!file|)}
+\index{CPT!file|)}
 
 \index{Artificial illumination}
 \index{Illumination, artificial}
@@ -1665,7 +1659,7 @@ by finding the directional gradient in the direction of the artificial
 light source and scaling the gradients to have approximately a normal
 distribution on the interval [-1,+1].  These intensities are used
 to add ``white'' or ``black'' to the color as defined by the \emph{z}-values
-and the cpt-file.  An intensity of zero leaves the color unchanged.
+and the CPT file.  An intensity of zero leaves the color unchanged.
 Higher values will brighten the color, lower values will darken it,
 all without changing the original hue of the color (see Appendix~\ref{app:I}
 for more details).  The illumination is decoupled from the data
