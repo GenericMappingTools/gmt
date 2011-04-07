@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.150 2011-04-05 00:50:18 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.151 2011-04-07 11:24:59 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1686,6 +1686,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	}
 
 	to_gdalread->p.active = to_gdalread->p.pad = (int)C->current.io.pad[0];	/* Only 'square' padding allowed */
+	to_gdalread->I.active = TRUE; 			/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	to_gdalread->c_ptr.active = 1;
