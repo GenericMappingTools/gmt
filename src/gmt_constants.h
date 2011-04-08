@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_constants.h,v 1.2 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_constants.h,v 1.3 2011-04-08 02:26:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,5 +118,11 @@
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
+
+/* Various options for FFT calculations [Default is 0] */
+#define GMT_FFTPACK	1
+#define GMT_FFTW	2
+#define GMT_SUN4	3
+#define GMT_VECLIB	4
 
 #endif  /* _GMT_CONSTANTS_H */
