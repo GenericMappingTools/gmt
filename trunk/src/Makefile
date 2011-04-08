@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.64 2011-04-01 21:21:43 guru Exp $
+#	$Id: Makefile,v 1.65 2011-04-08 02:26:47 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -68,9 +68,9 @@ PROGS_O		= $(FUNCS_O:_func.o=.o)
 PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
 
 LIBPS_O		= pslib.o
-LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_io.o \
-		  gmt_nc.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_vector.o \
-		  $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
+LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
+		  gmt_io.o  gmt_nc.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o \
+		  gmt_vector.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
 LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
 
 SCRIPTS		= gmt_shell_functions.sh gmtlogo isogmt ../gmtswitch
@@ -181,7 +181,7 @@ grdmath_func.o:	grdmath_func.h grdmath_op.h grdmath_explain.h
 grdreformat.o:	grdreformat.h
 gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o \
 gmt_io.o gmt_map.o gmt_nc.o gmt_plot.o gmt_proj.o gmt_shore.o gmt_stat.o \
-gmt_support.o gmt_vector.o gmtapi_util.o:	gmt_internals.h
+gmt_fft.o gmt_support.o gmt_vector.o gmtapi_util.o:	gmt_internals.h
 gmtapi_util.o:	gmtapi_errstr.h
 gmt.o:		gmt_prognames.h gmt_progcases.h
 

@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.933 2011-04-07 17:59:44 jluis Exp $
+	$Id: ChangeLog,v 1.934 2011-04-08 02:26:47 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-07	pwessel
+	* gmt_fft.c:		New and separate FFT container which will deal with
+				the many ways to get a fast FFT on a particular system.
 
 2011-04-07	jluis
 	* gmt_gdalread.c:	Can store images data with BIP or BSQ interleaving.
