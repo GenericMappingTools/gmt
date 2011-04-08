@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.1 2011-04-08 02:26:47 guru Exp $
+ *	$Id: gmt_fft.c,v 1.2 2011-04-08 22:57:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1541,11 +1541,6 @@ void rffti(int n, Treal wsave[])
 
 typedef struct FCOMPLEX {float r,i;} fcomplex;
 
-void die(char *, char *);
-void cffti(int, float *);
-void cfftf(int, fcomplex *, float *);
-void cfftb(int, fcomplex *, float *);
-
 /*----------------------------------------------------------------------------*/
 void cfft1d_(int *np, fcomplex *c, int *dir)
 {
@@ -1561,7 +1556,10 @@ void cfft1d_(int *np, fcomplex *c, int *dir)
 
 	if ((n != nold) || (*dir == 0)) {
 		if (nold != 0) free((char *) work);
-		if ((work = (float *) malloc((4*n+30)*sizeof(float))) == NULL) die("Sorry, can't allocate mem","");
+		if ((work = (float *) malloc((4*n+30)*sizeof(float))) == NULL) {
+			fprintf (stderr, "Cannot allocate work memory\n");
+			GMT_exit (EXIT_FAILURE);
+		}
 
 		cffti (n, work);
 
@@ -1570,17 +1568,88 @@ void cfft1d_(int *np, fcomplex *c, int *dir)
 
 /* Do forward transform with NO normalization.  Forward is exp(+i*k*x) */
 
-	if (*dir == -1) cfftf (n, c, work); 
+	if (*dir == -1) cfftf (n, (Treal *)c, work); 
 
 /* Do inverse transform with normalization.  Inverse is exp(-i*k*x) */
 
 	if (*dir == 1) {
-	  	cfftb (n, c, work);
+	  	cfftb (n, (Treal *)c, work);
           	for (i=0; i<n; i++) {
 			c[i].i = c[i].i/(1.0*n);
 			c[i].r = c[i].r/(1.0*n);
 		}
 	}
+}
+
+/*------------------------------------------------------------------------*/
+/*	calculates 2D fft by doing 1D over rows, transposing, and then 	  */
+/*	columns								  */
+/*------------------------------------------------------------------------*/
+
+void transpose_complex_NM (struct FCOMPLEX *in, int n, int m)
+{
+	int i, j;
+	struct FCOMPLEX	*tmp;
+
+	tmp = (struct FCOMPLEX *) malloc(n * m * sizeof(struct FCOMPLEX));
+
+	for (i=0; i<n; i++) {
+		for (j=0; j<m; j++) {
+			tmp[j*n+i] = in[i*m+j];
+			}
+		}
+
+	for (i=0; i<(n*m); i++) in[i] = tmp[i];
+
+	free((char *) tmp);
+}
+
+int cfft2d (int *N, int *M, struct FCOMPLEX *cin, int *dir)
+{
+	int	i, j;
+	static	int flag = 1;
+
+	if (flag == 0) {
+		fprintf(stderr,"using fftpack \n");
+		flag = 1;
+	}
+
+	if (debug) print_complex (cin, *N, *M, 1);
+
+	/* forward 2D */
+	if (*dir == -1) {
+		/* forward rows */
+		for (i=0; i<(*N); i++) cfft1d_(M, &cin[i*(*M)], dir); 
+
+		/* transpose */
+		transpose_complex_NM(cin, *N, *M);
+
+		/* forward columns */
+		for (i=0; i<(*M); i++) cfft1d_(N, &cin[i*(*N)], dir); 
+
+		/* transpose */
+		transpose_complex_NM(cin, *M, *N);
+	}
+
+	/* inverse 2D */
+	if (*dir == 1) {
+		/* forward rows */
+		for (i=0; i<(*N); i++) cfft1d_(M, &cin[i*(*M)], dir); 
+
+		/* transpose */
+		transpose_complex_NM(cin, *N, *M);
+
+		/* forward columns */
+		for (i=0; i<(*M); i++) cfft1d_(N, &cin[i*(*N)], dir); 
+
+		/* transpose */
+		transpose_complex_NM(cin, *M, *N);
+		}
+
+	if (debug) print_complex(cin, *N, *M, 1);
+
+return 0;
+
 }
 
 #elif GMT_FFT == GMT_FFTW
@@ -1755,7 +1824,9 @@ void cfft1d_cleanup_()
 	}
 }
 
-#else	/* Default GMT FFT */
+#endif
+
+/* Default GMT FFT which we always compile in */
 
 /*--------------------------------------------------------------------
  *	Translation of old fourt.f FORTRAN code to C using the automatic
@@ -2617,15 +2688,86 @@ L920:
 
 /* C-callable wrapper for BRENNER_fourt_ */
 
-void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work)
+GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	/* void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work) */
 	/* Data array */
 	/* Dimension array */
 	/* Number of dimensions */
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
+	GMT_LONG ksign, ndim = 1;
+	float *work;
+	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	(void) BRENNER_fourt_ (data, &n, &ndim, &ksign, &mode, work);
+	return (GMT_OK);
+}
+GMT_LONG GMT_fft_1d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
+	return (GMT_fft_1d_general (C, data, n, direction, mode));
+	
+}
+
+GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+{
+	/* Data array */
+	/* Dimension array */
+	/* Number of dimensions */
+	/* Forward(-1) or Inverse(+1) */
+	/* Real(0) or complex(1) data */
+	/* Work array */
+	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny};
+	float *work;
+	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
+	return (GMT_OK);
+}
+GMT_LONG GMT_fft_2d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+{
+	return (GMT_fft_2d_general (C, data, nx, ny, direction, mode));
+	
+}
+
+/* C-callable wrapper for BRENNER_fourt_ */
+
+void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work)
+{
+	/* Data array */
+	/* Dimension array */
+	/* Number of dimensions */
+	/* Forward(-1) or Inverse(+1) */
+	/* Real(0) or complex(1) data */
+	/* Work array */
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &iform, work);
 }
 
-#endif
+#define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
+
+GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+{
+	/* data is an array of length n (or 2*n for complex) data points
+	 * n is the number of data points
+	 * mode is a combination of 0 (forward) or 1(inverse) and 2(real) or 4(compex)
+	 */
+	GMT_LONG status;
+	if (GMT_radix2 (n))
+		status = GMT_fft_1d_radix2 (C, data, n, direction, mode);
+	else
+		status = GMT_fft_1d_general (C, data, n, direction, mode);
+	return (status);
+}
+
+GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+{
+	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
+	 * nx, ny is the number of data nodes
+	 * mode is a combination of 0 (forward) or 1(inverse) and 2(real) or 4(compex)
+	 */
+	GMT_LONG status;
+	if (GMT_radix2 (nx) && GMT_radix2 (ny))
+		status = GMT_fft_2d_radix2 (C, data, nx, ny, direction, mode);
+	else
+		status = GMT_fft_2d_general (C, data, nx, ny, direction, mode);
+	return (status);
+}
