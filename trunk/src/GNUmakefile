@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.92 2011-03-15 02:06:35 guru Exp $
+#  $Id: GNUmakefile,v 1.93 2011-04-08 17:24:57 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -138,7 +138,7 @@ grdinfo.h:		Grdformats.txt
 			echo "};" >> $@
 			rm -f tmp0.txt
 
-# Must create gmt_prognames.h, gmtprogs_inc.h and gmt_progpurpose.h for GMT.c from GMTprogs.txt
+# Must create gmt_prognames.h, gmtprogs_inc.h and gmt_progpurpose.h for gmt.c from GMTprogs.txt
 
 gmt_prognames.h:	GMTprogs.txt
 			egrep -v '#' GMTprogs.txt | $(AWK) '{printf "{\"%s\",\t%s},\n", $$1, $$2}' > gmt_prognames.h
