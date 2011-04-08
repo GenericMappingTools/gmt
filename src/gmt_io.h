@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.100 2011-04-05 22:45:56 guru Exp $
+ *	$Id: gmt_io.h,v 1.101 2011-04-08 22:57:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,10 +70,15 @@
 #define GMT_IS_VECTOR		5	/* Entity is user vectors */
 #define GMT_IS_MATRIX		6	/* Entity is user matrix */
 
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+extern GMT_LONG GMT_X = 0;
+extern GMT_LONG GMT_Y = 1;
+extern GMT_LONG GMT_Z = 2;
+#else
 #define GMT_X			0	/* x or lon is in 0th column */
 #define GMT_Y			1	/* y or lat is in 1st column */
 #define GMT_Z			2	/* z is in 2nd column */
-
+#endif
 #define GMT_IS_TEXT		0	/* GIS geometries (text here refers to just a line of text with no coordinates) */
 #define GMT_IS_POINT		1
 #define GMT_IS_LINE		2
@@ -177,9 +182,15 @@
 
 /* Array indices for input/output/stderr variables */
 
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging only */
+extern GMT_LONG GMT_IN = 0;
+extern GMT_LONG GMT_OUT = 1;
+extern GMT_LONG GMT_ERR = 2;
+#else
 #define GMT_IN	0
 #define GMT_OUT	1
 #define GMT_ERR	2
+#endif
 
 /* Get current setting for in/out columns */
 

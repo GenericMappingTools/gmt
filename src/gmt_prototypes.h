@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.16 2011-04-07 12:27:51 remko Exp $
+ *	$Id: gmt_prototypes.h,v 1.17 2011-04-08 23:00:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,6 +36,11 @@ EXTERN_MSC double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double 
 /* Format # 22 */
 EXTERN_MSC int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl);
 #endif
+
+/* gmt_fft.c: */
+
+EXTERN_MSC GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode);
 
 /* gmt_grdio.c: */
 
