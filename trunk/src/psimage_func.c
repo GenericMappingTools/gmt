@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.8 2011-04-07 11:23:23 jluis Exp $
+ *	$Id: psimage_func.c,v 1.9 2011-04-08 01:21:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -370,7 +370,11 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		buffer = GMT_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
+#ifdef USE_GDAL
+		GMT_free (GMT, picture);
+#else
 		PSL_free (PSL, picture);
+#endif
 		picture = buffer;
 		free_GMT = TRUE;
 	}
@@ -439,7 +443,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 	if (free_GMT)
 		GMT_free (GMT, picture);
-	else
+	else if (known)
 		PSL_free (PSL, picture);
 
 	Return (GMT_OK);
