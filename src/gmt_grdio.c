@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.151 2011-04-07 11:24:59 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.152 2011-04-09 16:26:34 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -146,6 +146,10 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 			else
 				strcpy (header->name, &header->name[i+3]);
 			magic = 0;	/* We don't want it to try to prepend any path */
+		}
+		else if ( val == 22 && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
+			header->pocket = strdup(&header->name[i+4]);
+			header->name[i-1] = '\0';
 		}
 		else {
 			j = (i == 1) ? i : i - 1;
@@ -1458,6 +1462,7 @@ struct GMT_GRID *GMT_create_grid (struct GMT_CTRL *C)
 	G = GMT_memory (C, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
 	GMT_grd_setpad (G->header, C->current.io.pad);	/* Use the system pad setting by default */
+	G->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
 
 	return (G);
 }
@@ -1605,6 +1610,7 @@ GMT_LONG GMT_check_url_name (char *fname) {
 
 #ifdef USE_GDAL
 GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
+	int i;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 
@@ -1614,6 +1620,14 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
 	to_gdalread->M.active = 1;	/* Get metadata only */
+
+	i = (int)strlen(file) - 1;
+	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
+	if (i && file[i+1] == 'b') {
+		/* Yes we do. Put the band string into the 'pocket' where GMT_read_image will look and finish the request */
+		I->header->pocket = strdup(&file[i+2]);
+		file[i] = '\0';
+	}
 
 	if (C->common.R.active) {	/* Must confirm the need/effect of this */
 		char strR [128]; 
@@ -1678,11 +1692,16 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 	to_gdalread->F.active = 1;	/* Force PIX reg info */
 
-	if (C->common.R.active) {
+	if ( C->common.R.active ) {
 		char strR [128]; 
 		sprintf (strR, "-R%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
 							    C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		/*to_gdalread->R.region = strR;*/
+	}
+
+	if ( I->header->pocket ) {				/* See if we have a band request */
+		to_gdalread->B.active = 1;
+		to_gdalread->B.bands = I->header->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
 	to_gdalread->p.active = to_gdalread->p.pad = (int)C->current.io.pad[0];	/* Only 'square' padding allowed */
@@ -1698,6 +1717,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	}
 
 	I->ColorMap = from_gdalread->ColorMap;
+	I->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
 		I->header->nx -= (int)(pad[XLO] + pad[XHI]);
