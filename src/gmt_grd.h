@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.47 2011-03-27 20:48:18 guru Exp $
+ *	$Id: gmt_grd.h,v 1.48 2011-04-09 16:34:23 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,6 +81,7 @@ struct GRD_HEADER {
 	char title[GRD_TITLE_LEN];	/* name of data set */
 	char command[GRD_COMMAND_LEN];	/* name of generating command */
 	char remark[GRD_REMARK_LEN];	/* comments re this data set */
+	char *pocket;			/* A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 };
 
 /*-----------------------------------------------------------------------------------------
