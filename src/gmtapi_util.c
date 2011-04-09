@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.41 2011-04-04 15:01:35 remko Exp $
+ *	$Id: gmtapi_util.c,v 1.42 2011-04-09 16:36:32 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2233,6 +2233,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup ((char *)(*resource));
 				if (family == GMT_IS_GRID && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids so access can work */
+				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) *p = '\0';	/* Chop off any +<stuff> for images so access can work */
 				if (GMT_access (API->GMT, file, F_OK) && !GMT_check_url_name(file)) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_report (API->GMT, GMT_MSG_FATAL, "File %s not found\n", file);
 					return (GMT_Report_Error (API, GMT_FILE_NOT_FOUND));
