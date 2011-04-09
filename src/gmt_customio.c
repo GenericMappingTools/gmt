@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.103 2011-03-31 17:15:12 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.104 2011-04-09 16:35:41 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1558,6 +1558,10 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (pad[XLO] > 0) {	/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
 		to_gdalread->p.active = 1;
 		to_gdalread->p.pad = (int)pad[XLO];
+	}
+	if (header->pocket) {	/* Have a band request. */
+		to_gdalread->B.active = 1;
+		to_gdalread->B.bands = header->pocket;		/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *grid pointer */
