@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.4 2011-03-18 17:50:12 guru Exp $
+ *	$Id: grdfft_func.c,v 1.5 2011-04-09 19:20:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -290,9 +290,7 @@ double kx (GMT_LONG k, struct K_XY *K)
 	 * and k refers to the position
 	 * in the datac array, datac[k].  */
 
-	GMT_LONG ii;
-
-	ii = (k/2)%(K->nx2);
+	GMT_LONG ii = (k/2)%(K->nx2);
 	if (ii > (K->nx2)/2) ii -= (K->nx2);
 	return (ii * K->delta_kx);
 }
@@ -304,9 +302,7 @@ double ky (GMT_LONG k, struct K_XY *K)
 	 * and k refers to the position
 	 *in the datac array, datac[k].  */
 
-	GMT_LONG jj;
-
-	jj = (k/2)/(K->nx2);
+	GMT_LONG jj = (k/2)/(K->nx2);
 	if (jj > (K->ny2)/2) jj -= (K->ny2);
 	return (jj * K->delta_ky);
 }
@@ -1153,7 +1149,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 	set_grid_radix_size (GMT, Ctrl, Grid, &workc);		/* This also sets the new pads and allocates work array workc */
 
-	/* Now read data into the real positions in the padded radix grid */
+	/* Now read data into the real positions in the padded complex radix grid */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
@@ -1196,7 +1192,8 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "forward FFT...");
 	
 	narray[0] = Ctrl->N.nx2;	narray[1] = Ctrl->N.ny2;
-	GMT_fourt (GMT, Grid->data, narray, 2, -1, 1, workc);
+	/* GMT_fourt (GMT, Grid->data, narray, 2, -1, 1, workc); */
+	GMT_fft_2d (GMT, Grid->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
@@ -1243,7 +1240,8 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "inverse FFT...");
 
-		GMT_fourt (GMT, Grid->data, narray, 2, 1, 1, workc);
+		/* GMT_fourt (GMT, Grid->data, narray, 2, 1, 1, workc); */
+		GMT_fft_2d (GMT, Grid->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
 		Ctrl->S.scale *= (2.0 / Grid->header->nm);
 		for (i = 0; i < Grid->header->size; i++) Grid->data[i] *= (float)Ctrl->S.scale;
