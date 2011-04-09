@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.27 2011-04-09 16:20:24 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.28 2011-04-09 17:26:55 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,9 +71,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++) 
 			if (prhs->B.bands[n] == '-') n_dash = n;
 		nn = MAX(n_commas+1, n_dash);
-		if (nn)
-			nn = MAX(nn, atoi(&prhs->B.bands[nc_ind]));
-			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1]) );
+		if (nn) {
+			nn = MAX( nn, atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
+			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1])+1 );
+		}
 		else
 			nn = atoi(prhs->B.bands);
 		whichBands = GMT_memory (C, NULL, nn, GMT_LONG);
@@ -1037,7 +1038,7 @@ int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
 		}
 		stop = MIN (stop, n_col);
 		for (i = start; i <= stop; i++) {
-			whichBands[n] = i;
+			whichBands[n] = i + 1;			/* Band numbering in GMT is 0 based */
 			n++;
 		}
 	}
