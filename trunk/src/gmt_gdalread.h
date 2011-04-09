@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.16 2011-04-04 15:01:35 remko Exp $
+ *	$Id: gmt_gdalread.h,v 1.17 2011-04-09 15:02:37 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,8 @@ struct GD_CTRL {
 	int	*ColorMap;
 	int	RasterXsize;
 	int	RasterYsize;
-	int	RasterCount;
+	int	RasterCount;	/* Total number of bands in file */
+	int	nActualBands;	/* Number of bands that were actually sent back */
 	struct Corners {
 		double LL[2], UL[2], UR[2], LR[2];
 	} Corners;
