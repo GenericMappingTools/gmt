@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.243 2011-04-05 22:45:56 guru Exp $
+ *	$Id: gmt_io.c,v 1.244 2011-04-09 16:39:57 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5268,6 +5268,7 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
 	I->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
 	GMT_grd_setpad (I->header, C->current.io.pad);	/* Use the system pad setting by default */
+	I->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
 	return (I);
 }
 
