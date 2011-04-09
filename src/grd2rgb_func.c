@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.3 2011-03-25 22:17:40 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.4 2011-04-09 19:20:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -120,7 +120,7 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 }
 
 GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel, GMT_LONG *raw_nx, GMT_LONG *raw_ny) {
-	GMT_LONG k = 0, j, inc, i, l, even, narray, img_size, n_pix;
+	GMT_LONG k = 0, j, inc, i, l, even, img_size, n_pix;
 	unsigned char *buffer = NULL;
 	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
 	int rgb[3];
@@ -160,8 +160,8 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 		k += 2;
 	}
 
-	narray = n_pix;
-	GMT_fourt (GMT, datac, &narray, 1, -1, 1, work);
+	/* GMT_fourt (GMT, datac, &narray, 1, -1, 1, work); */
+	GMT_fft_1d (GMT, datac, n_pix, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	/* Now compute the image's power spectrum */
 	for (k = 0, j = 0; k < n_pix; k += 2, j++) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.4 2011-04-09 03:27:17 guru Exp $
+ *	$Id: gmt_fft.c,v 1.5 2011-04-09 19:20:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2686,6 +2686,58 @@ L920:
 	return 0;
 } /* fourt_ */
 
+GMT_LONG gmt_get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
+{
+	/* Return the product of the non-symmetric factors in f[]  */
+	GMT_LONG i = 0, j = 1, retval = 1;
+
+	if (n == 1) return (f[0]);
+
+	while (i < n) {
+		while (j < n && f[j] == f[i]) j++;
+		if ((j-i)%2) retval *= f[i];
+		i = j;
+		j = i + 1;
+	}
+	if (retval == 1) retval = 0;	/* There are no non-sym factors  */
+	return (retval);
+}
+
+GMT_LONG brenner_worksize (GMT_LONG nx, GMT_LONG ny)
+{
+	/* Find the size of the workspace that will be needed by the transform.
+	 * To use this routine for a 1-D transform, set ny = 1.
+	 * 
+	 * This is all based on the comments in Norman Brenner's code
+	 * FOURT, from which our C codes are translated.
+	 * 
+	 * Let m = largest prime factor in the list of factors.
+	 * Let p = product of all primes which appear an odd number of
+	 * times in the list of prime factors.  Then the worksize needed
+	 * s = max(m,p).  However, we know that if n is radix 2, then no
+	 * work is required; yet this formula would say we need a worksize
+	 * of at least 2.  So I will return s = 0 when max(m,p) = 2.
+	 *
+	 * W. H. F. Smith, 26 February 1992.
+	 *  */
+
+	GMT_LONG f[32], n_factors, nonsymx, nonsymy, nonsym, storage, ntotal;
+	EXTERN_MSC GMT_LONG GMT_get_prime_factors (GMT_LONG n, GMT_LONG *f);
+
+	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
+	n_factors = GMT_get_prime_factors (nx, f);
+	nonsymx = gmt_get_non_symmetric_f (f, n_factors);
+	n_factors = GMT_get_prime_factors (ny, f);
+	nonsymy = gmt_get_non_symmetric_f (f, n_factors);
+	nonsym = MAX (nonsymx, nonsymy);
+
+	/* Now get factors of ntotal  */
+	ntotal = GMT_get_nm (nx,ny);
+        n_factors = GMT_get_prime_factors (ntotal, f);
+	storage = MAX (nonsym, f[n_factors-1]);
+	return (2 * ((storage == 2) ? 0 : storage));
+} 
+
 /* C-callable wrapper for BRENNER_fourt_ */
 
 #define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
@@ -2699,12 +2751,12 @@ GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 1, radix2 = GMT_radix2(n);
+	GMT_LONG ksign, ndim = 1, work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-	if (!radix2) work = GMT_memory (C, NULL, 2*n, float);
+	if ((work_size = brenner_worksize (n, 1))) work = GMT_memory (C, NULL, work_size, float);
 	(void) BRENNER_fourt_ (data, &n, &ndim, &ksign, &mode, work);
-	if (!radix2) GMT_free (C, work);
+	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
 GMT_LONG GMT_fft_1d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
@@ -2720,10 +2772,12 @@ GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny};
+	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny}, work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	if ((work_size = brenner_worksize (nx, ny))) work = GMT_memory (C, NULL, work_size, float);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
+	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
 GMT_LONG GMT_fft_2d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
