@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.26 2011-04-07 15:43:02 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.27 2011-04-09 16:20:24 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,9 +27,11 @@
  */
 
 int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform);
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *, char * ,GMT_LONG , GMT_LONG, GMT_LONG, int, int, double, double, double, double, double, double);
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *, char * ,GMT_LONG , GMT_LONG, GMT_LONG, int, int, double, 
+	double, double, double, double, double);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
-void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
+void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, 
+	GMT_LONG nYSize, double, double);
 int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
@@ -63,20 +65,34 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GMT_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
-		for (n = 0, n_commas = 0; prhs->B.bands[n]; n++) if (prhs->B.bands[n] == ',') n_commas = n;
-		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++) if (prhs->B.bands[n] == '-') n_dash = n;
-		nn = MAX(n_commas, n_dash);
+		int nc_ind;
+		for (nc_ind = 0, n_commas = 0; prhs->B.bands[nc_ind]; nc_ind++) 
+			if (prhs->B.bands[nc_ind] == ',') n_commas++;
+		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++) 
+			if (prhs->B.bands[n] == '-') n_dash = n;
+		nn = MAX(n_commas+1, n_dash);
 		if (nn)
-			nn = atoi(&prhs->B.bands[nn+1]);
+			nn = MAX(nn, atoi(&prhs->B.bands[nc_ind]));
+			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1]) );
 		else
 			nn = atoi(prhs->B.bands);
-		whichBands = calloc(nn, sizeof(GMT_LONG));
+		whichBands = GMT_memory (C, NULL, nn, GMT_LONG);
 		nReqBands = gdal_decode_columns (prhs->B.bands, whichBands, nn);
+		free(prhs->B.bands);	/* This is actualy the contents of header->pocket allocated by strdup */
+	}
+	else if (prhs->f_ptr.active) {	
+		/* Here we are going to read to a grid so if no band info was provided, default to read only the
+		   first band. This avoids, for example, allocate and read all 3 bands in a RGB image and send
+		   back a full 3 band array to GMT_gdal_read_grd that will only keep the first band. */
+		nReqBands = 1;
+		whichBands = GMT_memory (C, NULL, 1, GMT_LONG);
+		whichBands[0] = 1;
 	}
 
 	correct_bounds = prhs->C.active;
 	pixel_reg = prhs->F.active;
 	do_BIP = prhs->I.active;
+	if (nReqBands == 1) do_BIP = FALSE;	/* This must overrule any -I option settings */
 	fliplr = prhs->L.active;
 	metadata_only = prhs->M.active;
 
@@ -342,7 +358,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				Ctrl->UInt8.active = TRUE;
 				if (fliplr) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
 					}
@@ -457,13 +473,15 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	GMT_free(C, mVector);
 	free(tmp);
-	if (prhs->B.active) free(whichBands);
+	if (whichBands) GMT_free(C, whichBands);
 	if (nVector) GMT_free(C, nVector);
 
 	GDALClose(hDataset);
 
 	populate_metadata (C, Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
 				nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+
+	Ctrl->nActualBands = nBands;	/* Number of bands that were actually read in */
 
 	return (GMT_NOERROR);
 }
