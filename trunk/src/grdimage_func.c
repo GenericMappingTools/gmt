@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.9 2011-04-05 00:47:58 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.10 2011-04-09 18:02:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -422,6 +422,15 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		to_gdalread->p.active = to_gdalread->p.pad = 0;
+
+		j = (int)strlen(Ctrl->In.file[0]) - 1;
+		while (j && Ctrl->In.file[0][j] && Ctrl->In.file[0][j] != '+') j--;	/* See if we have a band request */
+		if (j && Ctrl->In.file[0][j+1] == 'b') {
+			Ctrl->In.file[0][j] = '\0';			/* Strip the band request string and put in the -B option */
+			to_gdalread->B.active = 1;
+			to_gdalread->B.bands = strdup(&Ctrl->In.file[0][j+2]);	/* Band parsing and error testing is done in gmt_gdalread */
+
+		}
 
 		if (GMT_gdalread (GMT, Ctrl->In.file[0], to_gdalread, from_gdalread)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
