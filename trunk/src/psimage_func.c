@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.9 2011-04-08 01:21:41 guru Exp $
+ *	$Id: psimage_func.c,v 1.10 2011-04-09 16:24:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -249,8 +249,10 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR:  Must specify a single input raster or EPS file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.width <= 0.0 && Ctrl->E.dpi <= 0.0, "Must specify image width (-W) or dpi (-E)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1), "GMT SYNTAX ERROR -N option:  Must specify positive values for replication\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, "GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1), 
+			"GMT SYNTAX ERROR -N option:  Must specify positive values for replication\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
+			"GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -262,7 +264,12 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 	FILE *fp = NULL;
 	unsigned char c[4];
 	int j, magic, in[4];
-	
+
+	j = (int)strlen(file) - 1;
+	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
+	if (j && file[j+1] == 'b')
+		file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+
 	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (EXIT_FAILURE);
@@ -272,6 +279,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 		return (EXIT_FAILURE);
 	}
 	GMT_fclose (GMT, fp);
+	if (j) file[j] = '+';			/* Reset the band request string */
 	if (!strncmp ((char *)c, "%!PS", 4)) return (1);	/* Read an EPS file */
 	/* Here we must check for a Sun rasterfile */
 	for (j = 0; j < 4; j++) in[j] = (int)c[j];
@@ -319,14 +327,13 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
-	if (access (Ctrl->In.file, R_OK)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
-	}
-
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
+	if (known == EXIT_FAILURE) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
+		Return (EXIT_FAILURE);
+	}
 	
 	if (known) {	/* Read an EPS or Sun raster file */
 		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
