@@ -1,6 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.934 2011-04-08 02:26:47 guru Exp $
+	$Id: ChangeLog,v 1.935 2011-04-09 16:43:05 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-09	jluis
+	* psimage_func.c	When used with GDAL alow selecting the image's bands order via a
+				my_image.jpg+b<stuff> mechanism. 
+				Test if image name has a +b<stuff> glued to the name.
+	* gmt_grd.h		Add a new member "pocket" to the GRD_HEADER struct
+	* gmt_gdalread.c:	Fix band parsing algoito allow band selection with reverse ordering. 
+				When reading image to grid make sure only one band is processed.
+	* gmt_gdalread.h:	Add a new member to GD_CTRL to hold the actual number of loaded bands
+	* gmtapi_util.c		---"---
+	* gmt_grdio.c		---"---
+				Check on the "pocket" header member for info about band selection.
+	* gmt_customio.c	---"---
 
 2011-04-07	pwessel
 	* gmt_fft.c:		New and separate FFT container which will deal with
