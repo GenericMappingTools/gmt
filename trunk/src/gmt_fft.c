@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.3 2011-04-08 23:00:36 guru Exp $
+ *	$Id: gmt_fft.c,v 1.4 2011-04-09 03:27:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2688,6 +2688,8 @@ L920:
 
 /* C-callable wrapper for BRENNER_fourt_ */
 
+#define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
+
 GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
 	/* void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work) */
@@ -2697,16 +2699,17 @@ GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 1;
-	float *work;
+	GMT_LONG ksign, ndim = 1, radix2 = GMT_radix2(n);
+	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	if (!radix2) work = GMT_memory (C, NULL, 2*n, float);
 	(void) BRENNER_fourt_ (data, &n, &ndim, &ksign, &mode, work);
+	if (!radix2) GMT_free (C, work);
 	return (GMT_OK);
 }
 GMT_LONG GMT_fft_1d_radix2 (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {
 	return (GMT_fft_1d_general (C, data, n, direction, mode));
-	
 }
 
 GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
@@ -2718,7 +2721,7 @@ GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	/* Real(0) or complex(1) data */
 	/* Work array */
 	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny};
-	float *work;
+	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
 	return (GMT_OK);
@@ -2741,8 +2744,6 @@ void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GM
 	/* Work array */
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &iform, work);
 }
-
-#define GMT_radix2(n) GMT_IS_ZERO(log2 ((double)n)-floor(log2 ((double)n)))
 
 GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
 {

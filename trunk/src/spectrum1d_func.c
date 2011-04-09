@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.3 2011-04-09 03:27:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -149,14 +149,11 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
 
 void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, GMT_LONG n_data)
 {
-	GMT_LONG n_windows, w, i, t_start, t_stop, t, f, narray;
-	float work = 0.0;
+	GMT_LONG n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
 	char format[BUFSIZ];
 	
-	narray = C->window;
-
 	/* Scale factor for spectral estimates should be 1/4 of amount given in
 		Bendat & Piersol eqn 11-102 because I compute 2 * fft in my
 		one-sided code below.  However, tests show that I need 1/8 of
@@ -189,8 +186,8 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		detrend_and_hanning (C);
 
-		GMT_fourt (GMT, C->datac, &narray, 1, -1, 1, &work);
-
+		GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+		
 		/* Get one-sided estimates:  */
 
 		x_varp = spec_scale * (C->datac[0] * C->datac[0]);
