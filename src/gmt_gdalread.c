@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.29 2011-04-11 21:10:40 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.30 2011-04-11 21:20:48 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -119,7 +119,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	if (error) {
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: GMT_gdalread failed to extract a Sub-region\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_gdalread failed to extract a Sub-region\n");
 		return (-1);
 	}
 
@@ -149,7 +149,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		else {
 			Ctrl->ProjectionRefWKT = CNULL; 
 			GMT_report (C, GMT_MSG_FATAL, 
-				"WARNING: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
+				"Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
 				Ctrl->ProjectionRefPROJ4);
 		}
 

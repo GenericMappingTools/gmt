@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.939 2011-04-11 20:59:21 guru Exp $
+	$Id: ChangeLog,v 1.940 2011-04-11 21:20:48 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-11      pwessel
 	* grdproject_func.c:	Output grd header had wrong units when non-inch settings were in effect.
 
 2011-04-11	remko
+	* *.c:			Produce consistent messages (Warning:, Error:, Syntax error:)
 	* gmt_io.h:		Introduced "enum {GMT_X, GMT_Y, GMT_Z};" to make debugging easier
 	* gmt_init.c:		Allow using "c" for arcseconds in -B option in GMT_COMPAT.
 
