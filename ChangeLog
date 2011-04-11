@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.938 2011-04-11 19:36:28 remko Exp $
+	$Id: ChangeLog,v 1.939 2011-04-11 20:59:21 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-11      pwessel
+	* grdproject_func.c:	Output grd header had wrong units when non-inch settings were in effect.
 
 2011-04-11	remko
 	* gmt_io.h:		Introduced "enum {GMT_X, GMT_Y, GMT_Z};" to make debugging easier
