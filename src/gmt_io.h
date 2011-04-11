@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.103 2011-04-11 18:57:22 remko Exp $
+ *	$Id: gmt_io.h,v 1.104 2011-04-11 19:45:03 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -46,12 +46,16 @@
 #define GMT_BY_REC		1	/* Means we will access the registere files on a record-by-record basis */
 
 /* These are the 6 methods for i/o */
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+enum GMT_methods {GMT_IS_FILE, GMT_IS_STREAM, GMT_IS_FDESC, GMT_IS_COPY, GMT_IS_REF, GMT_IS_READONLY};
+#else
 #define GMT_IS_FILE		0	/* Entity is a filename */
 #define GMT_IS_STREAM		1	/* Entity is an open stream */
 #define GMT_IS_FDESC		2	/* Entity is an open file descriptor */
 #define GMT_IS_COPY		3	/* Entity is a memory location that should be duplicated */
 #define GMT_IS_REF		4	/* Entity is a memory location and we just pass the ref (no copying) */
 #define GMT_IS_READONLY		5	/* As GMT_IS_REF, but we are not allowed to change the data in any way. */
+#endif
 #define GMT_N_METHODS		6	/* Number of methods we recognize */
 
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
@@ -60,15 +64,19 @@
 #define GMT_VIA_MATRIX		200
 
 /* These are the 5 families of data types */
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+enum GMT_families {GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE, GMT_IS_VECTOR, GMT_IS_MATRIX};
+#else
 #define GMT_IS_DATASET		0	/* Entity is data table */
 #define GMT_IS_TEXTSET		1	/* Entity is a Text table */
 #define GMT_IS_GRID		2	/* Entity is a GMT grid */
 #define GMT_IS_CPT		3	/* Entity is a CPT table */
 #define GMT_IS_IMAGE		4	/* Entity is a 1- or 3-layer unsigned char image */
-#define GMT_N_FAMILIES		5	/* Number of families we recognize */
 /* These are used internally to hande interfacing with user data types */
 #define GMT_IS_VECTOR		5	/* Entity is user vectors */
 #define GMT_IS_MATRIX		6	/* Entity is user matrix */
+#endif
+#define GMT_N_FAMILIES		5	/* Number of families we recognize */
 
 #ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
 enum GMT_dimensions {GMT_X, GMT_Y, GMT_Z};
@@ -77,11 +85,15 @@ enum GMT_dimensions {GMT_X, GMT_Y, GMT_Z};
 #define GMT_Y			1	/* y or lat is in 1st column */
 #define GMT_Z			2	/* z is in 2nd column */
 #endif
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE};
+#else
 #define GMT_IS_TEXT		0	/* GIS geometries (text here refers to just a line of text with no coordinates) */
 #define GMT_IS_POINT		1
 #define GMT_IS_LINE		2
 #define GMT_IS_POLY		3
 #define GMT_IS_SURFACE		4
+#endif
 
 /* These are polygon modes */
 #define GMT_IS_PERIMETER	0
