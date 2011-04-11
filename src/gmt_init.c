@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.471 2011-04-05 18:48:46 guru Exp $
+ *	$Id: gmt_init.c,v 1.472 2011-04-11 19:36:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5237,6 +5237,12 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 			GMT_report (C, GMT_MSG_FATAL, "Warning: Axis sub-item %c set more than once (typo?)\n", item_flag[i]);
 		}
 		I[i]->interval = val;
+#ifdef GMT_COMPAT
+		if (unit == 'c' || unit == 'C') {
+			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning:  Unit c (arcseconds) is deprecated; use s instead.\n");
+			unit = 's';
+		}
+#endif
 		I[i]->unit = unit;
 		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
 		I[i]->flavor = 0;
@@ -5327,7 +5333,11 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 			t = s;
 			phase = strtod (t, &s);
 		}
+#ifdef GMT_COMPAT
+		if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+#else
 		if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+#endif
 			unit = s[0];
 			s++;
 		}
@@ -5370,7 +5380,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 			else
 				flag = (char) toupper ((int)flag);
 		}
-		if (!error) gmt_set_titem (C, A, val, phase, flag, unit);				/* Store the findings for this segment */
+		gmt_set_titem (C, A, val, phase, flag, unit);				/* Store the findings for this segment */
 		t = s;									/* Make t point to start of next segment, if any */
 	}
 
@@ -7209,14 +7219,14 @@ GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYS
 		case 'M':
 			time_system->scale = GMT_MIN2SEC_F;
 			break;
-		case 's':	/* For backwards compatibility. Should be 'c' instead */
+		case 's':
 		case 'S':
 			time_system->scale = 1.0;
 			break;
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning:  TIME_UNIT c is deprecated; use s instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning:  Unit c (seconds) is deprecated; use s instead.\n");
 			time_system->scale = 1.0;
 			break;
 #endif
