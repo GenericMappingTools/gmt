@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.472 2011-04-11 19:36:28 remko Exp $
+ *	$Id: gmt_init.c,v 1.473 2011-04-11 19:56:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1071,16 +1071,13 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 		case 'i': error += C->common.i.active == 0; break;
 		case 'o': error += C->common.o.active == 0; break;
 #ifdef GMT_COMPAT
+		case 'Z': break;
 		case 'E':
 #endif
 		case 'p': error += C->common.p.active == 0; break;
 #ifdef GMT_COMPAT
 		case 'm': break;
-#endif
-#ifdef GMT_COMPAT
 		case 'S':
-#endif
-#ifdef GMT_COMPAT
 		case 'F':
 #endif
 		case 'r': error += C->common.r.active == 0; break;
@@ -1254,12 +1251,12 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = TRUE;
 		if (C->current.setting.io_seg_marker[GMT_OUT] != '>') {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
+			GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
 			C->current.setting.io_seg_marker[GMT_OUT] = '>';
 		}
 	}
 	else if (C->current.setting.io_seg_marker[GMT_IN] != '>') {
-		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
 		C->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
 	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
@@ -2029,27 +2026,27 @@ void gmt_verify_encodings (struct GMT_CTRL *C) {
 	/* First check for degree symbol */
 
 	if (C->current.setting.ps_encoding.code[gmt_ring] == 32 && C->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* Neither /ring or /degree encoded */
-		GMT_message (C, "GMT Warning: Selected character encoding does not have suitable degree symbol - will use space instead\n");
+		GMT_message (C, "Warning: Selected character encoding does not have suitable degree symbol - will use space instead\n");
 	}
 	else if (C->current.setting.map_degree_symbol == gmt_ring && C->current.setting.ps_encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
-		GMT_message (C, "GMT Warning: Selected character encoding does not have ring symbol - will use degree symbol instead\n");
+		GMT_message (C, "Warning: Selected character encoding does not have ring symbol - will use degree symbol instead\n");
 		C->current.setting.map_degree_symbol = gmt_degree;
 	}
 	else if (C->current.setting.map_degree_symbol == gmt_degree && C->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
-		GMT_message (C, "GMT Warning: Selected character encoding does not have degree symbol - will use ring symbol instead\n");
+		GMT_message (C, "Warning: Selected character encoding does not have degree symbol - will use ring symbol instead\n");
 		C->current.setting.map_degree_symbol = gmt_ring;
 	}
 
 	/* Then single quote for minute symbol... */
 
 	if (C->current.setting.map_degree_symbol < 2 && C->current.setting.ps_encoding.code[gmt_squote] == 32) {
-		GMT_message (C, "GMT Warning: Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
+		GMT_message (C, "Warning: Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
 	}
 
 	/* ... and double quote for second symbol */
 
 	if (C->current.setting.map_degree_symbol < 2 && C->current.setting.ps_encoding.code[gmt_dquote] == 32) {
-		GMT_message (C, "GMT Warning: Selected character encoding does not have second symbol (double quote) - will use space instead\n");
+		GMT_message (C, "Warning: Selected character encoding does not have second symbol (double quote) - will use space instead\n");
 	}
 }
 
@@ -2200,7 +2197,7 @@ GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 
 	GMT_getsharepath (C, "time", C->current.setting.time_language, ".d", file);
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning: Could not load time language %s - revert to us (English)!\n", C->current.setting.time_language);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not load time language %s - revert to us (English)!\n", C->current.setting.time_language);
 		GMT_getsharepath (C, "time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "GMT Error: Could not find %s!\n", file);
@@ -2748,7 +2745,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_MAP_LINE_STEP:
 			if ((C->current.setting.map_line_step = GMT_to_inch (C, value)) <= 0.0) {
 				C->current.setting.map_line_step = 0.01;
-				GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: %s <= 0, reset to %g %s\n", keyword, C->current.setting.map_line_step, C->session.unit_name[GMT_INCH]);
+				GMT_report (C, GMT_MSG_FATAL, "Warning: %s <= 0, reset to %g %s\n", keyword, C->current.setting.map_line_step, C->session.unit_name[GMT_INCH]);
 			}
 			break;
 #ifdef GMT_COMPAT
@@ -4891,7 +4888,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.HOMEDIR = strdup (this);
 #endif
 	else
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning: Could not determine home directory!\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not determine home directory!\n");
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
@@ -4910,9 +4907,9 @@ void GMT_set_env (struct GMT_CTRL *C)
 	/* Check if obsolete GMT_CPTDIR was specified */
 
 	if ((this = getenv ("GMT_CPTDIR")) != CNULL) {	/* GMT_CPTDIR was set */
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: System-wide color tables are in %s/cpt.\n", C->session.SHAREDIR);
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", C->session.USERDIR);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: System-wide color tables are in %s/cpt.\n", C->session.SHAREDIR);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", C->session.USERDIR);
 	}
 #endif
 
@@ -4933,8 +4930,8 @@ void GMT_set_env (struct GMT_CTRL *C)
 #else
 		if (access (this, R_OK+W_OK+X_OK)) {
 #endif
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
+			GMT_report (C, GMT_MSG_FATAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			C->session.TMPDIR = CNULL;
 		}
 		else
@@ -5239,7 +5236,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 		I[i]->interval = val;
 #ifdef GMT_COMPAT
 		if (unit == 'c' || unit == 'C') {
-			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning:  Unit c (arcseconds) is deprecated; use s instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning:  Unit c (arcseconds) is deprecated; use s instead.\n");
 			unit = 's';
 		}
 #endif
@@ -7072,15 +7069,15 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			break;
 #endif
 
-#ifdef GMT_COMPAT
-		case 'E':	/* Backwards compatibility */
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated. Use -p instead.\n");
-#endif
 		case 'o':
 			error += (GMT_more_than_once (C, C->common.o.active) || gmt_parse_o_option (C, item));
 			C->common.o.active = TRUE;
 			break;
 
+#ifdef GMT_COMPAT
+		case 'E':	/* Backwards compatibility */
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated. Use -p instead.\n");
+#endif
 		case 'p':
 			error += (GMT_more_than_once (C, C->common.p.active) || gmt_parse_p_option (C, item));
 			C->common.p.active = TRUE;
@@ -7226,7 +7223,7 @@ GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYS
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning:  Unit c (seconds) is deprecated; use s instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning:  Unit c (seconds) is deprecated; use s instead.\n");
 			time_system->scale = 1.0;
 			break;
 #endif
@@ -7242,13 +7239,13 @@ GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYS
 	if (gmt_scanf_epoch (C, time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
 
 	if (error & 1) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning:  TIME_UNIT is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning:  TIME_UNIT is invalid.  Default assumed.\n");
 		GMT_report (C, GMT_MSG_FATAL, "Choose one only from y o d h m s\n");
 		GMT_report (C, GMT_MSG_FATAL, "Corresponding to year month day hour minute second\n");
 		GMT_report (C, GMT_MSG_FATAL, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (error & 2) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning:  TIME_EPOCH format is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning:  TIME_EPOCH format is invalid.  Default assumed.\n");
 		GMT_report (C, GMT_MSG_FATAL, "    A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
 		GMT_report (C, GMT_MSG_FATAL, "    or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
 		GMT_report (C, GMT_MSG_FATAL, "    An example of a correct format is:  2000-01-01T12:00:00\n");
