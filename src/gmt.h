@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.205 2011-04-08 22:57:18 guru Exp $
+ *	$Id: gmt.h,v 1.206 2011-04-11 18:48:58 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -96,15 +96,6 @@ extern "C" {
 #ifndef WIN32
 #include <pwd.h>
 #include <unistd.h>
-#endif
-
-#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging only */
-extern GMT_LONG GMT_IN;
-extern GMT_LONG GMT_OUT;
-extern GMT_LONG GMT_ERR;
-extern GMT_LONG GMT_X;
-extern GMT_LONG GMT_Y;
-extern GMT_LONG GMT_Z;
 #endif
 
 #include "gmt_constants.h"	/* All basic constant definitions */
