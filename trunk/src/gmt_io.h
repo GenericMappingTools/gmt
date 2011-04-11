@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.101 2011-04-08 22:57:18 guru Exp $
+ *	$Id: gmt_io.h,v 1.102 2011-04-11 18:48:58 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,9 +71,9 @@
 #define GMT_IS_MATRIX		6	/* Entity is user matrix */
 
 #ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
-extern GMT_LONG GMT_X = 0;
-extern GMT_LONG GMT_Y = 1;
-extern GMT_LONG GMT_Z = 2;
+enum {GMT_X = 0};
+enum {GMT_Y = 1};
+enum {GMT_Z = 2};
 #else
 #define GMT_X			0	/* x or lon is in 0th column */
 #define GMT_Y			1	/* y or lat is in 1st column */
@@ -183,9 +183,9 @@ extern GMT_LONG GMT_Z = 2;
 /* Array indices for input/output/stderr variables */
 
 #ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging only */
-extern GMT_LONG GMT_IN = 0;
-extern GMT_LONG GMT_OUT = 1;
-extern GMT_LONG GMT_ERR = 2;
+enum {GMT_IN = 0};
+enum {GMT_OUT = 1};
+enum {GMT_ERR = 2};
 #else
 #define GMT_IN	0
 #define GMT_OUT	1
