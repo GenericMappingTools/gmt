@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.4 2011-04-06 18:32:30 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.5 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,9 +108,9 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, n_files > 1, "GMT SYNTAX ERROR.  Only one file can be processed at the time\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "GMT SYNTAX ERROR.  Cannot read file %s\n", Ctrl->In.file);
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR.  Binary input data cannot have header -H\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error.  Only one file can be processed at the time\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error.  Cannot read file %s\n", Ctrl->In.file);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -H\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

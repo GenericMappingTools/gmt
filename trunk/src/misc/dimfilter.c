@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.16 2011-03-25 22:17:42 guru Exp $
+ * $Id: dimfilter.c,v 1.17 2011-04-11 21:15:32 remko Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -262,22 +262,22 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
 	if (!Ctrl->Q.active) {
 		GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "GMT SYNTAX ERROR -D option:  Choose from the range 0-4\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "GMT SYNTAX ERROR -F option:  Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->N.filter < 0 || Ctrl->N.n_sectors <= 0, "GMT SYNTAX ERROR -N option:  Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "Syntax error -D option:  Choose from the range 0-4\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "Syntax error -F option:  Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->N.filter < 0 || Ctrl->N.n_sectors <= 0, "Syntax error -N option:  Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 		slow = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);		/* Will require sorting etc */
 #ifdef OBSOLETE						
-		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "GMT SYNTAX ERROR -E option:  Only valid for robust filters -Fm|p.\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option:  Only valid for robust filters -Fm|p.\n");
 #endif	
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "GMT SYNTAX ERROR:  Must use -Q to specify total # of columns in the input file.\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->Q.err_cols > 50, "GMT SYNTAX ERROR -Q option:  Total # of columns cannot exceed 50.\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error:  Must use -Q to specify total # of columns in the input file.\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option:  Total # of columns cannot exceed 50.\n");
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -893,7 +893,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE						
 		if (Ctrl->E.active && n_bad_planes) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to detrend data at %ld nodes\n", n_bad_planes);
 #endif	
-		if (GMT_n_multiples > 0) GMT_message (GMT, "WARNING: %ld multiple modes found\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_message (GMT, "Warning: %ld multiple modes found\n", GMT_n_multiples);
 				
 		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
@@ -947,7 +947,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	   
 		/* check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_message (GMT, "ERROR: Unable to open file %s\n", Ctrl->In.file);
+			GMT_message (GMT, "Error: Unable to open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 

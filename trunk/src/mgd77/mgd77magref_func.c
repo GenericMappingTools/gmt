@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -362,14 +362,14 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_message (GMT, "ERROR: -Sc option usage is -Sc<low/high>\n");
+						GMT_message (GMT, "Error: -Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_message (GMT, "ERROR: -Sl option usage is -Sl<low/high>\n");
+						GMT_message (GMT, "Error: -Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -382,8 +382,8 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0, "GMT SYNTAX ERROR:  Binary input data (-bi) must have at least %ld columns\n", n_out);
-	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, "GMT SYNTAX ERROR:  You cannot select both -F and -L options\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error:  Binary input data (-bi) must have at least %ld columns\n", n_out);
+	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, "Syntax error:  You cannot select both -F and -L options\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -432,7 +432,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 
-	if (nfval && Ctrl->do_IGRF) GMT_message (GMT, "WARNING. Source fields other than IGRF will be ignored. It's in the manual\n");
+	if (nfval && Ctrl->do_IGRF) GMT_message (GMT, "Warning. Source fields other than IGRF will be ignored. It's in the manual\n");
 
 	/* ------------- Test, and take measures, if mix mode IGRF/CM4 is to be used -------------------------- */
 	if (Ctrl->joint_IGRF_CM4) {
@@ -552,7 +552,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
-				GMT_message (GMT, "WARNING. Time is outside the CM4 strict validity domain [1960-2002.7].\n");
+				GMT_message (GMT, "Warning: Time is outside the CM4 strict validity domain [1960-2002.7].\n");
 				GMT_message (GMT, "\tThough extended here to 2009 the secular variation estimation will be unreliable.\n");
 			}
 

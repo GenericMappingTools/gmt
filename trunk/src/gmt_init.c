@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.473 2011-04-11 19:56:14 remko Exp $
+ *	$Id: gmt_init.c,v 1.474 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -685,7 +685,7 @@ void GMT_cont_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 
 void GMT_inc_syntax (struct GMT_CTRL *C, char option, GMT_LONG error)
 {
-	if (error) GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (error) GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (C, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	GMT_message (C, "\t   For geographic regions in degrees you can optionally append units\n");
@@ -699,7 +699,7 @@ void GMT_inc_syntax (struct GMT_CTRL *C, char option, GMT_LONG error)
 
 void GMT_fill_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
 	GMT_message (C, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	GMT_message (C, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
@@ -713,7 +713,7 @@ void GMT_fill_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_pen_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c ", option);
 	GMT_message (C, string, GMT_putpen (C, C->current.setting.map_default_pen));
 	GMT_message (C, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
@@ -734,7 +734,7 @@ void GMT_pen_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_rgb_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
 	GMT_message (C, "\t   1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
 	GMT_message (C, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
@@ -745,7 +745,7 @@ void GMT_rgb_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_mapscale_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Use -%cx to specify Cartesian coordinates instead.  Scale is calculated at latitude <slat>;\n", option);
 	GMT_message (C, "\t   optionally give longitude <slon> [Default is central longitude].  Give scale <length> and\n");
@@ -757,7 +757,7 @@ void GMT_mapscale_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_GSHHS_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 	GMT_message (C, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
@@ -767,7 +767,7 @@ void GMT_GSHHS_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Use -%cx to specify Cartesian coordinates instead.  -Tf draws a \"fancy\" rose [Default is plain].\n", option);
 	GMT_message (C, "\t   Give rose <diameter> and optionally the west, east, south, north labels desired [W,E,S,N].\n");
@@ -782,7 +782,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_sample_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic]\n");
 	GMT_message (C, "\t   Optionally, prepend - to switch off antialiasing (except for l) [Default: on]\n");
@@ -793,7 +793,7 @@ void GMT_sample_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Append e (meter), f (feet), k (km), M (mile), n (nautical mile),\n");
 	GMT_message (C, "\t   d (arc degree), m (arc minute), or s (arc second) [e].\n");
@@ -811,7 +811,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 
 	u = C->session.unit_name[C->current.setting.proj_length_unit];
 
-	GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option.  Correct syntax:\n", option);
+	GMT_report (C, GMT_MSG_FATAL, "Suntax error -%c option.  Correct syntax:\n", option);
 
 	switch (option) {
 
@@ -1347,7 +1347,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 
 			default:	/* Stop scanning */
 				error = TRUE;
-				GMT_report (C, GMT_MSG_FATAL, "GMT Error: Malformed -b argument [%s]\n", text);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -b argument [%s]\n", text);
 				GMT_syntax (C, 'b');
 				break;
 		}
@@ -1439,7 +1439,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 				code = GMT_IS_FLOAT;
 				break;
 			default:	/* No suffix, consider it an error */
-				GMT_report (C, GMT_MSG_FATAL, "GMT Error: Malformed -f argument [%s]\n", arg);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -f argument [%s]\n", arg);
 				return 1;
 				break;
 		}
@@ -1609,17 +1609,17 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, GMT_LONG n_req) {
 	/* These are specific tests for binary input */
 
 	if (C->current.io.io_header[GMT_IN]) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR.  Binary input data (-bi) cannot have header -h\n");
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error.  Binary input data (-bi) cannot have header -h\n");
 		n_errors++;
 	}
 
 	if (C->common.b.ncol[GMT_IN] == 0) C->common.b.ncol[GMT_IN] = n_req;
 	if (C->common.b.ncol[GMT_IN] == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR.  Must specify number of columns in binary input data (-bi)\n");
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error.  Must specify number of columns in binary input data (-bi)\n");
 		n_errors++;
 	}
 	else if (n_req > C->common.b.ncol[GMT_IN]) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR.  Binary input data (-bi) provides %ld but must have at least %ld columns\n", C->common.b.ncol[GMT_IN], n_req);
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error.  Binary input data (-bi) provides %ld but must have at least %ld columns\n", C->common.b.ncol[GMT_IN], n_req);
 		n_errors++;
 	}
 
@@ -1758,7 +1758,7 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 
 	if (!txt && !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = C->common.g.n_methods) == GMT_N_GAP_METHODS) {
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
 		return (1);
 	}
 
@@ -1813,14 +1813,14 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 			c = k;
 			while (txt[k] && isdigit ((int)txt[k])) k++;	/* Skip past until we find z */
 			if (txt[k] != 'z') {
-				GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
 				return (1);
 			}
 			C->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			C->common.g.col[i] = atoi (&txt[c]);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
 			return (1);
 			break;
 	}
@@ -1858,7 +1858,7 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	k++;	/* Skip to start of gap value */
 	if (txt[k] == '-' || txt[k] == '+') k++;	/* SKip sign */
 	if ((C->common.g.gap[i] = atof (&txt[k])) == 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Gap value must be non-zero\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: Gap value must be non-zero\n");
 		return (1);
 	}
 	if (C->common.g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
@@ -1937,7 +1937,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 		return 1;
 	}
 	if (el <= 0.0 || el > 90.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -p option:  Elevation must be in 0-90 range\n");
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error -p option:  Elevation must be in 0-90 range\n");
 		return 1;
 	}
 	C->current.proj.z_project.view_azimuth = az;
@@ -2012,7 +2012,7 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	/* Count and set array of NaN-columns */
 	for (i = n = 0; i < GMT_MAX_COLUMNS; i++) if (tmp[i] != -1) C->current.io.io_nan_col[n++] = i;
 	if (error || n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -s option:  Unable to decode columns from %s\n", item);
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error -s option:  Unable to decode columns from %s\n", item);
 		return TRUE;
 	}
 	C->current.io.io_nan_ncols = n;
@@ -2200,7 +2200,7 @@ GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not load time language %s - revert to us (English)!\n", C->current.setting.time_language);
 		GMT_getsharepath (C, "time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT Error: Could not find %s!\n", file);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find %s!\n", file);
 			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (C->current.setting.time_language, "us");
@@ -2232,7 +2232,7 @@ GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 	}
 	fclose (fp);
 	if (! (nm == 78 && nw == 28 && nu == 1)) {	/* Sums of 1-12, 1-7, and 1, respectively */
-		GMT_report (C, GMT_MSG_FATAL, "GMT Error: Mismatch between expected and actual contents in %s!\n", file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (GMT_NOERROR);
@@ -3377,13 +3377,13 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		default:
 			error = TRUE;
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n", keyword);
+			GMT_report (C, GMT_MSG_FATAL, "Suntax error in GMT_setparameter:  Unrecognized keyword %s\n", keyword);
 			break;
 	}
 
 	if ((i = strlen(value))) C->current.setting.given_unit[case_val] = value[i-1];
 
-	if (error && case_val >= 0) GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  %s given illegal value (%s)!\n", keyword, value);
+	if (error && case_val >= 0) GMT_report (C, GMT_MSG_FATAL, "Suntax error:  %s given illegal value (%s)!\n", keyword, value);
 	return (error);
 }
 
@@ -4077,7 +4077,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR in GMT_putparameter:  Unrecognized keyword %s\n", keyword);
+			GMT_report (C, GMT_MSG_FATAL, "Suntax error in GMT_putparameter:  Unrecognized keyword %s\n", keyword);
 			error = TRUE;
 			break;
 	}
@@ -4101,7 +4101,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	sprintf (line, "%s%cconf%cgmt.conf", C->session.SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if (access (line, R_OK)) {
-		GMT_report (C, -GMT_MSG_FATAL, "GMT Error:  Could not find system defaults file - Aborting.\n");
+		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
 		return (0);
 	}
 	if ((fpi = fopen (line, "r")) == NULL) return (-1);
@@ -5135,7 +5135,7 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 					n_int[3]++;
 					break;
 				default:
-					GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Unrecognixed type (%c) in custom file %s.\n", type[k], A->file_custom);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognixed type (%c) in custom file %s.\n", type[k], A->file_custom);
 					n_errors++;
 					break;
 			}
@@ -5143,7 +5143,7 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 	}
 	GMT_fclose (C, fp);
 	if (n_int[0] && n_int[1]) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
 		n_errors++;
 	}
 	return (n_errors);
@@ -5236,7 +5236,7 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 		I[i]->interval = val;
 #ifdef GMT_COMPAT
 		if (unit == 'c' || unit == 'C') {
-			GMT_report (C, GMT_MSG_COMPAT, "Warning:  Unit c (arcseconds) is deprecated; use s instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c (arcseconds) is deprecated; use s instead.\n");
 			unit = 's';
 		}
 #endif
@@ -5620,7 +5620,7 @@ GMT_LONG gmt_scale_or_width (struct GMT_CTRL *C, char *scale_or_width, double *v
 		if (n != 1 || *value < 0.0) return (1);
 		*value = 1.0 / (*value * C->current.proj.unit);
 		if (C->current.proj.gave_map_width) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -J option: Cannot specify map width with 1:xxxx format\n");
+			GMT_report (C, GMT_MSG_FATAL, "Suntax error -J option: Cannot specify map width with 1:xxxx format\n");
 			return (1);
 		}
 	}
@@ -6583,7 +6583,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			k = 0;
 			while (text_cp[j] && text_cp[j] != ' ' && k < 63) p->string[k++] = text_cp[j++];
 			if (!k) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Sl option:  No string given\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error -Sl option:  No string given\n");
 				decode_error++;
 			}
 			p->string[k] = 0;
@@ -6624,7 +6624,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			}
 			if (mode == 0) {
 				decode_error = TRUE;
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option:  Symbol type %c is 3-D only\n", symbol_type);
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error -S option:  Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
 		case 'P':
@@ -6666,7 +6666,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			p->symbol = GMT_SYMBOL_CUBE;
 			if (mode == 0) {
 				decode_error = TRUE;
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option:  Symbol type %c is 3-D only\n", symbol_type);
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error -S option:  Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
 		case 'V':
@@ -6771,7 +6771,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			break;
 		default:
 			decode_error = TRUE;
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option:  Unrecognized symbol type %c\n", symbol_type);
+			GMT_report (C, GMT_MSG_FATAL, "Suntax error -S option:  Unrecognized symbol type %c\n", symbol_type);
 			break;
 	}
 	if (p->given_size_x == 0.0 && check) {
@@ -7140,7 +7140,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 	if ((C->current.proj.x_off_supplied && C->current.proj.y_off_supplied) && C->current.ps.is_abs[GMT_X] != C->current.ps.is_abs[GMT_Y]) {
 		error++;
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR: -X -Y must both be absolute or relative\n");
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error: -X -Y must both be absolute or relative\n");
 	}
 	if (C->current.ps.is_abs[GMT_X] && C->current.ps.is_abs[GMT_Y]) C->current.ps.absolute = TRUE;
 
@@ -7223,7 +7223,7 @@ GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYS
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_report (C, GMT_MSG_COMPAT, "Warning:  Unit c (seconds) is deprecated; use s instead.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c (seconds) is deprecated; use s instead.\n");
 			time_system->scale = 1.0;
 			break;
 #endif
@@ -7239,13 +7239,13 @@ GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYS
 	if (gmt_scanf_epoch (C, time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
 
 	if (error & 1) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning:  TIME_UNIT is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: TIME_UNIT is invalid.  Default assumed.\n");
 		GMT_report (C, GMT_MSG_FATAL, "Choose one only from y o d h m s\n");
 		GMT_report (C, GMT_MSG_FATAL, "Corresponding to year month day hour minute second\n");
 		GMT_report (C, GMT_MSG_FATAL, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (error & 2) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning:  TIME_EPOCH format is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: TIME_EPOCH format is invalid.  Default assumed.\n");
 		GMT_report (C, GMT_MSG_FATAL, "    A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
 		GMT_report (C, GMT_MSG_FATAL, "    or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
 		GMT_report (C, GMT_MSG_FATAL, "    An example of a correct format is:  2000-01-01T12:00:00\n");
@@ -7441,7 +7441,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
 		C->PSL = (struct PSL_CTRL *)New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
-			GMT_report (C, -GMT_MSG_FATAL, "GMT Error:  Could not initialize PSL - Aborting.\n");
+			GMT_report (C, -GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
 			return (NULL);
 		}
 	}
@@ -7452,7 +7452,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	sprintf (path, "%s%cconf%cgmt.conf", C->session.SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if (access (path, R_OK)) {
-		GMT_report (C, -GMT_MSG_FATAL, "GMT Error:  Could not find system defaults file - Aborting.\n");
+		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
 		return (NULL);
 	}
 	GMT_loaddefaults (C, path);	/* Load GMT system default settings [and PSL settings if selected] */

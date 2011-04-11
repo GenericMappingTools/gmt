@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -305,7 +305,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_message (GMT, "ERROR -C: Flag must be f, g, or e\n");
+					GMT_message (GMT, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -317,7 +317,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_message (GMT, "ERROR -Da: Start time (%s) in wrong format\n", t);
+							GMT_message (GMT, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -326,7 +326,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_message (GMT, "ERROR -Db : Stop time (%s) in wrong format\n", t);
+							GMT_message (GMT, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -349,7 +349,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 						Ctrl->F.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_message (GMT, "ERROR -T: append m, e, or neither\n");
+						GMT_message (GMT, "Error -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -366,7 +366,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 						Ctrl->G.value[GAP_T] = (GMT_LONG)(atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
-						GMT_message (GMT, "ERROR -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
+						GMT_message (GMT, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
 						n_errors++;
 						break;
 				}
@@ -427,14 +427,14 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 						break;
 				}
 				if (error) {
-					GMT_message (GMT, "ERROR: Unrecognized modifier %c given to -T\n", opt->arg[0]);
+					GMT_message (GMT, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
 					n_errors++;
 				}
 				strcpy (comment, &opt->arg[1]);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
-					GMT_message (GMT, "ERROR: -TT|t|d takes 5 arguments\n");
+					GMT_message (GMT, "Error: -TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
@@ -455,14 +455,14 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "GMT SYNTAX ERROR.  Cannot specify both start time AND start distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "GMT SYNTAX ERROR.  Cannot specify both stop time AND stop distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "GMT SYNTAX ERROR -S: Start distance exceeds stop distance!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "GMT SYNTAX ERROR ERROR -D: Start time exceeds stop time!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0, "GMT SYNTAX -Gd: Must specify a positive gap distance in km!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0, "GMT SYNTAX -Gt: Must specify a positive gap distance in minutes!\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR.  Region is not set\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "GMT SYNTAX ERROR.  Region set incorrectly\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Syntax error.  Cannot specify both start time AND start distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Syntax error.  Cannot specify both stop time AND stop distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Syntax error -S: Start distance exceeds stop distance!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error -D: Start time exceeds stop time!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0, "Syntax error -Gd: Must specify a positive gap distance in km!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0, "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error.  Region is not set\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "Syntax error.  Region set incorrectly\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -582,7 +582,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "ERROR: No cruises given\n");
+		GMT_message (GMT, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 

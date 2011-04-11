@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.3 2011-04-09 03:27:17 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.4 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -557,12 +557,12 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 					if (j < SPECTRUM1D_N_OUTPUT_CHOICES) {
 						Ctrl->C.col[j] = opt->arg[j];
 						if (!strchr ("xycnpago", Ctrl->C.col[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C option.  Unrecognized output choice %c\n", Ctrl->C.col[j]);
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option.  Unrecognized output choice %c\n", Ctrl->C.col[j]);
 							n_errors++;
 						}
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C option: Too many output columns selected: Choose from -Cxycnpago\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Too many output columns selected: Choose from -Cxycnpago\n");
 						n_errors++;
 					}
 				}
@@ -596,9 +596,9 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.size <= 0, "GMT SYNTAX ERROR -S option: segment size must be positive\n");
-	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "GMT SYNTAX ERROR -S option: Segment size not radix 2.  Try %ld or %ld\n", (window_test/2), window_test);
-	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "GMT SYNTAX ERROR -D option: Sampling interval must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.size <= 0, "Syntax error -S option: segment size must be positive\n");
+	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %ld or %ld\n", (window_test/2), window_test);
+	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
 	n_errors += GMT_check_binary_io (GMT, Ctrl->C.active + 1);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

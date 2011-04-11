@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.3 2011-03-28 18:24:05 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -455,15 +455,15 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "GMT SYNTAX ERROR -C.  Need to supply color palette name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "GMT SYNTAX ERROR -D: Cannot open HTML description file %s\n", Ctrl->D.file);
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR.  Binary input data cannot have header -H\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C.  Need to supply color palette name\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -H\n");
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "GMT SYNTAX ERROR.  -Ra without arguments only accepted for single table\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "GMT SYNTAX ERROR.  -S takes scales > 0.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "GMT SYNTAX ERROR.  -Q takes transparencies in range 0-1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "GMT SYNTAX ERROR.  -N+ not valid for lines and polygons\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "GMT SYNTAX ERROR.  -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error.  -Ra without arguments only accepted for single table\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error.  -S takes scales > 0.0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error.  -Q takes transparencies in range 0-1\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error.  -N+ not valid for lines and polygons\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error.  -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -718,17 +718,17 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					break;
 			}
 			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
-				GMT_message (GMT, "ERROR: Could not decode longitude from %s\n", C[GMT_X]);
+				GMT_message (GMT, "Error: Could not decode longitude from %s\n", C[GMT_X]);
 				Return (EXIT_FAILURE);
 			}
 			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
-				GMT_message (GMT, "ERROR: Could not decode latitude from %s\n", C[GMT_Y]);
+				GMT_message (GMT, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 				Return (EXIT_FAILURE);
 			}
 			if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 			if (get_z) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
-					GMT_message (GMT, "ERROR: Could not decode altitude from %s\n", C[GMT_Z]);
+					GMT_message (GMT, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
 					Return (EXIT_FAILURE);
 				}
 				if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
@@ -736,7 +736,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (Ctrl->F.mode == EVENT) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_message (GMT, "ERROR: Could not decode time event from %s\n", C[t1_col]);
+					GMT_message (GMT, "Error: Could not decode time event from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -744,13 +744,13 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!(strcmp (C[t1_col], "NaN")))
 					out[t1_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_message (GMT, "ERROR: Could not decode time span beginning from %s\n", C[t1_col]);
+					GMT_message (GMT, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 				if (!(strcmp (C[t2_col], "NaN")))
 					out[t2_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
-					GMT_message (GMT, "ERROR: Could not decode time span end from %s\n", C[t2_col]);
+					GMT_message (GMT, "Error: Could not decode time span end from %s\n", C[t2_col]);
 					Return (EXIT_FAILURE);
 				}
 			}

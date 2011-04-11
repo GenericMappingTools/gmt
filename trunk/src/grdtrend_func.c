@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -180,7 +180,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -D option:  Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option:  Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -196,7 +196,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -T option:  Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option:  Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -205,7 +205,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->W.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -W option:  Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option:  Must specify file name\n");
 					n_errors++;
 				}
 				/* OK if this file doesn't exist:  */
@@ -217,8 +217,8 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR:  Must specify an input grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "GMT SYNTAX ERROR -N option:  Specify 1-10 model parameters\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error:  Must specify an input grid file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option:  Specify 1-10 model parameters\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 	}
 
 	n_errors += GMT_check_condition (GMT, !((Ctrl->M.mode == RAW_HEADER) + (Ctrl->M.mode == E77_HEADER) + (Ctrl->M.mode == HIST_HEADER) \
-		+ Ctrl->E.active + Ctrl->C.active + (Ctrl->M.mode == FORMATTED_HEADER) + Ctrl->L.active ) == 1, "GMT SYNTAX ERROR:  Specify one of -C, -E, -L, or -M\n");
+		+ Ctrl->E.active + Ctrl->C.active + (Ctrl->M.mode == FORMATTED_HEADER) + Ctrl->L.active ) == 1, "Syntax error:  Specify one of -C, -E, -L, or -M\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -292,7 +292,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
 	if (n_paths == 0) {
-		GMT_message (GMT, "%s: ERROR: No cruises given\n", GMT->init.progname);
+		GMT_message (GMT, "%s: Error: No cruises given\n", GMT->init.progname);
 		Return (EXIT_FAILURE);
 	}
 	

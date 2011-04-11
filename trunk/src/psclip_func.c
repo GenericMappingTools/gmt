@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.8 2011-04-03 07:57:21 guru Exp $
+ *	$Id: psclip_func.c,v 1.9 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 					if (isdigit ((int)opt->arg[k])) Ctrl->C.n = atoi (&opt->arg[k]);
 					else if (opt->arg[k] == 'a') Ctrl->C.n = (Ctrl->C.mode == CLIP_POL) ? PSL_ALL_CLIP_POL : PSL_ALL_CLIP_TXT;
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C:  Correct syntax is -C[s|c|t|p[<n>|a]]\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C:  Correct syntax is -C[s|c|t|p[<n>|a]]\n");
 						n_errors++;
 					}
 				}
@@ -145,8 +145,8 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	}
 
 	if (!Ctrl->C.active) {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = TRUE;	/* -T implies -N */
 	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Option -T ignores all input files\n");

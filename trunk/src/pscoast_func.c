@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.6 2011-04-05 18:48:46 guru Exp $
+ *	$Id: pscoast_func.c,v 1.7 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -290,7 +290,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 			case 'I':
 				Ctrl->I.active = TRUE;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  -I option takes at least one argument\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  -I option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -317,7 +317,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 					default:
 						k = atoi (opt->arg);
 						if (k < 0 || k >= GMT_N_RLEVELS) {
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -I option: Feature not in list!\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -339,7 +339,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 			case 'N':
 				Ctrl->N.active = TRUE;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  -N option takes at least one argument\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  -N option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -357,7 +357,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 					default:
 						k = opt->arg[0] - '1';
 						if (k < 0 || k >= GMT_N_BLEVELS) {
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option: Feature not in list!\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -426,27 +426,27 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GMT_MAX_GSHHS_LEVEL; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "GMT SYNTAX ERROR -W option:  Pen thickness for feature %ld cannot be negative\n", k);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option:  Pen thickness for feature %ld cannot be negative\n", k);
 	}
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "GMT SYNTAX ERROR:  Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "GMT SYNTAX ERROR:  Cannot combine -C, -G, -S while clipping\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "GMT SYNTAX ERROR:  Must choose between clipping land OR water\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "GMT SYNTAX ERROR:  Must choose between dumping and clipping/plotting\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error:  Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "Syntax error:  Cannot combine -C, -G, -S while clipping\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error:  Must choose between clipping land OR water\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error:  Must choose between dumping and clipping/plotting\n");
 	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0, "-JE not implemented for global clipping - I quit\n");
 	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active), "Cannot do clipping AND draw coastlines, rivers, or borders\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "GMT SYNTAX ERROR -M:  Must specify one of -I, -N, and -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M:  Must specify one of -I, -N, and -W\n");
 
 	if (Ctrl->I.active) {
 		for (k = Ctrl->I.n_rlevels = 0; k < GMT_N_RLEVELS; k++) {
 			if (!Ctrl->I.use[k]) continue;
-			n_errors += GMT_check_condition (GMT, Ctrl->I.pen[k].width < 0.0, "GMT SYNTAX ERROR -I option:  Pen thickness cannot be negative\n");
+			n_errors += GMT_check_condition (GMT, Ctrl->I.pen[k].width < 0.0, "Syntax error -I option:  Pen thickness cannot be negative\n");
 			Ctrl->I.use[Ctrl->I.n_rlevels] = k;
 			Ctrl->I.pen[Ctrl->I.n_rlevels] = Ctrl->I.pen[k];
 			Ctrl->I.n_rlevels++;
@@ -456,7 +456,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	if (Ctrl->N.active) {
 		for (k = Ctrl->N.n_blevels = 0; k < GMT_N_BLEVELS; k++) {
 			if (!Ctrl->N.use[k]) continue;
-			n_errors += GMT_check_condition (GMT, Ctrl->N.pen[k].width < 0.0, "GMT SYNTAX ERROR -N option:  Pen thickness cannot be negative\n");
+			n_errors += GMT_check_condition (GMT, Ctrl->N.pen[k].width < 0.0, "Syntax error -N option:  Pen thickness cannot be negative\n");
 			Ctrl->N.use[Ctrl->N.n_blevels] = k + 1;
 			Ctrl->N.pen[Ctrl->N.n_blevels] = Ctrl->N.pen[k];
 			Ctrl->N.n_blevels++;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: pssegy_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -280,13 +280,13 @@ GMT_LONG GMT_pssegy_parse (struct GMTAPI_CTRL *C, struct PSSEGY_CTRL *Ctrl, stru
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "GMT SYNTAX ERROR.  Option -T requires a file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "GMT SYNTAX ERROR.  Cannot file file %s\n", Ctrl->T.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "GMT SYNTAX ERROR -E.  slop cannot be negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "GMT SYNTAX ERROR.  Must specify -F with -I\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "GMT SYNTAX ERROR.  Must specify -F or -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "GMT SYNTAX ERROR.  Must specify a positive deviation\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == PLOT_CDP && Ctrl->S.mode == PLOT_OFFSET, "GMT SYNTAX ERROR.  Cannot specify more than one trace location key\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error.  Option -T requires a file name\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "Syntax error.  Cannot file file %s\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "Syntax error -E.  slop cannot be negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error.  Must specify -F with -I\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error.  Must specify -F or -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error.  Must specify a positive deviation\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == PLOT_CDP && Ctrl->S.mode == PLOT_OFFSET, "Syntax error.  Cannot specify more than one trace location key\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -495,7 +495,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_FAILURE);
 	}
 
-	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "WARNING: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
 	if (Ctrl->Q.value[Y_ID]) GMT_message (GMT, "Overriding sample interval dy = %f\n", Ctrl->Q.value[Y_ID]);
 
 
@@ -564,7 +564,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "pssegy: WARNING data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_message (GMT, "pssegy: Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */

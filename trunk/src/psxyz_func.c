@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.5 2011-04-05 19:16:05 guru Exp $
+ *	$Id: psxyz_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -D option: Give x and y [and z] offsets\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Give x and y [and z] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -291,12 +291,12 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && GMT_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, TRUE), "GMT SYNTAX ERROR -S option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR.  Binary input data cannot have header -h\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "GMT SYNTAX ERROR.  Binary input data cannot have symbol information\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "GMT SYNTAX ERROR.  -W option +|-<pen> requires the -C option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && GMT_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, TRUE), "Syntax error -S option\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -h\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error.  Binary input data cannot have symbol information\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error.  -W option +|-<pen> requires the -C option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

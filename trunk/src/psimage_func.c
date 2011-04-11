@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.10 2011-04-09 16:24:05 jluis Exp $
+ *	$Id: psimage_func.c,v 1.11 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 			case 'C':	/* Image placement */
 				Ctrl->C.active = TRUE;
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, Ctrl->C.justify);
-				n_errors += GMT_check_condition (GMT, n < 2 || n > 3, "ERROR: Syntax is -C<xpos>/<ypos>[/<justify>]\n");
+				n_errors += GMT_check_condition (GMT, n < 2 || n > 3, "Error: Syntax is -C<xpos>/<ypos>[/<justify>]\n");
 				Ctrl->C.x = GMT_to_inch (GMT, txt_a);
 				Ctrl->C.y = GMT_to_inch (GMT, txt_b);
 				if (n == 2) strcpy (Ctrl->C.justify, "LB");	/* Default positioning */
@@ -221,7 +221,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				Ctrl->N.active = TRUE;
 				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx, &Ctrl->N.ny);
 				if (n == 1) Ctrl->N.ny = Ctrl->N.nx;
-				n_errors += GMT_check_condition (GMT, n < 1, "GMT SYNTAX ERROR -N option:  Must values for replication\n");
+				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option:  Must values for replication\n");
 				break;
 			case 'W':	/* Image width */
 				Ctrl->W.active = TRUE;
@@ -247,12 +247,12 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR:  Must specify a single input raster or EPS file\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error:  Must specify a single input raster or EPS file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.width <= 0.0 && Ctrl->E.dpi <= 0.0, "Must specify image width (-W) or dpi (-E)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.nx < 1 || Ctrl->N.ny < 1), 
-			"GMT SYNTAX ERROR -N option:  Must specify positive values for replication\n");
+			"Syntax error -N option:  Must specify positive values for replication\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
-			"GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
+			"Syntax error -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

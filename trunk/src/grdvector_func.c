@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdvector_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -199,12 +199,12 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 				if (opt->arg[j]) {	/* Normalize option used */
 					Ctrl->Q.norm = GMT_to_inch (GMT, &opt->arg[j+1]);
-					n_errors += GMT_check_condition (GMT, Ctrl->Q.norm <= 0.0, "GMT SYNTAX ERROR -Qn option:  No reference length given\n");
+					n_errors += GMT_check_condition (GMT, Ctrl->Q.norm <= 0.0, "Syntax error -Qn option:  No reference length given\n");
 					opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 				}
 				if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
 					if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Q option:  Could not decode arrowwidth/headlength/headwidth\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option:  Could not decode arrowwidth/headlength/headwidth\n");
 						n_errors++;
 					}
 					else {
@@ -221,7 +221,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[j];
 				else if (! (opt->arg[j] == '.' || isdigit ((int)opt->arg[j]))) {	/* Not decimal point or digit means trouble */
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option:  Unrecognized unit %c\n", opt->arg[j]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option:  Unrecognized unit %c\n", opt->arg[j]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
@@ -253,16 +253,16 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option:  Must specify positive increments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "GMT SYNTAX ERROR -S option:  Scale must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "GMT SYNTAX ERROR -Sl option:  Length must be positive\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option:  Must specify positive increments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option:  Scale must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option:  Length must be positive\n");
 	if (Ctrl->Q.active && Ctrl->Q.norm > 0.0) shrink_properties = TRUE;
-	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && shrink_properties, "GMT SYNTAX ERROR -Sl, -Q options:  Cannot use -Q..n<size> with -Sl\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "GMT SYNTAX ERROR -Z option:  Azimuths not valid input for Cartesian data\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "GMT SYNTAX ERROR -C option:  Must specify a color palette table\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active), "GMT SYNTAX ERROR:  Must specify at least one of -G, -W, -C\n");
-	n_errors += GMT_check_condition (GMT, n_files != 2, "GMT SYNTAX ERROR:  Must specify two input grid files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && shrink_properties, "Syntax error -Sl, -Q options:  Cannot use -Q..n<size> with -Sl\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active, "Syntax error -Z option:  Azimuths not valid input for Cartesian data\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option:  Must specify a color palette table\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active), "Syntax error:  Must specify at least one of -G, -W, -C\n");
+	n_errors += GMT_check_condition (GMT, n_files != 2, "Syntax error:  Must specify two input grid files\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.4 2011-04-11 20:59:21 guru Exp $
+ *	$Id: grdproject_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				Ctrl->C.active = TRUE;
 				if (opt->arg[0]) 	/* Also gave shifts */
 					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
-						 "GMT SYNTAX ERROR.  Expected -C[<false_easting>/<false_northing>]\n");
+						 "Syntax error.  Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
 				Ctrl->D.active = TRUE;
@@ -226,14 +226,14 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 
 	GMT_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.active, &Ctrl->D.active);
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "GMT SYNTAX ERROR:  Can specify only one of -A and -M\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "GMT SYNTAX ERROR:  Must specify only one of -D or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "GMT SYNTAX ERROR -D option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "GMT SYNTAX ERROR -E option.  Must specify positive dpi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), "GMT SYNTAX ERROR -S option:  threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "Syntax error:  Can specify only one of -A and -M\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error:  Must specify only one of -D or -E\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "Syntax error -D option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "Syntax error -E option.  Must specify positive dpi\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), "Syntax error -S option:  threshold must be in [0,1] range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

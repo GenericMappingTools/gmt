@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gravfft.c,v 1.2 2011-03-22 21:46:04 jluis Exp $
+ *	$Id: gravfft.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -147,7 +147,7 @@ int main (int argc, char **argv) {
 								from_top = TRUE;
 								break;
 							default:
-								fprintf (stderr, "%s SYNTAX ERROR -C: [%s] is not valid, chose from [tbw]\n", GMT_program, &t_or_b[n]);
+								fprintf (stderr, "%s: Syntax error -C: [%s] is not valid, chose from [tbw]\n", GMT_program, &t_or_b[n]);
                                         			error++;
 								break;
 						}
@@ -155,7 +155,7 @@ int main (int argc, char **argv) {
 					break;
                                 case 'D':
                                         if (!(&argv[i][2])) {
-						fprintf (stderr, "%s: GMT SYNTAX ERROR -D option: must give density contrast\n", GMT_program);
+						fprintf (stderr, "%s: Syntax error -D option: must give density contrast\n", GMT_program);
                                         	error++;
                                         }
                                         rho = atof (&argv[i][2]);
@@ -203,7 +203,7 @@ int main (int argc, char **argv) {
 											k_or_m = 1000.;
 											break;
 										default:
-											fprintf (stderr, "%s SYNTAX ERROR -I : [%s] is not valid, chose from [wbct]\n", GMT_program, &adm_opts[n]);
+											fprintf (stderr, "%s: Syntax error -I : [%s] is not valid, chose from [wbct]\n", GMT_program, &adm_opts[n]);
                                         						error++;
 											break;
 									}
@@ -365,7 +365,7 @@ int main (int argc, char **argv) {
                 fprintf (stderr,"\t   -Ks multiplies the bathymetry grid by -1. Used for changing z sign\n");
 		fprintf (stderr,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 		fprintf (stderr,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
-		fprintf (stderr,"\t   WARNING: both -D -H and -Q will implicitly set -L.\n");
+		fprintf (stderr,"\t   Warning: both -D -H and -Q will implicitly set -L.\n");
                 fprintf (stderr,"\t   Append m or h to just remove the mean or half-way from data and then exit\n");
 		fprintf (stderr,"\t-l Removes half-way from bathymetry data [Default removes mean].\n");
 		fprintf (stderr,"\t   Append n to do not remove any constant from input bathymetry data.\n");
@@ -389,15 +389,15 @@ int main (int argc, char **argv) {
 
 	if (theor_only) {
 		if (!isostasy) {
-			fprintf (stderr, "%s: ERROR: -A not set\n", GMT_program); 
+			fprintf (stderr, "%s: Error: -A not set\n", GMT_program); 
 			error++;
 		}
 		if (from_top && !zm) {
-			fprintf (stderr, "%s: ERROR: -Z not used (must give moho compensation depth\n", GMT_program); 
+			fprintf (stderr, "%s: Error: -Z not used (must give moho compensation depth\n", GMT_program); 
 			error++;
 		}
 		if (from_below && !(zm && zl)) {
-			fprintf (stderr, "%s: ERROR: -Z not used (must give moho and swell compensation depths\n", GMT_program); 
+			fprintf (stderr, "%s: Error: -Z not used (must give moho and swell compensation depths\n", GMT_program); 
 			error++;
 		}
 		if (error) exit (EXIT_FAILURE);
@@ -428,53 +428,53 @@ int main (int argc, char **argv) {
 	/* -----------------------------------------  ----------------------------------------- */
 
 	if (!infile) {
-		fprintf (stderr, "%s: ERROR: no bathymetry file given\n", GMT_program);
+		fprintf (stderr, "%s: Error: no bathymetry file given\n", GMT_program);
 		error++;
 	}
 	if(flex_file && !isostasy) {
-		fprintf (stderr, "%s: ERROR: -Q implies also -A\n", GMT_program); 
+		fprintf (stderr, "%s: Error: -Q implies also -A\n", GMT_program); 
 		error++;
 	}
 	if(moho_contrib && !isostasy) {
-		fprintf (stderr, "%s: ERROR: -H implies also -A\n", GMT_program); 
+		fprintf (stderr, "%s: Error: -H implies also -A\n", GMT_program); 
 		error++;
 	}
 	if(flex_file && !zm) {
-		fprintf (stderr, "%s: ERROR: for creating the flex_file I need to know it's average depth (see -Z<zm>)\n", GMT_program); 
+		fprintf (stderr, "%s: Error: for creating the flex_file I need to know it's average depth (see -Z<zm>)\n", GMT_program); 
 		error++;
 	}
 	if(moho_contrib && !zm) {
-		fprintf (stderr, "%s: ERROR: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n", GMT_program); 
+		fprintf (stderr, "%s: Error: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n", GMT_program); 
 		error++;
 	}
 	if (swell && !isostasy) {
-		fprintf (stderr, "%s: ERROR: -S implies also -A\n", GMT_program); 
+		fprintf (stderr, "%s: Error: -S implies also -A\n", GMT_program); 
 		error++;
 	}
 	if (((isostasy && !moho_contrib) && n_terms > 1) || (swell && n_terms > 1)) {
-		fprintf (stderr, "%s: WARNING: Due to a bug, or a method limitation (I didn't figure that out yet)\n", GMT_program);
+		fprintf (stderr, "%s: Warning: Due to a bug, or a method limitation (I didn't figure that out yet)\n", GMT_program);
 		fprintf (stderr, "with the selected options, the number of terms in Parker expansion is reset to one\n"); 
 		fprintf (stderr, "See examples in the manual if you realy want to compute with higher order expansion\n\n"); 
 		n_terms = 1;
 	}
 	if (!(simple_grav || isostasy || swell || admittance || fft_grids)) {
-		fprintf (stderr, "%s: ERROR: must set density contrast\n", GMT_program); 
+		fprintf (stderr, "%s: Error: must set density contrast\n", GMT_program); 
 		error++;
 	}
 	if (admittance && !in_grav_file) {
-		fprintf (stderr, "%s: ERROR: for admittance|coherence need a gravity or geoide grid\n", GMT_program); 
+		fprintf (stderr, "%s: Error: for admittance|coherence need a gravity or geoide grid\n", GMT_program); 
 		error++;
 	}
 	if (from_below && from_top) {
-		fprintf (stderr, "%s: ERROR: -I choose only one model\n", GMT_program); 
+		fprintf (stderr, "%s: Error: -I choose only one model\n", GMT_program); 
 		error++;
 	}
 	if (admittance && from_top && !(rw && rl && rm && zm)) {
-		fprintf (stderr, "%s: ERROR: not all parameters needed for computing \"loading from top\" admittance were set\n", GMT_program); 
+		fprintf (stderr, "%s: Error: not all parameters needed for computing \"loading from top\" admittance were set\n", GMT_program); 
 		error++;
 	}
 	if (admittance && from_below && !(rw && rl && rm && zm && zl)) {
-		fprintf (stderr, "%s: ERROR: not all parameters needed for computing \"loading from below\" admittance were set\n", GMT_program); 
+		fprintf (stderr, "%s: Error: not all parameters needed for computing \"loading from below\" admittance were set\n", GMT_program); 
 		error++;
 	}
 
@@ -596,7 +596,7 @@ int main (int argc, char **argv) {
 	}
 
 	if (!outfile) {		/* Doing this test before was too complicated */
-		fprintf (stderr, "%s: ERROR: no output file name given\n", GMT_program);
+		fprintf (stderr, "%s: Error: no output file name given\n", GMT_program);
 		exit (EXIT_FAILURE);
 	}
 

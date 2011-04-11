@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.5 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_sync.c,v 1.6 2011-04-11 21:15:32 remko Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -41,7 +41,7 @@ int main (int argc, char **argv) {
 		while (pol_readheader (&P[res][n_id[res]].h, fp) == 1) {
 			P[res][n_id[res]].p = (struct LONGPAIR *) GMT_memory (VNULL, P[res][n_id[res]].h.n, sizeof (struct LONGPAIR), "polygon_hierarchy");
 			if (pol_fread (P[res][n_id[res]].p, P[res][n_id[res]].h.n, fp) != P[res][n_id[res]].h.n) {
-				fprintf(stderr,"polygon_xover:  ERROR  reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
+				fprintf(stderr,"polygon_xover:  Error reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
 				exit (EXIT_FAILURE);
 			}
 			n_id[res]++;
@@ -64,12 +64,12 @@ int main (int argc, char **argv) {
 		sscanf (line, "%d %d %d %d %d %d %d %d %d %d ", &link[0][id1], &level[0][id1], &link[1][id1], &level[1][id1], &link[2][id1], &level[2][id1], &link[3][id1], &level[3][id1], &link[4][id1], &level[4][id1]);
 		for (res = 0; res < 5; res++) {
 			if (res > 0 && link[res][id1] >= 0 && level[res][id1] != level[FULL][id1]) {
-				fprintf (stderr, "ERROR: Siblings of pol %d differ in levels\n", link[FULL][id1]);
+				fprintf (stderr, "Error: Siblings of pol %d differ in levels\n", link[FULL][id1]);
 				error++;
 				printf ("%s", line);
 			}
 			if (res > 0 && link[res][id1] >= 0 && link[res-1][id1] == -1) {
-				fprintf (stderr, "ERROR: Siblings of pol %d missing in a higher resolution\n", link[FULL][id1]);
+				fprintf (stderr, "Error: Siblings of pol %d missing in a higher resolution\n", link[FULL][id1]);
 				error++;
 				printf ("%s", line);
 			}
@@ -87,11 +87,11 @@ int main (int argc, char **argv) {
 				for (id1 = N_CONTINENTS, father = -1; id1 < n_id[FULL] && father == -1; id1++) if (link[res][id1] == id2) father = id1;	/* Get id to full version */
 			}
 			if (father == -1) {
-				printf ("ERROR: Cannot find father of %c id = %d!\n", kind[res], id2);
+				printf ("Error: Cannot find father of %c id = %d!\n", kind[res], id2);
 				error++;
 			}
 			else if (P[res][id2].h.river != P[FULL][father].h.river) {
-				printf ("ERROR: Sibling of river pol %d has wrong river value (%d) for %c id = %d\n", father, P[res][id2].h.river, kind[res], id2);
+				printf ("Error: Sibling of river pol %d has wrong river value (%d) for %c id = %d\n", father, P[res][id2].h.river, kind[res], id2);
 				error++;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.27 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.28 2011-04-11 21:15:32 remko Exp $
  */
 #include "wvs.h"
 
@@ -275,7 +275,7 @@ int main (int argc, char **argv) {
 				parent = blob[id1].inside[i]; /* Found the polygon one level up */
 			}
 		}
-		if (parent == -1) fprintf (stderr, "ERROR: Polygon %d has no parent!\n", blob[id1].h.id);
+		if (parent == -1) fprintf (stderr, "Error: Polygon %d has no parent!\n", blob[id1].h.id);
 		if (parent != blob[id1].h.parent) fprintf (stderr, "Reset polygon %d parent from %d to %d\n", blob[id1].h.id, blob[id1].h.parent, parent);
 		blob[id1].h.parent = parent;
 		if (parent != -1) fprintf (fpr, "%d is parent of %d\n", blob[id1].h.parent, blob[id1].h.id);

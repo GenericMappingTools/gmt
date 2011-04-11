@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.2 2011-03-15 02:06:38 guru Exp $
+ *	$Id: x2sys_merge_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -106,11 +106,11 @@ GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files > 0, "GMT SYNTAX ERROR: No command-line input iles allowed\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->A.active || !Ctrl->A.file, "GMT SYNTAX ERROR: Missing Base COEs database file. -A is mandatory\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->M.active || !Ctrl->M.file, "GMT SYNTAX ERROR: Missing Updating COEs database file. -M is mandatory\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && !access (Ctrl->A.file, F_OK), "GMT SYNTAX ERROR: Unable to find crossover file %s\n", Ctrl->A.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !access (Ctrl->M.file, F_OK), "GMT SYNTAX ERROR: Unable to find crossover file %s\n", Ctrl->M.file);
+	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No command-line input iles allowed\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->A.active || !Ctrl->A.file, "Syntax error: Missing Base COEs database file. -A is mandatory\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->M.active || !Ctrl->M.file, "Syntax error: Missing Updating COEs database file. -M is mandatory\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && !access (Ctrl->A.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->A.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !access (Ctrl->M.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->M.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -143,12 +143,12 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_message (GMT, "ERROR: Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_message (GMT, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_message (GMT, "ERROR: Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_message (GMT, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
 		Return (EXIT_FAILURE);
 	}
 

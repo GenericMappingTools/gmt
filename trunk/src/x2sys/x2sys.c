@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.152 2011-03-25 22:17:42 guru Exp $
+ *	$Id: x2sys.c,v 1.153 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -124,7 +124,7 @@ void gmtmggpath_init (struct GMT_CTRL *C) {
 	n_gmtmgg_paths = 0;
 
 	if ((fp = fopen (line, "r")) == NULL) {
-		fprintf (stderr, "GMT Warning: path file %s for *.gmt files not found\n", line);
+		fprintf (stderr, "Warning: path file %s for *.gmt files not found\n", line);
 		fprintf (stderr, "(Will only look in current directory for such files)\n");
 		return;
 	}
@@ -393,7 +393,7 @@ GMT_LONG x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO 
 			s->use_column[j] = 1;
 		}
 		else {
-			GMT_message (C, "X2SYS: ERROR: Unknown column name %s\n", p);
+			GMT_message (C, "X2SYS: Error: Unknown column name %s\n", p);
 			return (X2SYS_BAD_COL);
 		}
 		i++;
@@ -1467,7 +1467,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
-		GMT_message (C, "%s: ERROR: Unable to open crossover file %s\n", C->init.progname, dbase);
+		GMT_message (C, "%s: Error: Unable to open crossover file %s\n", C->init.progname, dbase);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1483,7 +1483,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		 */
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
-				GMT_message (C, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", C->init.progname, dbase, &line[7], S->TAG);
+				GMT_message (C, "%s: Error: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", C->init.progname, dbase, &line[7], S->TAG);
 				exit (EXIT_FAILURE);
 			}
 			continue;	/* Goto next record */
@@ -1515,12 +1515,12 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 
 	our_item -= 10;		/* Account for the 10 common items */
 	if (our_item < 0) {
-		GMT_message (C, "%s: ERROR: Crossover file %s does not have the specified column %s - aborting\n", C->init.progname, dbase, fflag);
+		GMT_message (C, "%s: Error: Crossover file %s does not have the specified column %s - aborting\n", C->init.progname, dbase, fflag);
 		exit (EXIT_FAILURE);
 	}
 
 	if (ignorefile && (k = x2sys_read_list (C, ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
-		GMT_message (C, "%s: ERROR: Ignore file %s cannot be read - aborting\n", C->init.progname, ignorefile);
+		GMT_message (C, "%s: Error: Ignore file %s cannot be read - aborting\n", C->init.progname, ignorefile);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1596,11 +1596,11 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				P[p].start[k] = P[p].stop[k] = C->session.d_NaN;
 			else {
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
-					GMT_message (C, "%s: ERROR: Header time specification tstart%ld (%s) in wrong format\n", C->init.progname, (k+1), start[k]);
+					GMT_message (C, "%s: Error: Header time specification tstart%ld (%s) in wrong format\n", C->init.progname, (k+1), start[k]);
 					exit (EXIT_FAILURE);
 				}
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
-					GMT_message (C, "%s: ERROR: Header time specification tstop%ld (%s) in wrong format\n", C->init.progname, (k+1), stop[k]);
+					GMT_message (C, "%s: Error: Header time specification tstop%ld (%s) in wrong format\n", C->init.progname, (k+1), stop[k]);
 					exit (EXIT_FAILURE);
 				}
 			}
@@ -1638,7 +1638,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = C->session.d_NaN;
 				else if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
-					GMT_message (C, "%s: ERROR: Time specification t%ld (%s) in wrong format\n", C->init.progname, (i+1), t_txt[i]);
+					GMT_message (C, "%s: Error: Time specification t%ld (%s) in wrong format\n", C->init.progname, (i+1), t_txt[i]);
 					exit (EXIT_FAILURE);
 				}
 			}

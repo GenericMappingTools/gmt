@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.104 2011-04-09 16:35:41 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.105 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1634,7 +1634,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 }
 
 GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode) {
-	GMT_report (C, GMT_MSG_FATAL, "ERROR: Unable to write gdal files.\n");
+	GMT_report (C, GMT_MSG_FATAL, "Error: Unable to write gdal files.\n");
 	return (GMT_NOERROR);
 }
 #endif

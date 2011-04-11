@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_solve_func.c,v 1.2 2011-03-15 02:06:38 guru Exp $
+ *	$Id: x2sys_solve_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -270,10 +270,10 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "GMT SYNTAX ERROR: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode < 0, "GMT SYNTAX ERROR -E: Choose among c, d, g, h, s and t\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s and t\n");
 #ifdef SAVEFORLATER
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == F_IS_DRIFT_T && !Ctrl->I.file, "GMT SYNTAX ERROR -Ed: Solution requires -I<tracklist>\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == F_IS_DRIFT_T && !Ctrl->I.file, "Syntax error -Ed: Solution requires -I<tracklist>\n");
 #endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -376,7 +376,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
-		GMT_message (GMT, "ERROR: -C must specify a single column name\n");
+		GMT_message (GMT, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -436,7 +436,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	fp = GMT->session.std[GMT_IN];
 	if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
-		GMT_message (GMT, "ERROR: Cannot open file %s\n", Ctrl->In.file);
+		GMT_message (GMT, "Error: Cannot open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);	
 	}
 	
@@ -505,7 +505,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Check that IDs are all contained within 0 <= ID < n_tracks and that there are no gaps */
 		n_tracks2 = max_ID - min_ID + 1;
 		if (n_tracks && n_tracks2 != n_tracks) {
-			GMT_message (GMT, "ERROR: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
+			GMT_message (GMT, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
 			error = TRUE;	
 		}
 		else {	/* Either no tracks read before or the two numbers did match properly */
@@ -516,7 +516,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (k = 0; k < n_tracks && check[k]; k++);
 			GMT_free (GMT, check);
 			if (k < n_tracks) {
-				GMT_message (GMT, "ERROR: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
+				GMT_message (GMT, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
 				error = TRUE;
 			}
 		}
@@ -532,7 +532,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		not_used = GMT_fgets (GMT, line, BUFSIZ, fp);	/* Read first line with TAG and column */
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
-			GMT_message (GMT, "ERROR: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
+			GMT_message (GMT, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);	
 		}
 		while (GMT_fgets (GMT, line, BUFSIZ, fp)) {    /* Not yet EOF */
@@ -594,7 +594,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 #ifdef SAVEFORLATER
 					else {
-						GMT_message (GMT, "ERROR: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
+						GMT_message (GMT, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
 						Return (EXIT_FAILURE);					
 					}
 #endif

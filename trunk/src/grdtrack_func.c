@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -198,7 +198,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
-					GMT_report (GMT, GMT_MSG_FATAL, "SYNTAX ERROR -G option: Too many grids (max = %d)\n", MAX_GRIDS);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 				}
 				else {
@@ -206,18 +206,18 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 					Ctrl->G.scale[ng] = 1.0;
 					if (strchr (opt->arg, ',') && !strchr (opt->arg, '?')) {	/* IMG grid file with required parameters */
 						if ((j = sscanf (opt->arg, "%[^,],%lf,%" GMT_LL "d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
-							GMT_report (GMT, GMT_MSG_FATAL, "SYNTAX ERROR -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 							n_errors++;
 						}
 						else
 							Ctrl->G.file[ng] = strdup (line);
 						Ctrl->G.type[ng] = 1;
-						n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "GMT SYNTAX ERROR -G: mode must be in 0-3 range\n");
-						n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "GMT SYNTAX ERROR -G: max latitude should be positive\n");
+						n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
+						n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
 					}
 					else
 						Ctrl->G.file[ng] = strdup (opt->arg);
-					n_errors += GMT_check_condition (GMT, !Ctrl->G.file[ng], "GMT SYNTAX ERROR -G:  Must specify input file\n");
+					n_errors += GMT_check_condition (GMT, !Ctrl->G.file[ng], "Syntax error -G:  Must specify input file\n");
 					ng++;
 				}
 				break;
@@ -232,7 +232,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				else {
 					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-					GMT_report (GMT, GMT_MSG_COMPAT, "GMT Warning: Option -L is obsolete (but is processed correctly).  Please use -f instead.\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is obsolete (but is processed correctly).  Please use -f instead.\n");
 				}
 #endif
 				break;
@@ -279,11 +279,11 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 		}
 	}
 	Ctrl->G.n_grids = ng;
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "GMT SYNTAX ERROR -D:  Must specify file name.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "GMT SYNTAX ERROR:  Must specify -G at least once\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "GMT SYNTAX ERROR -C:  Arguments must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0), "GMT SYNTAX ERROR -Q:  Threshold must be in [0,1] range\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "GMT SYNTAX ERROR:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D:  Must specify file name.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error:  Must specify -G at least once\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C:  Arguments must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0), "Syntax error -Q:  Threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

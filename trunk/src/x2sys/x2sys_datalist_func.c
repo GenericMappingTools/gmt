@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,7 +142,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "GMT SYNTAX ERROR: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

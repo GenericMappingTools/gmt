@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *    $Id: psvelo_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -258,10 +258,10 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	no_size_needed = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE || Ctrl->S.readmode == READ_ANISOTROPY || Ctrl->S.readmode == READ_CROSS || Ctrl->S.readmode == READ_WEDGE );
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, n_set > 1, "GMT SYNTAX ERROR:  Only one -S setting is allowed.\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "GMT SYNTAX ERROR:  Must specify symbol size.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "GMT SYNTAX ERROR:  -D requres -Se|w.\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, n_set > 1, "Syntax error:  Only one -S setting is allowed.\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error:  Must specify symbol size.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error:  -D requres -Se|w.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: rotconverter_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -176,7 +176,7 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 			case 'F':
 				Ctrl->F.active = TRUE;
 				if (strlen (opt->arg) != 1) {
-					GMT_message (GMT, "ERROR: Must specify -F<out>\n");
+					GMT_message (GMT, "Error: Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
@@ -191,7 +191,7 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 						Ctrl->F.mode = FALSE;
 						break;
 					default:
-						GMT_message (GMT, "ERROR: Must specify t|s\n");
+						GMT_message (GMT, "Error: Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -223,9 +223,9 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "GMT SYNTAX ERROR:  Cannot specify both -N and -S!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "GMT SYNTAX ERROR:  -E requires stage rotations on output\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "GMT SYNTAX ERROR:  -G requires total reconstruction rotations on output\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error:  Cannot specify both -N and -S!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error:  -E requires stage rotations on output\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error:  -G requires total reconstruction rotations on output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -327,7 +327,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (j = n_slash = 0; opt->arg[j]; j++) if (opt->arg[j] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
-				GMT_message (GMT, "ERROR: Cannot read file %s\n", opt->arg);
+				GMT_message (GMT, "Error: Cannot read file %s\n", opt->arg);
 				Return (EXIT_FAILURE);
 			}
 			else {	/* Try to decode as a single rotation */
@@ -336,11 +336,11 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = TRUE;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
-					GMT_message (GMT, "ERROR: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
+					GMT_message (GMT, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (EXIT_FAILURE);
 				}
 				if (angle == 0.0) {
-					GMT_message (GMT, "ERROR: Online rotation has zero opening angle\n");
+					GMT_message (GMT, "Error: Online rotation has zero opening angle\n");
 					Return (EXIT_FAILURE);
 				}
 				online_rot = TRUE;

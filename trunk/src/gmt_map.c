@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.268 2011-03-25 22:17:39 guru Exp $
+ *	$Id: gmt_map.c,v 1.269 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ GMT_LONG GMT_quickconic (struct GMT_CTRL *C)
 	}
 
 	if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
-		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Using spherical projection with conformal latitudes\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Using spherical projection with conformal latitudes\n");
 		return (TRUE);
 	}
 	else /* Use full ellipsoidal terms */
@@ -149,7 +149,7 @@ GMT_LONG GMT_quicktm (struct GMT_CTRL *C, double lon0, double limit)
 	while (d_left  < -180.0) d_left  += 360.0;
 	while (d_right < -180.0) d_right += 360.0;
 	if (fabs (d_left) > limit || fabs (d_right) > limit) {
-		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Using spherical projection with authalic latitudes\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Using spherical projection with authalic latitudes\n");
 		return (TRUE);
 	}
 	else /* Use full ellipsoidal terms */
@@ -2427,7 +2427,7 @@ GMT_LONG GMT_map_init_linear (struct GMT_CTRL *C) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (C->common.R.wesn[XLO] <= 0.0 || C->common.R.wesn[XHI] <= 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n");
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			xmin = (C->current.proj.xyz_pos[GMT_X]) ? d_log10 (C, C->common.R.wesn[XLO]) : d_log10 (C, C->common.R.wesn[XHI]);
@@ -2454,7 +2454,7 @@ GMT_LONG GMT_map_init_linear (struct GMT_CTRL *C) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (C->common.R.wesn[YLO] <= 0.0 || C->common.R.wesn[YHI] <= 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n");
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Jx option:  Limits must be positive for log10 option\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			ymin = (C->current.proj.xyz_pos[GMT_Y]) ? d_log10 (C, C->common.R.wesn[YLO]) : d_log10 (C, C->common.R.wesn[YHI]);
@@ -2516,7 +2516,7 @@ GMT_LONG GMT_map_init_polar (struct GMT_CTRL *C)
 	GMT_vpolar (C, C->current.proj.pars[1]);
 	if (C->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
 		if (C->common.R.wesn[YLO] < 0.0 || C->common.R.wesn[YHI] > 90.0) {
-			GMT_report (C, GMT_MSG_FATAL, "ERROR: -JP...r for elevation plots requires s >= 0 and n <= 90!\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: -JP...r for elevation plots requires s >= 0 and n <= 90!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (GMT_IS_ZERO (90.0 - C->common.R.wesn[YHI])) C->current.proj.edge[2] = FALSE;
@@ -2562,7 +2562,7 @@ GMT_LONG GMT_map_init_merc (struct GMT_CTRL *C) {
 		D = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].eq_radius / C->current.proj.GMT_lat_swap_vals.rm;
 	}
 	if (C->common.R.wesn[YLO] <= -90.0 || C->common.R.wesn[YHI] >= 90.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -R option:  Cannot include south/north poles with Mercator projection!\n");
+		GMT_report (C, GMT_MSG_FATAL, "Syntax error -R option:  Cannot include south/north poles with Mercator projection!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
@@ -2987,7 +2987,7 @@ void GMT_get_origin (struct GMT_CTRL *C, double lon1, double lat1, double lon_p,
 		if (c < 90.0) az += 180.0;
 		*lat2 = d_asind (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
 		*lon2 = lon1 + d_atan2d (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
-		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Correct projection origin = %g/%g\n", *lon2, *lat2);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Correct projection origin = %g/%g\n", *lon2, *lat2);
 	}
 	else {
 		*lon2 = lon1;
@@ -6951,7 +6951,7 @@ GMT_LONG GMT_init_three_D (struct GMT_CTRL *C) {
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (C->common.R.wesn[ZLO] <= 0.0 || C->common.R.wesn[ZHI] <= 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR for -Jz -JZ option: limits must be positive for log10 projection\n");
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error for -Jz -JZ option: limits must be positive for log10 projection\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			zmin = (C->current.proj.xyz_pos[GMT_Z]) ? d_log10 (C, C->common.R.wesn[ZLO]) : d_log10 (C, C->common.R.wesn[ZHI]);
@@ -7329,7 +7329,7 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 	if (C->current.map.width > 400.0 && !C->PSL) {	/* PSL not active so we assume this is ***project calling */
 		search = FALSE;	/* Safe-guard that prevents region search below for mapproject and others (400 inch = ~> 10 meters) */
-		GMT_report (C, GMT_MSG_DEBUG, "WARNING: GMT_map_setup perimeter search skipped due to excessive (> 10m) plot size; probably a mapproject process.\n");
+		GMT_report (C, GMT_MSG_DEBUG, "Warning: GMT_map_setup perimeter search skipped due to excessive (> 10m) plot size; probably a mapproject process.\n");
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
@@ -7425,7 +7425,7 @@ GMT_LONG GMT_init_distaz (struct GMT_CTRL *C, char c, GMT_LONG mode, GMT_LONG ty
 			break;
 			
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR.  Distance units must be one of %s|X|C|S|P\n", GMT_LEN_UNITS_DISPLAY);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error.  Distance units must be one of %s|X|C|S|P\n", GMT_LEN_UNITS_DISPLAY);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}

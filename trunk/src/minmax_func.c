@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *    $Id: minmax_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -A. Flags are a|f|s.\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A. Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -179,7 +179,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -E. Flags are L|l|H|h.\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E. Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -217,11 +217,11 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 		Ctrl->I.inc[1] = Ctrl->I.inc[0];
 		Ctrl->I.ncol = 2;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "GMT SYNTAX ERROR.  -Ip requires -C\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "GMT SYNTAX ERROR.  Only one of -I and -T can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "GMT SYNTAX ERROR -T option.  Must specify a positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error.  -Ip requires -C\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error.  Only one of -I and -T can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option.  Must specify a positive increment\n");
 	for (j = 0; Ctrl->I.active && j < Ctrl->I.ncol; j++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[j] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[j] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -437,11 +437,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -E option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
+  				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -T option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;

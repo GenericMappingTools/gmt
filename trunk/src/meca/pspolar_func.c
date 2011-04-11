@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -290,7 +290,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "GMT SYNTAX ERROR -S option:  Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_message (GMT, "Syntax error -S option:  Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				break;
@@ -345,9 +345,9 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.ech <= 0.0, "GMT SYNTAX ERROR:  -M must specify a size\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "GMT SYNTAX ERROR:  -D, -M, -S must be set together\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error:  -M must specify a size\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error:  -D, -M, -S must be set together\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

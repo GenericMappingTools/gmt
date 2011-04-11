@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.39 2011-03-25 22:32:45 guru Exp $
+ *	$Id: gmt_vector.c,v 1.40 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -585,7 +585,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 
 		/* Follow great circle */
 		else if ((theta = d_acosd (GMT_dot3v (C, a, b))) == 180.0)	/* trouble, no unique great circle */
-			GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Two points in input list are antipodal - no resampling taken place!\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
 
 		else if ((n_step = irint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;

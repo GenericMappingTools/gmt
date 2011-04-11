@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.10 2011-04-09 18:02:05 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.11 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -264,24 +264,24 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 	if (Ctrl->D.active) {} else
 #endif
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, 
-					"GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+					"Syntax error:  Must specify a map projection with the -J option\n");
 #ifdef USE_GDAL
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb && !Ctrl->D.active, 
-					"GMT SYNTAX ERROR:  Must specify color palette table\n");
+					"Syntax error:  Must specify color palette table\n");
 #else
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb, 
-					"GMT SYNTAX ERROR:  Must specify color palette table\n");
+					"Syntax error:  Must specify color palette table\n");
 #endif
 	n_errors += GMT_check_condition (GMT, !(n_files == 1 || n_files == 3), 
-					"GMT SYNTAX ERROR:  Must specify one (or three) input file(s)\n");
+					"Syntax error:  Must specify one (or three) input file(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, 
-					"GMT SYNTAX ERROR -I option:  Must specify intensity file\n");
+					"Syntax error -I option:  Must specify intensity file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0, 
-					"GMT SYNTAX ERROR -E option:  dpi must be positive\n");
+					"Syntax error -E option:  dpi must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
-					"GMT SYNTAX ERROR -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
+					"Syntax error -G option:  Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), 
-					"GMT SYNTAX ERROR -S option:  threshold must be in [0,1] range\n");
+					"Syntax error -S option:  threshold must be in [0,1] range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -396,11 +396,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.active) {
 		/* One more test though */
 		if (Ctrl->I.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR cannot use -D and -I options.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error cannot use -D and -I options.\n");
 			Return (EXIT_FAILURE);
 		}
 		if (Ctrl->D.mode && !GMT->common.R.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING: -Dr without -R makes no sense. Ignoring -Dr.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = FALSE;
 		}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.309 2011-04-06 02:44:47 guru Exp $
+ *	$Id: gmt_plot.c,v 1.310 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2390,7 +2390,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 	switch (ms->measure) {	/* Convert bar_length to km */
 #ifdef GMT_COMPAT
 		case 'm':
-			GMT_report (C, GMT_MSG_COMPAT, "GMT Warning: Distance unit m is deprecated; use M for statute miles\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
 #endif
 		case 'M':	/* Statute miles instead */
 			unit = 1;
@@ -2837,7 +2837,7 @@ GMT_LONG custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBOL_I
 			result = GMT_is_dnan (size[s->var]);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Unrecognized symbol macro operator (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol macro operator (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (EXIT_FAILURE);
 			break;
 		
@@ -2887,7 +2887,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, 
 				found_elseif = !skip[level];
 			}
 			if (level == 10) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (s->conditional == 4) level--, found_elseif = FALSE;	/* Simply reduce indent */
@@ -2970,7 +2970,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, 
 
 #ifdef GMT_COMPAT
 			case (GMT_LONG)'C':
-				GMT_report (C, GMT_MSG_COMPAT, "GMT Warning: Circle macro symbol C is deprecated; use c instead\n");
+				GMT_report (C, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
 				s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 #endif
 			case GMT_SYMBOL_CROSS:
@@ -3042,7 +3042,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, 
 				break;
 
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: Unrecognized symbol code (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol code (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
 				GMT_exit (EXIT_FAILURE);
 				break;
 		}

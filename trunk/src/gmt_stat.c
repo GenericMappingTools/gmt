@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.76 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_stat.c,v 1.77 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -163,7 +163,7 @@ GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double
 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = C->session.d_NaN;
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test_new:  ERROR:  Bad argument(s).\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test_new:  Error:  Bad argument(s).\n");
 		return (-1);
 	}
 

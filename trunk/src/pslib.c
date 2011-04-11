@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.250 2011-04-05 18:48:46 guru Exp $
+ *	$Id: pslib.c,v 1.251 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -526,7 +526,7 @@ PSL_LONG PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label,
 	val0 = MIN(PSL->internal.axis_limit[k], PSL->internal.axis_limit[k+1]);
 	val1 = MAX(PSL->internal.axis_limit[k], PSL->internal.axis_limit[k+1]);
 	if ((val1 - val0) == 0.0) {
-		PSL_message (PSL, PSL_MSG_FATAL, "ERROR: Axis val0 == val1!\n");
+		PSL_message (PSL, PSL_MSG_FATAL, "Error: Axis val0 == val1!\n");
 		return (PSL_BAD_RANGE);
 	}
 	reverse = (PSL->internal.axis_limit[k] > PSL->internal.axis_limit[k+1]);

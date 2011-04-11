@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.152 2011-04-09 16:26:34 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.153 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -407,7 +407,7 @@ GMT_LONG GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *h
 	GMT_grd_get_units (C, header);
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
-	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "GMT Warning: scale_factor should not be 0.\n");
+	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 0), file);
 	GMT_set_grddim (C, header);	/* Set all integer dimensions and xy_off */
 
@@ -430,7 +430,7 @@ GMT_LONG GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
 		header->z_scale_factor = 1.0;
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
@@ -474,7 +474,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 		header->nm = GMT_get_nm (header->nx, header->ny);
 		GMT_setnval (header->BC, 4, GMT_BC_IS_DATA);
 	}
-	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "GMT Warning: scale_factor should not be 0.\n");
+	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_grd_setpad (header, pad);		/* Copy the pad to the header */
 	GMT_set_grddim (C, header);		/* Update all dimensions */
 	GMT_grd_do_scaling (grid, header->size, header->z_scale_factor, header->z_add_offset);
@@ -501,7 +501,7 @@ GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
 		header->z_scale_factor = 1.0;
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	GMT_grd_set_units (C, header);
 	
@@ -597,15 +597,15 @@ GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG m
 
 	switch (GMT_minmaxinc_verify (C, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_SMALL)) {
 		case 3:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: grid x increment <= 0.0\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: grid x increment <= 0.0\n");
 			error++;
 			break;
 		case 2:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: grid x range <= 0.0\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: grid x range <= 0.0\n");
 			error++;
 			break;
 		case 1:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
+			GMT_report (C, GMT_MSG_FATAL, "Error: (x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
 			error++;
 		default:
 			/* Everything is OK */
@@ -614,15 +614,15 @@ GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG m
 
 	switch (GMT_minmaxinc_verify (C, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], GMT_SMALL)) {
 		case 3:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: grid y increment <= 0.0\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: grid y increment <= 0.0\n");
 			error++;
 			break;
 		case 2:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: grid y range <= 0.0\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: grid y range <= 0.0\n");
 			error++;
 			break;
 		case 1:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
+			GMT_report (C, GMT_MSG_FATAL, "Error: (y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
 			error++;
 		default:
 			/* Everything is OK */
@@ -731,19 +731,19 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 				case 0:
 					GMT_memset (h->x_units, GRD_UNIT_LEN, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"GMT WARNING: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+						"Warning: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->x_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 1:
 					GMT_memset (h->y_units, GRD_UNIT_LEN, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"GMT WARNING: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+						"Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->y_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 2:
 					GMT_memset (h->z_units, GRD_UNIT_LEN, char);
 					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"GMT WARNING: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
+						"Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
 					strncpy (h->z_units, ptr, (size_t)GRD_UNIT_LEN);
 					break;
 				case 3:
@@ -754,12 +754,12 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					break;
 				case 5:
 					if (strlen(ptr) >= GRD_TITLE_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"GMT WARNING: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN);
+						"Warning: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN);
 					strncpy (h->title, ptr, (size_t)GRD_TITLE_LEN);
 					break;
 				case 6:
 					if (strlen(ptr) >= GRD_REMARK_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"GMT WARNING: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN);
+						"Warning: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN);
 					strncpy (h->remark, ptr, (size_t)GRD_REMARK_LEN);
 					break;
 				default:
@@ -800,7 +800,7 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 		G->header.z_scale_factor = 1.0;
 	else if (G->header.z_scale_factor == 0.0) {
 		G->header.z_scale_factor = 1.0;
-		GMT_report (C, GMT_MSG_FATAL, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
@@ -1227,8 +1227,8 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			wesn[XLO] = val;
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: w reset to %g\n", wesn[XLO]);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: w reset to %g\n", wesn[XLO]);
 		}
 
 		val = header->wesn[XLO] + irint ((wesn[XHI] - header->wesn[XLO]) / header->inc[GMT_X]) * header->inc[GMT_X];
@@ -1236,8 +1236,8 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
 		if (dx > GMT_SMALL) {
 			wesn[XHI] = val;
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: e reset to %g\n", wesn[XHI]);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: e reset to %g\n", wesn[XHI]);
 		}
 	}
 
@@ -1247,15 +1247,15 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	val = header->wesn[YLO] + irint ((wesn[YLO] - header->wesn[YLO]) / header->inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		wesn[YLO] = val;
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: s reset to %g\n", wesn[YLO]);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: s reset to %g\n", wesn[YLO]);
 	}
 
 	val = header->wesn[YLO] + irint ((wesn[YHI] - header->wesn[YLO]) / header->inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		wesn[YHI] = val;
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		GMT_report (C, GMT_MSG_FATAL, "GMT WARNING: n reset to %g\n", wesn[YHI]);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: n reset to %g\n", wesn[YHI]);
 	}
 	return (GMT_NOERROR);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77path_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->D.active, "GMT SYNTAX ERROR:  Only one of -A -D may be used\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->D.active, "Syntax error:  Only one of -A -D may be used\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

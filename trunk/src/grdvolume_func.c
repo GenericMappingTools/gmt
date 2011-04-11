@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -342,7 +342,7 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 				Ctrl->C.active = TRUE;
 				n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->C.low, &Ctrl->C.high, &Ctrl->C.inc);
 				if (n == 3) {
-					n_errors += GMT_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0, "GMT SYNTAX ERROR -C:  high must exceed low and delta must be positive\n");
+					n_errors += GMT_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0, "Syntax error -C:  high must exceed low and delta must be positive\n");
 				}
 				else
 					Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
@@ -367,12 +367,12 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "SYNTAX ERROR -T option: Append c or h [Default].\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
-				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1, "GMT SYNTAX ERROR option -Z: Must specify <fact> and optionally <shift>\n");
+				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1, "Syntax error option -Z: Must specify <fact> and optionally <shift>\n");
 				break;
 
 			default:	/* Report bad options */
@@ -381,12 +381,12 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !(n == 1 || n == 3), "GMT SYNTAX ERROR option -C: Must specify 1 or 3 arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)), "GMT SYNTAX ERROR option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value), "GMT SYNTAX ERROR option -L: Must specify base\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active, "GMT SYNTAX ERROR option -T: Must also specify -Clow/high/delta\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && GMT_IS_ZERO (Ctrl->C.high - Ctrl->C.low), "GMT SYNTAX ERROR option -T: Must specify -Clow/high/delta\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input grid file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !(n == 1 || n == 3), "Syntax error option -C: Must specify 1 or 3 arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)), "Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value), "Syntax error option -L: Must specify base\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active, "Syntax error option -T: Must also specify -Clow/high/delta\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && GMT_IS_ZERO (Ctrl->C.high - Ctrl->C.low), "Syntax error option -T: Must specify -Clow/high/delta\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

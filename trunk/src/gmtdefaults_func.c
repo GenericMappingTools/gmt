@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtdefaults_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtdefaults_func.c,v 1.3 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,7 +101,7 @@ GMT_LONG GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files, "GMT SYNTAX ERROR: No input files are expected\n");
+	n_errors += GMT_check_condition (GMT, n_files, "Syntax error: No input files are expected\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

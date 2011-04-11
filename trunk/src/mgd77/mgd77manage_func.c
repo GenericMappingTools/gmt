@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -409,7 +409,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = TRUE;
 									break;
 								default:
-									GMT_message (GMT, "ERROR: -Ae modifiers must be combination of hfnvs\n");
+									GMT_message (GMT, "Error: -Ae modifiers must be combination of hfnvs\n");
 									n_errors++;
 									break;
 							}
@@ -435,7 +435,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					default:
-						GMT_message (GMT, "ERROR: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
+						GMT_message (GMT, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
 						n_errors++;
 						break;
 				}
@@ -448,7 +448,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_message (GMT, "ERROR -C: Flag must be f, g, or e\n");
+					GMT_message (GMT, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -474,7 +474,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				Ctrl->N.active = TRUE;
 				Ctrl->N.code[0] = opt->arg[0];
 				if (!strchr ("ekmn", (int)Ctrl->N.code[0])) {
-					GMT_message (GMT, "ERROR -N: Unit must be e, k, m, or n\n");
+					GMT_message (GMT, "Error -N: Unit must be e, k, m, or n\n");
 					n_errors++;
 				}
 				break;
@@ -510,15 +510,15 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	c_nc_type = (nc_type) irint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
 	
-	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "GMT SYNTAX ERROR:  You must select one, and only one, of the -A options\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "GMT SYNTAX ERROR:  Cannot interpolate column if data are strings\n");
-	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "GMT SYNTAX ERROR:  Only one -A option can be specified\n");
-	n_errors += GMT_check_condition (GMT, !got_grid && Ctrl->Q.interpolant != BCR_BICUBIC, "GMT SYNTAX ERROR -Q:  Requires -Ag|i\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0, "GMT SYNTAX ERROR -Q:  threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error:  You must select one, and only one, of the -A options\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error:  Cannot interpolate column if data are strings\n");
+	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error:  Only one -A option can be specified\n");
+	n_errors += GMT_check_condition (GMT, !got_grid && Ctrl->Q.interpolant != BCR_BICUBIC, "Syntax error -Q:  Requires -Ag|i\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0, "Syntax error -Q:  threshold must be in [0,1] range\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN, "GMT SYNTAX ERROR: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN, "GMT SYNTAX ERROR: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN, "GMT SYNTAX ERROR: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
+		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN, "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
+		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN, "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
+		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN, "Syntax error: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
 	}
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -591,12 +591,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "ERROR: No cruises given\n");
+		GMT_message (GMT, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
 	if (got_table && n_paths != 1) {
-		GMT_message (GMT, "ERROR: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
+		GMT_message (GMT, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
 		Return (EXIT_FAILURE);
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
@@ -636,9 +636,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 		else {
 #ifdef USE_CM4
-			GMT_message (GMT, "ERROR: -Ac expects 4, m, c, or g[1-4]\n");
+			GMT_message (GMT, "Error: -Ac expects 4, m, c, or g[1-4]\n");
 #else
-			GMT_message (GMT, "ERROR: -Ac expects m, c, or g[1-4]\n");
+			GMT_message (GMT, "Error: -Ac expects m, c, or g[1-4]\n");
 #endif
 			Return (EXIT_FAILURE);
 		}
@@ -1172,7 +1172,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
 				sprintf (efile, "%s%cE77%c%s.e77", In.MGD77_HOME, DIR_DELIM, DIR_DELIM, list[argno]);
 				if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
-					GMT_message (GMT, "ERROR: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
+					GMT_message (GMT, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
 					MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 					continue;
 				}
@@ -1184,12 +1184,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			 
 			P = D->H.mgd77[MGD77_ORIG];	/* Because E77 is absolute and not incremental we start from original settings */
 			if (!GMT_fgets (GMT, line, BUFSIZ, fp_e)) {
-				GMT_message (GMT, "ERROR: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
+				GMT_message (GMT, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
 			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %ld", ID, date, &n_recs);
 			if (strcmp (In.NGDC_id, ID)) {
-				GMT_message (GMT, "ERROR: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
+				GMT_message (GMT, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
 				e_error++;
 			}
 			/* Make sure the File creation dates from the data file and the E77 match */
@@ -1200,12 +1200,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			year = atoi (date);
 			
 			if (!(year == atoi (P->File_Creation_Year) && month == atoi (P->File_Creation_Month) && day == atoi (P->File_Creation_Day))) {
-				GMT_message (GMT, "ERROR: E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
+				GMT_message (GMT, "Error: E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
 					P->File_Creation_Year, P->File_Creation_Month, P->File_Creation_Day);
 				e_error++;
 			}
 			if (n_recs != D->H.n_records) {
-				GMT_message (GMT, "ERROR: E77 Conflict %s: n_recs = %ld versus %ld = aborting\n", efile, n_recs, D->H.n_records);
+				GMT_message (GMT, "Error: E77 Conflict %s: n_recs = %ld versus %ld = aborting\n", efile, n_recs, D->H.n_records);
 				e_error++;
 			}
 			verified = FALSE;
@@ -1215,12 +1215,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!strncmp (line, "Y Errata table verification status", (size_t)34)) verified = TRUE;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
-				GMT_message (GMT, "ERROR: E77 file %s not yet verified.  E77 not applied\n", efile);
+				GMT_message (GMT, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
 				e_error++;
 			}
 			
 			if (e_error) {
-				GMT_message (GMT, "ERROR: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_message (GMT, "Error: The file %s has too many errors.  E77 not applied\n", efile);
 				MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -1243,19 +1243,19 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else				/* Data record */
 					sscanf (line, "%c %s %s %ld %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_message (GMT, "ERROR: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
+					GMT_message (GMT, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
 					e_error++;
 				}
 			}
 			
 			if (e_error) {
-				GMT_message (GMT, "ERROR: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_message (GMT, "Error: The file %s has too many errors.  E77 not applied\n", efile);
 				GMT_fclose (GMT, fp_e);
 				MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
 			if (n_unprocessed) {
-				GMT_message (GMT, "ERROR: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
+				GMT_message (GMT, "Error: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
 				GMT_fclose (GMT, fp_e);
 				MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
@@ -1280,7 +1280,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				*/
 				sscanf (line, "%c-%c-%[^-]-%[^-]-%ld", &YorN, &kind, ID, field, &item);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_message (GMT, "ERROR: E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_message (GMT, "Error: E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1295,7 +1295,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->A.e77_skip_mode[type]) continue;
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
-					if (GMT->current.setting.verbose == 2 && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: WARNING: %s\n", list[argno], line);
+					if (GMT->current.setting.verbose == 2 && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: Warning: %s\n", list[argno], line);
 					continue;
 				}
 				if (!got_default_answer (line, answer)) continue;
@@ -1400,7 +1400,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			while (GMT_fgets (GMT, line, BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %ld %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_message (GMT, "ERROR: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_message (GMT, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1413,16 +1413,16 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				rec--;	/* E77 starts with rec = 1 for first data record */
 				if (has_time) {
 					if (!strcmp(timestamp,"NaN")) {
-						if (GMT->current.setting.verbose == 2) GMT_message (GMT, "WARNING: %s: E77 time stamp %s, using recno\n", ID, timestamp);
+						if (GMT->current.setting.verbose == 2) GMT_message (GMT, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
 						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
-							GMT_message (GMT, "ERROR: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
+							GMT_message (GMT, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
 							continue;
 						}
 						del_t = fabs (tvar[rec] - rec_time);
 						if (del_t > (0.06 + GMT_CONV_LIMIT)) {	/* 0.06 is finest time step in MGD77 file so we allow that much slop */
-							GMT_message (GMT, "ERROR: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
+							GMT_message (GMT, "Error: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
 							continue;
 						}
 					}

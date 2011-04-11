@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtdp_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,13 +125,13 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -1, "GMT SYNTAX ERROR -T.  Unrecognized unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -2, "GMT SYNTAX ERROR -T.  Unable to decode tolarance distance.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -3, "GMT SYNTAX ERROR -T.  Tolarance is negative\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR.  Binary input data cannot have header -h.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -1, "Syntax error -T.  Unrecognized unit\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -2, "Syntax error -T.  Unable to decode tolarance distance.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -3, "Syntax error -T.  Tolarance is negative\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -h.\n");
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 2, "GMT SYNTAX ERROR.  Binary input data (-bi) must have at least 2 columns.\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "GMT SYNTAX ERROR:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error.  Binary input data (-bi) must have at least 2 columns.\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -289,7 +289,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the gmtdp main code ----------------------------*/
 
 	if (Ctrl->T.mode > 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "WARNING: gmtdp only implemented using Flat-Earth calculations.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	

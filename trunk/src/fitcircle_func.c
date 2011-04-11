@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.2 2011-03-15 02:06:35 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -166,7 +166,7 @@ GMT_LONG GMT_fitcircle_parse (struct GMTAPI_CTRL *C, struct FITCIRCLE_CTRL *Ctrl
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "GMT SYNTAX ERROR -L option:  Choose between 1, 2, or 3\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option:  Choose between 1, 2, or 3\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

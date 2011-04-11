@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: redpol_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1069,7 +1069,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				j = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = TRUE;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_message (GMT, "ERROR: number of filter coefficients must be odd\n");
+					GMT_message (GMT, "Error: number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
@@ -1089,7 +1089,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = FALSE;
 					else {
-						GMT_message (GMT, "WARNING: Error using option -M (option ignored)\n");
+						GMT_message (GMT, "Warning: Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = TRUE;
 					}
 				}
@@ -1113,11 +1113,11 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
-		GMT_message (GMT, "WARNING: -E option overrides -C\n");
+		GMT_message (GMT, "Warning: -E option overrides -C\n");
 		Ctrl->C.const_f = FALSE;
 	}
 
