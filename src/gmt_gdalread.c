@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.28 2011-04-09 17:26:55 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.29 2011-04-11 21:10:40 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -80,6 +80,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		whichBands = GMT_memory (C, NULL, nn, GMT_LONG);
 		nReqBands = gdal_decode_columns (prhs->B.bands, whichBands, nn);
 		free(prhs->B.bands);	/* This is actualy the contents of header->pocket allocated by strdup */
+		prhs->B.bands = NULL;
 	}
 	else if (prhs->f_ptr.active) {	
 		/* Here we are going to read to a grid so if no band info was provided, default to read only the
