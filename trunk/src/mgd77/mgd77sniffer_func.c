@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.4 2011-04-11 21:35:21 remko Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2591,7 +2591,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 											case NAV_UNDEF:
 												fprintf (fpout, "navigation undefined");
 												break;
-											case NAV_TZ_Error:
+											case NAV_TZ_ERROR:
 												fprintf (fpout, "UTC shifted %d hr by time zone crossing error",E[rec].utc_offset/3600);
 												break;
 											default:
