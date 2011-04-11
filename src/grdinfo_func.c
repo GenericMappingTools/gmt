@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -166,12 +166,12 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files == 0, "GMT SYNTAX ERROR: Must specify one or more input files\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "GMT SYNTAX ERROR -T: Must specify a positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == 2 && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I: Must specify a positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "GMT SYNTAX ERROR -M: Not compatible with -I or -T\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "GMT SYNTAX ERROR -L: Not compatible with -I or -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "GMT SYNTAX ERROR: Only one of -I -T can be specified\n");
+	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify one or more input files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "Syntax error -T: Must specify a positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == 2 && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I: Must specify a positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

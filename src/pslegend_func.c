@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: pslegend_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				else				/* Gave lon, lat */
 					k = 0;
 				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, Ctrl->D.justify);
-				n_errors += GMT_check_condition (GMT, n != 5, "ERROR: Syntax is -D[x]<xpos>/<ypos>/<width>/<height>/<justify>\n");
+				n_errors += GMT_check_condition (GMT, n != 5, "Error: Syntax is -D[x]<xpos>/<ypos>/<width>/<height>/<justify>\n");
 				if (opt->arg[0] == 'x') {
 					Ctrl->D.lon = GMT_to_inch (GMT, txt_a);
 					Ctrl->D.lat = GMT_to_inch (GMT, txt_b);
@@ -189,11 +189,11 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "GMT SYNTAX ERROR -C option:  clearances cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "GMT SYNTAX ERROR -D option:  legend box sizes cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option:  clearances cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option:  legend box sizes cannot be negative!\n");
 	if (!Ctrl->D.cartesian || !GMT->common.O.active) {	/* Overlays with -Dx does not need-R -J; other cases do */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -494,7 +494,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					sprintf (buffer, "%s %s -O -K -L%s", txt_e, txt_f, &mapscale[k]);
 				else {	/* Use -R -J supplied to pslegend */
 					if (!r_ptr || !j_ptr) {
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR: The M record must have map -R -J if -Dx and no -R -J is used\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
@@ -516,11 +516,11 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef GMT_COMPAT
 			case '>':	/* Paragraph text header */
-				GMT_report (GMT, GMT_MSG_COMPAT, "GMT Warning: paragraph text header flag > is deprecated; use P instead\n");
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
 				n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 				if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 				if (!(n == 0 || n == 9)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "ERROR: The > record must have 0 or 9 arguments (only %ld found)\n", n);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: The > record must have 0 or 9 arguments (only %ld found)\n", n);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
@@ -533,7 +533,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 					if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 					if (!(n == 0 || n == 8)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR: The P record must have 0 or 9 arguments (only %ld found)\n", n);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: The P record must have 0 or 9 arguments (only %ld found)\n", n);
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -568,7 +568,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					i = 0;
 					while (size[i] != '/' && size[i]) i++;
 					if (size[i] != '/') {
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Sf option must have a tick length\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: -Sf option must have a tick length\n");
 						Return (EXIT_FAILURE);
 					}
 					size[i] = '\0';	/* Temporarily truncate */
@@ -684,7 +684,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 
 			default:
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR: Unrecognized record (%s)\n", line);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unrecognized record (%s)\n", line);
 				Return (GMT_RUNTIME_ERROR);
 			break;
 		}

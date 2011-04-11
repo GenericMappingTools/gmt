@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.20 2011-03-15 02:06:37 guru Exp $
+ *	$Id: cm4_functions.c,v 1.21 2011-04-11 21:15:32 remko Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -845,7 +845,7 @@ double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr) {
     }
 	if (jbot < mjdl || jtop > mjdh) {
 		*cerr = 50;
-		fprintf (stderr, "INTDST -- ERROR: T (%d; %d) LIES OUTSIDE OF DST TABLE TIME SPAN [%d; %d] -- ABORT\n", jbot, jtop, mjdl, mjdh);
+		fprintf (stderr, "INTDST -- Error: T (%d; %d) LIES OUTSIDE OF DST TABLE TIME SPAN [%d; %d] -- ABORT\n", jbot, jtop, mjdl, mjdh);
 		dst = -1e12;
 	}
 	else
@@ -2485,7 +2485,7 @@ void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
 	    }
 	}
     } else {
-	fprintf (stderr, "TBSPLN -- ERROR: T (%f) LIES OUTSIDE OF KNOT DOMAIN [%f; %f] -- ABORT\n", *t, bkpo[1], bkpo[*k + 2]);
+	fprintf (stderr, "TBSPLN -- Error: T (%f) LIES OUTSIDE OF KNOT DOMAIN [%f; %f] -- ABORT\n", *t, bkpo[1], bkpo[*k + 2]);
 	*cerr = 50;
     }
 }

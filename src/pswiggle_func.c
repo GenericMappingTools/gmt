@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -307,7 +307,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 					units++;
 					Ctrl->S.label = strdup (units);
 				}
-				n_errors += GMT_check_condition (GMT, k != 3, "GMT SYNTAX ERROR -S option:  Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
+				n_errors += GMT_check_condition (GMT, k != 3, "Syntax error -S option:  Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
@@ -336,10 +336,10 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active), "GMT SYNTAX ERROR:  Must specify at least one of -G, -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "GMT SYNTAX ERROR -Z option:  scale must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active), "Syntax error:  Must specify at least one of -G, -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option:  scale must be nonzero\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

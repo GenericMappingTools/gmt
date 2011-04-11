@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.5 2011-04-06 20:22:54 guru Exp $
+ *	$Id: grdview_func.c,v 1.6 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -423,7 +423,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 					Ctrl->G.file[0] = strdup (opt->arg);
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR option -G:  Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -G:  Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -445,12 +445,12 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 					Ctrl->N.active = TRUE;
 					n = sscanf (opt->arg, "%lf/%s", &Ctrl->N.level, colors);
 					if (n == 2) {
-						n_errors += GMT_check_condition (GMT, GMT_getrgb (GMT, colors, Ctrl->N.rgb), "GMT SYNTAX ERROR option -N:  Usage is -N<level>[/<color>]\n");
+						n_errors += GMT_check_condition (GMT, GMT_getrgb (GMT, colors, Ctrl->N.rgb), "Syntax error option -N:  Usage is -N<level>[/<color>]\n");
 						Ctrl->N.facade = TRUE;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR option -N:  Usage is -N<level>[/<color>]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -N:  Usage is -N<level>[/<color>]\n");
 					n_errors++;
 				}
 				break;
@@ -460,7 +460,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				switch (opt->arg[0]) {
 					case 'm':	/* Mesh plot */
 						Ctrl->Q.mode = GRDVIEW_MESH;
-						n_errors += GMT_check_condition (GMT, opt->arg[1] == '/' && GMT_getfill (GMT, &opt->arg[2], &Ctrl->Q.fill), "GMT SYNTAX ERROR -Qm option: To give mesh color, use -Qm/<color>\n");
+						n_errors += GMT_check_condition (GMT, opt->arg[1] == '/' && GMT_getfill (GMT, &opt->arg[2], &Ctrl->Q.fill), "Syntax error -Qm option: To give mesh color, use -Qm/<color>\n");
 						break;
 					case 's':	/* Color without contours */
 						Ctrl->Q.mode = GRDVIEW_SURF;
@@ -478,7 +478,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 						Ctrl->Q.mask = TRUE;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR option -Q:  Unrecognized qualifier (%c)\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -Q:  Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -530,27 +530,27 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "GMT ERROR:  Piping of topofile not supported!\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Error: Piping of topofile not supported!\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
-	n_errors += GMT_check_condition (GMT, q_set > 1, "GMT ERROR:  -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
+	n_errors += GMT_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
 	/* Gave both -Q and -T */
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "GMT ERROR:  -Q and -T are mutually exclusive options\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Error: -Q and -T are mutually exclusive options\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
 	n_drape = Ctrl->G.image ? 3 : 1;
 	if (Ctrl->G.active) {
 		GMT_LONG i;
 		for (i = 0; i < n_drape; i++) {
-			n_errors += GMT_check_condition (GMT, !Ctrl->G.file[i][0], "GMT SYNTAX ERROR option -G:  Must specify drape file\n");
+			n_errors += GMT_check_condition (GMT, !Ctrl->G.file[i][0], "Syntax error option -G:  Must specify drape file\n");
 		}
 		n_errors += GMT_check_condition (GMT, n_drape == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "GMT SYNTAX ERROR option -I:  Must specify intensity file\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) && !Ctrl->C.file && !Ctrl->G.image, "GMT SYNTAX ERROR:  Must specify color palette table\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "GMT SYNTAX ERROR -Qi option:  Must specify positive dpi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "GMT SYNTAX ERROR -T option:  Cannot specify -JZ|z\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "GMT SYNTAX ERROR -S option:  smooth value must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error option -I:  Must specify intensity file\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) && !Ctrl->C.file && !Ctrl->G.image, "Syntax error:  Must specify color palette table\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "Syntax error -Qi option:  Must specify positive dpi\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "Syntax error -T option:  Cannot specify -JZ|z\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option:  smooth value must be positive\n");
 	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -610,7 +610,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (P->is_bw) Ctrl->Q.monochrome = TRUE;
 	}
 	if (P->categorical && Ctrl->W.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING -W:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 

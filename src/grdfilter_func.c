@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.4 2011-04-04 00:12:46 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -292,7 +292,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option.  Correct syntax: -FX<width>, X one of bcgmplLuU\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Correct syntax: -FX<width>, X one of bcgmplLuU\n");
 					n_errors++;
 				}
 				break;
@@ -320,7 +320,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 						Ctrl->N.mode = NAN_PRESERVE;	/* Preserve */
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option.  Correct syntax: -Ni|p|r\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option.  Correct syntax: -Ni|p|r\n");
 						n_errors++;
 						break;
 				}
@@ -337,13 +337,13 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 	
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 5, "GMT SYNTAX ERROR -D option:  Choose from the range 0-5\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "GMT SYNTAX ERROR: -F option is required:\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "GMT SYNTAX ERROR -F option:  filter fullwidth must be nonzero:\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass, "GMT SYNTAX ERROR -F option:  Highpass filtering requires original -R -I\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 5, "Syntax error -D option:  Choose from the range 0-5\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F option is required:\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "Syntax error -F option:  filter fullwidth must be nonzero:\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass, "Syntax error -F option:  Highpass filtering requires original -R -I\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -775,7 +775,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* At last, that's it!  Output: */
 
 	if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %ld nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING: %ld multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", GMT_n_multiples);
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout);

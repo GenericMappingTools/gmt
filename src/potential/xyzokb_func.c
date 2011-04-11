@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -277,7 +277,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf", 
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_message (GMT, "SYNTAX ERROR -H option: Can't dechiper values\n");
+					GMT_message (GMT, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = TRUE;
@@ -350,7 +350,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 							j++;
 						}
 						if (j != 2 && j != 3) {
-							GMT_message (GMT, "SYNTAX ERROR -t option: Must give names for data points and vertex files\n");
+							GMT_message (GMT, "Syntax error -t option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
 						Ctrl->T.triangulate = TRUE;
@@ -378,18 +378,18 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	}
 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)), 
-					 "GMT SYNTAX ERROR.  Radius is NaN or negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "GMT ERROR: Must specify either -G or -F options\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "GMT ERROR: Must specify -I option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "GMT ERROR:  Must specify -R option\n");
+					 "Syntax error.  Radius is NaN or negative\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "Error: Must specify either -G or -F options\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "Error: Must specify -I option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "Error:  Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 , 
-					"GMT ERROR: Must specify either -Cdensity or -H<stuff>\n");
+					"Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "GMT ERROR -G option:  Must specify output file\n");
-	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "GMT WARNING: -F overrides -G\n");
-	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "GMT WARNING: -tr overrides -S\n"))
+	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "Warning: -tr overrides -S\n"))
 		Ctrl->S.active = TRUE;
 
-	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR: Must specify input file\n");*/
+	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -498,7 +498,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 
 	if (n_swap > 0)
-		GMT_message (GMT, "WARNING: %ld triangles had ccw order\n", n_swap);
+		GMT_message (GMT, "Warning: %ld triangles had ccw order\n", n_swap);
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {

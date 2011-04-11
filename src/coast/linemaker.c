@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.12 2011-03-15 02:06:37 guru Exp $
+ *	$Id: linemaker.c,v 1.13 2011-04-11 21:15:32 remko Exp $
  */
 /*
  *
@@ -150,7 +150,7 @@ int main (int argc, char **argv)
 				seg_level[i] = seg_head.level - 3;
 				break;
 			default:
-				fprintf (stderr, "linemaker: ERROR: found level == %d for segment!\n", seg_head.level);
+				fprintf (stderr, "linemaker: Error: found level == %d for segment!\n", seg_head.level);
 				exit (EXIT_FAILURE);
 				break;
 		}

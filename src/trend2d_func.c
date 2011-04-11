@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: trend2d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,7 +108,7 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, GM
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND2D_DATA);
 		}
 		if (i == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: Cannot process more than %d data points\n", INT_MAX);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot process more than %d data points\n", INT_MAX);
 			GMT_free (GMT, data);
 			return (EXIT_FAILURE);
 		}
@@ -462,7 +462,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 					if (j < TREND2D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option: Too many output columns selected: Choose from -Fxyzmrw\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxyzmrw\n");
 						n_errors++;
 					}
 				}
@@ -487,14 +487,14 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "GMT SYNTAX ERROR -C option.  Condition number must be larger than unity\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "GMT SYNTAX ERROR -C option.  Give 0 < confidence level < 1.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "GMT SYNTAX ERROR -N option.  Must request 1-10 parameters\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option.  Condition number must be larger than unity\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option.  Give 0 < confidence level < 1.0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option.  Must request 1-10 parameters\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	for (j = Ctrl->n_outputs = 0; j < TREND2D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xyzmrw", Ctrl->F.col[j])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -502,8 +502,8 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 
 		Ctrl->n_outputs++;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "GMT SYNTAX ERROR -F option.  Must specify at least one output column\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "GMT SYNTAX ERROR -F option.  Too many output columns specified (%ld)\n", Ctrl->n_outputs);
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option.  Must specify at least one output column\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option.  Too many output columns specified (%ld)\n", Ctrl->n_outputs);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

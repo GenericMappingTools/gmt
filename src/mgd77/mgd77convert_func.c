@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77convert_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -167,8 +167,8 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "GMT SYNTAX ERROR.  Must specify format of input files\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "GMT SYNTAX ERROR.  Must specify format of output files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error.  Must specify format of input files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error.  Must specify format of output files\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -215,7 +215,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "ERROR: No cruises given\n");
+		GMT_message (GMT, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 

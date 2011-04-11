@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,7 +176,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "GMT ERROR: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_message (GMT, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -194,12 +194,12 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 	
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR.  Binary input data cannot have header -h\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -h\n");
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "GMT SYNTAX ERROR.  Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode < 0 || Ctrl->Q.mode > 3, "GMT SYNTAX ERROR -T:  Must specify a mode in the 0-3 range\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error.  Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode < 0 || Ctrl->Q.mode > 3, "Syntax error -T:  Must specify a mode in the 0-3 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

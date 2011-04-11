@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: pssegyz_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -259,7 +259,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 				break;
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_message (GMT, "SYNTAX ERROR: Can't specify more than one trace location key\n");
+					GMT_message (GMT, "Syntax error: Can't specify more than one trace location key\n");
 					n_errors++;
 					continue;
 				}
@@ -304,14 +304,14 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR.  Must specify the -R option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.wesn[ZLO]  == GMT->common.R.wesn[ZHI], "GMT SYNTAX ERROR.  Must specify z range in -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "GMT SYNTAX ERROR.  Option -T requires a file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "GMT SYNTAX ERROR.  Cannot file file %s\n", Ctrl->T.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "GMT SYNTAX ERROR -E.  slop cannot be negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "GMT SYNTAX ERROR.  Must specify -F with -I\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "GMT SYNTAX ERROR.  Must specify -F or -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value[GMT_X] < 0.0 || Ctrl->D.value[GMT_Y] < 0.0, "GMT SYNTAX ERROR.  Must specify a positive deviation\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error.  Must specify the -R option\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.wesn[ZLO]  == GMT->common.R.wesn[ZHI], "Syntax error.  Must specify z range in -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error.  Option -T requires a file name\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "Syntax error.  Cannot file file %s\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "Syntax error -E.  slop cannot be negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error.  Must specify -F with -I\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error.  Must specify -F or -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.value[GMT_X] < 0.0 || Ctrl->D.value[GMT_Y] < 0.0, "Syntax error.  Must specify a positive deviation\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -607,7 +607,7 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
-	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "WARNING: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
 
 	if (Ctrl->In.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file %s\n", Ctrl->In.file);
@@ -668,7 +668,7 @@ use a few of these*/
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples is %ld\n", n_samp);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "WARNING data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_message (GMT, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Z_ID]) {
 		Ctrl->Q.value[Z_ID] = binhead.sr; /* sample interval of data (microseconds) */

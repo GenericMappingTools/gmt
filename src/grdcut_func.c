@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdcut_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -137,9 +137,9 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->Z.active) != 1, "GMT SYNTAX ERROR:  Must specify either the -R or the -Z options\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G option:  Must specify output grid file\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR:  Must specify one input grid file\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->Z.active) != 1, "Syntax error:  Must specify either the -R or the -Z options\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output grid file\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error:  Must specify one input grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

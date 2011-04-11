@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.5 2011-04-05 18:48:46 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.6 2011-04-11 21:15:32 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -196,11 +196,11 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "GMT SYNTAX ERROR:  Must specify -E\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "GMT SYNTAX ERROR:  Must specify -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0.0, "GMT SYNTAX ERROR -T:  Must specify positive age.\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error:  Must specify -E\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error:  Must specify -S\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T:  Must specify positive age.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

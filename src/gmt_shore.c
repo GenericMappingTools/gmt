@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.69 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_shore.c,v 1.70 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -A option:  No area given\n");
+		GMT_report (C, GMT_MSG_FATAL, "Syntax error -A option:  No area given\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
@@ -104,7 +104,7 @@ GMT_LONG GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 			base = 4;
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -%c option:  Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option:  Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
@@ -910,7 +910,7 @@ GMT_LONG GMT_prep_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, GM
 		else {
 			n_use = GMT_compact_line (C, xtmp, ytmp, n, FALSE, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Antipodal bin # %ld not filled!\n", anti_bin);
+				GMT_report (C, GMT_MSG_NORMAL, "Warning: Antipodal bin # %ld not filled!\n", anti_bin);
 				GMT_free (C, xtmp);
 				GMT_free (C, ytmp);
 				continue;

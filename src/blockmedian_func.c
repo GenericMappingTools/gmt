@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmedian_func.c,v 1.3 2011-03-25 22:17:38 guru Exp $
+ *    $Id: blockmedian_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,11 +130,11 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.quantile <= 0.0 || Ctrl->T.quantile >= 1.0,
-			"GMT SYNTAX ERROR: 0 < q < 1 for quantile in -T [0.5]\n");
+			"Syntax error: 0 < q < 1 for quantile in -T [0.5]\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0,
-			"GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+			"Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -252,7 +252,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING: -C overrides -Q\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -C overrides -Q\n");
 		go_quickly = 0;
 	}
 

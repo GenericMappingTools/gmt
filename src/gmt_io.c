@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.245 2011-04-11 19:45:03 guru Exp $
+ *	$Id: gmt_io.c,v 1.246 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2114,7 +2114,7 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 			case 'L':
 			case 'R':
 				if (k > 2) {
-					GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Z: Choose format from [TBLR][TBLR]!\n");
+					GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: Choose format from [TBLR][TBLR]!\n");
 					return (EXIT_FAILURE);
 				}
 				z->format[k++] = txt[i];
@@ -2162,7 +2162,7 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 				break;
 
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Z: %c not a valid modifier!\n", txt[i]);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid modifier!\n", txt[i]);
 				return (EXIT_FAILURE);
 				break;
 		}
@@ -2207,7 +2207,7 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 				first = FALSE;
 				break;
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Z: %c not a valid format specifier!\n", format[k]);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid format specifier!\n", format[k]);
 				GMT_exit (EXIT_FAILURE);
 				break;
 
@@ -2277,7 +2277,7 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 
 
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Z: %c not a valid data type!\n", type);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid data type!\n", type);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -2429,7 +2429,7 @@ GMT_LONG GMT_get_ymdj_order (struct GMT_CTRL *C, char *text, struct GMT_DATE_IO 
 		error += (n_j == 0 && !((n_m == 2 || n_m == 0) && (n_d == 2 || n_d == 0) && n_d <= n_m));	/* mm/dd must have jjj = 0 and m >= d and m,d 0 or 2 */
 	}
 	if (error) {
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Unacceptable date template %s\n", text);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Unacceptable date template %s\n", text);
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (GMT_NOERROR);
@@ -5489,7 +5489,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE
 		V = (S && S->ogr) ? S->ogr->value[id] : C->current.io.OGR->value[id];	/* Either from table or from segment (multi) */
 		return (GMT_convert_aspatial_value (C, C->current.io.OGR->type[id], V));
 	}
-	GMT_report (C, GMT_MSG_FATAL, "GMT WARNING.  No aspatial value found for column %ld [Return NaN]\n", col);
+	GMT_report (C, GMT_MSG_FATAL, "Warning:  No aspatial value found for column %ld [Return NaN]\n", col);
 	return (C->session.d_NaN);
 }
 

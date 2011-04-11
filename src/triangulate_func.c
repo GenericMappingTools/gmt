@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: triangulate_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -162,7 +162,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 					case 'y': case 'Y':
 						Ctrl->D.dir = GMT_Y; break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR.  Give -Dx or -Dy\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error.  Give -Dx or -Dy\n");
 						n_errors++; break;
 				}
 				break;
@@ -203,13 +203,13 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_binary_io (GMT, 2);
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.dir < GMT_X || Ctrl->D.dir > GMT_Y), "GMT SYNTAX ERROR -D option.  Must specify x or y\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "GMT SYNTAX ERROR -G option.  Must specify file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "GMT SYNTAX ERROR.  Must specify -R, -I, -G for gridding\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.dir < GMT_X || Ctrl->D.dir > GMT_Y), "Syntax error -D option.  Must specify x or y\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option.  Must specify file name\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error.  Must specify -R, -I, -G for gridding\n");
 #ifdef TRIANGLE_D
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "GMT SYNTAX ERROR -G option.  Cannot be used with -Q\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "GMT SYNTAX ERROR -Q option.  Requires -R\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option.  Cannot be used with -Q\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option.  Requires -R\n");
 #endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -294,7 +294,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->G.active) zz = GMT_memory (GMT, zz, n_alloc, double);
 		}
 		if (n == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: Cannot triangulate more than %d points\n", INT_MAX);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
 			GMT_free (GMT, xx);
 			GMT_free (GMT, yy);
 			if (Ctrl->G.active) GMT_free (GMT, zz);

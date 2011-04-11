@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -216,10 +216,10 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "GMT SYNTAX ERROR: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.width < 1, "GMT SYNTAX ERROR: Error -W: window must be at least 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "GMT SYNTAX ERROR: Error -S: lower speed cutoff higher than upper cutoff!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "GMT SYNTAX ERROR: Error -Q: Only one of -Qe -Qi can be specified!\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.width < 1, "Syntax error: Error -W: window must be at least 1\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Syntax error: Error -S: lower speed cutoff higher than upper cutoff!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Error -Q: Only one of -Qe -Qi can be specified!\n");
 
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -328,7 +328,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!s->geographic) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_UNKNOWN;
 
 	if (s->x_col == -1 || s->y_col == -1) {
-		GMT_message (GMT, "ERROR: lon,lat or x,y are not among data columns!\n");
+		GMT_message (GMT, "Error: lon,lat or x,y are not among data columns!\n");
 		Return (EXIT_FAILURE);
 	}
 	

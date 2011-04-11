@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.2 2011-03-15 02:06:38 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -219,11 +219,11 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "GMT SYNTAX ERROR: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "GMT SYNTAX ERROR: Error -Q: Only one of -Qe -Qi can be specified!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "GMT SYNTAX ERROR: ERROR: -S: Asymmetry must be in the range 0-1\n");
-	n_errors += GMT_check_condition (GMT, GMT->current.io.multi_segments[GMT_OUT] && GMT->common.b.active[GMT_OUT], "GMT SYNTAX ERROR: Must use -F to specify output items.\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "GMT SYNTAX ERROR: ERROR: Cannot use -M with binary output\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
+	n_errors += GMT_check_condition (GMT, GMT->current.io.multi_segments[GMT_OUT] && GMT->common.b.active[GMT_OUT], "Syntax error: Must use -F to specify output items.\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Cannot use -M with binary output\n");
 	n_items = strlen (Ctrl->F.flags);
 	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
@@ -232,7 +232,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text - cannot use binary output */
 	}
-	n_errors += GMT_check_condition (GMT, mixed && GMT->common.b.active[GMT_OUT], "GMT SYNTAX ERROR: Cannot use -Fn with binary output\n");
+	n_errors += GMT_check_condition (GMT, mixed && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -304,7 +304,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_message (GMT, "ERROR: -C must specify a single column name\n");
+		GMT_message (GMT, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	

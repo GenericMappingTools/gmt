@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.8 2011-04-06 20:22:54 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.9 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,7 +247,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 
 				Ctrl->A.active = TRUE;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -A option.  Correct syntax:\n\t-A[-][<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g[<fill>]][+j<just>][+o][+p[<pen>]][+s<size>][+u<unit>][+v]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option.  Correct syntax:\n\t-A[-][<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g[<fill>]][+j<just>][+o][+p[<pen>]][+s<size>][+u<unit>][+v]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
@@ -285,7 +285,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 						Ctrl->F.value = +1;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option.  Correct syntax is -F[l|r]:\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Correct syntax is -F[l|r]:\n");
 						break;
 				}
 				break;
@@ -334,7 +334,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 							n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -T option.  Give low and high labels either as -:LH or -:<low>,<high>.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option.  Give low and high labels either as -:LH or -:<low>,<high>.\n");
 							Ctrl->T.label = FALSE;
 							n_errors++;
 						}
@@ -345,7 +345,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}
 					}
-					n_errors += GMT_check_condition (GMT, n == 1 || Ctrl->T.spacing <= 0.0 || Ctrl->T.length == 0.0, "GMT SYNTAX ERROR -T option.  Correct syntax:\n\t-T[+|-][<tick_gap>[%s]/<tick_length>[%s]][:LH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					n_errors += GMT_check_condition (GMT, n == 1 || Ctrl->T.spacing <= 0.0 || Ctrl->T.length == 0.0, "Syntax error -T option.  Correct syntax:\n\t-T[+|-][<tick_gap>[%s]/<tick_length>[%s]][:LH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Pen settings */
@@ -390,16 +390,16 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR:  Must specify a single grid file\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "GMT SYNTAX ERROR:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "GMT SYNTAX ERROR -C option:  Must specify contour interval, file name with levels, or cpt-file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "GMT SYNTAX ERROR -L option: lower limit >= upper!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "GMT SYNTAX ERROR -F option: Must also specify -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "GMT SYNTAX ERROR -S option:  Smooth_factor must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.min < 0, "GMT SYNTAX ERROR -Q option:  Value must be >= 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "GMT SYNTAX ERROR -G option.  Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "GMT SYNTAX ERROR -Z option:  factor must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "GMT SYNTAX ERROR -W option:  + or - only valid if -C sets a cpt file\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error:  Must specify a single grid file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option:  Must specify contour interval, file name with levels, or cpt-file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option:  Smooth_factor must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.min < 0, "Syntax error -Q option:  Value must be >= 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option.  Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option:  factor must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option:  + or - only valid if -C sets a cpt file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -696,7 +696,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file */
 		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */

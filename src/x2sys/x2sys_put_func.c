@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.2 2011-03-15 02:06:38 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,8 +131,8 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "GMT SYNTAX ERROR: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "GMT SYNTAX ERROR: Only specify one of -D and -F\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Syntax error: Only specify one of -D and -F\n");
 	
 	if (Ctrl->F.active) Ctrl->D.active = TRUE;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 
@@ -221,7 +221,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
 	if (Ctrl->In.active && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-		GMT_message (GMT, "ERROR: Could not open file %s\n", Ctrl->In.file);
+		GMT_message (GMT, "Error: Could not open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */

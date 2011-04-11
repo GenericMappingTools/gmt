@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.3 2011-03-31 04:02:39 remko Exp $
+ *	$Id: grdedit_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -158,18 +158,18 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->A.active, "GMT SYNTAX ERROR -S option:  Incompatible with -A\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->A.active, "Syntax error -S option:  Incompatible with -A\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || 
-			Ctrl->T.active), "GMT SYNTAX ERROR -E option:  Incompatible with -A, -D, -N, -S, and -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "GMT SYNTAX ERROR -S option:  Incompatible with -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "GMT SYNTAX ERROR -S option:  Incompatible with -N\n");
+			Ctrl->T.active), "Syntax error -E option:  Incompatible with -A, -D, -N, -S, and -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "Syntax error -S option:  Incompatible with -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error -S option:  Incompatible with -N\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active, 
-					"GMT SYNTAX ERROR -S option:  Must also specify -R\n");
+					"Syntax error -S option:  Must also specify -R\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]), 
-					"GMT SYNTAX ERROR -S option:  -R longitudes must span exactly 360 degrees\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR: Must specify a single grid file\n");
+					"Syntax error -S option:  -R longitudes must span exactly 360 degrees\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	if (Ctrl->N.active) {
-		n_errors += GMT_check_condition (GMT, !Ctrl->N.file, "GMT SYNTAX ERROR -N option:  Must specify name of xyz file\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->N.file, "Syntax error -N option:  Must specify name of xyz file\n");
 		n_errors += GMT_check_binary_io (GMT, 3);
 	}
 

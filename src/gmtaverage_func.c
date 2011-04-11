@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtaverage_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *    $Id: gmtaverage_func.c,v 1.3 2011-04-11 21:15:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -158,11 +158,11 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "GMT SYNTAX ERROR: Must specify -T option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.median == 2, "GMT SYNTAX ERROR: Bad modifier in -T option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.median == 2, "Syntax error: Bad modifier in -T option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.quantile < 0.0 || Ctrl->T.quantile >= 1.0,
-			"GMT SYNTAX ERROR: 0 < q < 1 for quantile in -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->T.median, "GMT SYNTAX ERROR: -Eb requires -Te|<q>\n");
+			"Syntax error: 0 < q < 1 for quantile in -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->T.median, "Syntax error: -Eb requires -Te|<q>\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

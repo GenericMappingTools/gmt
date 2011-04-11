@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.70 2011-03-15 02:06:37 guru Exp $
+ *	$Id: libspotter.c,v 1.71 2011-04-11 21:15:32 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -401,7 +401,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		sscanf (file, "%[^-]-%s", A, B);
 		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != CNULL) ? this : GPLATES_PLATES);
 		if ((fp = GMT_fopen (C, Plates, "r")) == NULL) {
-			GMT_message (C, "libspotter: ERROR: Cannot open GPlates plate id file %s\n", Plates);
+			GMT_message (C, "libspotter: Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (EXIT_FAILURE);
 		}
 		A_id = B_id = 0;
@@ -413,23 +413,23 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 		GMT_fclose (C, fp);
 		if (A_id == 0) {
-			GMT_message (C, "libspotter: ERROR: Could not find an entry for plate %s in the GPlates plate id file\n", A);
+			GMT_message (C, "libspotter: Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (B_id == 0) {
-			GMT_message (C, "libspotter: ERROR: Could not find an entry for plate %s in the GPlates plate id file\n", B);
+			GMT_message (C, "libspotter: Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
 			GMT_exit (EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
 		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != CNULL) ? this : GPLATES_ROTATIONS);
 		if ((fp = GMT_fopen (C, Rotations, "r")) == NULL) {
-			GMT_message (C, "libspotter: ERROR: Cannot open GPlates rotation file %s\n", Rotations);
+			GMT_message (C, "libspotter: Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GPlates = total_in = TRUE;
 	}
 	else if ((fp = GMT_fopen (C, file, "r")) == NULL) {
-		GMT_message (C, "libspotter: ERROR: Cannot open stage pole file: %s\n", file);
+		GMT_message (C, "libspotter: Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -458,12 +458,12 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7], &K[8]);
 			if (! (nf == 4 || nf == 5 || nf == 13 || nf == 14)) {
-				GMT_message (C, "libspotter: ERROR: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
+				GMT_message (C, "libspotter: Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
-					GMT_message (C, "libspotter: ERROR: Rotation file mixes total reconstruction and stage rotation format\n");
+					GMT_message (C, "libspotter: Error: Rotation file mixes total reconstruction and stage rotation format\n");
 					GMT_exit (EXIT_FAILURE);
 				}
 				total_in = TRUE;
@@ -480,7 +480,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 
 		if (e[i].t_stop >= e[i].t_start) {
-			GMT_message (C, "libspotter: ERROR: Stage rotation %ld has start time younger than stop time\n", i);
+			GMT_message (C, "libspotter: Error: Stage rotation %ld has start time younger than stop time\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
@@ -503,7 +503,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	GMT_fclose (C, fp);
 
 	if (GPlates && i == 0) {
-		GMT_message (C, "libspotter: ERROR: Could not find rotations for the plate pair %s - %s\n", A, B);
+		GMT_message (C, "libspotter: Error: Could not find rotations for the plate pair %s - %s\n", A, B);
 		GMT_exit (EXIT_FAILURE);
 	}
 	

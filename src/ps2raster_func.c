@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.5 2011-03-31 17:46:21 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -504,19 +504,19 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
-		"GMT SYNTAX ERROR: Anti-aliasing for graphics requires sub-samplib box of 1,2, or 4\n");
+		"Syntax error: Anti-aliasing for graphics requires sub-samplib box of 1,2, or 4\n");
 
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
-		"GMT SYNTAX ERROR: Anti-aliasing for text requires sub-samplib box of 1,2, or 4\n");
+		"Syntax error: Anti-aliasing for text requires sub-samplib box of 1,2, or 4\n");
 
 	n_errors += GMT_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
-		"GMT SYNTAX ERROR: Cannot handle both a file list and multiple ps files in input\n");
+		"Syntax error: Cannot handle both a file list and multiple ps files in input\n");
 
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
-		"GMT ERROR: Cannot read list file %s\n", Ctrl->L.file);
+		"Error: Cannot read list file %s\n", Ctrl->L.file);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
-		"GMT SYNTAX ERROR: Creation of Multipage PDF requires setting -F option\n");
+		"Syntax error: Creation of Multipage PDF requires setting -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -587,12 +587,12 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
 
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
 		Ctrl->F.active = FALSE;
 	}
 
 	if (Ctrl->F.active && Ctrl->In.n_files > 1 && Ctrl->T.device != -GS_DEV_PDF) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT WARNING: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
 		Ctrl->F.active = FALSE;
 	}
 	
@@ -604,7 +604,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->W.kml && !(Ctrl->T.device == GS_DEV_JPG || Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF || 
 		Ctrl->T.device == GS_DEV_TIFG || Ctrl->T.device == GS_DEV_PNG ||
 		Ctrl->T.device == GS_DEV_TPNG || Ctrl->T.device == GS_DEV_PNGG) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "WARNERROR: As far as we know selected raster type is unsuported by GE.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
@@ -618,7 +618,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR: Cannot to open list file %s\n", Ctrl->L.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot to open list file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -832,7 +832,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT FATAL ERROR: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			continue;
 		}
 
@@ -878,17 +878,17 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 								(south >= -90) && (north <= 90) ) {
 							proj4_cmd = strdup ("latlon");
-							GMT_report (GMT, GMT_MSG_FATAL, "WARNING: An unknown ps2rasterion setting was found but since "
-									"image coordinates seam to be geographical, a linear transformation "
+							GMT_report (GMT, GMT_MSG_FATAL, "Warning: An unknown ps2raster setting was found but since "
+									"image coordinates seem to be geographical, a linear transformation "
 									"will be used.\n");
 						}
 						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-							GMT_report (GMT, GMT_MSG_FATAL, "WARNERROR: You requested an automatic geotiff generation, but "
-									"no recognized ps2rasterion was used for the PS creation.\n"); 
+							GMT_report (GMT, GMT_MSG_FATAL, "Error: requested an automatic geotiff generation, but "
+									"no recognized ps2raster option was used for the PS creation.\n"); 
 						}
 					}
 					else if (Ctrl->W.kml) {
-						GMT_report (GMT, GMT_MSG_FATAL, "WARNERROR: To GE images must be in geographical coords. Very likely "
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: To GE images must be in geographical coords. Very likely "
 									"this won't work as you wish inside GE.\n"); 
 					}
 				}
@@ -1015,7 +1015,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 			i_unused = system (cmd);		/* Execute the GhostScript command */
 			if ((i_unused = access (out_file, R_OK)) != 0)
-				fprintf(stderr, "\nPS2RASTER WARNING: file\n\t%s\nwas not created. Maybe you forgot to close the PS file (a -K in excess?)\n", out_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: file\n\t%s\nwas not created. Maybe you forgot to close the PS file (a -K in excess?)\n", out_file);
 			if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, " Done.\n");

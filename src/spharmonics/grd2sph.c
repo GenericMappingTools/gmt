@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.15 2011-03-15 02:06:37 guru Exp $
+ *	$Id: grd2sph.c,v 1.16 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -116,23 +116,23 @@ int main (int argc, char **argv)
 	}
 
 	if (n_files == 0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify at least one input grid\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error:  Must specify at least one input grid\n", GMT->init.progname);
 		error++;
 	}
 	if (n_files > 1) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input grid\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error:  Can only handle one input grid\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->D.max_degree <= 0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -D maximum degree must be positive\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error:  -D maximum degree must be positive\n", GMT->init.progname);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
 		error++;
 	}
 	if (GMT->current.io.info.binary[GMT_OUT] && GMT->current.io.info.io_header[GMT_OUT]) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR.  Binary output data cannot have header -H\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error.  Binary output data cannot have header -H\n", GMT->init.progname);
 		error++;
 	}
 

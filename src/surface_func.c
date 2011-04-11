@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.5 2011-03-30 03:58:42 guru Exp $
+ *	$Id: surface_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1256,7 +1256,7 @@ GMT_LONG rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	C->z_scale = sqrt (ssz / C->npoints);
 
 	if (C->z_scale < GMT_CONV_LIMIT) {
-		GMT_report (GMT, GMT_MSG_FATAL, "WARNING: Input data lie exactly on a plane.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Input data lie exactly on a plane.\n");
 		C->r_z_scale = C->z_scale = 1.0;
 		return (1);	/* Flag to tell the main to just write out the plane */
 	}
@@ -1681,7 +1681,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 				Ctrl->L.active = TRUE;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower limit  */
-						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "GMT SYNTAX ERROR -Ll option: No argument given\n");
+						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Ll option: No argument given\n");
 						Ctrl->L.low = strdup (&opt->arg[1]);
 						if (!GMT_access (GMT, Ctrl->L.low, R_OK))	/* file exists */
 							Ctrl->L.lmode = 3;
@@ -1693,7 +1693,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 						}
 						break;
 					case 'u':	/* Upper limit  */
-						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "GMT SYNTAX ERROR -Lu option: No argument given\n");
+						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Lu option: No argument given\n");
 						Ctrl->L.high = strdup (&opt->arg[1]);
 						if (!GMT_access (GMT, Ctrl->L.high, R_OK))	/* file exists */
 							Ctrl->L.hmode = 3;
@@ -1727,7 +1727,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 				}
 #endif
 				if (!strchr ("sm ", Ctrl->S.unit)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -S option: Unrecognized unit %c\n", Ctrl->S.unit);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
 					n_errors++;
 				}
 				break;
@@ -1744,7 +1744,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -T option: Unrecognized modifier %c\n", modifier);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
 					n_errors++;
 				}
 				break;
@@ -1761,12 +1761,12 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "GMT SYNTAX ERROR -D:  Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value < 1, "GMT SYNTAX ERROR -N option.  Max iterations must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "GMT SYNTAX ERROR -Z option.  Relaxation value must be 1 <= z <= 2\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR option -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D:  Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option.  Max iterations must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option.  Relaxation value must be 1 <= z <= 2\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G:  Must specify output file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1852,7 +1852,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
-	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING:  Your grid dimensions are mutually prime.\n");
+	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Warning:  Your grid dimensions are mutually prime.\n");
 	if ((C.grid == 1 && GMT->current.setting.verbose >= GMT_MSG_NORMAL) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 

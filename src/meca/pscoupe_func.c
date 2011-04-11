@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -425,7 +425,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "GMT SYNTAX ERROR -s option:  Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_message (GMT, "Syntax error -s option:  Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;
@@ -572,10 +572,10 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 	/* Check that the options selected are mutually consistent */
 
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
-	n_errors += GMT_check_condition (GMT, !Ctrl->A.active, "GMT SYNTAX ERROR:  Must specify -A option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, no_size_needed && Ctrl->S.symbol > 0, "GMT SYNTAX ERROR:  -S must specify scale\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "GMT SYNTAX ERROR:  -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->A.active, "Syntax error:  Must specify -A option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, no_size_needed && Ctrl->S.symbol > 0, "Syntax error:  -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error:  -S must specify scale\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -778,7 +778,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Ctrl->T.active = TRUE;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.0;
-				GMT_report (GMT, GMT_MSG_NORMAL, "WARNING : second plane is not defined for event %s only first plane is plotted.\n", line);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
 			}
 			else {
 				meca.NP1.rake = computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);

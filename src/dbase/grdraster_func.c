@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.10 2011-03-28 17:39:42 guru Exp $
+ *	$Id: grdraster_func.c,v 1.11 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -180,7 +180,7 @@ GMT_LONG get_byte_size (struct GMT_CTRL *GMT, char type) {
 			ksize = 4;
 			break;
 		default:
-			GMT_message (GMT, "ERROR: Invalid data type [%c]\n", (int)type);
+			GMT_message (GMT, "Error: Invalid data type [%c]\n", (int)type);
 			return (EXIT_FAILURE);
 			break;
 	}
@@ -707,12 +707,12 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	/* Check that arguments were valid:  */
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "GMT SYNTAX ERROR -I option.  You must specify only one raster file ID.\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error -I option.  You must specify only one raster file ID.\n");
 #ifndef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "GMT SYNTAX ERROR:  You must select only one of -G or -T.\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "GMT SYNTAX ERROR:  You must select either -G or -T.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error:  You must select only one of -G or -T.\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error:  You must select either -G or -T.\n");
 #endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -783,7 +783,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "ERROR:  At least two rasters have the same file number in grdraster.info\n");
+					GMT_message (GMT, "Error:  At least two rasters have the same file number in grdraster.info\n");
 					error++;
 				}
 			}
@@ -795,7 +795,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "ERROR:  At least two rasters have the same text [%s] in grdraster.info\n", tselect);
+					GMT_message (GMT, "Error:  At least two rasters have the same text [%s] in grdraster.info\n", tselect);
 					error++;
 				}
 			}
@@ -803,9 +803,9 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (j == -1) {
 		if (iselect != -1)
-			GMT_message (GMT, "ERROR:  No raster with file number %ld in grdraster.info\n", iselect);
+			GMT_message (GMT, "Error:  No raster with file number %ld in grdraster.info\n", iselect);
 		else
-			GMT_message (GMT, "ERROR:  No raster with text %s in grdraster.info\n", tselect);
+			GMT_message (GMT, "Error:  No raster with text %s in grdraster.info\n", tselect);
 		error++;
 	}
 	else {
@@ -839,7 +839,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		jmult = irint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
-			GMT_message (GMT, "ERROR:  Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
+			GMT_message (GMT, "Error:  Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -883,7 +883,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->wesn[YHI] =  ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
 		Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
-		GMT_message (GMT, "WARNING:  Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
+		GMT_message (GMT, "Warning:  Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (GMT_IS_ZERO (rint (Grid->header->inc[GMT_X] * 60.0) - Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = (GMT_LONG) irint ((Grid->header->wesn[XLO] - w) * 60.0);
@@ -891,15 +891,15 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = (GMT_LONG) irint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = (GMT_LONG) irint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "WARNING:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
+				GMT_message (GMT, "Warning:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
 			else
-				GMT_message (GMT, "WARNING:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
+				GMT_message (GMT, "Warning:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
 		}
 		else {
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "WARNING:  Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				GMT_message (GMT, "Warning:  Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 			else
-				GMT_message (GMT, "WARNING:  Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
+				GMT_message (GMT, "Warning:  Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
 		}
 		error = 0;
 	}
@@ -973,7 +973,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
 		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
-			GMT_message (GMT, "ERROR:  Failure to read a bitmap raster from %s.\n", myras.h.remark);
+			GMT_message (GMT, "Error:  Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
@@ -1101,7 +1101,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Finished reading from %s\n", myras.h.remark);
 	GMT_report (GMT, GMT_MSG_NORMAL, "min max and # NaN found: %g %g %ld\n", Grid->header->z_min, Grid->header->z_max, n_nan);
 
-	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING - Your grid file is entirely full of NaNs.\n");
+	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid file is entirely full of NaNs.\n");
 
 	if (Ctrl->T.active)
 		GMT_free (GMT, x);

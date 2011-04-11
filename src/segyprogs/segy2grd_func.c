@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -174,7 +174,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'z')
 					Ctrl->A.mode = AVERAGE;
 				else {
-					GMT_message (GMT, "GMT SYNTAX ERROR -A option:  Select -An or -A[z]\n");
+					GMT_message (GMT, "Syntax error -A option:  Select -An or -A[z]\n");
 					n_errors++;
 				}
 				break;
@@ -195,7 +195,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				break;
 			case 'N':
 				if (!opt->arg[0]) {
-					GMT_message (GMT, "GMT SYNTAX ERROR -N option:  Must specify value or NaN\n");
+					GMT_message (GMT, "Syntax error -N option:  Must specify value or NaN\n");
 					n_errors++;
 				}
 				else {
@@ -227,7 +227,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 			/* variable spacing */
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_message (GMT, "GMT SYNTAX ERROR -S option:  Can only be set once\n");
+					GMT_message (GMT, "Syntax error -S option:  Can only be set once\n");
 					n_errors++;
 				}
 				Ctrl->S.active = TRUE;
@@ -251,10 +251,10 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 	
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR.  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error.  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -368,7 +368,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "segy2grd: WARNING data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_message (GMT, "segy2grd: Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */

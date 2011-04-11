@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.3 2011-03-25 22:17:42 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -167,7 +167,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 
 			case 'A':
 				if (!strchr ("nluz", opt->arg[0])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -A option:  Select -An, -Al, -Au, or -A[z]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option:  Select -An, -Al, -Au, or -A[z]\n");
 					n_errors++;
 				}
 				else {
@@ -205,7 +205,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option:  Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -227,10 +227,10 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "GMT SYNTAX ERROR option -S:  Must also specify -Z\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error option -S:  Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */
 		if (n_files > 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  -S can only handle one input file\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  -S can only handle one input file\n");
 			n_errors++;
 		}
 		else {
@@ -251,10 +251,10 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 	do_grid = !(Ctrl->S.active);
 #endif
 	if (do_grid) {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
 	}
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "GMT SYNTAX ERROR option -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G:  Must specify output file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

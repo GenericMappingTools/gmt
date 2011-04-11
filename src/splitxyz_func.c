@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -208,23 +208,23 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 
 			case 'A':
 				Ctrl->A.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2, "GMT SYNTAX ERROR -A option: Can't decipher values\n");
+				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2, "Syntax error -A option: Can't decipher values\n");
 				break;
 			case 'C':
 				Ctrl->C.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1, "GMT SYNTAX ERROR -C option: Can't decipher value\n");
+				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1, "Syntax error -C option: Can't decipher value\n");
 				break;
 			case 'D':
 				Ctrl->D.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1, "GMT SYNTAX ERROR -D option: Can't decipher value\n");
+				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1, "Syntax error -D option: Can't decipher value\n");
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2, "GMT SYNTAX ERROR -F option: Can't decipher values\n");
+				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2, "Syntax error -F option: Can't decipher values\n");
 				break;
 			case 'G':
 				Ctrl->G.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->G.value)) != 1, "GMT SYNTAX ERROR -G option: Can't decipher value\n");
+				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->G.value)) != 1, "Syntax error -G option: Can't decipher value\n");
 				break;
 			case 'M':
 				Ctrl->M.active = TRUE;
@@ -234,7 +234,7 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->N.name = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option: Append a name stem\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Append a name stem\n");
 					n_errors++;
 				}
 				break;
@@ -244,14 +244,14 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 					if (j < SPLITXYZ_N_OUTPUT_CHOICES) {
 						Ctrl->Q.col[j] = opt->arg[j];
 						if (!strchr ("xyzdh", Ctrl->Q.col[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Q option.  Unrecognized output choice %c\n", Ctrl->Q.col[j]);
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option.  Unrecognized output choice %c\n", Ctrl->Q.col[j]);
 							n_errors++;
 						}
 						if (opt->arg[j] == 'z') z_selected = TRUE;
 						n_outputs++;
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
 						n_errors++;
 					}
 				}
@@ -269,16 +269,16 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
                }
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "GMT SYNTAX ERROR -D option: Minimum segment distance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "GMT SYNTAX ERROR -C option: Course change tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "GMT SYNTAX ERROR -A option: Azimuth tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.value < 0.0, "GMT SYNTAX ERROR -G option: Data gap distance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->S.active, "GMT SYNTAX ERROR -Z option: Cannot be used with -S option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->F.z_filter != 0.0, "GMT SYNTAX ERROR -F option: Cannot specify z-filter while using -Z option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name, "GMT SYNTAX ERROR.  Binary output requires a namestem in -N\n");
-	n_errors += GMT_check_condition (GMT, n_outputs > 0 && z_selected && Ctrl->Z.active, "GMT SYNTAX ERROR.  -Q:  Cannot request z if -Z have been specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.value < 0.0, "Syntax error -G option: Data gap distance must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->S.active, "Syntax error -Z option: Cannot be used with -S option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->F.z_filter != 0.0, "Syntax error -F option: Cannot specify z-filter while using -Z option\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name, "Syntax error.  Binary output requires a namestem in -N\n");
+	n_errors += GMT_check_condition (GMT, n_outputs > 0 && z_selected && Ctrl->Z.active, "Syntax error.  -Q:  Cannot request z if -Z have been specified\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->S.active) ? 5 : ((Ctrl->Z.active) ? 2 : 3));
-	n_errors += GMT_check_condition (GMT, n_files > 1, "GMT SYNTAX ERROR:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

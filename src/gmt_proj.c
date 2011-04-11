@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.56 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_proj.c,v 1.57 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -88,13 +88,13 @@ void GMT_check_R_J (struct GMT_CTRL *C, double *clon)	/* Make sure -R and -J agr
 	if (C->current.map.is_world && lon0 != *clon) {
 		C->common.R.wesn[XLO] = *clon - 180.0;
 		C->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 	}
 	else if (!C->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < C->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > C->common.R.wesn[XHI]) GMT_report (C, GMT_MSG_NORMAL, "GMT Warning: Central meridian outside region\n");
+		if (lon0 > C->common.R.wesn[XHI]) GMT_report (C, GMT_MSG_NORMAL, "Warning: Central meridian outside region\n");
 	}
 }
 

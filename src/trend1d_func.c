@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: trend1d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -145,7 +145,7 @@ GMT_LONG read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, GM
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND1D_DATA);
 		}
 		if (i == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: Cannot process more than %d data points\n", INT_MAX);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot process more than %d data points\n", INT_MAX);
 			GMT_free (GMT, data);
 			return (EXIT_FAILURE);
 		}
@@ -524,7 +524,7 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option: Too many output columns selected: Choose from -Fxymrw\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw\n");
 						n_errors++;
 					}
 				}
@@ -548,7 +548,7 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 				if (opt->arg[j])
 					Ctrl->N.value = atoi(&opt->arg[j]);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option.  No model specified\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option.  No model specified\n");
 					n_errors++;
 				}
 				break;
@@ -562,20 +562,20 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "GMT SYNTAX ERROR -C option.  Condition number must be larger than unity\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "GMT SYNTAX ERROR -C option.  Give 0 < confidence level < 1.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0.0, "GMT SYNTAX ERROR -N option.  A positive number of terms must be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option.  Condition number must be larger than unity\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option.  Give 0 < confidence level < 1.0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0.0, "Syntax error -N option.  A positive number of terms must be specified\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xymrw", Ctrl->F.col[j])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
 			Ctrl->weighted_output = TRUE;
 		Ctrl->n_outputs++;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "GMT SYNTAX ERROR -F option.  Must specify at least one output columns \n");
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option.  Must specify at least one output columns \n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

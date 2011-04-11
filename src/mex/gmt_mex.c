@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.c,v 1.2 2011-03-15 02:06:37 guru Exp $
+ *	$Id: gmt_mex.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -167,7 +167,7 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, struct GMT_GRID **G, int n
 		if (strstr (options, "-G")) 	/* User gave -G<file> among the options */
 			return (NULL);		/* No output will be send to Matlab */
 		else
-			mexErrMsgTxt ("ERROR: neither -G option nor left hand side output args.");
+			mexErrMsgTxt ("Error: neither -G option nor left hand side output args.");
 	}
 	o_string = (char *) mxMalloc(GMTAPI_STRLEN);
 	GMT_Encode_ID (API, o_string, out_ID);	/* Make filename with embedded object ID */
@@ -186,7 +186,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 		if (strstr (options, ">")) 	/* User gave > file among the options */
 			return (NULL);		/* No output will be send to Matlab */
 		else
-			mexErrMsgTxt ("ERROR: neither output file name with the '>' "
+			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
 	*V = GMT_create_vector (API->GMT, n_cols);

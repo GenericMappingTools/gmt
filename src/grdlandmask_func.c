@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -181,7 +181,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option:  Specify 2 or 5 arguments\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -195,10 +195,10 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "GMT SYNTAX ERROR:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "GMT SYNTAX ERROR -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify an output file\n");
-	n_errors += GMT_check_condition (GMT, n_files, "GMT SYNTAX ERROR:  Use -G to specify output an file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G:  Must specify an output file\n");
+	n_errors += GMT_check_condition (GMT, n_files, "Syntax error:  Use -G to specify output an file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

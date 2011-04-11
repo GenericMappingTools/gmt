@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.3 2011-03-31 23:03:21 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -585,14 +585,14 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "GMT SYNTAX ERROR.  Cannot specify both start time AND start distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "GMT SYNTAX ERROR.  Cannot specify both stop time AND stop distance\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "GMT SYNTAX ERROR.  Region set incorrectly\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.value <= 0.0, "GMT SYNTAX ERROR.  -W weight must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "GMT SYNTAX ERROR -S: Start distance exceeds stop distance!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "GMT SYNTAX ERROR -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "GMT SYNTAX ERROR -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "GMT SYNTAX ERROR ERROR -D: Start time exceeds stop time!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0, "Syntax error.  Cannot specify both start time AND start distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX, "Syntax error.  Cannot specify both stop time AND stop distance\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "Syntax error.  Region set incorrectly\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.value <= 0.0, "Syntax error.  -W weight must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Syntax error -S: Start distance exceeds stop distance!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "Syntax error -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Syntax error -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error ERROR -D: Start time exceeds stop time!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -729,7 +729,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "ERROR: No cruises given\n");
+		GMT_message (GMT, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -897,7 +897,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (auxlist[MGD77_AUX_ID].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
-				GMT_message (GMT, "ERROR: Cannot specify binary output with text fields\n");
+				GMT_message (GMT, "Error: Cannot specify binary output with text fields\n");
 				MGD77_Free (GMT, D);
 				Return (EXIT_FAILURE);
 			}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.4 2011-04-06 20:22:54 guru Exp $
+ *	$Id: psscale_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -319,19 +319,19 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	/* Check that the options selected are mutually consistent */
 
 	if (!Ctrl->D.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR: -D is required and must be specified\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -D is required and must be specified\n");
 		n_errors++;
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.length) < GMT_SMALL , "GMT SYNTAX ERROR -D option: scale length must be nonzero\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "GMT SYNTAX ERROR -D option: scale width must be positive\n");
+		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.length) < GMT_SMALL , "Syntax error -D option: scale length must be nonzero\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: scale width must be positive\n");
 	}
-	n_errors += GMT_check_condition (GMT, n_files > 0, "GMT SYNTAX ERROR: No input files are allowed\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.dpi < 1, "GMT SYNTAX ERROR -N option: dpi must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->common.B.set, "GMT SYNTAX ERROR -L option: Cannot be used with -B option.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.do_pen || Ctrl->T.do_fill), "GMT SYNTAX ERROR -T option: Must set pen or fill.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "GMT SYNTAX ERROR -Z option: No file given\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && GMT_access (GMT, Ctrl->Z.file, R_OK), "GMT SYNTAX ERROR -Z option: Cannot access file %s\n", Ctrl->Z.file);
+	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.dpi < 1, "Syntax error -N option: dpi must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->common.B.set, "Syntax error -L option: Cannot be used with -B option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.do_pen || Ctrl->T.do_fill), "Syntax error -T option: Must set pen or fill.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && GMT_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -991,7 +991,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->range[i].z_low <= 0.0 || P->range[i].z_high <= 0.0) {
-				GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Q option: All z-values must be positive for logarithmic scale\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
 				Return (EXIT_FAILURE);
 			}
 			P->range[i].z_low = d_log10 (GMT, P->range[i].z_low);

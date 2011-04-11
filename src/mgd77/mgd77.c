@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.265 2011-03-28 17:39:42 guru Exp $
+ *	$Id: mgd77.c,v 1.266 2011-04-11 21:15:32 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -749,7 +749,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	P = (F->original || F->format != MGD77_FORMAT_CDF) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 
 	if (!H->meta.verified) {
-		GMT_message (C, "%s: ERROR: MGD77_Verify_Header called before MGD77_Verify_Prep\n", C->init.progname);
+		GMT_message (C, "%s: Error: MGD77_Verify_Header called before MGD77_Verify_Prep\n", C->init.progname);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -1686,7 +1686,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	}
 
 	if (match == 0) {
-		GMT_message (C, "%s: ERROR: No header item matched your string %s\n", C->init.progname, item);
+		GMT_message (C, "%s: Error: No header item matched your string %s\n", C->init.progname, item);
 		return -1;
 	}
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
@@ -1702,7 +1702,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 			return 0;
 		}
 		else {
-			GMT_message (C, "%s: ERROR: More than one item matched your string %s:\n", C->init.progname, item);
+			GMT_message (C, "%s: Error: More than one item matched your string %s:\n", C->init.progname, item);
 			for (i = 0; i < match; i++) GMT_message (C, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
@@ -1724,7 +1724,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *it
 	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
 
 	if (id == MGD77_NOT_SET) {
-		GMT_message (C, "%s: INTERNAL ERROR: MGD77_Get_Header_Item returns %d for item %s\n", C->init.progname, id, item);
+		GMT_message (C, "%s: Error: MGD77_Get_Header_Item returns %d for item %s\n", C->init.progname, id, item);
 		exit (EXIT_FAILURE);
 	}
 
@@ -2621,7 +2621,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
 		if ((fp = GMT_fopen (C, flist, "r")) == NULL) {
-			GMT_message (C, "WARNING: Unable to open file list %s\n", flist);
+			GMT_message (C, "Warning: Unable to open file list %s\n", flist);
 			return (-1);
 		}
 		while (GMT_fgets (C, line, BUFSIZ, fp)) {
@@ -2676,7 +2676,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			/* The directory search is only supported on Unix-like systems for now */
 			/* Here we have either <agency> or <agency><vessel> code or blank for all */
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
-				GMT_message (C, "%s: WARNING: Unable to open directory %s\n", C->init.progname, F->MGD77_datadir[i]);
+				GMT_message (C, "%s: Warning: Unable to open directory %s\n", C->init.progname, F->MGD77_datadir[i]);
 				continue;
 			}
 			while ((entry = readdir (dir)) != NULL) {
@@ -3973,7 +3973,7 @@ int MGD77_carter_get_bin (struct GMT_CTRL *C, double lon, double lat, int *bin)
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		GMT_message (C, "MGD77 ERROR: in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
+		GMT_message (C, "Error: in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -3994,12 +3994,12 @@ int MGD77_carter_get_zone (struct GMT_CTRL *G, int bin, struct MGD77_CARTER *C, 
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(G, C) ) {
-		fprintf (G->session.std[GMT_ERR], "MGD77 ERROR: in MGD77_carter_get_zone:  Initialization failure.\n");
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone:  Initialization failure.\n");
 		return (-1);
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (G->session.std[GMT_ERR], "MGD77 ERROR: in MGD77_carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = C->carter_zone[bin];
@@ -4039,15 +4039,15 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init(G, C) ) {
-		fprintf (G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Initialization failure.\n");
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0.0) {
-		fprintf (G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_depth_from_twt:  Negative twt: %g msec\n", twt_in_msec);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Negative twt: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4062,7 +4062,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
-		fprintf (G->session.std[GMT_ERR], "MGD77 ERROR: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4071,7 +4071,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
 		if ( i == (C->carter_offset[zone] - 2) ) {
-			fprintf (G->session.std[GMT_ERR], "GMT ERROR: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+			fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
 			return (-1);
 		}
 
@@ -4099,15 +4099,15 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_c
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init (G, C) ) {
-		fprintf(G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Initialization failure.\n");
+		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0.0) {
-		fprintf(G->session.std[GMT_ERR],"MGD77 ERROR: in MGD77_carter_twt_from_depth:  Negative depth: %g m\n", depth_in_corr_m);
+		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Negative depth: %g m\n", depth_in_corr_m);
 		return(-1);
 	}
 
@@ -4120,7 +4120,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_c
 	min = C->carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > C->carter_correction[max]) {
-		fprintf (G->session.std[GMT_ERR], "MGD77 ERROR: in MGD77_carter_twt_from_depth:  Depth too big: %g m.\n", depth_in_corr_m);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_twt_from_depth:  Depth too big: %g m.\n", depth_in_corr_m);
 		return (-1);
 	}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.3 2011-04-05 18:48:46 guru Exp $
+*    $Id: gmtvector_func.c,v 1.4 2011-04-11 21:15:30 remko Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -220,9 +220,9 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_in, "GMT SYNTAX ERROR:  Binary input data (-bi) must have at least %ld columns\n", n_in);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "GMT SYNTAX ERROR -S:  Secondary vector cannot be a file!\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "GMT SYNTAX ERROR:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error:  Binary input data (-bi) must have at least %ld columns\n", n_in);
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S:  Secondary vector cannot be a file!\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

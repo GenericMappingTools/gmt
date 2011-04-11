@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.4 2011-04-01 19:50:05 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.5 2011-04-11 21:15:32 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -239,16 +239,16 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	}
 
         if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "GMT SYNTAX ERROR:  Binary input data cannot have header -H\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "GMT SYNTAX ERROR:  No output grid file allowed with -S\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "GMT SYNTAX ERROR -G:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "GMT SYNTAX ERROR:  -N and -S cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "GMT SYNTAX ERROR:  Binary input data (-bi) must have at least 2 columns\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "GMT SYNTAX ERROR:  -N and -D cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->e.active, "GMT SYNTAX ERROR:  -E and -e cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->e.active, "GMT SYNTAX ERROR:  Must specify either -E -T or -e\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->T.active, "GMT SYNTAX ERROR:  Option -E requires -T\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error:  Binary input data cannot have header -H\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error:  No output grid file allowed with -S\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error:  -N and -S cannot both be given\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error:  Binary input data (-bi) must have at least 2 columns\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error:  -N and -D cannot both be given\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->e.active, "Syntax error:  -E and -e cannot both be given\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->e.active, "Syntax error:  Must specify either -E -T or -e\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->T.active, "Syntax error:  Option -E requires -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

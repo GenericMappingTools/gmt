@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -198,7 +198,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						case 'O': case 'o': Ctrl->D.mode |= 2; break;
 						case 'N': case 'n': Ctrl->D.mode |= 4; break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -D option:  Unrecognized modifier\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option:  Unrecognized modifier\n");
 							n_errors++;
 							break;
 					}
@@ -213,11 +213,11 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						break;
 					case 's':	/* "simple" Lambertian case */
 						Ctrl->E.mode = 2;
-						n_errors += GMT_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "GMT SYNTAX ERROR -Es option: Must append azimuth/elevation\n");
+						n_errors += GMT_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
 						break;
 					default:
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
-						n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "GMT SYNTAX ERROR -E option: Must give at least azimuth and elevation\n");
+						n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "Syntax error -E option: Must give at least azimuth and elevation\n");
 						entry = pos = 0;
 						while (entry < 6 && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
 							switch (entry) {
@@ -256,7 +256,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_report (GMT, GMT_MSG_COMPAT, "GMT Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 #endif
 				break;
@@ -286,15 +286,15 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "GMT SYNTAX ERROR:  Must specify -A, -D, or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "GMT SYNTAX ERROR -S option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "GMT SYNTAX ERROR -G option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "GMT SYNTAX ERROR:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "GMT SYNTAX ERROR -N option:  Normalization amplitude must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "GMT SYNTAX ERROR -N option:  Sigma must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "GMT SYNTAX ERROR -E option:  Use 0-90 degree range for elevation\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error:  Must specify -A, -D, or -E\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option:  Normalization amplitude must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option:  Sigma must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option:  Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "WARNING: -E option overrides -A, -D or -S\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = FALSE;
 	}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.3 2011-04-01 19:50:05 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -241,7 +241,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				Ctrl->C.active = TRUE;
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 'f') {
-					GMT_report (GMT, GMT_MSG_COMPAT, "GMT Warning: Option -Cf is deprecated; use -C- instead\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 					opt->arg[0] = '-';
 					fix = TRUE;
 				}
@@ -254,7 +254,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C:  Expects -C%s/<file>\n", GMT_DIST_OPT);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C:  Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
 #ifdef GMT_COMPAT
@@ -277,7 +277,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 							Ctrl->E.inside[N_ITEM] = P_IS_INSIDE;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -E:  Expects -Ef, -En, or -Efn\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E:  Expects -Ef, -En, or -Efn\n");
 							n_errors++;
 							break;
 					}
@@ -310,7 +310,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 							Ctrl->I.pass[5] = FALSE;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -I:  Expects -Icflrsz\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I:  Expects -Icflrsz\n");
 							n_errors++;
 							break;
 					}
@@ -326,7 +326,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 					}
 					for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);
 					if (!opt->arg[j]) {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -L:  Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L:  Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 						n_errors++;
 					}
 					else {
@@ -342,7 +342,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				strcpy (buffer, opt->arg);
 #ifdef GMT_COMPAT
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
-					GMT_report (GMT, GMT_MSG_COMPAT, "GMT Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = TRUE;
 					Ctrl->E.inside[N_ITEM] = P_IS_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
@@ -358,13 +358,13 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 							Ctrl->N.mask[j] = 1;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option:  Bad modifier (use s or k)\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Bad modifier (use s or k)\n");
 							n_errors++;
 					}
 					j++;
 				}
 				if (!(j == 2 || j == GMTSELECT_N_CLASSES)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option:  Specify 2 or 5 arguments\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -373,7 +373,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				Ctrl->Z.active = TRUE;
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -Z option:  Specify z_min and z_max\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Z option:  Specify z_min and z_max\n");
 					n_errors++;
 				}
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
@@ -391,18 +391,18 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "GMT SYNTAX ERROR -C.  Unrecognized distance unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "GMT SYNTAX ERROR -C.  Unable to decode distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -3, "GMT SYNTAX ERROR -C.  Distance is negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && GMT_access (GMT, Ctrl->C.file, R_OK), "GMT SYNTAX ERROR -C:  Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && GMT_access (GMT, Ctrl->F.file, R_OK), "GMT SYNTAX ERROR -F:  Cannot read file %s!\n", Ctrl->F.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK), "GMT SYNTAX ERROR -L:  Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -1, "GMT SYNTAX ERROR -L.  Unrecognized distance unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -2, "GMT SYNTAX ERROR -L.  Unable to decode distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "GMT SYNTAX ERROR -L.  Distance is negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "GMT SYNTAX ERROR:  -A and -D requires -N!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.max <= Ctrl->Z.min, "GMT SYNTAX ERROR:  -Z must have zmax > zmin!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "GMT SYNTAX ERROR.  If both -C and -L are used they must use the same distance unit and calculation mode\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C.  Unrecognized distance unit\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C.  Unable to decode distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C.  Distance is negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C:  Cannot read file %s!\n", Ctrl->C.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && GMT_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F:  Cannot read file %s!\n", Ctrl->F.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L:  Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L.  Unrecognized distance unit\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L.  Unable to decode distance\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L.  Distance is negative\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error:  -A and -D requires -N!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.max <= Ctrl->Z.min, "Syntax error:  -Z must have zmax > zmin!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error.  If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += GMT_check_binary_io (GMT, 2 + Ctrl->Z.active);
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -524,12 +524,12 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C:  %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C:  %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
 			Return (EXIT_FAILURE);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -C:  %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C:  %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
 			Return (EXIT_FAILURE);
 		}
@@ -577,7 +577,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, (void **)&Ctrl->L.file, (void **)&Lin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Lin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -L:  %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L:  %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Lin);
 			Return (EXIT_FAILURE);
 		}
@@ -598,7 +598,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, (void **)&Ctrl->F.file, (void **)&Fin)) Return ((error = GMT_DATA_READ_ERROR));
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F:  %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F:  %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Fin);
 			Return (EXIT_FAILURE);
 		}

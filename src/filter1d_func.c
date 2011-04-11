@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.2 2011-03-15 02:06:35 guru Exp $
+ *	$Id: filter1d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -250,7 +250,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.filter = opt->arg[0];
 					Ctrl->F.width = atof (&opt->arg[1]);
-					n_errors += GMT_check_condition (GMT, Ctrl->F.width <= 0.0, "GMT SYNTAX ERROR -F option: Filterwidth must be positive\n");
+					n_errors += GMT_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Filterwidth must be positive\n");
 					switch (Ctrl->F.filter) {	/* Get some futher info from some filters */
 						case 'P':
 						case 'p':
@@ -264,14 +264,14 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 							if (opt->arg[1] && !GMT_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR -F[Ff] option. Could not find file %s.\n", &opt->arg[1]);
+								GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
 								n_errors++;
 							}
 							break;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -F option.  Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					n_errors++;
 				}
 				break;
@@ -287,7 +287,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 				Ctrl->N.active = TRUE;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/') && sscanf (opt->arg, "%*s/%" GMT_LL "d", &Ctrl->N.col) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -N option:  Syntax is -N<tcol>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 					n_errors++;
 				}
 				else if (!strchr (opt->arg, '/'))
@@ -307,7 +307,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 			case 'T':	/* Set output knots */
 				Ctrl->T.active = TRUE;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR -T option:  Syntax is -T<start>/<stop>/<inc>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Suntax error -T option: Syntax is -T<start>/<stop>/<inc>\n");
 					n_errors++;
 				}
 				else {
@@ -324,13 +324,13 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 
 	/* Check arguments */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "GMT SYNTAX ERROR:  -F is required\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "GMT SYNTAX ERROR -D:  must give positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "GMT SYNTAX ERROR -T option:  Output interval < filterwidth\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "GMT SYNTAX ERROR -L option:  Unreasonable lack-of-data interval\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "GMT SYNTAX ERROR -S option:  Enter a factor between 0 and 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.col < 0, "GMT SYNTAX ERROR -N option.  Time column cannot be negative.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "GMT SYNTAX ERROR -Q option:  Enter a factor between 0 and 1\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error:  -F is required\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D:  must give positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option:  Output interval < filterwidth\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option:  Unreasonable lack-of-data interval\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option:  Enter a factor between 0 and 1\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.col < 0, "Syntax error -N option:  Time column cannot be negative.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option:  Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -804,7 +804,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"GMT SYNTAX ERROR.  Binary input data must have at least %ld fields\n", F.n_cols);
+		"Syntax error:  Binary input data must have at least %ld fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = TRUE;
@@ -926,7 +926,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (F.filter_type == FILTER1D_CUSTOM) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&F.Fin);
 
 	free_space_filter1d (GMT, &F);
-	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "WARNING: %ld multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", F.n_multiples);
 
 	Free_filter1d_Ctrl (GMT, Ctrl);
 	
