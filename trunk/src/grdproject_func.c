@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.3 2011-03-25 22:17:41 guru Exp $
+ *	$Id: grdproject_func.c,v 1.4 2011-04-11 20:59:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -511,7 +511,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (unit) for (k = 0; k < 4; k++) Rect->header->wesn[k] *= fwd_scale;	/* Change the 1:1 unit used */
 		}
 		else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Convert from inch to whatever */
-			for (k = 0; k < 4; k++) Rect->header->wesn[k] *= unit_to_inch;
+			for (k = 0; k < 4; k++) Rect->header->wesn[k] /= unit_to_inch;
 		}
 		if (shift_xy) {
 			Rect->header->wesn[XLO] += Ctrl->C.easting;
