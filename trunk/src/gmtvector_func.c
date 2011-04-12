@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+*    $Id: gmtvector_func.c,v 1.6 2011-04-12 04:11:57 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,6 +47,10 @@ struct GMTVECTOR_CTRL {
 		GMT_LONG n_args;
 		char *arg;
 	} In;
+	struct A {	/* -A[vec] */
+		GMT_LONG active;
+		char *arg;
+	} A;
 	struct C {	/* -C[i|o] */
 		GMT_LONG active[2];
 	} C;
@@ -93,7 +97,7 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtvector %s - Basic vector manipulation in 2-D and 3-D\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtvector <infiles> [-C[i|o]] [-E] [-N] [-Ta|b|d|D|s|r<rot>|x] [%s]\n", GMT_b_OPT);
+	GMT_message (GMT, "usage: gmtvector [<infiles>] [-A<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x] [%s]\n", GMT_b_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -103,6 +107,7 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t  If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
 	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
 	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta\n");
 	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates\n");
 	GMT_message (GMT, "\t-E Automatically convert between geodetic and geocentric coordinates [no conversion].\n");
@@ -141,7 +146,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
+			case '<':	/* Input files or single point */
 				Ctrl->In.active = TRUE;
 				if (Ctrl->In.n_args++ == 0) Ctrl->In.arg = strdup (opt->arg);
 				break;
@@ -151,6 +156,10 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Secondary vector */
+				Ctrl->A.active = TRUE;
+				Ctrl->A.arg = strdup (opt->arg);
+				break;
 			case 'C':	/* Cartesian coordinates on in|out */
 				if (opt->arg[0] == 'i')
 					Ctrl->C.active[GMT_IN] = TRUE;
@@ -220,9 +229,10 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_in);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error:  Binary input data (-bi) must have at least %ld columns\n", n_in);
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S:  Secondary vector cannot be a file!\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active, "Syntax error:  Cannot give input files and -A at the same time\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -381,8 +391,8 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Read input data set */
 	
-	if (Ctrl->In.active && Ctrl->In.n_args == 1 && GMT_access (GMT, Ctrl->In.arg, R_OK)) {	/* Try to parse "file" as a vector */
-		n = decode_vector (GMT, Ctrl->In.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
+	if (Ctrl->A.active) {	/* Gave single primary vector */
+		n = decode_vector (GMT, Ctrl->A.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (EXIT_FAILURE);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize before we turn dot-product into angle */
 			if (n == 2)
