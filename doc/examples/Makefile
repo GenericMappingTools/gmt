@@ -7,7 +7,7 @@ example_07.ps example_08.ps example_09.ps example_10.ps example_11.ps example_12
 example_13.ps example_14.ps example_15.ps example_16.ps example_17.ps example_18.ps \
 example_19.ps example_20.ps example_21.ps example_22.ps example_23.ps example_24.ps \
 example_25.ps example_26.ps example_27.ps example_28.ps example_29.ps example_30.ps \
-example_31.ps
+example_31.ps example_32.ps
 ANIM=anim_01.ps anim_02.ps anim_03.ps anim_04.ps
 
 examples run-examples:	$(EX)
@@ -89,6 +89,8 @@ example_30.ps: ex30/job30.sh ex29/mars370.in
 	cd ex30 ; ./job30.sh
 example_31.ps: ex31/job31.sh
 	cd ex31 ; ./job31.sh
+example_32.ps: ex32/job32.sh ex32/euflag.nc ex32/topo.nc
+	cd ex32 ; ./job32.sh
 
 anim_01.ps: anim01/anim_01.sh
 	cd anim01 ; ./anim_01.sh
