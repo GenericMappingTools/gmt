@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.15 2011-03-30 01:28:26 jluis Exp $
+ *	$Id: gmt_esri_io.c,v 1.16 2011-04-12 14:37:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -208,14 +208,14 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
 
-	if ( header->remark[0] == 'M' || header->remark[0] == 'I' ) {	/* We are dealing with a ESRI .hdr file */
+	if (header->remark[0] == 'M' || header->remark[0] == 'I') {	/* We are dealing with a ESRI .hdr file */
 		GMT_LONG error;
 		if ((error = read_esri_info_hdr (C, header))) 		/* Continue the work someplace else */
 			return (error);
 		else
 			return (GMT_NOERROR);
 	}
-	else if ( header->remark[0] == 'B' && header->remark[1] == '0' ) {	/* A GTOPO30 or SRTM30 file */
+	else if (header->remark[0] == 'B' && header->remark[1] == '0') {	/* A GTOPO30 or SRTM30 file */
 		size_t len = strlen (header->command);
 		double inc2;
 
@@ -240,8 +240,8 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 			header->nx = 7200;
 			header->ny = 3600;
 		}
-		header->wesn[XLO] += inc2;	header->wesn[XHI] -= inc2;	/* Grid reg */
-		header->wesn[YLO] += inc2;	header->wesn[YHI] -= inc2; 
+		header->registration = GMT_PIXEL_REG;
+		
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
 			header->nan_value = -9999;
@@ -251,7 +251,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
-	else if ( header->remark[0] == 'B' && header->remark[1] == '1' ) {	/* A SRTM3 or SRTM1 file */
+	else if (header->remark[0] == 'B' && header->remark[1] == '1') {	/* A SRTM3 or SRTM1 file */
 		size_t len = strlen (header->command);
 		struct GMT_STAT F;
 
@@ -274,7 +274,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		if (!GMT_is_geographic (C, GMT_IN)) GMT_parse_common_options (C, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
 	}
-	else if ( (header->remark[0] == 'L' || header->remark[0] == 'B') && header->remark[1] == '2' ) {	/* A Arc/Info BINARY file */
+	else if ((header->remark[0] == 'L' || header->remark[0] == 'B') && header->remark[1] == '2') {	/* A Arc/Info BINARY file */
 		if ((fp2 = GMT_fopen (C, header->command, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 		/* To use the same parsing header code as in the ASCII file case where header and data are in the
 		   same file, we will swap the file pointers and undo the swap at the end of this function */
@@ -397,7 +397,7 @@ GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *heade
 	strcat  (record, item);	strcat  (record, "\n");
 	GMT_fputs (record, fp);		/* Write a text record */
 	if (GMT_is_fnan (header->nan_value)) {
-		GMT_report (C, GMT_MSG_NORMAL, "WARNING: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0;
 	}
 	sprintf (record, "nodata_value %ld\n", (GMT_LONG)irint (header->nan_value));
