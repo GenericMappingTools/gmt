@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.53 2011-03-27 17:03:39 remko Exp $
+#	$Id: GNUmakefile,v 1.54 2011-04-12 20:30:58 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -68,7 +68,8 @@ EX_PS=	examples/example_01.ps examples/example_02.ps examples/example_03.ps exam
 	examples/example_16.ps examples/example_17.ps examples/example_18.ps examples/example_19.ps \
 	examples/example_20.ps examples/example_21.ps examples/example_22.ps examples/example_23.ps \
 	examples/example_24.ps examples/example_25.ps examples/example_26.ps examples/example_27.ps \
-	examples/example_28.ps examples/example_29.ps examples/example_30.ps examples/example_31.ps
+	examples/example_28.ps examples/example_29.ps examples/example_30.ps examples/example_31.ps \
+	examples/example_32.ps
 
 # Ghostscript font lookup path
 FONTPATH=examples/ex31/fonts

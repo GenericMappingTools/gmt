@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.69 2011-04-07 00:55:30 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.70 2011-04-12 20:30:58 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1068,3 +1068,31 @@ a PDF-file.
 \GMTexample{31}{Using non-default fonts in \PS.}
  
 \index{Example!Using non-default fonts in \PS|)}
+
+\section{Draping an image over topography}
+\index{Example!Draping an image over topography|(}
+
+In some cases, it is nice to ``drape'' an arbitrary image over a topgraphic map.
+We have already seen how to use \GMTprog{psimage} to plot an image anywhere in out plot.
+But here are aim is different, we want to manipulate an image to shade it and plot it in 3-D over topography.
+This example was originally created by Stephan Eickschen for a flyer emphasizing the historical economical and cultural
+bond between Brussels, Maastricht and Bonn. Obviously, the flag of the European Union came to mind as a good
+``background''.
+
+To avoid adding large files to this example, some steps have been already done. First we get the EU flag
+directly from the web and convert it to a grid with values ranging from 0 to 255, where the higher values will become
+yellow and the lower values blue. This use of \GMTprog{grdreformat} requires GDAL support. \GMTprog{grdedit} then adds
+the right grid dimension.
+
+The second step is to reformat the GTOPO30 DEM file to a netCDF grid as well and then subsample it at the same pixels
+as the EU flag. We then illuminate the topography grid so we can use it later to emphasize the topography. The colors that we will use are those of the proper flag. Lower values will become blue and the upper values yellow.
+
+The call the \GMTprog{grdview} plots a topography map of northwest continental Europe, with the flagged draped over it and with shading to show the little topography there is. \GMTprog{pscoast} is used in conjunction with \GMTprog{grdtrack} and \GMT{psxyz} to plot rivers ``at altitude''. Something similar is done at the end to plot some symbols and names for cities.
+
+\script[examples]{example_32}
+
+The script produces the plot in Figure~\ref{fig:GMT_example_32}. Note that the PNG image of the flag can be downloaded directly in the call the \GMTprog{grdreformat}, but we have commented that out in the example because it requires compilation with GDAL support. You will also see the \GMTprog{grdcut} command commented out because we did not want to store the 58 MB DEM file, whose location is mentioned in the script.
+
+\GMTexample[width=\textwidth]{32}{Draping an image over topography}
+
+\index{Example!Draping an image over topography|)}
