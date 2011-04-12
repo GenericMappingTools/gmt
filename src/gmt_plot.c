@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.310 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_plot.c,v 1.311 2011-04-12 20:03:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3721,7 +3721,7 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_S
 	 * two paths are not the same.
 	 */
 	struct GMT_LINE_SEGMENT *S2 = NULL;
-	GMT_LONG add_pole, outline;
+	GMT_LONG add_pole, outline = 0;
 	
 	add_pole = (S->pole && !GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0));	/* TRUE if a polar cap AND fill was requested */
 	if (add_pole) {	/* Must do fill and outline separately */
