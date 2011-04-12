@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.48 2011-04-09 16:34:23 jluis Exp $
+ *	$Id: gmt_grd.h,v 1.49 2011-04-12 19:50:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -68,6 +68,8 @@ struct GRD_HEADER {
 	int xy_dim[2];			/* NetCDF: dimension order of x and y; normally {1, 0} */
 	double nan_value;		/* Missing value as stored in grid file */
 	double xy_off;			/* 0.0 (registration == 0) or 0.5 ( == 1) */
+	char flags[4];			/* Flags used for ESRI grids */
+	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 /* The following elements should not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
 	double z_min;			/* Minimum z value */
@@ -81,7 +83,6 @@ struct GRD_HEADER {
 	char title[GRD_TITLE_LEN];	/* name of data set */
 	char command[GRD_COMMAND_LEN];	/* name of generating command */
 	char remark[GRD_REMARK_LEN];	/* comments re this data set */
-	char *pocket;			/* A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 };
 
 /*-----------------------------------------------------------------------------------------
