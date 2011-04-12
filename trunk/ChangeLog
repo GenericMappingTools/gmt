@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.940 2011-04-11 21:20:48 remko Exp $
+	$Id: ChangeLog,v 1.941 2011-04-12 16:23:29 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-12	remko
+	* gmt_esri_io.c:	Load GTOPO30 and SRTM30 as pixel registered grids (which they are).
+	* gmt_gdalread.[ch]:	Removed C.active from GDALREAD_CTRL. Need was based on misinterpretation.
+	* gmt_grdio.c:		Force pixel registration in GMT_read_image_info.
+	* gmt_customio.c:		Force pixel registration in GMT_gdal_read_grd_info.
 
 2011-04-11      pwessel
 	* grdproject_func.c:	Output grd header had wrong units when non-inch settings were in effect.
