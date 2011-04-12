@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_restore.c,v 1.6 2007-05-09 04:19:37 pwessel Exp $
+ *	$Id: polygon_restore.c,v 1.7 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 	char file[80], line[BUFSIZ];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_restore new.lis final_polygons.b level\n");
+		fprintf(stderr,"usage: polygon_restore new.lis final_polygons.b level\n");
 		exit(-1);
 	}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grd2cpt_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -200,7 +200,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = TRUE;
 				if (sscanf (opt->arg, "%ld", &Ctrl->E.levels) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option:  Cannot decode value\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -219,7 +219,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = TRUE;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option:  Cannot decode limits\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
@@ -239,7 +239,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 			case 'S':	/* Sets sample range */
 				Ctrl->S.active = TRUE;
 				if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option:  Cannot decode values\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Cannot decode values\n");
 					n_errors++;
 				}
 				break;
@@ -247,7 +247,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 				Ctrl->T.active = TRUE;
 				kind = '\0';
 				if (sscanf (opt->arg, "%c", &kind) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option:  Cannot decode option\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Cannot decode option\n");
 					n_errors++;
 				}
 				switch (kind) {
@@ -256,7 +256,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 					case '_': Ctrl->T.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
 					case '=': Ctrl->T.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option:  Must append modifier -, +, _, or =\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
 						n_errors++;
 						break;
 				}
@@ -276,13 +276,11 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option:  min_limit must be less than max_limit.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
-		"Syntax error -S option:  Bad arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
-		"GMT USAGE ERROR -S option:  Cannot be combined with -E nor -T option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option: min_limit must be less than max_limit.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0), "Syntax error -S option: Bad arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active), "Syntax error -S option: Cannot be combined with -E nor -T option.\n");
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A:  Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -484,7 +482,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
 			sd = (G[0]->header->z_max - mean) / 1.5;
 			if (sd <= 0.0) {
-				GMT_report (GMT, GMT_MSG_FATAL, " ERROR.  Min and Max data values are equal.\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Min and Max data values are equal.\n");
 				Return (EXIT_FAILURE);
 			}
 		}	/* End of stupid bug fix  */

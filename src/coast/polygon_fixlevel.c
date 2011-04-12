@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fixlevel.c,v 1.4 2007-03-28 18:29:39 pwessel Exp $
+ *	$Id: polygon_fixlevel.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  */
@@ -13,7 +13,7 @@ int main (int argc, char **argv)
 	struct GMT3_POLY h;
         
 	if (argc != 4) {
-		fprintf (stderr, "usage:  polygon_fixlevel database.b id new_level\n");
+		fprintf (stderr, "usage: polygon_fixlevel database.b id new_level\n");
 		fprintf (stderr, "Note: polygon_fixlevel modifies the database.b directly!\n");
 		exit (-1);
 	}
@@ -42,13 +42,13 @@ int main (int argc, char **argv)
 
 	h.level = new_level;
 	if (fseek (fp_in, (long) (-sizeof (struct GMT3_POLY)), SEEK_CUR)) {
- 		fprintf(stderr,"polygon_fixlevel:  ERROR  seeking to start of header.\n");
+ 		fprintf(stderr,"polygon_fixlevel: Error seeking to start of header.\n");
 		exit(-1);
 	}
 	fflush (fp_in);
 
 	if (pol_writeheader (&h, fp_in) != 1) {
-		fprintf(stderr,"polygon_fixlevel:  ERROR  writing file.\n");
+		fprintf(stderr,"polygon_fixlevel: Error writing file.\n");
 		exit(-1);
 	}
 	fflush (fp_in);
@@ -57,18 +57,18 @@ int main (int argc, char **argv)
 	if (abs (new_level - old_level) % 2 == 1) {	/* Must reverse polygon */
 		p = (struct LONGPAIR *) GMT_memory (CNULL, h.n, sizeof (struct LONGPAIR), "polygon_fixlevel");
 		if (pol_fread (p, h.n, fp_in) != h.n) {
-			fprintf(stderr,"polygon_fixlevel:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_fixlevel: Error reading file.\n");
 			exit(-1);
 		}
 		fflush (fp_in);
 		if (fseek (fp_in, (long) (-h.n * sizeof (struct LONGPAIR)), SEEK_CUR)) {
- 			fprintf(stderr,"polygon_fixlevel:  ERROR  seeking to start of data.\n");
+ 			fprintf(stderr,"polygon_fixlevel: Error seeking to start of data.\n");
 			exit(-1);
 		}
 		fflush (fp_in);
 		for (k = 0; k < h.n; k++) {
 			if (pol_fwrite (&p[h.n-1-k], 1, fp_in)) {
-				fprintf(stderr,"polygon_fixlevel:  ERROR  writing file.\n");
+				fprintf(stderr,"polygon_fixlevel: Error writing file.\n");
 				exit(-1);
 			}
 		}
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 	}
 #endif
 	fclose(fp_in);
-	fprintf(stderr,"polygon_fixlevel:  Polygon %d successfully fixed\n", id);
+	fprintf(stderr,"polygon_fixlevel: Polygon %d successfully fixed\n", id);
 
 	exit (0);
 }

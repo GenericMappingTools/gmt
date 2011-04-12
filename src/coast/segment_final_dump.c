@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_final_dump.c,v 1.3 2009-06-20 23:30:19 guru Exp $
+ *	$Id: segment_final_dump.c,v 1.4 2011-04-12 13:06:42 remko Exp $
  */
 /* segment_final_dump <wvs_polygon_file.b> wvs_polygons.b
  *
@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	int	id, i, greenwich, iw, ie, is, in, np = 0, ranks[100];
 
 	if (argc != 3) {
-		fprintf(stderr,"usage:  segment_final_dump wvs_clean_poly.b wvs_polygons.b\n");
+		fprintf(stderr,"usage: segment_final_dump wvs_clean_poly.b wvs_polygons.b\n");
 		exit(-1);
 	}
 
@@ -29,7 +29,7 @@ int main (int argc, char **argv)
 	id = 0;
 	while (fread((void *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp) == 1) {
 		if ((fread((void *)p, sizeof(struct LONGPAIR), (size_t) hin.n, fp)) != hin.n) {
-			fprintf(stderr,"segment_final_dump:  ERROR  reading file.\n");
+			fprintf(stderr,"segment_final_dump: Error reading file.\n");
 			exit(-1);
 		}
 		

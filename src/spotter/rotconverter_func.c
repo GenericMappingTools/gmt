@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: rotconverter_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -223,9 +223,9 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error:  Cannot specify both -N and -S!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error:  -E requires stage rotations on output\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error:  -G requires total reconstruction rotations on output\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot specify both -N and -S!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

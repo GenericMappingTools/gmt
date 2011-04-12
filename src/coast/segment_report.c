@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_report.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: segment_report.c,v 1.3 2011-04-12 13:06:42 remko Exp $
  */
 /* 
  *	segment_report makes a multisegment ascii-file of entire dbase
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 	struct RAWSEG_HEADER h;
         
 	if (argc != 2) {
-		fprintf(stderr,"usage:  segment_report polygons.b\n");
+		fprintf(stderr,"usage: segment_report polygons.b\n");
 		exit(-1);
 	}
 	

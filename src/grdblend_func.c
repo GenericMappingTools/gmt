@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
+ *    $Id: grdblend_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -275,7 +275,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid\n");
-	GMT_message (GMT, "\t   Each record has three items:  filename -Rw/e/s/n weight\n");
+	GMT_message (GMT, "\t   Each record has three items: filename -Rw/e/s/n weight\n");
 	GMT_message (GMT, "\t   Relative weights are <weight> inside the given -R and cosine taper to 0 at actual grid -R.\n");
 	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
@@ -328,7 +328,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 					case 'f': Ctrl->C.mode = BLEND_FIRST; break;
 					case 'o': Ctrl->C.mode = BLEND_LAST; break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option:  Modifiers are f|l|o|u only\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Modifiers are f|l|o|u only\n");
 						n_errors++;
 						break;
 				}
@@ -349,7 +349,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->N.nodata = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -372,14 +372,14 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error -R:  Must specify region\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I:  Must specify positive dx, dy\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error -R option: Must specify region\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive dx, dy\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	if ((err = GMT_grd_get_format (GMT, Ctrl->G.file, &(S->header), FALSE)) != GMT_NOERROR){
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); n_errors++;
 	}
 	type = (char)GMT_grdformats[S->header.type][0];
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (type == 'c' || type == 'n'), "Syntax error -Q:  Output grid file cannot be netCDF format\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (type == 'c' || type == 'n'), "Syntax error -Q option: Output grid file cannot be netCDF format\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -435,7 +435,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (Ctrl->W.active && n_blend > 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W:  Only applies when there is a single input grid file\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Only applies when there is a single input grid file\n");
 		Return (EXIT_FAILURE);
 	}
 

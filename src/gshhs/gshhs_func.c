@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+/*	$Id: gshhs_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -77,7 +77,7 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "gshhs %s [API] - ASCII export of GSHHS %s data\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-	GMT_message (GMT, "usage:  gshhs gshhs_[f|h|i|l|c].b [-I<id>] [-L] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-I<id>] [-L] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -127,7 +127,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error.  No data file specified!\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

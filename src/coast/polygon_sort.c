@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sort.c,v 1.7 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_sort.c,v 1.8 2011-04-12 13:06:42 remko Exp $
  */
 /* polygon_sorts writes out final data in decreasing order (# points)
  *
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 	struct LONGPAIR pp;
 
 	if (argc < 3) {
-		fprintf(stderr,"usage:  polygon_sort old.b new.b [-a|A|n]\n");
+		fprintf(stderr,"usage: polygon_sort old.b new.b [-a|A|n]\n");
 		exit(-1);
 	}
 
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 		
 		for (k = 0; k < hin.n; k++) {
 			if (pol_fread (&pp, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_findlevel: Error reading file.\n");
 				exit(-1);
 			}
 			if (do_a) {
@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 		}
 
 		if (pol_fread (p, hin.n, fp) != hin.n) {
-			fprintf(stderr,"polygon_sort:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_sort: Error reading file.\n");
 			exit(-1);
 		}
 		
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (pol_fwrite (p, hin.n, fp_out) != hin.n) {
-			fprintf(stderr,"polygon_sort:  ERROR  writing file.\n");
+			fprintf(stderr,"polygon_sort: Error writing file.\n");
 			exit(-1);
 		}
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
+ *	$Id: psxyz_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -16,9 +16,9 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Author:    Paul Wessel
- * Date:      1-JAN-2010
- * Version:   5 API
+ * Author:	Paul Wessel
+ * Date:	1-JAN-2010
+ * Version:	5 API
  *
  * Brief synopsis: psxyz will read <x,y,z> triplets and plot symbols, lines,
  * or polygons in a 3-D perspective view.
@@ -262,14 +262,14 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 			case 'L':		/* Force closed polygons */
 				Ctrl->L.active = TRUE;
 				break;
-                        case 'N':               /* Do not clip to map */
-                                Ctrl->N.active = TRUE;
-                                break;
-			case 'Q':               /* Do not sort symbols based on distance */
-                                Ctrl->Q.active = TRUE;
-                                break;
+			case 'N':	/* Do not clip to map */
+				Ctrl->N.active = TRUE;
+				break;
+			case 'Q':	/* Do not sort symbols based on distance */
+				Ctrl->Q.active = TRUE;
+				break;
 			case 'S':		/* Get symbol [and size] */
-                                Ctrl->S.active = TRUE;
+				Ctrl->S.active = TRUE;
 				Ctrl->S.arg = strdup (opt->arg);
 				break;
 			case 'W':		/* Set line attributes */
@@ -291,12 +291,12 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && GMT_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, TRUE), "Syntax error -S option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -h\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error.  Binary input data cannot have symbol information\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error.  -W option +|-<pen> requires the -C option\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -h\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

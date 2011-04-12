@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: trend1d_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -345,7 +345,7 @@ void load_gtg_and_gtd_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, GMT_L
 	GMT_LONG i, j, k;
 	double wy;
 
-	/* First zero the contents for summing:  */
+	/* First zero the contents for summing */
 
 	for (j = 0; j < n_model; j++) {
 		for (k = 0; k < n_model; k++) gtg[j + k*mp] = 0.0;
@@ -470,7 +470,7 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to ascii xy[w]\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  trend1d -F<xymrw> -N[f]<n_model>[r] [<xy[w]file>] [-C<condition_#>]\n");
+	GMT_message (GMT, "usage: trend1d -F<xymrw> -N[f]<n_model>[r] [<xy[w]file>] [-C<condition_#>]\n");
 	GMT_message (GMT, "\t[-I[<confidence>]] [%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -548,7 +548,7 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 				if (opt->arg[j])
 					Ctrl->N.value = atoi(&opt->arg[j]);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option.  No model specified\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: No model specified\n");
 					n_errors++;
 				}
 				break;
@@ -562,20 +562,20 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option.  Condition number must be larger than unity\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option.  Give 0 < confidence level < 1.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0.0, "Syntax error -N option.  A positive number of terms must be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option: Condition number must be larger than unity\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option: Give 0 < confidence level < 1.0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0.0, "Syntax error -N option: A positive number of terms must be specified\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xymrw", Ctrl->F.col[j])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
 			Ctrl->weighted_output = TRUE;
 		Ctrl->n_outputs++;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option.  Must specify at least one output columns \n");
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -625,14 +625,14 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (xmin == xmax) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Fatal error in input data.  X min = X max.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Min and Max value of input data are the same.\n");
 		Return (EXIT_FAILURE);
 	}
 	if (n_data == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Fatal error.  Could not read any data.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read any data.\n");
 		Return (EXIT_FAILURE);
 	}
-	if (n_data < Ctrl->N.value) GMT_report (GMT, GMT_MSG_FATAL, "Warning. Ill-posed problem.  n_data < n_model_max.\n");
+	if (n_data < Ctrl->N.value) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
 
 	transform_x_1d (GMT, data, n_data, Ctrl->N.mode, xmin, xmax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
@@ -742,7 +742,7 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
-		sprintf (format, "Final model stats:  N model parameters %%ld.  Rank %%ld.  Chi-Squared:  %s\n", GMT->current.setting.format_float_out);
+		sprintf (format, "Final model stats: N model parameters %%ld.  Rank %%ld.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Model Coefficients  (Chebyshev):");
 		sprintf (format, "\t%s", GMT->current.setting.format_float_out);

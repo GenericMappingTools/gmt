@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdlandmask_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -181,7 +181,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option:  Specify 2 or 5 arguments\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);

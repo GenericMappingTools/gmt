@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -51,7 +51,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	fprintf(stderr,"mgd77sniffer %s - Along-track quality control of MGD77 cruises\n\n", MGD77_VERSION);
-	GMT_message (GMT, "usage:  mgd77sniffer <cruises> [-Afieldabbrev,scale,offset] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
+	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-Afieldabbrev,scale,offset] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_message (GMT, "\t[-gfieldabbrev,imggrid,scale,mode[,latmax]] [-Gfieldabbrev,grid] [-H] [-Ifieldabbrev,rec1,recN] [-K]\n");
 	GMT_message (GMT, "\t[-Lcustom_limits_file ] [-N] [-Q[b|c|l|n][[/]<threshold>]] [%s] [-Sd|s|t]\n",GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Tgap] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [-V] [%s]\n\n", GMT_bo_OPT);
@@ -176,7 +176,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tError Record Format: <time/distance>  <record  number>  <error code string> <description>\n\n");
 	GMT_message (GMT, "Example:\n# Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066\n");
 	GMT_message (GMT, "# Examined: Wed Oct  3 16:30:13 2007 by mtchandl\n");
-	GMT_message (GMT, "# Arguments:  -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\n");
+	GMT_message (GMT, "# Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\n");
 	GMT_message (GMT, "N Errata table verification status\n");
 	GMT_message (GMT, "# mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review)\n");
 	GMT_message (GMT, "# For instructions on E77 format and usage, see http://gmt.soest.hawaii.edu/mgd77/errata.php\n");
@@ -411,7 +411,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					n_out_columns = 12;
 				}
 				else {
-					GMT_message (GMT, "Syntax error:  Unrecognized option -%c%s\n",\
+					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n",\
 					opt->option, opt->arg);
 					error = TRUE;
 				}
@@ -464,7 +464,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'b')
 					forced = FALSE;
 				else {
-					GMT_message (GMT, "Syntax error:  Unrecognized option -%c%s\n", opt->option,\
+					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
 					opt->arg);
 					error = TRUE;
 				}
@@ -539,7 +539,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					for (j = 0; j<MGD77_N_NUMBER_FIELDS; j++) maxSlope[j] = mgd77snifferdefs[j].maxTimeGrad;
 				}
 				else {
-					GMT_message (GMT, "Syntax error:  Unrecognized option -%c%s\n", opt->option, opt->arg);
+					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
 					error = TRUE;
 				}
 				break;
@@ -571,7 +571,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						do_regression = TRUE;
 						warn[SUMMARY_WARN] = TRUE;
 					} else {
-						GMT_message (GMT, "Syntax error:  Unrecognized option -%c%s\n", opt->option, opt->arg);
+						GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
 						error = TRUE;
 					}
 				}
@@ -2918,7 +2918,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 
 	GMT_boundcond_param_prep (GMT, info->G, &info->edgeinfo);
 
-	/* Initialize bcr structure with 2 row/col boundaries:  */
+	/* Initialize bcr structure with 2 row/col boundaries */
 
 	GMT_bcr_init (GMT, info->G, interpolant, threshold, &info->bcr);
 

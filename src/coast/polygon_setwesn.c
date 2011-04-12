@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setwesn.c,v 1.3 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_setwesn.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* polygon_setwesn updates the wesn info
  *
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 	struct GMT3_POLY h;
 
 	if (argc != 2) {
-		fprintf(stderr,"usage:  polygon_setwesn wvs_polygons.b > new.b\n");
+		fprintf(stderr,"usage: polygon_setwesn wvs_polygons.b > new.b\n");
 		exit(-1);
 	}
 
@@ -26,7 +26,7 @@ int main (int argc, char **argv)
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		if (pol_fread (p, h.n, fp) != h.n) {
-			fprintf(stderr,"polygon_setwesn:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_setwesn: Error reading file.\n");
 			exit(-1);
 		}
 		for (i = 0; i < h.n; i++) {
@@ -46,11 +46,11 @@ int main (int argc, char **argv)
 		h.south = iymin * 1e-6;
 		h.north = iymax * 1e-6;
 		if (pol_writeheader (&h, stdout) != 1) {
-			fprintf(stderr,"polygon_setwesn:  ERROR  writing file.\n");
+			fprintf(stderr,"polygon_setwesn: Error writing file.\n");
 			exit(-1);
 		}
 		if (pol_fwrite (p, h.n, stdout) != h.n) {
-			fprintf(stderr,"polygon_setwesn:  ERROR  writing file.\n");
+			fprintf(stderr,"polygon_setwesn: Error writing file.\n");
 			exit(-1);
 		}
 	}

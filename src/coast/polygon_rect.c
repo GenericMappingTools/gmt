@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_rect.c,v 1.1 2009-06-11 08:44:12 guru Exp $
+ *	$Id: polygon_rect.c,v 1.2 2011-04-12 13:06:42 remko Exp $
  */
 /* 
  *
@@ -21,7 +21,7 @@ int main (int argc, char **argv)
 	double w, e, s, n;
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_id polygons.b w e s n\n");
+		fprintf(stderr,"usage: polygon_id polygons.b w e s n\n");
 		exit(-1);
 	}
 
@@ -34,7 +34,7 @@ int main (int argc, char **argv)
 	while (pol_readheader (&h, fp_in) == 1) {
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_id:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_id: Error reading file.\n");
 				exit(-1);
 			}
 		}

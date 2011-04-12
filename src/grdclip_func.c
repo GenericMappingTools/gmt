@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdclip_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdclip_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 					Ctrl->S.mode |= 1;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.high, txt);
 					if (n != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sa option.  Correct syntax:\n\t-Sa<high>/<above>, <above> may be set to NaN\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
 					}
 					else 
@@ -132,14 +132,14 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 					Ctrl->S.mode |= 2;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.low, txt);
 					if (n != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sb option: Correct syntax:\n\t-Sb<low>/<below>, <below> may be set to NaN\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
 						n_errors++;
 					}
 					else
 						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Correct syntax:\n\t-Sa<high>/<above> or -Sb<low>/<below>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Expected -Sa<high>/<above> or -Sb<low>/<below>\n");
 					n_errors++;
 				}
 				break;

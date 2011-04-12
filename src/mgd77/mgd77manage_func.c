@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: mgd77manage_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -174,7 +174,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MG
 	GMT_message (GMT, "\t        v = Ignore data record bitflags pertaining to data values.\n");
 	GMT_message (GMT, "\t        s = Ignore data record bitflags pertaining to data slopes (gradients).\n");
 	GMT_message (GMT, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y]\n");
-	GMT_message (GMT, "\t      NOTE:  Previous E77 information will be removed prior to processing this E77 information.\n");
+	GMT_message (GMT, "\t      Note: Previous E77 information will be removed prior to processing this E77 information.\n");
 	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -Q).\n");
 	GMT_message (GMT, "\t      Append filename of the GMT grid.\n");
 	GMT_message (GMT, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -Q).\n");
@@ -510,11 +510,11 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	c_nc_type = (nc_type) irint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
 	
-	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error:  You must select one, and only one, of the -A options\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error:  Cannot interpolate column if data are strings\n");
-	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error:  Only one -A option can be specified\n");
-	n_errors += GMT_check_condition (GMT, !got_grid && Ctrl->Q.interpolant != BCR_BICUBIC, "Syntax error -Q:  Requires -Ag|i\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0, "Syntax error -Q:  threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
+	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
+	n_errors += GMT_check_condition (GMT, !got_grid && Ctrl->Q.interpolant != BCR_BICUBIC, "Syntax error -Q: Requires -Ag|i\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0, "Syntax error -Q: threshold must be in [0,1] range\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
 		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN, "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
 		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN, "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
@@ -654,7 +654,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 		GMT_boundcond_param_prep (GMT, G, &edgeinfo);
 	
-		/* Initialize bcr structure with 2 rows/cols boundaries:  */
+		/* Initialize bcr structure with 2 rows/cols boundaries */
 
 		GMT_bcr_init (GMT, G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 		
@@ -1275,7 +1275,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			while (GMT_fgets (GMT, line, BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", (size_t)14)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
 				GMT_chop (line);					/* Rid the world of CR/LF */
-				/* Example of expected line:  
+				/* Example of expected line 
 				   Y-E-06050010-H15-01: Invalid Gravity Departure Base Station Value: (0000000) [1000009]
 				*/
 				sscanf (line, "%c-%c-%[^-]-%[^-]-%ld", &YorN, &kind, ID, field, &item);

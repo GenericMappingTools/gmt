@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: pshistogram_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -433,16 +433,16 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !GMT_IS_LINEAR (GMT), "Syntax error -J option:  Only linear projection supported.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode < PSHISTOGRAM_COUNTS || Ctrl->Z.mode > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option:  histogram type must be in 0-5 range\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->W.active, "Syntax error -W option:  Must specify bin width\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.inc <= 0.0, "Syntax error -W option:  bin width must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !GMT_IS_LINEAR (GMT), "Syntax error -J option: Only linear projection supported.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode < PSHISTOGRAM_COUNTS || Ctrl->Z.mode > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->W.active, "Syntax error -W option: Must specify bin width\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.inc <= 0.0, "Syntax error -W option: bin width must be nonzero\n");
 
 	/* Now must specify either fill color with -G or outline pen with -L */
 	n_errors += GMT_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->L.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-L), or both.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
 	n_errors += GMT_check_binary_io (GMT, 0);
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

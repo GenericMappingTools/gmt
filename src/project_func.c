@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
+ *	$Id: project_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -403,13 +403,13 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 			case 'C':
 				Ctrl->C.active = TRUE;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option.  Correct syntax: -C<lon0>/<lat0>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->C.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option:  Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 #ifdef GMT_COMPAT
@@ -422,13 +422,13 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 			case 'E':
 				Ctrl->E.active = TRUE;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option.  Correct syntax: -E<lon1>/<lat1>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option:  Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'F':
@@ -456,7 +456,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 				if (opt->arg[0] == 'W' || opt->arg[0] == 'w')
 					Ctrl->L.constrain = TRUE;
 				else {
-					n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error -L option.  Correct syntax: -L[w | <min>/<max>]\n");
+					n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
 				}
 				break;
 			case 'N': /* Handled above but still in argv */
@@ -471,18 +471,18 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 			case 'T':
 				Ctrl->T.active = TRUE;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option.  Correct syntax: -T<lonp>/<latp>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -T<lonp>/<latp>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option:  Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = TRUE;
-				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2, "Syntax error -W option.  Correct syntax: -W<min>/<max>\n");
+				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2, "Syntax error: Expected -W<min>/<max>\n");
 				break;
 
 			default:	/* Report bad options */
@@ -491,15 +491,15 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option.  w_min must be < w_max\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max, "Syntax error -W option.  w_min must be < w_max\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option: w_min must be < w_max\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max, "Syntax error -W option: w_min must be < w_max\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1, "Syntax error: Specify only one of -A, -E, and -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y), "Syntax error -E option: Second point must differ from origin!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active, "Syntax error -G option: Must also specify -Lmin/max or use -E instead\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Syntax error -G option: -F not allowed [Defaults to rsp]\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0, "Syntax error -G option: Must specify a positive increment\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active, "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option:  Cannot be used with -fg\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -704,7 +704,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	/* Now things are initialized.  We will work in degrees for awhile, so we convert things:  */
+	/* Now things are initialized.  We will work in degrees for awhile, so we convert things */
 
 	if (Ctrl->Q.active) {
 		Ctrl->G.inc /= GMT->current.proj.DIST_KM_PR_DEG;

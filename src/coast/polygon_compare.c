@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_compare.c,v 1.3 2009-06-20 23:30:19 guru Exp $
+ *	$Id: polygon_compare.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *
@@ -19,7 +19,7 @@ int main (int argc, char **argv)
 
       
 	if (argc != 3) {
-		fprintf(stderr,"usage:  polygon_compare one.b two.b\n");
+		fprintf(stderr,"usage: polygon_compare one.b two.b\n");
 		exit (EXIT_FAILURE);
 	}
 

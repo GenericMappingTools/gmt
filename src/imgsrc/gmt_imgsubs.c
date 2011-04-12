@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.c,v 1.10 2011-03-15 02:06:37 guru Exp $
+/* $Id: gmt_imgsubs.c,v 1.11 2011-04-12 13:06:44 remko Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -11,8 +11,8 @@
  *
  * Further comments and definitions are in "gmt_imgsubs.h".
  *
- * Author:  W H F Smith
- * Date:    7 October 1998 
+ * Author:	W H F Smith
+ * Date:	7 October 1998 
  *
  */
 
@@ -65,7 +65,7 @@ GMT_LONG GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, str
 	 * 0 on success.  */
 
 	if (r->maxlon < 360.0) {
-		fprintf (GMT->session.std[GMT_ERR], "ERROR from GMT_img_setup_coord:  Cannot handle maxlon < 360.\n");
+		fprintf (GMT->session.std[GMT_ERR], "ERROR from GMT_img_setup_coord: Cannot handle maxlon < 360.\n");
 		return (-1);
 	}
 	

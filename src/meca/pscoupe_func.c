@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *    $Id: pscoupe_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -13,11 +13,10 @@ plot symbols on a cross-section. Focal mechanisms may be specified
 PostScript code is written to stdout.
 
 
- Author:       Genevieve Patau
- Date:         9 September 1992
- Last change : 02 April 2001
- Version:      4
- Roots:        based on psxy.c version 3.0
+ Author:	Genevieve Patau
+ Date:		9 September 1992
+ Version:	4
+ Roots:		based on psxy.c version 3.0
 
  */
 
@@ -266,7 +265,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 
 			/* Processes program-specific parameters */
 
-			case 'A':   /* Cross-section definition */
+			case 'A':	/* Cross-section definition */
 				Ctrl->A.active = TRUE;
 				Ctrl->A.proj_type = opt->arg[0];
 				if (opt->arg[strlen (opt->arg)-1] == 'f') Ctrl->A.frame = TRUE;
@@ -300,14 +299,14 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				Ctrl->A.polygon = TRUE;
 				break;
 
-			case 'E':    /* Set color for extensive parts  */
+			case 'E':	/* Set color for extensive parts  */
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				Ctrl->A.polygon = TRUE;
 				break;
-			case 'G':    /* Set color for compressive parts */
+			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = TRUE;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
@@ -315,20 +314,20 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				}
 				Ctrl->A.polygon = TRUE;
 				break;
-			case 'L':    /* Draw outline [set outline attributes] */
+			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					GMT_pen_syntax (GMT, 'L', " ");
 					n_errors++;
 				}
 				break;
-			case 'M':    /* Same size for any magnitude */
+			case 'M':	/* Same size for any magnitude */
 				Ctrl->M.active = TRUE;
 				break;
-			case 'N':    /* Do not skip points outside border */
+			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = TRUE;
 				break;
-			case 'S':    /* Mechanisms : get format [and size] */
+			case 'S':	/* Mechanisms : get format [and size] */
 				Ctrl->S.active = TRUE;
 				Ctrl->S.type = opt->arg[0];
 				p = NULL;	strcpy (txt, &opt->arg[1]);
@@ -384,7 +383,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				}
 				break;
 
-			case 's':    /* Only points : get symbol [and size] */
+			case 's':	/* Only points : get symbol [and size] */
 				Ctrl->S.active2 = TRUE;
 				Ctrl->S.type = opt->arg[0];
 				p = NULL;	strcpy (txt, &opt->arg[1]);
@@ -425,7 +424,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "Syntax error -s option:  Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_message (GMT, "Syntax error -s option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;
@@ -440,18 +439,18 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 					n_errors++;
 				}
 				break;
-			case 'W':    /* Set line attributes */
+			case 'W':	/* Set line attributes */
 				Ctrl->W.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
 				}
 				break;
-			case 'Z':    /* Vary symbol color with z */
+			case 'Z':	/* Vary symbol color with z */
 				Ctrl->Z.active = TRUE;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
-			case 'a':    /* plot axis */
+			case 'a':	/* plot axis */
 				Ctrl->a2.active = TRUE;
 				if (!opt->arg[0]) {	/* Set defaults */
 					strcpy (txt,"0.08i");
@@ -534,28 +533,28 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 						break;
 				}
 				break;
-			case 'e':    /* Set color for T axis symbol */
+			case 'e':	/* Set color for T axis symbol */
 				Ctrl->E2.active = TRUE;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
 					GMT_fill_syntax (GMT, 'e', " ");
 					n_errors++;
 				}
 				break;
-			case 'g':    /* Set color for P axis symbol */
+			case 'g':	/* Set color for P axis symbol */
 				Ctrl->E2.active = TRUE;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
 					GMT_fill_syntax (GMT, 'g', " ");
 					n_errors++;
 				}
 				break;
-			case 'p':    /* Draw outline of P axis symbol [set outline attributes] */
+			case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 				Ctrl->P2.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
 					GMT_pen_syntax (GMT, 'p', " ");
 					n_errors++;
 				}
 				break;
-			case 't':    /* Draw outline of T axis symbol [set outline attributes] */
+			case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 				Ctrl->T2.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->T2.pen)) {
 					GMT_pen_syntax (GMT, 't', " ");
@@ -572,10 +571,10 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 	/* Check that the options selected are mutually consistent */
 
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
-	n_errors += GMT_check_condition (GMT, !Ctrl->A.active, "Syntax error:  Must specify -A option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, no_size_needed && Ctrl->S.symbol > 0, "Syntax error:  -S must specify scale\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error:  -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->A.active, "Syntax error: Must specify -A option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, no_size_needed && Ctrl->S.symbol > 0, "Syntax error: -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

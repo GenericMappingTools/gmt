@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *    $Id: psmeca_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -13,12 +13,10 @@ moment tensor).
 PostScript code is written to stdout.
 
 
- Author:     Genevieve Patau
- Date:         7 July 1998
- Version:    4
- Roots:      based on psxy.c
-
- Last change  18 February 2000
+ Author:	Genevieve Patau
+ Date:		7 July 1998
+ Version:	4
+ Roots:		based on psxy.c
  */
 
 #include "pslib.h"      /* to have pslib environment */
@@ -271,7 +269,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
-			case 'C':   /* Change position [set line attributes] */
+			case 'C':	/* Change position [set line attributes] */
 				Ctrl->C.active = TRUE;
 				if (!opt->arg[0]) break;
 				p = NULL;	strcpy (txt, opt->arg);
@@ -284,45 +282,45 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					}
 				}
 				break;
-			case 'D':    /* Plot events between depmin and depmax deep */
+			case 'D':	/* Plot events between depmin and depmax deep */
 				Ctrl->D.active = TRUE;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->D.depmin, &Ctrl->D.depmax);
 				break;
-			case 'E':    /* Set color for extensive parts  */
+			case 'E':	/* Set color for extensive parts  */
 				Ctrl->E.active = TRUE;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
-			case 'G':    /* Set color for compressive parts */
+			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = TRUE;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
-			case 'L':    /* Draw outline [set outline attributes] */
+			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					GMT_pen_syntax (GMT, 'L', " ");
 					n_errors++;
 				}
 				break;
-			case 'M':    /* Same size for any magnitude */
+			case 'M':	/* Same size for any magnitude */
 				Ctrl->M.active = TRUE;
 				break;
-			case 'N':    /* Do not skip points outside border */
+			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = TRUE;
 				break;
-			case 'r':    /* draw box around text */
+			case 'r':	/* draw box around text */
 				Ctrl->R2.active = TRUE;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
 					GMT_fill_syntax (GMT, 'r', " ");
 					n_errors++;
 				}
 				break;
-			case 'S':    /* Get symbol [and size] */
+			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.active = TRUE;
 				Ctrl->S.type = opt->arg[0];
 				p = NULL;	strcpy (txt, &opt->arg[1]);
@@ -380,25 +378,25 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 					n_errors++;
 				}
 				break;
-			case 'z': /* overlay zerotrace moment tensor */
+			case 'z':	/* overlay zerotrace moment tensor */
 				Ctrl->Z2.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->Z2.pen)) { /* Set pen attributes */
 					GMT_pen_syntax (GMT, 'z', " ");
 					n_errors++;
 				}
 				break;
-			case 'W':    /* Set line attributes */
+			case 'W':	/* Set line attributes */
 				Ctrl->W.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
 				}
 				break;
-			case 'Z':    /* Vary symbol color with z */
+			case 'Z':	/* Vary symbol color with z */
 				Ctrl->Z.active = TRUE;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
-			case 'a':    /* plot axis */
+			case 'a':	/* plot axis */
 				Ctrl->a2.active = TRUE;
 				if (!opt->arg[0]) {	/* Set defaults */
 					strcpy (txt,"0.2c");
@@ -483,35 +481,35 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 						break;
 				}
 				break;
-			case 'e':    /* Set color for T axis symbol */
+			case 'e':	/* Set color for T axis symbol */
 				Ctrl->E2.active = TRUE;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
 					GMT_fill_syntax (GMT, 'e', " ");
 					n_errors++;
 				}
 				break;
-			case 'g':    /* Set color for P axis symbol */
+			case 'g':	/* Set color for P axis symbol */
 				Ctrl->E2.active = TRUE;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
 					GMT_fill_syntax (GMT, 'g', " ");
 					n_errors++;
 				}
 				break;
-			case 'p':    /* Draw outline of P axis symbol [set outline attributes] */
+			case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 				Ctrl->P2.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
 					GMT_pen_syntax (GMT, 'p', " ");
 					n_errors++;
 				}
 				break;
-			case 't':    /* Draw outline of T axis symbol [set outline attributes] */
+			case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 				Ctrl->T2.active = TRUE;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->T2.pen)) {
 					GMT_pen_syntax (GMT, 't', " ");
 					n_errors++;
 				}
 				break;
-			case 'o':   /* use psvelomeca format (without depth in 3rd column) */
+			case 'o':	/* use psvelomeca format (without depth in 3rd column) */
 				Ctrl->O2.active = TRUE;
 				Ctrl->O2.mode = 0;
 				break;
@@ -525,9 +523,9 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	/* Check that the options selected are mutually consistent */
 
 	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error:  -S must specify scale\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->O2.mode, "Syntax error:  -Z cannot be combined with -o\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.active > 1 && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->O2.mode, "Syntax error: -Z cannot be combined with -o\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

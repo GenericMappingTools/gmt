@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.9 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.10 2011-04-12 13:06:42 remko Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -44,7 +44,7 @@ int main (int argc, char **argv) {
 			P[res][n_id[res]].father = NOT_PRESENT;	/* Initially we do not know the father */
 			P[res][n_id[res]].p = (struct LONGPAIR *) GMT_memory (VNULL, P[res][n_id[res]].h.n, sizeof (struct LONGPAIR), "polygon_hierarchy");
 			if (pol_fread (P[res][n_id[res]].p, P[res][n_id[res]].h.n, fp) != P[res][n_id[res]].h.n) {
-				fprintf(stderr,"polygon_xover:  ERROR  reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
+				fprintf(stderr,"polygon_xover: Error reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
 				exit (EXIT_FAILURE);
 			}
 			n_id[res]++;

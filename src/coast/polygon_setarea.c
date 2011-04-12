@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setarea.c,v 1.2 2009-06-20 23:55:29 guru Exp $
+ *	$Id: polygon_setarea.c,v 1.3 2011-04-12 13:06:43 remko Exp $
  * Updates polygon areas for the resolution.
  */
 #include "wvs.h"
@@ -31,7 +31,7 @@ int main (int argc, char **argv) {
 			p = (struct LONGPAIR *) GMT_memory ((void *)p, n_alloc, sizeof(struct LONGPAIR), "polygon_setarea");
 		}
 		if (pol_fread (p, h.n, fp) != h.n) {
-			fprintf(stderr,"polygon_setarea:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_setarea: Error reading file.\n");
 			exit(-1);
 		}
 		for (k = 0; k < h.n; k++) {
@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		if (pol_fwrite (p, h.n, fp_out) != h.n) {
-			fprintf(stderr,"polygon_setarea:  ERROR  writing file.\n");
+			fprintf(stderr,"polygon_setarea: Error writing file.\n");
 			exit(-1);
 		}
 	}

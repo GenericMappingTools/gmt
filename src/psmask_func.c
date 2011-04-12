@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
+ *	$Id: psmask_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -473,20 +473,16 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 	GMT_check_lattice (GMT, Ctrl->I.inc, &Ctrl->F.active, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, 
-				"Syntax error:  Must specify a map projection with the -J option\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->I.active, "Syntax error:  Must specify -I option\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !GMT_IS_RECT_GRATICULE(GMT), 
-				"Syntax error -T option:  Only available with Linear, Mercator, or basic cylindrical projections\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), 
-				"Syntax error -T option:  Must also specify a tile fill with -G\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), 
-				"Syntax error -I option:  Must specify positive increments\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S.  Unrecognized unit\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S.  Unable to decode radius\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S.  Radius is negative\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error.  -D cannot be used with -T\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->I.active, "Syntax error: Must specify -I option\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !GMT_IS_RECT_GRATICULE(GMT), "Syntax error -T option: Only available with Linear, Mercator, or basic cylindrical projections\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), "Syntax error -T option: Must also specify a tile fill with -G\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
 		n_errors += GMT_check_binary_io (GMT, 2);
 	}
 

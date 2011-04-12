@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.6 2009-06-05 00:25:12 guru Exp $
+ *	$Id: string_check_subs.c,v 1.7 2011-04-12 13:06:43 remko Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -71,7 +71,7 @@ int stringcheck (struct LONGPAIR p[], struct FLAGPAIR work[], int *n)
 int look_for_crossings (struct FLAGPAIR p[], int n)
 {
 	/* Uses the intersect routine to see if lines cross:
-		Can't do anything unless n is at least 4:  */
+		Can't do anything unless n is at least 4 */
 	int	i, j, jstop;
 
 	if (n < 4)
@@ -110,7 +110,7 @@ int compare_k (const void *P1, const void *P2)
 
 	p1 = (struct FLAGPAIR *)P1;
 	p2 = (struct FLAGPAIR *)P2;
-	/* Here, k's magnitude and sign are both important:  */
+	/* Here, k's magnitude and sign are both important */
 	if (p1->k < p2->k) return(-1);
 	if (p1->k > p2->k) return(1);
 	return(0);
@@ -122,7 +122,7 @@ int compare_absk (const void *P1, const void *P2)
 
 	p1 = (struct FLAGPAIR *)P1;
 	p2 = (struct FLAGPAIR *)P2;
-	/* Here, k's magnitude only, not sign, is important:  */
+	/* Here, k's magnitude only, not sign, is important */
 	if (abs(p1->k) < abs(p2->k)) return(-1);
 	if (abs(p1->k) > abs(p2->k)) return(1);
 	return(0);
@@ -147,7 +147,7 @@ int remove_spikes (struct FLAGPAIR p[], int *n)
 		i = 0;
 		while (i < *n-1 && p[i].k < 0) i++;
 		if (i == *n-1) {
-			fprintf(stderr,"string_check_subs:  ERROR.  Somehow all the points were flagged as spikes.\n");
+			fprintf(stderr,"string_check_subs: Error: Somehow all the points were flagged as spikes.\n");
 			return(-1);
 		}
 		*n -= spike;
@@ -178,7 +178,7 @@ int look_for_spikes (struct FLAGPAIR p[],int n)
 	while (current < stop_point) {	/* Only need to check through n-2, since n-1 == 0  */
 	
 		if (p[last].x == p[next].x && p[last].y == p[next].y) {
-			/* The current point is a spike.  Throw away two points:  */
+			/* The current point is a spike.  Throw away two points */
 			p[current].k = -p[current].k;
 			p[next].k = -p[next].k;
 			current += 2;
@@ -291,7 +291,7 @@ int delete_small_moves (struct LONGPAIR p[], int n, double tol)
 			j++;
 		}
 		else if (s > 0.0) {
-			/* If current pt is on a bin edge, don't throw it away:  */
+			/* If current pt is on a bin edge, don't throw it away */
 			if (p[i].x%1000000 == 0 || p[i].y%1000000 == 0) {
 				/* If previous is also on a bin edge, add current to list.  */
 				if (p[j-1].x%1000000 == 0 || p[j-1].y%1000000 == 0) {
@@ -335,23 +335,23 @@ int delete_nearby_spikes (struct LONGPAIR p[], int n, double tol)
 			i++;
 		}
 		else {
-			/* Point i is a spike.  Check bin status of i+1, j-1:  */
+			/* Point i is a spike.  Check bin status of i+1, j-1 */
 			if (p[i+1].x%1000000 == 0 || p[i+1].y%1000000 == 0) {
 				/* Point i+1 is on a bin edge.  */
 				if (p[j-1].x%1000000 == 0 || p[j-1].y%1000000 == 0) {
-					/* Point j-1 is also on a bin edge.  Delete only i from list:  */
+					/* Point j-1 is also on a bin edge.  Delete only i from list */
 					p[j] = p[i+1];
 					j++;
 					i++;
 				}
 				else {
-					/* Point j-1 is not on a bin edge.  Replace j-1 with i+1, delete i, and go on:  */
+					/* Point j-1 is not on a bin edge.  Replace j-1 with i+1, delete i, and go on */
 					p[j-1] = p[i+1];
 					i+=2;
 				}
 			}
 			else {
-				/* Point i+1 is not on a bin edge.  Delete points i and i+1 from list:  */
+				/* Point i+1 is not on a bin edge.  Delete points i and i+1 from list */
 				i += 2;
 			}
 		}

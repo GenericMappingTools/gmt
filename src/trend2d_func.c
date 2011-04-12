@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: trend2d_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -331,7 +331,7 @@ void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_L
 	GMT_LONG i, j, k;
 	double wz;
 
-	/* First zero the contents for summing:  */
+	/* First zero the contents for summing */
 
 	for (j = 0; j < n_model; j++) {
 		for (k = 0; k < n_model; k++) gtg[j + k*mp] = 0.0;
@@ -409,7 +409,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "trend2d %s [API] - Fit a [weighted] [robust] polynomial for z = f(x,y) to ascii xyz[w]\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  trend2d -F<xyzmrw> -N<n_model>[r] [<xyz[w]file>] [-C<condition_#>] [-I[<confidence>]]\n");
+	GMT_message (GMT, "usage: trend2d -F<xyzmrw> -N<n_model>[r] [<xyz[w]file>] [-C<condition_#>] [-I[<confidence>]]\n");
 	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -487,14 +487,14 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option.  Condition number must be larger than unity\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option.  Give 0 < confidence level < 1.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option.  Must request 1-10 parameters\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option: Condition number must be larger than unity\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option: Give 0 < confidence level < 1.0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Must request 1-10 parameters\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	for (j = Ctrl->n_outputs = 0; j < TREND2D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xyzmrw", Ctrl->F.col[j])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -502,8 +502,8 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 
 		Ctrl->n_outputs++;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option.  Must specify at least one output column\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option.  Too many output columns specified (%ld)\n", Ctrl->n_outputs);
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output column\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option: Too many output columns specified (%ld)\n", Ctrl->n_outputs);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -672,7 +672,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
-		sprintf (format, "Final model stats:  N model parameters %%d.  Rank %%d.  Chi-Squared:  %s\n", GMT->current.setting.format_float_out);
+		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Model Coefficients:");
 		sprintf (format, "%s\t", GMT->current.setting.format_float_out);

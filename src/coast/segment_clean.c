@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_clean.c,v 1.3 2009-02-25 12:36:29 remko Exp $
+ *	$Id: segment_clean.c,v 1.4 2011-04-12 13:06:42 remko Exp $
  */
 /* segment_clean.c <raw_wvs_segment_file.b>  <clean_wvs_segment_file.b>
  *
@@ -34,7 +34,7 @@ int main (int argc, char **argv)
 
 
 	if (argc < 3 || argc > 4 || (fp = fopen(argv[1], "r")) == NULL) {
-		fprintf(stderr,"usage:  segment_clean raw_wvs_segment_file  clean_wvs_segment_file [-v]\n");
+		fprintf(stderr,"usage: segment_clean raw_wvs_segment_file  clean_wvs_segment_file [-v]\n");
 		exit(-1);
 	}
 
@@ -52,11 +52,11 @@ int main (int argc, char **argv)
 		if (hin.rank > maxrank) maxrank = hin.rank;
 		if (hin.rank < minrank) minrank = hin.rank;
 		if (hin.n <= 0) {
-			fprintf(stderr,"segment_clean:  There are non-positive string numbers.\n");
+			fprintf(stderr,"segment_clean: There are non-positive string numbers.\n");
 		}
 		for (j = 0; j < hin.n; j++) {
 			if ((fread((char *)&ptemp, sizeof(struct LONGPAIR), 1, fp)) != 1) {
-				fprintf(stderr,"segment_clean:  ERROR  reading file.\n");
+				fprintf(stderr,"segment_clean: Error reading file.\n");
 				exit(-1);
 			}
 			if (ptemp.x < 0 || ptemp.x >= 360000000) {
@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 					ptemp.x = 0;
 				else {
 					lonerr++;
-					fprintf(stderr,"segment_clean:  Longitude = %d\n", ptemp.x);
+					fprintf(stderr,"segment_clean: Longitude = %d\n", ptemp.x);
 				}
 			}
 			if (ptemp.y < -90000000 || ptemp.y > 90000000) laterr++;
@@ -114,16 +114,16 @@ int main (int argc, char **argv)
 				n_closed++;
 			else
 				n_not_on_edge += !((p[0].x%1000000 == 0 || p[0].y%1000000 == 0) && (p[hout.n-1].x%1000000 == 0 || p[hout.n-1].y%1000000 == 0));
-			/* Need to write out the segment and header here:  */
+			/* Need to write out the segment and header here */
 		}
 		
 		if (hout.n > 1) {
 			if ((j=fwrite ((char *)&hout, sizeof(struct RAWSEG_HEADER), 1, fp2)) != 1) {
-				fprintf(stderr,"segment_clean:  ERROR  writing header.\n");
+				fprintf(stderr,"segment_clean: Error writing header.\n");
 				exit(-1);
 			}
 			if ((j=fwrite((char *)p, sizeof(struct LONGPAIR), hout.n, fp2)) != hout.n) {
-				fprintf(stderr,"segment_clean:  ERROR  writing data.\n");
+				fprintf(stderr,"segment_clean: Error writing data.\n");
 				exit(-1);
 			}
 		}
@@ -134,25 +134,25 @@ int main (int argc, char **argv)
 		if (hout.n != hin.n)
 			ncleaned++;
 
-		if (id%100 == 0)fprintf(stderr,"segment_clean:  Finished %6.6d strings with %6.6d too short, %6.6d crossing, %6.6d cleaned so far\r", id, nsmallbad, nbigbad, ncleaned);
+		if (id%100 == 0)fprintf(stderr,"segment_clean: Finished %6.6d strings with %6.6d too short, %6.6d crossing, %6.6d cleaned so far\r", id, nsmallbad, nbigbad, ncleaned);
 
 	}
 	
 	fclose (fp2);
-	fprintf(stderr,"\nsegment_clean:  There are %d strings in the file.\n", id);
-	fprintf(stderr,"segment_clean:  Min and Max # points in a string are %d %d\n", shortest, longest);
-	fprintf(stderr,"segment_clean:  Min and Max ranks found are %d %d\n", minrank, maxrank);
-	fprintf(stderr,"segment_clean:  There are %d longitudes out of valid range.\n", lonerr);
-	fprintf(stderr,"segment_clean:  There are %d latitudes out of valid range.\n", laterr);
-	fprintf(stderr,"segment_clean:  There are a total of %d points stored in the file.\n", avg);
-	fprintf(stderr,"segment_clean:  The average string length is %d.\n", irint((double)avg/(double)id));
-	fprintf(stderr,"segment_clean:  %d strings represents closed polygons\n", n_closed);
-	fprintf(stderr,"segment_clean:  %d strings did not start and end on a grid line\n", n_not_on_edge);
-	fprintf(stderr,"segment_clean:  %d strings shrank to <2 points after cleaning\n", nsmallbad);
-	fprintf(stderr,"segment_clean:  %d strings have crossings\n", nbigbad);
-	fprintf(stderr,"segment_clean:  The coordinate (0,0) occured %d times\n", zero);
-	fprintf(stderr,"segment_clean:  %d strings of length 1 had (0,0) as only point\n", n_zero);
-	fprintf(stderr,"segment_clean:  Max point separation withing string %g for segment # %d\n", maxds, maxid);
+	fprintf(stderr,"\nsegment_clean: There are %d strings in the file.\n", id);
+	fprintf(stderr,"segment_clean: Min and Max # points in a string are %d %d\n", shortest, longest);
+	fprintf(stderr,"segment_clean: Min and Max ranks found are %d %d\n", minrank, maxrank);
+	fprintf(stderr,"segment_clean: There are %d longitudes out of valid range.\n", lonerr);
+	fprintf(stderr,"segment_clean: There are %d latitudes out of valid range.\n", laterr);
+	fprintf(stderr,"segment_clean: There are a total of %d points stored in the file.\n", avg);
+	fprintf(stderr,"segment_clean: The average string length is %d.\n", irint((double)avg/(double)id));
+	fprintf(stderr,"segment_clean: %d strings represents closed polygons\n", n_closed);
+	fprintf(stderr,"segment_clean: %d strings did not start and end on a grid line\n", n_not_on_edge);
+	fprintf(stderr,"segment_clean: %d strings shrank to <2 points after cleaning\n", nsmallbad);
+	fprintf(stderr,"segment_clean: %d strings have crossings\n", nbigbad);
+	fprintf(stderr,"segment_clean: The coordinate (0,0) occured %d times\n", zero);
+	fprintf(stderr,"segment_clean: %d strings of length 1 had (0,0) as only point\n", n_zero);
+	fprintf(stderr,"segment_clean: Max point separation withing string %g for segment # %d\n", maxds, maxid);
 
 	fclose(fp);
 
@@ -166,7 +166,7 @@ int main (int argc, char **argv)
 		if (id == maxid) {
 			for (j = 0; j < hin.n; j++) {
 				if ((fread((char *)&ptemp, sizeof(struct LONGPAIR), 1, fp)) != 1) {
-					fprintf(stderr,"segment_clean:  ERROR  reading file.\n");
+					fprintf(stderr,"segment_clean: Error reading file.\n");
 					exit(-1);
 				}
 				printf("%10.6f\t%10.6f\n", 1.0e-06*ptemp.x, 1.0e-06*ptemp.y);

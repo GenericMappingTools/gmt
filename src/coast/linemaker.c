@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.14 2011-04-12 03:05:18 remko Exp $
+ *	$Id: linemaker.c,v 1.15 2011-04-12 13:06:42 remko Exp $
  */
 /*
  *
@@ -65,17 +65,17 @@ int main (int argc, char **argv)
 	
 	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open %s bin file %s\n", name[kind], file);
+		fprintf (stderr, "linemaker: Cannot open %s bin file %s\n", name[kind], file);
 		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open %s seg file %s\n", name[kind], file);
+		fprintf (stderr, "linemaker: Cannot open %s seg file %s\n", name[kind], file);
 		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open %s point file %s\n", name[kind], file);
+		fprintf (stderr, "linemaker: Cannot open %s point file %s\n", name[kind], file);
 		exit (EXIT_FAILURE);
 	}
 		
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 	
 	for (i = 0; i < 16; i++) counts[i] = 0;
 	
-	fprintf (stderr, "linemaker:  Process header file\n");
+	fprintf (stderr, "linemaker: Process header file\n");
 
 	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "linemaker: Error reading file header\n");
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 	
 	fclose (fp_bin);
 	
-	fprintf (stderr, "linemaker:  Process segment file\n");
+	fprintf (stderr, "linemaker: Process segment file\n");
 
 	seg_n  = (short *) GMT_memory (VNULL, s.n_seg, sizeof (short), "linemaker");
 	seg_level  = (short *) GMT_memory (VNULL, s.n_seg, sizeof (short), "linemaker");
@@ -161,7 +161,7 @@ int main (int argc, char **argv)
 	
 	fclose (fp_seg);
 
-	fprintf (stderr, "linemaker:  Process point file\n");
+	fprintf (stderr, "linemaker: Process point file\n");
 
 	pt_dx = (short *) GMT_memory (VNULL, s.n_pt, sizeof (short), "linemaker");
 	pt_dy = (short *) GMT_memory (VNULL, s.n_pt, sizeof (short), "linemaker");

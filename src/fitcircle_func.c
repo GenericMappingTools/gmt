@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *    $Id: fitcircle_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -112,7 +112,7 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "fitcircle %s [API] - Find best-fitting great- or small-circle to points on sphere\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  fitcircle [<input_file>] -L[<n>] [-S[<lat>]] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: fitcircle [<input_file>] -L[<n>] [-S[<lat>]] [%s]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -188,7 +188,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 		within a few degrees of the pole, then the
 		center point is not on the small circle, and
 		we cannot use it.  So, we first have to fit
-		the circle_dist correctly:  */
+		the circle_dist correctly */
 
 	if (norm == 1) {
 		for (i = 0; i < ndata; i++) work[i] = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
@@ -201,7 +201,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 		*circle_distance /= ndata;
 	}
 
-	/* Now do each data point:  */
+	/* Now do each data point */
 
 	for (i = 0; i < ndata; i++) {
 		distance = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
@@ -224,7 +224,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 	double length_ab, length_aold, length_bold, circle_distance;
 
 	/* First find out if solution is between center and gcpole,
-		or center and -gcpole:  */
+		or center and -gcpole */
 
 	GMT_add3v (GMT, center, gcpole, temppole);
 	GMT_normalize3v (GMT, temppole);
@@ -244,7 +244,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_
 	}
 
 	/* Now a is at center and b is at pole on correct side.
-	  Try to bracket a minimum.  Move from b toward a in 1 degree steps:  */
+	  Try to bracket a minimum.  Move from b toward a in 1 degree steps */
 
 	afit = circle_misfit (GMT, data, ndata, a, norm, work, &circle_distance);
 	bfit = circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: originator_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -321,12 +321,12 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 	n_input = (Ctrl->Q.active) ? 3 : 5;
         if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error:  Binary input data (-bi) must have at least %ld columns\n", n_input);
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error:  Binary input data cannot have header -H\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.file, "Syntax error -F:  Must specify hotspot file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.file, "Syntax error -F:  Must specify Euler pole file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D:  Must specify a positive interval\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W:  Must specify a positive distance in km\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_input);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -H\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D: Must specify a positive interval\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W: Must specify a positive distance in km\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -374,7 +374,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	nh = spotter_hotspot_init (GMT, Ctrl->F.file, TRUE, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n <= 0 || Ctrl->S.n > nh) {
-		GMT_message (GMT, "%s: Syntax error -S:  Give value between 1 and %ld\n", GMT->init.progname, nh);
+		GMT_message (GMT, "%s: Syntax error -S option: Give value between 1 and %ld\n", GMT->init.progname, nh);
 		Return (EXIT_FAILURE);
 	}
 	n_max_spots = MIN (Ctrl->S.n, nh);

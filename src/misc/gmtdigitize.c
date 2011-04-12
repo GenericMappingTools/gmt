@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.37 2011-04-11 21:15:32 remko Exp $
+ *    $Id: gmtdigitize.c,v 1.38 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -229,18 +229,18 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 			case 'A':
 				Ctrl->A.active = TRUE;
 				break;
-			case 'C':               /* Device to use */
+			case 'C':	/* Device to use */
 				Ctrl->C.active = TRUE;
 				Ctrl->C.device = strdup (opt->arg);
 				break;
-			case 'D':               /* Minimum distance between continuously digitized points */
+			case 'D':	/* Minimum distance between continuously digitized points */
 				Ctrl->D.active = TRUE;
 				Ctrl->D.limit = GMT_to_inch (GMT, opt->arg);
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
 				break;
-			case 'L':               /* Resolution of digitizer in lines per inch */
+			case 'L':	/* Resolution of digitizer in lines per inch */
 				Ctrl->L.active = TRUE;
 				Ctrl->L.LPI = atoi (opt->arg);
 				break;
@@ -248,7 +248,7 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 				if (opt->arg[0] == 'k') Ctrl->Z.active[K_ID] = TRUE;
 				if (opt->arg[0] == 'v') Ctrl->Z.active[V_ID] = TRUE;
 				break;
-			case 'N':               /* Multiple line segments */
+			case 'N':	/* Multiple line segments */
 				Ctrl->N.active = TRUE;
 				Ctrl->N.name = strdup (opt->arg);
 				break;
@@ -262,8 +262,8 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files, "Syntax error:  No input files allowed\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, n_files, "Syntax error: No input files allowed\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -600,9 +600,9 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	if (GMT->current.setting.verbose && n_read > 0) {
-		sprintf (format, "Input extreme values:  Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
-		sprintf (format, "Output extreme values:  Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_out_min, x_out_max, y_out_min, y_out_max);
 		GMT_message (GMT, "Digitized %ld points\n", n);
 		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%ld fell outside region\n", n_read - n);

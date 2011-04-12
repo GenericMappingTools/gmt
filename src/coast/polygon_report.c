@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_report.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_report.c,v 1.3 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *	polygon_report makes a multisegment ascii-file of entire dbase
@@ -14,7 +14,7 @@ int main (int argc, char **argv)
 	struct GMT3_POLY h;
         
 	if (argc != 2) {
-		fprintf(stderr,"usage:  polygon_report polygons.b\n");
+		fprintf(stderr,"usage: polygon_report polygons.b\n");
 		exit(-1);
 	}
 	

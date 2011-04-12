@@ -1,5 +1,5 @@
 /*
- *	$Id: gshhs_to_polygon.c,v 1.4 2007-05-08 20:51:45 pwessel Exp $
+ *	$Id: gshhs_to_polygon.c,v 1.5 2011-04-12 13:06:42 remko Exp $
  * 
  *	read a GSHHS file and and write a polygon.b format file to stdout
  * UNTESTED but should work. (-pw)
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 	struct GSHHS gshhs_header;
         
 	if (argc != 2) {
-		fprintf (stderr,"usage:  gshhs_to_polygon gshhs_res.b > polygonfile_res.b\n");
+		fprintf (stderr,"usage: gshhs_to_polygon gshhs_res.b > polygonfile_res.b\n");
 		exit (EXIT_FAILURE);
 	}
 	
@@ -48,11 +48,11 @@ int main (int argc, char **argv)
 		pol_writeheader (&h, stdout);
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf (stderr,"gshhs_to_polygon:  ERROR  reading file %s.\n", argv[1]);
+				fprintf (stderr,"gshhs_to_polygon: Error reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
 			}
 			if (pol_fwrite (&p, 1, stdout) != 1) {
-				fprintf (stderr,"gshhs_to_polygon:  ERROR  writing to stdout.\n");
+				fprintf (stderr,"gshhs_to_polygon: Error writing to stdout.\n");
 				exit (EXIT_FAILURE);
 			}
 		}

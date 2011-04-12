@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: redpol_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
  * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573 
  *
  * Author:	Joaquim Luis / Miguel Miranda
- * Date:        18-Feb-2003 (original GMT4 version)
+ * Date:	18-Feb-2003 (original GMT4 version)
  * Version:	5 API
  */
 
@@ -213,7 +213,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 	   Ctrl->S.nx & Ctrl->S.ny are the grid's original number of column/rows before extension */
 	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew;
 
-	/* First reflect about xmin and xmax, point symmetric about edge point:  */
+	/* First reflect about xmin and xmax, point symmetric about edge point */
 
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
 		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
@@ -1113,8 +1113,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
 		GMT_message (GMT, "Warning: -E option overrides -C\n");

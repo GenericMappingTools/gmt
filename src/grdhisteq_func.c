@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdhisteq_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -198,7 +198,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	
 	cell = GMT_memory (GMT, NULL, n_cells, struct CELL);
 
-	/* Sort the data and find the division points:  */
+	/* Sort the data and find the division points */
 
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort */

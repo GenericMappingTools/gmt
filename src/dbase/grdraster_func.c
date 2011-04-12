@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.12 2011-04-12 03:05:19 remko Exp $
+ *	$Id: grdraster_func.c,v 1.13 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -245,7 +245,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 		strcpy (rasinfo[nfound].h.command, record);
 
-		/* Find the integer file name first:  */
+		/* Find the integer file name first */
 		i = 0;
 		while (i < length && (rasinfo[nfound].h.command[i] == ' ' ||  rasinfo[nfound].h.command[i] == '\t') ) i++;
 		if (i == length) {
@@ -266,7 +266,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			continue;
 		}
 
-		/* Now find the title string:  */
+		/* Now find the title string */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
 		if (i == length) {
@@ -287,7 +287,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		strncpy(rasinfo[nfound].h.title, &rasinfo[nfound].h.command[i], (size_t)j-i);
 		rasinfo[nfound].h.title[j-i] = '\0';
 
-		/* Now find the z_unit string:  */
+		/* Now find the z_unit string */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
 		if (i == length) {
@@ -308,7 +308,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		strncpy(rasinfo[nfound].h.z_units, &rasinfo[nfound].h.command[i], (size_t)j-i);
 		rasinfo[nfound].h.z_units[j-i] = '\0';
 
-		/* Now find the -R string:  */
+		/* Now find the -R string */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
 		if (i == length) {
@@ -343,7 +343,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		rasinfo[nfound].h.wesn[YLO] = GMT->common.R.wesn[YLO];
 		rasinfo[nfound].h.wesn[YHI] = GMT->common.R.wesn[YHI];
 		rasinfo[nfound].geo = (fabs (rasinfo[nfound].h.wesn[XLO]) > 360.0 || fabs (rasinfo[nfound].h.wesn[XHI]) > 360.0 || fabs (rasinfo[nfound].h.wesn[YLO]) > 90.0 || fabs (rasinfo[nfound].h.wesn[YHI]) > 90.0) ? FALSE : TRUE;
-		/* Now find the -I string:  */
+		/* Now find the -I string */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
 		if (i == length) {
@@ -364,7 +364,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			continue;
 		}
 
-		/* Get P or G:  */
+		/* Get P or G */
 		i = j+1;
 		while(i < length && !(rasinfo[nfound].h.command[i] == 'P' || rasinfo[nfound].h.command[i] == 'G') ) i++;
 		if (i == length) {
@@ -473,7 +473,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			}
 		}
 
-		/* Get filename:  */
+		/* Get filename */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
 		if (i == length) {
@@ -545,7 +545,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			}
 		}
 
-		/* Get here when all is OK for this line:  */
+		/* Get here when all is OK for this line */
 		global_lon = 360.0 - (1 - rasinfo[nfound].h.registration) * rasinfo[nfound].h.inc[GMT_X];
 		lon_tol = 0.01 * rasinfo[nfound].h.inc[GMT_X];
 		global_lon -= lon_tol;	/* make sure we don't fail to find a truly global file  */
@@ -704,15 +704,15 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 		}
 	}
 
-	/* Check that arguments were valid:  */
+	/* Check that arguments were valid */
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error -I option.  You must specify only one raster file ID.\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
 #ifndef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error:  You must select only one of -G or -T.\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error:  You must select either -G or -T.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
 #endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -783,7 +783,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "Error:  At least two rasters have the same file number in grdraster.info\n");
+					GMT_message (GMT, "Error: At least two rasters have the same file number in grdraster.info\n");
 					error++;
 				}
 			}
@@ -795,7 +795,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "Error:  At least two rasters have the same text [%s] in grdraster.info\n", tselect);
+					GMT_message (GMT, "Error: At least two rasters have the same text [%s] in grdraster.info\n", tselect);
 					error++;
 				}
 			}
@@ -803,9 +803,9 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (j == -1) {
 		if (iselect != -1)
-			GMT_message (GMT, "Error:  No raster with file number %ld in grdraster.info\n", iselect);
+			GMT_message (GMT, "Error: No raster with file number %ld in grdraster.info\n", iselect);
 		else
-			GMT_message (GMT, "Error:  No raster with text %s in grdraster.info\n", tselect);
+			GMT_message (GMT, "Error: No raster with text %s in grdraster.info\n", tselect);
 		error++;
 	}
 	else {
@@ -839,7 +839,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		jmult = irint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
-			GMT_message (GMT, "Error:  Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
+			GMT_message (GMT, "Error: Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -904,7 +904,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		error = 0;
 	}
 
-	/* Now we are ready to go:  */
+	/* Now we are ready to go */
 	if (!myras.h.registration) {
 		Grid->header->nx++;
 		Grid->header->ny++;
@@ -936,7 +936,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (myras.nglobal) while (irasstart < 0) irasstart += myras.nglobal;
 	n_nan = 0;
 
-	/* Get space:  */
+	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
@@ -949,16 +949,16 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	ksize = get_byte_size (GMT, myras.type);
-	if (ksize == 0) {	/* Bits; Need to read the whole thing:  */
+	if (ksize == 0) {	/* Bits; Need to read the whole thing */
 		nmask = (GMT_LONG)ceil (myras.h.nx * myras.h.ny * 0.125);
 		ubuffer = GMT_memory (GMT, NULL, nmask, unsigned char);
 	}
-	else {	/* Need to read by rows, and convert each row to float:  */
+	else {	/* Need to read by rows, and convert each row to float */
 		buffer = GMT_memory (GMT, NULL, ksize * myras.h.nx, char);
 		floatrasrow = GMT_memory (GMT, NULL, myras.h.nx, float);
 	}
 
-	/* Now open file and do it:  */
+	/* Now open file and do it */
 
 	if ( (fp = GMT_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
 		GMT_message (GMT, "ERROR opening %s for read.\n", myras.h.remark);
@@ -973,7 +973,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
 		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
-			GMT_message (GMT, "Error:  Failure to read a bitmap raster from %s.\n", myras.h.remark);
+			GMT_message (GMT, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
@@ -982,7 +982,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
-				/* This entire row is outside the raster:  */
+				/* This entire row is outside the raster */
 				for (i = 0; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
 			}
@@ -1022,7 +1022,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
-				/* This entire row is outside the raster:  */
+				/* This entire row is outside the raster */
 				for (i = 0; i < Grid->header->nx; i++, ij++) Grid->data[ij] = GMT->session.f_NaN;
 				n_nan += Grid->header->nx;
 			}

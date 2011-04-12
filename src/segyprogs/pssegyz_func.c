@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: pssegyz_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -304,14 +304,14 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error.  Must specify the -R option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.wesn[ZLO]  == GMT->common.R.wesn[ZHI], "Syntax error.  Must specify z range in -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error.  Option -T requires a file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "Syntax error.  Cannot file file %s\n", Ctrl->T.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "Syntax error -E.  slop cannot be negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error.  Must specify -F with -I\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error.  Must specify -F or -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value[GMT_X] < 0.0 || Ctrl->D.value[GMT_Y] < 0.0, "Syntax error.  Must specify a positive deviation\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify the -R option\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.wesn[ZLO]  == GMT->common.R.wesn[ZHI], "Syntax error: Must specify z range in -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error: Option -T requires a file name\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && !access (Ctrl->T.file, R_OK), "Syntax error: Cannot file file %s\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "Syntax error -E option: Slop cannot be negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error: Must specify -F with -I\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error: Must specify -F or -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.value[GMT_X] < 0.0 || Ctrl->D.value[GMT_Y] < 0.0, "Syntax error: Must specify a positive deviation\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

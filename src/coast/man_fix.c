@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix.c,v 1.4 2009-06-11 05:42:09 guru Exp $
+ *	$Id: man_fix.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  */
 #include "wvs.h"
 
@@ -114,7 +114,7 @@ int main (int argc, char **argv) {
 		
 			for (k = 0; k < poly[id].h.n; k++) {
 				if (fread((char *)&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
-					fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
+					fprintf(stderr,"polygon_extract: Error reading file.\n");
 					exit(-1);
 				}
 				if ((poly[id].h.greenwich & 1) && p.x > poly[id].h.datelon) p.x -= M360;

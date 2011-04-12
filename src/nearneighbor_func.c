@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
+ *	$Id: nearneighbor_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option:  Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Must specify value or NaN\n");
 				}
 				break;
 			case 'G':	/* Output file */
@@ -231,14 +231,14 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error:  Must specify -S option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option:  Must specify a positive number of sectors\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S.  Unrecognized unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S.  Unable to decode radius\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S.  Radius is negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
 

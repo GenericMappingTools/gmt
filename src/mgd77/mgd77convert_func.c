@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: mgd77convert_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -167,8 +167,8 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error.  Must specify format of input files\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error.  Must specify format of output files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error: Must specify format of input files\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error: Must specify format of output files\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
+ *	$Id: makecpt_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -105,7 +105,7 @@ GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "makecpt %s [API] - Make GMT color palette tables\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  makecpt [-A[+]<transparency>] [-C<colortable>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
+	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<colortable>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
 	GMT_message (GMT, "	[-T<z0/z1/dz> | -T<file>] [%s] [-Z]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -183,7 +183,7 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
-					default:  Ctrl->F.model = GMT_RGB; break;
+					default: Ctrl->F.model = GMT_RGB; break;
 				}
 				break;
 			case 'I':	/* Invert table */
@@ -203,7 +203,7 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 					GMT_LONG n;
 					Ctrl->T.inc = 0.0;
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
-					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option:  Must specify start/stop[/inc]\n");
+					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc]\n");
 				}
 				break;
 			case 'Q':	/* Logarithmic scale */
@@ -226,12 +226,12 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0, "Syntax error:  No input files expected\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error:  -W and -Z cannot be used simultaneously\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option:  Give start < stop and inc > 0\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0, "Syntax error: No input files expected\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option: Give start < stop and inc > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.file && GMT_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
-	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error:  Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A:  Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

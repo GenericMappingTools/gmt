@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.27 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.28 2011-04-12 13:06:43 remko Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -25,7 +25,7 @@ int main (int argc, char **argv)
 	double dx1, dx2, dy1, dy2, off, cos_a;
 
 	if (argc != 2) {
-		fprintf(stderr,"usage:  polygon_consistency wvs_polygons.b > report.lis\n");
+		fprintf(stderr,"usage: polygon_consistency wvs_polygons.b > report.lis\n");
 		exit(-1);
 	}
 
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 		n = irint (h.north * 1e6);
 		for (i = nd = 0; i < h.n; i++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_consistency:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_consistency: Error reading file.\n");
 				exit(-1);
 			}
 			if (p.x < 0 || p.x > M360) fprintf (stderr, "Pol %d, point %d: x outside range [%g]\n", h.id, i, p.x*1e-6);

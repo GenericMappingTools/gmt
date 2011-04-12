@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_merge.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_merge.c,v 1.3 2011-04-12 13:06:42 remko Exp $
  */
 /* polygon_merge 
  *
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 	int	i, id, n_id, n_1, n_2, pos, found;
 
 	if (argc != 4) {
-		fprintf(stderr,"usage:  polygon_merge main.b updated.b.b final.b\n");
+		fprintf(stderr,"usage: polygon_merge main.b updated.b.b final.b\n");
 		exit(-1);
 	}
 
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 			}
 
 			if (pol_fread (p, hin.n, fp[1]) != hin.n) {
-				fprintf(stderr,"wvs_final_dump:  ERROR  reading file.\n");
+				fprintf(stderr,"wvs_final_dump: Error reading file.\n");
 				exit(-1);
 			}
 		}
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 				exit (-1);
 			}
 			if (pol_fread (p, hin.n, fp[0]) != hin.n) {
-				fprintf(stderr,"wvs_final_dump:  ERROR  reading file.\n");
+				fprintf(stderr,"wvs_final_dump: Error reading file.\n");
 				exit(-1);
 			}
 		}
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (pol_fwrite (p, hin.n, fp_out) != hin.n) {
-			fprintf(stderr,"wvs_final_dump:  ERROR  writing file.\n");
+			fprintf(stderr,"wvs_final_dump: Error writing file.\n");
 			exit(-1);
 		}
 	}

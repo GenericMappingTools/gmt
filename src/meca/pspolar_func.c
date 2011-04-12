@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $ 
+ *    $Id: pspolar_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -12,11 +12,10 @@
  * Only one event may be plotted at a time.
  * PostScript code is written to stdout.
  *
- * Author:         Genevieve Patau
- * Date:           19-OCT-1995 (psprojstations)
- * Version:        4
- * Roots:          heavily based on psxy.c
- * Last modified : 02-APR-2001
+ * Author:	Genevieve Patau
+ * Date:	19-OCT-1995 (psprojstations)
+ * Version:	4
+ * Roots:	heavily based on psxy.c
  *
  */
 
@@ -212,51 +211,51 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 
 			/* Processes program-specific parameters */
 
-			case 'C':       /* New coordinates */
+			case 'C':	/* New coordinates */
 				Ctrl->C.active = TRUE;
 				sscanf(opt->arg, "%lf/%lf", &Ctrl->C.lon, &Ctrl->C.lat);
 				if (strchr (opt->arg, 'W'))  GMT_getpen (GMT, strchr (opt->arg+1, 'W')+1, &Ctrl->C.pen);
 				if (strchr (opt->arg, 'P')) sscanf(strchr (opt->arg+1, 'P')+1, "%lf", &Ctrl->C.size);
 				break;
-			case 'D':       /* Coordinates */
+			case 'D':	/* Coordinates */
 				Ctrl->D.active = TRUE;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->D.lon, &Ctrl->D.lat);
 				break;
-			case 'E':        /* Set color for station in extensive part */
+			case 'E':	/* Set color for station in extensive part */
 				Ctrl->E.active = TRUE;
 				GMT_getfill (GMT, opt->arg, &Ctrl->E.fill);
 				break;
-			case 'e':        /* Outline station symbol in extensive part */
+			case 'e':	/* Outline station symbol in extensive part */
 				Ctrl->E.active = TRUE;
 				if (strlen (opt->arg)) GMT_getpen (GMT, opt->arg, &Ctrl->E.pen);
 				break;
-			case 'F':        /* Set background color of beach ball */
+			case 'F':	/* Set background color of beach ball */
 				Ctrl->F.active = TRUE;
 				GMT_getfill (GMT, opt->arg, &Ctrl->F.fill);
 				break;
-			case 'f':        /* Outline beach ball */
+			case 'f':	/* Outline beach ball */
 				Ctrl->F.active = TRUE;
 				if (strlen (opt->arg))  GMT_getpen (GMT, opt->arg, &Ctrl->F.pen);
 				break;
-			case 'G':        /* Set color for station in compressive part */
+			case 'G':	/* Set color for station in compressive part */
 				Ctrl->C.active = TRUE;
 				GMT_getfill (GMT, opt->arg, &Ctrl->G.fill);
 				break;
-			case 'g':        /* Outline station symbol in compressive part */
+			case 'g':	/* Outline station symbol in compressive part */
 				Ctrl->G.active = TRUE;
 				if (strlen (opt->arg)) GMT_getpen (GMT, opt->arg, &Ctrl->G.pen);
 				break;
-			case 'Q':    /* Use HYPO71 format */
+			case 'Q':	/* Use HYPO71 format */
 				Ctrl->Q.active = TRUE;
 				break;
-			case 'M':    /* Focal sphere size */
+			case 'M':	/* Focal sphere size */
 				Ctrl->M.active = TRUE;
 				Ctrl->M.ech = GMT_to_inch (GMT, opt->arg);
 				break;
-			case 'N':        /* Do not skip points outside border */
+			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = TRUE;
 				break;
-			case 'S':        /* Get symbol [and size] */
+			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.type = opt->arg[0];
 				Ctrl->S.size = GMT_to_inch (GMT, &opt->arg[1]);
 				Ctrl->S.active = TRUE;
@@ -290,11 +289,11 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "Syntax error -S option:  Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_message (GMT, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				break;
-			case 's':        /* Get S polarity */
+			case 's':	/* Get S polarity */
 				Ctrl->S2.active = TRUE;
 				strcpy (txt, &opt->arg[1]);
 				n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
@@ -322,17 +321,17 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 				}
 				if (strchr (opt->arg, 'L')) Ctrl->S2.outline = TRUE;
 				break;
-			case 'T':       /* Information about label printing */
+			case 'T':	/* Information about label printing */
 				Ctrl->T.active = TRUE;
 				if (strlen (opt->arg)) {
 					sscanf (opt->arg, "%lf/%ld/%ld/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
 				}
 				break;
-			case 't':       /* Set color for station label */
+			case 't':	/* Set color for station label */
 				GMT_getpen (GMT, opt->arg, &Ctrl->T.pen);
 				break;
 
-			case 'W':    /* Set line attributes */
+			case 'W':	/* Set line attributes */
 				Ctrl->W.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
@@ -345,9 +344,9 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error:  -M must specify a size\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error:  -D, -M, -S must be set together\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error: -M must specify a size\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error: -D, -M, -S must be set together\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

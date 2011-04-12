@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
+ *	$Id: pslegend_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -189,11 +189,11 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option:  clearances cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option:  legend box sizes cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option: legend box sizes cannot be negative!\n");
 	if (!Ctrl->D.cartesian || !GMT->common.O.active) {	/* Overlays with -Dx does not need-R -J; other cases do */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.247 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmt_io.c,v 1.248 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3032,7 +3032,7 @@ GMT_LONG GMT_scanf_ISO_calendar (struct GMT_CTRL *C, char *s, GMT_LONG *rd) {
 
 	if ((n = sscanf (s, C->current.io.date_input.format, &ival[0], &ival[1], &ival[2])) == 0) return (-1);
 
-	/* Handle possible missing bits:  */
+	/* Handle possible missing bits */
 	for (k = n; k < 3; k++) ival[k] = 1;
 
 	if (ival[1] < 1 || ival[1] > 53) return (-1);
@@ -3135,7 +3135,7 @@ GMT_LONG GMT_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 	is now used and returned, and this also permits a double precision format in the minutes or seconds,
 	and does more error checking.  However, this is not optimized for speed (yet).  WHFS, 16 Aug 2001
 
-	Note:  Mismatch handling (e.g. this routine finds a lon but calling routine expected a lat) is not
+	Note: Mismatch handling (e.g. this routine finds a lon but calling routine expected a lat) is not
 	done here.
 	*/
 
@@ -3266,7 +3266,7 @@ GMT_LONG GMT_scanf_float (char *s, double *val)
 	if (p[0] != 'D' && p[0] != 'd') return (GMT_IS_NAN);
 	k = strlen(p);
 	if (k == 1) return (GMT_IS_NAN);	/* A string ending in e would be invalid  */
-	/* Make a copy of s in scopy, mapping the d or D to an e:  */
+	/* Make a copy of s in scopy, mapping the d or D to an e */
 	j = (GMT_LONG)strlen (s);
 	if (j > GMT_TEXT_LEN) return (GMT_IS_NAN);
 	j -= k;
@@ -3347,7 +3347,7 @@ GMT_LONG GMT_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 		return (GMT_IS_RELTIME);
 	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
-	if (pt[1]) {	/* There is a string following the T:  Decode a clock:  */
+	if (pt[1]) {	/* There is a string following the T:  Decode a clock */
 		k = sscanf (&pt[1], "%2" GMT_LL "d:%2" GMT_LL "d:%lf", &hh, &mm, &ss);
 		if (k == 0) return (GMT_IS_NAN);
 		if (hh < 0 || hh >= 24) return (GMT_IS_NAN);
@@ -3365,7 +3365,7 @@ GMT_LONG GMT_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	k = 0;
 	while (s[k] && s[k] == ' ') k++;
 	if (s[k] == '-') negate_year = TRUE;
-	if (s[k] == 'T') {	/* There is no calendar.  Set day to 1 and use that:  */
+	if (s[k] == 'T') {	/* There is no calendar.  Set day to 1 and use that */
 		*t = GMT_rdc2dt (C, (GMT_LONG)1, x);
 		return (GMT_IS_ABSTIME);
 	}
@@ -3388,11 +3388,11 @@ GMT_LONG GMT_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
 	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
-	if (got_yd) {	/* Gregorian yyyy-jjj calendar:  */
+	if (got_yd) {	/* Gregorian yyyy-jjj calendar */
 		if ( (j = sscanf(&s[k], "%4" GMT_LL "d-%3" GMT_LL "d", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
 		ival[2] = 1;
 	}
-	else {	/* Gregorian yyyy-mm-dd calendar:  */
+	else {	/* Gregorian yyyy-mm-dd calendar */
 		if ( (j = sscanf(&s[k], "%4" GMT_LL "d-%2" GMT_LL "d-%2" GMT_LL "d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
 		for (k = j; k < 3; k++) ival[k] = 1;
 	}
@@ -3504,7 +3504,7 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 	}
 
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  GMT_scanf() called with invalid expectation.\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG: GMT_scanf() called with invalid expectation.\n");
 		return (GMT_IS_NAN);
 	}
 }

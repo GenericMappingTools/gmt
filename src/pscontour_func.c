@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.10 2011-04-12 03:05:18 remko Exp $
+ *	$Id: pscontour_func.c,v 1.11 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -406,7 +406,7 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_pen_syntax (GMT, 'W', "Sets pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default]");
 	GMT_message (GMT, "\t   The default settings are\n");
 	P = GMT->current.setting.map_default_pen;
-	GMT_message (GMT, "\t   Contour pen:  %s\n", GMT_putpen (GMT, P));
+	GMT_message (GMT, "\t   Contour pen: %s\n", GMT_putpen (GMT, P));
 	P.width *= 3.0;
 	GMT_message (GMT, "\t   Annotate pen: %s\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file\n");
@@ -444,7 +444,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 
 				Ctrl->A.active = TRUE;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option.  Correct syntax:\n\t-A[-][<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g[<fill>]][+j<just>][+o][+p[<pen>]][+s<size>][+u<unit>][+v]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-][<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g[<fill>]][+j<just>][+o][+p[<pen>]][+s<size>][+u<unit>][+v]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
@@ -530,7 +530,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 							n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option.  Give low and high labels either as -:LH or -:<low>,<high>.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
 							Ctrl->T.label = FALSE;
 							n_errors++;
 						}
@@ -541,7 +541,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 							Ctrl->T.txt[1] = strdup (txt_b);
 						}
 					}
-					n_errors += GMT_check_condition (GMT, n == 1 || Ctrl->T.spacing <= 0.0 || Ctrl->T.length == 0.0, "Syntax error -T option.  Correct syntax:\n\t-T[+|-][<tick_gap>[%s]/<tick_length>[%s]][:LH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					n_errors += GMT_check_condition (GMT, n == 1 || Ctrl->T.spacing <= 0.0 || Ctrl->T.length == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][<tick_gap>[%s]/<tick_length>[%s]][:LH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Sets pen attributes */
@@ -582,14 +582,14 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option:  Must specify contour interval, file name with levels, or cpt-file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error:  Must specify one of -W or -I\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error:  Cannot use -G, -I, -L, -N, -W with -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option:  Must specify a color palette table via -C\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->Q.file, "Syntax error -Q option:  Must specify an index file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.file && GMT_access (GMT, Ctrl->Q.file, F_OK), "Syntax error -Q option:  Cannot find file %s\n", Ctrl->Q.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option:  + or - only valid if -C sets a cpt file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->Q.file, "Syntax error -Q option: Must specify an index file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.file && GMT_access (GMT, Ctrl->Q.file, F_OK), "Syntax error -Q option: Cannot find file %s\n", Ctrl->Q.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -728,7 +728,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Q.file, (void **)&Tin)) Return ((error = GMT_DATA_READ_ERROR));
 
  		if (Tin->n_columns < 3) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q:  %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Tin);
 			Return (EXIT_FAILURE);
 		}

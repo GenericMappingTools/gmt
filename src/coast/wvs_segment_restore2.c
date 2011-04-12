@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_restore2.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: wvs_segment_restore2.c,v 1.3 2011-04-12 13:06:42 remko Exp $
  */
 /* wvs_segment_restore2 <asciifiles> > <segments.b>
  *
@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	char line[512];
 
 	if (argc == 1) {
-		fprintf(stderr,"usage:  wvs_segment_restore2 asciifiles > raw_wvs_segment_file\n");
+		fprintf(stderr,"usage: wvs_segment_restore2 asciifiles > raw_wvs_segment_file\n");
 		exit(-1);
 	}
 
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 		hin.rank = 1;
 		fwrite((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, stdout);
 		if ((fwrite((char *)p, sizeof(struct LONGPAIR), hin.n, stdout)) != hin.n) {
-			fprintf(stderr,"wvs_segment_restore2:  ERROR  writing file.\n");
+			fprintf(stderr,"wvs_segment_restore2: Error writing file.\n");
 			exit(-1);
 		}
 		fclose (fp);

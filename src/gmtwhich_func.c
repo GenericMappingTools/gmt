@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtwhich_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *    $Id: gmtwhich_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,7 +93,7 @@ GMT_LONG GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, 
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error.  No files specified\n");
+	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: No files specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

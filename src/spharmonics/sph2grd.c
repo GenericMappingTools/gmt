@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.19 2011-04-11 21:15:32 remko Exp $
+ *    $Id: sph2grd.c,v 1.20 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -165,23 +165,23 @@ int main (int argc, char **argv)
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (n_files > 1) {
-		fprintf (stderr, "%s: Syntax error:  Can only handle one input coefficient file\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Can only handle one input coefficient file\n", GMT->init.progname);
 		error++;
 	}
 	if (!GMT->common.R.active) {
-		fprintf (stderr, "%s: Syntax error:  Must specify -R option\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Must specify -R option\n", GMT->init.progname);
 		error++;
 	}
 	if (!Ctrl->G.file) {
-		fprintf (stderr, "%s: Syntax error option -G:  Must specify output file\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error -G option: Must specify output file\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->D.active && !(Ctrl->D.mode == 'g' || Ctrl->D.mode == 'n')) {
-		fprintf (stderr, "%s: Syntax error option -D:  Must append g or n\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error -D option: Must append g or n\n", GMT->init.progname);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: Syntax error:  -N Normalization must be one of m, g, or s\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.progname);
 		error++;
 	}
 	if (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0) {

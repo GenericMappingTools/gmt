@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.6 2011-04-12 03:05:19 remko Exp $
+/* $Id: img2grd_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,8 +42,8 @@
  * of these files and anticipate higher-resolutions to come down the road.
  * Also added is the option to look for the img file in GMT_IMGDIR
  *
- * Author:  Walter H F Smith
- * Date:    8 October, 1998
+ * Author:	Walter H F Smith
+ * Date:	8 October, 1998
  * 
  **WHFS 27 Nov 1998 fixed bug so that -T0 gives correct results
  **  PW 18 Oct 1999 Use WORDS_BIGENDIAN macro set by configure.
@@ -125,7 +125,7 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "img2grd %s [API] - Extract a subset from an img file in Mercator or Geographic projection.\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  img2grd <world_image_filename> %s -G<grdfile> -T<type> [-C]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: img2grd <world_image_filename> %s -G<grdfile> -T<type> [-C]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<minutes>] [-M] [-N<navg>] [-S<scale>] [-V] [-W<maxlon>]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -249,15 +249,15 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error:  Must specify input imgfile name.\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  More than one world image file name given.\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option.\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Syntax error:  Must specify -R with west < east and south < north.\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Syntax error:  Must specify output grid file name with -G.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Syntax error:  Min/max latitudes are invalid.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error:  Must specify output type in the range 0-3 with -T.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error:  Requires a maximum longitude >= 360.0 with -W.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error:  Requires a positive value with -I.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify input imgfile name.\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: More than one world image file name given.\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.R.active && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Syntax error:Must specify -R with west < east and south < north.\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Syntax error: Must specify output grid file name with -G.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Syntax error: Min/max latitudes are invalid.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error: Must specify output type in the range 0-3 with -T.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error: Requires a maximum longitude >= 360.0 with -W.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error: Requires a positive value with -I.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -376,7 +376,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	navg = Ctrl->N.value;
 	
-	/* Expected edges of input image based on coordinate initialization (might not exactly match user spec):  */
+	/* Expected edges of input image based on coordinate initialization (might not exactly match user spec) */
 	
 	toplat = GMT_img_ypix_to_lat (0.0, &imgcoord);
 	botlat = GMT_img_ypix_to_lat ((double)imgcoord.nyrow, &imgcoord);
@@ -394,7 +394,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		wesn[YLO] = botlat + GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	
-	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries:  */
+	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */
 	
 	jinstart = navg * (int)floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg);
 	jinstop  = navg * (int)ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg);
@@ -406,7 +406,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	iinstart = navg * (GMT_LONG)floor (wesn[XLO]/inc[GMT_X]);
 	iinstop  = navg * (GMT_LONG)ceil  (wesn[XHI]/inc[GMT_X]);
 	/* iinstart <= ipixelcol < iinstop, but modulo all with imgcoord.nx360  */
-	/* Reset left and right edges of user area:  */
+	/* Reset left and right edges of user area */
 	wesn[XLO] = iinstart * dx;
 	wesn[XHI] = iinstop  * dx;
 	Merc->header->nx = (int)((iinstop - iinstart) / navg);
@@ -417,7 +417,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
 	while (iinstart < 0) iinstart += imgcoord.nx360;
 	
-	/* Set navgsq, rnavgsq, for the averaging:  */
+	/* Set navgsq, rnavgsq, for the averaging */
 	navgsq = navg * navg;
 	rnavgsq = 1.0 / navgsq;
 
@@ -500,7 +500,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			continue;
 		}
 		if ((fread ((void *)row, sizeof (short int), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
-			GMT_message (GMT, "Error:  Read failure at jin = %ld.\n", jin);
+			GMT_message (GMT, "Error: Read failure at jin = %ld.\n", jin);
 			exit (EXIT_FAILURE);
 		}
 

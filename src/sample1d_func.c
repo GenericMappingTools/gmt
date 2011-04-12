@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
+ *	$Id: sample1d_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -216,7 +216,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && GMT_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->T.col >= 2) ? Ctrl->T.col + 1 : 2);
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

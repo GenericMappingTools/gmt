@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.6 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdfilter_func.c,v 1.7 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -292,7 +292,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option.  Correct syntax: -FX<width>, X one of bcgmplLuU\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Fx<width>, where x is one of bcgmplLuU\n");
 					n_errors++;
 				}
 				break;
@@ -320,7 +320,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 						Ctrl->N.mode = NAN_PRESERVE;	/* Preserve */
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option.  Correct syntax: -Ni|p|r\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Ni|p|r\n");
 						n_errors++;
 						break;
 				}
@@ -431,7 +431,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
 	same_grid = !(GMT->common.R.active  || Ctrl->I.active || Gin->header->registration == one_or_zero);
 	if (!fast_way) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning - Your output grid spacing is such that filter-weights must\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your output grid spacing is such that filter-weights must\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");

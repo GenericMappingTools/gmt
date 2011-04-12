@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
+ *    $Id: minmax_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,11 +217,11 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 		Ctrl->I.inc[1] = Ctrl->I.inc[0];
 		Ctrl->I.ncol = 2;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error.  -Ip requires -C\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error.  Only one of -I and -T can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option.  Must specify a positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.active && Ctrl->I.ncol < 2, "Syntax error: -Ip requires -C\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error: Only one of -I and -T can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option: Must specify a positive increment\n");
 	for (j = 0; Ctrl->I.active && j < Ctrl->I.ncol; j++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[j] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[j] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

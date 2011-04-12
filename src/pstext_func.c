@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.11 2011-04-11 21:15:32 remko Exp $
+ *	$Id: pstext_func.c,v 1.12 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -436,7 +436,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 			case 'T':
 				Ctrl->T.active = TRUE;
 				Ctrl->T.mode = opt->arg[0];
-				n_errors += GMT_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option:  must add o, O, c, or C\n");
+				n_errors += GMT_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option: must add o, O, c, or C\n");
 				break;
 			case 'W':
 				Ctrl->W.active = TRUE;
@@ -464,9 +464,9 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option:  clearances cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->G.active && !Ctrl->W.active, "Warning: -T requires -W and/or -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");

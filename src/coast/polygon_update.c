@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_update.c,v 1.7 2009-06-20 23:30:19 guru Exp $
+ *	$Id: polygon_update.c,v 1.8 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 	char file[80], line[512];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_update final_polygons.b bad.lis fix.lis final_x_polygons.b [-n]\n");
+		fprintf(stderr,"usage: polygon_update final_polygons.b bad.lis fix.lis final_x_polygons.b [-n]\n");
 		fprintf(stderr,"	-n Do not recalculate area and check for handedness\n");
 		fprintf(stderr,"	   By default, for the full resolution we will update region and area\n");
 		fprintf(stderr,"	   We will reverse the order of the polygon if level and handedness are in conflict\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdtrend_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,7 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdtrend %s [API] - Fit trend surface to gridded data\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  grdtrend <input.grd> -N<n_model>[r] [-D<diff.grd>]\n");
+	GMT_message (GMT, "usage: grdtrend <input.grd> -N<n_model>[r] [-D<diff.grd>]\n");
 	GMT_message (GMT, "\t[%s] [-T<trend.grd>] [%s] [-W<weight.grd>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -180,7 +180,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option:  Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Must specify file name\n");
 					n_errors++;
 				}
-				/* OK if this file doesn't exist:  */
+				/* OK if this file doesn't exist */
 				break;
 
 			default:	/* Report bad options */
@@ -237,7 +237,7 @@ void set_up_vals (double *val, GMT_LONG nval, double vmin, double vmax, double d
 		v = true_min + i * dv;
 		val[i] = (v - middle) * drange;
 	}
-	/* Just to be sure no rounding outside:  */
+	/* Just to be sure no rounding outside */
 	val[0] = -1.0;
 	val[nval - 1] = 1.0;
 	return;
@@ -257,7 +257,7 @@ void load_pstuff (double *pstuff, GMT_LONG n_model, double x, double y, GMT_LONG
 		if (n_model >= 6) pstuff[5] = 0.5*(3.0*pstuff[2]*pstuff[2] - 1.0);
 		if (n_model >= 10) pstuff[9] = (5.0*pstuff[2]*pstuff[5] - 2.0*pstuff[2])/3.0;
 	}
-	/* In either case, refresh cross terms:  */
+	/* In either case, refresh cross terms */
 
 	if (n_model >= 4) pstuff[3] = pstuff[1]*pstuff[2];
 	if (n_model >= 8) pstuff[7] = pstuff[4]*pstuff[2];
@@ -294,11 +294,11 @@ void grd_trivial_model (struct GMT_GRID *G, double *xval, double *yval, double *
 	GMT_LONG row, col, ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 
-	/* First zero the model parameters to use for sums:  */
+	/* First zero the model parameters to use for sums */
 
 	GMT_memset (gtd, n_model, double);
 
-	/* Now accumulate sums:  */
+	/* Now accumulate sums */
 
 	GMT_row_loop (G, row) {
 		y2 = yval[row] * yval[row];
@@ -355,11 +355,11 @@ double compute_robust_weight (struct GMT_GRID *R, struct GMT_GRID *W)
 	j2 = j / 2;
 	mad = (j%2) ? W->data[j2] : 0.5 *(W->data[j2] + W->data[j2 - 1]);
 
-	/* Adjust mad to equal Gaussian sigma:  */
+	/* Adjust mad to equal Gaussian sigma */
 
 	scale = 1.4826 * mad;
 
-	/* Use weight according to Huber (1981), but squared:  */
+	/* Use weight according to Huber (1981), but squared */
 
 	GMT_grd_loop (R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) {
@@ -389,7 +389,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, GMT_LONG n_model
 	sprintf (pbasis[8], "P1(x)*P2(y)");
 	sprintf (pbasis[9], "P3(y)");
 
-	sprintf(format, "Coefficient fit to %%s:  %s\n", GMT->current.setting.format_float_out);
+	sprintf(format, "Coefficient fit to %%s: %s\n", GMT->current.setting.format_float_out);
 	for (i = 0; i < n_model; i++) GMT_message (GMT, format, pbasis[i], gtd[i]);
 
 	return;
@@ -407,14 +407,14 @@ void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *p
 
 	GMT_LONG row, col, k, l, n_used = 0, ij;
 
-	/* First zero things out to start:  */
+	/* First zero things out to start */
 
 	GMT_memset (gtd, n_model, double);
 	GMT_memset (gtg, n_model * n_model, double);
 
 	/* Now get going.  Have to load_pstuff separately in i and j,
 	   because it is possible that we skip data when i = 0.
-	   Loop over all data:  */
+	   Loop over all data */
 
 	GMT_row_loop (G, row) {
 		load_pstuff (pstuff, n_model, xval[0], yval[row], 0, 1);
@@ -426,7 +426,7 @@ void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *p
 			load_pstuff (pstuff, n_model, xval[col], yval[row], 1, 0);
 
 			if (weighted) {
-				/* Loop over all gtg and gtd elements:  */
+				/* Loop over all gtg and gtd elements */
 				for (k = 0; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * W->data[ij] * pstuff[k]);
 					gtg[k] += (W->data[ij] * pstuff[k]);
@@ -434,7 +434,7 @@ void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *p
 				}
 			}
 			else {	/* If !weighted  */
-				/* Loop over all gtg and gtd elements:  */
+				/* Loop over all gtg and gtd elements */
 				for (k = 0; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * pstuff[k]);
 					gtg[k] += pstuff[k];
@@ -444,7 +444,7 @@ void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *p
 		}
 	}	/* End of loop over data i,j  */
 
-	/* Now if !weighted, use more accurate sum for gtg[0], and set symmetry:  */
+	/* Now if !weighted, use more accurate sum for gtg[0], and set symmetry */
 
 	if (!weighted) gtg[0] = (double)n_used;
 
@@ -466,8 +466,8 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	char format[BUFSIZ];
 
 	double chisq, old_chisq, zero_test = 1.0e-08, scale = 1.0, dv;
-	double *xval = NULL;	/* Pointer for array of change of variable:  x[i]  */
-	double *yval = NULL;	/* Pointer for array of change of variable:  y[j]  */
+	double *xval = NULL;	/* Pointer for array of change of variable: x[i]  */
+	double *yval = NULL;	/* Pointer for array of change of variable: y[j]  */
 	double *gtg = NULL;	/* Pointer for array for matrix G'G normal equations  */
 	double *gtd = NULL;	/* Pointer for array for vector G'd normal equations  */
 	double *old = NULL;	/* Pointer for array for old model, used for robust sol'n  */
@@ -508,7 +508,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		i++;
 	}
 
-	/* Allocate other required arrays:  */
+	/* Allocate other required arrays */
 
 	T = GMT_create_grid (GMT);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
@@ -526,7 +526,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	pstuff = GMT_memory (GMT, NULL, Ctrl->N.value, double);
 	pstuff[0] = 1.0; /* This is P0(x) = 1, which is not altered in this program. */
 
-	/* If a weight array is needed, get one:  */
+	/* If a weight array is needed, get one */
 
 	W = GMT_create_grid (GMT);	/* Pointer for grid with array containing data weights  */
 	if (weighted) {
@@ -534,7 +534,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
-				GMT_report (GMT, GMT_MSG_FATAL, " Input weight file does not match input data file.  Ignoring.\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get data */
 				set_ones = FALSE;
@@ -549,7 +549,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	/* End of weight set up.  */
 
-	/* Set up xval and yval lookup tables:  */
+	/* Set up xval and yval lookup tables */
 
 	dv = 2.0 / (double)(G->header->nx - 1);
 	for (k = 0; k < G->header->nx - 1; k++) xval[k] = -1.0 + k * dv;
@@ -557,7 +557,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	for (k = 0; k < G->header->ny - 1; k++) yval[k] = -1.0 + k * dv;
 	xval[G->header->nx - 1] = yval[G->header->ny - 1] = 1.0;
 
-	/* Do the problem:  */
+	/* Do the problem */
 
 	if (trivial) {
 		grd_trivial_model (G, xval, yval, gtd, Ctrl->N.value);
@@ -569,7 +569,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		load_gtg_and_gtd (G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
 		if (ierror) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Gauss returns error code %ld\n", ierror);
+			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 			return (EXIT_FAILURE);
 		}
 		compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -578,8 +578,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		if (Ctrl->N.robust) {
 			chisq = compute_chisq (R, W, scale);
 			iterations = 1;
-			sprintf (format, "Robust iteration %%d:  Old Chi Squared:  %s  New Chi Squared %s\n", 
-				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			sprintf (format, "Robust iteration %%d:  Old Chi Squared: %s  New Chi Squared: %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			do {
 				old_chisq = chisq;
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
@@ -587,7 +586,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 				load_gtg_and_gtd (G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
 				if (ierror) {
-					GMT_report (GMT, GMT_MSG_FATAL, " Gauss returns error code %ld\n", ierror);
+					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 					return (EXIT_FAILURE);
 				}
 				compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -597,7 +596,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
 
-			/* Get here when new model not significantly better; use old one:  */
+			/* Get here when new model not significantly better; use old one */
 
 			GMT_memcpy (gtd, old, Ctrl->N.value, double);
 			compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -607,7 +606,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	/* End of do the problem section.  */
 
-	/* Get here when ready to do output:  */
+	/* Get here when ready to do output */
 
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) write_model_parameters (GMT, gtd, Ctrl->N.value);

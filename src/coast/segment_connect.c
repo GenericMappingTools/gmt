@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_connect.c,v 1.4 2009-02-25 12:37:40 remko Exp $
+ *	$Id: segment_connect.c,v 1.5 2011-04-12 13:06:42 remko Exp $
  *
  * segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
  *
@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 	int n_alloc = 10000, do_close;
 
 	if (argc != 4 || (fp = fopen(argv[1], "r")) == NULL) {
-		fprintf(stderr,"usage:  segment_connect clean_segment_file tmp_poly_segment_file.b closed_polyfile.b\n");
+		fprintf(stderr,"usage: segment_connect clean_segment_file tmp_poly_segment_file.b closed_polyfile.b\n");
 		exit(-1);
 	}
 
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 		}
 		
 		if ((fread((char *)p, sizeof(struct LONGPAIR), hin.n, fp)) != hin.n) {
-			fprintf(stderr,"segment_connect:  ERROR  reading file.\n");
+			fprintf(stderr,"segment_connect: Error reading file.\n");
 			exit(-1);
 		}
 		
@@ -82,11 +82,11 @@ int main (int argc, char **argv)
 		
 		if (do_close) {
 			if (fwrite((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp3) != 1) {
-				fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+				fprintf(stderr,"segment_connect: Error writing file 2.\n");
 				exit(-1);
 			}
 			if (fwrite((char *)p, sizeof(struct LONGPAIR), hin.n, fp3) != hin.n) {
-				fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+				fprintf(stderr,"segment_connect: Error writing file 2.\n");
 				exit(-1);
 			}
 			n_islands++;
@@ -182,7 +182,7 @@ int main (int argc, char **argv)
 		h_pos = ftell (fp2);
 		
 		if (fwrite((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp2) != 1) {
-			fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+			fprintf(stderr,"segment_connect: Error writing file 2.\n");
 			exit(-1);
 		}
 		
@@ -196,7 +196,7 @@ int main (int argc, char **argv)
 			fseek (fp, seg[id].pos, 0);
 			fread((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp);
 			if ((fread((char *)p, sizeof(struct LONGPAIR), hin.n, fp)) != hin.n) {
-				fprintf(stderr,"segment_connect:  ERROR  reading file.\n");
+				fprintf(stderr,"segment_connect: Error reading file.\n");
 				exit(-1);
 			}
 			if (tie == 0) {
@@ -210,7 +210,7 @@ int main (int argc, char **argv)
 				}
 				/* gwrite (&p[j], n); */
 				if (fwrite((char *)&p[j], sizeof(struct LONGPAIR), n, fp2) != n) {
-					fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+					fprintf(stderr,"segment_connect: Error writing file 2.\n");
 					exit(-1);
 				}
 				p_last = p[hin.n-1];
@@ -228,7 +228,7 @@ int main (int argc, char **argv)
 				for (i = hin.n-1-j; i >= 0; i--) {
 					/* gwrite (&p[i], 1); */
 					if (fwrite((char *)&p[i], sizeof(struct LONGPAIR), 1, fp2) != 1) {
-						fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+						fprintf(stderr,"segment_connect: Error writing file 2.\n");
 						exit(-1);
 					}
 				}
@@ -258,7 +258,7 @@ int main (int argc, char **argv)
 		fseek (fp2, h_pos, 0);
 		hin.n = n_new;
 		if (fwrite((char *)&hin, sizeof(struct RAWSEG_HEADER), 1, fp2) != 1) {
-			fprintf(stderr,"segment_connect:  ERROR  writing file 2.\n");
+			fprintf(stderr,"segment_connect: Error writing file 2.\n");
 			exit(-1);
 		}
 		fseek (fp2, 0, 2);

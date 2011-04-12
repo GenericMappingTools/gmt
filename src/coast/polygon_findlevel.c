@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.28 2011-04-11 21:15:32 remko Exp $
+ *	$Id: polygon_findlevel.c,v 1.29 2011-04-12 13:06:42 remko Exp $
  */
 #include "wvs.h"
 
@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
-			fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_findlevel: Error reading file.\n");
 			exit(-1);
 		}
 		if (p.x < 0) {
@@ -84,7 +84,7 @@ int main (int argc, char **argv) {
 		fseek (fp, (long)blob[id].start, 0);
 		for (k = 0; k < blob[id].h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_findlevel: Error reading file.\n");
 				exit(-1);
 			}
 			if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
@@ -133,7 +133,7 @@ int main (int argc, char **argv) {
 		fseek (fp, (long)blob[id1].start, 0);
 		for (k = 0; k < blob[id1].h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_findlevel: Error reading file.\n");
 				exit(-1);
 			}
 			if ((blob[id1].h.greenwich & 1) && p.x > blob[id1].h.datelon) p.x -= M360;
@@ -303,7 +303,7 @@ int main (int argc, char **argv) {
 		pol_writeheader (&blob[id].h, fp2);
 		fseek (fp, (long)blob[id].start, 0);
 		if (pol_fread (pp, blob[id].h.n, fp) != blob[id].h.n) {
-			fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_findlevel: Error reading file.\n");
 			exit(-1);
 		}
 		if (blob[id].reverse) {	/* Reverse polygon */

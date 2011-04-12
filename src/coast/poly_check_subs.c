@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_check_subs.c,v 1.4 2008-03-06 05:16:06 guru Exp $
+ *	$Id: poly_check_subs.c,v 1.5 2011-04-12 13:06:42 remko Exp $
  */
 /* poly_check_subs.c
  * Subroutines for testing polygon quality.
@@ -42,7 +42,7 @@ int poly_problems (struct PAIR p[], int *n)
 	int	P_compare_xy(const void *v1, const void *v2), P_compare_k(const void *v1, const void *v2), P_compare_absk(const void *v1, const void *v2);
 	
 	if (*n < 3) {
-		fprintf(stderr,"poly_check_subs:  ERROR  called with degenerate polygon (n<3).\n");
+		fprintf(stderr,"poly_check_subs: Error called with degenerate polygon (n<3).\n");
 		return(-1);
 	}
 
@@ -127,7 +127,7 @@ int P_compare_xy (const void *v1, const void *v2)
 
 int P_compare_k (const void *v1, const void *v2)
 {
-	/* Here, k's magnitude and sign are both important:  */
+	/* Here, k's magnitude and sign are both important */
 	struct PAIR *p1, *p2;
 	p1 = (struct PAIR *)v1;
 	p2 = (struct PAIR *)v2;
@@ -138,7 +138,7 @@ int P_compare_k (const void *v1, const void *v2)
 
 int P_compare_absk (const void *v1, const void *v2)
 {
-	/* Here, k's magnitude only, not sign, is important:  */
+	/* Here, k's magnitude only, not sign, is important */
 	struct PAIR *p1, *p2;
 	p1 = (struct PAIR *)v1;
 	p2 = (struct PAIR *)v2;
@@ -167,7 +167,7 @@ int P_remove_spikes (struct PAIR p[], int *n)
 		i = 0;
 		while (i < *n-1 && p[i].k < 0) i++;
 		if (i == *n-1) {
-			fprintf(stderr,"poly_check_subs:  ERROR.  Somehow all the points were flagged as spikes.\n");
+			fprintf(stderr,"poly_check_subs: Error: Somehow all the points were flagged as spikes.\n");
 			return(-1);
 		}
 		*n -= spike;
@@ -196,7 +196,7 @@ int P_look_for_spikes (struct PAIR p[], int n)
 	while (current < stop_point) {	/* Only need to check through n-2, since n-1 == 0  */
 	
 		if (p[last].x == p[next].x && p[last].y == p[next].y) {
-			/* The current point is a spike.  Throw away two points:  */
+			/* The current point is a spike.  Throw away two points */
 			if (current == 0) {
 				/* Special case.  Throw away 0 and n-1, so poly starts at 1 and ends at n-2 == 1  */
 				p[0].k = -p[0].k;

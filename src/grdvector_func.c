@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdvector_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -199,12 +199,12 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 				if (opt->arg[j]) {	/* Normalize option used */
 					Ctrl->Q.norm = GMT_to_inch (GMT, &opt->arg[j+1]);
-					n_errors += GMT_check_condition (GMT, Ctrl->Q.norm <= 0.0, "Syntax error -Qn option:  No reference length given\n");
+					n_errors += GMT_check_condition (GMT, Ctrl->Q.norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
 					opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 				}
 				if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
 					if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option:  Could not decode arrowwidth/headlength/headwidth\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
 						n_errors++;
 					}
 					else {
@@ -221,7 +221,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[j];
 				else if (! (opt->arg[j] == '.' || isdigit ((int)opt->arg[j]))) {	/* Not decimal point or digit means trouble */
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option:  Unrecognized unit %c\n", opt->arg[j]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[j]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
