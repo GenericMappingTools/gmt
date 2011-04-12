@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: grdreformat_func.c,v 1.3 2011-04-12 16:23:05 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,7 +103,7 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
 				else {
 					n_in++;
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT SYNTAX ERROR:  Specify only one input and one output file\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Specify only one input and one output file\n");
 				}
 				break;
 			case '>':	/* Output file */
@@ -123,7 +123,7 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_in != 2, "GMT SYNTAX ERROR: Must specify both input and output file names\n");
+	n_errors += GMT_check_condition (GMT, n_in != 2, "Syntax error: Must specify both input and output file names\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
