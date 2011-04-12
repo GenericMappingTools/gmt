@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.17 2011-04-09 15:02:37 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.18 2011-04-12 16:16:47 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,9 +27,6 @@ struct GDALREAD_CTRL {
 		int active;
 		char *bands;
 	} B;
-	struct GD_C {	/* correct limits to grid reg */
-		int active;
-	} C;
 	struct GD_F {	/* Force pixel-reg info in ouput 'hdr' field */
 		int active;
 	} F;
