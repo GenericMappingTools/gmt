@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
+ *	$Id: grdmath_func.c,v 1.7 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -193,15 +193,15 @@ GMT_LONG GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, st
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (missing_equal) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Usage is <operations> = [outfile]\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Usage is <operations> = [outfile]\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && !GMT->common.R.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  -I requires the -R option\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -I requires the -R option\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option.  Must specify positive increment(s)\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors++;
 	}
 
@@ -2849,7 +2849,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else {	/* Standard output */
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  No output file specified via = file mechanism\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: No output file specified via = file mechanism\n");
 				Return (EXIT_FAILURE);
 			}
 		}
@@ -2901,12 +2901,12 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active && Ctrl->I.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Cannot use -R, -I when grid files are specified\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -R, -I when grid files are specified\n");
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 			Return (EXIT_FAILURE);
 		}
 		else if  (GMT->common.r.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Cannot use -r when grid files are specified\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -r when grid files are specified\n");
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 			Return (EXIT_FAILURE);
 		}
@@ -2923,7 +2923,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, info.G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->Out.file);
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Expression must contain at least one grid file or -R, -I\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
 		Return (EXIT_FAILURE);
 	}
 	info.nm = info.G->header->nm;	info.size = info.G->header->size;
@@ -2989,7 +2989,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
 			if (nstack <= 0) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  No items on stack available for output!\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: No items on stack available for output!\n");
 				Return (EXIT_FAILURE);
 			}
 
@@ -3096,12 +3096,12 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Here we have an operator */
 
 		if ((new_stack = nstack - consumed_operands[op] + produced_operands[op]) >= GRDMATH_STACK_SIZE) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Stack overflow (%s)\n", opt->arg);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Stack overflow (%s)\n", opt->arg);
 			Return (EXIT_FAILURE);
 		}
 
 		if (nstack < consumed_operands[op]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Operation \"%s\" requires %ld operands\n", operator[op], consumed_operands[op]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Operation \"%s\" requires %ld operands\n", operator[op], consumed_operands[op]);
 			Return (EXIT_FAILURE);
 		}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.77 2011-04-11 21:15:32 remko Exp $
+ *	$Id: gmt_stat.c,v 1.78 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -945,7 +945,7 @@ double GMT_factorial (struct GMT_CTRL *C, GMT_LONG n)
 	double val = 1.0;
 
 	if (n < 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  n < 0 in GMT_factorial(n)\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: n < 0 in GMT_factorial(n)\n");
 		return (C->session.d_NaN);
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
@@ -2168,7 +2168,7 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 			m_guess = (temp < glb) ? temp : glb;	/* Move guess at least to glb  */
 		}
 		else {	/* If we get here, I made a mistake!  */
-			GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Internal goof - please report to developers!\n");
+			GMT_report (C, GMT_MSG_FATAL, "Error: Internal goof in GMT_median; please report to developers!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 

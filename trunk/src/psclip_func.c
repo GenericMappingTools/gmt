@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.9 2011-04-11 21:15:31 remko Exp $
+ *	$Id: psclip_func.c,v 1.10 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -149,10 +149,10 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error:  Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = TRUE;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.plot) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.plot = FALSE;
 	}
 

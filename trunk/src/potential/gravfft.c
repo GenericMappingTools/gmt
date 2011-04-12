@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gravfft.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: gravfft.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 #endif
 
 /* Macro definition ij_data(i,j) finds the array index to an element
-        containing the real data(i,j) in the padded complex array:  */
+	containing the real data(i,j) in the padded complex array:  */
 
 #define ij_data(i,j) (2*(nx2*((j)+j_data_start)+(i)+i_data_start))
 #define ij_data_0(i,j) (2*(nx2*((j)+0)+(i)+0))
@@ -46,12 +46,12 @@ GMT_LONG admittance = FALSE, coherence = FALSE;
 
 struct GRD_HEADER h, ig_h;
 struct FFT_SUGGESTION {
-        int     nx;
-        int     ny;
-        int     worksize;       /* # single-complex elements needed in work array  */
-        int     totalbytes;     /* (8*(nx*ny + worksize))  */
-        double  run_time;
-        double  rms_rel_err;
+	int     nx;
+	int     ny;
+	int     worksize;       /* # single-complex elements needed in work array  */
+	int     totalbytes;     /* (8*(nx*ny + worksize))  */
+	double  run_time;
+	double  rms_rel_err;
 }       fft_sug[3];     /* [0] holds fastest, [1] most accurate, [2] least storage  */
 
 
@@ -96,7 +96,7 @@ void	write_script(void);
 
 int main (int argc, char **argv) {
 
-        GMT_LONG error = FALSE, stop, give_wavelength = FALSE, fft_grids = FALSE;
+	GMT_LONG error = FALSE, stop, give_wavelength = FALSE, fft_grids = FALSE;
 	GMT_LONG quick = FALSE, isostasy = FALSE, flex_file = FALSE, swell = FALSE;
 	GMT_LONG moho_contrib = FALSE, theor_only = FALSE;
 	/* first 2 cols from table III of Singleton's paper on fft.... */
@@ -108,21 +108,21 @@ int main (int argc, char **argv) {
 			2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
 			3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
 
-        int	i, j, k, n, n_pt;
-        double	p, theor_inc, delta_pt, freq;
-        float	k_or_m = 1.;
+	int	i, j, k, n, n_pt;
+	double	p, theor_inc, delta_pt, freq;
+	float	k_or_m = 1.;
 	char	*ptr, line[256], line2[256], t_or_b[4], *adm_opts, format[64], buffer[256];
 	dummy[0] = dummy[1] = dummy[2] = dummy[3] = 0;
 
-        argc = (int)GMT_begin (argc, argv);
+	argc = (int)GMT_begin (argc, argv);
 
-        for (i = 1; !error && i < argc; i++) {
-                if (argv[i][0] == '-') {
-                        switch (argv[i][1]) {
+	for (i = 1; !error && i < argc; i++) {
+		if (argv[i][0] == '-') {
+			switch (argv[i][1]) {
 
-                                case '\0':
-                                        quick = TRUE;
-                                        break;
+				case '\0':
+					quick = TRUE;
+					break;
 				case 'A':
 					sscanf (&argv[i][2], "%lf/%lf/%lf/%lf", &te, &rl, &rm, &rw);
 					isostasy = TRUE;
@@ -148,31 +148,31 @@ int main (int argc, char **argv) {
 								break;
 							default:
 								fprintf (stderr, "%s: Syntax error -C: [%s] is not valid, chose from [tbw]\n", GMT_program, &t_or_b[n]);
-                                        			error++;
+								error++;
 								break;
 						}
 					}
 					break;
-                                case 'D':
-                                        if (!(&argv[i][2])) {
+				case 'D':
+					if (!(&argv[i][2])) {
 						fprintf (stderr, "%s: Syntax error -D option: must give density contrast\n", GMT_program);
-                                        	error++;
-                                        }
-                                        rho = atof (&argv[i][2]);
+						error++;
+					}
+					rho = atof (&argv[i][2]);
 					simple_grav = TRUE;
-                                        leave_trend_alone = TRUE;
-                                        break;
-                                case 'E':
-                                        n_terms = atoi (&argv[i][2]);
-                                        if (n_terms > 10) {
+					leave_trend_alone = TRUE;
+					break;
+				case 'E':
+					n_terms = atoi (&argv[i][2]);
+					if (n_terms > 10) {
 						fprintf (stderr, "%s: ERROR -E option: n_terms must be <= 10\n", GMT_program);
-                                        	error++;
-                                        }
-                                        break;
+						error++;
+					}
+					break;
 				case 'H':
 					moho_contrib = TRUE;
-                                        leave_trend_alone = TRUE;
-                                        break;
+					leave_trend_alone = TRUE;
+					break;
 				case 'I':
 					admittance = TRUE;
 					strcpy (line, &argv[i][2]);
@@ -204,7 +204,7 @@ int main (int argc, char **argv) {
 											break;
 										default:
 											fprintf (stderr, "%s: Syntax error -I : [%s] is not valid, chose from [wbct]\n", GMT_program, &adm_opts[n]);
-                                        						error++;
+											error++;
 											break;
 									}
 								}
@@ -225,7 +225,7 @@ int main (int argc, char **argv) {
 					}
 					break;
 				case 'L':
-                                        leave_trend_alone = TRUE;
+					leave_trend_alone = TRUE;
 					if (argv[i][2]) rem_something = TRUE; 
 					if (argv[i][2] == 'm' || argv[i][2] == 'M')
 						mean_or_half_way = TRUE;
@@ -239,25 +239,24 @@ int main (int argc, char **argv) {
 						mean_or_half_way = FALSE;
 					break;
 				case 'N':
-                                        if (argv[i][2] == 'f' || argv[i][2] == 'F')
-                                                force_narray = TRUE;
-                                        else if (argv[i][2] == 'q' || argv[i][2] == 'Q')
-                                                suggest_narray = TRUE;
-                                        else if (argv[i][2] == 's' || argv[i][2] == 'S') {
+					if (argv[i][2] == 'f' || argv[i][2] == 'F')
+						force_narray = TRUE;
+					else if (argv[i][2] == 'q' || argv[i][2] == 'Q')
+						suggest_narray = TRUE;
+					else if (argv[i][2] == 's' || argv[i][2] == 'S') {
 						fprintf (stderr, "\t\"Good\" numbers for FFT dimensions\n");
 						for (k = 0; k < 104; k++) {
 							fprintf (stderr, "\t%d", nlist[k]);
-							if ((k+1) % 10 == 0 || k == 103)
-								fprintf (stderr, "\n");
+							if ((k+1) % 10 == 0 || k == 103) fprintf (stderr, "\n");
 						}
 						exit (0);
 					}
-                                        else {
-                                                if ((sscanf(&argv[i][2], "%d/%d", &nx2, &ny2)) != 2) error = TRUE;
-                                                if (nx2 <= 0 || ny2 <= 0) error = TRUE;
-                                                n_user_set = TRUE;
-                                        }
-                                        break;
+					else {
+						if ((sscanf(&argv[i][2], "%d/%d", &nx2, &ny2)) != 2) error = TRUE;
+						if (nx2 <= 0 || ny2 <= 0) error = TRUE;
+						n_user_set = TRUE;
+					}
+					break;
 				case 'F':
 					geoid = TRUE;
 					break;
@@ -269,8 +268,8 @@ int main (int argc, char **argv) {
 					break;
 				case 'Q':
 					flex_file = TRUE;
-                                        leave_trend_alone = TRUE;
-                                        break;
+					leave_trend_alone = TRUE;
+					break;
 				case 'S':
 					swell = TRUE;
 					break;
@@ -294,96 +293,96 @@ int main (int argc, char **argv) {
 					break;
 				case 'Z':
 					sscanf (&argv[i][2], "%lf/%lf", &zm, &zl);
-                                        break;
+					break;
 				case 'z':
 					sscanf (&argv[i][2], "%lf", &z_offset);
-                                        break;
+					break;
 				default:
-                                        error = TRUE;
+					error = TRUE;
 					GMT_default_error (argv[i][1]);
-                                        break;
-                        }
-                }
-                else
-                        infile = argv[i];
-        }
+					break;
+			}
+		}
+		else
+			infile = argv[i];
+	}
 
-        if (argc == 1 || quick) {
-                fprintf (stderr, "gravfft %s - Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)\n\n", GMT_VERSION);
-                fprintf (stderr,"usage: gravfft <topo_grd> -A<te/rl/rm/rw> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
-                fprintf (stderr,"       -G<out_grdfile> [-E<n_terms>] [-F] [-K[xyzs]] [-L[m|h]] [-l[n]] -I<second_file>[/<wbct>]\n");
-                fprintf (stderr,"       -H [-M] [-N<stuff>] -Q [-S] -T[c|a] [-V] -Z<zm>[/<zl>] [-z<cte>]\n\n");
+	if (argc == 1 || quick) {
+		fprintf (stderr, "gravfft %s - Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)\n\n", GMT_VERSION);
+		fprintf (stderr,"usage: gravfft <topo_grd> -A<te/rl/rm/rw> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
+		fprintf (stderr,"       -G<out_grdfile> [-E<n_terms>] [-F] [-K[xyzs]] [-L[m|h]] [-l[n]] -I<second_file>[/<wbct>]\n");
+		fprintf (stderr,"       -H [-M] [-N<stuff>] -Q [-S] -T[c|a] [-V] -Z<zm>[/<zl>] [-z<cte>]\n\n");
 
 		if (quick) exit (EXIT_FAILURE);
 
-                fprintf (stderr,"\ttopo_grd is the input grdfile with topography values\n");
-                fprintf (stderr,"\t-A Computes the isostatic compensation. Input file is topo load.\n");
-                fprintf (stderr,"\t   Append elastic thickness and densities of load, mantle, and\n");
-                fprintf (stderr,"\t   water, all in SI units. Give average mantle depth via -Z\n");
-                fprintf (stderr,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
-                fprintf (stderr,"\t   flexural rigidity (by default it's computed from Te and Young modulus)\n");
-                fprintf (stderr,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
-                fprintf (stderr,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
-                fprintf (stderr,"\t   --> Rest of parametrs are set within -A AND -Z options\n");
-                fprintf (stderr,"\t   Append dataflags (one or two) of tbw.\n");
+		fprintf (stderr,"\ttopo_grd is the input grdfile with topography values\n");
+		fprintf (stderr,"\t-A Computes the isostatic compensation. Input file is topo load.\n");
+		fprintf (stderr,"\t   Append elastic thickness and densities of load, mantle, and\n");
+		fprintf (stderr,"\t   water, all in SI units. Give average mantle depth via -Z\n");
+		fprintf (stderr,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
+		fprintf (stderr,"\t   flexural rigidity (by default it's computed from Te and Young modulus)\n");
+		fprintf (stderr,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
+		fprintf (stderr,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
+		fprintf (stderr,"\t   --> Rest of parametrs are set within -A AND -Z options\n");
+		fprintf (stderr,"\t   Append dataflags (one or two) of tbw.\n");
 		fprintf (stderr,"\t     t writes \"elastic plate\" admittance \n");
 		fprintf (stderr,"\t     b writes \"loading from below\" admittance \n");
 		fprintf (stderr,"\t     w writes wavelength instead of wavenumber\n");
-                fprintf (stderr,"\t-D Sets density contrast across surface (used when not -A)\n");
-                fprintf (stderr,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
-                fprintf (stderr,"\t-H writes a grid with the Moho's gravity|geoid effect from model selcted by -A\n");
-                fprintf (stderr,"\t-I Use <second_file> and <topo_grd> to estimate admittance|coherence and write\n");
+		fprintf (stderr,"\t-D Sets density contrast across surface (used when not -A)\n");
+		fprintf (stderr,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
+		fprintf (stderr,"\t-H writes a grid with the Moho's gravity|geoid effect from model selcted by -A\n");
+		fprintf (stderr,"\t-I Use <second_file> and <topo_grd> to estimate admittance|coherence and write\n");
 		fprintf (stderr,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 		fprintf (stderr,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
 		fprintf (stderr,"\t   contains 3 or 4 columns. Frequency (wavelength), admittance (coherence)\n");
 		fprintf (stderr,"\t   one sigma error bar and, optionaly, a theoretical admittance.\n");
-                fprintf (stderr,"\t   Append dataflags (one to three) of wbct.\n");
+		fprintf (stderr,"\t   Append dataflags (one to three) of wbct.\n");
 		fprintf (stderr,"\t     w writes wavelength instead of wavenumber\n");
 		fprintf (stderr,"\t     c computes coherence instead of admittance\" \n");
 		fprintf (stderr,"\t     b writes a forth column with \"loading from below\" \n");
 		fprintf (stderr,"\t       theoretical admittance\n");
 		fprintf (stderr,"\t     t writes a forth column with \"elastic plate\" \n");
 		fprintf (stderr,"\t       theoretical admittance\n");
-                fprintf (stderr,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
-                fprintf (stderr,"\t   whose average depth is at the value set by the option -Z<zm>.\n");
-                fprintf (stderr,"\t-S Computes predicted gravity|geoide grid due to a subplate load.\n");
-                fprintf (stderr,"\t   produced by the current bathymetry and the theoretical admittance.\n");
-                fprintf (stderr,"\t   --> The necessary parametrs are set within -A and -Z options\n");
-                fprintf (stderr,"\t-T Writes the FFT of the input grid in the form of two grids. One for\n");
-                fprintf (stderr,"\t   the real part and the other for the imaginary. The grid names are\n");
-                fprintf (stderr,"\t   built from the input grid name with _real and _imag appended. These\n");
-                fprintf (stderr,"\t   grids have the DC at the center and coordinates are the kx,ky frequencies.\n");
-                fprintf (stderr,"\t   Appending a or c will make the program write a csh script (admit_coher.sc)\n");
-                fprintf (stderr,"\t   that computes, respectively, admittance or coherence by an alternative,\n");
-                fprintf (stderr,"\t   (but much slower than the one used with -I) method based on grid\n");
-                fprintf (stderr,"\t   interpolations using grdtrack. Read comments/instructions on the script.\n");
-                fprintf (stderr,"\t-Z zm[/zl] -> Moho [and swell] average compensation depths\n");
+		fprintf (stderr,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
+		fprintf (stderr,"\t   whose average depth is at the value set by the option -Z<zm>.\n");
+		fprintf (stderr,"\t-S Computes predicted gravity|geoide grid due to a subplate load.\n");
+		fprintf (stderr,"\t   produced by the current bathymetry and the theoretical admittance.\n");
+		fprintf (stderr,"\t   --> The necessary parametrs are set within -A and -Z options\n");
+		fprintf (stderr,"\t-T Writes the FFT of the input grid in the form of two grids. One for\n");
+		fprintf (stderr,"\t   the real part and the other for the imaginary. The grid names are\n");
+		fprintf (stderr,"\t   built from the input grid name with _real and _imag appended. These\n");
+		fprintf (stderr,"\t   grids have the DC at the center and coordinates are the kx,ky frequencies.\n");
+		fprintf (stderr,"\t   Appending a or c will make the program write a csh script (admit_coher.sc)\n");
+		fprintf (stderr,"\t   that computes, respectively, admittance or coherence by an alternative,\n");
+		fprintf (stderr,"\t   (but much slower than the one used with -I) method based on grid\n");
+		fprintf (stderr,"\t   interpolations using grdtrack. Read comments/instructions on the script.\n");
+		fprintf (stderr,"\t-Z zm[/zl] -> Moho [and swell] average compensation depths\n");
 		fprintf (stderr, "\n\tOPTIONS:\n");
-                fprintf (stderr,"\t-E number of terms used in Parker expansion [Default = 1]\n");
-                fprintf (stderr,"\t-F compute geoid rather than gravity\n");
-                fprintf (stderr,"\t-K indicates that distances in these directions are in km [meter]\n");
-                fprintf (stderr,"\t   -Ks multiplies the bathymetry grid by -1. Used for changing z sign\n");
+		fprintf (stderr,"\t-E number of terms used in Parker expansion [Default = 1]\n");
+		fprintf (stderr,"\t-F compute geoid rather than gravity\n");
+		fprintf (stderr,"\t-K indicates that distances in these directions are in km [meter]\n");
+		fprintf (stderr,"\t   -Ks multiplies the bathymetry grid by -1. Used for changing z sign\n");
 		fprintf (stderr,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 		fprintf (stderr,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
 		fprintf (stderr,"\t   Warning: both -D -H and -Q will implicitly set -L.\n");
-                fprintf (stderr,"\t   Append m or h to just remove the mean or half-way from data and then exit\n");
+		fprintf (stderr,"\t   Append m or h to just remove the mean or half-way from data and then exit\n");
 		fprintf (stderr,"\t-l Removes half-way from bathymetry data [Default removes mean].\n");
 		fprintf (stderr,"\t   Append n to do not remove any constant from input bathymetry data.\n");
-                fprintf (stderr,"\t-M Map units used.  Convert grid dimensions from degrees to meters.\n");
-                fprintf (stderr,"\t-N<stuff>  Choose or inquire about suitable grid dimensions for FFT.\n");
-                fprintf (stderr,"\t\t-Nf will force the FFT to use the dimensions of the data.\n");
-                fprintf (stderr,"\t\t-Nq will inQuire about more suitable dimensions.\n");
-                fprintf (stderr,"\t\t-N<nx>/<ny> will do FFT on array size <nx>/<ny>\n");
-                fprintf (stderr,"\t\t (Must be >= grdfile size). Default chooses dimensions >= data\n");
-                fprintf (stderr,"\t\t which optimize speed, accuracy of FFT.\n");
-                fprintf (stderr,"\t\t If FFT dimensions > grdfile dimensions, data are extended\n");
-                fprintf (stderr,"\t\t and tapered to zero.\n");
-                fprintf (stderr,"\t\t-Ns will print out a table with suitable dimensions and exits.\n");
-                fprintf (stderr,"\t-s Take into account Earth Sphericity [No] (currently deactivated).\n");
-                fprintf (stderr,"\t-V verbose mode\n");
-                fprintf (stderr,"\t-z add a constant to the bathymetry (not to <second_file>) before doing anything else.\n");
+		fprintf (stderr,"\t-M Map units used.  Convert grid dimensions from degrees to meters.\n");
+		fprintf (stderr,"\t-N<stuff>  Choose or inquire about suitable grid dimensions for FFT.\n");
+		fprintf (stderr,"\t\t-Nf will force the FFT to use the dimensions of the data.\n");
+		fprintf (stderr,"\t\t-Nq will inQuire about more suitable dimensions.\n");
+		fprintf (stderr,"\t\t-N<nx>/<ny> will do FFT on array size <nx>/<ny>\n");
+		fprintf (stderr,"\t\t (Must be >= grdfile size). Default chooses dimensions >= data\n");
+		fprintf (stderr,"\t\t which optimize speed, accuracy of FFT.\n");
+		fprintf (stderr,"\t\t If FFT dimensions > grdfile dimensions, data are extended\n");
+		fprintf (stderr,"\t\t and tapered to zero.\n");
+		fprintf (stderr,"\t\t-Ns will print out a table with suitable dimensions and exits.\n");
+		fprintf (stderr,"\t-s Take into account Earth Sphericity [No] (currently deactivated).\n");
+		fprintf (stderr,"\t-V verbose mode\n");
+		fprintf (stderr,"\t-z add a constant to the bathymetry (not to <second_file>) before doing anything else.\n");
 		exit (EXIT_FAILURE);
-        }
+	}
 
 	/* -------------------- Compute only a theoretical model and exit -------------------- */
 
@@ -482,10 +481,10 @@ int main (int argc, char **argv) {
 
 	if (verbose) fprintf (stderr, "%s: Allocates memory and read data file\n", GMT_program);
 
-        if (read_data(argc, argv, TRUE) ) {	/* TRUE means setting everything for bat file */
-                fprintf (stderr,"%s: Fatal memory error.  Exiting.\n", GMT_program);
+	if (read_data(argc, argv, TRUE) ) {	/* TRUE means setting everything for bat file */
+		fprintf (stderr,"%s: Fatal memory error.  Exiting.\n", GMT_program);
 		exit (EXIT_FAILURE);
-        }
+	}
 
 	if (admittance) {
 		if (GMT_read_grd_info (in_grav_file, &ig_h)) {
@@ -506,34 +505,34 @@ int main (int argc, char **argv) {
 		}
 		if (verbose) fprintf (stderr, "%s: Processing gravity file %s\n", GMT_program, in_grav_file);
 
-	        if (read_data(argc, argv, FALSE) ) {
-                	fprintf (stderr,"%s: Fatal memory error.  Exiting.\n", GMT_program);
+		if (read_data(argc, argv, FALSE) ) {
+			fprintf (stderr,"%s: Fatal memory error.  Exiting.\n", GMT_program);
 			exit (EXIT_FAILURE);
-        	}
-        	/* Check that no NaNs are present in gravity file */
-        	stop = FALSE;
-        	for (j = 0; !stop && j < h.ny; j++) 
+		}
+		/* Check that no NaNs are present in gravity file */
+		stop = FALSE;
+		for (j = 0; !stop && j < h.ny; j++) 
 		for (i = 0; !stop && i < h.nx; i++) stop = GMT_is_fnan ((double)in_grv[ij_data(i,j)]);
-        	if (stop) {
-                	fprintf (stderr, "%s: Input grid (%s) cannot have NaNs!\n", GMT_program, in_grav_file);
+		if (stop) {
+			fprintf (stderr, "%s: Input grid (%s) cannot have NaNs!\n", GMT_program, in_grav_file);
 			exit (EXIT_FAILURE);
-        	}
+		}
 
 		if (error) exit (EXIT_FAILURE);
 
 	}
 
-        /* Check that no NaNs are present in bathymetry file */
+	/* Check that no NaNs are present in bathymetry file */
 
-        stop = FALSE;
-        for (j = 0; !stop && j < h.ny; j++) 
+	stop = FALSE;
+	for (j = 0; !stop && j < h.ny; j++) 
 	for (i = 0; !stop && i < h.nx; i++) stop = GMT_is_fnan ((double)datac[ij_data(i,j)]);
-        if (stop) {
-                fprintf (stderr, "%s: Input grid (%s) cannot have NaNs!\n", GMT_program, infile);
+	if (stop) {
+		fprintf (stderr, "%s: Input grid (%s) cannot have NaNs!\n", GMT_program, infile);
 		exit (EXIT_FAILURE);
-        }
+	}
 
-        ksign = -1;
+	ksign = -1;
 
 	if (fft_grids) {	/* Write the FFTed input grid as two grids; Real and Img */
 		int nx_2, ny_2, plus_minus;
@@ -556,9 +555,9 @@ int main (int argc, char **argv) {
 		/*datac[ij_data_0(nx_2,ny_2)] = datac[ij_data_0(nx_2,ny_2) + 1] = 1.0;*/
 		/* put DC to average of its four neighbours */
 		/*datac[ij_data_0(nx_2,ny_2)] = (datac[ij_data_0(nx_2+1,ny_2)] + datac[ij_data_0(nx_2-1,ny_2)]
-		                            + datac[ij_data_0(nx_2,ny_2+1)] + datac[ij_data_0(nx_2,ny_2-1)])/4;
+					    + datac[ij_data_0(nx_2,ny_2+1)] + datac[ij_data_0(nx_2,ny_2-1)])/4;
 		datac[ij_data_0(nx_2,ny_2)+1] = (datac[ij_data_0(nx_2+1,ny_2) + 1] + datac[ij_data_0(nx_2-1,ny_2) + 1]
-		                            + datac[ij_data_0(nx_2,ny_2+1) + 1] + datac[ij_data_0(nx_2,ny_2-1) + 1])/4;*/
+					    + datac[ij_data_0(nx_2,ny_2+1) + 1] + datac[ij_data_0(nx_2,ny_2-1) + 1])/4;*/
 		/* Write out frequency, not wavenumber  */
 		delta_kx /= (2.0*M_PI);		delta_ky /= (2.0*M_PI);
 
@@ -591,7 +590,7 @@ int main (int argc, char **argv) {
 		/*fourt_(in_grv, narray, &ndim, &ksign, &iform, workc);*/
 		GMT_fourt (in_grv, narray, 2, -1, 1, workc);
 		do_admittance((int)give_wavelength, k_or_m);
-        	GMT_end (argc, argv);
+		GMT_end (argc, argv);
 		return(0);
 	}
 
@@ -607,7 +606,7 @@ int main (int argc, char **argv) {
 		ksign = 1;
 		/*fourt_(datac, narray, &ndim, &ksign, &iform, workc);*/
 		GMT_fourt (datac, narray, 2, 1, 1, workc);
-	        scale_out *= (2.0 / ndatac);
+		scale_out *= (2.0 / ndatac);
 		for (i = 0; i < ndatac; i+= 2) datac[i] *= (float)scale_out;
 		if (!moho_contrib) {
 			remove_level();		/* Because average was no longer zero */
@@ -620,16 +619,16 @@ int main (int argc, char **argv) {
 			ksign = -1;
 			z_level = zm;
 			rho = rho_mc;
-	        	scale_out = 1.0;
+			scale_out = 1.0;
 		}
 	}
 
-        memcpy ((char *)topo, (char *)datac, ndatac * sizeof (float));
-        memcpy ((char *)raised, (char *)datac, ndatac * sizeof (float));
+	memcpy ((char *)topo, (char *)datac, ndatac * sizeof (float));
+	memcpy ((char *)raised, (char *)datac, ndatac * sizeof (float));
 	for (i = 0; i < ndatac; i++) datac[i] = 0.0;
 
-        if (verbose) fprintf (stderr, "%s: Evatuating for term = 1", GMT_program);
-        for (n = 1; n <= n_terms; n++) {
+	if (verbose) fprintf (stderr, "%s: Evatuating for term = 1", GMT_program);
+	for (n = 1; n <= n_terms; n++) {
 
 		if (verbose && n > 1) fprintf (stderr, "-%d", n);
 
@@ -639,49 +638,49 @@ int main (int argc, char **argv) {
 		/* To avoid changing sign of negative^(even)*/
 		/*if (n > 1) for (i = 0; i < ndatac; i++) raised[i] = fabs (pow (topo[i], p));*/
 		/*if (n > 1 && n%2 == 0) {
-                	for (i = 0; i < ndatac; i++) 
+			for (i = 0; i < ndatac; i++) 
 				if (topo[i] < 0.) raised[i] *= -1;
 		}*/
 
-                /*fourt_ (raised, narray, &ndim, -1, &iform, workc);*/
+		/*fourt_ (raised, narray, &ndim, -1, &iform, workc);*/
 		GMT_fourt (raised, narray, 2, -1, 1, workc);
 
 		if (simple_grav || moho_contrib)	/* "classical" anomaly */
-                	do_parker (n, z_level, rho);
+			do_parker (n, z_level, rho);
 		else if (isostasy && !swell)		/* Compute "loading from top" grav|geoid */
 			load_from_top_grid(n);
 		else if (swell)				/* Compute "loading from below" grav|geoid */
 			load_from_below_grid(n);
 		else
 			fprintf (stderr, "It SHOULDN'T pass here\n");
-        }
+	}
 
-        if (verbose) fprintf (stderr, " Inverse FFT...");
+	if (verbose) fprintf (stderr, " Inverse FFT...");
 
-        ksign = 1;
-        /*fourt_(datac, narray, &ndim, &ksign, &iform, workc);*/
+	ksign = 1;
+	/*fourt_(datac, narray, &ndim, &ksign, &iform, workc);*/
 	GMT_fourt (datac, narray, 2, 1, 1, workc);
 
-        scale_out *= (2.0 / ndatac);
-        for (i = 0; i < ndatac; i+= 2) datac[i] *= (float)scale_out;
+	scale_out *= (2.0 / ndatac);
+	for (i = 0; i < ndatac; i+= 2) datac[i] *= (float)scale_out;
 
-        if (geoid) {
-                strcpy (h.title, "Geoid anomalies");
-                strcpy (h.z_units, "meter");
-        }
-        else {
-                strcpy (h.title, "Gravity anomalies");
-                strcpy (h.z_units, "mGal");
-        }
-        sprintf (h.remark, "Parker expansion of order %d", n_terms);
+	if (geoid) {
+		strcpy (h.title, "Geoid anomalies");
+		strcpy (h.z_units, "meter");
+	}
+	else {
+		strcpy (h.title, "Gravity anomalies");
+		strcpy (h.z_units, "mGal");
+	}
+	sprintf (h.remark, "Parker expansion of order %d", n_terms);
 
-        if (verbose) fprintf (stderr, "write_output...");
+	if (verbose) fprintf (stderr, "write_output...");
 
-        write_output();
+	write_output();
 
-        if (verbose) fprintf (stderr, "done!\n");
+	if (verbose) fprintf (stderr, "done!\n");
 
-        GMT_end (argc, argv);
+	GMT_end (argc, argv);
 
 	return(0);
 }
@@ -694,26 +693,26 @@ int 	read_data(int argc, char **argv, int bat) {
 	   compatible with the bathymetry file. The grd_info stuff and checking
 	   against the bathymetry file is done on the main program.		*/
 
-        int     worksize, factors[32], i, j;
-        double  tdummy, edummy;
+	int     worksize, factors[32], i, j;
+	double  tdummy, edummy;
 	void	suggest_fft(int nx, int ny, struct FFT_SUGGESTION *fft_sug, int do_print);
 	void	fourt_stats(int nx, int ny, int *f, double *r, int *s, double *t);
 
 	if (bat) {	/* if not, header has already been read in main */
-        	if (GMT_read_grd_info (infile, &h)) {
+		if (GMT_read_grd_info (infile, &h)) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, infile);
 			exit (EXIT_FAILURE);
-        	}
-        	GMT_grd_init (&h, argc, argv, TRUE);
-        }
+		}
+		GMT_grd_init (&h, argc, argv, TRUE);
+	}
 
-        if (rem_something) {  /*  Just remove the mean or half way and exit   */
-                datac = (float *) GMT_memory (VNULL, (size_t) h.nx*h.ny, sizeof(float), GMT_program);
-                if (GMT_read_grd (infile, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, FALSE)) {
-                        fprintf (stderr, "%s: Error reading file %s\n", GMT_program, infile);
+	if (rem_something) {  /*  Just remove the mean or half way and exit   */
+		datac = (float *) GMT_memory (VNULL, (size_t) h.nx*h.ny, sizeof(float), GMT_program);
+		if (GMT_read_grd (infile, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, FALSE)) {
+			fprintf (stderr, "%s: Error reading file %s\n", GMT_program, infile);
 			exit (EXIT_FAILURE);
-                }
-                remove_level();
+		}
+		remove_level();
 		if (verbose && mean_or_half_way) fprintf (stderr, "Mean value removed\n");
 		if (verbose && !mean_or_half_way) fprintf (stderr, "Half-way value removed\n");
 		if (GMT_write_grd (outfile, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, FALSE)) {
@@ -721,74 +720,74 @@ int 	read_data(int argc, char **argv, int bat) {
 			exit (EXIT_FAILURE);
 		}
 
-                GMT_free ((void *)datac);
+		GMT_free ((void *)datac);
 
-                if (verbose) fprintf (stderr, "done!\n");
+		if (verbose) fprintf (stderr, "done!\n");
 
-                GMT_end (argc, argv);
-        }
+		GMT_end (argc, argv);
+	}
 
-        /* Get dimensions as may be appropriate:  */
+	/* Get dimensions as may be appropriate:  */
 	if (n_user_set) {
 		if (nx2 < h.nx || ny2 < h.ny) {
-                        fprintf(stderr,"%s: Error: You specified -Nnx/ny smaller than input grdfile.  Ignored.\n", GMT_program);
-                        n_user_set = FALSE;
-                }
-        }
-        if (!(n_user_set) ) {
-                if (force_narray) {
-                        nx2 = h.nx;
-                        ny2 = h.ny;
-                }
-                else {
-                        suggest_fft(h.nx, h.ny, fft_sug, (verbose || suggest_narray));
-                        if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
-                                /* The most accurate solution needs same or less storage
-                                 * as the fastest solution; use the most accurate's dimensions:  */
-                                nx2 = fft_sug[1].nx;
-                                ny2 = fft_sug[1].ny;
-                        }
-                        else {
-                                /* Use the sizes of the fastest solution  */
-                                nx2 = fft_sug[0].nx;
-                                ny2 = fft_sug[0].ny;
-                        }
-                }
-        }
+			fprintf(stderr,"%s: Error: You specified -Nnx/ny smaller than input grdfile.  Ignored.\n", GMT_program);
+			n_user_set = FALSE;
+		}
+	}
+	if (!(n_user_set) ) {
+		if (force_narray) {
+			nx2 = h.nx;
+			ny2 = h.ny;
+		}
+		else {
+			suggest_fft(h.nx, h.ny, fft_sug, (verbose || suggest_narray));
+			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
+				/* The most accurate solution needs same or less storage
+				 * as the fastest solution; use the most accurate's dimensions:  */
+				nx2 = fft_sug[1].nx;
+				ny2 = fft_sug[1].ny;
+			}
+			else {
+				/* Use the sizes of the fastest solution  */
+				nx2 = fft_sug[0].nx;
+				ny2 = fft_sug[0].ny;
+			}
+		}
+	}
 
-        /* Get here when nx2 and ny2 are set to the vals we will use.  */
-        narray[0] = nx2;
-        narray[1] = ny2;
-        fourt_stats(nx2, ny2, factors, &edummy, &worksize, &tdummy);
-        if (verbose) fprintf(stderr,"%s:  Data dimension %d %d\tFFT dimension %d %d\n",
-                GMT_program, h.nx, h.ny, nx2, ny2);
+	/* Get here when nx2 and ny2 are set to the vals we will use.  */
+	narray[0] = nx2;
+	narray[1] = ny2;
+	fourt_stats(nx2, ny2, factors, &edummy, &worksize, &tdummy);
+	if (verbose) fprintf(stderr,"%s:  Data dimension %d %d\tFFT dimension %d %d\n",
+		GMT_program, h.nx, h.ny, nx2, ny2);
 
-        /* Make an array of floats 2 * nx2 * ny2 for complex data:  */
-        ndatac = 2 * nx2 * ny2;
+	/* Make an array of floats 2 * nx2 * ny2 for complex data:  */
+	ndatac = 2 * nx2 * ny2;
 
 	if (bat) {
-        	datac = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-        	topo = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		datac = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		topo = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
 		raised = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-        	memset ((char *)datac, 0, (size_t)(ndatac*sizeof(float)));
+		memset ((char *)datac, 0, (size_t)(ndatac*sizeof(float)));
 	}
 	else {		/* means the -I option was set */
-        	in_grv = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
-        	memset ((char *)in_grv, 0, (size_t)(ndatac*sizeof(float)));
+		in_grv = (float *) GMT_memory (VNULL, (size_t) ndatac, sizeof(float), GMT_program);
+		memset ((char *)in_grv, 0, (size_t)(ndatac*sizeof(float)));
 	}
-        if (worksize) {
-                if (worksize < nx2) worksize = nx2;
-                if (worksize < ny2) worksize = ny2;
-                worksize *= 2;
-                workc = (float *) GMT_memory (VNULL, (size_t)worksize, sizeof(float), GMT_program);
-                memset ((char *)workc, 0, (size_t)(worksize*sizeof(float)));
-        }
-        else {
-                workc = (float *) GMT_memory (VNULL, 4, sizeof(float), GMT_program);
-                memset ((char *)workc, 0, (size_t)(4*sizeof(float)));
-        }
+	if (worksize) {
+		if (worksize < nx2) worksize = nx2;
+		if (worksize < ny2) worksize = ny2;
+		worksize *= 2;
+		workc = (float *) GMT_memory (VNULL, (size_t)worksize, sizeof(float), GMT_program);
+		memset ((char *)workc, 0, (size_t)(worksize*sizeof(float)));
+	}
+	else {
+		workc = (float *) GMT_memory (VNULL, 4, sizeof(float), GMT_program);
+		memset ((char *)workc, 0, (size_t)(4*sizeof(float)));
+	}
 
-        /* Put the data in the middle of the padded array:  */
+	/* Put the data in the middle of the padded array:  */
 
 	i_data_start = GMT_pad[0] = (nx2 - h.nx)/2;	/* zero if nx2 < h.nx+1  */
 	j_data_start = GMT_pad[3] = (ny2 - h.ny)/2;
@@ -805,7 +804,7 @@ int 	read_data(int argc, char **argv, int bat) {
 		if (kms) for (j = 0; j < h.ny; j++) for (i = 0; i < h.nx; i++) datac[ij_data(i,j)] *= -1.;
 		if (!rem_nothing) remove_level();	/* removes either the mean or half-way (if any) */
 		if (!leave_trend_alone) remove_plane(datac);
-        	taper_edges(datac);
+		taper_edges(datac);
 	}
 	else {
 		if (GMT_read_grd (in_grav_file, &ig_h, in_grv, ig_h.x_min, ig_h.x_max, ig_h.y_min, ig_h.y_max, GMT_pad, TRUE)) {
@@ -814,57 +813,57 @@ int 	read_data(int argc, char **argv, int bat) {
 		}
 
 		if (!leave_trend_alone) remove_plane(in_grv);
-        	taper_edges(in_grv);
+		taper_edges(in_grv);
 	}
 
-        delta_kx = 2 * M_PI / (nx2 * h.x_inc);
-        delta_ky = 2 * M_PI / (ny2 * h.y_inc);
-        if (map_units) {
-                /* Give delta_kx, delta_ky units of 2pi/meters  */
-                double tmp;
-                tmp = 2.0 * M_PI * 6371008.7714 / 360.0;        /* GRS-80 sphere m/degree */
-                delta_kx /= (tmp * cos(0.5 * (h.y_min + h.y_max) * D2R) );
-                delta_ky /= tmp;
-        }
-        else {
-                if (kmx) delta_kx *= 0.001;
-                if (kmy) delta_ky *= 0.001;
-        }
+	delta_kx = 2 * M_PI / (nx2 * h.x_inc);
+	delta_ky = 2 * M_PI / (ny2 * h.y_inc);
+	if (map_units) {
+		/* Give delta_kx, delta_ky units of 2pi/meters  */
+		double tmp;
+		tmp = 2.0 * M_PI * 6371008.7714 / 360.0;	/* GRS-80 sphere m/degree */
+		delta_kx /= (tmp * cos(0.5 * (h.y_min + h.y_max) * D2R) );
+		delta_ky /= tmp;
+	}
+	else {
+		if (kmx) delta_kx *= 0.001;
+		if (kmy) delta_ky *= 0.001;
+	}
 	return(0);
 }
 
 void	write_output(void) {
 
-        /* The data are in the middle of the padded array:  */
+	/* The data are in the middle of the padded array:  */
 
-        if (GMT_write_grd (outfile, &h, datac, h.x_min, h.x_max, h.y_min, h.y_max, GMT_pad, TRUE)) {
+	if (GMT_write_grd (outfile, &h, datac, h.x_min, h.x_max, h.y_min, h.y_max, GMT_pad, TRUE)) {
 		fprintf (stderr, "%s: Error writing file %s\n", GMT_program, outfile);
 		exit (EXIT_FAILURE);
 	}
 
-        GMT_free((void *)datac);
-        GMT_free((void *)raised);
-        GMT_free((void *)topo);
+	GMT_free((void *)datac);
+	GMT_free((void *)raised);
+	GMT_free((void *)topo);
 }
 
 void	remove_level(void) {
-        /* Remove the level corresponding to the mean or the half-way point.
+	/* Remove the level corresponding to the mean or the half-way point.
 	   This level is used as the depth parameter in the exponential term */
 
-        int i, j;
-        double z_min, z_max, sum = 0.0, half_w = 0.0;
+	int i, j;
+	double z_min, z_max, sum = 0.0, half_w = 0.0;
 
-        z_min = 1.0e100;	 z_max = -1.0e100;
+	z_min = 1.0e100;	 z_max = -1.0e100;
 
 	for (j = 0; j < h.ny; j++) for (i = 0; i < h.nx; i++) {
 		if (!GMT_is_fnan((double)datac[ij_data(i,j)])) {
 		  	z_min = MIN (z_min, datac[ij_data(i,j)]);
-	          	z_max = MAX (z_max, datac[ij_data(i,j)]);
+		  	z_max = MAX (z_max, datac[ij_data(i,j)]);
 			sum += datac[ij_data(i,j)];
 		}
 	}
 
-        sum /= (h.nx * h.ny);		half_w = z_min + 0.5 * (z_max - z_min);
+	sum /= (h.nx * h.ny);		half_w = z_min + 0.5 * (z_max - z_min);
 	z_level = (mean_or_half_way) ? sum : half_w;
 
 	for (j = 0; j < h.ny; j++) for (i = 0; i < h.nx; i++) {
@@ -872,7 +871,7 @@ void	remove_level(void) {
 			datac[ij_data(i,j)] -= (float)z_level;
 		}
 	}
-        if (verbose) fprintf (stderr, "%s: 1/2-way level = %g, mean = %g : value removed --> %g\n", GMT_program, half_w, sum, z_level);
+	if (verbose) fprintf (stderr, "%s: 1/2-way level = %g, mean = %g : value removed --> %g\n", GMT_program, half_w, sum, z_level);
 	z_level = fabs(z_level);	/* Need absolute value for uppward continuation */
 }
 
@@ -940,412 +939,412 @@ void	taper_edges (float *grid) {
 }
 
 double  kx(int k) {
-        /* Return the value of kx given k,
-                where kx = 2 pi / lambda x,
-                and k refers to the position
-                in the datac array, datac[k].  */
+	/* Return the value of kx given k,
+		where kx = 2 pi / lambda x,
+		and k refers to the position
+		in the datac array, datac[k].  */
 
-        int     ii;
+	int     ii;
 
-        ii = ((int)(k/2))%nx2;
-        if (ii > nx2/2) ii -= nx2;
-        return(ii * delta_kx);
+	ii = ((int)(k/2))%nx2;
+	if (ii > nx2/2) ii -= nx2;
+	return(ii * delta_kx);
 }
 
 double  ky(int k) {
-        /* Return the value of ky given k,
-                where ky = 2 pi / lambda y,
-                and k refers to the position
-                in the datac array, datac[k].  */
+	/* Return the value of ky given k,
+		where ky = 2 pi / lambda y,
+		and k refers to the position
+		in the datac array, datac[k].  */
 
-        int     jj;
+	int     jj;
 
-        jj = ((int)(k/2))/nx2;
-        if (jj > ny2/2) jj -= ny2;
-        return(jj * delta_ky);
+	jj = ((int)(k/2))/nx2;
+	if (jj > ny2/2) jj -= ny2;
+	return(jj * delta_ky);
 }
 
 double  modk(int k) {
-        /* Return the value of sqrt(kx*kx + ky*ky),
-                given k, where k is array position.  */
+	/* Return the value of sqrt(kx*kx + ky*ky),
+		given k, where k is array position.  */
 
 	return (hypot (kx(k), ky(k)));
 }
 
 void do_isostasy (void) {
-        /* Do the isostatic response function convolution in the Freq domain.
-        All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
-        densities in kg/m**3, Te in m, etc.
-        rw, the water density, is used to set the Airy ratio and the restoring
-        force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
-        int     k;
-        double  airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
+	/* Do the isostatic response function convolution in the Freq domain.
+	All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
+	densities in kg/m**3, Te in m, etc.
+	rw, the water density, is used to set the Airy ratio and the restoring
+	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
+	int     k;
+	double  airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
 
-        /*   te         Elastic thickness, SI units (m)  */
-        /*   rl         Load density, SI units  */
-        /*   rm         Mantle density, SI units  */
-        /*   rw         Water density, SI units  */
-        
-        rigidity_d = (youngs_modulus * te * te * te) / (12.0 * (1.0 - poissons_ratio * poissons_ratio));
-        d_over_restoring_force = rigidity_d / ( (rm - rl) * normal_gravity);
+	/*   te	 Elastic thickness, SI units (m)  */
+	/*   rl	 Load density, SI units  */
+	/*   rm	 Mantle density, SI units  */
+	/*   rw	 Water density, SI units  */
+	
+	rigidity_d = (youngs_modulus * te * te * te) / (12.0 * (1.0 - poissons_ratio * poissons_ratio));
+	d_over_restoring_force = rigidity_d / ( (rm - rl) * normal_gravity);
 	airy_ratio = -(rl - rw)/(rm - rl);
  
-        if (te == 0.0) {      /* Airy isostasy; scale global variable scale_out and return */
-                scale_out *= airy_ratio;
-                return;
-        }
-        
+	if (te == 0.0) {      /* Airy isostasy; scale global variable scale_out and return */
+		scale_out *= airy_ratio;
+		return;
+	}
+	
 	for (k = 0; k < ndatac; k+= 2) {
 		mk = modk(k);	k2 = mk * mk;	k4 = k2 * k2;
-		transfer_fn = airy_ratio / ( (d_over_restoring_force * k4) + 1.0);          
+		transfer_fn = airy_ratio / ( (d_over_restoring_force * k4) + 1.0);	  
 		datac[k] *= (float)transfer_fn;
 		datac[k+1] *= (float)transfer_fn;
 	}
 }
 
 int     do_parker (int n, double z_level, double rho) {
-        int i, k;
-        double f, p, t, mk, v, c;
+	int i, k;
+	double f, p, t, mk, v, c;
 
-        f = 1.0;
-        for (i = 2; i <= n; i++) f *= i;	/* n! */
-        p = (double) n - 1.0;
+	f = 1.0;
+	for (i = 2; i <= n; i++) f *= i;	/* n! */
+	p = (double) n - 1.0;
 
-        c = 1.0e5 * 2.0 * M_PI * G * rho / f; /* Gives mGal */
-        if (geoid) c /= 980619.92;
+	c = 1.0e5 * 2.0 * M_PI * G * rho / f; /* Gives mGal */
+	if (geoid) c /= 980619.92;
 
-        for (k = 0; k < ndatac; k+= 2) {
-                mk = modk(k);
-                if (p == 0.0)
-                        t = 1.0;
-                else if (p == 1.0)
-                        t = mk;
-                else
-                        t = pow (mk, p);
+	for (k = 0; k < ndatac; k+= 2) {
+		mk = modk(k);
+		if (p == 0.0)
+			t = 1.0;
+		else if (p == 1.0)
+			t = mk;
+		else
+			t = pow (mk, p);
 
-                v = c * exp (-mk * z_level) * t;
-                if (geoid && mk > 0.0) v /= mk;
-                datac[k] += (float) (v * raised[k]);
-                datac[k+1] += (float) (v * raised[k+1]);
-        }
+		v = c * exp (-mk * z_level) * t;
+		if (geoid && mk > 0.0) v /= mk;
+		datac[k] += (float) (v * raised[k]);
+		datac[k+1] += (float) (v * raised[k+1]);
+	}
 	return (0);
 }
 
 void	fourt_stats(int nx, int ny, int *f, double *r, int *s, double *t) {
-        /* Find the proportional run time, t, and rms relative error, r,
-         * of a Fourier transform of size nx,ny.  Also gives s, the size
-         * of the workspace that will be needed by the transform.
-         * To use this routine for a 1-D transform, set ny = 1.
-         *
-         * This is all based on the comments in Norman Brenner's code
-         * FOURT, from which our C codes are translated.
-         * Brenner says:
-         * r = 3 * pow(2, -FSIGNIF) * sum{ pow(prime_factors, 1.5) }
-         * where FSIGNIF is the smallest bit in the floating point fraction.
-         *
-         * Let m = largest prime factor in the list of factors.
-         * Let p = product of all primes which appear an odd number of
-         * times in the list of prime factors.  Then the worksize needed
-         * s = max(m,p).  However, we know that if n is radix 2, then no
-         * work is required; yet this formula would say we need a worksize
-         * of at least 2.  So I will return s = 0 when max(m,p) = 2.
-         *
-         * I have two different versions of the comments in FOURT, with
-         * different formulae for t.  The simple formula says
-         *      t = n * (sum of prime factors of n).
-         * The more complicated formula gives coefficients in microsecs
-         * on a cdc3300 (ancient history, but perhaps proportional):
-         *      t = 3000 + n*(500 + 43*s2 + 68*sf + 320*nf),
-         * where s2 is the sum of all factors of 2, sf is the sum of all
-         * factors greater than 2, and nf is the number of factors != 2.
-         * We know that factors of 2 are very good to have, and indeed,
-         * Brenner's code calls different routines depending on whether
-         * the transform is of size 2 or not, so I think that the second
-         * formula is more correct, using proportions of 43:68 for 2 and
-         * non-2 factors.  So I will use the more complicated formula.
-         * However, I realize that the actual numbers are wrong for today's
-         * architectures, and the relative proportions may be wrong as well.
-         *
-         * W. H. F. Smith, 26 February 1992.
-         *  */
+	/* Find the proportional run time, t, and rms relative error, r,
+	 * of a Fourier transform of size nx,ny.  Also gives s, the size
+	 * of the workspace that will be needed by the transform.
+	 * To use this routine for a 1-D transform, set ny = 1.
+	 *
+	 * This is all based on the comments in Norman Brenner's code
+	 * FOURT, from which our C codes are translated.
+	 * Brenner says:
+	 * r = 3 * pow(2, -FSIGNIF) * sum{ pow(prime_factors, 1.5) }
+	 * where FSIGNIF is the smallest bit in the floating point fraction.
+	 *
+	 * Let m = largest prime factor in the list of factors.
+	 * Let p = product of all primes which appear an odd number of
+	 * times in the list of prime factors.  Then the worksize needed
+	 * s = max(m,p).  However, we know that if n is radix 2, then no
+	 * work is required; yet this formula would say we need a worksize
+	 * of at least 2.  So I will return s = 0 when max(m,p) = 2.
+	 *
+	 * I have two different versions of the comments in FOURT, with
+	 * different formulae for t.  The simple formula says
+	 *      t = n * (sum of prime factors of n).
+	 * The more complicated formula gives coefficients in microsecs
+	 * on a cdc3300 (ancient history, but perhaps proportional):
+	 *      t = 3000 + n*(500 + 43*s2 + 68*sf + 320*nf),
+	 * where s2 is the sum of all factors of 2, sf is the sum of all
+	 * factors greater than 2, and nf is the number of factors != 2.
+	 * We know that factors of 2 are very good to have, and indeed,
+	 * Brenner's code calls different routines depending on whether
+	 * the transform is of size 2 or not, so I think that the second
+	 * formula is more correct, using proportions of 43:68 for 2 and
+	 * non-2 factors.  So I will use the more complicated formula.
+	 * However, I realize that the actual numbers are wrong for today's
+	 * architectures, and the relative proportions may be wrong as well.
+	 *
+	 * W. H. F. Smith, 26 February 1992.
+	 *  */
 
-        int     n_factors, i, ntotal, sum2, sumnot2, nnot2;
-        int     nonsymx, nonsymy, nonsym, storage;
-        double  err_scale, sig_bits = FSIGNIF;
+	int     n_factors, i, ntotal, sum2, sumnot2, nnot2;
+	int     nonsymx, nonsymy, nonsym, storage;
+	double  err_scale, sig_bits = FSIGNIF;
 
 
-        /* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-        n_factors = get_prime_factors(nx, f);
-        nonsymx = get_non_symmetric_f(f, n_factors);
-        n_factors = get_prime_factors(ny, f);
-        nonsymy = get_non_symmetric_f(f, n_factors);
-        nonsym = MAX(nonsymx, nonsymy);
+	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
+	n_factors = get_prime_factors(nx, f);
+	nonsymx = get_non_symmetric_f(f, n_factors);
+	n_factors = get_prime_factors(ny, f);
+	nonsymy = get_non_symmetric_f(f, n_factors);
+	nonsym = MAX(nonsymx, nonsymy);
 
-        /* Now get factors of ntotal  */
-        ntotal = nx * ny;
-        n_factors = get_prime_factors(ntotal, f);
-        storage = MAX(nonsym, f[n_factors - 1]);
-        if (storage == 2)
-                *s = 0;
-        else
-                *s = storage;
+	/* Now get factors of ntotal  */
+	ntotal = nx * ny;
+	n_factors = get_prime_factors(ntotal, f);
+	storage = MAX(nonsym, f[n_factors - 1]);
+	if (storage == 2)
+		*s = 0;
+	else
+		*s = storage;
 
-        /* Now find time and error estimates:  */
+	/* Now find time and error estimates:  */
 
-        err_scale = 0.0;
-        sum2 = 0;
-        sumnot2 = 0;
-        nnot2 = 0;
-        for(i = 0; i < n_factors; i++) {
-                if (f[i] == 2)
-                        sum2 += f[i];
-                else {
-                        sumnot2 += f[i];
-                        nnot2++;
-                }
-                err_scale += pow((double)f[i], 1.5);
-        }
-        *t = 1.0e-06*(3000.0 + ntotal * (500.0 + 43.0*sum2 + 68.0*sumnot2 + 320.0*nnot2));
-        *r = err_scale * 3.0 * pow(2.0, -sig_bits);
-        return;
+	err_scale = 0.0;
+	sum2 = 0;
+	sumnot2 = 0;
+	nnot2 = 0;
+	for(i = 0; i < n_factors; i++) {
+		if (f[i] == 2)
+			sum2 += f[i];
+		else {
+			sumnot2 += f[i];
+			nnot2++;
+		}
+		err_scale += pow((double)f[i], 1.5);
+	}
+	*t = 1.0e-06*(3000.0 + ntotal * (500.0 + 43.0*sum2 + 68.0*sumnot2 + 320.0*nnot2));
+	*r = err_scale * 3.0 * pow(2.0, -sig_bits);
+	return;
 }
 
 int	get_non_symmetric_f(int *f, int n) {
-        /* Return the product of the non-symmetric factors in f[]  */
-        int     i = 0, j = 1, retval = 1;
+	/* Return the product of the non-symmetric factors in f[]  */
+	int     i = 0, j = 1, retval = 1;
 
-        if (n == 1) return(f[0]);
+	if (n == 1) return(f[0]);
 
-        while(i < n) {
-                while(j < n && f[j] == f[i]) j++;
-                if ((j-i)%2) retval *= f[i];
-                i = j;
-                j = i + 1;
-        }
-        if (retval == 1) retval = 0;    /* There are no non-sym factors  */
-        return(retval);
+	while(i < n) {
+		while(j < n && f[j] == f[i]) j++;
+		if ((j-i)%2) retval *= f[i];
+		i = j;
+		j = i + 1;
+	}
+	if (retval == 1) retval = 0;    /* There are no non-sym factors  */
+	return(retval);
 }
 
 void	suggest_fft(int nx, int ny, struct FFT_SUGGESTION *fft_sug, int do_print) {
-        int     f[64], xstop, ystop;
-        int     nx_best_t, ny_best_t;
-        int     nx_best_e, ny_best_e;
-        int     nx_best_s, ny_best_s;
-        int     nxg, nyg;       /* Guessed by this routine  */
-        int     nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
-        double  current_time, best_time, given_time, s_time, e_time;
-        int     current_space, best_space, given_space, e_space, t_space;
-        double  current_err, best_err, given_err, s_err, t_err;
+	int     f[64], xstop, ystop;
+	int     nx_best_t, ny_best_t;
+	int     nx_best_e, ny_best_e;
+	int     nx_best_s, ny_best_s;
+	int     nxg, nyg;       /* Guessed by this routine  */
+	int     nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
+	double  current_time, best_time, given_time, s_time, e_time;
+	int     current_space, best_space, given_space, e_space, t_space;
+	double  current_err, best_err, given_err, s_err, t_err;
 	void	fourt_stats(int nx, int ny, int *f, double *r, int *s, double *t);
 
 
-        fourt_stats(nx, ny, f, &given_err, &given_space, &given_time);
-        given_space += nx*ny;
-        given_space *= 8;
-        if (do_print) fprintf(stderr,"%s:  Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n",
-                GMT_program, nx, ny, given_time, given_err, given_space);
+	fourt_stats(nx, ny, f, &given_err, &given_space, &given_time);
+	given_space += nx*ny;
+	given_space *= 8;
+	if (do_print) fprintf(stderr,"%s:  Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n",
+		GMT_program, nx, ny, given_time, given_err, given_space);
 
-        best_err = s_err = t_err = given_err;
-        best_time = s_time = e_time = given_time;
-        best_space = t_space = e_space = given_space;
-        nx_best_e = nx_best_t = nx_best_s = nx;
-        ny_best_e = ny_best_t = ny_best_s = ny;
+	best_err = s_err = t_err = given_err;
+	best_time = s_time = e_time = given_time;
+	best_space = t_space = e_space = given_space;
+	nx_best_e = nx_best_t = nx_best_s = nx;
+	ny_best_e = ny_best_t = ny_best_s = ny;
 
-        xstop = 2 * nx;
-        ystop = 2 * ny;
+	xstop = 2 * nx;
+	ystop = 2 * ny;
 
-        for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
-          for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
-            for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
-                nxg = nx2 * nx3 * nx5;
-                if (nxg < nx || nxg > xstop) continue;
+	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
+	  for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
+	    for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
+		nxg = nx2 * nx3 * nx5;
+		if (nxg < nx || nxg > xstop) continue;
 
-                for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
-                  for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
-                    for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
-                        nyg = ny2 * ny3 * ny5;
-                        if (nyg < ny || nyg > ystop) continue;
+		for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
+		  for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
+		    for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
+			nyg = ny2 * ny3 * ny5;
+			if (nyg < ny || nyg > ystop) continue;
 
-                        fourt_stats(nxg, nyg, f, &current_err, &current_space, &current_time);
-                        current_space += nxg*nyg;
-                        current_space *= 8;
-                        if (current_err < best_err) {
-                                best_err = current_err;
-                                nx_best_e = nxg;
-                                ny_best_e = nyg;
-                                e_time = current_time;
-                                e_space = current_space;
-                        }
-                        if (current_time < best_time) {
-                                best_time = current_time;
-                                nx_best_t = nxg;
-                                ny_best_t = nyg;
-                                t_err = current_err;
-                                t_space = current_space;
-                        }
-                        if (current_space < best_space) {
-                                best_space = current_space;
-                                nx_best_s = nxg;
-                                ny_best_s = nyg;
-                                s_time = current_time;
-                                s_err = current_err;
-                        }
+			fourt_stats(nxg, nyg, f, &current_err, &current_space, &current_time);
+			current_space += nxg*nyg;
+			current_space *= 8;
+			if (current_err < best_err) {
+				best_err = current_err;
+				nx_best_e = nxg;
+				ny_best_e = nyg;
+				e_time = current_time;
+				e_space = current_space;
+			}
+			if (current_time < best_time) {
+				best_time = current_time;
+				nx_best_t = nxg;
+				ny_best_t = nyg;
+				t_err = current_err;
+				t_space = current_space;
+			}
+			if (current_space < best_space) {
+				best_space = current_space;
+				nx_best_s = nxg;
+				ny_best_s = nyg;
+				s_time = current_time;
+				s_err = current_err;
+			}
 
-                    }
-                  }
-                }
+		    }
+		  }
+		}
 
-            }
-          }
-        }
+	    }
+	  }
+	}
 
-        if (do_print) {
+	if (do_print) {
 		fprintf(stderr,"%s:  Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
-                        nx_best_t, ny_best_t, best_time, t_err, t_space);
+			nx_best_t, ny_best_t, best_time, t_err, t_space);
 		fprintf(stderr,"%s:  Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
-                        nx_best_e, ny_best_e, e_time, best_err, e_space);
+			nx_best_e, ny_best_e, e_time, best_err, e_space);
 		fprintf(stderr,"%s:  Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
-                        nx_best_s, ny_best_s, s_time, s_err, best_space);
-        }
-        /* Fastest solution:  */
-        fft_sug[0].nx = nx_best_t;
-        fft_sug[0].ny = ny_best_t;
-        fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
-        fft_sug[0].totalbytes = t_space;
-        fft_sug[0].run_time = best_time;
-        fft_sug[0].rms_rel_err = t_err;
-        /* Most accurate solution:  */
-        fft_sug[1].nx = nx_best_e;
-        fft_sug[1].ny = ny_best_e;
-        fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
-        fft_sug[1].totalbytes = e_space;
-        fft_sug[1].run_time = e_time;
-        fft_sug[1].rms_rel_err = best_err;
-        /* Least storage solution:  */
-        fft_sug[2].nx = nx_best_s;
-        fft_sug[2].ny = ny_best_s;
-        fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
-        fft_sug[2].totalbytes = best_space;
-        fft_sug[2].run_time = s_time;
-        fft_sug[2].rms_rel_err = s_err;
+			nx_best_s, ny_best_s, s_time, s_err, best_space);
+	}
+	/* Fastest solution:  */
+	fft_sug[0].nx = nx_best_t;
+	fft_sug[0].ny = ny_best_t;
+	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
+	fft_sug[0].totalbytes = t_space;
+	fft_sug[0].run_time = best_time;
+	fft_sug[0].rms_rel_err = t_err;
+	/* Most accurate solution:  */
+	fft_sug[1].nx = nx_best_e;
+	fft_sug[1].ny = ny_best_e;
+	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
+	fft_sug[1].totalbytes = e_space;
+	fft_sug[1].run_time = e_time;
+	fft_sug[1].rms_rel_err = best_err;
+	/* Least storage solution:  */
+	fft_sug[2].nx = nx_best_s;
+	fft_sug[2].ny = ny_best_s;
+	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
+	fft_sug[2].totalbytes = best_space;
+	fft_sug[2].run_time = s_time;
+	fft_sug[2].rms_rel_err = s_err;
 
-        return;
+	return;
 }
 
 int     get_prime_factors(int n, int *f) {
-        /* Fills the integer array f with the prime factors of n.
-         * Returns the number of locations filled in f, which is
-         * one if n is prime.
-         *
-         * f[] should have been malloc'ed to enough space before
-         * calling prime_factors().  We can be certain that f[32]
-         * is enough space, for if n fits in a long, then n < 2**32,
-         * and so it must have fewer than 32 prime factors.  I think
-         * that in general, ceil(log2((double)n)) is enough storage
-         * space for f[].
-         *
-         * Tries 2,3,5 explicitly; then alternately adds 2 or 4
-         * to the previously tried factor to obtain the next trial
-         * factor.  This is done with the variable two_four_toggle.
-         * With this method we try 7,11,13,17,19,23,25,29,31,35,...
-         * up to a maximum of sqrt(n).  This shortened list results
-         * in 1/3 fewer divisions than if we simply tried all integers
-         * between 5 and sqrt(n).  We can reduce the size of the list
-         * of trials by an additional 20% by removing the multiples
-         * of 5, which are equal to 30m +/- 5, where m >= 1.  Starting
-         * from 25, these are found by alternately adding 10 or 20.
-         * To do this, we use the variable ten_twenty_toggle.
-         *
-         * W. H. F. Smith, 26 Feb 1992, after D.E. Knuth, vol. II  */
+	/* Fills the integer array f with the prime factors of n.
+	 * Returns the number of locations filled in f, which is
+	 * one if n is prime.
+	 *
+	 * f[] should have been malloc'ed to enough space before
+	 * calling prime_factors().  We can be certain that f[32]
+	 * is enough space, for if n fits in a long, then n < 2**32,
+	 * and so it must have fewer than 32 prime factors.  I think
+	 * that in general, ceil(log2((double)n)) is enough storage
+	 * space for f[].
+	 *
+	 * Tries 2,3,5 explicitly; then alternately adds 2 or 4
+	 * to the previously tried factor to obtain the next trial
+	 * factor.  This is done with the variable two_four_toggle.
+	 * With this method we try 7,11,13,17,19,23,25,29,31,35,...
+	 * up to a maximum of sqrt(n).  This shortened list results
+	 * in 1/3 fewer divisions than if we simply tried all integers
+	 * between 5 and sqrt(n).  We can reduce the size of the list
+	 * of trials by an additional 20% by removing the multiples
+	 * of 5, which are equal to 30m +/- 5, where m >= 1.  Starting
+	 * from 25, these are found by alternately adding 10 or 20.
+	 * To do this, we use the variable ten_twenty_toggle.
+	 *
+	 * W. H. F. Smith, 26 Feb 1992, after D.E. Knuth, vol. II  */
 
-        int     current_factor; /* The factor currently being tried  */
-        int     max_factor;     /* Don't try any factors bigger than this  */
-        int     n_factors = 0;  /* Returned; one if n is prime  */
-        int     two_four_toggle = 0;    /* Used to add 2 or 4 to get next trial factor  */
-        int     ten_twenty_toggle = 0;  /* Used to add 10 or 20 to skip_five  */
-        int     skip_five = 25; /* Used to skip multiples of 5 in the list  */
-        int     m;      /* Used to keep a working copy of n  */
+	int     current_factor; /* The factor currently being tried  */
+	int     max_factor;     /* Don't try any factors bigger than this  */
+	int     n_factors = 0;  /* Returned; one if n is prime  */
+	int     two_four_toggle = 0;    /* Used to add 2 or 4 to get next trial factor  */
+	int     ten_twenty_toggle = 0;  /* Used to add 10 or 20 to skip_five  */
+	int     skip_five = 25; /* Used to skip multiples of 5 in the list  */
+	int     m;      /* Used to keep a working copy of n  */
 
 
-        /* Initialize m and max_factor  */
-        m = abs(n);
-        if (m < 2) return(0);
-        max_factor = (int)floor(sqrt((double)m));
+	/* Initialize m and max_factor  */
+	m = abs(n);
+	if (m < 2) return(0);
+	max_factor = (int)floor(sqrt((double)m));
 
-        /* First find the 2s  */
-        current_factor = 2;
-        while(!(m%current_factor)) {
-                m /= current_factor;
-                f[n_factors] = current_factor;
-                n_factors++;
-        }
-        if (m == 1) return(n_factors);
+	/* First find the 2s  */
+	current_factor = 2;
+	while(!(m%current_factor)) {
+		m /= current_factor;
+		f[n_factors] = current_factor;
+		n_factors++;
+	}
+	if (m == 1) return(n_factors);
 
-        /* Next find the 3s  */
-        current_factor = 3;
-        while(!(m%current_factor)) {
-                m /= current_factor;
-                f[n_factors] = current_factor;
-                n_factors++;
-        }
-        if (m == 1) return(n_factors);
+	/* Next find the 3s  */
+	current_factor = 3;
+	while(!(m%current_factor)) {
+		m /= current_factor;
+		f[n_factors] = current_factor;
+		n_factors++;
+	}
+	if (m == 1) return(n_factors);
 
-        /* Next find the 5s  */
-        current_factor = 5;
-        while(!(m%current_factor)) {
-                m /= current_factor;
-                f[n_factors] = current_factor;
-                n_factors++;
-        }
-        if (m == 1) return(n_factors);
+	/* Next find the 5s  */
+	current_factor = 5;
+	while(!(m%current_factor)) {
+		m /= current_factor;
+		f[n_factors] = current_factor;
+		n_factors++;
+	}
+	if (m == 1) return(n_factors);
 
-        /* Now try all the rest  */
+	/* Now try all the rest  */
 
-        while (m > 1 && current_factor <= max_factor) {
+	while (m > 1 && current_factor <= max_factor) {
 
-                /* Current factor is either 2 or 4 more than previous value  */
+		/* Current factor is either 2 or 4 more than previous value  */
 
-                if (two_four_toggle) {
-                        current_factor += 4;
-                        two_four_toggle = 0;
-                }
-                else {
-                        current_factor += 2;
-                        two_four_toggle = 1;
-                }
+		if (two_four_toggle) {
+			current_factor += 4;
+			two_four_toggle = 0;
+		}
+		else {
+			current_factor += 2;
+			two_four_toggle = 1;
+		}
 
-                /* If current factor is a multiple of 5, skip it.  But first,
-                        set next value of skip_five according to 10/20 toggle:  */
+		/* If current factor is a multiple of 5, skip it.  But first,
+			set next value of skip_five according to 10/20 toggle:  */
 
-                if (current_factor == skip_five) {
-                        if (ten_twenty_toggle) {
-                                skip_five += 20;
-                                ten_twenty_toggle = 0;
-                        }
-                        else {
-                                skip_five += 10;
-                                ten_twenty_toggle = 1;
-                        }
-                        continue;
-                }
+		if (current_factor == skip_five) {
+			if (ten_twenty_toggle) {
+				skip_five += 20;
+				ten_twenty_toggle = 0;
+			}
+			else {
+				skip_five += 10;
+				ten_twenty_toggle = 1;
+			}
+			continue;
+		}
 
-                /* Get here when current_factor is not a multiple of 2,3 or 5:  */
+		/* Get here when current_factor is not a multiple of 2,3 or 5:  */
 
-                while(!(m%current_factor)) {
-                        m /= current_factor;
-                        f[n_factors] = current_factor;
-                        n_factors++;
-                }
-        }
+		while(!(m%current_factor)) {
+			m /= current_factor;
+			f[n_factors] = current_factor;
+			n_factors++;
+		}
+	}
 
-        /* Get here when all factors up to floor(sqrt(n)) have been tried.  */
+	/* Get here when all factors up to floor(sqrt(n)) have been tried.  */
 
-        if (m > 1) {
-                /* m is an additional prime factor of n  */
-                f[n_factors] = m;
-                n_factors++;
-        }
-        return (n_factors);
+	if (m > 1) {
+		/* m is an additional prime factor of n  */
+		f[n_factors] = m;
+		n_factors++;
+	}
+	return (n_factors);
 }
 
 void	do_admittance(int give_wavelength, float k_or_m) {
@@ -1590,9 +1589,9 @@ void	load_from_top_grid(int n) {
 	int k, i;
 	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
 
-        f = 1.0;
-        for (i = 2; i <= n; i++) f *= i;	/* n! */
-        p = (double) n - 1.0;
+	f = 1.0;
+	for (i = 2; i <= n; i++) f *= i;	/* n! */
+	p = (double) n - 1.0;
 
 	twopi = 2. * M_PI;
 	D = (youngs_modulus * te * te * te) / (12.0 * (1.0 - poissons_ratio * poissons_ratio));
@@ -1612,8 +1611,8 @@ void	load_from_top_grid(int n) {
 		if (!geoid) t1 *= 1.0e5;		/* to have it in mGals */
 		if (geoid) t1 /= (normal_gravity * mk * twopi);
 		t2 = exp(-twopi * mk * z_level) - exp(-twopi * mk * zm) / (1 + alfa*pow(mk,4.));
-                datac[k] += (float) ((rho_cw * t1 * t2) * t / f * raised[k]);
-                datac[k+1] += (float) ((rho_cw * t1 * t2) * t / f * raised[k+1]);
+		datac[k] += (float) ((rho_cw * t1 * t2) * t / f * raised[k]);
+		datac[k+1] += (float) ((rho_cw * t1 * t2) * t / f * raised[k+1]);
 	}
 }
 
@@ -1625,9 +1624,9 @@ void	load_from_below_grid(int n) {
 	int k, i;
 	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
 
-        f = 1.0;
-        for (i = 2; i <= n; i++) f *= i;	/* n! */
-        p = (double) n - 1.0;
+	f = 1.0;
+	for (i = 2; i <= n; i++) f *= i;	/* n! */
+	p = (double) n - 1.0;
 
 	twopi = 2. * M_PI;
 	D = (youngs_modulus * te * te * te) / (12.0 * (1.0 - poissons_ratio * poissons_ratio));
@@ -1648,8 +1647,8 @@ void	load_from_below_grid(int n) {
 		if (geoid) t1 /= (normal_gravity * mk * twopi);
 		t2 = rho_cw * exp(-twopi * mk * z_level) + rho_mc * exp(-twopi * mk * zm);
 		t3 = -(rho_mw + rho_mc * pow(mk,4.) * alfa) * exp(-twopi * mk * zl);
-                datac[k] += (float) ((t1 * (t2 + t3)) * t / f * raised[k]);
-                datac[k+1] += (float) ((t1 * (t2 + t3)) * t / f * raised[k+1]);
+		datac[k] += (float) ((t1 * (t2 + t3)) * t / f * raised[k]);
+		datac[k+1] += (float) ((t1 * (t2 + t3)) * t / f * raised[k+1]);
 	}
 }
 

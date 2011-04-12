@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.4 2011-04-11 21:35:21 remko Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -937,10 +937,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Adjust along-track gradient type for time */
 		if (!strcmp(derivative,"TIME") && !gotTime) {
 			/*derivative = "SPACE";*/
-			if (warn[TIME_WARN]) {
-				sprintf (buffer, "%s Warning: cruise contains no time - time gradients invalid.\n", GMT->init.progname);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			}
+			if (warn[TIME_WARN]) GMT_report (GMT, GMT_MSG_FATAL, "Warning: cruise contains no time - time gradients invalid.\n");
 		}
 
 		/* Allocate memory for error array */

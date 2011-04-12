@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpaste_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: grdpaste_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,7 +97,7 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error:  Only two files may be pasted\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Only two files may be pasted\n");
 				}
 				break;
 
@@ -114,8 +114,8 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error:  Must specify two input files\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: filter1d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -324,13 +324,13 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 
 	/* Check arguments */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error:  -F is required\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D:  must give positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option:  Output interval < filterwidth\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option:  Unreasonable lack-of-data interval\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option:  Enter a factor between 0 and 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.col < 0, "Syntax error -N option:  Time column cannot be negative.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option:  Enter a factor between 0 and 1\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D: must give positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.col < 0, "Syntax error -N option: Time column cannot be negative.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -804,7 +804,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"Syntax error:  Binary input data must have at least %ld fields\n", F.n_cols);
+		"Syntax error: Binary input data must have at least %ld fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = TRUE;

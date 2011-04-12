@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.3 2011-04-11 21:15:30 remko Exp $
+ *	$Id: grd2xyz_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -162,12 +162,12 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 	
 	GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
-	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error:  Must specify at least one input file\n");
+	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
 #ifdef GMT_COMPAT
-	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error:  -E can only handle one input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error:  -E is not compatible with -Z\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
 #endif
-	n_errors += GMT_check_condition (GMT, (GMT->common.b.active[GMT_OUT] || io->binary) && GMT->current.io.io_header[GMT_OUT], "Syntax error:  Binary output data cannot have header -h\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.b.active[GMT_OUT] || io->binary) && GMT->current.io.io_header[GMT_OUT], "Syntax error: Binary output data cannot have header -h\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: mgd77info_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -292,7 +292,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
 	if (n_paths == 0) {
-		GMT_message (GMT, "%s: Error: No cruises given\n", GMT->init.progname);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 	

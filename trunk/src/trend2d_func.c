@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: trend2d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -371,7 +371,7 @@ void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 		n = n_model;
 		m = mp;
 		if (GMT_jacobi (GMT, gtg, &n, &m, lambda, v, b, z, &nrots)) {
-			GMT_message (GMT, "trend2d:  Warning:  Matrix Solver Convergence Failure.\n");
+			GMT_message (GMT, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
 		while (rank < n_model && lambda[rank] > 0.0 && lambda[rank] > c_test) rank++;
@@ -556,20 +556,20 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (xmin == xmax || ymin == ymax) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Fatal error in input data.  X min = X max.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Maximum and minimum input values are the same.\n");
 		Return (EXIT_FAILURE);
 	}
 	if (n_data == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Fatal error.  Could not read any data.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read any data.\n");
 		Return (EXIT_FAILURE);
 	}
 	if (n_data < Ctrl->N.value) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Warning.  Ill-posed problem.  n_data < n_model_max.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
 	}
 
 	transform_x_2d (GMT,data, n_data, xmin, xmax, ymin, ymax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, " Read %ld data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
 	GMT_report (GMT, GMT_MSG_NORMAL, "N_model\tRank\tChi_Squared\tSignificance\n");
 
 	sprintf (format, "%%ld\t%%ld\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

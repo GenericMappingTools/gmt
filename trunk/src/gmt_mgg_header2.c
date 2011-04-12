@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.47 2011-03-21 18:36:46 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.48 2011-04-12 03:05:18 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -211,12 +211,12 @@ GMT_LONG mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", MGG_MAGIC_NUM + MGG_VERSION, mggHeader.version);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", MGG_MAGIC_NUM + MGG_VERSION, mggHeader.version);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
 	if (mggHeader.length != sizeof (MGG_GRID_HEADER_2)) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
 		return (GMT_GRDIO_GRD98_BADLENGTH);
 	}
 

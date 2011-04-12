@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: grdgradient_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -286,13 +286,13 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error:  Must specify -A, -D, or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option:  Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option:  Normalization amplitude must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option:  Sigma must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option:  Use 0-90 degree range for elevation\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error: Must specify -A, -D, or -E\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = FALSE;

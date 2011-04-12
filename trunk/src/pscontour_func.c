@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.9 2011-04-11 21:15:31 remko Exp $
+ *	$Id: pscontour_func.c,v 1.10 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -651,7 +651,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (GMT_OK);
 		}
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */

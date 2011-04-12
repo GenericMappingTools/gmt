@@ -11185,7 +11185,7 @@ FILE *polyfile;
   }
   elefile = fopen(elefilename, "r");
   if (elefile == (FILE *) NULL) {
-    printf("  Error:  Cannot access file %s.\n", elefilename);
+    printf("Error:  Cannot access file %s.\n", elefilename);
     triexit(1);
   }
   /* Read number of triangles, number of vertices per triangle, and */
@@ -11255,7 +11255,7 @@ FILE *polyfile;
     }
     areafile = fopen(areafilename, "r");
     if (areafile == (FILE *) NULL) {
-      printf("  Error:  Cannot access file %s.\n", areafilename);
+      printf("Error:  Cannot access file %s.\n", areafilename);
       triexit(1);
     }
     stringptr = readline(inputline, areafile, areafilename);
@@ -13818,7 +13818,7 @@ char *infilename;
   do {
     result = fgets(string, INPUTLINESIZE, infile);
     if (result == (char *) NULL) {
-      printf("  Error:  Unexpected end of file in %s.\n", infilename);
+      printf("Error:  Unexpected end of file in %s.\n", infilename);
       triexit(1);
     }
     /* Skip anything that doesn't look like a number, a comment, */
@@ -13918,7 +13918,7 @@ FILE **polyfile;
     }
     *polyfile = fopen(polyfilename, "r");
     if (*polyfile == (FILE *) NULL) {
-      printf("  Error:  Cannot access file %s.\n", polyfilename);
+      printf("Error:  Cannot access file %s.\n", polyfilename);
       triexit(1);
     }
     /* Read number of vertices, number of dimensions, number of vertex */
@@ -13966,7 +13966,7 @@ FILE **polyfile;
     }
     infile = fopen(nodefilename, "r");
     if (infile == (FILE *) NULL) {
-      printf("  Error:  Cannot access file %s.\n", nodefilename);
+      printf("Error:  Cannot access file %s.\n", nodefilename);
       triexit(1);
     }
     /* Read number of vertices, number of dimensions, number of vertex */
@@ -14399,7 +14399,7 @@ char **argv;
   }
   outfile = fopen(nodefilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", nodefilename);
+    printf("Error:  Cannot create file %s.\n", nodefilename);
     triexit(1);
   }
   /* Number of vertices, number of dimensions, number of vertex attributes, */
@@ -14562,7 +14562,7 @@ char **argv;
   }
   outfile = fopen(elefilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", elefilename);
+    printf("Error:  Cannot create file %s.\n", elefilename);
     triexit(1);
   }
   /* Number of triangles, vertices per triangle, attributes per triangle. */
@@ -14704,7 +14704,7 @@ char **argv;
   }
   outfile = fopen(polyfilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", polyfilename);
+    printf("Error:  Cannot create file %s.\n", polyfilename);
     triexit(1);
   }
   /* The zero indicates that the vertices are in a separate .node file. */
@@ -14844,7 +14844,7 @@ char **argv;
   }
   outfile = fopen(edgefilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", edgefilename);
+    printf("Error:  Cannot create file %s.\n", edgefilename);
     triexit(1);
   }
   /* Number of edges, number of boundary markers (zero or one). */
@@ -15014,7 +15014,7 @@ char **argv;
   }
   outfile = fopen(vnodefilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", vnodefilename);
+    printf("Error:  Cannot create file %s.\n", vnodefilename);
     triexit(1);
   }
   /* Number of triangles, two dimensions, number of vertex attributes, */
@@ -15083,7 +15083,7 @@ char **argv;
   }
   outfile = fopen(vedgefilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", vedgefilename);
+    printf("Error:  Cannot create file %s.\n", vedgefilename);
     triexit(1);
   }
   /* Number of edges, zero boundary markers. */
@@ -15202,7 +15202,7 @@ char **argv;
   }
   outfile = fopen(neighborfilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", neighborfilename);
+    printf("Error:  Cannot create file %s.\n", neighborfilename);
     triexit(1);
   }
   /* Number of triangles, three neighbors per triangle. */
@@ -15294,7 +15294,7 @@ char **argv;
 
   outfile = fopen(offfilename, "w");
   if (outfile == (FILE *) NULL) {
-    printf("  Error:  Cannot create file %s.\n", offfilename);
+    printf("Error:  Cannot create file %s.\n", offfilename);
     triexit(1);
   }
   /* Number of vertices, triangles, and edges. */

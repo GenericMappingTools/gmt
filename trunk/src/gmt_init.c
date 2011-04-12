@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.474 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_init.c,v 1.475 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2082,7 +2082,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 		rec++;
 		GMT_chop (line);	/* Get rid of [\r]\n */
 		if (rec == 1 && (strlen (line) < 7 || line[6] != '5')) {
-			GMT_message (C, "GMT: Warning: Your gmt.conf file may not be GMT 5 compatible\n");
+			GMT_message (C, "Warning: Your gmt.conf file may not be GMT 5 compatible\n");
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
@@ -7270,8 +7270,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 	GMT_getsharepath (C, "pslib", "PS_font_info", ".d", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
-		GMT_report (C, -GMT_MSG_FATAL, "GMT Fatal Error: ");
-		perror (fullname);
+		GMT_report (C, -GMT_MSG_FATAL, "Error: Cannot open %s", fullname);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7280,7 +7279,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Trouble decoding font info for font %ld\n", i);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %ld\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->session.font[i++].name = strdup (fullname);
@@ -7292,8 +7291,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 
 	if (GMT_getsharepath (C, "pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
-			GMT_report (C, -GMT_MSG_FATAL, "GMT Fatal Error: ");
-			perror (fullname);
+			GMT_report (C, -GMT_MSG_FATAL, "Error: Cannot open %s", fullname);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -7301,7 +7299,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
 			}
 			C->session.font[i++].name = strdup (fullname);

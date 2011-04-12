@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.480 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_support.c,v 1.481 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1772,7 +1772,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		strcpy (cpt_file, (char *)source);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Cannot open color palette table %s\n", cpt_file);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open color palette table %s\n", cpt_file);
 			return (EXIT_FAILURE);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
@@ -1837,7 +1837,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			else if (strstr (line, "CMYK"))
 				X->model = GMT_CMYK;
 			else {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: unrecognized COLOR_MODEL in color palette table %s\n", cpt_file);
+				GMT_report (C, GMT_MSG_FATAL, "Error: unrecognized COLOR_MODEL in color palette table %s\n", cpt_file);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -1880,7 +1880,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			else if (GMT_is_pattern (C, T1)) {	/* Gave a pattern */
 				X->patch[id].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 				if (GMT_getfill (C, T1, X->patch[id].fill)) {
-					GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", T1);
+					GMT_report (C, GMT_MSG_FATAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
 					return (EXIT_FAILURE);
 				}
 				X->has_pattern = TRUE;
@@ -1951,7 +1951,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		X->range[n].skip = FALSE;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n");
+				GMT_report (C, GMT_MSG_FATAL, "Error: z-slice to skip not in [z0 - z1 -] format!\n");
 				return (EXIT_FAILURE);
 			}
 			GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
@@ -1962,7 +1962,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 		else if (GMT_is_pattern (C, T1)) {	/* Gave pattern fill */
 			X->range[n].fill = GMT_memory (C, NULL, 1, struct GMT_FILL);
 			if (GMT_getfill (C, T1, X->range[n].fill)) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", T1);
+				GMT_report (C, GMT_MSG_FATAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
 				return (EXIT_FAILURE);
 			}
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
@@ -1974,7 +1974,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 				GMT_scanf_arg (C, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
 			}
 			else {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
+				GMT_report (C, GMT_MSG_FATAL, "Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
 				return (EXIT_FAILURE);
 			}
 			X->has_pattern = TRUE;
@@ -2026,7 +2026,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			if (!X->categorical) {
 				dz = X->range[n].z_high - X->range[n].z_low;
 				if (dz == 0.0) {
-					GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Z-slice with dz = 0\n");
+					GMT_report (C, GMT_MSG_FATAL, "Error: Z-slice with dz = 0\n");
 					return (EXIT_FAILURE);
 				}
 				X->range[n].i_dz = 1.0 / dz;
@@ -2071,15 +2071,15 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	}
 
 	if (X->categorical && n_cat_records != n) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Error when decoding %s as categorical cpt file - aborts!\n", cpt_file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot decode %s as categorical cpt file\n", cpt_file);
 		return (EXIT_FAILURE);
 	}
 	if (error) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Error when decoding %s - aborts!\n", cpt_file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Failed to decode %s\n", cpt_file);
 		return (EXIT_FAILURE);
 	}
 	if (n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: CPT file %s has no z-slices!\n", cpt_file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: CPT file %s has no z-slices!\n", cpt_file);
 		return (EXIT_FAILURE);
 	}
 
@@ -2091,7 +2091,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + 1.0 : X->range[i+1].z_low;
 			dz = X->range[i].z_high - X->range[i].z_low;
 			if (dz == 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Z-slice with dz = 0\n");
+				GMT_report (C, GMT_MSG_FATAL, "Error: Z-slice with dz = 0\n");
 				return (EXIT_FAILURE);
 			}
 			X->range[i].i_dz = 1.0 / dz;
@@ -2104,7 +2104,7 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	}
 	annot += X->range[i].annot;
 	if (gap) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Color palette table %s has gaps - aborts!\n", cpt_file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Color palette table %s has gaps - aborts!\n", cpt_file);
 		return (EXIT_FAILURE);
 	}
 	if (!annot) {	/* Must set default annotation flags */
@@ -2981,7 +2981,7 @@ GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_L
 	if (mode > 3) mode = 0;
 	if (mode != 3 && n < 4) mode = 0;
 	if (n < 2) {
-		GMT_report (C, GMT_MSG_VERBOSE, "GMT Fatal Error: need at least 2 x-values\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "Error: need at least 2 x-values\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -3005,7 +3005,7 @@ GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_L
 		}
 
 		if (err_flag) {
-			GMT_report (C, GMT_MSG_VERBOSE, "GMT Fatal Error: x-values are not monotonically increasing/decreasing (at record %ld)!\n", err_flag);
+			GMT_report (C, GMT_MSG_VERBOSE, "Error: x-values are not monotonically increasing/decreasing (at record %ld)!\n", err_flag);
 			return (err_flag);
 		}
 
@@ -3067,7 +3067,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 	GMT_LONG k;
 
 	if (nelem < 0) {	/* Probably 32-bit overflow */
-		GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Requesting negative number of items (%ld) - exceeding 32-bit counting?\n", nelem);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting negative number of items (%ld) - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
 		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -3083,7 +3083,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Could not reallocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not reallocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
 #ifdef DEBUG
 			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -3096,7 +3096,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, GMT_LONG nelem, size
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report (C, GMT_MSG_FATAL, "GMT Fatal Error: Could not allocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (GMT_LONG)size);
 #ifdef DEBUG
 			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
 #endif
@@ -8812,7 +8812,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		}
 
 		if (error) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Error in parsing symbol commands in file %s\n", file);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Failed to parse symbol commands in file %s\n", file);
 			GMT_report (C, GMT_MSG_FATAL, "Error: Offending line: %s\n", buffer);
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -9509,7 +9509,7 @@ GMT_LONG GMT_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	struct GMT_LINE_SEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_message (GMT, "syntax error:  Dataset does not have at least 2 columns with coordinates\n");
+		GMT_message (GMT, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
 		return (1);
 	}
 
@@ -9635,7 +9635,7 @@ GMT_LONG GMT_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	struct GMT_LINE_SEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_message (GMT, "syntax error:  Dataset does not have at least 2 columns with coordinates\n");
+		GMT_message (GMT, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
 		return (1);
 	}
 

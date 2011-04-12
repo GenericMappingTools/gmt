@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: x2sys_cross_func.c,v 1.4 2011-04-12 03:05:19 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 						Ctrl->S.active[HHI] = TRUE;
 						break;
 					default:
-						GMT_message (GMT, "Syntax Error: -S<l|h|u><speed>\n");
+						GMT_message (GMT, "Syntax error: -S<l|h|u><speed>\n");
 						n_errors++;
 						break;
 				}

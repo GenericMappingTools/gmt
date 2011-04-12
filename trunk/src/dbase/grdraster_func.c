@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.11 2011-04-11 21:15:32 remko Exp $
+ *	$Id: grdraster_func.c,v 1.12 2011-04-12 03:05:19 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -883,7 +883,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->wesn[YHI] =  ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
 		Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
-		GMT_message (GMT, "Warning:  Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
+		GMT_message (GMT, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (GMT_IS_ZERO (rint (Grid->header->inc[GMT_X] * 60.0) - Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = (GMT_LONG) irint ((Grid->header->wesn[XLO] - w) * 60.0);
@@ -891,15 +891,15 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = (GMT_LONG) irint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = (GMT_LONG) irint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "Warning:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
+				GMT_message (GMT, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
 			else
-				GMT_message (GMT, "Warning:  Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
+				GMT_message (GMT, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
 		}
 		else {
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "Warning:  Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				GMT_message (GMT, "Warning: Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 			else
-				GMT_message (GMT, "Warning:  Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
+				GMT_message (GMT, "Warning: Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
 		}
 		error = 0;
 	}

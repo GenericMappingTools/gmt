@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.6 2011-04-11 21:15:32 remko Exp $
+ *	$Id: polygon_sync.c,v 1.7 2011-04-12 03:05:18 remko Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -41,7 +41,7 @@ int main (int argc, char **argv) {
 		while (pol_readheader (&P[res][n_id[res]].h, fp) == 1) {
 			P[res][n_id[res]].p = (struct LONGPAIR *) GMT_memory (VNULL, P[res][n_id[res]].h.n, sizeof (struct LONGPAIR), "polygon_hierarchy");
 			if (pol_fread (P[res][n_id[res]].p, P[res][n_id[res]].h.n, fp) != P[res][n_id[res]].h.n) {
-				fprintf(stderr,"polygon_xover:  Error reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
+				fprintf(stderr,"polygon_xover: Error reading %d points from file %s.\n", P[res][n_id[res]].h.n, file);
 				exit (EXIT_FAILURE);
 			}
 			n_id[res]++;

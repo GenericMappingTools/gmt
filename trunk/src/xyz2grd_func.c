@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
+ *	$Id: xyz2grd_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -242,7 +242,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 	GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 	if (b_only && Ctrl->Z.active) {
 		GMT->common.b.active[GMT_IN] = FALSE;
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT Warning.  -Z overrides -bi\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bi\n");
 	}
 
 #ifdef GMT_COMPAT

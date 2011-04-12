@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.57 2011-04-11 21:15:32 remko Exp $
+ *	$Id: gmt_proj.c,v 1.58 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2407,7 +2407,7 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 	/* Set up Robinson projection */
 
 	if (C->current.setting.interpolant == 0) {	/* Must reset and warn */
-		GMT_message (C, "GMT Warning : -JN requires Akima or Cubic spline interpolant, set to Akima\n");
+		GMT_message (C, "Warning: -JN requires Akima or Cubic spline interpolant, set to Akima\n");
 		C->current.setting.interpolant = 1;
 	}
 

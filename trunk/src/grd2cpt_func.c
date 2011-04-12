@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
+ *	$Id: grd2cpt_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -274,14 +274,14 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error:  No grid name(s) specified.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error:  -W and -Z cannot be used simultaneously\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option:  min_limit must be less than max_limit.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
 		"Syntax error -S option:  Bad arguments\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
 		"GMT USAGE ERROR -S option:  Cannot be combined with -E nor -T option.\n");
-	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A:  Transparency must be n 0-100 range [0 or opaque]\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

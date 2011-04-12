@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.42 2011-04-09 16:36:32 jluis Exp $
+ *	$Id: gmtapi_util.c,v 1.43 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -280,7 +280,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
 	S = API->object[API->current_item[direction]];		/* For shorthand purposes only */
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Next_IO_Source selected object %" GMT_LL "d\n", S->ID);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Next_IO_Source selected object %" GMT_LL "d\n", S->ID);
 	mode = (direction == GMT_IN) ? API->GMT->current.io.r_mode : API->GMT->current.io.w_mode;	/* Reading or writing */
 	S->close_file = FALSE;		/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
@@ -377,7 +377,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 			break;
 
 		default:
-			GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal Error: GMTAPI_Next_IO_Source called with illegal method\n");
+			GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMTAPI_Next_IO_Source called with illegal method\n");
 			break;
 	}
 
@@ -424,7 +424,7 @@ GMT_LONG GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	*object_ID = object->ID = API->unique_ID++;	/* Assign a unique object ID */
 	API->object[API->n_objects-1] = object;		/* Hook the current object onto the end of the list */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Add_Data_Object add new object %" GMT_LL "d: method = %" GMT_LL "d geometry = %" GMT_LL "d direction = %" GMT_LL "d\n", object->ID, object->method, object->geometry, object->direction);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Add_Data_Object add new object %" GMT_LL "d: method = %" GMT_LL "d geometry = %" GMT_LL "d direction = %" GMT_LL "d\n", object->ID, object->method, object->geometry, object->direction);
 	
 	return (GMT_OK);		
 }
@@ -496,7 +496,7 @@ GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_
 
 	/* OK, now it is safe to remove the object */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Unregistering object no %" GMT_LL "d\n", item);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Unregistering object no %" GMT_LL "d\n", item);
 
 	GMT_free (API->GMT, API->object[item]);		/* Free the current data object */
 	API->n_objects--;				/* Tally of how many data sets are left */
@@ -519,7 +519,7 @@ GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 	struct GMT_PALETTE *D = NULL, *Din = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Import_CPT with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Import_CPT with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 	
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_CPT, ID, GMT_IN, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -567,7 +567,7 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_PALETTE *P_copy = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Export_CPT with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Export_CPT with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 	
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_CPT, ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -628,7 +628,7 @@ GMT_LONG GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	struct GMT_VECTOR *V = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Import_Dataset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Import_Dataset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 	
 	if (ID == GMTAPI_NOTSET) {	/* More than one source: Merge all registered data tables into a single virtual data set */
 		last_item  = API->n_objects - 1;
@@ -820,7 +820,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	struct GMT_VECTOR *V = NULL;
 	void *ptr = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Export_Dataset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Export_Dataset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_DATASET, ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -936,7 +936,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Import_Textset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Import_Textset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	T = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSET);
 	
@@ -1055,7 +1055,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	struct GMT_MATRIX *M = NULL;
 	char *ptr = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Export_Textset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Export_Textset with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -1146,7 +1146,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Import_Image with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Import_Image with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, ID, GMT_IN, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
 	
@@ -1354,7 +1354,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Import_Grid with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Import_Grid with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_GRID, ID, GMT_IN, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
 	
@@ -1548,7 +1548,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Export_Grid with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Export_Grid with ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", ID, mode);
 
 	if (ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((error = GMTAPI_Validate_ID (API, GMT_IS_GRID, ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
@@ -1764,7 +1764,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	struct GMT_OPTION *current = NULL;
 	double *wesn = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Init_Import with family = %" GMT_LL "d and geometry = %" GMT_LL "d\n", family, geometry);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Init_Import with family = %" GMT_LL "d and geometry = %" GMT_LL "d\n", family, geometry);
 
 	n_reg = GMTAPI_n_items (API, family, GMT_IN, first_ID);	/* Count unread datasets in this family that have already been registered */
 	
@@ -1787,7 +1787,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 			current = current->next;	/* Go to next option */
 		}
 		n_reg += n_new;	/* Total registration count so far */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Init_Import added %ld new sources\n", n_new);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import added %ld new sources\n", n_new);
 	}
 	
 	/* Note that n_reg can have changed if we added file args above */
@@ -1797,7 +1797,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 		if (error != GMT_OK) return (GMT_Report_Error (API, error));	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (*first_ID == GMTAPI_NOTSET) *first_ID = object_ID;	/* Found our first ID */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Init_Import added stdin to registered sources\n");
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import added stdin to registered sources\n");
 	}
 	return (GMT_OK);		
 }
@@ -1818,11 +1818,11 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	GMT_LONG n_reg, error = 0;
 	struct GMT_OPTION *current = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Calling GMTAPI_Init_Export with family = %" GMT_LL "d and geometry = %" GMT_LL "d\n", family, geometry);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Calling GMTAPI_Init_Export with family = %" GMT_LL "d and geometry = %" GMT_LL "d\n", family, geometry);
 
 	n_reg = GMTAPI_n_items (API, family, GMT_OUT, object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {						/* There is a destination registered already */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Init_Export found one registered destination (object ID = %ld); skip further registrations\n", *object_ID);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export found one registered destination (object ID = %ld); skip further registrations\n", *object_ID);
 		return (GMT_Report_Error (API, GMT_OK));
 	}
 	if (n_reg > 1) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));	/* Only one output destination allowed at once */
@@ -1844,7 +1844,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 					fprintf (stderr, "%c %s\n", current->option, current->arg);
 					error = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, (void **)&current->arg, NULL, NULL, object_ID);
 					if (error != GMT_OK) return (GMT_Report_Error (API, error));	/* Failure to register */
-					GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Init_Import added 1 new destination\n");
+					GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import added 1 new destination\n");
 				}
 				current = current->next;	/* Go to next option */
 			}
@@ -1857,7 +1857,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	if (n_reg == 0 && ((mode & GMT_REG_STD_ALWAYS) || (mode & GMT_REG_STD_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
 		error = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, (void **)&API->GMT->session.std[GMT_OUT], NULL, NULL, object_ID);
 		if (error != GMT_OK) return (GMT_Report_Error (API, error));	/* Failure to register stdout? */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: GMTAPI_Init_Export added stdout to registered destinations\n");
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */
 	}
 	if (n_reg == 0) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* No output set */
@@ -2083,10 +2083,10 @@ GMT_LONG GMT_Report_Error (struct GMTAPI_CTRL *API, GMT_LONG error)
 	if (error < GMT_OK) {	/* Report only negative numbers as errors: positive are warnings only */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
 		if (API && API->session_tag) fprintf (fp, "[Session %s (%" GMT_LL "d)]: ", API->session_tag, API->session_ID);
-		fprintf (fp, "GMT: Error returned from GMT API: %s (%" GMT_LL "d)\n", GMTAPI_errstr[-error], error);
+		fprintf (fp, "Error returned from GMT API: %s (%" GMT_LL "d)\n", GMTAPI_errstr[-error], error);
 	}
 	else if (error)
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT: Warning returned from GMT API: %" GMT_LL "d\n", error);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "Warning returned from GMT API: %" GMT_LL "d\n", error);
 
 	return (error);
 }
@@ -2268,7 +2268,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			if (direction == GMT_IN) {	/* For input we can check if the GMT_MATRIX structure has proper parameters. */
 				struct GMT_MATRIX *M = (struct GMT_MATRIX *)(*resource);
 				if (M->n_rows == 0 || M->n_columns == 0 || GMT_check_region (API->GMT, M->limit)) {
-					GMT_report (API->GMT, GMT_MSG_FATAL, "GMT: Error in GMT_Register_IO (%s): Matrix parameters not set.\n", GMT_direction[direction]);
+					GMT_report (API->GMT, GMT_MSG_FATAL, "Error in GMT_Register_IO (%s): Matrix parameters not set.\n", GMT_direction[direction]);
 					return (GMT_Report_Error (API, GMT_NO_PARAMETERS));
 				}
 			}
@@ -2283,7 +2283,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			if (direction == GMT_IN) {	/* For input we can check if the GMT_MATRIX structure has proper parameters. */
 				struct GMT_VECTOR *V = (struct GMT_VECTOR *)(*resource);
 				if (V->n_rows == 0 || V->n_columns == 0) {
-					GMT_report (API->GMT, GMT_MSG_FATAL, "GMT: Error in GMT_Register_IO (%s): Vector parameters not set.\n", GMT_direction[direction]);
+					GMT_report (API->GMT, GMT_MSG_FATAL, "Error in GMT_Register_IO (%s): Vector parameters not set.\n", GMT_direction[direction]);
 					return (GMT_Report_Error (API, GMT_NO_PARAMETERS));
 				}
 			}
@@ -2294,7 +2294,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			break;
 
 		default:
-			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT: Error in GMT_Register_IO (%s): Unrecognized method %" GMT_LL "d\n", GMT_direction[direction], method);
+			GMT_report (API->GMT, GMT_MSG_FATAL, "Error in GMT_Register_IO (%s): Unrecognized method %" GMT_LL "d\n", GMT_direction[direction], method);
 			return (GMT_Report_Error (API, GMT_NOT_A_VALID_METHOD));
 			break;
 	}
@@ -2644,7 +2644,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 				}
 				break;
 			default:
-				GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal Error: GMT_Get_Record called with illegal method\n");
+				GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Get_Record called with illegal method\n");
 				break;
 		}
 	} while (get_next_record);
@@ -2704,7 +2704,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 					GMT_write_textrecord (API->GMT, S->fp, s);
 					break;
 				default:
-					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal Error: GMT_Put_Record called with illegal mode\n");
+					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
 					break;
 			}
 			break;
@@ -2745,7 +2745,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 					/* Copy from record to current row in D */
 					break;
 				default:
-					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal Error: GMT_Put_Record called with illegal mode\n");
+					GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
 					break;
 			}
 			break;			
@@ -2792,7 +2792,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 			break;
 
 		default:
-			GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal Error: GMT_Put_Record called with illegal method\n");
+			GMT_report (API->GMT, GMT_MSG_FATAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal method\n");
 			break;
 	}
 

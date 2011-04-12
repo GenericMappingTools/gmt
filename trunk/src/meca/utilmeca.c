@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.28 2011-03-15 02:06:37 guru Exp $
+/*	$Id: utilmeca.c,v 1.29 2011-04-12 03:05:19 remko Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -924,7 +924,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	}
 /* patch to fix big_iso case plotting problems. JP, NOV 2010 */
 	if (big_iso){
-		fprintf(stderr, "psmeca: Warning:  big isotropic component, case not fully tested! \n");
+		fprintf(stderr, "Warning: big isotropic component, case not fully tested! \n");
 		if (jp_flag == 1){
 			ssize[0] = radius_size*2.0;
 			GMT_setfill (GMT, PSL, F1, lineout);

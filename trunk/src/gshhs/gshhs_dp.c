@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.27 2011-03-15 02:06:37 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.28 2011-04-12 03:05:19 remko Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -309,13 +309,13 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname)
 
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t) (n * size))) == VNULL) {
-			fprintf (stderr, "gshhs Fatal Error: %s could not reallocate more memory, n = %d\n", progname, n);
+			fprintf (stderr, "Error: %s could not reallocate more memory, n = %d\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) n, (size_t) size)) == VNULL) {
-			fprintf (stderr, "gshhs Fatal Error: %s could not allocate memory, n = %d\n", progname, n);
+			fprintf (stderr, "Error: %s could not allocate memory, n = %d\n", progname, n);
 			exit (EXIT_FAILURE);
 		}
 	}

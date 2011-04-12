@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
+ *	$Id: x2sys_init_func.c,v 1.5 2011-04-12 03:05:19 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 					case 't':	/* Get new timegap */
 						break;
 					default:
-						GMT_message (GMT, "Syntax Error: -Wt|d<width>\n");
+						GMT_message (GMT, "Syntax error: -Wt|d<width>\n");
 						n_errors++;
 						break;
 				}
