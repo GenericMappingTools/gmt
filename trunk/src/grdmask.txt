@@ -46,6 +46,7 @@ Here, OPT(NP) includes the polygon perimeter as inside.
 OPT(S)IT(search_radius)[IT(unit)]
 Set nodes depending on their distance from the nearest data point.  Nodes within IT(radius) [0] from
 a data point are considered inside; append a distance unit (see UNITS).
+If OPT(S) is not set then we consider the input data to define closed polygon(s) instead.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
