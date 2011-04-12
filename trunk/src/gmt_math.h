@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.33 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_math.h,v 1.34 2011-04-12 17:52:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,6 +48,14 @@ EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void 
 #define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #else
 extern double copysign(double x, double y);
+#endif
+
+#if defined(log2)
+/* Macro already takes care of log2 - probably from BSD */
+#elif HAVE_LOG2 == 0
+#define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
+#else
+extern double log2(double x);
 #endif
 
 #if HAVE_LOG1P == 0

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.h.in,v 1.18 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_notposix.h.in,v 1.19 2011-04-12 17:52:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,6 +45,7 @@
  * none of the functions are available (the POSIX standard) */
 
 #define HAVE_COPYSIGN 0
+#define HAVE_LOG2 0
 #define HAVE_LOG1P 0
 #define HAVE_HYPOT 0
 #define HAVE_ACOSH 0

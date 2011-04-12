@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.37 2011-03-28 17:39:42 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.38 2011-04-12 17:52:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -73,6 +73,7 @@
 /* These functions are available under Windows with MSVC compilers */
 
 #define HAVE_COPYSIGN 1
+#define HAVE_LOG2 0
 #define HAVE_LOG1P 0
 #define HAVE_HYPOT 1
 #define HAVE_ACOSH 0

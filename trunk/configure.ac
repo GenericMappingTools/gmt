@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.108 2011-03-17 17:26:36 guru Exp $
+dnl $Id: configure.ac,v 1.109 2011-04-12 17:52:00 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.108 $)
+AC_REVISION($Revision: 1.109 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -245,6 +245,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNC(copysign, AC_DEFINE(HAVE_COPYSIGN), )
+AC_CHECK_FUNC(log2, AC_DEFINE(HAVE_LOG2), )
 AC_CHECK_FUNC(log1p, AC_DEFINE(HAVE_LOG1P), )
 AC_CHECK_FUNC(hypot, AC_DEFINE(HAVE_HYPOT), )
 AC_CHECK_FUNC(acosh, AC_DEFINE(HAVE_ACOSH), )
