@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.153 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.154 2011-04-12 16:18:42 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1619,7 +1619,8 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
-	to_gdalread->M.active = 1;	/* Get metadata only */
+	to_gdalread->M.active = TRUE;	/* Get metadata only */
+	to_gdalread->F.active = TRUE;	/* Force pixel registration */
 
 	i = (int)strlen(file) - 1;
 	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
@@ -1690,7 +1691,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	/* Allocate new control structures */
 	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
-	to_gdalread->F.active = 1;	/* Force PIX reg info */
+	to_gdalread->F.active = TRUE;	/* Force pixel registration */
 
 	if ( C->common.R.active ) {
 		char strR [128]; 
@@ -1700,7 +1701,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	}
 
 	if ( I->header->pocket ) {				/* See if we have a band request */
-		to_gdalread->B.active = 1;
+		to_gdalread->B.active = TRUE;
 		to_gdalread->B.bands = I->header->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
@@ -1708,7 +1709,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	to_gdalread->I.active = TRUE; 			/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
-	to_gdalread->c_ptr.active = 1;
+	to_gdalread->c_ptr.active = TRUE;
 	to_gdalread->c_ptr.grd = I->data;
 
 	if (GMT_gdalread (C, file, to_gdalread, from_gdalread)) {
