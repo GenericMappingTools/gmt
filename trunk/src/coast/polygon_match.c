@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.8 2011-03-15 02:06:37 guru Exp $
+ * $Id: polygon_match.c,v 1.9 2011-04-12 13:06:42 remko Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -76,7 +76,7 @@ int main (int argc, char **argv) {
 		new_P[n_A].brother = NOT_PRESENT;	/* Initially we do not know the match */
 		new_P[n_A].p = (struct LONGPAIR *) GMT_memory (VNULL, new_P[n_A].h.n, sizeof (struct LONGPAIR), "polygon_match");
 		if (pol_fread (new_P[n_A].p, new_P[n_A].h.n, fp) != new_P[n_A].h.n) {
-			fprintf(stderr,"polygon_match:  ERROR  reading %d points from file %s.\n", new_P[n_A].h.n, file);
+			fprintf(stderr,"polygon_match: Error reading %d points from file %s.\n", new_P[n_A].h.n, file);
 			exit (EXIT_FAILURE);
 		}
 		n_A++;
@@ -94,7 +94,7 @@ int main (int argc, char **argv) {
 		old_P[n_B].brother = NOT_PRESENT;	/* Initially we do not know the match */
 		old_P[n_B].p = (struct LONGPAIR *) GMT_memory (VNULL, old_P[n_B].h.n, sizeof (struct LONGPAIR), "polygon_match");
 		if (pol_fread2 (old_P[n_B].p, old_P[n_B].h.n, fp) != old_P[n_B].h.n) {
-			fprintf(stderr,"polygon_match:  ERROR  reading %d points from file %s.\n", old_P[n_B].h.n, file);
+			fprintf(stderr,"polygon_match: Error reading %d points from file %s.\n", old_P[n_B].h.n, file);
 			exit (EXIT_FAILURE);
 		}
 		n_B++;

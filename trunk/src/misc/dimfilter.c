@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.17 2011-04-11 21:15:32 remko Exp $
+ * $Id: dimfilter.c,v 1.18 2011-04-12 13:06:44 remko Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -218,7 +218,7 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 					n_errors++;
 				}
 				break;
-			case 'N':	/* SCAN:  Option to set the number of sections and how to reduce the sector results to a single value */
+			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
 				Ctrl->N.active = TRUE;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower bound (min) */
@@ -242,7 +242,7 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 				}
 				Ctrl->N.n_sectors = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
 				break;
-			case 'Q':  /* entering the MAD error analysis mode */
+			case 'Q':	/* entering the MAD error analysis mode */
 				Ctrl->Q.active = TRUE;
 				Ctrl->Q.err_cols = atoi (opt->arg);
 				break;
@@ -262,22 +262,22 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	if (!Ctrl->Q.active) {
 		GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option.  Must specify positive increment(s)\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option:  Must specify output file\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "Syntax error -D option:  Choose from the range 0-4\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "Syntax error -F option:  Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->N.filter < 0 || Ctrl->N.n_sectors <= 0, "Syntax error -N option:  Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "Syntax error -D option: Choose from the range 0-4\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->F.filter < 0 || Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->N.filter < 0 || Ctrl->N.n_sectors <= 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 		slow = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);		/* Will require sorting etc */
 #ifdef OBSOLETE						
-		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option:  Only valid for robust filters -Fm|p.\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
 #endif	
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error:  Must use -Q to specify total # of columns in the input file.\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option:  Total # of columns cannot exceed 50.\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option: Total # of columns cannot exceed 50.\n");
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -456,7 +456,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
 		
 		if (!fast_way) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning - Your output grid spacing is such that filter-weights must\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your output grid spacing is such that filter-weights must\n");
 			GMT_report (GMT, GMT_MSG_NORMAL, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
 			GMT_report (GMT, GMT_MSG_NORMAL, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
 			GMT_report (GMT, GMT_MSG_NORMAL, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");

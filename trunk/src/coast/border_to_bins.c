@@ -1,5 +1,5 @@
 /*
- *	$Id: border_to_bins.c,v 1.10 2011-03-15 02:06:37 guru Exp $
+ *	$Id: border_to_bins.c,v 1.11 2011-04-12 13:06:42 remko Exp $
  */
 /* border_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -114,7 +114,7 @@ int main (int argc, char **argv) {
 		}
 		n_init += h.n;
 
-		if (h.id%100 == 0) fprintf (stderr,"border_to_bins:  Binning line %d\r", h.id);
+		if (h.id%100 == 0) fprintf (stderr,"border_to_bins: Binning line %d\r", h.id);
 		
 		n_alloc = h.n + 10;
 		ix = (int *) GMT_memory (CNULL, n_alloc, sizeof (int), "border_to_bins");
@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
 		yy = (int *) GMT_memory (CNULL, n_alloc, sizeof (int), "border_to_bins");
 		
 		if (pol_fread (&p, 1, fp_in) != 1) {
-			fprintf(stderr,"border_to_bins:  ERROR  reading file.\n");
+			fprintf(stderr,"border_to_bins: Error reading file.\n");
 			exit(-1);
 		}
 		if (p.x%B_WIDTH == 0) p.x += noise;
@@ -135,7 +135,7 @@ int main (int argc, char **argv) {
 		n_int = 0;
 		for (k = kk = 1; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"border_to_bins:  ERROR  reading file.\n");
+				fprintf(stderr,"border_to_bins: Error reading file.\n");
 				exit(-1);
 			}
 			if (p.x%B_WIDTH == 0) p.x += noise;
@@ -314,7 +314,7 @@ int main (int argc, char **argv) {
 
 		n_seg = 0;
 		if (first) {
-			/* This line lies entirely inside one bin.  Get bin, and stick it in there:  */
+			/* This line lies entirely inside one bin.  Get bin, and stick it in there */
 			b = (BIN_NY - (yy[0] / B_WIDTH) - 1) * BIN_NX + xx[0] / B_WIDTH;
 
 			/* Create a string header  */
@@ -330,7 +330,7 @@ int main (int argc, char **argv) {
 			}
 			s = bin[b].current_seg;
 			
-			/* Put np into this header:  */
+			/* Put np into this header */
 			
 			s->n = nn;
 			s->p = (struct SHORT_PAIR *)GMT_memory(CNULL, s->n, sizeof(struct SHORT_PAIR), "border_to_bins");
@@ -353,7 +353,7 @@ int main (int argc, char **argv) {
 		}
 
 		/* If we had an inside line, we break out here and go get another one.
-		 * If not, execution proceeds with the following:  */
+		 * If not, execution proceeds with the following */
 
 		i_x_1 = (xx[0] / B_WIDTH);
 		i_x_1mod = xx[0] % B_WIDTH;
@@ -365,13 +365,13 @@ int main (int argc, char **argv) {
 			i_y_2mod = yy[i] % B_WIDTH;
 			if (i_x_2mod == 0 || i_y_2mod == 0 || j == (nn-1)) {	/* Exit box or end of line */
 				if (i - last_i > 1) {
-					/* There is at least 1 inside point.  Use it to get bin:  */
+					/* There is at least 1 inside point.  Use it to get bin */
 					k = (i + last_i)/2;
 					i_x_3 = xx[k] / B_WIDTH;
 					i_y_3 = yy[k] / B_WIDTH;
 				}
 				else {
-					/* We have only 2 ps in this bin; avg them to get bin; check Greenwich:  */
+					/* We have only 2 ps in this bin; avg them to get bin; check Greenwich */
 					if (xx[i] == 0)
 						i_x_3 = xx[last_i] / B_WIDTH;
 					else if (xx[last_i] == 0)
@@ -398,13 +398,13 @@ int main (int argc, char **argv) {
 				}
 				s = bin[b].current_seg;
 				
-				/* Put level, nps, etc. into this header:  */
+				/* Put level, nps, etc. into this header */
 				
 				s->n = i - last_i + 1;
 				s->level = h.level;
 				n_seg++;
 
-				/* Write from last_i through i, inclusive, into this bin:  */
+				/* Write from last_i through i, inclusive, into this bin */
 				
 				x_origin = i_x_3 * B_WIDTH;
 				y_origin = i_y_3 * B_WIDTH;
@@ -484,7 +484,7 @@ int main (int argc, char **argv) {
 	
 	for (b = np = 0; b < nbins; b++) {
 	
-		if (b%100 == 0) fprintf(stderr,"border_to_bins:  Working on bin number %d\r", b);
+		if (b%100 == 0) fprintf(stderr,"border_to_bins: Working on bin number %d\r", b);
 		
 		if (fwrite ((char *)&bin_head[b], sizeof (struct GMT3_BIN_HEADER), 1, fp_bin) != 1) {
 			fprintf (stderr, "border_to_bins: Error writing bin header for bin # %d\n", b);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.7 2011-04-12 03:05:18 remko Exp $
+ *	$Id: surface_func.c,v 1.8 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * surface.c:  a gridding program.
+ * surface.c: a gridding program.
  * reads xyz triples and fits a surface to the data.
  * surface satisfies (1 - T) D4 z - T D2 z = 0,
  * where D4 is the biharmonic operator,
@@ -785,15 +785,15 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 
 		/* Fill in auxiliary boundary values (in new way) */
 
-		/* First set d2[]/dn2 = 0 along edges:  */
+		/* First set d2[]/dn2 = 0 along edges */
 		/* New experiment : (1-T)d2[]/dn2 + Td[]/dn = 0  */
 
 		for (i = 0; i < C->nx; i += C->grid) {
-			/* set d2[]/dy2 = 0 on south side:  */
+			/* set d2[]/dy2 = 0 on south side */
 			ij = C->ij_sw_corner + i * C->my;
 			/* u[ij - 1] = 2 * u[ij] - u[ij + grid];  */
 			u[ij - 1] = (float)(y_0_const * u[ij] + y_1_const * u[ij + C->grid]);
-			/* set d2[]/dy2 = 0 on north side:  */
+			/* set d2[]/dy2 = 0 on north side */
 			ij = C->ij_nw_corner + i * C->my;
 			/* u[ij + 1] = 2 * u[ij] - u[ij - grid];  */
 			u[ij + 1] = (float)(y_0_const * u[ij] + y_1_const * u[ij - C->grid]);
@@ -801,17 +801,17 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 		}
 
 		for (j = 0; j < C->ny; j += C->grid) {
-			/* set d2[]/dx2 = 0 on west side:  */
+			/* set d2[]/dx2 = 0 on west side */
 			ij = C->ij_sw_corner + j;
 			/* u[ij - my] = 2 * u[ij] - u[ij + grid_east];  */
 			u[ij - C->my] = (float)(x_1_const * u[ij + C->grid_east] + x_0_const * u[ij]);
-			/* set d2[]/dx2 = 0 on east side:  */
+			/* set d2[]/dx2 = 0 on east side */
 			ij = C->ij_se_corner + j;
 			/* u[ij + my] = 2 * u[ij] - u[ij - grid_east];  */
 			u[ij + C->my] = (float)(x_1_const * u[ij - C->grid_east] + x_0_const * u[ij]);
 		}
 
-		/* Now set d2[]/dxdy = 0 at each corner:  */
+		/* Now set d2[]/dxdy = 0 at each corner */
 
 		ij = C->ij_sw_corner;
 		u[ij - C->my - 1] = u[ij + C->grid_east - 1] + u[ij - C->my + C->grid] - u[ij + C->grid_east + C->grid];
@@ -825,8 +825,8 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 		ij = C->ij_ne_corner;
 		u[ij + C->my + 1] = u[ij - C->grid_east + 1] + u[ij + C->my - C->grid] - u[ij - C->grid_east - C->grid];
 
-		/* Now set (1-T)dC/dn + Tdu/dn = 0 at each edge :  */
-		/* New experiment:  only dC/dn = 0  */
+		/* Now set (1-T)dC/dn + Tdu/dn = 0 at each edge */
+		/* New experiment: only dC/dn = 0  */
 
 		x_w_case = 0;
 		x_e_case = C->block_nx - 1;
@@ -839,7 +839,7 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 			else
 				x_case = 2;
 
-			/* South side :  */
+			/* South side */
 			kase = x_case * 5;
 			ij = C->ij_sw_corner + i * C->my;
 			u[ij + C->offset[kase][11]] = 
@@ -847,7 +847,7 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 					- u[ij + C->offset[kase][8]] - u[ij + C->offset[kase][10]])
 					+ C->two_plus_em2 * (u[ij + C->offset[kase][9]] - u[ij + C->offset[kase][2]]) );
 				/*  + tense * C->eps_m2 * (u[ij + C->offset[kase][2]] - u[ij + C->offset[kase][9]]) / (1.0 - tense);  */
-			/* North side :  */
+			/* North side */
 			kase = x_case * 5 + 4;
 			ij = C->ij_nw_corner + i * C->my;
 			u[ij + C->offset[kase][0]] = 
@@ -868,7 +868,7 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 			else
 				y_case = 2;
 
-			/* West side :  */
+			/* West side */
 			kase = y_case;
 			ij = C->ij_sw_corner + j;
 			u[ij+C->offset[kase][4]] = 
@@ -876,7 +876,7 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 				-u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
 				+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]));
 				/*  + tense * (u[ij + C->offset[kase][6]] - u[ij + C->offset[kase][5]]) / (1.0 - tense);  */
-			/* East side :  */
+			/* East side */
 			kase = 20 + y_case;
 			ij = C->ij_se_corner + j;
 			u[ij + C->offset[kase][7]] = 
@@ -1113,7 +1113,7 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 	d3u_dxdy2 = 0.5 * ( ( u[ij + move_over[3]] + u[ij + move_over[10]] - 2 * u[ij + move_over[6]] )
 	 				- ( u[ij + move_over[1]] + u[ij + move_over[8]] - 2 * u[ij + move_over[5]] ) );
 
-	 	/* 3rd order Taylor approx:  */
+	 	/* 3rd order Taylor approx */
 	 
 	 	z_est = u[ij] + dx * (du_dx +  dx * ( (0.5 * d2u_dx2) + dx * (d3u_dx3 / 6.0) ) )
 				+ dy * (du_dy +  dy * ( (0.5 * d2u_dy2) + dy * (d3u_dy3 / 6.0) ) )
@@ -1251,7 +1251,7 @@ GMT_LONG rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 
 	for (i = 0; i < C->npoints; i++) ssz += (C->data[i].z * C->data[i].z);
 
-	/* Set z_scale = rms(z):  */
+	/* Set z_scale = rms(z) */
 
 	C->z_scale = sqrt (ssz / C->npoints);
 
@@ -1422,7 +1422,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	if (n_sug) {
 		qsort ((void *)sug, (size_t)n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
-			GMT_report (GMT, GMT_MSG_FATAL, " HINT:  Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
+			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
 		}
 		GMT_free (GMT, sug);
@@ -1608,7 +1608,7 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
 	GMT_message (GMT, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_message (GMT, "\t   or the filename of a grid with bounding values.  [Default solution unconstrained].\n");
-	GMT_message (GMT, "\t   Example:  -Ll0 gives a non-negative solution.\n");
+	GMT_message (GMT, "\t   Example: -Ll0 gives a non-negative solution.\n");
 	GMT_message (GMT, "\t-N Sets max <n_iterations> in each cycle; default = 250.\n");
 	GMT_message (GMT, "\t-S Sets <search_radius> to initialize grid; default = 0 will skip this step.\n");
 	GMT_message (GMT, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
@@ -1761,12 +1761,12 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D:  Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option.  Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option.  Max iterations must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option.  Relaxation value must be 1 <= z <= 2\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G:  Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1826,7 +1826,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_set_grddim (GMT, C.Grid->header);
 
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR.  Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
 		Return (EXIT_FAILURE);
 	}
 
@@ -1844,7 +1844,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_Surface_Global.x_min = C.Grid->header->wesn[XLO];
 	GMT_Surface_Global.y_min = C.Grid->header->wesn[YLO];
 
-	/* New stuff here for v4.3:  Check out the grid dimensions:  */
+	/* New stuff here for v4.3: Check out the grid dimensions */
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->Q.active) {

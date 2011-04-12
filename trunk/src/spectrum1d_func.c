@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.4 2011-04-11 21:15:30 remko Exp $
+ *	$Id: spectrum1d_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,9 +157,9 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 	/* Scale factor for spectral estimates should be 1/4 of amount given in
 		Bendat & Piersol eqn 11-102 because I compute 2 * fft in my
 		one-sided code below.  However, tests show that I need 1/8 of
-		their equation to match variances approximately:  */
+		their equation to match variances approximately */
 
-	/* This used to read:  spec_scale = 0.5 / (C->window_2 * dt);  */
+	/* This used to read: spec_scale = 0.5 / (C->window_2 * dt);  */
 	spec_scale = C->dt / (C->window_2);
 
 	C->d_n_windows = (double)n_data / (double)C->window;
@@ -188,7 +188,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 		
-		/* Get one-sided estimates:  */
+		/* Get one-sided estimates */
 
 		x_varp = spec_scale * (C->datac[0] * C->datac[0]);
 		if (C->y_given) {
@@ -207,9 +207,9 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 				y_varp += ypower;
 				C->spec[i].xpow += xpower;
 				C->spec[i].ypow += ypower;
-				/* Temporarily store co-spec in gain:  */
+				/* Temporarily store co-spec in gain */
 				C->spec[i].gain += co_spec;
-				/* Temporarily store quad-spec in phase:  */
+				/* Temporarily store quad-spec in phase */
 				C->spec[i].phase += quad_spec;
 			}
 			x_varp *= (C->dt/C->n_spec);
@@ -229,13 +229,13 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
 			GMT_message (GMT, "Window %ld from %ld to %ld\n", w, t_start, t_stop);
-			sprintf(format, "X var:  %s  X pow:  %s  ratio:  %s  Y var:  %s  Y pow:  %s  ratio:  %s\n",
+			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",
 				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_message (GMT, format, C->x_variance, x_varp, (C->x_variance/x_varp), C->y_variance, y_varp, C->y_pow);
 		}
 	}
 	/* Now we can divide by n_windows for the ensemble average.
-		The cross spectral stuff needs to be computed:  */
+		The cross spectral stuff needs to be computed */
 
 	if (C->y_given ) {
 		for (i = 0; i < C->n_spec; i++) {
@@ -505,7 +505,7 @@ GMT_LONG GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "spectrum1d %s [API] - Compute auto- [and cross- ] spectra from one [or two] timeseries\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage:  spectrum1d -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-N[+]<name_stem>]\n");
+	GMT_message (GMT, "usage: spectrum1d -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-N[+]<name_stem>]\n");
 	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -557,7 +557,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 					if (j < SPECTRUM1D_N_OUTPUT_CHOICES) {
 						Ctrl->C.col[j] = opt->arg[j];
 						if (!strchr ("xycnpago", Ctrl->C.col[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option.  Unrecognized output choice %c\n", Ctrl->C.col[j]);
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Unrecognized output choice %c\n", Ctrl->C.col[j]);
 							n_errors++;
 						}
 					}

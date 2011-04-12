@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.9 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_findlevel2.c,v 1.10 2011-04-12 13:06:42 remko Exp $
  */
 #include "wvs.h"
 
@@ -44,7 +44,7 @@ int main (int argc, char **argv) {
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
-			fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_findlevel2: Error reading file.\n");
 			exit(-1);
 		}
 		blob[n_id].x0 = p.x;	/* Pick any point on the polygon */
@@ -63,7 +63,7 @@ int main (int argc, char **argv) {
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp2) != 1) {
-			fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_findlevel2: Error reading file.\n");
 			exit(-1);
 		}
 		blob[n_id].x0 = p.x;	/* Pick any point on the polygon */
@@ -105,7 +105,7 @@ int main (int argc, char **argv) {
 			fseek (fp2, (long)blob[id].start, 0);
 			for (k = 0; k < blob[id].h.n; k++) {
 				if (pol_fread (&p, 1, fp2) != 1) {
-					fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
+					fprintf(stderr,"polygon_findlevel2: Error reading file.\n");
 					exit(-1);
 				}
 				if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
@@ -263,7 +263,7 @@ int main (int argc, char **argv) {
 				fseek (fp_in, (long)blob[id1].start, 0);
 				for (k = 0; k < blob[id1].h.n; k++) {
 					if (pol_fread (&p, 1, fp_in) != 1) {
-						fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
+						fprintf(stderr,"polygon_findlevel2: Error reading file.\n");
 						exit(-1);
 					}
 					if ((blob[id1].h.greenwich & 1) && p.x > blob[id1].h.datelon) p.x -= M360;
@@ -384,7 +384,7 @@ int main (int argc, char **argv) {
 		pol_writeheader (&blob[id].h, fp3);
 		fseek (fp2, (long)blob[id].start, 0);
 		if (pol_fread (pp, blob[id].h.n, fp2) != blob[id].h.n) {
-			fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_findlevel2: Error reading file.\n");
 			exit(-1);
 		}
 		if (blob[id].reverse) {	/* Reverse polygon */

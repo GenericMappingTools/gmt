@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_dump.c,v 1.3 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_dump.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *	polygon_dump makes a multisegment ascii-file of entire dbase
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 	char file[80];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_dump polygons.b level [-M]\n");
+		fprintf(stderr,"usage: polygon_dump polygons.b level [-M]\n");
 		exit(-1);
 	}
 	level = (argv[2]) ? atoi (argv[2]) : 0;
@@ -39,7 +39,7 @@ int main (int argc, char **argv)
 			
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_dump:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_dump: Error reading file.\n");
 				exit(-1);
 			}
 			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;

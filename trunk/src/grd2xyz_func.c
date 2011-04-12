@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grd2xyz_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -141,7 +141,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_message (GMT, "Syntax error -N option:  Must specify value or NaN\n");
+					GMT_message (GMT, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -209,12 +209,12 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT->common.b.active[GMT_OUT]) {
 		if (Ctrl->Z.active && !io.binary) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning.  -Z overrides -bo\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = FALSE;
 		}
 #ifdef GMT_COMPAT
 		if (Ctrl->E.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning.  -E overrides -bo\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = FALSE;
 		}
 #endif

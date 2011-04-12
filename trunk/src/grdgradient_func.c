@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdgradient_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Sets azimuth (0-360 CW from North (+y)) for directional derivatives\n");
 	GMT_message (GMT, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
 	GMT_message (GMT, "\t-D Finds the direction of grad z.\n");
-	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default:  azimuth]\n");
+	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth]\n");
 	GMT_message (GMT, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360]\n");
 	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o\n");
 	GMT_message (GMT, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
@@ -146,7 +146,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   or one or both of\n");
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
-	GMT_message (GMT, "\t   [Default:  Natural conditions]\n");
+	GMT_message (GMT, "\t   [Default: Natural conditions]\n");
 	GMT_message (GMT, "\t-N Will normalize gradients so that max |grad| = <amp> [1.0]\n");
 	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0]\n");
 	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0]\n");
@@ -198,7 +198,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						case 'O': case 'o': Ctrl->D.mode |= 2; break;
 						case 'N': case 'n': Ctrl->D.mode |= 4; break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option:  Unrecognized modifier\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Unrecognized modifier\n");
 							n_errors++;
 							break;
 					}
@@ -387,7 +387,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* TRUE if input is a read-only array */
 	
-	/* set boundary conditions:  */
+	/* set boundary conditions */
 
 	GMT_boundcond_set (GMT, Surf, &edgeinfo);
 

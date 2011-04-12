@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.481 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmt_support.c,v 1.482 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3394,11 +3394,11 @@ GMT_LONG GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GM
 			k = sscanf (&txt[1+j], "%" GMT_LL "d/%s", &L->n_cont, txt_a);
 			if (k == 2) L->min_dist = GMT_to_inch (C, txt_a);
 			if (L->n_cont == 0) {
-				GMT_report (C, GMT_MSG_FATAL, "syntax error -%c.  Number of labels must exceed zero\n", L->flag);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Number of labels must exceed zero\n", L->flag);
 				error++;
 			}
 			if (L->min_dist < 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "syntax error -%c.  Minimum label separation cannot be negative\n", L->flag);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Minimum label separation cannot be negative\n", L->flag);
 				error++;
 			}
 			break;
@@ -3428,16 +3428,16 @@ GMT_LONG GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GM
 			else
 				L->label_dist_spacing = GMT_to_inch (C, &txt_a[1]);
 			if (L->label_dist_spacing <= 0.0) {
-				GMT_report (C, GMT_MSG_FATAL, "syntax error -%c.  Spacing between labels must exceed 0.0\n", L->flag);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Spacing between labels must exceed 0.0\n", L->flag);
 				error++;
 			}
 			if (L->label_dist_frac < 0.0 || L->label_dist_frac > 1.0) {
-				GMT_report (C, GMT_MSG_FATAL, "syntax error -%c.  Initial label distance fraction must be in 0-1 range\n", L->flag);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Initial label distance fraction must be in 0-1 range\n", L->flag);
 				error++;
 			}
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "syntax error -%c.  Unrecognized modifiler %c\n", L->flag, txt[0]);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Unrecognized modifiler %c\n", L->flag, txt[0]);
 			error++;
 			break;
 	}

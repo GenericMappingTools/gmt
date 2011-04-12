@@ -1,5 +1,5 @@
 /*
- *	$Id: swap.c,v 1.2 2008-03-06 04:39:37 guru Exp $
+ *	$Id: swap.c,v 1.3 2011-04-12 13:06:43 remko Exp $
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"
@@ -24,12 +24,12 @@ int main (int argc, char **argv) {
 		pol_writeheader (&h, stdout);
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findarea:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_findarea: Error reading file.\n");
 				exit(-1);
 			}
 			swab_polpoints (&p, 1);
 			if (pol_fwrite (&p, 1, stdout) != 1) {
-				fprintf(stderr,"polygon_findarea:  ERROR  writing file.\n");
+				fprintf(stderr,"polygon_findarea: Error writing file.\n");
 				exit(-1);
 			}
 		}

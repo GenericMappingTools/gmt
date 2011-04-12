@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.267 2011-04-12 03:05:18 remko Exp $
+ *	$Id: mgd77.c,v 1.268 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3898,11 +3898,11 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 
 	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
 
-	/* Read the correction table:  */
+	/* Read the correction table */
 
 	GMT_getsharepath (G, "mgg", "carter", ".d", buffer);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
-                fprintf (G->session.std[GMT_ERR],"MGD77_carter_init:  Cannot open r %s\n", buffer);
+                fprintf (G->session.std[GMT_ERR],"MGD77_carter_init: Cannot open r %s\n", buffer);
                 return (-1);
         }
 
@@ -3910,49 +3910,49 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
-		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
+		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
                 return(-1);
 	}
 
         for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
                 if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Could not read correction # %d\n", i);
+			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read correction # %d\n", i);
 			return (-1);
 		}
                 C->carter_correction[i] = (short)atoi (buffer);
         }
 
-	/* Read the offset table:  */
+	/* Read the offset table */
 
 	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
 	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
-		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
+		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
                 return (-1);
 	}
 
         for (i = 0; i < N_CARTER_OFFSETS; i++) {
                  if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Could not read offset # %d\n", i);
+			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read offset # %d\n", i);
 			return (-1);
 		}
                 C->carter_offset[i] = (short)atoi (buffer);
         }
 
-	/* Read the zone table:  */
+	/* Read the zone table */
 
 	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
 	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
-		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
+		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
                 return (-1);
 	}
 
         for (i = 0; i < N_CARTER_BINS; i++) {
                  if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init:  Could not read offset # %d\n", i);
+			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read offset # %d\n", i);
 			return (-1);
 		}
                 C->carter_zone[i] = (short)atoi (buffer);
@@ -3973,7 +3973,7 @@ int MGD77_carter_get_bin (struct GMT_CTRL *C, double lon, double lat, int *bin)
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
+		GMT_report (C, GMT_MSG_FATAL, "Error in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -3994,12 +3994,12 @@ int MGD77_carter_get_zone (struct GMT_CTRL *G, int bin, struct MGD77_CARTER *C, 
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(G, C) ) {
-		GMT_report (G, GMT_MSG_FATAL, "Error in MGD77_carter_get_zone:  Initialization failure.\n");
+		GMT_report (G, GMT_MSG_FATAL, "Error in MGD77_carter_get_zone: Initialization failure.\n");
 		return (-1);
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone: Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = C->carter_zone[bin];
@@ -4039,15 +4039,15 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init(G, C) ) {
-		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Initialization failure.\n");
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0.0) {
-		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt:  Negative twt: %g msec\n", twt_in_msec);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4062,7 +4062,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
-		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4071,7 +4071,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_mse
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
 		if ( i == (C->carter_offset[zone] - 2) ) {
-			fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt:  twt too big: %g msec\n", twt_in_msec);
+			fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 			return (-1);
 		}
 
@@ -4099,15 +4099,15 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_c
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init (G, C) ) {
-		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Initialization failure.\n");
+		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0.0) {
-		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth:  Negative depth: %g m\n", depth_in_corr_m);
+		fprintf(G->session.std[GMT_ERR],"Error: in MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
 		return(-1);
 	}
 
@@ -4120,7 +4120,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_c
 	min = C->carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > C->carter_correction[max]) {
-		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_twt_from_depth:  Depth too big: %g m.\n", depth_in_corr_m);
+		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
 		return (-1);
 	}
 

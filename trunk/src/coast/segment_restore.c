@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_restore.c,v 1.1 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: segment_restore.c,v 1.2 2011-04-12 13:06:43 remko Exp $
  */
 /* segment_restore <asciifiles> > <segments.b>
  *
@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	char line[512];
 
 	if (argc == 1) {
-		fprintf(stderr,"usage:  segment_restore [-L<level>] asciifiles > polygons.b\n");
+		fprintf(stderr,"usage: segment_restore [-L<level>] asciifiles > polygons.b\n");
 		exit(-1);
 	}
 
@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 		hin.rank = level;
 		fwrite((void *)&hin, sizeof(struct RAWSEG_HEADER), 1, stdout);
 		if ((fwrite((void *)p, sizeof(struct LONGPAIR), (size_t) hin.n, stdout)) != hin.n) {
-			fprintf(stderr,"segment_restore:  ERROR  writing file.\n");
+			fprintf(stderr,"segment_restore: Error writing file.\n");
 			exit(-1);
 		}
 		fclose (fp);

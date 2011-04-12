@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.22 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_xover.c,v 1.23 2011-04-12 13:06:43 remko Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 	struct LONGPAIR p;
 
 	if (argc < 2 || argc > 3) {
-		fprintf(stderr,"usage:  polygon_xover wvs_polygons.b [-V] > report.lis\n");
+		fprintf(stderr,"usage: polygon_xover wvs_polygons.b [-V] > report.lis\n");
 		exit(-1);
 	}
 
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 
 		for (i = 0; i < P[n_id].h.n; i++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_xover:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_xover: Error reading file.\n");
 				exit(-1);
 			}
 			if ((P[n_id].h.greenwich & 1) && p.x > P[n_id].h.datelon) p.x -= M360;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.70 2011-04-11 21:15:30 remko Exp $
+ *	$Id: gmt_shore.c,v 1.71 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error -A option:  No area given\n");
+		GMT_report (C, GMT_MSG_FATAL, "Syntax error -A option: No area given\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
@@ -104,7 +104,7 @@ GMT_LONG GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 			base = 4;
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option:  Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;

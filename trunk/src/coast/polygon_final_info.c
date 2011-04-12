@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.9 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_final_info.c,v 1.10 2011-04-12 13:06:43 remko Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 	int id, src = -1, np = 0;
 
 	if (argc < 2 || argc > 3) {
-		fprintf(stderr,"usage:  polygon_final_info wvs_polygons.b [src]\n");
+		fprintf(stderr,"usage: polygon_final_info wvs_polygons.b [src]\n");
 		exit(-1);
 	}
 

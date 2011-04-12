@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.5 2011-03-15 02:06:37 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -171,7 +171,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 	   x[n_path-1] = x[0], and y[n_path-1] = y[0].
 
 	   This is version 2, trying to kill a bug
-	   in above routine:  If point is on X edge,
+	   in above routine: If point is on X edge,
 	   fails to discover that it is on edge.
 
 	   We are imagining a ray extending "up" from the
@@ -193,13 +193,13 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 	above = FALSE;
 	crossing_count = 0;
 
-	/* First make sure first point in path is not a special case:  */
+	/* First make sure first point in path is not a special case */
 	j = jend = n_path - 1;
 	if (x[j] == xp) {
-		/* Trouble already.  We might get lucky:  */
+		/* Trouble already.  We might get lucky */
 		if (y[j] == yp) return(1);
 
-		/* Go backward down the polygon until x[i] != xp:  */
+		/* Go backward down the polygon until x[i] != xp */
 		if (y[j] > yp) above = TRUE;
 		i = j - 1;
 		while (x[i] == xp && i > 0) {
@@ -210,13 +210,13 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 
 		/* Now if i == 0 polygon is degenerate line x=xp;
 		   since we know xp,yp is inside bounding box,
-		   it must be on edge:  */
+		   it must be on edge */
 		if (i == 0) return(1);
 
-		/* Now we want to mark this as the end, for later:  */
+		/* Now we want to mark this as the end, for later */
 		jend = i;
 
-		/* Now if (j-i)>1 there are some segments the point could be exactly on:  */
+		/* Now if (j-i)>1 there are some segments the point could be exactly on */
 		for (k = i+1; k < j; k++) {
 			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
 		}
@@ -224,7 +224,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 
 		/* Now we have arrived where i is > 0 and < n_path-1, and x[i] != xp.
 			We have been using j = n_path-1.  Now we need to move j forward 
-			from the origin:  */
+			from the origin */
 		j = 1;
 		while (x[j] == xp) {
 			if (y[j] == yp) return (1);
@@ -234,13 +234,13 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 
 		/* Now at the worst, j == jstop, and we have a polygon with only 1 vertex
 			not at x = xp.  But now it doesn't matter, that would end us at
-			the main while below.  Again, if j>=2 there are some segments to check:  */
+			the main while below.  Again, if j>=2 there are some segments to check */
 		for (k = 0; k < j-1; k++) {
 			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
 		}
 
 
-		/* Finally, we have found an i and j with points != xp.  If (above) we may have crossed the ray:  */
+		/* Finally, we have found an i and j with points != xp.  If (above) we may have crossed the ray */
 		if (above && x[i] < xp && x[j] > xp) 
 			crossing_count++;
 		else if (above && x[i] > xp && x[j] < xp) 
@@ -250,7 +250,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 	}
 
 	else {
-		/* Get here when x[0] != xp:  */
+		/* Get here when x[0] != xp */
 		i = 0;
 		j = 1;
 		while (x[j] == xp && j < jend) {
@@ -261,7 +261,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 		/* Again, if j==jend, (i.e., 0) then we have a polygon with only 1 vertex
 			not on xp and we will branch out below.  */
 
-		/* if ((j-i)>2) the point could be on intermediate segments:  */
+		/* if ((j-i)>2) the point could be on intermediate segments */
 		for (k = i+1; k < j-1; k++) {
 			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
 		}
@@ -305,7 +305,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
-		/* if ((j-i)>2) the point could be on intermediate segments:  */
+		/* if ((j-i)>2) the point could be on intermediate segments */
 		for (k = i+1; k < j-1; k++) {
 			if ( (y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp) ) return (1);
 		}
@@ -334,7 +334,7 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 			}
 		}
 
-		/* That's it for this piece.  Advance i:  */
+		/* That's it for this piece.  Advance i */
 
 		i = j;
 	}

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.24 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.25 2011-04-12 13:06:43 remko Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 	struct GSHHS gshhs_header;
         
 	if (argc < 2 || argc > 3) {
-		fprintf (stderr,"usage:  polygon_to_gshhs [-l] file_res.b > gshhs_res.b\n");
+		fprintf (stderr,"usage: polygon_to_gshhs [-l] file_res.b > gshhs_res.b\n");
 		fprintf (stderr,"	-l indicates data are lines (rivers, borders) and not polygons\n");
 		exit (EXIT_FAILURE);
 	}
@@ -59,12 +59,12 @@ int main (int argc, char **argv)
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
+				fprintf (stderr,"polygon_to_gshhs: Error reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) p.x += M360;
 			if (k < np && pol_fwrite2 (&p, 1, stdout) != 1) {
-				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
+				fprintf (stderr,"polygon_to_gshhs: Error writing to stdout.\n");
 				exit (EXIT_FAILURE);
 			}
 		}

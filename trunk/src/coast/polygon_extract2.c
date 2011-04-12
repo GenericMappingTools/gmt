@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract2.c,v 1.3 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_extract2.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 	char file[80];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_extract final_polygons.b w e s n id \n");
+		fprintf(stderr,"usage: polygon_extract final_polygons.b w e s n id \n");
 		exit(-1);
 	}
 
@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 		
 	for (k = 0; k < poly[i].h.n; k++) {
 		if (pol_fread (&p, 1, fp_in) != 1) {
-			fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_extract: Error reading file.\n");
 			exit(-1);
 		}
 		if (p.y < s || p.y > n) continue;

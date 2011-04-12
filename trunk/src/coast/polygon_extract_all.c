@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract_all.c,v 1.4 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_extract_all.c,v 1.5 2011-04-12 13:06:42 remko Exp $
  */
 /* 
  *
@@ -21,7 +21,7 @@ int main (int argc, char **argv)
 	char file[80];
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_extract final_polygons.b w e s n\n");
+		fprintf(stderr,"usage: polygon_extract final_polygons.b w e s n\n");
 		exit(-1);
 	}
 	if (argc == 6) {
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 		
 		for (k = 0; k < poly[i].h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_extract: Error reading file.\n");
 				exit(-1);
 			}
 			if ((poly[i].h.greenwich & 1) && p.x > poly[i].h.datelon) p.x -= M360;

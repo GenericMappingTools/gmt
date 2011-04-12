@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_bincount.c,v 1.3 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_bincount.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *	polygon_bincount calculates # points pr bin
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 	struct GMT3_POLY h;
         
 	if (argc != 3) {
-		fprintf(stderr,"usage:  polygon_bincount polygons.b binsize\n");
+		fprintf(stderr,"usage: polygon_bincount polygons.b binsize\n");
 		exit(-1);
 	}
 
@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 		memset ((char *)tmp, 0, nbins * sizeof (int));
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_bincount:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_bincount: Error reading file.\n");
 				exit(-1);
 			}
 			if (p.x == M360) p.x = 0;

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_shrink.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_shrink.c,v 1.3 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  * polygon_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	struct	LONGPAIR p;
         
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr,"usage:  polygon_shrink final_polygons.b tolerance shrink_polygons.b [-v]\n");
+		fprintf (stderr,"usage: polygon_shrink final_polygons.b tolerance shrink_polygons.b [-v]\n");
 		fprintf (stderr,"	tolerance is maximum mismatch in km\n");
 		exit (-1);
 	}
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 		
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_shrink:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_shrink: Error reading file.\n");
 				exit(-1);
 			}
 			x[k] = p.x;
@@ -67,14 +67,14 @@ int main (int argc, char **argv)
 			h.id = n_out;
 			h.n = n;
 			if (pol_writeheader (&h, fp_out) != 1) {
-				fprintf(stderr,"polygon_shrink:  ERROR  writing file.\n");
+				fprintf(stderr,"polygon_shrink: Error writing file.\n");
 				exit(-1);
 			}
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
 				if (pol_fwrite (&p, 1, fp_out) != 1) {
-					fprintf(stderr,"polygon_shrink:  ERROR  writing file.\n");
+					fprintf(stderr,"polygon_shrink: Error writing file.\n");
 					exit(-1);
 				}
 			}

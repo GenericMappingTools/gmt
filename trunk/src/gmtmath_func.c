@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmtmath_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -448,7 +448,7 @@ GMT_LONG GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, st
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && GMT_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A:  Cannot read file %s!\n", Ctrl->A.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && GMT_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += GMT_check_condition (GMT, missing_equal, "Syntax error: Usage is <operations> = [outfile]\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active), "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
 	n_req = (Ctrl->N.active) ? Ctrl->N.ncol : 0;
@@ -2971,17 +2971,17 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Make sure the min/man/inc values harmonize */
 		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_SMALL)) {
 			case 1:
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T:  (max - min) is not a whole multiple of inc\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T options: (max - min) is not a whole multiple of inc\n");
 				Return (EXIT_FAILURE);
 				break;
 			case 2:
 				if (Ctrl->T.inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T:  (max - min) is <= 0\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T options: (max - min) is <= 0\n");
 					Return (EXIT_FAILURE);
 				}
 				break;
 			case 3:
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T:  inc is <= 0\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T options: inc is <= 0\n");
 				Return (EXIT_FAILURE);
 				break;
 			default:	/* OK */

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_checkarea.c,v 1.3 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_checkarea.c,v 1.4 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
  	struct GMT3_POLY h3;
        
 	if (argc < 3 || argc > 4) {
-		fprintf(stderr,"usage:  polygon_checkarea final_polygons.b start_id [-v] > remove.lis\n");
+		fprintf(stderr,"usage: polygon_checkarea final_polygons.b start_id [-v] > remove.lis\n");
 		exit(-1);
 	}
 
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 		x = y = 0.0;
 		for (k = 0; k < h3.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"polygon_checkarea:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_checkarea: Error reading file.\n");
 				exit(-1);
 			}
 			if ((h3.greenwich & 1) && p.x > h3.datelon) p.x -= M360;

@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.7 2009-06-05 00:25:12 guru Exp $
+ *	$Id: wvs_crosscheck.c,v 1.8 2011-04-12 13:06:43 remko Exp $
  */
 /*  */
    
@@ -31,7 +31,7 @@ int main (int argc, char **argv) {
 	while (pol_readheader (&h, fp) == 1) {
 		h.id = id;
 		if (pol_fread (p, h.n, fp) != h.n) {
-			fprintf(stderr,"wvs_crosscheck:  ERROR  reading file.\n");
+			fprintf(stderr,"wvs_crosscheck: Error reading file.\n");
 			exit(-1);
 		}
 		
@@ -160,7 +160,7 @@ int main (int argc, char **argv) {
 			if (h.greenwich) for (i = 0; i < h.n; i++) if (p[i].x < 0) p[i].x += 360000000;
 
 			if (pol_fwrite (p, h.n, fp_out) != h.n) {
-				fprintf(stderr,"polygon_crosscheck:  ERROR  writing file.\n");
+				fprintf(stderr,"polygon_crosscheck: Error writing file.\n");
 				exit(-1);
 			}
 		}

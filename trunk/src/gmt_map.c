@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.270 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmt_map.c,v 1.271 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6529,7 +6529,7 @@ double GMT_lat_swap (struct GMT_CTRL *C, double lat, GMT_LONG itype)
 	if (itype < 0 || itype >= GMT_LATSWAP_N) {
 		/* This should never happen -?- or do we want to allow the
 			possibility of using itype = -1 to do nothing  */
-		GMT_report (C, GMT_MSG_FATAL, "GMT_lat_swap():  Invalid choice.  (Programming bug.)\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT_lat_swap(): Invalid choice, programming bug.\n");
 		return(lat);
 	}
 
@@ -7425,7 +7425,7 @@ GMT_LONG GMT_init_distaz (struct GMT_CTRL *C, char c, GMT_LONG mode, GMT_LONG ty
 			break;
 			
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error.  Distance units must be one of %s|X|C|S|P\n", GMT_LEN_UNITS_DISPLAY);
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Distance units must be one of %s|X|C|S|P\n", GMT_LEN_UNITS_DISPLAY);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}

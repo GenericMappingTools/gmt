@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.15 2011-04-12 03:05:18 remko Exp $
+ *	$Id: shoremaker.c,v 1.16 2011-04-12 13:06:43 remko Exp $
  */
 /*
  *
@@ -39,29 +39,29 @@ int main (int argc, char **argv) {
 	
 	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore bin file %s\n", file);
+		fprintf (stderr, "shoremaker: Cannot open shore bin file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore seg file %s\n", file);
+		fprintf (stderr, "shoremaker: Cannot open shore seg file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore point file %s\n", file);
+		fprintf (stderr, "shoremaker: Cannot open shore point file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.par", prefix);
 	if ((fp_par = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "shoremaker:  Cannot open shore parent file %s\n", file);
+		fprintf (stderr, "shoremaker: Cannot open shore parent file %s\n", file);
 		exit (EXIT_FAILURE);
 	}
 		
 	sprintf (file, "%s.cdf", prefix);
 	GMT_err_fail (nc_create (file, NC_CLOBBER, &s.cdfid), file);
 	
-	fprintf (stderr, "shoremaker:  Process header file\n");
+	fprintf (stderr, "shoremaker: Process header file\n");
 
 	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "shoremaker: Error reading file header\n");
@@ -93,7 +93,7 @@ int main (int argc, char **argv) {
 	
 	fclose (fp_bin);
 	
-	fprintf (stderr, "shoremaker:  Process segment file\n");
+	fprintf (stderr, "shoremaker: Process segment file\n");
 
 	seg_info	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 	seg_area	 = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
@@ -117,7 +117,7 @@ int main (int argc, char **argv) {
 	
 	fclose (fp_seg);
 
-	fprintf (stderr, "shoremaker:  Process point file\n");
+	fprintf (stderr, "shoremaker: Process point file\n");
 
 	pt_dx = (short *) GMT_memory (CNULL, s.n_pt, sizeof (short), "shoremaker");
 	pt_dy = (short *) GMT_memory (CNULL, s.n_pt, sizeof (short), "shoremaker");
@@ -135,7 +135,7 @@ int main (int argc, char **argv) {
 	
 	fclose (fp_pt);
 	
-	fprintf (stderr, "shoremaker:  Process parent file\n");
+	fprintf (stderr, "shoremaker: Process parent file\n");
 
 	if (fread ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "shoremaker: Error reading # of GSHHS parents\n");

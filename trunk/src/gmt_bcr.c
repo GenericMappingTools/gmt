@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.13 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.14 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,7 +91,7 @@ void GMT_bcr_init (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG interpolant,
 	else
 		bcr->n = 4;
 
-	/* Initialize rx_inc, ry_inc, and offset:  */
+	/* Initialize rx_inc, ry_inc, and offset */
 	bcr->rx_inc = 1.0 / G->header->inc[GMT_X];
 	bcr->ry_inc = 1.0 / G->header->inc[GMT_Y];
 	bcr->offset = (G->header->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;

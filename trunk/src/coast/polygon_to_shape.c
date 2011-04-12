@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.16 2011-03-15 02:06:37 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.17 2011-04-12 13:06:42 remko Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -36,7 +36,7 @@ int main (int argc, char **argv)
 	GMT_err_fail (GMT_map_setup (-180.0, 180.0, -90.0, 90.0), "");
 	
 	if (argc < 2 || argc > 3) {
-		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix\n");
+		fprintf (stderr,"usage: polygon_to_shape file_res.b prefix\n");
 		fprintf (stderr,"	file_res.b is the binary local file with all polygon info for a resolution\n");
 		fprintf (stderr,"	prefix is used to form the files prefix_L[1-4].gmt\n");
 		fprintf (stderr,"	These are then converted to shapefiles via ogr2ogr\n");
@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 	while (pol_readheader (&P[n_id].h, fp_in) == 1) {
 		P[n_id].p = (struct LONGPAIR *) GMT_memory (VNULL, P[n_id].h.n, sizeof (struct LONGPAIR), "polygon_to_shape");
 		if (pol_fread (P[n_id].p, P[n_id].h.n, fp_in) != P[n_id].h.n) {
-			fprintf(stderr,"polygon_to_shape:  ERROR  reading file.\n");
+			fprintf(stderr,"polygon_to_shape: Error reading file.\n");
 			exit(-1);
 		}
 		for (k = 0; k < P[n_id].h.n; k++) {
@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 	for (level = 1; level <= 4; level++) {	/* Make separate files for each level*/
 		sprintf (file, "%s_L%d.gmt", argv[2], level);
 		if ((fp = fopen (file, "w")) == NULL) {
-			fprintf(stderr,"polygon_to_shape:  ERROR  creating file %s.\n", file);
+			fprintf(stderr,"polygon_to_shape: Error creating file %s.\n", file);
 			exit(-1);
 		}
 		fprintf (fp, "# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n");

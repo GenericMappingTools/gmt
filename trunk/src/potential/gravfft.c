@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gravfft.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gravfft.c,v 1.5 2011-04-12 13:06:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
 #endif
 
 /* Macro definition ij_data(i,j) finds the array index to an element
-	containing the real data(i,j) in the padded complex array:  */
+	containing the real data(i,j) in the padded complex array */
 
 #define ij_data(i,j) (2*(nx2*((j)+j_data_start)+(i)+i_data_start))
 #define ij_data_0(i,j) (2*(nx2*((j)+0)+(i)+0))
@@ -727,7 +727,7 @@ int 	read_data(int argc, char **argv, int bat) {
 		GMT_end (argc, argv);
 	}
 
-	/* Get dimensions as may be appropriate:  */
+	/* Get dimensions as may be appropriate */
 	if (n_user_set) {
 		if (nx2 < h.nx || ny2 < h.ny) {
 			fprintf(stderr,"%s: Error: You specified -Nnx/ny smaller than input grdfile.  Ignored.\n", GMT_program);
@@ -743,7 +743,7 @@ int 	read_data(int argc, char **argv, int bat) {
 			suggest_fft(h.nx, h.ny, fft_sug, (verbose || suggest_narray));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
-				 * as the fastest solution; use the most accurate's dimensions:  */
+				 * as the fastest solution; use the most accurate's dimensions */
 				nx2 = fft_sug[1].nx;
 				ny2 = fft_sug[1].ny;
 			}
@@ -759,10 +759,10 @@ int 	read_data(int argc, char **argv, int bat) {
 	narray[0] = nx2;
 	narray[1] = ny2;
 	fourt_stats(nx2, ny2, factors, &edummy, &worksize, &tdummy);
-	if (verbose) fprintf(stderr,"%s:  Data dimension %d %d\tFFT dimension %d %d\n",
+	if (verbose) fprintf(stderr,"%s: Data dimension %d %d\tFFT dimension %d %d\n",
 		GMT_program, h.nx, h.ny, nx2, ny2);
 
-	/* Make an array of floats 2 * nx2 * ny2 for complex data:  */
+	/* Make an array of floats 2 * nx2 * ny2 for complex data */
 	ndatac = 2 * nx2 * ny2;
 
 	if (bat) {
@@ -787,7 +787,7 @@ int 	read_data(int argc, char **argv, int bat) {
 		memset ((char *)workc, 0, (size_t)(4*sizeof(float)));
 	}
 
-	/* Put the data in the middle of the padded array:  */
+	/* Put the data in the middle of the padded array */
 
 	i_data_start = GMT_pad[0] = (nx2 - h.nx)/2;	/* zero if nx2 < h.nx+1  */
 	j_data_start = GMT_pad[3] = (ny2 - h.ny)/2;
@@ -834,7 +834,7 @@ int 	read_data(int argc, char **argv, int bat) {
 
 void	write_output(void) {
 
-	/* The data are in the middle of the padded array:  */
+	/* The data are in the middle of the padded array */
 
 	if (GMT_write_grd (outfile, &h, datac, h.x_min, h.x_max, h.y_min, h.y_max, GMT_pad, TRUE)) {
 		fprintf (stderr, "%s: Error writing file %s\n", GMT_program, outfile);
@@ -891,7 +891,7 @@ void	taper_edges (float *grid) {
 		this is zero anyway.  */
 
 
-	/* First reflect about xmin and xmax, point symmetric about edge point:  */
+	/* First reflect about xmin and xmax, point symmetric about edge point */
 
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;	/* Outside xmin; left of edge 1  */
@@ -906,7 +906,7 @@ void	taper_edges (float *grid) {
 
 	/* Next, reflect about ymin and ymax.
 		At the same time, since x has been reflected,
-		we can use these vals and taper on y edges:  */
+		we can use these vals and taper on y edges */
 
 	scale = M_PI / (j_data_start + 1);
 
@@ -922,7 +922,7 @@ void	taper_edges (float *grid) {
 		}
 	}
 
-	/* Now, cos taper the x edges:  */
+	/* Now, cos taper the x edges */
 
 	scale = M_PI / (i_data_start + 1);
 	for (im = 1; im <= i_data_start; im++) {
@@ -1089,7 +1089,7 @@ void	fourt_stats(int nx, int ny, int *f, double *r, int *s, double *t) {
 	else
 		*s = storage;
 
-	/* Now find time and error estimates:  */
+	/* Now find time and error estimates */
 
 	err_scale = 0.0;
 	sum2 = 0;
@@ -1141,7 +1141,7 @@ void	suggest_fft(int nx, int ny, struct FFT_SUGGESTION *fft_sug, int do_print) {
 	fourt_stats(nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx*ny;
 	given_space *= 8;
-	if (do_print) fprintf(stderr,"%s:  Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n",
+	if (do_print) fprintf(stderr,"%s: Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n",
 		GMT_program, nx, ny, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
@@ -1199,28 +1199,28 @@ void	suggest_fft(int nx, int ny, struct FFT_SUGGESTION *fft_sug, int do_print) {
 	}
 
 	if (do_print) {
-		fprintf(stderr,"%s:  Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
+		fprintf(stderr,"%s: Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		fprintf(stderr,"%s:  Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
+		fprintf(stderr,"%s: Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		fprintf(stderr,"%s:  Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
+		fprintf(stderr,"%s: Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %d\n", GMT_program,
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
-	/* Fastest solution:  */
+	/* Fastest solution */
 	fft_sug[0].nx = nx_best_t;
 	fft_sug[0].ny = ny_best_t;
 	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
 	fft_sug[0].totalbytes = t_space;
 	fft_sug[0].run_time = best_time;
 	fft_sug[0].rms_rel_err = t_err;
-	/* Most accurate solution:  */
+	/* Most accurate solution */
 	fft_sug[1].nx = nx_best_e;
 	fft_sug[1].ny = ny_best_e;
 	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
 	fft_sug[1].totalbytes = e_space;
 	fft_sug[1].run_time = e_time;
 	fft_sug[1].rms_rel_err = best_err;
-	/* Least storage solution:  */
+	/* Least storage solution */
 	fft_sug[2].nx = nx_best_s;
 	fft_sug[2].ny = ny_best_s;
 	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
@@ -1314,7 +1314,7 @@ int     get_prime_factors(int n, int *f) {
 		}
 
 		/* If current factor is a multiple of 5, skip it.  But first,
-			set next value of skip_five according to 10/20 toggle:  */
+			set next value of skip_five according to 10/20 toggle */
 
 		if (current_factor == skip_five) {
 			if (ten_twenty_toggle) {
@@ -1328,7 +1328,7 @@ int     get_prime_factors(int n, int *f) {
 			continue;
 		}
 
-		/* Get here when current_factor is not a multiple of 2,3 or 5:  */
+		/* Get here when current_factor is not a multiple of 2,3 or 5 */
 
 		while(!(m%current_factor)) {
 			m /= current_factor;
@@ -1373,7 +1373,7 @@ void	do_admittance(int give_wavelength, float k_or_m) {
 	if (delta_kx < delta_ky) {delta_k = delta_kx;	nk = nx2/2;}
 	else {delta_k = delta_ky;	nk = ny2/2;}
 
-	/* Get an array for summing stuff:  */
+	/* Get an array for summing stuff */
 	b_pow = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
 	g_pow = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
 	err_bar = (double *) GMT_memory (VNULL, (size_t)nk, sizeof(double), GMT_program);
@@ -1386,7 +1386,7 @@ void	do_admittance(int give_wavelength, float k_or_m) {
 	if (coherence)
 		admittance = FALSE;
 
-	/* Loop over it all, summing and storing, checking range for r:  */
+	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
 	
@@ -1504,10 +1504,10 @@ void	remove_plane(float *grid)
 		}
 	}
 	data_var = sqrt(data_var / (h.nx*h.ny - 1));
-	/* Rescale a1,a2 into user's units, in case useful later:  */
+	/* Rescale a1,a2 into user's units, in case useful later */
 	a[1] *= (2.0/(h.x_max - h.x_min));
 	a[2] *= (2.0/(h.y_max - h.y_min));
-	if(verbose) fprintf (stderr,"%s: Plane removed.  Mean, S.D., Dx, Dy:  %.8g\t%.8g\t%.8g\t%.8g\n", GMT_program, a[0],data_var,a[1],a[2]);
+	if(verbose) fprintf (stderr,"%s: Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", GMT_program, a[0],data_var,a[1],a[2]);
 }
 
 void	load_from_below_admit(void) {

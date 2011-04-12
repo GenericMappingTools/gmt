@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdtrack_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,7 +217,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 					}
 					else
 						Ctrl->G.file[ng] = strdup (opt->arg);
-					n_errors += GMT_check_condition (GMT, !Ctrl->G.file[ng], "Syntax error -G:  Must specify input file\n");
+					n_errors += GMT_check_condition (GMT, !Ctrl->G.file[ng], "Syntax error -G: Must specify input file\n");
 					ng++;
 				}
 				break;
@@ -406,7 +406,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		}
 		GMT_boundcond_param_prep (GMT, GC[g].G, &GC[g].edgeinfo);
 
-		/* Initialize bcr structure:  */
+		/* Initialize bcr structure */
 
 		GMT_bcr_init (GMT, GC[g].G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &GC[g].bcr);
 

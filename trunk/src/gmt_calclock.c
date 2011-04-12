@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.77 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.78 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,7 +49,7 @@
 
 /* Functions to assemble/disassemble a continuous
 variable (double) and a calendar day (GMT_LONG)
-and time of day (double secs):  
+and time of day (double secs) 
 */
 
 double GMT_rdc2dt (struct GMT_CTRL *C, GMT_LONG rd, double secs) {

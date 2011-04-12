@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.29 2011-04-12 03:05:19 remko Exp $
+/*	$Id: utilmeca.c,v 1.30 2011-04-12 13:06:44 remko Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -1590,7 +1590,7 @@ GMT_LONG trace_wedge (double spin, double sscale, double wedge_amp, GMT_LONG lin
 	/*   sscale      : scaling factor for size (radius) of wedge */
 	/*   wedge_amp   : scaling factor for angular size of wedge */
 	/*   spin        : CW spin rate in rad/yr */
-	/*   lines :     : if true, draw lines                  */
+	/*   line        : if true, draw lines                  */
 
 	GMT_LONG nstep, i1, i, nump;
 	double th, x0, y0, spin10, th0, x1, y1, s, c;
@@ -1651,7 +1651,7 @@ GMT_LONG trace_sigwedge (double spin, double spinsig, double sscale, double wedg
 	/*   slon        - longitude in degrees of arrow tail */
 	/*   sscale      : scaling factor for size (radius) of wedge */
 	/*   wedge_amp   : scaling factor for angular size of wedge */
-	/*   spin,spinsig :    :CW rotation rate and sigma in rad/yr */
+	/*   spin,spinsig:CW rotation rate and sigma in rad/yr */
 
 	GMT_LONG nstep, i, nump;
 	double th, x0, y0, spin10, sig10, th0, x1, y1, s, c;

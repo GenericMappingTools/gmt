@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: segment_dump.c,v 1.3 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  *	segment_dump makes a multisegment ascii-file of entire dbase
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 	struct RAWSEG_HEADER h;
         
 	if (argc != 3) {
-		fprintf(stderr,"usage:  segment_dump polygons.b level\n");
+		fprintf(stderr,"usage: segment_dump polygons.b level\n");
 		exit(-1);
 	}
 	level = atoi (argv[2]);
@@ -34,7 +34,7 @@ int main (int argc, char **argv)
 		printf ("> Segment %d N = %d\n", id, h.n);
 		for (k = 0; k < h.n; k++) {
 			if (fread((char *)&p, sizeof(struct LONGPAIR), 1, fp_in) != 1) {
-				fprintf(stderr,"segment_dump:  ERROR  reading file.\n");
+				fprintf(stderr,"segment_dump: Error reading file.\n");
 				exit(-1);
 			}
 			printf ("%g\t%g\n", 1.0e-6 * p.x, 1.0e-6 * p.y);

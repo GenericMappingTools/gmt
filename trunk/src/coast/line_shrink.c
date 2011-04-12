@@ -1,5 +1,5 @@
 /*
- *	$Id: line_shrink.c,v 1.5 2009-06-11 05:42:09 guru Exp $
+ *	$Id: line_shrink.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  */
 /* 
  * line_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -19,7 +19,7 @@ int main (int argc, char **argv)
 	struct	LONGPAIR p;
         
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr,"usage:  line_shrink final_lines.b tolerance shrink_lines.b [-v]\n");
+		fprintf (stderr,"usage: line_shrink final_lines.b tolerance shrink_lines.b [-v]\n");
 		fprintf (stderr,"	tolerance is maximum mismatch in km\n");
 		exit (-1);
 	}
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 		
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"line_shrink:  ERROR  reading file.\n");
+				fprintf(stderr,"line_shrink: Error reading file.\n");
 				exit(-1);
 			}
 			x[k] = p.x;
@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 			h.id = n_out;
 			h.n = n;
 			if (pol_writeheader (&h, fp_out) != 1) {
-				fprintf(stderr,"line_shrink:  ERROR  writing file.\n");
+				fprintf(stderr,"line_shrink: Error writing file.\n");
 				exit(-1);
 			}
 			for (k = 0; k < n; k++) {
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 				p.y = y[index[k]];
 				if ((h.greenwich & 1) && p.x < 0) p.x += 360000000;
 				if (pol_fwrite (&p, 1, fp_out) != 1) {
-					fprintf(stderr,"line_shrink:  ERROR  writing file.\n");
+					fprintf(stderr,"line_shrink: Error writing file.\n");
 					exit(-1);
 				}
 			}

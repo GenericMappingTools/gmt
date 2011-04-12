@@ -1,5 +1,5 @@
 /*
- *	$Id: ciaman_fix.c,v 1.5 2009-06-11 05:42:09 guru Exp $
+ *	$Id: ciaman_fix.c,v 1.6 2011-04-12 13:06:43 remko Exp $
  */
 #include "wvs.h"
 
@@ -27,7 +27,7 @@ int main (int argc, char **argv) {
 	
 	if (argc == 4) {
 		ncut = atoi (argv[3]);
-		fprintf(stderr,"ciaman_fix:  ncut = %d\n", ncut);
+		fprintf(stderr,"ciaman_fix: ncut = %d\n", ncut);
 	}
 	
 	
@@ -162,7 +162,7 @@ int main (int argc, char **argv) {
 		
 		for (k = 0; k < poly[id].h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
-				fprintf(stderr,"ciaman_fix:  ERROR  reading file.\n");
+				fprintf(stderr,"ciaman_fix: Error reading file.\n");
 				exit(-1);
 			}
 			if (p.y > in || p.y < is) continue;
@@ -182,7 +182,7 @@ int main (int argc, char **argv) {
 		
 		for (k = 0; k < poly[id2].h.n; k++) {
 			if (pol_fread (&p, 1, fp_in2) != 1) {
-				fprintf(stderr,"ciaman_fix:  ERROR  reading file.\n");
+				fprintf(stderr,"ciaman_fix: Error reading file.\n");
 				exit(-1);
 			}
 			if ((poly[id2].h.greenwich & 1) && p.x > poly[id2].h.datelon) p.x -= M360;

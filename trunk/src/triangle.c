@@ -1430,7 +1430,7 @@ int size;
 
   memptr = (VOID *) malloc((size_t) size);
   if (memptr == (VOID *) NULL) {
-    printf("Error:  Out of memory.\n");
+    printf("error: Out of memory.\n");
     triexit(1);
   }
   return(memptr);
@@ -3369,7 +3369,7 @@ struct behavior *b;
             workstring[k] = '\0';
             b->maxarea = (REAL) strtod(workstring, (char **) NULL);
             if (b->maxarea <= 0.0) {
-              printf("Error:  Maximum area must be greater than zero.\n");
+              printf("Error: Maximum area must be greater than zero.\n");
               triexit(1);
 	    }
 	  } else {
@@ -3531,7 +3531,7 @@ struct behavior *b;
   b->goodangle *= b->goodangle;
   if (b->refine && b->noiterationnum) {
     printf(
-      "Error:  You cannot use the -I switch when refining a triangulation.\n");
+      "Error: You cannot use the -I switch when refining a triangulation.\n");
     triexit(1);
   }
   /* Be careful not to allocate space for element area constraints that */

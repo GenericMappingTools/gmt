@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findarea.c,v 1.3 2009-06-11 21:07:58 guru Exp $
+ *	$Id: polygon_findarea.c,v 1.4 2011-04-12 13:06:42 remko Exp $
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"
@@ -38,7 +38,7 @@ int main (int argc, char **argv) {
 		}
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
-				fprintf(stderr,"polygon_findarea:  ERROR  reading file.\n");
+				fprintf(stderr,"polygon_findarea: Error reading file.\n");
 				exit(-1);
 			}
 			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;

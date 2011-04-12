@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_set.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_set.c,v 1.3 2011-04-12 13:06:42 remko Exp $
  */
 /* polygon_set 
  *
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 	int	i, id, level, reverse;
 
 	if (argc != 4) {
-		fprintf(stderr,"usage:  polygon_set final.b id level\n");
+		fprintf(stderr,"usage: polygon_set final.b id level\n");
 		exit(-1);
 	}
 
@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 	}
 	
 	if (pol_fread (p, hin.n, fp) != hin.n) {
-		fprintf(stderr,"polygon_set:  ERROR  reading file.\n");
+		fprintf(stderr,"polygon_set: Error reading file.\n");
 		exit(-1);
 	}
 
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 	
 	for (i = hin.n - 1; i >= 0; i--) {
 		if (pol_fwrite (&p[i], 1, fp) != 1) {
-			fprintf(stderr,"polygon_set:  ERROR  writing file.\n");
+			fprintf(stderr,"polygon_set: Error writing file.\n");
 			exit(-1);
 		}
 	}

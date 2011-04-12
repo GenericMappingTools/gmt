@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_segment_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: wvs_segment_dump.c,v 1.3 2011-04-12 13:06:42 remko Exp $
  */
 /* wvs_segment_dump <raw_wvs_segment_file.b> <prefix>
  *
@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	strcpy (prefix, "piece");
 
 	if (argc == 1) {
-		fprintf(stderr,"usage:  wvs_segment_dump raw_wvs_segment_file prefix\n");
+		fprintf(stderr,"usage: wvs_segment_dump raw_wvs_segment_file prefix\n");
 		exit(-1);
 	}
 
@@ -30,7 +30,7 @@ int main (int argc, char **argv)
 		fp2 = fopen (file, "w");
 		for (j = 0; j < hin.n; j++) {
 			if ((fread((char *)&ptemp, sizeof(struct LONGPAIR), 1, fp)) != 1) {
-				fprintf(stderr,"wvs_segment_dump:  ERROR  reading file.\n");
+				fprintf(stderr,"wvs_segment_dump: Error reading file.\n");
 				exit(-1);
 			}
 			if (ptemp.x == 360000000) ptemp.x = 0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.7 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdfft_func.c,v 1.8 2011-04-12 13:06:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,7 +108,7 @@ struct GRDFFT_CTRL {
 #define	POISSONS_RATIO	0.25
 
 /* Macro definition ij_data(i,j) finds the array index to an element
-	containing the real data(i,j) in the padded complex array:  */
+	containing the real data(i,j) in the padded complex array */
 
 #define	ij_data(i,j,mx,i_data_start,j_data_start) (2*((mx)*((j)+j_data_start)+(i)+i_data_start))
 
@@ -214,10 +214,10 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		}
 	}
 	data_var = sqrt(data_var / (Grid->header->nx*Grid->header->ny - 1));
-	/* Rescale a1,a2 into user's units, in case useful later:  */
+	/* Rescale a1,a2 into user's units, in case useful later */
 	a[1] *= (2.0/(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
 	a[2] *= (2.0/(Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
-	GMT_report (GMT, GMT_MSG_NORMAL, "Plane removed.  Mean, S.D., Dx, Dy:  %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
 }
 
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
@@ -236,7 +236,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	i_data_start = GMT->current.io.pad[XLO];	/* For readability */
 	j_data_start = GMT->current.io.pad[YHI];
 	
-	/* First reflect about xmin and xmax, point symmetric about edge point:  */
+	/* First reflect about xmin and xmax, point symmetric about edge point */
 
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;	/* Outside xmin; left of edge 1  */
@@ -251,7 +251,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 
 	/* Next, reflect about ymin and ymax.
 	 * At the same time, since x has been reflected,
-	 * we can use these vals and taper on y edges:  */
+	 * we can use these vals and taper on y edges */
 
 	scale = M_PI / (j_data_start + 1);
 
@@ -267,7 +267,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		}
 	}
 
-	/* Now, cos taper the x edges:  */
+	/* Now, cos taper the x edges */
 
 	scale = M_PI / (i_data_start + 1);
 	for (im = 1; im <= i_data_start; im++) {
@@ -498,7 +498,7 @@ GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	/* Syntax is either -F[x|y]lc/hc/lp/hp (Cosine taper), -F[x|y]lo/hi (Gaussian), or 0F[x|y]lo/hi/order (Butterworth) */
 	
 	strcpy(line, c);
-	i = j = 0;	/* j is Filter type:  r=0, x=1, y=2  */
+	i = j = 0;	/* j is Filter type: r=0, x=1, y=2  */
 	
 	if (line[i] == 'x') {
 		j = 1;
@@ -629,10 +629,10 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		get_k = (PFD)modk;
 	}
 
-	/* Get an array for summing stuff:  */
+	/* Get an array for summing stuff */
 	power = GMT_memory (GMT, NULL, nk, double);
 
-	/* Loop over it all, summing and storing, checking range for r:  */
+	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
 	
@@ -744,7 +744,7 @@ void fourt_stats (GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, GMT_LONG *s,
 	storage = MAX (nonsym, f[n_factors-1]);
 	*s = (storage == 2) ? 0 : storage;
 
-	/* Now find time and error estimates:  */
+	/* Now find time and error estimates */
 
 	err_scale = 0.0;
 	sum2 = sumnot2 = nnot2 = 0;
@@ -843,21 +843,21 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %lds\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
-	/* Fastest solution:  */
+	/* Fastest solution */
 	fft_sug[0].nx = nx_best_t;
 	fft_sug[0].ny = ny_best_t;
 	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
 	fft_sug[0].totalbytes = t_space;
 	fft_sug[0].run_time = best_time;
 	fft_sug[0].rms_rel_err = t_err;
-	/* Most accurate solution:  */
+	/* Most accurate solution */
 	fft_sug[1].nx = nx_best_e;
 	fft_sug[1].ny = ny_best_e;
 	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
 	fft_sug[1].totalbytes = e_space;
 	fft_sug[1].run_time = e_time;
 	fft_sug[1].rms_rel_err = best_err;
-	/* Least storage solution:  */
+	/* Least storage solution */
 	fft_sug[2].nx = nx_best_s;
 	fft_sug[2].ny = ny_best_s;
 	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
@@ -875,7 +875,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
 		
-	/* Get dimensions as may be appropriate:  */
+	/* Get dimensions as may be appropriate */
 	if (Ctrl->N.n_user_set) {
 		if (Ctrl->N.nx2 < Gin->header->nx || Ctrl->N.ny2 < Gin->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: You specified -Nnx/ny smaller than input grid.  Ignored.\n");
@@ -891,7 +891,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 			suggest_fft (GMT, (GMT_LONG)Gin->header->nx, (GMT_LONG)Gin->header->ny, fft_sug, (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->N.suggest_narray));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
-				 * as the fastest solution; use the most accurate's dimensions:  */
+				 * as the fastest solution; use the most accurate's dimensions */
 				Ctrl->N.nx2 = fft_sug[1].nx;
 				Ctrl->N.ny2 = fft_sug[1].ny;
 			}
@@ -919,7 +919,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 		workc = GMT_memory (GMT, NULL, 4, float);
 
 
-	/* Put the data in the middle of the padded array:  */
+	/* Put the data in the middle of the padded array */
 
 	GMT->current.io.pad[XLO] = (Ctrl->N.nx2 - Gin->header->nx)/2;	/* zero if nx2 < Gin->header->nx+1  */
 	GMT->current.io.pad[YHI] = (Ctrl->N.ny2 - Gin->header->ny)/2;
@@ -1018,18 +1018,18 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 			case 'A':	/* Directional derivative */
 				Ctrl->A.active = TRUE;
-				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, "Syntax error -A option:  Cannot read azimuth\n");
+				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, "Syntax error -A option: Cannot read azimuth\n");
 				add_operation (GMT, Ctrl, AZIMUTHAL_DERIVATIVE, 1, par);
 				break;
 			case 'C':	/* Upward/downward continuation */
 				Ctrl->C.active = TRUE;
-				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, "Syntax error -C option:  Cannot read zlevel\n");
+				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, "Syntax error -C option: Cannot read zlevel\n");
 				add_operation (GMT, Ctrl, UP_DOWN_CONTINUE, 1, par);
 				break;
 			case 'D':	/* d/dz */
 				Ctrl->D.active = TRUE;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
-				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -D option:  scale must be nonzero\n");
+				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum */ 
@@ -1053,7 +1053,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 					f_info->set_already = TRUE;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);
 				}
-				n_errors += GMT_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Syntax error -F option: ");
+				n_errors += GMT_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Syntax error -F option");
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = TRUE;
@@ -1062,7 +1062,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 			case 'I':	/* Integrate */
 				Ctrl->I.active = TRUE;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
-				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option:  scale must be nonzero\n");
+				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, INTEGRATE, 1, par);
 				break;
 			case 'L':	/* Leave trend alone */
@@ -1246,7 +1246,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Ctrl->S.scale *= (2.0 / Grid->header->nm);
 		for (i = 0; i < Grid->header->size; i++) Grid->data[i] *= (float)Ctrl->S.scale;
 
-		/* The data are in the middle of the padded array:  */
+		/* The data are in the middle of the padded array */
 
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Grid);
 	}

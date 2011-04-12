@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *    $Id: psvelo_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -14,14 +14,14 @@ additional columns of data.  Only one symbol may be plotted at a time.
 PostScript code is written to stdout.
 
 
- Author:     Kurt Feigl
- Date:	      7 July 1998
- Version:     4
- Roots:       based on psxy.c
+ Author:	Kurt Feigl
+ Date:		7 July 1998
+ Version:	4
+ Roots:		based on psxy.c
  Adapted to version 3.3 by Genevieve Patau (25 June 1999)
  Last modified : 18 February 2000
 
- */
+*/
 
 #include "pslib.h"	/* to have pslib environment */
 #include "gmt_meca.h"	/* to have gmt_meca supplements */
@@ -175,31 +175,31 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
-			case 'A':       /* Change size of arrow head */
+			case 'A':	/* Change size of arrow head */
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 				Ctrl->A.width = GMT_to_inch (GMT, txt);
 				Ctrl->A.length = GMT_to_inch (GMT, txt_b);
 				Ctrl->A.head = GMT_to_inch (GMT, txt_c);
 				break;
-			case 'D':       /* Rescale Sigmas */
+			case 'D':	/* Rescale Sigmas */
 				Ctrl->D.active = TRUE;
 				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
 				break;
-			case 'E':		/* Set color for error ellipse  */
+			case 'E':	/* Set color for error ellipse  */
 				GMT_getfill (GMT, opt->arg, &Ctrl->E.fill);
 				Ctrl->E.active = TRUE;
 				break;
-			case 'G':		/* Set Gray shade for polygon */
+			case 'G':	/* Set Gray shade for polygon */
 				Ctrl->G.active = TRUE;
 				GMT_getfill (GMT, opt->arg, &Ctrl->G.fill);
 				break;
-			case 'L':		/* Draw the outline */
+			case 'L':	/* Draw the outline */
 				Ctrl->L.active = TRUE;
 				break;
-			case 'N':		/* Do not skip points outside border */
+			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = TRUE;
 				break;
-			case 'S':		/* Get symbol [and size] */
+			case 'S':	/* Get symbol [and size] */
  				Ctrl->S.type = opt->arg[0];
  				if (Ctrl->S.type == 'e' || Ctrl->S.type == 'r') {
 					strcpy (txt, &opt->arg[1]);
@@ -242,7 +242,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 						break;
 				}
 				break;
-			case 'W':    /* Set line attributes */
+			case 'W':	/* Set line attributes */
 				Ctrl->W.active = TRUE;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
@@ -258,10 +258,10 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	no_size_needed = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE || Ctrl->S.readmode == READ_ANISOTROPY || Ctrl->S.readmode == READ_CROSS || Ctrl->S.readmode == READ_WEDGE );
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error:  Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, n_set > 1, "Syntax error:  Only one -S setting is allowed.\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error:  Must specify symbol size.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error:  -D requres -Se|w.\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, n_set > 1, "Syntax error: Only one -S setting is allowed.\n");
+	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error: Must specify symbol size.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

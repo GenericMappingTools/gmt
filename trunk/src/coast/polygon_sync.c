@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.7 2011-04-12 03:05:18 remko Exp $
+ *	$Id: polygon_sync.c,v 1.8 2011-04-12 13:06:43 remko Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -122,7 +122,7 @@ int main (int argc, char **argv) {
 			P[res][id2].h.greenwich += (P[FULL][father].h.id << 1);
 			pol_writeheader (&P[res][id2].h, fp);
 			if (pol_fwrite (P[res][id2].p, P[res][id2].h.n, fp) != P[res][id2].h.n) {
-				fprintf(stderr,"polygon_xover:  ERROR  writing %d points from file %s.\n", P[res][id2].h.n, file);
+				fprintf(stderr,"polygon_xover: Error writing %d points from file %s.\n", P[res][id2].h.n, file);
 				exit (EXIT_FAILURE);
 			}
 		}
