@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.30 2011-04-11 21:20:48 remko Exp $
+ *	$Id: gmt_gdalread.c,v 1.31 2011-04-12 16:16:47 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,11 +27,9 @@
  */
 
 int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform);
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *, char * ,GMT_LONG , GMT_LONG, GMT_LONG, int, int, double, 
-	double, double, double, double, double);
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG pixel_reg, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
-void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, 
-	GMT_LONG nYSize, double, double);
+void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
 int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
@@ -39,11 +37,11 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	int	bGotNodata, metadata_only;
 	int	do_BIP;	/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
-	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */ 
+	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
-	GMT_LONG	pixel_reg, correct_bounds, fliplr;
+	GMT_LONG	pixel_reg, fliplr;
 	GMT_LONG	n, m, nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, n_commas, n_dash, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
@@ -61,14 +59,14 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GInt32	*tmpI32 = NULL;
 	GUInt32	*tmpUI32 = NULL;
 
-	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */ 
+	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	GMT_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
 		int nc_ind;
-		for (nc_ind = 0, n_commas = 0; prhs->B.bands[nc_ind]; nc_ind++) 
+		for (nc_ind = 0, n_commas = 0; prhs->B.bands[nc_ind]; nc_ind++)
 			if (prhs->B.bands[nc_ind] == ',') n_commas++;
-		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++) 
+		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++)
 			if (prhs->B.bands[n] == '-') n_dash = n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
@@ -82,7 +80,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		free(prhs->B.bands);	/* This is actualy the contents of header->pocket allocated by strdup */
 		prhs->B.bands = NULL;
 	}
-	else if (prhs->f_ptr.active) {	
+	else if (prhs->f_ptr.active) {
 		/* Here we are going to read to a grid so if no band info was provided, default to read only the
 		   first band. This avoids, for example, allocate and read all 3 bands in a RGB image and send
 		   back a full 3 band array to GMT_gdal_read_grd that will only keep the first band. */
@@ -91,7 +89,6 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		whichBands[0] = 1;
 	}
 
-	correct_bounds = prhs->C.active;
 	pixel_reg = prhs->F.active;
 	do_BIP = prhs->I.active;
 	if (nReqBands == 1) do_BIP = FALSE;	/* This must overrule any -I option settings */
@@ -144,13 +141,11 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		if( OSRImportFromProj4( hSRS, Ctrl->ProjectionRefPROJ4) == CE_None ) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, FALSE );
-			Ctrl->ProjectionRefWKT = pszPrettyWkt; 
+			Ctrl->ProjectionRefWKT = pszPrettyWkt;
 		}
 		else {
-			Ctrl->ProjectionRefWKT = CNULL; 
-			GMT_report (C, GMT_MSG_FATAL, 
-				"Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
-				Ctrl->ProjectionRefPROJ4);
+			Ctrl->ProjectionRefWKT = CNULL;
+			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", Ctrl->ProjectionRefPROJ4);
 		}
 
 		OSRDestroySpatialReference( hSRS );
@@ -158,8 +153,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	if (metadata_only) {
-		populate_metadata (C, Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
-				nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+		populate_metadata (C, Ctrl, gdal_filename, pixel_reg, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 		return (GMT_NOERROR);
 	}
 
@@ -192,8 +186,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		GDALGetGeoTransform( hDataset, adfGeoTransform );
 
 		if( adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0 ) {
-			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated." 
-							" This configuration is not supported.\n");
+			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated.  This configuration is not supported.\n");
 			GDALClose( hDataset );
 			GDALDestroyDriverManager();
 			return (-1);
@@ -219,18 +212,14 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		if( anSrcWin[0] < 0 || anSrcWin[1] < 0
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset) ) {
-			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n", 
-					GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset) );
+			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
+					GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			return (-1);
 		}
 		xOrigin = anSrcWin[0];
 		yOrigin = anSrcWin[1];
 		nXSize = anSrcWin[2];
 		nYSize = anSrcWin[3];
-		if (correct_bounds) {	/* Patch for the bug reading GMT grids */
-			nXSize++;
-			nYSize++;
-		}
 	}
 	else {			/* Use entire dataset */
 		xOrigin = yOrigin = 0;
@@ -300,7 +289,6 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "gdalread: Unsupported data type\n");
 			break;
-		
 	}
 
 	tmp = calloc(nBufYSize * nBufXSize, nPixelSize);
@@ -332,7 +320,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize,
 			tmp, nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0 );
 
-        	dfNoData = GDALGetRasterNoDataValue(hBand, &bGotNodata);
+		dfNoData = GDALGetRasterNoDataValue(hBand, &bGotNodata);
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(C, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
 
@@ -354,7 +342,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				for (n = 0; n < nXSize; n++)
 					if (do_BIP)
 						nVector[n] = n * nRGBA + i;	/* Vector for Pixel Interleaving */
-					else 
+					else
 						nVector[n] = n + i_x_nXYSize;	/* Vector for Band Sequential */
 
 				Ctrl->UInt8.active = TRUE;
@@ -480,8 +468,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	GDALClose(hDataset);
 
-	populate_metadata (C, Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
-				nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+	populate_metadata (C, Ctrl, gdal_filename, pixel_reg, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 
 	Ctrl->nActualBands = nBands;	/* Number of bands that were actually read in */
 
@@ -521,7 +508,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
  *            if image is not referenced) of the LL - LowerLeft - point, and so on.
  *
  *    GEOGCorners:
- *        A structure array with the same field as 'Corners' but in geographical coordinates 
+ *        A structure array with the same field as 'Corners' but in geographical coordinates
  *        (if that is possible, or otherwise the LL values are set to NaN).
  *
  *    hdr:
@@ -530,9 +517,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
  *        registration, but it is actually set the -F option [default is 0]
  *
  * */
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename , GMT_LONG correct_bounds,
-			GMT_LONG pixel_reg, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY,
-			double dfLRX, double dfLRY, double z_min, double z_max) {
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG pixel_reg, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
 
 	GDALDriverH hDriver;		/* This is the driver chosen by the GDAL library to query the dataset. */
 	GDALDatasetH hDataset;		/* pointer structure used to query the gdal file. */
@@ -540,7 +525,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	GDALColorTableH	hTable;
 	GDALColorEntry	sEntry;
 
-	int	i, n_colors;		/* Number of colors in the eventual Color Table */ 
+	int	i, n_colors;		/* Number of colors in the eventual Color Table */
 	int	status, bSuccess;	/* success or failure */
 	int	xSize, ySize; 		/* Dimensions of the dataset */
 	int	nBand, raster_count;
@@ -573,20 +558,20 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		/* First in PROJ4 format */
 		if( OSRImportFromWkt( hSRS, &pszProjection) == CE_None ) {
 			OSRExportToProj4( hSRS, &pszResult );
-			Ctrl->ProjectionRefPROJ4 = pszResult; 
+			Ctrl->ProjectionRefPROJ4 = pszResult;
 		}
 		else
-			Ctrl->ProjectionRefPROJ4 = CNULL; 
+			Ctrl->ProjectionRefPROJ4 = CNULL;
 
 		/* Now in WKT format */
 		if( OSRImportFromWkt( hSRS, &pszProjection ) == CE_None ) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, FALSE );
-			Ctrl->ProjectionRefWKT = pszPrettyWkt; 
+			Ctrl->ProjectionRefWKT = pszPrettyWkt;
 			CPLFree( pszPrettyWkt );
 		}
 		else
-			Ctrl->ProjectionRefWKT = CNULL; 
+			Ctrl->ProjectionRefWKT = CNULL;
 
 		OSRDestroySpatialReference( hSRS );
 	}
@@ -595,12 +580,11 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* Record the geotransform. */
 	/* ------------------------------------------------------------------------- */
 	status = record_geotransform ( gdal_filename, hDataset, adfGeoTransform );
-	if (!strcmp(GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)),"netCDF") && 
-		    GDAL_VERSION_NUM <= 1450) {
+	if (!strcmp(GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)),"netCDF") && GDAL_VERSION_NUM <= 1450) {
 		adfGeoTransform[3] *= -1;
 		adfGeoTransform[5] *= -1;
 	}
-	if ( status == 0 ) {
+	if (status == 0) {
 		Ctrl->GeoTransform[0] = adfGeoTransform[0];
 		Ctrl->GeoTransform[1] = adfGeoTransform[1];
 		Ctrl->GeoTransform[2] = adfGeoTransform[2];
@@ -611,19 +595,19 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->GeoTransform[0] = dfULX;
 			Ctrl->GeoTransform[3] = dfULY;
 		}
-	} 
+	}
 
 	/* ------------------------------------------------------------------------- */
 	/* Get driver information */
 	/* ------------------------------------------------------------------------- */
-	hDriver = GDALGetDatasetDriver( hDataset );
+	hDriver = GDALGetDatasetDriver (hDataset);
 
-	Ctrl->DriverShortName = GDALGetDriverShortName( hDriver );
-	Ctrl->DriverLongName  = GDALGetDriverLongName( hDriver );
+	Ctrl->DriverShortName = GDALGetDriverShortName (hDriver);
+	Ctrl->DriverLongName  = GDALGetDriverLongName (hDriver);
 
 	if (!got_R) {		/* That is, if we are using the entire dataset */
-		xSize = GDALGetRasterXSize( hDataset );
-		ySize = GDALGetRasterYSize( hDataset );
+		xSize = GDALGetRasterXSize (hDataset);
+		ySize = GDALGetRasterYSize (hDataset);
 	}
 	else if (got_R && nXSize == 0 && nYSize == 0) {		/* metadata_only */
 		int	anSrcWin[4];
@@ -645,15 +629,12 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		if( anSrcWin[0] < 0 || anSrcWin[1] < 0
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset) ) {
-			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n", 
+			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 							GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset) );
 			GMT_report (C, GMT_MSG_FATAL, "Quiting with error\n");
 			return(-1);
 		}
 		nXSize = anSrcWin[2];	nYSize = anSrcWin[3];
-		if (correct_bounds) {	/* Patch for the hostility towards grid registration grids */
-			nXSize++;	nYSize++;
-		}
 
 		xSize = nXSize;
 		ySize = nYSize;
@@ -692,7 +673,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 
 		Ctrl->band_field_names[nBand].DataType = strdup( GDALGetDataTypeName( GDALGetRasterDataType ( hBand )) );
 		Ctrl->band_field_names[nBand].nodata = (double)GDALGetRasterNoDataValue( hBand, &status );
-	
+
 		/* Get band's Min/Max. If the band has no record of it we won't compute it */
 		adfMinMax[0] = GDALGetRasterMinimum( hBand, &bGotMin );
 		adfMinMax[1] = GDALGetRasterMaximum( hBand, &bGotMax );
@@ -737,7 +718,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* Get the first band NoData Value */
 	/* ------------------------------------------------------------------------- */
 	nodata = (double) (GDALGetRasterNoDataValue ( hBand, &status ) );
-	if ( status == 0 ) 
+	if ( status == 0 )
 		Ctrl->nodata = nodata;
 	else
 		Ctrl->nodata = 0;	/* How the hell I set a novalue-nodatavalue ? */
@@ -745,11 +726,11 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Map of first band (if any) */
 	/* ------------------------------------------------------------------------- */
-	if( GDALGetRasterColorInterpretation(hBand) == GCI_PaletteIndex 
+	if( GDALGetRasterColorInterpretation(hBand) == GCI_PaletteIndex
 		&& (hTable = GDALGetRasterColorTable( hBand )) != NULL ) {
 
 		n_colors = GDALGetColorEntryCount( hTable );
-		Ctrl->ColorMap = GMT_memory(C, NULL, n_colors*4, int); 
+		Ctrl->ColorMap = GMT_memory(C, NULL, n_colors*4, int);
 		for( i = 0; i < n_colors; i++ ) {
 			GDALGetColorEntryAsRGB( hTable, i, &sEntry );
 			Ctrl->ColorMap[i*4]   = sEntry.c1;
@@ -764,69 +745,64 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* ------------------------------------------------------------------------- */
 	/* Record corners. */
 	/* ------------------------------------------------------------------------- */
-	if (!got_R)					/* Lower Left */ 
+	if (!got_R)					/* Lower Left */
 		ReportCorner (C, hDataset, 0.0, GDALGetRasterYSize(hDataset), xy_c, xy_geo[0]);
 	else
-		{xy_c[0] = dfULX;	xy_c[1] = dfLRY;}
+		xy_c[0] = dfULX, xy_c[1] = dfLRY;
 	Ctrl->Corners.LL[0] = Ctrl->hdr[0] = xy_c[0];	/* xmin, ymin */
 	Ctrl->Corners.LL[1] = Ctrl->hdr[2] = xy_c[1];
 
 	if (!got_R)					/* Upper Left */
-		ReportCorner(C, hDataset, 0.0, 0.0, xy_c, xy_geo[1]);				
+		ReportCorner (C, hDataset, 0.0, 0.0, xy_c, xy_geo[1]);
 	else
-		{xy_c[0] = dfULX;	xy_c[1] = dfULY;}
+		xy_c[0] = dfULX, xy_c[1] = dfULY;
 	Ctrl->Corners.UL[0] = xy_c[0];
 	Ctrl->Corners.UL[1] = xy_c[1];
 
-	if (!got_R)					/* Upper Rigt */
-		ReportCorner(C, hDataset, GDALGetRasterXSize(hDataset), 0.0, xy_c, xy_geo[2]);
+	if (!got_R)					/* Upper Right */
+		ReportCorner (C, hDataset, GDALGetRasterXSize(hDataset), 0.0, xy_c, xy_geo[2]);
 	else
-		{xy_c[0] = dfLRX;	xy_c[1] = dfULY;}
+		xy_c[0] = dfLRX, xy_c[1] = dfULY;
 	Ctrl->Corners.UR[0] = Ctrl->hdr[1] = xy_c[0];	/* xmax, ymax */
 	Ctrl->Corners.UR[1] = Ctrl->hdr[3] = xy_c[1];
 
-	if (!got_R)					/* LR */
-		ReportCorner(C, hDataset, GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset), xy_c, xy_geo[3]);
+	if (!got_R)					/* Lower Right */
+		ReportCorner (C, hDataset, GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset), xy_c, xy_geo[3]);
 	else
-		{xy_c[0] = dfLRX;	xy_c[1] = dfLRY;}
+		xy_c[0] = dfLRX, xy_c[1] = dfLRY;
 	Ctrl->Corners.LR[0] = xy_c[0];
 	Ctrl->Corners.LR[1] = xy_c[1];
 
 	/* --------------------------------------------------------------------------------------
 	 * Record Geographical corners (if they exist)
 	 * -------------------------------------------------------------------------------------- */
-	if( !got_R ) {
-		if( !GMT_is_dnan(xy_geo[0][0]) ) {
+	if(!got_R) {
+		if (!GMT_is_dnan(xy_geo[0][0])) {
 			Ctrl->GEOGCorners.LL[0] = xy_geo[0][0]; Ctrl->GEOGCorners.LL[1] = xy_geo[0][1];
 			Ctrl->GEOGCorners.UL[0] = xy_geo[1][0]; Ctrl->GEOGCorners.UL[1] = xy_geo[1][1];
 			Ctrl->GEOGCorners.UR[0] = xy_geo[2][0]; Ctrl->GEOGCorners.UR[1] = xy_geo[2][1];
 			Ctrl->GEOGCorners.LR[0] = xy_geo[3][0]; Ctrl->GEOGCorners.LR[1] = xy_geo[3][1];
 		}
-		else {
+		else
 			Ctrl->GEOGCorners.LL[0] = Ctrl->GEOGCorners.LL[1] = C->session.d_NaN;
-		}
 	}
-	else {
+	else
 		Ctrl->GEOGCorners.LL[0] = Ctrl->GEOGCorners.LL[1] = C->session.d_NaN;
-	}
 
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
 			GDALComputeRasterMinMax( hBand, TRUE, adfMinMax );
-			Ctrl->hdr[4] = adfMinMax[0]; 
-			Ctrl->hdr[5] = adfMinMax[1]; 
+			Ctrl->hdr[4] = adfMinMax[0];
+			Ctrl->hdr[5] = adfMinMax[1];
 		}
 		else {
 			Ctrl->hdr[4] = z_min;
 			Ctrl->hdr[5] = z_max;
-		}	
+		}
 
-		if (!pixel_reg)			/* See if we want grid or pixel registration */
-			Ctrl->hdr[6] = 0; 
-		else
-			Ctrl->hdr[6] = 1; 
+		Ctrl->hdr[6] = (pixel_reg) ? 1 : 0;	/* See if we want grid or pixel registration */
 		Ctrl->hdr[7] = adfGeoTransform[1];
 		Ctrl->hdr[8] = fabs(adfGeoTransform[5]);
 
@@ -836,20 +812,19 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->hdr[3] = tmpdble;
 		}
 
-		if (correct_bounds && !got_R) {
-			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
-			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
-		}
-		else if (got_R) {
+		if (got_R) {
 			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
 			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
 		}
+		else if (!pixel_reg) {
+			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
+			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
+		}
 	}
 
+	GDALClose (hDataset);
 
-	GDALClose ( hDataset );
-
-	return ( GMT_NOERROR );
+	return (GMT_NOERROR);
 }
 
 /************************************************************************/
@@ -868,18 +843,17 @@ int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y,
 /*      Transform the point into georeferenced coordinates.             */
 /* -------------------------------------------------------------------- */
 	if( GDALGetGeoTransform( hDataset, adfGeoTransform ) == CE_None ) {
-        	pszProjection = GDALGetProjectionRef(hDataset);
-		if (!strcmp(GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)),"netCDF") && 
-			    GDAL_VERSION_NUM <= 1450) {
+		pszProjection = GDALGetProjectionRef(hDataset);
+		if (!strcmp(GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)),"netCDF") && GDAL_VERSION_NUM <= 1450) {
 			adfGeoTransform[3] *= -1;
 			adfGeoTransform[5] *= -1;
 		}
-        	dfGeoX = adfGeoTransform[0] + adfGeoTransform[1] * x + adfGeoTransform[2] * y;
-        	dfGeoY = adfGeoTransform[3] + adfGeoTransform[4] * x + adfGeoTransform[5] * y;
+		dfGeoX = adfGeoTransform[0] + adfGeoTransform[1] * x + adfGeoTransform[2] * y;
+		dfGeoY = adfGeoTransform[3] + adfGeoTransform[4] * x + adfGeoTransform[5] * y;
 	}
 	else {
 		xy_c[0] = x;	xy_c[1] = y;
-        	return FALSE;
+		return FALSE;
 	}
 
 /* -------------------------------------------------------------------- */
@@ -890,25 +864,23 @@ int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y,
 /* -------------------------------------------------------------------- */
 /*      Setup transformation to lat/long.                               */
 /* -------------------------------------------------------------------- */
-    if( pszProjection != NULL && strlen(pszProjection) > 0 ) {
+	if( pszProjection != NULL && strlen(pszProjection) > 0 ) {
 
-        hProj = OSRNewSpatialReference( pszProjection );
-        if( hProj != NULL )
-            hLatLong = OSRCloneGeogCS( hProj );
+		hProj = OSRNewSpatialReference( pszProjection );
+		if( hProj != NULL ) hLatLong = OSRCloneGeogCS( hProj );
 
-        if( hLatLong != NULL ) {
-            CPLPushErrorHandler( CPLQuietErrorHandler );
-            hTransform = OCTNewCoordinateTransformation( hProj, hLatLong );
-            CPLPopErrorHandler();
-            OSRDestroySpatialReference( hLatLong );
-        }
+		if( hLatLong != NULL ) {
+			CPLPushErrorHandler( CPLQuietErrorHandler );
+			hTransform = OCTNewCoordinateTransformation( hProj, hLatLong );
+			CPLPopErrorHandler();
+			OSRDestroySpatialReference( hLatLong );
+		}
 
-        if( hProj != NULL )
-            OSRDestroySpatialReference( hProj );
-    }
+		if( hProj != NULL ) OSRDestroySpatialReference( hProj );
+	}
 /*
  * --------------------------------------------------------------------
- *      Transform to latlong and report.                                
+ *      Transform to latlong and report.
  * --------------------------------------------------------------------
  */
 	if( hTransform != NULL && OCTTransform(hTransform,1,&dfGeoX,&dfGeoY,NULL) )
@@ -948,7 +920,7 @@ int record_geotransform ( char *gdal_filename, GDALDatasetH hDataset, double *ad
 }
 
 /* -------------------------------------------------------------------- */
-void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], 
+void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 			GMT_LONG nXSize, GMT_LONG nYSize, double z_min, double z_max) {
 	/* Compute Min/Max of a sub-region. I'm forced to do this because the
 	GDALComputeRasterMinMax works only on the entire dataset */
@@ -960,7 +932,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, d
 	float	*tmpF32 = NULL;
 	double	dfNoDataValue, *tmpF64;
 
-        dfNoDataValue = GDALGetRasterNoDataValue(hBand, &bGotNoDataValue);
+	dfNoDataValue = GDALGetRasterNoDataValue(hBand, &bGotNoDataValue);
 	switch( GDALGetRasterDataType(hBand) ) {
 		case GDT_Byte:
 			for (i = 0; i < nXSize*nYSize; i++) {
