@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.12 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdimage_func.c,v 1.13 2011-04-12 16:22:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -412,7 +412,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Allocate new control structures */
 		to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
 		from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
-		to_gdalread->F.active = 1;
+		to_gdalread->F.active = TRUE;
 
 		if (GMT->common.R.active && !Ctrl->D.mode) {
 			char strR [128]; 
@@ -427,7 +427,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		while (j && Ctrl->In.file[0][j] && Ctrl->In.file[0][j] != '+') j--;	/* See if we have a band request */
 		if (j && Ctrl->In.file[0][j+1] == 'b') {
 			Ctrl->In.file[0][j] = '\0';			/* Strip the band request string and put in the -B option */
-			to_gdalread->B.active = 1;
+			to_gdalread->B.active = TRUE;
 			to_gdalread->B.bands = strdup(&Ctrl->In.file[0][j+2]);	/* Band parsing and error testing is done in gmt_gdalread */
 
 		}

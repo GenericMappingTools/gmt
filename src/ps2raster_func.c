@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
+ *	$Id: ps2raster_func.c,v 1.7 2011-04-12 16:22:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -935,7 +935,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				/* Allocate new control structures */
 				to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
 				from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
-				to_gdalread->W.active = 1;
+				to_gdalread->W.active = TRUE;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
 				GMT_gdalread (GMT, NULL, to_gdalread, from_gdalread);
 				if (from_gdalread->ProjectionRefWKT != CNULL) {
