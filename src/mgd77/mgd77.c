@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.266 2011-04-11 21:15:32 remko Exp $
+ *	$Id: mgd77.c,v 1.267 2011-04-12 03:05:18 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -209,7 +209,7 @@ int MGD77_Write_File (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, s
 			err = MGD77_Write_File_asc (C, file, F, S);
 			break;
 		default:
-			GMT_message (C, "%s: Bad format (%d)!\n", C->init.progname, F->format);
+			GMT_report (C, GMT_MSG_FATAL, "Bad format (%d)!\n", F->format);
 			GMT_exit (EXIT_FAILURE);
 	}
 	return (err);
@@ -228,7 +228,7 @@ int MGD77_Read_File (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, st
 			err = MGD77_Read_File_cdf (C, file, F, S);
 			break;
 		default:
-			GMT_message (C, "%s: Bad format (%d)!\n", C->init.progname, F->format);
+			GMT_report (C, GMT_MSG_FATAL, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -247,7 +247,7 @@ int MGD77_Write_Data (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, s
 			err = MGD77_Write_Data_cdf (C, file, F, S);
 			break;
 		default:
-			GMT_message (C, "%s: Bad format (%d)!\n", C->init.progname, F->format);
+			GMT_report (C, GMT_MSG_FATAL, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -266,7 +266,7 @@ int MGD77_Read_Data (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, st
 			err = MGD77_Read_Data_cdf (C, file, F, S);
 			break;
 		default:
-			GMT_message (C, "%s: Bad format (%d)!\n", C->init.progname, F->format);
+			GMT_report (C, GMT_MSG_FATAL, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -286,14 +286,14 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	if (rw == MGD77_READ_MODE) {	/* Reading a file */
 		mode[0] = 'r';
 		if (MGD77_Get_Path (C, F->path, leg, F)) {
-   			GMT_message (C, "%s : Cannot find leg %s\n", C->init.progname, leg);
+   			GMT_report (C, GMT_MSG_FATAL, "Cannot find leg %s\n", leg);
      			return (MGD77_FILE_NOT_FOUND);
   		}
 	}
 	else if (rw == MGD77_WRITE_MODE) {		/* Writing to a new file; leg is assumed to be complete name */
 		int k, has_suffix = MGD77_NOT_SET;
 		if (F->format == MGD77_FORMAT_ANY || F->format == MGD77_NOT_SET) {
-			GMT_message (C, "%s: Format type not set for output file %s\n", C->init.progname, leg);
+			GMT_report (C, GMT_MSG_FATAL, "Format type not set for output file %s\n", leg);
 			return (MGD77_ERROR_OPEN_FILE);
 		}
 		mode[0] = 'w';
@@ -311,7 +311,7 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	/* For netCDF format we do not open file - this is done differently later */
 
 	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
-		GMT_message (C, "%s: Could not open %s\n", C->init.progname, F->path);
+		GMT_report (C, GMT_MSG_FATAL, "Could not open %s\n", F->path);
 		return (MGD77_ERROR_OPEN_FILE);
 	}
 
@@ -487,7 +487,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
 		if (GMT_STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
-			GMT_message (C, "%s: Unable to stat file %s\n", C->init.progname, F->path);
+			GMT_report (C, GMT_MSG_FATAL, "Unable to stat file %s\n", F->path);
 			GMT_exit (EXIT_FAILURE);
 		}
 #ifdef WIN32
@@ -749,7 +749,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	P = (F->original || F->format != MGD77_FORMAT_CDF) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 
 	if (!H->meta.verified) {
-		GMT_message (C, "%s: Error: MGD77_Verify_Header called before MGD77_Verify_Prep\n", C->init.progname);
+		GMT_report (C, GMT_MSG_FATAL, "Error: MGD77_Verify_Header called before MGD77_Verify_Prep\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -1498,7 +1498,7 @@ int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct MGD77_C
 
 	MGD77_nc_status (C, nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */
-		GMT_message (C, "%s: No record dimension in file %s - cannot read contents\n", C->init.progname, file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: No record dimension in file %s - cannot read contents\n", file);
 		return (MGD77_ERROR_NOT_MGD77PLUS);
 	}
 	MGD77_nc_status (C, nc_inq_dimname (F->nc_id, F->nc_recid, name));	/* Get dimension name */
@@ -1686,7 +1686,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	}
 
 	if (match == 0) {
-		GMT_message (C, "%s: Error: No header item matched your string %s\n", C->init.progname, item);
+		GMT_report (C, GMT_MSG_FATAL, "Error: No header item matched your string %s\n", item);
 		return -1;
 	}
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
@@ -1702,7 +1702,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 			return 0;
 		}
 		else {
-			GMT_message (C, "%s: Error: More than one item matched your string %s:\n", C->init.progname, item);
+			GMT_report (C, GMT_MSG_FATAL, "Error: More than one item matched your string %s:\n", item);
 			for (i = 0; i < match; i++) GMT_message (C, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
@@ -1724,7 +1724,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *it
 	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
 
 	if (id == MGD77_NOT_SET) {
-		GMT_message (C, "%s: Error: MGD77_Get_Header_Item returns %d for item %s\n", C->init.progname, id, item);
+		GMT_report (C, GMT_MSG_FATAL, "Error: MGD77_Get_Header_Item returns %d for item %s\n", id, item);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1884,7 +1884,7 @@ int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH) {
-		GMT_message (C, "Incorrect record length (%d), skipped\n%s\n",len,line);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Incorrect record length (%d), skipped\n%s\n",len,line);
 		return (MGD77_WRONG_DATA_REC_LEN);
 	}
 
@@ -2082,19 +2082,19 @@ int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *record, int 
 		got = fgetc (fp);		/* Read the first character from the file stream */
 		ungetc (got, fp);		/* Put the character back on the stream */
 		if (! (got == '4' || got == '1')) {	/* 4 means pre-Y2K header/file */
-			GMT_message (C, "MGD77_Read_Header: No header record present\n");
+			GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: No header record present\n");
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
 	if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
-		GMT_message (C, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
+		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
 	GMT_chop (record);
 
 	got = atoi (&record[78]);
 	if (got != seq) {
-		GMT_message (C, "MGD77_Read_Header: Expected header sequence %2.2d says it is %2.2d\n", seq, got);
+		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Expected header sequence %2.2d says it is %2.2d\n", seq, got);
 		return (MGD77_WRONG_HEADER_REC);
 	}
 	return (MGD77_NO_ERROR);
@@ -2142,7 +2142,7 @@ void MGD77_Process_Ignore (struct GMT_CTRL *C, char code, char *format)
 				MGD77_Ignore_Format (C, MGD77_FORMAT_TBL);
 				break;
 			default:
-				GMT_message (C, "%s: Option -%c Bad format (%c)!\n", C->init.progname, code, format[i]);
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error: Option -%c Bad format (%c)!\n", code, format[i]);
 				GMT_exit (EXIT_FAILURE);
 				break;
 		}
@@ -2254,7 +2254,7 @@ int MGD77_Order_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD
 
 	for (i = 0; i < F->n_out_columns; i++) {	/* This is not really needed if MGD77_Select_All_Columns did things, but just in case */
 		if (MGD77_Info_from_Abbrev (C, F->desired_column[i], H, &set, &item) == MGD77_NOT_SET) {
-			GMT_message (C, "%s: Requested column %s not in data set!\n", C->init.progname, F->desired_column[i]);
+			GMT_report (C, GMT_MSG_FATAL, "Requested column %s not in data set!\n", F->desired_column[i]);
 			return (MGD77_ERROR_NOSUCHCOLUMN);
 		}
 		F->order[i].item = (int)item;
@@ -2444,7 +2444,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 		else {	/* Desired output column */
 			for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < i; j++) if (!strcmp (word, F->desired_column[j])) k = j;
 			if (k != MGD77_NOT_SET) {	/* Mentioned before */
-				GMT_message (C, "%s: Warning: Column \"%s\" given more than once.\n", C->init.progname, word);
+				GMT_report (C, GMT_MSG_FATAL, "Warning: Column \"%s\" given more than once.\n", word);
 			}
 			strcpy (F->desired_column[i], word);
 			if (exact) {		/* This geophysical column must be != NaN for us to output record */
@@ -2464,7 +2464,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 		else if (p[0] == '-')
 			F->Bit_test[i].match = 0;
 		else {
-			GMT_message (C, "%s: Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", C->init.progname, p);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
 			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (F->Bit_test[i].name, &p[1]);
@@ -2621,7 +2621,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
 		if ((fp = GMT_fopen (C, flist, "r")) == NULL) {
-			GMT_message (C, "Warning: Unable to open file list %s\n", flist);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: Unable to open file list %s\n", flist);
 			return (-1);
 		}
 		while (GMT_fgets (C, line, BUFSIZ, fp)) {
@@ -2676,7 +2676,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			/* The directory search is only supported on Unix-like systems for now */
 			/* Here we have either <agency> or <agency><vessel> code or blank for all */
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
-				GMT_message (C, "%s: Warning: Unable to open directory %s\n", C->init.progname, F->MGD77_datadir[i]);
+				GMT_report (C, GMT_MSG_FATAL, "Warning: Unable to open directory %s\n", F->MGD77_datadir[i]);
 				continue;
 			}
 			while ((entry = readdir (dir)) != NULL) {
@@ -2759,11 +2759,11 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	}
 
 	if (has_suffix != MGD77_NOT_SET && !MGD77_format_allowed[has_suffix]) {	/* Filename clashes with allowed extensions */
-		GMT_message (C, "%s: Error: File has suffix (%s) that is set to be ignored!\n", C->init.progname, MGD77_suffix[has_suffix]);
+		GMT_report (C, GMT_MSG_FATAL, "Error: File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
 		return (MGD77_FILE_NOT_FOUND);
 	}
 	if (has_suffix == MGD77_NOT_SET && (track[0] == '/' || track[1] == ':')) {	/* Hard path given without extension */
-		GMT_message (C, "%s: Error: Hard path (%s) has no recognized extension!\n", C->init.progname, track);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Hard path (%s) has no recognized extension!\n", track);
 		return (MGD77_FILE_NOT_FOUND);
 	}
 
@@ -2793,7 +2793,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 			f_stop  = MGD77_FORMAT_TBL;
 			break;
 		default:	/* Bad */
-			GMT_message (C, "%s: Bad file format specified given (%d)\n", C->init.progname, F->format);
+			GMT_report (C, GMT_MSG_FATAL, "Bad file format specified given (%d)\n", F->format);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -3030,7 +3030,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 
 void MGD77_Fatal_Error (struct GMT_CTRL *C, int error)
 {
-	GMT_message (C, "%s: Error [%d]: ", C->init.progname, error);
+	GMT_report (C, GMT_MSG_FATAL, "Error [%d]: ", error);
 	switch (error) {
 		case MGD77_NO_HEADER_REC:
 			GMT_message (C, "Header record not found");
@@ -3124,7 +3124,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 
 	entry = MGD77_Info_from_Abbrev (C, "lon", &S->H, &t_set, &t_id);
 	if (entry == MGD77_NOT_SET) {	/* Not good */
-		GMT_message (C, "%s: Longitude not present!\n", C->init.progname);
+		GMT_report (C, GMT_MSG_FATAL, "Longitude not present!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -3143,7 +3143,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 		}
 	}
 	if (crossed_dateline && crossed_greenwich)
-		GMT_message (C, "%s: Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n", C->init.progname);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n");
 	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
 		for (i = 0; i < S->H.n_records; i++) if (values[i] < 0.0) values[i] += 360.0;
 	}
@@ -3218,7 +3218,7 @@ int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct MGD77_
 	/* It is assumed that MGD77_Prep_Header_cdf has been called */
 
 	if (H->no_time) {
-		GMT_report (C, GMT_MSG_NORMAL, "%s: Data set %s has no time values\n", C->init.progname, file);
+		GMT_report (C, GMT_MSG_NORMAL, "Data set %s has no time values\n", file);
 		MGD77_nc_status (C, nc_def_dim (F->nc_id, "record_no", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited record dimension */
 		time_id = MGD77_NOT_SET;
 	}
@@ -3459,7 +3459,7 @@ int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F
 		switch (S->H.info[c].col[id].adjust) {
 			case MGD77_COL_ADJ_TWT:		/* Must undo PDR wrap-around only */
 				if (GMT_IS_ZERO (S->H.PDR_wrap)) {
-					GMT_message (C, "%s: Warning: PDR unwrapping requested but period = 0. Wrapping deactivated\n", C->init.progname);
+					GMT_report (C, GMT_MSG_FATAL, "Warning: PDR unwrapping requested but period = 0. Wrapping deactivated\n");
 				}
 				else {
 					E.needed[E77_AUX_FIELD_TWT] = 1;
@@ -3877,7 +3877,7 @@ void MGD77_nc_status (struct GMT_CTRL *C, int status)
 	 * appropriate action if the status != NC_NOERR
 	 */
 	if (status != NC_NOERR) {
-		GMT_message (C, "%s: %s\n", C->init.progname, nc_strerror (status));
+		GMT_report (C, GMT_MSG_FATAL, "%s\n", nc_strerror (status));
 		GMT_exit (EXIT_FAILURE);
 	}
 }
@@ -3973,7 +3973,7 @@ int MGD77_carter_get_bin (struct GMT_CTRL *C, double lon, double lat, int *bin)
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		GMT_message (C, "Error: in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
+		GMT_report (C, GMT_MSG_FATAL, "Error in MGD77_carter_get_bin:  Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -3994,7 +3994,7 @@ int MGD77_carter_get_zone (struct GMT_CTRL *G, int bin, struct MGD77_CARTER *C, 
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(G, C) ) {
-		fprintf (G->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone:  Initialization failure.\n");
+		GMT_report (G, GMT_MSG_FATAL, "Error in MGD77_carter_get_zone:  Initialization failure.\n");
 		return (-1);
 	}
 
@@ -4649,7 +4649,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 
 	if (date < 1900.0 || date > 2015.0) {
-		GMT_message (C, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", C->init.progname, date);
+		GMT_report (C, GMT_MSG_FATAL, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", date);
 		return (MGD77_BAD_IGRFDATE);
 	}
 
@@ -4852,7 +4852,7 @@ double MGD77_Theoretical_Gravity (struct GMT_CTRL *C, double lon, double lat, in
 			break;
 		default:	/* Unrecognized */
 			g = C->session.d_NaN;
-			GMT_message (C, "%s: Unrecognized theoretical gravity formula code (%d)\n", C->init.progname, version);
+			GMT_report (C, GMT_MSG_FATAL, "Unrecognized theoretical gravity formula code (%d)\n", version);
 			break;
 	}
 
@@ -4922,7 +4922,7 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	FILE *fp;
 
 	if ((fp = GMT_fopen (C, tablefile, "r")) == NULL) {
-		GMT_message (C, "%s: Correction table %s not found!\n", C->init.progname, tablefile);
+		GMT_report (C, GMT_MSG_FATAL, "Correction table %s not found!\n", tablefile);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -4946,13 +4946,13 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 				p = basis;
 				if (strchr ("CcSsEe", p[0])) p += 3;	/* Need cos, sin, or exp */
 				if (p[0] != '(') {
-					GMT_message (C, "%s: Correction table format error line %ld, term = %s: Expected 1st opening parenthesis!\n", C->init.progname, rec, arguments);
+					GMT_report (C, GMT_MSG_FATAL, "Correction table format error line %ld, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
 					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
-					GMT_message (C, "%s: Correction table format error line %ld, term = %s: Expected 2nd opening parenthesis!\n", C->init.progname, rec, arguments);
+					GMT_report (C, GMT_MSG_FATAL, "Correction table format error line %ld, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
 					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
@@ -5032,7 +5032,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	};
 
 	if ((fp = GMT_fopen (C, tablefile, "r")) == NULL) {
-		GMT_message (C, "%s: Correction table %s not found!\n", C->init.progname, tablefile);
+		GMT_report (C, GMT_MSG_FATAL, "Correction table %s not found!\n", tablefile);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -5083,14 +5083,14 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 				else					/* Nothing, just copy value */
 					c->modifier = (PFD) MGD77_Copy;
 				if (p[0] != '(') {
-					GMT_message (C, "%s: Correction table format error line %ld, term = %s: Expected 1st opening parenthesis!\n", C->init.progname, rec, arguments);
+					GMT_report (C, GMT_MSG_FATAL, "Correction table format error line %ld, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
 					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
 				c->scale = (p[0] == '(') ? 1.0 : atof (p);
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
-					GMT_message (C, "%s: Correction table format error line %ld, term = %s: Expected 2nd opening parenthesis!\n", C->init.progname, rec, arguments);
+					GMT_report (C, GMT_MSG_FATAL, "Correction table format error line %ld, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
 					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
@@ -5105,7 +5105,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 				if ((c->id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
 					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxilliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
-						GMT_message (C, "%s: Column %s not found - requested by the correction table %s!\n", C->init.progname, name, tablefile);
+						GMT_report (C, GMT_MSG_FATAL, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
 						GMT_exit (EXIT_FAILURE);
 					}
 					c->id += MGD77_MAX_COLS;	/* To flag this is an aux column */
@@ -5130,7 +5130,7 @@ void MGD77_Init_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE *CORR, do
 		for (current = CORR[col].term; current; current = current->next) {
 			if (GMT_is_dnan (current->origin) && value) current->origin = value[current->id][0];
 			if (GMT_is_dnan (current->origin)) {
-				GMT_message (C, "%s: Correction origin = T has NaN in 1st record, reset to 0!\n", C->init.progname);
+				GMT_report (C, GMT_MSG_FATAL, "Correction origin = T has NaN in 1st record, reset to 0!\n");
 				current->origin = 0.0;
 			}
 		}

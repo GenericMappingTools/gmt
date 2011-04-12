@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.3 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmtdp_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,13 +125,13 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -1, "Syntax error -T.  Unrecognized unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -2, "Syntax error -T.  Unable to decode tolarance distance.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -3, "Syntax error -T.  Tolarance is negative\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error.  Binary input data cannot have header -h.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -1, "Syntax error -T: Unrecognized unit\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -2, "Syntax error -T: Unable to decode tolarance distance.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.mode == -3, "Syntax error -T: Tolarance is negative\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -h.\n");
 	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error.  Binary input data (-bi) must have at least 2 columns.\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error:  Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

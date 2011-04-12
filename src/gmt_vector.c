@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.40 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_vector.c,v 1.41 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -266,7 +266,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, do
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi: Failed to converge in %ld sweeps\n", nsweeps);
+		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi failed to converge in %ld sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);

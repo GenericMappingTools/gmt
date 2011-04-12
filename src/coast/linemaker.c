@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.13 2011-04-11 21:15:32 remko Exp $
+ *	$Id: linemaker.c,v 1.14 2011-04-12 03:05:18 remko Exp $
  */
 /*
  *
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 	fprintf (stderr, "linemaker:  Process header file\n");
 
 	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
-		fprintf (stderr, "linemaker:  Error reading file header\n");
+		fprintf (stderr, "linemaker: Error reading file header\n");
 		exit (EXIT_FAILURE);
 	}
 	
@@ -104,7 +104,7 @@ int main (int argc, char **argv)
 	for (i = 0; i < s.n_bin; i++) {
 	
 		if (fread ((void *)&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
-			fprintf (stderr, "linemaker:  Error reading bin header %d\n", i);
+			fprintf (stderr, "linemaker: Error reading bin header %d\n", i);
 			exit (EXIT_FAILURE);
 		}
 		
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 	for (i = 0; i < s.n_seg; i++) {
 	
 		if (fread ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
-			fprintf (stderr, "linemaker:  Error reading seg header %d\n", i);
+			fprintf (stderr, "linemaker: Error reading seg header %d\n", i);
 			exit (EXIT_FAILURE);
 		}
 		
@@ -169,7 +169,7 @@ int main (int argc, char **argv)
 	for (i = 0; i < s.n_pt; i++) {
 	
 		if (fread ((void *)&p, sizeof (struct SHORT_PAIR), (size_t)1, fp_pt) != 1) {
-			fprintf (stderr, "linemaker:  Error reading point %d\n", i);
+			fprintf (stderr, "linemaker: Error reading point %d\n", i);
 			exit (-1);
 		}
 		

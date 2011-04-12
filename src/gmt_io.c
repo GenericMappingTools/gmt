@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.246 2011-04-11 21:15:32 remko Exp $
+ *	$Id: gmt_io.c,v 1.247 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5489,7 +5489,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE
 		V = (S && S->ogr) ? S->ogr->value[id] : C->current.io.OGR->value[id];	/* Either from table or from segment (multi) */
 		return (GMT_convert_aspatial_value (C, C->current.io.OGR->type[id], V));
 	}
-	GMT_report (C, GMT_MSG_FATAL, "Warning:  No aspatial value found for column %ld [Return NaN]\n", col);
+	GMT_report (C, GMT_MSG_FATAL, "Warning: No aspatial value found for column %ld [Return NaN]\n", col);
 	return (C->session.d_NaN);
 }
 

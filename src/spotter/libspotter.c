@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.71 2011-04-11 21:15:32 remko Exp $
+ *	$Id: libspotter.c,v 1.72 2011-04-12 03:05:19 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -1381,7 +1381,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 		kk = 2;
 
 	if (GMT_jacobi (G, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-		fprintf (G->session.std[GMT_ERR],"libspotter: Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_message (G, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* z unit vector */

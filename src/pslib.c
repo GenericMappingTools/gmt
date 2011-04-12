@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.251 2011-04-11 21:15:31 remko Exp $
+ *	$Id: pslib.c,v 1.252 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -4401,7 +4401,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t 
 	PSL_LONG k;
 
 	if (nelem < 0) {	/* Probably 32-bit overflow */
-		PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Requesting negative number of items (%ld) - exceeding 32-bit counting?\n", nelem);
+		PSL_message (PSL, PSL_MSG_FATAL, "Error: Requesting negative number of items (%ld) - exceeding 32-bit counting?\n", nelem);
 		PSL_exit (EXIT_FAILURE);
 	}
 
@@ -4414,7 +4414,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t 
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Could not reallocate more memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
@@ -4424,7 +4424,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t 
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Could not allocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %ld items of %ld bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}

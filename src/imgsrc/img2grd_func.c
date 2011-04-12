@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.5 2011-04-11 21:15:32 remko Exp $
+/* $Id: img2grd_func.c,v 1.6 2011-04-12 03:05:19 remko Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,16 +343,16 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	if (GMT_img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_message (GMT, "Syntax error:  Error in img coordinate specification [-I -W or -D].\n");
+		GMT_message (GMT, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.value && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_message (GMT, "Syntax error:  Bad choice of navg in -N.  Must divide %ld and %ld\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_message (GMT, "Syntax error: Bad choice of navg in -N.  Must divide %ld and %ld\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((fp = fopen (infile, "rb")) == NULL) {
-		GMT_message (GMT, "Syntax error:  Cannot open %s for binary read.\n", infile);
+		GMT_message (GMT, "Syntax error: Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -386,11 +386,11 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Expects %s to be %ld by %ld pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < Merc->header->wesn[YHI]) {
-		GMT_message (GMT, "Warning:  Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
+		GMT_message (GMT, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
 		wesn[YHI] = toplat - GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	if (botlat > Merc->header->wesn[YLO]) {
-		GMT_message (GMT, "Warning:  Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YLO], botlat);
+		GMT_message (GMT, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YLO], botlat);
 		wesn[YLO] = botlat + GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	

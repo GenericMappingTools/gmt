@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
+ *	$Id: segy2grd_func.c,v 1.5 2011-04-12 03:05:19 remko Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -368,7 +368,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "segy2grd: Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_message (GMT, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */

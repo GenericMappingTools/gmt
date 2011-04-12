@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: trend1d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -384,7 +384,7 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 		n = n_model;
 		m = mp;
 		if (GMT_jacobi (GMT, gtg, &n, &m, lambda, v, b, z, &nrots)) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Warning:  Matrix Solver Convergence Failure.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
 		while (rank < n_model && lambda[rank] > 0.0 && lambda[rank] > c_test) rank++;

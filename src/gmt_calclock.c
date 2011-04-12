@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.76 2011-04-11 21:15:32 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.77 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -391,7 +391,7 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 	GMT_LONG retval = 0;
 	
 	if (step < 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps must be positive.\n");
+		GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps must be positive.\n");
 		return (-1);
 	}
 
@@ -403,21 +403,21 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 		case 'C':
 #endif
 			if (step > 60) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in seconds must be <= 60\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in seconds must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'm':
 		case 'M':
 			if (step > 60) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in minutes must be <= 60\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in minutes must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'h':
 		case 'H':
 			if (step > 24) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in hours must be <= 24\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in hours must be <= 24\n");
 				retval = -1;
 			}
 			break;
@@ -428,14 +428,14 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 			/* The letter d is used for both days of the month and days of the (Gregorian) year */
 			if (C->current.plot.calclock.date.day_of_year) {
 				if (step > 365) {	/* This is probably an error.  */
-					GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in year days must be <= 365\n");
+					GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in year days must be <= 365\n");
 					retval = -1;
 				}
 			}
 			else {
 				/* If step is longer than 31 it is probably an error. */
 				if (step > 31) {
-					GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in days of the month must be <= 31\n");
+					GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in days of the month must be <= 31\n");
 					retval = -1;
 				}
 			}
@@ -443,28 +443,28 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 		case 'k':
 		case 'K':
 			if (step > 7) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in weekdays must be <= 7\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in weekdays must be <= 7\n");
 				retval = -1;
 			}
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
 			if (step != 1) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time step must be 1 for Gregorian weeks\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time step must be 1 for Gregorian weeks\n");
 				retval = -1;
 			}
 			break;
 		case 'u':	/* ISO week */
 		case 'U':
 			if (step > 52) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in weeks must be <= 52\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in weeks must be <= 52\n");
 				retval = -1;
 			}
 			break;
 		case 'o':
 		case 'O':
 			if (step > 12) {
-				GMT_report (C, GMT_MSG_FATAL, "Suntax error:  time steps in months must be <= 12\n");
+				GMT_report (C, GMT_MSG_FATAL, "Suntax error: time steps in months must be <= 12\n");
 				retval = -1;
 			}
 			break;
@@ -475,7 +475,7 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 		case 'p':
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Suntax error:  Unrecognized time axis unit.\n");
+			GMT_report (C, GMT_MSG_FATAL, "Suntax error: Unrecognized time axis unit.\n");
 			retval = -1;
 			break;
 	}

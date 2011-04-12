@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.6 2011-04-11 21:15:31 remko Exp $
+ *	$Id: surface_func.c,v 1.7 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -645,13 +645,13 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 		C->low_limit = C->data[kmin].z;
 	else if (C->set_low == 2 && C->low_limit > C->data[kmin].z) {
 	/*	C->low_limit = data[kmin].z;	*/
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Your lower value is > than min data value.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your lower value is > than min data value.\n");
 	}
 	if (C->set_high == 1)
 		C->high_limit = C->data[kmax].z;
 	else if (C->set_high == 2 && C->high_limit < C->data[kmax].z) {
 	/*	C->high_limit = data[kmax].z;	*/
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning:  Your upper value is < than max data value.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your upper value is < than max data value.\n");
 	}
 	return (0);
 }
@@ -1852,7 +1852,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
-	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Warning:  Your grid dimensions are mutually prime.\n");
+	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid dimensions are mutually prime.\n");
 	if ((C.grid == 1 && GMT->current.setting.verbose >= GMT_MSG_NORMAL) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 

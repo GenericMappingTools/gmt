@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
+ *	$Id: grd2rgb_func.c,v 1.6 2011-04-12 03:05:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -327,21 +327,21 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
-		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input raster file\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !Ctrl->W.active, "Syntax error:  Must specify -Idx/dy\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] == 0.0 || Ctrl->I.inc[GMT_Y] == 0.0), "Syntax error:  increments must be positive\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !Ctrl->W.active, "Syntax error: Must specify -Idx/dy\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] == 0.0 || Ctrl->I.inc[GMT_Y] == 0.0), "Syntax error: increments must be positive\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->W.size != 3 && Ctrl->W.size != 4, "Syntax error: byte_per_pixel must be either 3 or 4\n");
 		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.nx, &Ctrl->W.ny);
 
-		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.nx <= 0, "Syntax error:  Witdth of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.nx);
-		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.ny <= 0, "Syntax error:  Height of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.ny);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.nx <= 0, "Syntax error: Witdth of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.nx);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.ny <= 0, "Syntax error: Height of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.ny);
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error:  Must specify input z grid file\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->C.file, "Syntax error:  Must specify cpt file\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input z grid file\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->C.file, "Syntax error: Must specify cpt file\n");
 	}
-	n_errors += GMT_check_condition (GMT, !strstr (Ctrl->G.name, "%c"), "Syntax error:  output template must contain %%c\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !strchr ("rgb", Ctrl->L.layer), "Syntax error:  -L layer must be one of r, g, or b\n");
+	n_errors += GMT_check_condition (GMT, !strstr (Ctrl->G.name, "%c"), "Syntax error: output template must contain %%c\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !strchr ("rgb", Ctrl->L.layer), "Syntax error: -L layer must be one of r, g, or b\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
