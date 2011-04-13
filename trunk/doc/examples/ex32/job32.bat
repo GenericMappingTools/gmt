@@ -1,5 +1,5 @@
 REM		GMT EXAMPLE 32
-REM		$Id: job32.bat,v 1.1 2011-04-12 20:30:58 remko Exp $
+REM		$Id: job32.bat,v 1.2 2011-04-13 01:01:12 jluis Exp $
 REM
 REM Purpose:	Illustrate draping of an image over topography
 REM GMT progs:	grdedit, grdgradient, grdreformat, grdsample, grdtrack, grdview
@@ -9,12 +9,12 @@ REM Credits:	Original by Stephan Eickschen
 REM
 
 echo GMT EXAMPLE 32
-ps=..\example_32.ps
+set ps=..\example_32.ps
 
 REM Here we get and convert the flag of Europe directly from the web through grdreformat using
 REM GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 REM for a ratio of 3x2.
-REM Because GDAL support will not be standard for most users, we have stored
+REM Because GDAL support will not be standard for most unix users, we have stored
 REM the result, euflag.nc in this directory.
 
 set Rflag=-R3/9/50/54.002
