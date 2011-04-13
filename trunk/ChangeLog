@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.943 2011-04-12 20:30:58 remko Exp $
+	$Id: ChangeLog,v 1.944 2011-04-13 01:21:55 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-12      pwessel
@@ -13,6 +13,7 @@
 	* gmt_esri_io.c:	Put type flags in newly created "flags" variable in grid header.
 	* grdreformat_func.c:	Fixed bug when using -R. Did not select region properly.
 	* examples/ex32:	New example, thanks to Stephan Eickschen.
+	* psimage_func.c:	Fixed bug in file_is_known.
 
 2011-04-11      pwessel
 	* grdproject_func.c:	Output grd header had wrong units when non-inch settings were in effect.

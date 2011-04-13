@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.12 2011-04-12 13:06:44 remko Exp $
+ *	$Id: psimage_func.c,v 1.13 2011-04-13 01:20:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -257,34 +257,29 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define	RAS_MAGIC	0x59a66a95	/* Sun rasterfile magic number */
-
 GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
-{	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 otherwise */
+{	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
+       Returns -1 on read error */
 	FILE *fp = NULL;
-	unsigned char c[4];
-	int j, magic, in[4];
+	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
+	int j;
 
 	j = (int)strlen(file) - 1;
 	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
-	if (j && file[j+1] == 'b')
-		file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
 
 	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
-		return (EXIT_FAILURE);
+		return (-1);
 	}
 	if (GMT_fread ((void *)c, (size_t)1, (size_t)4, fp) != (size_t)4) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
-		return (EXIT_FAILURE);
+		return (-1);
 	}
 	GMT_fclose (GMT, fp);
 	if (j) file[j] = '+';			/* Reset the band request string */
-	if (!strncmp ((char *)c, "%!PS", 4)) return (1);	/* Read an EPS file */
-	/* Here we must check for a Sun rasterfile */
-	for (j = 0; j < 4; j++) in[j] = (int)c[j];
-	magic = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
-	if (magic == RAS_MAGIC) return (2);	/* Read a Sun rasterfile */
+	if (GMT_same_rgb (c, magic_ps)) return(1);
+	if (GMT_same_rgb (c, magic_ras)) return(2);
 	return (0);	/* Neither */
 }
 
@@ -330,7 +325,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
-	if (known == EXIT_FAILURE) {
+	if (known < 0) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
