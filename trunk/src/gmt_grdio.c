@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.155 2011-04-14 15:29:35 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.156 2011-04-14 22:06:15 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1629,13 +1629,6 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 		file[i] = '\0';
 	}
 
-	if (C->common.R.active) {	/* Must confirm the need/effect of this */
-		char strR [128]; 
-		sprintf (strR, "-R%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
-							    C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		/*to_gdalread->R.region = strR;		Do not use this yet. Probably should only apply with referenced images */
-	}
-
 	if (GMT_gdalread (C, file, to_gdalread, from_gdalread)) {
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading image with gdalread.\n");
 		return (GMT_GRDIO_READ_FAILED);
@@ -1693,9 +1686,10 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 
 	if ( C->common.R.active ) {
 		char strR [128]; 
-		sprintf (strR, "-R%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
-							    C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
-		/*to_gdalread->R.region = strR;*/
+		sprintf (strR, "%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
+							  C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
+		to_gdalread->R.region = strR;
+		to_gdalread->R.active = TRUE;
 	}
 
 	if ( I->header->pocket ) {				/* See if we have a band request */
