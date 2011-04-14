@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.109 2011-04-12 17:52:00 guru Exp $
+dnl $Id: configure.ac,v 1.110 2011-04-14 17:17:55 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.109 $)
+AC_REVISION($Revision: 1.110 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -711,15 +711,6 @@ EXE=
 COMPRESS="@:"
 if test "X$CYGWIN" = "Xyes" ; then
 	EXE=".exe"
-	if test ! -d /tmp ; then
-		AC_MSG_WARN(Cygwin: /tmp not found - created)
-		mkdir /tmp
-	fi
-	if test ! -f /bin/sh.exe ; then
-		AC_MSG_WARN(Cygwin: /bin/sh not found - created)
-		this_sh=`type -p sh`
-		cp -f $this_sh /bin
-	fi
 fi
 if test "$os" = "OS/2" ; then
 	EXE=".exe"
