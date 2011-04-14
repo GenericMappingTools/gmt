@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.65 2011-04-08 02:26:47 guru Exp $
+#	$Id: Makefile,v 1.66 2011-04-14 05:33:51 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,10 +26,9 @@
 #	To start installation from scratch, first do "make spotless"
 #	To wipe out installed modules, do "make uninstall"
 #
-#	Authors:	Paul Wessel, SOEST, U. of Hawaii
-#			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
+#	Authors:	Paul Wessel and Remko Scharroo
 #
-#	Date:		20-SEPT-2009
+#	Date:		1-JAN-2011
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!

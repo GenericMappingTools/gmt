@@ -1,11 +1,11 @@
-	$Id: README.mgd77,v 1.19 2011-03-15 02:06:37 guru Exp $
+	$Id: README.mgd77,v 1.20 2011-04-14 05:33:52 guru Exp $
 
 README file for GMT supplemental mgd77 programs.  The mgd77 supplement
 and all its files are distributed under the Gnu Public License.
 
 AUTHORS:	Paul Wessel and Michael Chandler
-DATE:		01-MAY-2009
-VERSION:	1.5
+DATE:		01-MAY-2011
+VERSION:	2 (GMT 5 revision)
 INSTALL INFO:	The mgd77 directory should install under GMT/src
 
 	These programs are intended for use with the marine geophysical

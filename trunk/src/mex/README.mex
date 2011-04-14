@@ -1,7 +1,11 @@
-	$Id: README.mex,v 1.9 2009-09-09 23:27:04 guru Exp $
+	$Id: README.mex,v 1.10 2011-04-14 05:33:52 guru Exp $
 
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
+GMT 5 Release introduced a full set of Matlab interface functions
+for all GMT modules.
+
+---------------------------------------------------------------
 Date:	1-JAN-95
 
 grdinfo.c

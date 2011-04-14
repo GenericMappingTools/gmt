@@ -1,4 +1,4 @@
-	$Id: README.misc,v 1.13 2009-09-09 23:27:04 guru Exp $
+	$Id: README.misc,v 1.14 2011-04-14 05:33:52 guru Exp $
 
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
@@ -7,50 +7,17 @@ that may come in handy for some users.
 
 	dimfilter - Filtering of 2-D gridded data and
 	   assisting in calculation of MAD error envelope
-	gmt2kml - Convert GMT tables to KML files for Google Earth
 	gmtdigitize - Digitize and project coordinates from dititizer
-	gmtdp - Line reduction using the Douglas-Peucker algorithm
-	gmtstitch - Assemble polygons from line segments
-	kml2gmt - Extract GMT tables from Google Earth KML files
-	makepattern - create Sun rasterfiles from patterns
-	psmageplot - blow up plots over several pages
-	nc2xy - convert 1-D netCDF files to ASCII
 
 dimfilter derives from grdfilter but allows for directional filtering
 of grids (*).  The dim.template.sh is a skeleton shell script that can
 be used to set up a complete DiM analysis, including the MAD analysis.
 [S-S Kim and P Wessel]
 
-gmt2kml reads a GMT table file and creates KML output for either
-points, lines, or polygons.
-
 gmtdigitize works with a Calcomp Digiboard III digitizer and will
 read coordinates from the selected port and apply inverse map projection
 to recover the map coordinates.  Users with other digitizers or users
 of an OS other than Linux may have to make changes.
-
-gmtdp reads one or more files (including multisegment files)
-and applies the Dougles-Peucker line reduction algorithm.  Useful for
-simplifying lines or coastlines. [J Luis]
-
-gmtstitch reads one or more files (including multisegment files)
-and attempts to connect segments whose endpoints are within a
-specified separation threshold.  Useful for connecting digitized
-lines back to a complete whole. [P Wessel]
-
-kml2gmt reverses the process of gmt2kml and lets you extract GMT
-data from KML files, perhaps after editing the KML files in GE.
-
-makepattern can read the user's Sun 1-bit raster files or
-Sun icon files (of the type used for patterns in GMT3.0)
-and colorize it into an 8-bit Sun rasterfile that can be
-used for patterns in GMT 3.x (x > 1). [P Wessel]
-
-psmegaplot takes a page-sized PS plot and magnifies it by
-tiling. [P Wessel]
-
-nc2xy lists the contents of 1-D netCDF files as columns
-in ASCII format. Output is send to standard output. [R Scharroo]
 
 (*) For details about the method, see:
 

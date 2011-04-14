@@ -1,4 +1,4 @@
-	$Id: README.spotter,v 1.10 2011-03-15 02:06:37 guru Exp $
+	$Id: README.spotter,v 1.11 2011-04-14 05:33:52 guru Exp $
 
 SPOTTER Supplemental Package
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
@@ -7,7 +7,7 @@ Distributed under the GNU Public License (see file ../LICENSE.TXT)
 Author:		Paul Wessel (pwessel@hawaii.edu)
 		SOEST, University of Hawaii
 Date:		October 18, 2007
-Version:	2.0
+Version:	5 (for GMT 5 release).  All tools made into modules
 ------------------------------------------------------
 
 This directory contains:
