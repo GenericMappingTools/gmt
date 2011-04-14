@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.946 2011-04-14 16:40:06 remko Exp $
+	$Id: ChangeLog,v 1.947 2011-04-14 21:43:17 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-14	jluis
+	* gmt_gdalread.c:	Fix situation when reading a subregion via GDAL
+	* gmt_customio.c:	---"---
 
 2011-04-14	remko
 	* gmt_gdalread.c:	Sets grid registration of pixel registered when data type is Byte.
