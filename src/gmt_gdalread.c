@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.32 2011-04-14 15:29:35 remko Exp $
+ *	$Id: gmt_gdalread.c,v 1.33 2011-04-14 17:57:23 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -688,7 +688,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		}
 
 		/* See if have grid or pixel registration */
-		pixel_reg = (GDALGetRasterDataType(0) == GDT_Byte);
+		if (nBand == 0) pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
 
 		/* Here the Mirone code has a chunk to read overviews info, but since we have not
 		   yet any use for it I won't implement that just yet.
