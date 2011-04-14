@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.108 2011-04-14 17:17:55 guru Exp $
+ *	$Id: gmt_customio.c,v 1.109 2011-04-14 21:38:56 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1552,7 +1552,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	subset = GMT_is_subset (header, wesn);	/* We have a Sub-region demand */
 	if (subset) {	/* We have a Sub-region demand */
 		to_gdalread->R.active = TRUE;
-		sprintf(strR, "-R%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		to_gdalread->R.region = strR;
 	}
 	if (pad[XLO] > 0) {	/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
