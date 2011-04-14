@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.944 2011-04-13 01:21:55 remko Exp $
+	$Id: ChangeLog,v 1.945 2011-04-14 15:29:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-14	remko
+	* gmt_gdalread.c:	Sets grid registration of pixel registered when data type is Byte.
+				We may/will need to update this later.
 
 2011-04-12      pwessel
 	* configure.ac:		Added check for log2, with macro in gmt_math.h
@@ -29,7 +33,7 @@
 				Test if image name has a +b<stuff> glued to the name.
 	* grdimage_func.c:	---"---
 	* gmt_grd.h:		Add a new member "pocket" to the GRD_HEADER struct
-	* gmt_gdalread.c:	Fix band parsing algoito allow band selection with reverse ordering. 
+	* gmt_gdalread.c:	Fix band parsing algorithm; allow band selection with reverse ordering. 
 				When reading image to grid make sure only one band is processed.
 	* gmt_gdalread.h:	Add a new member to GD_CTRL to hold the actual number of loaded bands
 	* gmtapi_util.c:	---"---

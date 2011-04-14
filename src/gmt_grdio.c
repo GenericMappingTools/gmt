@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.154 2011-04-12 16:18:42 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.155 2011-04-14 15:29:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1620,7 +1620,6 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
 	to_gdalread->M.active = TRUE;	/* Get metadata only */
-	to_gdalread->F.active = TRUE;	/* Force pixel registration */
 
 	i = (int)strlen(file) - 1;
 	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
@@ -1691,7 +1690,6 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	/* Allocate new control structures */
 	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
-	to_gdalread->F.active = TRUE;	/* Force pixel registration */
 
 	if ( C->common.R.active ) {
 		char strR [128]; 

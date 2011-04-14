@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.31 2011-04-12 16:16:47 remko Exp $
+ *	$Id: gmt_gdalread.c,v 1.32 2011-04-14 15:29:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
  */
 
 int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform);
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG pixel_reg, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
 int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
@@ -41,7 +41,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
-	GMT_LONG	pixel_reg, fliplr;
+	GMT_LONG	fliplr;
 	GMT_LONG	n, m, nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
 	GMT_LONG	n_alloc, n_commas, n_dash, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
@@ -89,7 +89,6 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		whichBands[0] = 1;
 	}
 
-	pixel_reg = prhs->F.active;
 	do_BIP = prhs->I.active;
 	if (nReqBands == 1) do_BIP = FALSE;	/* This must overrule any -I option settings */
 	fliplr = prhs->L.active;
@@ -153,7 +152,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	if (metadata_only) {
-		populate_metadata (C, Ctrl, gdal_filename, pixel_reg, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+		populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 		return (GMT_NOERROR);
 	}
 
@@ -299,12 +298,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
 	/* In the "Preview" mode those guys bellow are different and what we need is the BufSize */
-	if (jump) {
-		nX = nBufXSize;		nY = nBufYSize;
-	}
-	else {
-		nX = nXSize;		nY = nYSize;
-	}
+	if (jump)
+		nX = nBufXSize,	nY = nBufYSize;
+	else
+		nX = nXSize,	nY = nYSize;
 
 	mVector = GMT_memory(C, NULL, nY, GMT_LONG);
 	for (m = 0; m < nY; m++) mVector[m] = m*nX;
@@ -468,7 +465,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	GDALClose(hDataset);
 
-	populate_metadata (C, Ctrl, gdal_filename, pixel_reg, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+	populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
 
 	Ctrl->nActualBands = nBands;	/* Number of bands that were actually read in */
 
@@ -517,7 +514,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
  *        registration, but it is actually set the -F option [default is 0]
  *
  * */
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG pixel_reg, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
 
 	GDALDriverH hDriver;		/* This is the driver chosen by the GDAL library to query the dataset. */
 	GDALDatasetH hDataset;		/* pointer structure used to query the gdal file. */
@@ -525,10 +522,9 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	GDALColorTableH	hTable;
 	GDALColorEntry	sEntry;
 
-	int	i, n_colors;		/* Number of colors in the eventual Color Table */
+	int	i, j, n_colors;		/* Number of colors in the eventual Color Table */
 	int	status, bSuccess;	/* success or failure */
-	int	xSize, ySize; 		/* Dimensions of the dataset */
-	int	nBand, raster_count;
+	int	nBand, raster_count, pixel_reg = FALSE;
 	double 	adfGeoTransform[6];	/* bounds on the dataset */
 	double	tmpdble;		/* temporary value */
 	double	xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
@@ -606,8 +602,8 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	Ctrl->DriverLongName  = GDALGetDriverLongName (hDriver);
 
 	if (!got_R) {		/* That is, if we are using the entire dataset */
-		xSize = GDALGetRasterXSize (hDataset);
-		ySize = GDALGetRasterYSize (hDataset);
+		Ctrl->RasterXsize = GDALGetRasterXSize (hDataset);
+		Ctrl->RasterYsize = GDALGetRasterYSize (hDataset);
 	}
 	else if (got_R && nXSize == 0 && nYSize == 0) {		/* metadata_only */
 		int	anSrcWin[4];
@@ -634,20 +630,15 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			GMT_report (C, GMT_MSG_FATAL, "Quiting with error\n");
 			return(-1);
 		}
-		nXSize = anSrcWin[2];	nYSize = anSrcWin[3];
-
-		xSize = nXSize;
-		ySize = nYSize;
+		Ctrl->RasterXsize = nXSize = anSrcWin[2];
+		Ctrl->RasterYsize = nYSize = anSrcWin[3];
 	}
 	else {
-		xSize = nXSize;
-		ySize = nYSize;
+		Ctrl->RasterXsize = nXSize;
+		Ctrl->RasterYsize = nYSize;
 	}
 
-	Ctrl->RasterXsize = xSize;
-	Ctrl->RasterYsize = ySize;
-	raster_count = GDALGetRasterCount( hDataset );
-	Ctrl->RasterCount = raster_count;
+	Ctrl->RasterCount = raster_count = GDALGetRasterCount( hDataset );
 
 	/* ------------------------------------------------------------------------- */
 	/* Get some metadata for each band. */
@@ -696,6 +687,9 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->band_field_names[nBand].ScaleOffset[1] = 0.0;
 		}
 
+		/* See if have grid or pixel registration */
+		pixel_reg = (GDALGetRasterDataType(0) == GDT_Byte);
+
 		/* Here the Mirone code has a chunk to read overviews info, but since we have not
 		   yet any use for it I won't implement that just yet.
 
@@ -731,12 +725,12 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 
 		n_colors = GDALGetColorEntryCount( hTable );
 		Ctrl->ColorMap = GMT_memory(C, NULL, n_colors*4, int);
-		for( i = 0; i < n_colors; i++ ) {
+		for (i = 0, j = 0; i < n_colors; i++) {
 			GDALGetColorEntryAsRGB( hTable, i, &sEntry );
-			Ctrl->ColorMap[i*4]   = sEntry.c1;
-			Ctrl->ColorMap[i*4+1] = sEntry.c2;
-			Ctrl->ColorMap[i*4+2] = sEntry.c3;
-			Ctrl->ColorMap[i*4+3] = sEntry.c4;
+			Ctrl->ColorMap[j++] = sEntry.c1;
+			Ctrl->ColorMap[j++] = sEntry.c2;
+			Ctrl->ColorMap[j++] = sEntry.c3;
+			Ctrl->ColorMap[j++] = sEntry.c4;
 		}
 	}
 	else
@@ -802,7 +796,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->hdr[5] = z_max;
 		}
 
-		Ctrl->hdr[6] = (pixel_reg) ? 1 : 0;	/* See if we want grid or pixel registration */
+		Ctrl->hdr[6] = pixel_reg;
 		Ctrl->hdr[7] = adfGeoTransform[1];
 		Ctrl->hdr[8] = fabs(adfGeoTransform[5]);
 
