@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.106 2011-04-12 16:20:46 remko Exp $
+ *	$Id: gmt_customio.c,v 1.107 2011-04-14 15:29:35 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1488,7 +1488,6 @@ GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) 
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
 	to_gdalread->M.active = TRUE;		/* Metadata only */
-	to_gdalread->F.active = TRUE;		/* Pixel registration */
 	if (GMT_gdalread (C, header->name, to_gdalread, from_gdalread)) {
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -1547,7 +1546,6 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		to_gdalread->Z.complex = (int)complex_mode;
 	}
 
-	to_gdalread->F.active = (header->registration == GMT_PIXEL_REG);		/* Follow registration */
 	subset = GMT_is_subset (header, wesn);	/* We have a Sub-region demand */
 	if (subset) {	/* We have a Sub-region demand */
 		to_gdalread->R.active = TRUE;
