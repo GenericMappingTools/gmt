@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.33 2011-04-14 17:57:23 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.34 2011-04-14 21:36:25 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,6 +98,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	if (prhs->R.active) {
 		got_R = TRUE;
+		C->common.R.active = FALSE;	/* Reset because -R was already parsed when reading header info */
 		error += GMT_parse_common_options (C, "R", 'R', prhs->R.region);
 		if (!error) {
 			dfULX = C->common.R.wesn[XLO];	dfLRX = C->common.R.wesn[XHI];
@@ -107,6 +108,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	if (prhs->r.active) { 		/* Region is given in pixels */
 		got_r = TRUE;
+		C->common.R.active = FALSE;
 		error += GMT_parse_common_options (C, "R", 'R', prhs->r.region);
 		if (!error) {
 			dfULX = C->common.R.wesn[XLO];	dfLRX = C->common.R.wesn[XHI];
