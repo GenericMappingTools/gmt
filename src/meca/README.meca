@@ -1,6 +1,12 @@
-	$Id: README.meca,v 1.4 2009-09-09 23:27:04 guru Exp $
+	$Id: README.meca,v 1.5 2011-04-14 05:33:52 guru Exp $
 
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+GMT 5 version converted these tools to modules.
+
+-----------------------------------------------------------
+Comments from the original author Genevieve Patau.  She has
+since retired and no longer maintains the package.
 
 Dear colleagues,
 

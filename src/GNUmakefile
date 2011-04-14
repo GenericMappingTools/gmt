@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.93 2011-04-08 17:24:57 guru Exp $
+#  $Id: GNUmakefile,v 1.94 2011-04-14 05:33:51 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -12,9 +12,9 @@
 #	dependencies needed to generate certain source files from
 #	lower-level data files available in CVS but not in archives.
 #
-#	Author:	Paul Wessel, SOEST, University of Hawaii
+#	Author:	Paul Wessel and Remko Scharroo
 #
-#	Date:		29-MAY-2010
+#	Date:		1-JAN-2011
 #-------------------------------------------------------------------------------
 
 include Makefile

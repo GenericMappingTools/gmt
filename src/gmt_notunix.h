@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.38 2011-04-12 17:52:00 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.39 2011-04-14 05:33:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,7 +117,7 @@
 #define yn(n,x) _yn(n,x)
 #define strdup(s) _strdup(s)
 #define GMT_STAT _stat
-#if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in uix */
+#if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in unix */
 #define strtok_r strtok_s
 #endif
 
@@ -142,8 +142,8 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 #endif
 
 #define DIR_DELIM '\\'		/* Backslash as directory delimiter */
-#define PATH_DELIM ';'		/* Backslash as directory delimiter */
-#define PATH_SEPARATOR ";"	/* Win uses ;, Unix uses : */
+#define PATH_DELIM ';'		/* (char)   Win uses ;, Unix uses : */
+#define PATH_SEPARATOR ";"	/* (char *) Win uses ;, Unix uses : */
 
 #include <io.h>
 #include <direct.h>
@@ -308,6 +308,7 @@ EXTERN_MSC struct passwd *getpwuid (const int uid);
 EXTERN_MSC int getuid (void);
 
 #endif
+
 /*===================================================================
  *		      U N I X   C L E AN - U P
  *===================================================================*/

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.91 2011-03-25 16:08:03 remko Exp $
+#	$Id: Makefile,v 1.92 2011-04-14 05:33:51 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -51,11 +51,9 @@
 #	make uninstall-man
 #	make uninstall-doc
 #
-#	Authors:	Paul Wessel, SOEST, U. of Hawaii
-#			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
-#			The GMT Team
+#	Authors:	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #
-#	Date:		20-SEPT-2009
+#	Date:		1-JAN-2011
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------

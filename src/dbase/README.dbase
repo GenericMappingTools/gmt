@@ -1,7 +1,12 @@
-	$Id: README.dbase,v 1.6 2009-09-09 23:27:04 guru Exp $
+	$Id: README.dbase,v 1.7 2011-04-14 05:33:51 guru Exp $
 
 README for gmt/src/dbase directory.
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+==> CHANGES IN GMT 5.x <==
+
+Made into a module.  Added -T<file> to save table xyz files instead
+of always writing to stdout.
 
 ==> CHANGES IN GMT 4.0.1 <==
 

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.86 2011-03-27 15:38:08 remko Exp $
+#  $Id: GNUmakefile,v 1.87 2011-04-14 05:33:51 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,9 +57,9 @@
 #	This must be done separately:
 #	To tar all coastlines		make tar_gshhs
 #
-#	Author:	Paul Wessel, SOEST, University of Hawaii
+#	Author:	Paul Wessel, Remko Scharroo
 #
-#	Date:		12-JUL-2009
+#	Date:		1-JAN-2011
 #
 #-------------------------------------------------------------------------------
 #	DEFAULT SETTINGS

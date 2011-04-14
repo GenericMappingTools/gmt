@@ -1,7 +1,13 @@
+#	$Id: README.gshhs,v 1.26 2011-04-14 05:33:52 guru Exp $
+
 			G S H H S
 
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
+
+GMT 5 Version July 1, 2011
+
+Here, gshhs has become a module.
 
 Version July 1, 2009
 This version include a revised GSHHS data format in which the
