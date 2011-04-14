@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.29 2011-04-14 22:18:30 guru Exp $
 #
 #	makefile for dbase directory
 #
@@ -95,7 +95,6 @@ grdraster$(EXE):	grdraster.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBAPI) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

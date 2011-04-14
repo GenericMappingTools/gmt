@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.947 2011-04-14 21:43:17 jluis Exp $
+	$Id: ChangeLog,v 1.948 2011-04-14 22:18:29 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-14	pwessel
+	* *.[ch]:		Ended support for OS/2.  GMT 4 remains an option for OS/2 users.
 
 2011-04-14	jluis
 	* gmt_gdalread.c:	Fix situation when reading a subregion via GDAL

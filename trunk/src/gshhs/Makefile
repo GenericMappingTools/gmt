@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.21 2011-04-14 22:18:30 guru Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -98,11 +98,9 @@ gshhstograss$(EXE):	gshhstograss.o
 
 $(PROGS):	$(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_API):	$(PROGS_API_O) $(LIBAPI)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_API_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

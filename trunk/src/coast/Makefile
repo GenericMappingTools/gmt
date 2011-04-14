@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.80 2011-03-15 02:06:37 guru Exp $
+#	$Id: Makefile,v 1.81 2011-04-14 22:18:30 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -177,4 +177,3 @@ $(LIB):		$(SUBS_O)
 
 $(PROGS):	$(LIB) $(PROGS_O) $(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
