@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.107 2011-04-14 15:29:35 remko Exp $
+ *	$Id: gmt_customio.c,v 1.108 2011-04-14 17:17:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -867,7 +867,10 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (GMT_fread (tmp, (size_t)size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (GMT_fread (tmp, (size_t)size, (size_t)header->nx, fp) < (size_t)header->nx) {
+			i = 0;
+			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		}
 		ij = (j2 + pad[YHI]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
