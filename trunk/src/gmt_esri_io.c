@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.17 2011-04-12 19:50:44 remko Exp $
+ *	$Id: gmt_esri_io.c,v 1.18 2011-04-14 16:40:06 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -468,20 +468,20 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	if (is_binary) {
 
-		if ( (last_row - first_row + 1) != header->ny)		/* We have a sub-region */
+		if (last_row - first_row + 1 != header->ny)		/* We have a sub-region */
 			if (GMT_fseek (fp, (long) (first_row * header->nx * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
-		for (row = first_row; row <= last_row; row++) {
+		ij = pad[YHI] * width_out + i_0_out;
+
+		for (row = first_row; row <= last_row; row++, ij += (size_t)width_out) {
 			if (nBits == 32) {		/* Get one row */
 				if (GMT_fread (tmp, 4, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 			else {
 				if (GMT_fread (tmp16, 2, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
-			ij = (row + pad[YHI]) * width_out + i_0_out;
-			for (col = 0; col < width_in; col++) {
-				kk = ij + inc * col;
+			for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {
 				if (nBits == 32) {
 					if (swap) {
 						ui = (unsigned int *)&tmp[k[col]];	/* These 2 lines do the swap */
