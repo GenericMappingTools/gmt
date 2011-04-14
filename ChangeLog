@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.945 2011-04-14 15:29:35 remko Exp $
+	$Id: ChangeLog,v 1.946 2011-04-14 16:40:06 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-14	remko
 	* gmt_gdalread.c:	Sets grid registration of pixel registered when data type is Byte.
 				We may/will need to update this later.
+	* gmt_esri_io.c:	Fixed error in selecting output row when loading a binary subsection.
 
 2011-04-12      pwessel
 	* configure.ac:		Added check for log2, with macro in gmt_math.h
