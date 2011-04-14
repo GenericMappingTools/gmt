@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.24 2011-04-14 22:18:30 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -74,7 +74,7 @@ ex:		$(SCRIPTS)
 		for i in $(SCRIPTS); do \
 			sh $$i; \
 		done
-		
+
 #-------------------------------------------------------------------------------
 #	library
 #-------------------------------------------------------------------------------
@@ -109,7 +109,6 @@ sphinterpolate$(EXE):	sphinterpolate.o
 
 $(PROGS):	$(PROGS_O) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_sph $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBAPI) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

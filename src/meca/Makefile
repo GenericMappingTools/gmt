@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.31 2011-03-27 17:03:39 remko Exp $
+#       $Id: Makefile,v 1.32 2011-04-14 22:18:30 guru Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -90,7 +90,6 @@ pspolar$(EXE):	pspolar.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

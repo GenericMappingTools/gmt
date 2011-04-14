@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2011-03-15 02:06:37 guru Exp $
+#	$Id: Makefile,v 1.12 2011-04-14 22:18:30 guru Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -48,4 +48,3 @@ sph2grd$(EXE):	sph2grd.o
 
 $(PROGS):
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@

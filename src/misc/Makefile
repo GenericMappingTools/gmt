@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.40 2011-03-25 14:36:18 remko Exp $
+#	$Id: Makefile,v 1.41 2011-04-14 22:18:30 guru Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -52,4 +52,3 @@ gmtdigitize$(EXE):	gmtdigitize.o
 
 $(PROGS):	$(LIBGMT) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@

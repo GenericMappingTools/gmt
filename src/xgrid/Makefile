@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.12 2011-03-15 02:06:38 guru Exp $
+#		$Id: Makefile,v 1.13 2011-04-14 22:18:30 guru Exp $
 #
 #	Makefile for xgrid directory
 #	X Windows application xgridedit
@@ -58,4 +58,3 @@ xgridedit$(EXE):	xGridEdit.o
 
 $(PROGS):	$(OBJS1) $(OBJS2) $(LIBGMT)
 		$(CC) $(LDFLAGS) -o $@ $(PROGS_O) $(OBJS1) $(OBJS2) $(X_LIBS) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS)
-		$(COMPRESS) $@

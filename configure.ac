@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.110 2011-04-14 17:17:55 guru Exp $
+dnl $Id: configure.ac,v 1.111 2011-04-14 22:18:29 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.110 $)
+AC_REVISION($Revision: 1.111 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -63,7 +63,6 @@ dnl
 AC_SUBST(UNITS)
 AC_SUBST(EPS)
 AC_SUBST(EXE)
-AC_SUBST(COMPRESS)
 AC_SUBST(MATLAB)
 AC_SUBST(TXT2MAN)
 AC_SUBST(TRIANGLE_D)
@@ -704,18 +703,12 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Special checking and action required for Cygwin or OS/2
+dnl Special checking for Cygwin since an .exe extension is used
 dnl -----------------------------------------------------------------
 dnl
 EXE=
-COMPRESS="@:"
 if test "X$CYGWIN" = "Xyes" ; then
 	EXE=".exe"
-fi
-if test "$os" = "OS/2" ; then
-	EXE=".exe"
-	CPPFLAGS="$CPPFLAGS -D__EMX__"
-	COMPRESS="lxlite /ML1"
 fi
 dnl
 dnl -----------------------------------------------------------------

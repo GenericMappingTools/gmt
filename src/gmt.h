@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.206 2011-04-11 18:48:58 remko Exp $
+ *	$Id: gmt.h,v 1.207 2011-04-14 22:18:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ extern "C" {
 #endif
 #endif
 
-#include "gmt_notunix.h"	/* Stuff for Windows, OS/2 etc */
+#include "gmt_notunix.h"	/* Stuff for Windows */
 #ifndef WIN32
 #include <pwd.h>
 #include <unistd.h>

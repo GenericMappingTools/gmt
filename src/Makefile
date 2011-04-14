@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.66 2011-04-14 05:33:51 guru Exp $
+#	$Id: Makefile,v 1.67 2011-04-14 22:18:29 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -316,13 +316,10 @@ gmt2rgb$(EXE):		grd2rgb$(EXE)
 
 $(FUNCS) $(PROGS) $(PROGSPS):	$(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(DEMOS):	$(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 # To create to PSL demo program. Requires pslib only
 $(PSLDEMO):	$(PSLDEMO_O) $(LIBPS_O)
 		$(CC) $(LDFLAGS) $(PSLDEMO_O) $(LIBPS_O) $(LIBS) -o $@
-		$(COMPRESS) $@

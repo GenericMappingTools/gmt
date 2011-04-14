@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.39 2011-04-14 05:33:51 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.40 2011-04-14 22:18:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,9 +25,8 @@
  *
  *	flag    |	OS
  *	--------------------------------------------
- *	WIN32   | Microsoft Windows 9x, NT, 2000
- *	__EMX__ | IBM OS/2 with EMX support
- *	_WIN32  | Unix emulation under Windows, like
+ *	WIN32   | Microsoft Windows
+ *	_WIN32  | UNIX emulation under Windows, like
  *		| Cygwin or DJGPP.  WIN32 implies and
  *		| sets _WIN32 but the converse is not
  *		| true.
@@ -42,10 +41,10 @@
 #define _GMT_NOTUNIX_H
 
 /* A few general comments:
- * FLOCK is a pain. If cannot be used under EMX and _WIN32.
+ * FLOCK is a pain. If cannot be used under Windows.
  * Also, users have problems with file locking because their 
  * NFS does not support it. Only those who are really sure should
- * activate -DFLOCK.
+ * activate -DFLOCK. For these reasons, FLOCK is off by default.
  */
 
 /*--------------------------------------------------------------------
@@ -209,65 +208,6 @@ EXTERN_MSC int getuid (void);
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
 
 #endif		/* End of Windows setup */
-
-/*--------------------------------------------------------------------
- *
- *	 		  O S / 2
- *
- *	 This section applies to OS/2 with EMX support
- *
- *--------------------------------------------------------------------*/
- 
-#ifdef __EMX__	/* Start of OS/2 with EMX support */
-/*
- *   Definitions to aid the porting of GMT to OS/2
- *   Most of the porting is taken care of by configure.
- *
- * Author:	Allen Cogbill, Los Alamos National Laboratory
- * Date:	09-NOV-1999
- */
- 
-
-#define SET_IN_NOTUNIX	/* This forces the following not to be reset in gmt_notposix.h */
-
-/* This applies specifically to O/S2 with EMX and Sun Free math library */
-
-#define HAVE_COPYSIGN 1
-#define HAVE_LOG1P 1
-#define HAVE_HYPOT 1
-#define HAVE_ACOSH 1
-#define HAVE_ASINH 1
-#define HAVE_ATANH 1
-#define HAVE_RINT 1
-#define HAVE_IRINT 0
-#define HAVE_ISNANF 1
-#define HAVE_ISNAND 1
-#define HAVE_ISNAN 1
-#define HAVE_J0 1
-#define HAVE_J1 1
-#define HAVE_JN 1
-#define HAVE_Y0 1
-#define HAVE_Y1 1
-#define HAVE_YN 1
-#define HAVE_ERF 1
-#define HAVE_ERFC 1
-#define HAVE_STRDUP 1
-#define HAVE_STRTOD 1
-#define HAVE_SINCOS 0
-#define HAVE_ALPHASINCOS 0
-#define WORDS_BIGENDIAN 0
-
-#include <io.h>
-
-#undef FLOCK		/* Do not support file locking */
-#define SET_IO_MODE	/* Need to force binary i/o upon request */
-#define NO_FCNTL	/* fcntl.h does not exist here */
-#define GMT_STAT _stat
-
-EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int i_or_o);
-
-#endif		/* End of OS/2 with EMX support */
-
 
 /*--------------------------------------------------------------------
  *

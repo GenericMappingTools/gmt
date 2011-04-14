@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.65 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.66 2011-04-14 22:18:30 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -116,7 +116,6 @@ mgd77track$(EXE):	mgd77track.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBMGD77_API) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

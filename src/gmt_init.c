@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.476 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmt_init.c,v 1.477 2011-04-14 22:18:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7507,22 +7507,16 @@ int getuid (void) {
 #ifdef SET_IO_MODE
 
 /* Under non-Unix operating systems running on the PC, such as
- * Windows and OS/2, files are opened in either TEXT or BINARY
- * mode.  This difference does not exist under UNIX, but is important
+ * Windows, files are opened in either TEXT or BINARY mode.
+ * This difference does not exist under UNIX, but is important
  * on the PC.  Specifically, it causes a problem when a program
  * that writes/reads standard i/o wants to use binary data.
  * In those situations we must change the default (TEXT) mode of
  * the file handle to BINARY via a call to "setmode".
  *
- * Under OS/2, using the EMX compilation system, one can change
- * the mode of input/output from TEXT to BINARY using _fsetmode.
- * Suggested by Alan Cogbill, Los Alamos National Laboratory
- *
  * This can also be done under Win32 with the Microsoft VC++
  * compiler which supports ANSI-C (P. Wessel).  This may be true
- * of other Win32 compilers as well.  Until we know if _setmode
- * would work in the same way under OS/2 we choose to take two
- * different routes, hence the #ifdefs below
+ * of other Win32 compilers as well.
  */
 
 void GMT_setmode (struct GMT_CTRL *C, int i_or_o)

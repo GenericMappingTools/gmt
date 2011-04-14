@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.55 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.56 2011-04-14 22:18:30 guru Exp $
 #
 #		Makefile for GMT x2sys supplements
 #
@@ -114,7 +114,6 @@ x2sys_merge$(EXE):	x2sys_merge.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) -L../mgd77 -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

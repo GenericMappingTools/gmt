@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.34 2011-04-14 22:18:30 guru Exp $
 #
 # makefile for segyprogs directory
 #
@@ -99,7 +99,6 @@ segy2grd$(EXE):	segy2grd.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_API_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_segy $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBAPI) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
