@@ -1,8 +1,8 @@
 REM		GMT EXAMPLE 32
-REM		$Id: job32.bat,v 1.2 2011-04-13 01:01:12 jluis Exp $
+REM		$Id: job32.bat,v 1.3 2011-04-15 01:03:40 remko Exp $
 REM
 REM Purpose:	Illustrate draping of an image over topography
-REM GMT progs:	grdedit, grdgradient, grdreformat, grdsample, grdtrack, grdview
+REM GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
 REM GMT progs:	pscoast, pstext, psxyz
 REM DOS calls:	del, echo
 REM Credits:	Original by Stephan Eickschen
@@ -17,16 +17,15 @@ REM for a ratio of 3x2.
 REM Because GDAL support will not be standard for most unix users, we have stored
 REM the result, euflag.nc in this directory.
 
-set Rflag=-R3/9/50/54.002
+set Rflag=-R3/9/50/54
 REM grdreformat http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd euflag.nc=ns
-grdedit euflag.nc -fg %Rflag%
+REM grdedit euflag.nc -fg %Rflag%
 
-REM Now get the topography for the same area and the same resolution from GTOPO30.
+REM Now get the topography for the same area from GTOPO30 and store it as topo.nc.
 REM The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
-REM We sample this grid at the pixels of the EU flag (stored in this directory as topo.nc).
-REM Finally, make an gradient grid as well, which we will use to "illuminate" the flag.
+REM We make an gradient grid as well, which we will use to "illuminate" the flag.
 
-REM grdsample W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
+REM grdcut W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
 grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 REM The color map assigns "Reflex Blue" to the lower half of the 0-255 range and "Yellow" to the upper half.
