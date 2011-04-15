@@ -1,9 +1,9 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id: job32.sh,v 1.1 2011-04-12 20:30:58 remko Exp $
+#		$Id: job32.sh,v 1.2 2011-04-15 01:03:40 remko Exp $
 #
 # Purpose:	Illustrate draping of an image over topography
-# GMT progs:	grdedit, grdgradient, grdreformat, grdsample, grdtrack, grdview
+# GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
 # GMT progs:	pscoast, pstext, psxyz
 # Unix progs:	cat, rm
 # Credits:	Original by Stephan Eickschen
@@ -17,18 +17,17 @@ ps=../example_32.ps
 # Because GDAL support will not be standard for most users, we have stored
 # the result, euflag.nc in this directory.
 
-Rflag=-R3/9/50/54.002
-#grdreformat \
-#  http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd \
-#  euflag.nc=ns
-grdedit euflag.nc -fg $Rflag
+Rflag=-R3/9/50/54
+# grdreformat \
+#   http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd \
+#   euflag.nc=ns
+# grdedit euflag.nc -fg $Rflag
 
-# Now get the topography for the same area and the same resolution from GTOPO30.
+# Now get the topography for the same area from GTOPO30 and store it as topo.nc.
 # The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
-# We sample this grid at the pixels of the EU flag (stored in this directory as topo.nc).
-# Finally, make an gradient grid as well, which we will use to "illuminate" the flag.
+# We make an gradient grid as well, which we will use to "illuminate" the flag.
 
-#grdsample W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
+# grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
 grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
