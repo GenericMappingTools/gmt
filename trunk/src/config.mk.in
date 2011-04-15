@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: config.mk.in,v 1.4 2011-03-25 14:36:17 remko Exp $
+#	$Id: config.mk.in,v 1.5 2011-04-15 00:34:06 remko Exp $
 #
 #	Standard Makefile Macro Setup for GMT 5
 #
@@ -93,13 +93,6 @@ MEX_MDIR	= $(DESTDIR)@MEX_MDIR@
 #-------------------------------------------------------------------------------
 #
 EXE		= @EXE@
-#
-#-------------------------------------------------------------------------------
-#	Miscellaneous macros for OS/2 with EMX support
-#	Otherwise set to @: (which does nothing)
-#-------------------------------------------------------------------------------
-#
-COMPRESS	= @COMPRESS@
 #
 #-------------------------------------------------------------------------------
 #	Required directives for netCDF includes and library

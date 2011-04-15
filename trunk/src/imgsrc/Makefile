@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2011-03-27 17:03:39 remko Exp $
+#	$Id: Makefile,v 1.29 2011-04-15 00:34:06 remko Exp $
 #
 #
 #	makefile for imgsrc directory
@@ -97,7 +97,6 @@ img2grd$(EXE):	img2grd.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
-		$(COMPRESS) $@
 
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
