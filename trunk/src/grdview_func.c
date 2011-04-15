@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.8 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdview_func.c,v 1.9 2011-04-15 00:26:23 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -666,7 +666,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[i]);
 
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->G.file[i]), (void **)&Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny)  drape_resample = TRUE;
+			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
 			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
@@ -684,7 +684,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!GMT->current.proj.xyz_pos[2]) d_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
-	ij_inc[0] = 0;		ij_inc[1] = 1;	ij_inc[2] = 1 - Topo->header->mx;	ij_inc[3] = -Topo->header->mx;
+	ij_inc[0] = 0;		ij_inc[1] = 1;	ij_inc[2] = 1 - Z->header->mx;	ij_inc[3] = -Z->header->mx;
 	nw = GMT_IJP (Topo->header, 0, 0);
 	ne = GMT_IJP (Topo->header, 0, Topo->header->nx - 1);
 	sw = GMT_IJP (Topo->header, Topo->header->ny - 1, 0);
@@ -780,7 +780,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
-		if (drape_resample) GMT_bcr_init (GMT, Intens, Ctrl->L.interpolant, Ctrl->L.threshold, &i_bcr);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
@@ -922,7 +921,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_LONG done, nm_i, layers, last_i, last_j, p, d_node;
 		GMT_LONG *top_jp = NULL, *bottom_jp = NULL, *ix = NULL, *iy = NULL;
 		double xp, yp, sum_w, w, sum_i, x_width, y_width, value;
-		double sum_r, sum_g, sum_b, intval = 0.0, y_drape, *x_drape = NULL;
+		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
 		float *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
@@ -936,28 +935,33 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		nx_i = irint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
 		ny_i = irint (y_width * Ctrl->Q.dpi);
 		last_i = nx_i - 1;	last_j = ny_i - 1;
+
 		if (drape_resample) {
-			ix = GMT_memory (GMT, NULL, Drape[0]->header->nm, GMT_LONG);
-			iy = GMT_memory (GMT, NULL, Drape[0]->header->nm, GMT_LONG);
-			x_drape = GMT_memory (GMT, NULL, Drape[0]->header->nx, double);
-			if (Ctrl->I.active) int_drape = GMT_memory (GMT, NULL, Drape[0]->header->nm, float);
-			for (col = 0; col < Drape[0]->header->nx; col++) x_drape[col] = GMT_grd_col_to_x (col, Drape[0]->header);
-			for (row = bin = 0; row < Drape[0]->header->ny; row++) {	/* Get projected coordinates converted to pixel locations */
-				y_drape = GMT_grd_row_to_y (row, Drape[0]->header);
-				for (col = 0; col < Drape[0]->header->nx; col++, bin++) {
-					value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape, &edgeinfo, &t_bcr);
-					if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
-						ix[bin] = iy[bin] = -1;
-					else {
-						GMT_geoz_to_xy (GMT, x_drape[col], y_drape, value, &xp, &yp);
-						/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
-						ix[bin] = MAX(0, MIN((GMT_LONG)floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi), last_i));
-						iy[bin] = MAX(0, MIN((GMT_LONG)floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi), last_j));
-					}
-					if (Ctrl->I.active) int_drape[bin] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape, &edgeinfo, &i_bcr);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Resampling illumination grid to drape grid resolution\n");
+			GMT_bcr_init (GMT, Intens, Ctrl->L.interpolant, Ctrl->L.threshold, &i_bcr);
+			ix = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
+			iy = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
+			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
+			y_drape = GMT_memory (GMT, NULL, Z->header->ny, double);
+			if (Ctrl->I.active) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
+			for (col = 0; col < Z->header->nx; col++) x_drape[col] = GMT_grd_col_to_x (col, Z->header);
+			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (row, Z->header);
+			bin = 0;
+			GMT_grd_loop (Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
+				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row], &edgeinfo, &t_bcr);
+				if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
+					ix[bin] = iy[bin] = -1;
+				else {
+					GMT_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);
+					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
+					ix[bin] = MAX(0, MIN((GMT_LONG)floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi), last_i));
+					iy[bin] = MAX(0, MIN((GMT_LONG)floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi), last_j));
 				}
+				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row], &edgeinfo, &i_bcr);
+				bin++;
 			}
 			GMT_free (GMT, x_drape);
+			GMT_free (GMT, y_drape);
 			if (Ctrl->I.active) {	/* Reset intensity grid so that we have no boundary row/cols */
 				GMT_free (GMT, Intens->data);
 				Intens->data = int_drape;
