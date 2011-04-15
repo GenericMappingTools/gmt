@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.109 2011-04-14 21:38:56 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.110 2011-04-15 21:30:10 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1497,7 +1497,7 @@ GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) 
 	}
 
 	header->type = GMT_GRD_IS_GDAL;
-	header->registration = (int)from_gdalread->hdr[6];	/* Pixel registration */
+	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");
 	header->nx = from_gdalread->RasterXsize, header->ny = from_gdalread->RasterYsize;
 	GMT_memcpy (header->wesn, from_gdalread->hdr, 4, double);
@@ -1572,6 +1572,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		GMT_report (C, GMT_MSG_FATAL, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
+
 	if (subset) {	/* We had a Sub-region demand */
 		header->nx = from_gdalread->RasterXsize;
 		header->ny = from_gdalread->RasterYsize;
@@ -1579,6 +1580,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		header->z_min = from_gdalread->hdr[4];
 		header->z_max = from_gdalread->hdr[5];
 	}
+
+	header->registration = (int)from_gdalread->hdr[6];	/* Confirm registration. It may not be the same as reported by read_grd_info */
 
 	if (from_gdalread->Float.active) {
 		if (!to_gdalread->f_ptr.active)
