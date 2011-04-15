@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.948 2011-04-14 22:18:29 guru Exp $
+	$Id: ChangeLog,v 1.949 2011-04-15 00:27:21 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-14	pwessel
@@ -13,6 +13,7 @@
 	* gmt_gdalread.c:	Sets grid registration of pixel registered when data type is Byte.
 				We may/will need to update this later.
 	* gmt_esri_io.c:	Fixed error in selecting output row when loading a binary subsection.
+	* grdview_func.c:	Fixed interpolation errors when resampling intensity to drape grid.
 
 2011-04-12      pwessel
 	* configure.ac:		Added check for log2, with macro in gmt_math.h
