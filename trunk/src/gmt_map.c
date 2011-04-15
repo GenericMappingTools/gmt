@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.271 2011-04-12 13:06:44 remko Exp $
+ *	$Id: gmt_map.c,v 1.272 2011-04-15 19:00:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5940,6 +5940,7 @@ GMT_LONG GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, GMT_L
 		else if (C->current.map.is_world)
 			nx = (*C->current.map.wrap_around_check) (C, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {	/* inside-outside or outside-inside */
+			if (GMT_is_dnan (yy[0])) fprintf (stderr, "y[0] NaN\n");
 			C->current.plot.x[np] = xx[0];	C->current.plot.y[np] = yy[0];
 			C->current.plot.pen[np++] = (inside) ? PSL_MOVE : PSL_DRAW;
 			if (np == C->current.plot.n_alloc) GMT_get_plot_array (C);
@@ -7342,6 +7343,9 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 	if (C->current.proj.central_meridian < C->common.R.wesn[XLO] && (C->current.proj.central_meridian + 360.0) <= C->common.R.wesn[XHI]) C->current.proj.central_meridian += 360.0;
 	if (C->current.proj.central_meridian > C->common.R.wesn[XHI] && (C->current.proj.central_meridian - 360.0) >= C->common.R.wesn[XLO]) C->current.proj.central_meridian -= 360.0;
+
+	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
+	C->current.map.path_step = C->current.setting.map_line_step / C->current.proj.scale[GMT_X] / C->current.proj.M_PR_DEG;
 
 	GMT_init_three_D (C);
 

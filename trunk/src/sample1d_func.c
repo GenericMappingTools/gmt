@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: sample1d_func.c,v 1.5 2011-04-15 19:00:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Change spherical sampling mode */
+			case 'A':	/* Change spherical sampling mode (but cannot turn it off) */
 				Ctrl->A.active = TRUE;
 				switch (opt->arg[0]) {
 					case 'm': Ctrl->A.mode = 1; break;
@@ -229,7 +229,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, spatial = FALSE, *nan_flag = NULL;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
-	double tt, low_t, high_t, last_t;
+	double tt, low_t, high_t, last_t, inc_degrees;
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_TABLE *T = NULL, *Tout = NULL;
@@ -280,7 +280,10 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->I.mode) GMT_init_distaz (GMT, Ctrl->I.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 
-	spatial = (Ctrl->I.active && Ctrl->I.mode == INT_2D);
+	if (Ctrl->I.active && Ctrl->I.mode == INT_2D) {
+		spatial = TRUE;
+		inc_degrees = GMT->current.proj.DIST_M_PR_DEG * Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert increment to spherical degrees */
+	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
@@ -298,14 +301,13 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = TRUE;
 			if (spatial) {	/* Need distance for spatial interpolation */
-				double *lon = NULL, *lat = NULL, inc;
+				double *lon = NULL, *lat = NULL;
 				GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, 1.0, 2, &dist_in);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
 				lat = GMT_memory (GMT, NULL, S->n_rows, double);
 				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
 				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
-				inc = GMT->current.proj.DIST_M_PR_DEG * Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert increment to spherical degrees */
-				m = GMT_fix_up_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
+				m = GMT_fix_up_path (GMT, &lon, &lat, S->n_rows, inc_degrees, Ctrl->A.mode);
 				GMT_dist_array (GMT, lon, lat, m, 1.0, 2, &t_out);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */

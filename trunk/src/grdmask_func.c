@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.8 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdmask_func.c,v 1.9 2011-04-15 19:00:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -63,7 +63,6 @@ void *New_grdmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->A.step = 0.1;		/* In degrees */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
 	return ((void *)C);
 }
@@ -91,8 +90,9 @@ GMT_LONG GMT_grdmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e. connect by straight lines\n");
+	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e. connect by straight lines,\n");
 	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
+	GMT_message (GMT, "\t   Ignored if -S is used since points are then not considered to be lines.\n");
 	GMT_message (GMT, "\t-N Sets <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
 	GMT_message (GMT, "\t   Optionally, use -Ni (inside) or -NI (inside+edge) to set polygon ID:\n");
@@ -135,7 +135,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 					case 'm': Ctrl->A.mode = 1; break;
 					case 'p': Ctrl->A.mode = 2; break;
 #ifdef DEBUG
-					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
+					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature; requires step in degrees */
 #endif
 				}
 				break;
@@ -204,7 +204,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE, resample = FALSE;
+	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE;
 	GMT_LONG row, col, side, d_col = 0, d_row = 0, col_0, row_0;
 	GMT_LONG tbl, seg, mode, n_pol = 0, k, ij;
 	
@@ -280,7 +280,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
-	resample = ((!Ctrl->A.active || Ctrl->A.mode) && periodic);
+	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
 
 	/* Initialize all nodes (including pad) to the 'outside' value */
 
@@ -295,7 +295,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 
-	if (!Ctrl->S.active && resample) {	/* Resample all polygons to desired resolution, once and for all */
+	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.41 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmt_vector.c,v 1.42 2011-04-15 19:00:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -514,7 +514,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
-	 * <step> spherical degree.
+	 * <step> spherical degree.  If step <= 0 we use the default path_step.
 	 * If mode=0: returns points along a great circle
 	 * If mode=1: first follows meridian, then parallel
 	 * If mode=2: first follows parallel, then meridian
@@ -533,7 +533,8 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 1, 0, double);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
-	if (step <= 0.0) step = 1.0;
+	if (step <= 0.0) step = C->current.map.path_step;	/* Based on C->current.setting.map_line_step converted to degrees */
+	if (step <= 0.0) step = 0.1;				/* Safety valve when no -J and step not set. */
 
 	for (i = 1; i < n; i++) {
 
