@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.38 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_map.h,v 1.39 2011-04-15 19:00:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,6 +34,9 @@
 #define GMT_MAP_DIST			0	/* Distance in the map */
 #define GMT_CONT_DIST			1	/* Distance along a contour or line in dist units */
 #define GMT_LABEL_DIST			2	/* Distance along a contour or line in dist label units */
+
+#define GMT_RESAMPLE_PATH		0	/* Default: Resample geographic paths based in a max gap allowed (path_step) */
+#define GMT_LEAVE_PATH			1	/* Options like -A can turn of this resampling, where available */
 
 #define METERS_IN_A_FOOT		0.3048	/* 2.54 * 12 / 100 */
 #define METERS_IN_A_KM			1000.0

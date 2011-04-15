@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.949 2011-04-15 00:27:21 remko Exp $
+	$Id: ChangeLog,v 1.950 2011-04-15 19:00:37 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-15	pwessel
+	* gmt_map.c:		Moved initialization of path resampling step for maps to here.
+				This is used by GMT_fix_up_path to resample before plotting.
+				Only programs that need to set this via options (e.g., sample1d)
+				will do so explicitly.
+	* gmt_plot.c:		Safer approach to fill and outline for multi-polygons with holes
+				or polar caps: For these cases we always do the fill separately
+				then draw the outline separately (if requested).
 
 2011-04-14	pwessel
 	* *.[ch]:		Ended support for OS/2.  GMT 4 remains an option for OS/2 users.

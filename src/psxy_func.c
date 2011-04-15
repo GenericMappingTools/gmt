@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.9 2011-04-12 13:06:43 remko Exp $
+ *	$Id: psxy_func.c,v 1.10 2011-04-15 19:00:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,7 +91,6 @@ void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new co
 
 	C->E.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
-	C->A.step = GMT->current.setting.map_line_step;
 	C->E.size = CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	return ((void *)C);
 }
@@ -495,7 +494,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the psxy task */
 	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, resample, set_type;
+	GMT_LONG default_outline, outline_active, set_type;
 	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
 	GMT_LONG i, n_total_read = 0, j, geometry, tbl, seg, read_mode;
 	GMT_LONG n_cols_start = 2, n_fields, error = GMT_NOERROR;
@@ -505,7 +504,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	char buffer[BUFSIZ], *text_rec = NULL;
 
 	double dim[7], *in = NULL;
-	double s, c, step, plot_x, plot_y, x_1, x_2, y_1, y_2;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 	double direction, length, dx, dy;
 
 	struct GMT_PEN current_pen, default_pen;
@@ -665,10 +664,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		penset_OK = FALSE;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
 	}
 
-	resample = ((!Ctrl->A.active || Ctrl->A.mode) && GMT_is_geographic (GMT, GMT_IN));
-	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (if requested) */
-	step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
-
+	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+#ifdef DEBUG
+	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
+	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
+#endif
 	if (S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || (not_line && !Ctrl->N.active)) {
 		if (!S.G.delay) {
 			GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
@@ -953,7 +953,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
-				if (L->header && L->header[0]) PSL_comment (PSL, "%s", L->header);
+				if (L->header && L->header[0]) PSL_comment (PSL, "%s\n", L->header);
 
 				if (Ctrl->I.active) {
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
@@ -975,10 +975,10 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}
 
-				if (resample)	/* Resample if spacing is too coarse */
-					L->n_rows = GMT_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, step, Ctrl->A.mode);
+				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH)	/* Resample if spacing is too coarse */
+					L->n_rows = GMT_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 
-				if (polygon) {	/* Want a filled polygon */
+				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					GMT_setfill (GMT, PSL, &current_fill, outline_active);
 					GMT_geo_polygons (GMT, PSL, L);
 				}

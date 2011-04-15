@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.8 2011-04-12 13:06:43 remko Exp $
+ *	$Id: pscoast_func.c,v 1.9 2011-04-15 19:00:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -524,7 +524,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double bin_x[5], bin_y[5], out[2];
 	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
-	double *xtmp = NULL, *ytmp = NULL, step, left, right, anti_x, anti_y, x_0, y_0, x_c, y_c, dist;
+	double *xtmp = NULL, *ytmp = NULL, left, right, anti_x, anti_y, x_0, y_0, x_c, y_c, dist;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
@@ -719,8 +719,6 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, PSL, &Ctrl->W.pen[0]);
 
-	/* Maximum step size (in degrees) used for interpolation of line segments along great circles */
-	step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 	last_pen_level = -1;
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 1);	/* Start clippath */
@@ -764,7 +762,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Get clipped polygons in x,y inches that can be plotted */
 
-			np_new = GMT_prep_polygons (GMT, &p, np, donut_hell, step, bin_trouble);
+			np_new = GMT_prep_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
 
 			if (clipping) {
 				for (k = level_to_be_painted; k < GMT_MAX_GSHHS_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
@@ -824,7 +822,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
-					if (donut_hell) p[i].n = GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
+					if (donut_hell) p[i].n = GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
 					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
@@ -904,7 +902,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
-
+		double step;
+		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 

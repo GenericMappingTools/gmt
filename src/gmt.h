@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.207 2011-04-14 22:18:29 guru Exp $
+ *	$Id: gmt.h,v 1.208 2011-04-15 19:00:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,10 +153,19 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	GMT_LONG is_world;			/* TRUE if map has 360 degrees of longitude range */
 	GMT_LONG is_world_tm;			/* TRUE if GMT_TM map is global? */
 	GMT_LONG lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
+	GMT_LONG meridian_straight;		/* TRUE if meridians plot as straight lines */
+	GMT_LONG parallel_straight;		/* TRUE if parallels plot as straight lines */
+	GMT_LONG n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
+	GMT_LONG n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
+	GMT_LONG z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
+	GMT_LONG path_mode;			/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
 	double half_width;			/* Half width in inches of this world map */
 	double half_height;			/* Half height of this world map */
+	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
+	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
+	double path_step;			/* Sampling interval if resampling of paths should be done */
 	PFL outside;				/* Pointer to function checking if a lon/lat point is outside map */
 	PFL crossing;				/* Pointer to functions returning crossover point at boundary */
 	PFL overlap;				/* Pointer to function checking for overlap between 2 regions */
@@ -167,19 +176,12 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	PFL near_lines_func;			/* Pointer to function returning distance to nearest line among a set of lines */
 	PFL near_a_line_func;			/* Pointer to function returning distance to line */
 	PFL near_point_func;			/* Pointer to function returning distance to nearest point */
-	GMT_LONG z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 	PFL wrap_around_check;			/* Does x or y wrap checks */
 	PFL jump;				/* TRUE if we jump in x or y */
 	PFB will_it_wrap;			/* TRUE if consecutive points indicate wrap */
 	PFB this_point_wraps;			/* Used in above */
 	PFV get_crossings;			/* Returns map crossings in x or y */
 	PFL truncate;				/* Truncate polygons agains boundaries */
-	GMT_LONG meridian_straight;		/* TRUE if meridians plot as straight lines */
-	GMT_LONG parallel_straight;		/* TRUE if parallels plot as straight lines */
-	GMT_LONG n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
-	GMT_LONG n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
-	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
-	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 };
 
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */
