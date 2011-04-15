@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.10 2011-04-15 01:03:03 remko Exp $
+ *	$Id: grdview_func.c,v 1.11 2011-04-15 01:51:39 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -576,7 +576,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GRDVIEW_CONT *start_cont = NULL, *this_cont = NULL, *last_cont = NULL;
 	struct GRDVIEW_POINT *this_point = NULL, *last_point = NULL;
 	struct GMT_GRID *Drape[3] = {NULL, NULL, NULL}, *Topo = NULL, *Intens = NULL, *Z = NULL;
-        struct GMT_EDGEINFO edgeinfo;
+	struct GMT_EDGEINFO edgeinfo;
 	struct GMT_BCR t_bcr, i_bcr;
 	struct GRDVIEW_BIN *binij = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -605,12 +605,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 
-	if (Ctrl->C.file) {
+	if (Ctrl->C.active) {
 		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
 		if (P->is_bw) Ctrl->Q.monochrome = TRUE;
-	}
-	if (P->categorical && Ctrl->W.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+		if (P->categorical && Ctrl->W.active) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+		}
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
@@ -925,7 +925,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		float *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
-		if (P->has_pattern) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Patterns in cpt file will not work with -Qi\n");
+		if (Ctrl->C.active && P->has_pattern) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Patterns in cpt file will not work with -Qi\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");
@@ -1002,7 +1002,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			layers = 3;
 			if (Ctrl->Q.mask) PS_colormask_off = 3;
 			bitimage_24 = GMT_memory (GMT, NULL, nm_i + PS_colormask_off, unsigned char);
-			if (Ctrl->Q.mask)
+			if (Ctrl->C.active && Ctrl->Q.mask)
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
 			else
 				GMT_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
@@ -1062,7 +1062,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 									rgb[kk] = GMT_is255 (Drape[kk]->data[d_node]);
 									if (rgb[kk] < 0.0) rgb[kk] = 0; else if (rgb[kk] > 1.0) rgb[kk] = 1.0;
 								}
-								if (GMT_same_rgb (rgb, P->patch[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
+								if (Ctrl->C.active && GMT_same_rgb (rgb, P->patch[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
 							}
 							else {		/* Use lookup to get color */
 								GMT_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
