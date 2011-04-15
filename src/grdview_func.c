@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.9 2011-04-15 00:26:23 remko Exp $
+ *	$Id: grdview_func.c,v 1.10 2011-04-15 01:03:03 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG get_contours, bad, error = FALSE, pen_set, row, col;
+	GMT_LONG get_contours, bad, good, error = FALSE, pen_set, row, col;
 	GMT_LONG first, begin, saddle, drape_resample = FALSE;
 	GMT_LONG j, n_edges, max, i_bin, j_bin, i_bin_old, j_bin_old, t_reg, d_reg[3], i_reg = 0;
 	GMT_LONG sw, se, nw, ne, n4, nk, c, i_start, i_stop, j_start, j_stop, i_inc, j_inc, ii, jj;
@@ -1054,7 +1054,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 						sum_r = sum_g = sum_b = sum_w = sum_i = 0.0;
 						done = FALSE;
-						for (k = bad = 0; !done && k < 4; k++) {	/* Loop over the 4 corners of the present tile */
+						for (k = good = 0; !done && k < 4; k++) {	/* Loop over the 4 corners of the present tile */
 							node = bin + bin_inc[k];
 							d_node = ij + ij_inc[k];
 							if (Ctrl->G.image) {	/* Have 3 grids with R,G,B values */
@@ -1062,17 +1062,16 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 									rgb[kk] = GMT_is255 (Drape[kk]->data[d_node]);
 									if (rgb[kk] < 0.0) rgb[kk] = 0; else if (rgb[kk] > 1.0) rgb[kk] = 1.0;
 								}
-								if (GMT_same_rgb (rgb, P->patch[GMT_NAN].rgb)) bad++;	/* Watch out for NaN colors */
+								if (GMT_same_rgb (rgb, P->patch[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
 							}
 							else {		/* Use lookup to get color */
 								GMT_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
-								if (GMT_is_fnan (Z->data[d_node]))	/* watch out for NaNs in the z-data*/
-									bad++;
-								else if (Ctrl->I.active && GMT_is_fnan (Intens->data[d_node]))	/* watch out for NaNs in the intensity data*/
-									bad++;
+								if (GMT_is_fnan (Z->data[d_node])) continue;	/* Skip NaNs in the z-data*/
 							}
-							if (bad) continue;	/* We don't want to blend in the (typically) gray NaN colors with the others. */
+							if (Ctrl->I.active && GMT_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
+							/* We don't want to blend in the (typically) gray NaN colors with the others. */
 							
+							good++;
 							dist = quick_idist (GMT, ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this corner value */
 								done = TRUE;
@@ -1087,7 +1086,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								sum_w += w;
 							}
 						}
-						if (!done && bad < 4) {	/* Must get weighted value when more than one non-nan value was found */
+						if (!done && good) {	/* Must get weighted value when more than one non-nan value was found */
 							sum_w = 1.0 / sum_w;
 							rgb[0] = sum_r * sum_w;
 							rgb[1] = sum_g * sum_w;
@@ -1095,7 +1094,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							if (Ctrl->I.active) intval = sum_i * sum_w;
 						}
 						if (Ctrl->Q.special) GMT_get_rgb_from_z (GMT, P, Z->data[ij], rgb);
-						if (Ctrl->I.active && bad < 4) GMT_illuminate (GMT, intval, rgb);
+						if (Ctrl->I.active && good) GMT_illuminate (GMT, intval, rgb);
 						kk = layers * ((ny_i-jp-1) * nx_i + ip) + PS_colormask_off;
 						if (Ctrl->Q.monochrome) /* GMT_YIQ transformation */
 							bitimage_8[kk] = (unsigned char) GMT_YIQ (rgb);
