@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.34 2011-04-14 21:36:25 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.35 2011-04-15 21:27:09 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,9 +35,10 @@ int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
 	int	bGotNodata, metadata_only;
-	int	do_BIP;	/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
+	int	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
+	int	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
@@ -146,7 +147,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		}
 		else {
 			Ctrl->ProjectionRefWKT = CNULL;
-			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", Ctrl->ProjectionRefPROJ4);
+			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
+					Ctrl->ProjectionRefPROJ4);
 		}
 
 		OSRDestroySpatialReference( hSRS );
@@ -155,6 +157,12 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 
 	if (metadata_only) {
 		populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+
+		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
+		if (!Ctrl->hdr[6]) {		/* Grid registration */
+			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
+			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
+		}
 		return (GMT_NOERROR);
 	}
 
@@ -187,7 +195,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		GDALGetGeoTransform( hDataset, adfGeoTransform );
 
 		if( adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0 ) {
-			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated.  This configuration is not supported.\n");
+			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose( hDataset );
 			GDALDestroyDriverManager();
 			return (-1);
@@ -315,6 +323,9 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			hBand = GDALGetRasterBand( hDataset, i+1 );
 		else			/* Band selection. Read only the requested ones */
 			hBand = GDALGetRasterBand( hDataset, (int)whichBands[i] );
+
+		/* Decide if grid or pixel registration based on the data type of first band actually sent back to the GMT machinery */
+		if (i == 0) pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
 
 		GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize,
 			tmp, nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0 );
@@ -468,6 +479,14 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GDALClose(hDataset);
 
 	populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+
+	/* Return registration based on data type of the actually read first band.
+	   We do this at the end because 'populate_metadata' scans all bands in file 
+	   and cannot know which one was actually read. */
+	if (!pixel_reg) {		/* Grid registration */
+		Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
+		Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
+	}
 
 	Ctrl->nActualBands = nBands;	/* Number of bands that were actually read in */
 
@@ -689,7 +708,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->band_field_names[nBand].ScaleOffset[1] = 0.0;
 		}
 
-		/* See if have grid or pixel registration */
+		/* Very soft guess if have grid or pixel registration. This will be confirmed latter on main */
 		if (nBand == 0) pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
 
 		/* Here the Mirone code has a chunk to read overviews info, but since we have not
@@ -811,10 +830,6 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		if (got_R) {
 			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
 			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
-		}
-		else if (!pixel_reg) {
-			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
-			Ctrl->hdr[2] += Ctrl->hdr[8] / 2;	Ctrl->hdr[3] -= Ctrl->hdr[8] / 2;
 		}
 	}
 
