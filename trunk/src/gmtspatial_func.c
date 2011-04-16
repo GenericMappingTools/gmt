@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.9 2011-04-12 03:05:18 remko Exp $
+*    $Id: gmtspatial_func.c,v 1.10 2011-04-16 00:50:53 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,6 +32,7 @@
 #define POL_UNION		0
 #define POL_INTERSECTION	1
 #define POL_CLIP		2
+#define POL_SPLIT		3
 
 #define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
@@ -569,7 +570,11 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
 	GMT_message (GMT, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Spatial assembly of polygons; append i for intersection, or u for union (closed polygon)\n");
+	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among\n");
+	GMT_message (GMT, "\t   i for intersection\n");
+	GMT_message (GMT, "\t   u for union\n");
+	GMT_message (GMT, "\t   s for splitting polygons that straddle the Dateline\n");
+	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline\n");
 	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if none is given we require -R\n");
 	GMT_message (GMT, "\t   and clip against a polygon derived from the region border.\n");
 	GMT_explain_options (GMT, "VfghC2D0io:.");
@@ -698,6 +703,8 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 					Ctrl->S.mode = POL_INTERSECTION;
 				else if (opt->arg[0] == 'c')
 					Ctrl->S.mode = POL_CLIP;
+				else if (opt->arg[0] == 's')
+					Ctrl->S.mode = POL_SPLIT;
 				else
 					n_errors++;
 				break;
@@ -799,7 +806,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_SUCCESS);
 	}
 	
-	if (Ctrl->S.active) Ctrl->I.active = external = TRUE;
+	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = TRUE;
 	
 	geo = GMT_is_geographic (GMT, GMT_IN);
 
@@ -915,7 +922,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_SUCCESS);
 	}
 	
-	if (Ctrl->I.active) {	/* Crossovers between polygons */
+	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		GMT_LONG k1, k2, j1, j2, nx, same;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
@@ -1277,7 +1284,50 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&C);
 		Return (EXIT_SUCCESS);
 	}
-
+	if (Ctrl->S.active) {	/* Do geospatial operations */
+		GMT_LONG n_split, tbl, seg, n_segs, crossing;
+		struct GMT_DATASET *Dout = NULL;
+		struct GMT_TABLE *T = NULL;
+		struct GMT_LINE_SEGMENT **L = NULL;
+		void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
+		
+		Dout = GMT_create_dataset (GMT, D->n_tables, 1, D->n_columns, 0);
+		Dout->n_segments = 0;
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			T = Dout->table[tbl];
+			n_segs = D->table[tbl]->n_segments;
+			Dout->table[tbl]->n_segments = 0;
+			for (j = seg = 0; j < D->table[tbl]->n_segments; j++) {
+				S = D->table[tbl]->segment[j];
+				if (S->n_rows == 0) continue;	/* Just skip empty segments */
+				crossing = GMT_crossing_dateline (GMT, S);
+				n_split = (crossing) ? GMT_split_poly_at_dateline (GMT, S, &L) : 1;
+				Dout->table[tbl]->n_segments += n_split;
+				if (Dout->table[tbl]->n_segments > n_segs) {
+					n_segs = Dout->table[tbl]->n_segments;
+					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_LINE_SEGMENT *);	/* Allow more space for new segments */
+				}
+				if (crossing) {
+					for (k = 0; k < n_split; k++) {
+						GMT_free_segment (GMT, T->segment[seg]);
+						T->segment[seg++] = L[k];	/* Add the remaining segments to the end */
+					}
+					GMT_free (GMT, L);
+				}
+				else {	/* Just duplicate */
+					GMT_duplicate_segment (GMT, S, T->segment[seg++]);
+				}
+			}
+			Dout->table[tbl]->n_segments = seg;
+			Dout->n_segments += seg;
+		}
+		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->Out.file, (void *)Dout)) Return ((error = GMT_DATA_WRITE_ERROR));
+		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments split across the Dateline\n", n_split);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Dout);
+	}
+	
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 	Return (EXIT_SUCCESS);
 }

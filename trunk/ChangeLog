@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.950 2011-04-15 19:00:37 guru Exp $
+	$Id: ChangeLog,v 1.951 2011-04-16 00:50:52 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-15	pwessel
@@ -10,6 +10,8 @@
 	* gmt_plot.c:		Safer approach to fill and outline for multi-polygons with holes
 				or polar caps: For these cases we always do the fill separately
 				then draw the outline separately (if requested).
+	* gmntspatial_func.c:	Preliminary implementation of -Ss for splitting polygons that
+				straddle the Dateline.
 
 2011-04-14	pwessel
 	* *.[ch]:		Ended support for OS/2.  GMT 4 remains an option for OS/2 users.
