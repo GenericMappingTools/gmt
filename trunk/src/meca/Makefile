@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.32 2011-04-14 22:18:30 guru Exp $
+#       $Id: Makefile,v 1.33 2011-04-16 22:04:47 guru Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -37,11 +37,24 @@ install:	all
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(API_H) $(includedir)/gmt; \
 		fi
+		if [ ! .. -ef $(libdir) ]; then \
+			$(INSTALL_DIR) $(libdir); \
+			$(INSTALL_DATA) $(LIBAPI:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) $(LIBAPI) $(libdir); fi \
+		fi
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
+			cd $(libdir) ; \
+			\mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)} ; \
+			$(LN_S) $(LIBAPI:.$(LIBEXT)=).{$(SL_VERSION),$(SL)} ; \
+		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS)
 		if [ ! . -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(API_H);\
+		fi
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			cd $(libdir); rm -f $(LIBAPI:.$(LIBEXT)=).{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)
