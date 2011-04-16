@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.250 2011-04-16 21:51:51 guru Exp $
+ *	$Id: gmt_io.c,v 1.251 2011-04-16 22:43:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5289,6 +5289,7 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 {	/* By taking a reference to the image pointer we can set it to NULL when done */
 	if (!(*I)) return;	/* Nothing to deallocate */
 	if ((*I)->data && free_image) GMT_free (C, (*I)->data);
+	if ((*I)->header) GMT_free (C, (*I)->header);
 	GMT_free (C, *I);
 	*I = NULL;
 }
