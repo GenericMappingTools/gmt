@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.13 2011-04-13 01:20:14 remko Exp $
+ *	$Id: psimage_func.c,v 1.14 2011-04-16 22:43:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -338,10 +338,12 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
+		GMT_set_pad (GMT, 0);	/* Temporary turn off padding since we will use image exactly as is */
 		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) 
 			Return (GMT_DATA_READ_ERROR);
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 		picture = (unsigned char *)I->data;
 		header.width = I->header->nx;
 		header.height = I->header->ny;

@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
+/* $Id: img2grd_func.c,v 1.8 2011-04-16 22:43:19 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -296,7 +296,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_img2grd", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf", "", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options))) Return (error);
 	Ctrl = (struct IMG2GRD_CTRL *)New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_img2grd_parse (API, Ctrl, options))) Return (error);
 	

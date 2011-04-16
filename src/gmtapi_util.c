@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.43 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmtapi_util.c,v 1.44 2011-04-16 22:43:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1161,9 +1161,6 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 	
 	switch (S->method) {
 		case GMT_IS_FILE:	/* Name of a image file on disk */
-
-			/* SET PAD TO ZERO BUT IS IT SAVE TO DO THIS HERE??? */
-			API->GMT->current.io.pad[0] = API->GMT->current.io.pad[1] = API->GMT->current.io.pad[2] = API->GMT->current.io.pad[3] = 0;
 
 			if ((*image) == NULL) {	/* Only allocate image struct when not already allocated */
 				if (mode == GMT_GRID_DATA) 		/* For mode = GMT_GRID_DATA grid must already be allocated */	
