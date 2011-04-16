@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.951 2011-04-16 00:50:52 guru Exp $
+	$Id: ChangeLog,v 1.952 2011-04-16 21:51:51 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-16      pwessel
+	* gmt_map.c:		The GMT_wesn_search did not handle periodic longitudes well,
+				now replaced with proper quandrant checking as in minmax.
 
 2011-04-15	pwessel
 	* gmt_map.c:		Moved initialization of path resampling step for maps to here.

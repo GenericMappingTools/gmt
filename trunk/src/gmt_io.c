@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.249 2011-04-16 00:50:52 guru Exp $
+ *	$Id: gmt_io.c,v 1.250 2011-04-16 21:51:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1660,6 +1660,40 @@ void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
 			break;
 	}
+}
+
+void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, GMT_LONG n, double *min, double *max)
+{	/* Return the min/max longitude in array lon using clever quadrant checking. */
+	GMT_LONG j, row, quad_no, n_quad, quad[4] = {FALSE, FALSE, FALSE, FALSE}, range[2] = {2, 0};
+	double xmin[2], xmax[2], x;
+
+	xmin[0] = xmin[1] = DBL_MAX; xmax[0] = xmax[1] = -DBL_MAX;
+	for (row = 0; row < n; row++) {
+		/* We must keep separate min/max for both Dateline and Greenwich conventions */
+		x = lon[row];	/* Work on a copy to avoid changing the array */
+		for (j = 0; j < 2; j++) {
+			GMT_lon_range_adjust (C, range[j], &x);	/* Set -180/180, then 0-360 range */
+			xmin[j] = MIN (x, xmin[j]);
+			xmax[j] = MAX (x, xmax[j]);
+		}
+		quad_no = (GMT_LONG)floor (x/90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
+		if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
+		quad[quad_no] = TRUE;
+	}
+	/* Finalize longitude range settings */
+	n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
+	if (quad[0] && quad[3])		/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
+		j = 0;
+	else if (quad[1] && quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
+		j = 1;
+	else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
+		j = ((xmax[0] - xmin[0]) < (xmax[1] - xmin[1])) ? 0 : 1;
+	else					/* Either will do, use default settings */
+		j = (C->current.io.geo.range == 0) ? 1 : 0;
+	*min = xmin[j];		*max = xmax[j];
+	/* Final adjustments */
+	if (*min > *max) *min -= 360.0;
+	if (*min < 0.0 && *max < 0.0) *min += 360.0, *max += 360.0;
 }
 
 #if 0
@@ -3700,49 +3734,19 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 }
 
 void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
-{
-	GMT_LONG col, xcol = -1, j, row, quad_no, quad[4] = {FALSE, FALSE, FALSE, FALSE}, range[2] = {2, 0};
-	double xmin[2], xmax[2], x;
-	for (col = 0; col < S->n_columns; col++) {	/* Initialize */
-		S->min[col] = DBL_MAX;
-		S->max[col] = -DBL_MAX;
-		if (C->current.io.col_type[GMT_IN][col] == GMT_IS_LON) xcol = col;
-	}
-	if (xcol >= 0) {xmin[0] = xmin[1] = DBL_MAX; xmax[0] = xmax[1] = -DBL_MAX;}
-	for (row = 0; row < S->n_rows; row++) {
-		for (col = 0; col < S->n_columns; col++) {
-			if (col == xcol) {	/* Longitude requires more work */
-				/* We must keep separate min/max for both Dateline and Greenwich conventions */
-				x = S->coord[col][row];
-				for (j = 0; j < 2; j++) {
-					GMT_lon_range_adjust (C, range[j], &x);	/* Set -180/180, then 0-360 range */
-					xmin[j] = MIN (x, xmin[j]);
-					xmax[j] = MAX (x, xmax[j]);
-				}
-				quad_no = (GMT_LONG)floor (x/90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
-				if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
-				quad[quad_no] = TRUE;
-			}
-			else {
+{	/* Determine the min/max values for each column in the segment */
+	GMT_LONG col, row;
+
+	for (col = 0; col < S->n_columns; col++) {
+		if (C->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
+			GMT_get_lon_minmax (C, S->coord[col], S->n_rows, &(S->min[col]), &(S->max[col]));
+		else {	/* Simple Cartesian-like arrangement */
+			S->min[col] = S->max[col] = S->coord[col][0];
+			for (row = 1; row < S->n_rows; row++) {
 				if (S->coord[col][row] < S->min[col]) S->min[col] = S->coord[col][row];
 				if (S->coord[col][row] > S->max[col]) S->max[col] = S->coord[col][row];
 			}
 		}
-	}
-	if (xcol >= 0) {	/* Finalize longitude range settings */
-		GMT_LONG n_quad;
-		n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
-		if (quad[0] && quad[3])	/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
-			j = 0;
-		else if (quad[1] && quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
-			j = 1;
-		else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
-			j = ((xmax[0] - xmin[0]) < (xmax[1] - xmin[1])) ? 0 : 1;
-		else					/* Either will do, use default settings */
-			j = (C->current.io.geo.range == 0) ? 1 : 0;
-		S->min[xcol] = xmin[j];	S->max[xcol] = xmax[j];
-		if (S->min[xcol] > S->max[xcol]) S->min[xcol] -= 360.0;
-		if (S->min[xcol] < 0.0 && S->max[xcol] < 0.0) S->min[xcol] += 360.0, S->max[xcol] += 360.0;
 	}
 }
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_internals.h,v 1.3 2011-04-16 21:51:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,6 +26,7 @@
 #ifndef _GMT_INTERNALS_H
 #define _GMT_INTERNALS_H
 
+EXTERN_MSC void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, GMT_LONG n, double *min, double *max);
 EXTERN_MSC struct GMT_OGR * GMT_duplicate_ogr (struct GMT_CTRL *C, struct GMT_OGR *G);
 EXTERN_MSC void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, GMT_LONG mode);
 EXTERN_MSC GMT_LONG ogr_get_geometry (char *item);
