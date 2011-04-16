@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.248 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmt_io.c,v 1.249 2011-04-16 00:50:52 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5080,6 +5080,14 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	*table = T;
 
 	return (0);
+}
+
+void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout)
+{	/* Duplicates the segment; Sout must have been allocated */
+	GMT_LONG col;
+	GMT_alloc_segment (C, Sout, Sin->n_rows, Sin->n_columns, FALSE);
+	for (col = 0; col < Sin->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
+	Sout->n_rows = Sin->n_rows;
 }
 
 void GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, struct GMT_DATASET **Dout, GMT_LONG n_columns, GMT_LONG n_rows, GMT_LONG mode)

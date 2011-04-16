@@ -5,7 +5,7 @@ gmtspatial \- Geospatial operations on polygons
 .SH SYNOPSIS
 BD(gmtspatial) IT(infiles) [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
 [ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
-[ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
+[ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u)|BD(s)|BD(j) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(gmtspatial) reads one or more data files (which may be multisegment files)
@@ -64,9 +64,11 @@ the same segment we skip the second (and further) scenario.
 Clips polygons to the map region, including map boundary to the polygon as needed.  The
 result is a closed polygon.
 .TP
-OPT(S)BD(i)|BD(u)
-Spatial processing of polygons.  Choose from OPT(Sc) OPT(Si) which returns the intersection of
-polygons (closed), or OPT(Sc) which returns the union of polygons (closed).
+OPT(S)BD(i)|BD(u)|BD(s)|BD(j)
+Spatial processing of polygons.  Choose from OPT(Si) which returns the intersection of
+polygons (closed), OPT(Sc) which returns the union of polygons (closed), OPT(Ss) which
+will split polygons that straddle the Dateline, and OPT(Sj) which will join polygons
+that were split by the Dateline.
 .TP
 OPT(T)[IT(clippolygon)]
 Truncate polygons against the specified polygon given, possibly resulting in open polygons.
