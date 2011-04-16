@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.11 2011-04-15 01:51:39 remko Exp $
+ *	$Id: grdview_func.c,v 1.12 2011-04-16 03:08:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -896,11 +896,13 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
+		struct GMT_LINE_SEGMENT S;
 		GMT_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Tiling without interpolation\n");
 
 		if (Ctrl->T.outline) GMT_setpen (GMT, PSL, &Ctrl->T.pen);
+		S.coord = GMT_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (Z, row, col, k) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[k]) && Ctrl->T.skip) continue;
 			if (Ctrl->I.active && Ctrl->T.skip && GMT_is_fnan (Intens->data[k])) continue;
@@ -908,10 +910,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->I.active) GMT_illuminate (GMT, Intens->data[k], fill.rgb);
 			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			GMT_setfill (GMT, PSL, &fill, Ctrl->T.outline);
-			GMT_geo_polygon (GMT, PSL, xx, yy, n);
+			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
+			GMT_geo_polygons (GMT, PSL, &S);
 			GMT_free (GMT, xx);
 			GMT_free (GMT, yy);
 		}
+		GMT_free (GMT, S.coord);
 		GMT_free (GMT, xval);
 		GMT_free (GMT, yval);
 	}
