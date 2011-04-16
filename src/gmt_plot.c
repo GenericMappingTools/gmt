@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.313 2011-04-15 21:20:37 guru Exp $
+ *	$Id: gmt_plot.c,v 1.314 2011-04-16 03:08:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3563,7 +3563,7 @@ void GMT_geo_polygon (struct GMT_CTRL *C, struct PSL_CTRL *P, double *lon, doubl
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
 	 * This usually means we have a global map with (east-west) = 360.
-	 * This function solves this by plotting the polygon three times:
+	 * This function solves this by determining the polygon outline three times:
 	 * First time: Truncate polygon between left and right border
 	 * Second time: Find where the polygon jumps and set all the points between jumps to
 	 *	       the point on the west boundary at the same latitude.
@@ -3572,11 +3572,8 @@ void GMT_geo_polygon (struct GMT_CTRL *C, struct PSL_CTRL *P, double *lon, doubl
 	 * In reality it depends on the nature of the first jump in which order we do the
 	 * west and east truncation above.
 	 * If the polygon is clipped or wraps around at a periodic boundary then we must
-	 * be careful how we draw the outline (if selected).  It is only when there is no
-	 * clipping/wrapping that we can call PSL_plotpolygon with outline set previously
-	 * by GMT_setfill.
-	 * Otherwise we must first fill the polygon without an outline and then separately
-	 * plot the outline as a path.
+	 * be careful how we draw the outline (if selected).  This function only lays down
+	 * the paths; filling/outline is controlled by higher powers (GMT_geo_polygons).
 	 */
 
 #define JUMP_L 0
@@ -3764,8 +3761,10 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double
 	GMT_LONG i;
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c;
 	double sin_c, cos_c, center, *px = NULL, *py = NULL;
+	struct GMT_LINE_SEGMENT *S = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 
-	(void)GMT_malloc2 (C, px, py, GMT_ELLIPSE_APPROX+1, 0, double);
+	GMT_alloc_segment (C, S, GMT_ELLIPSE_APPROX+1, 2, TRUE);
+	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
 	major *= 500.0, minor *= 500.0;	/* Convert to meters of semi-major and semi-minor axes */
@@ -3805,10 +3804,9 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double
 	}
 	/* Explicitly close the polygon */
 	px[GMT_ELLIPSE_APPROX] = px[0], py[GMT_ELLIPSE_APPROX] = py[0];
-	GMT_geo_polygon (C, P, px, py, (GMT_LONG)(GMT_ELLIPSE_APPROX+1));
+	GMT_geo_polygons (C, P, S);
 
-	GMT_free (C, px);
-	GMT_free (C, py);
+	GMT_free_segment (C, S);
 }
 
 void GMT_geo_rectangle (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, double lat, double width, double height, double azimuth)
