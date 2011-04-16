@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.272 2011-04-15 19:00:37 guru Exp $
+ *	$Id: gmt_map.c,v 1.273 2011-04-16 21:51:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4531,66 +4531,41 @@ GMT_LONG GMT_map_init_polyconic (struct GMT_CTRL *C) {
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 void GMT_wesn_search (struct GMT_CTRL *C, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
-	double dx, dy, w, e, s, n, x, y, lon, lat;
-	GMT_LONG i, j;
+	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
+	GMT_LONG i, j, k;
 
 	/* Search for extreme original coordinates lon/lat */
 
 	dx = (xmax - xmin) / C->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / C->current.map.n_lat_nodes;
+	lon = GMT_memory (C, NULL, 2 * (C->current.map.n_lon_nodes + C->current.map.n_lat_nodes + 2), double);
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
-	for (i = 0; i <= C->current.map.n_lon_nodes; i++) {
+	for (i = k = 0; i <= C->current.map.n_lon_nodes; i++) {
 		x = (i == C->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
-		GMT_xy_to_geo (C, &lon, &lat, x, ymin);
-		if (lon < w) w = lon;
-		if (lon > e) e = lon;
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
-		GMT_xy_to_geo (C, &lon, &lat, x, ymax);
-		if (lon < w) w = lon;
-		if (lon > e) e = lon;
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
+		GMT_xy_to_geo (C, &lon[k++], &lat, x, ymin);
+		if (lat < s) s = lat;	if (lat > n) n = lat;
+		GMT_xy_to_geo (C, &lon[k++], &lat, x, ymax);
+		if (lat < s) s = lat;	if (lat > n) n = lat;
 	}
 	for (j = 0; j <= C->current.map.n_lat_nodes; j++) {
 		y = (j == C->current.map.n_lat_nodes) ? ymax : ymin + j * dy;
-		GMT_xy_to_geo (C, &lon, &lat, xmin, y);
-		if (lon < w) w = lon;
-		if (lon > e) e = lon;
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
-		GMT_xy_to_geo (C, &lon, &lat, xmax, y);
-		if (lon < w) w = lon;
-		if (lon > e) e = lon;
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
+		GMT_xy_to_geo (C, &lon[k++], &lat, xmin, y);
+		if (lat < s) s = lat;	if (lat > n) n = lat;
+		GMT_xy_to_geo (C, &lon[k++], &lat, xmax, y);
+		if (lat < s) s = lat;	if (lat > n) n = lat;
 	}
+	GMT_get_lon_minmax (C, lon, k, &w, &e);	/* Determine lon-range by quandrant check */
+	GMT_free (C, lon);
 
 	/* Then check if one or both poles are inside map; then the above wont be correct */
 
-	if (!GMT_map_outside (C, C->current.proj.central_meridian, 90.0)) {
-		n = 90.0;
-		w = 0.0;
-		e = 360.0;
-	}
-	if (!GMT_map_outside (C, C->current.proj.central_meridian, -90.0)) {
-		s = -90.0;
-		w = 0.0;
-		e = 360.0;
-	}
+	if (!GMT_map_outside (C, C->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+	if (!GMT_map_outside (C, C->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
 
-	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small number */
-	n += 0.1;	if (n > 90.0) n = 90.0;
-	w -= 0.1;	e += 0.1;
-
-	if (fabs (w - e) > 360.0) {
-		w = 0.0;
-		e = 360.0;
-	}
-	*west = w;
-	*east = e;
-	*south = s;
-	*north = n;
+	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
+	n += 0.1;	if (n > 90.0) n = 90.0;		/* But dont go crazy beyond the pole */
+	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
 }
 
 GMT_LONG GMT_horizon_search (struct GMT_CTRL *C, double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {

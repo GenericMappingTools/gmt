@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *    $Id: minmax_func.c,v 1.6 2011-04-16 21:51:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -233,13 +233,13 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
 	GMT_LONG brackets = FALSE, work_on_abs_value, quad[4] = {FALSE, FALSE, FALSE, FALSE};
-	GMT_LONG i, j, ncol = 0, quad_no, n = 0, n_fields, save_range, mode, done;
+	GMT_LONG i, j, ncol = 0, quad_no, n = 0, n_fields, save_range, mode, done, range[2] = {2, 0};
 
 	char file[BUFSIZ], chosen[BUFSIZ], record[BUFSIZ], buffer[BUFSIZ], delimeter[2];
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value, x;
 	double west, east, south, north, low, high, e_min = DBL_MAX, e_max = -DBL_MAX;
-	double xmin1 = 360.0, xmin2 = 360.0, xmax1 = -360.0, xmax2 = -360.0;
+	double xmin[2] = {360.0, 360.0}, xmax[2] = { -360.0, -360.0};
 
 	struct MINMAX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -317,32 +317,16 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
  			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Must do more processing to determine longitude range since lon is periodic */
 				GMT_LONG n_quad;
 				n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
-				if (quad[0] && quad[3]) {	/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
-					xyzmin[GMT_X] = xmin2;
-					xyzmax[GMT_X] = xmax2;
-					GMT->current.io.geo.range = 2;	/* Override this setting explicitly */
-				}
-				else if (quad[1] && quad[2]) {	/* Longitudes on either side of the date line, must user 0/360 notation */
-					xyzmin[GMT_X] = xmin1;
-					xyzmax[GMT_X] = xmax1;
-					GMT->current.io.geo.range = 0;	/* Override this setting explicitly */
-				}
-				else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3]))) {	/* Funny quadrant gap, pick shortest longitude extent */
-					if ((xmax1 - xmin1) < (xmax2 - xmin2)) {	/* 0/360 more compact */
-						xyzmin[GMT_X] = xmin1;
-						xyzmax[GMT_X] = xmax1;
-						GMT->current.io.geo.range = 0;	/* Override this setting explicitly */
-					}
-					else {						/* -180/+180 more compact */
-						xyzmin[GMT_X] = xmin2;
-						xyzmax[GMT_X] = xmax2;
-						GMT->current.io.geo.range = 2;	/* Override this setting explicitly */
-					}
-				}
-				else {						/* Either will do, use default settings */
-					xyzmin[GMT_X] = xmin1;
-					xyzmax[GMT_X] = xmax1;
-				}
+				if (quad[0] && quad[3])	/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
+					j = 0;
+				else if (quad[1] && quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
+					j = 1;
+				else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
+					j = ((xmax[0] - xmin[0]) < (xmax[1] - xmin[1])) ? 0 : 1;
+				else						/* Either will do, use default settings */
+					j = (save_range == 0) ? 1 : 0;
+				GMT->current.io.geo.range = range[j];		/* Override this setting explicitly */
+				xyzmin[GMT_X] = xmin[j];	xyzmax[GMT_X] = xmax[j];
 				if (xyzmin[GMT_X] > xyzmax[GMT_X]) xyzmin[GMT_X] -= 360.0;
 				if (xyzmin[GMT_X] < 0.0 && xyzmax[GMT_X] < 0.0) xyzmin[GMT_X] += 360.0, xyzmax[GMT_X] += 360.0;
 			}
@@ -419,8 +403,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				xyzmin[i] = +DBL_MAX;
 				xyzmax[i] = -DBL_MAX;
 			}
-			xmin1 = xmin2 = 360.0;
-			xmax1 = xmax2 = -360.0;
+			xmin[0] = xmin[1] = 360.0;	xmax[0] = xmax[1] = -360.0;
 			n = 0;
 			file[0] = '\0';
 			if (done || GMT_REC_IS_SEG_HEADER (GMT)) continue;	/* We are done OR have no data record to process yet */
@@ -456,8 +439,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				xyzmin[i] = +DBL_MAX;
 				xyzmax[i] = -DBL_MAX;
 			}
-			xmin1 = xmin2 = 360.0;
-			xmax1 = xmax2 = -360.0;
+			xmin[0] = xmin[1] = 360.0;	xmax[0] = xmax[1] = -360.0;
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = FALSE;
 			first_data_record = FALSE;
@@ -484,17 +466,15 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (GMT_is_dnan (in[i])) continue;	/* We always skip NaNs */
 				if (i == 0 && GMT->current.io.col_type[GMT_IN][i] == GMT_IS_LON) {	/* Longitude requires more work */
 					/* We must keep separate min/max for both Dateline and Greenwich conventions */
-					x = in[i];
-					while (x >= 360.0) x -= 360.0;		/* Make sure longitude is < 360 ... */
-					while (x < 0.0) x += 360.0;		/* As well as >= 0.0 */
-					xmin1 = MIN (x, xmin1);
-					xmax1 = MAX (x, xmax1);
-					quad_no = (GMT_LONG)floor (x/90.0);	/* Yields quadrants 0-3 */
-					if (quad_no == 4) quad_no = 0;		/* When in[i] == 360.0 */
+					x = in[i];	/* Work on a copy to avoid changing the array */
+					for (j = 0; j < 2; j++) {
+						GMT_lon_range_adjust (GMT, range[j], &x);	/* Set -180/180, then 0-360 range */
+						xmin[j] = MIN (x, xmin[j]);
+						xmax[j] = MAX (x, xmax[j]);
+					}
+					quad_no = (GMT_LONG)floor (x/90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
+					if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
 					quad[quad_no] = TRUE;
-					while (x > 180.0) x -= 360.0;		/* Switch to -180+/180 range */
-					xmin2 = MIN (x, xmin2);
-					xmax2 = MAX (x, xmax2);
 				}
 				else if ((i == 0 && Ctrl->S.xbar) || (i == 1 && Ctrl->S.ybar)) {
 					/* Add/subtract value from error bar column */
