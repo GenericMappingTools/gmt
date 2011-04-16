@@ -4,9 +4,9 @@
 img2grd \- Extract subset of img file in Mercator or Geographic format
 .SH SYNOPSIS
 BD(img2grd) IT(imgfile) OPT(G)IT(grdfile) GMT_Rgeo_OPT 
-OPT(T)IT(type)  [ OPT(C) ] [ OPT(D)[IT(minlat/maxlat)] ] [ OPT(E) ] [ OPT(L) ] 
-[ OPT(M) ] [ OPT(N)IT(navg) ] [ OPT(S)IT(scale) ] 
-[ GMT_V_OPT ] [ OPT(W)IT(maxlon) ] [ OPT(m)IT(minutes) ]
+OPT(T)IT(type)  [ OPT(C) ] [ OPT(D)[IT(minlat/maxlat)] ] [ OPT(E) ] [ OPT(I)IT(minutes) ] 
+[ OPT(L) ] [ OPT(M) ] [ OPT(N)IT(navg) ] [ OPT(S)IT(scale) ] 
+[ GMT_V_OPT ] [ OPT(W)IT(maxlon) ]
 .SH DESCRIPTION
 BD(img2grd) reads an img format file, extracts a subset, and writes it to a grid file.
 The OPT(M) option dictates whether or not the Spherical Mercator 
@@ -55,7 +55,8 @@ OPT(R)0/45/45/72).
 .TP
 OPT(I)
 Indicate IT(minutes) as the width of an input img pixel in minutes of longitude.  
-[Default is 2.0].
+[Default is 2.0]. Not usually required since we can determine the pixel size from the
+file size (and OPT(D) is set for extended range images).
 .TP
 OPT(L)
 With no other arguments, list all *.img files found in the directory pointed to by
@@ -94,9 +95,6 @@ OPT(W)IT(maxlon)
 Indicate IT(maxlon) as the maximum longitude extent of the input img file.  Versions 
 since 1995 have had IT(maxlon) = 360.0, while some earlier files had IT(maxlon) = 
 390.0.  [Default is 360.0].
-.TP
-OPT(m)IT(minutes)
-Set the node-spacing of the img grid in minutes [2].
 #include "explain_help.txt"
 .SH GEOGRAPHIC EXAMPLES
 The OPT(M) option should be excluded if you need the output grid to be in geographic coordinates.
