@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.7 2011-04-17 21:01:35 guru Exp $
+ *    $Id: minmax_func.c,v 1.8 2011-04-17 21:03:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -408,8 +408,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			xmin[0] = xmin[1] = 360.0;	xmax[0] = xmax[1] = -360.0;
 			n = 0;
 			file[0] = '\0';
-			if (done || GMT_REC_IS_SEG_HEADER (GMT)) continue;	/* We are done OR have no data record to process yet */
-			if (do_report) continue;
+			if (done || do_report) continue;	/* We are done OR have no data record to process yet */
 		}
 
 		/* We get here once we have read a data record */
