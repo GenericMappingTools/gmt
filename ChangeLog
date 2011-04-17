@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.955 2011-04-17 22:17:32 guru Exp $
+	$Id: ChangeLog,v 1.956 2011-04-17 23:53:24 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-17      pwessel
 	* minmax_func.c:	Did not properly reset n records after a report.
 	* mapproject_func.c:	Did not accept unit c for Cartesian distances.
 				Despite -G[]c or -L[]c, continued to treat input x,y as lon,lat
+	* grdblend_func.c:	Now accepts -r (to set registration) and will automatically
+				call GMT_grdsample to first resample any input grid that has
+				another registration or grid spacing than the chosen output grid.
 	
 2011-04-16      pwessel
 	* gmt_map.c:		The GMT_wesn_search did not handle periodic longitudes well,

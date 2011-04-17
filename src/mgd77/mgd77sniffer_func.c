@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.7 2011-04-17 23:53:25 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2916,7 +2916,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 	info->mx = info->G->header->nx + 4;
 	if (GMT_360_RANGE (info->G->header->wesn[XHI], info->G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &info->edgeinfo, "g");
 
-	GMT_boundcond_param_prep (GMT, info->G, &info->edgeinfo);
+	GMT_boundcond_param_prep (GMT, info->G->header, &info->edgeinfo);
 
 	/* Initialize bcr structure with 2 row/col boundaries */
 

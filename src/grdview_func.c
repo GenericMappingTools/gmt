@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.12 2011-04-16 03:08:43 guru Exp $
+ *	$Id: grdview_func.c,v 1.13 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -674,7 +674,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		Z = Topo;
 
-	GMT_boundcond_param_prep (GMT, Topo, &edgeinfo);
+	GMT_boundcond_param_prep (GMT, Topo->header, &edgeinfo);
 
 	xval = GMT_memory (GMT, NULL, Topo->header->nx, double);
 	yval = GMT_memory (GMT, NULL, Topo->header->ny, double);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.7 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdmath_func.c,v 1.8 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -608,7 +608,7 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	GMT_boundcond_init (GMT, &edgeinfo);
 	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
 	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last], &edgeinfo);	/* Set parameters for selected BCs */
+	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
 	GMT_boundcond_set (GMT, stack[last], &edgeinfo);	/* Set the pad nodes using the BCs */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).
@@ -722,7 +722,7 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	GMT_boundcond_init (GMT, &edgeinfo);
 	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
 	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last], &edgeinfo);	/* Set parameters for selected BCs */
+	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
 	GMT_boundcond_set (GMT, stack[last], &edgeinfo);	/* Set the nodes using the BCs */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).
@@ -1012,7 +1012,7 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 	GMT_boundcond_init (GMT, &edgeinfo);
 	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
 	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last], &edgeinfo);	/* Set parameters for selected BCs */
+	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
 	GMT_boundcond_set (GMT, stack[last], &edgeinfo);	/* Set the nodes using the BCs */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).

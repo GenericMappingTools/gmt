@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.482 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmt_support.c,v 1.483 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5829,13 +5829,13 @@ GMT_LONG GMT_boundcond_parse (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo,
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_EDGEINFO *edgeinfo)
+GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_EDGEINFO *edgeinfo)
 {
-	/* Called when edgeinfo holds user's choices.  Sets edgeinfo according to choices and h.  */
+	/* Called when edgeinfo holds user's choices.  Sets edgeinfo according to choices and header.  */
 
 	double xtest;
 
-	if (edgeinfo->gn && !GMT_grd_is_global (C, G->header)) {
+	if (edgeinfo->gn && !GMT_grd_is_global (C, header)) {
 		/* User has requested geographical conditions, but grid is not global */
 		GMT_report (C, GMT_MSG_VERBOSE, "Warning: x range too small; g boundary condition ignored.\n");
 		edgeinfo->nxp = edgeinfo->nyp = 0;
@@ -5843,8 +5843,8 @@ GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GMT_GRID *G, struc
 		return (GMT_NOERROR);
 	}
 
-	if (GMT_grd_is_global (C, G->header)) {	/* Grid is truly global */
-		xtest = fmod (180.0, G->header->inc[GMT_X]) / G->header->inc[GMT_X];
+	if (GMT_grd_is_global (C, header)) {	/* Grid is truly global */
+		xtest = fmod (180.0, header->inc[GMT_X]) / header->inc[GMT_X];
 		/* xtest should be within GMT_SMALL of zero or of one.  */
 		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
@@ -5853,14 +5853,14 @@ GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GMT_GRID *G, struc
 			edgeinfo->gn  = edgeinfo->gs = FALSE;
 			return (GMT_NOERROR);
 		}
-		edgeinfo->nxp = irint (360.0 / G->header->inc[GMT_X]);
+		edgeinfo->nxp = irint (360.0 / header->inc[GMT_X]);
 		edgeinfo->nyp = 0;
-		edgeinfo->gn = ( (fabs(G->header->wesn[YHI] - 90.0) ) < (GMT_SMALL * G->header->inc[GMT_Y]) );
-		edgeinfo->gs = ( (fabs(G->header->wesn[YLO] + 90.0) ) < (GMT_SMALL * G->header->inc[GMT_Y]) );
+		edgeinfo->gn = ( (fabs(header->wesn[YHI] - 90.0) ) < (GMT_SMALL * header->inc[GMT_Y]) );
+		edgeinfo->gs = ( (fabs(header->wesn[YLO] + 90.0) ) < (GMT_SMALL * header->inc[GMT_Y]) );
 	}
 	else {
-		if (edgeinfo->nxp != 0) edgeinfo->nxp = (G->header->registration == GMT_PIXEL_REG) ? G->header->nx : G->header->nx - 1;
-		if (edgeinfo->nyp != 0) edgeinfo->nyp = (G->header->registration == GMT_PIXEL_REG) ? G->header->ny : G->header->ny - 1;
+		if (edgeinfo->nxp != 0) edgeinfo->nxp = (header->registration == GMT_PIXEL_REG) ? header->nx : header->nx - 1;
+		if (edgeinfo->nyp != 0) edgeinfo->nyp = (header->registration == GMT_PIXEL_REG) ? header->ny : header->ny - 1;
 	}
 	GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_param_prep determined edgeinfo: gn = %li, gs = %li, nxp = %li, nyp = %li\n", edgeinfo->gn, edgeinfo->gs, edgeinfo->nxp, edgeinfo->nyp);
 	return (GMT_NOERROR);

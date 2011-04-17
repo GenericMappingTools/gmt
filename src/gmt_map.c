@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.273 2011-04-16 21:51:51 guru Exp $
+ *	$Id: gmt_map.c,v 1.274 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6049,7 +6049,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	GMT_boundcond_param_prep (C, I, edgeinfo);	/* Init the BC parameters */
+	GMT_boundcond_param_prep (C, I->header, edgeinfo);	/* Init the BC parameters */
 
 	/* Initialize bcr structure:
 	   Threshold changed 10 Sep 07 by RS from 1.0 to <threshold> to allow interpolation closer to
