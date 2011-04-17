@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+*	$Id: mapproject_func.c,v 1.5 2011-04-17 21:01:35 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -302,6 +302,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 					Ctrl->G.sph = (opt->arg[0] == '-') ? 0 : ((opt->arg[0] == '+') ? 2 : 1);
 					Ctrl->G.unit = (opt->arg[0] == '-' || opt->arg[0] == '+') ? opt->arg[1] : opt->arg[0];
 				}
+				if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;

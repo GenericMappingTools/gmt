@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.6 2011-04-16 21:51:51 guru Exp $
+ *    $Id: minmax_func.c,v 1.7 2011-04-17 21:01:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -232,7 +232,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	GMT_LONG brackets = FALSE, work_on_abs_value, quad[4] = {FALSE, FALSE, FALSE, FALSE};
+	GMT_LONG brackets = FALSE, work_on_abs_value, quad[4] = {FALSE, FALSE, FALSE, FALSE}, do_report;
 	GMT_LONG i, j, ncol = 0, quad_no, n = 0, n_fields, save_range, mode, done, range[2] = {2, 0};
 
 	char file[BUFSIZ], chosen[BUFSIZ], record[BUFSIZ], buffer[BUFSIZ], delimeter[2];
@@ -299,6 +299,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	done = FALSE;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
 		n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, (void **)&in);
+		do_report = FALSE;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
@@ -314,6 +315,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			
 			/* Here we must issue a report */
 			
+			do_report = TRUE;
  			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Must do more processing to determine longitude range since lon is periodic */
 				GMT_LONG n_quad;
 				n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
@@ -407,6 +409,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			n = 0;
 			file[0] = '\0';
 			if (done || GMT_REC_IS_SEG_HEADER (GMT)) continue;	/* We are done OR have no data record to process yet */
+			if (do_report) continue;
 		}
 
 		/* We get here once we have read a data record */
@@ -488,10 +491,10 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (in[i] > xyzmax[i]) xyzmax[i] = in[i];
 				}
 			}
+			n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		}
 		if (file[0] == 0) strcpy (file, GMT->current.io.current_filename[GMT_IN]);	/* Grab name of current file while we can */
 		
-		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
