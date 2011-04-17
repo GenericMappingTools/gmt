@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77manage_func.c,v 1.5 2011-04-17 23:53:25 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -652,7 +652,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
 	
-		GMT_boundcond_param_prep (GMT, G, &edgeinfo);
+		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
 	
 		/* Initialize bcr structure with 2 rows/cols boundaries */
 
@@ -665,7 +665,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		G = GMT_create_grid (GMT);
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
-		GMT_boundcond_param_prep (GMT, G, &edgeinfo);
+		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
 		GMT_bcr_init (GMT, G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 		interpolate = (Ctrl->Q.threshold > 0.0);
 	}

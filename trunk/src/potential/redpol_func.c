@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: redpol_func.c,v 1.5 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1238,7 +1238,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			 	(void **)&(Ctrl->E.dipfile), (void **)&Gdip)) 
 			Return (GMT_DATA_READ_ERROR);
 
-		GMT_boundcond_param_prep (GMT, Gdip, &edgeinfo_dip);
+		GMT_boundcond_param_prep (GMT, Gdip->header, &edgeinfo_dip);
 		GMT_bcr_init (GMT, Gdip, BCR_BILINEAR, 1.0, &bcr_dip);		/* Initialize bcr structure: */
 		GMT_boundcond_set (GMT, Gdip, &edgeinfo_dip); 			/* Set boundary conditions */
 	}
@@ -1252,7 +1252,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			 	(void **)&(Ctrl->E.decfile), (void **)&Gdec)) 
 			Return (GMT_DATA_READ_ERROR);
 
-		GMT_boundcond_param_prep (GMT, Gdec, &edgeinfo_dec);
+		GMT_boundcond_param_prep (GMT, Gdec->header, &edgeinfo_dec);
 		GMT_bcr_init (GMT, Gdec, BCR_BILINEAR, 1.0, &bcr_dec);		/* Initialize bcr structure: */
 		GMT_boundcond_set (GMT, Gdec, &edgeinfo_dec); 			/* Set boundary conditions */
 	}

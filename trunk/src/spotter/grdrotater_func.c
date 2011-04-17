@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdrotater_func.c,v 1.7 2011-04-17 23:53:25 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -408,7 +408,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_boundcond_init (GMT, &edgeinfo);
 		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
 	
-		GMT_boundcond_param_prep (GMT, G, &edgeinfo);
+		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
 
 		/* Initialize bcr structure */
 

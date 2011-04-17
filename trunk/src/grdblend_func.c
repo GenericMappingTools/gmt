@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
+ *    $Id: grdblend_func.c,v 1.8 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,6 +83,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	GMT_LONG outside;				/* TRUE if the current output row is outside the range of this grid */
 	GMT_LONG invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
 	GMT_LONG open;					/* TRUE if file is currently open */
+	GMT_LONG delete;				/* TRUE if file was produced by grdsample to deal with different registartion/increments */
 	char file[GMT_LONG_TEXT];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
@@ -109,9 +110,10 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 }
 
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG n = 0, nr, one_or_zero = 0, n_alloc = 0, type, n_fields;
+	GMT_LONG n = 0, nr, one_or_zero = 0, n_alloc = 0, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
 	char *line = NULL, r_in[GMT_LONG_TEXT], *sense[2] = {"normal", "inverse"};
+	char Targs[GMT_LONG_TEXT], Iargs[GMT_LONG_TEXT], cmd[BUFSIZ];
 
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
@@ -120,42 +122,50 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 		if (n == n_alloc) n_alloc = GMT_malloc (GMT, B, n, n_alloc, struct GRDBLEND_INFO);
 		GMT_memset (&B[n], 1, struct GRDBLEND_INFO);	/* Initialize memory */
 		nr = sscanf (line, "%s %s %lf", B[n].file, r_in, &B[n].weight);
-		if (nr != 3) {
+		if (nr < 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
 			return (EXIT_FAILURE);
 		}
 		GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Read header structure */
-		if (!strcmp (r_in, "-")) {	/* Set inner = outer region */
+		if (nr == 1 || !strcmp (r_in, "-")) {	/* Set inner = outer region */
 			B[n].wesn[XLO] = B[n].G.header.wesn[XLO];	B[n].wesn[XHI] = B[n].G.header.wesn[XHI];
 			B[n].wesn[YLO] = B[n].G.header.wesn[YLO];	B[n].wesn[YHI] = B[n].G.header.wesn[YHI];
 		}
 		else	/* Must decode the -R string */
 			decode_R (GMT, &r_in[2], B[n].wesn);	/* Decode inner region */
-
+		if (nr == 1) B[n].weight = 1.0;	/* Default weight if not given */
 		/* Skip the file if its outer region does not lie within the final grid region */
 		if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside final grid region (skipped)\n", B[n].file);
 			continue;
 		}
 
-		/* Various sanity checking - e.g., all grid of same registration type and grid spacing */
+		/* If input grids have different spacing or registration we must resample */
 
-		if (n == 0) {
-			h->registration = B[n].G.header.registration;
-			one_or_zero = !h->registration;
-			GMT_RI_prepare (GMT, h);	/* Ensure -R -I consistency and set nx, ny */
+		Targs[0] = Iargs[0] = '\0';
+		do_sample = FALSE;
+		if (h->registration != B[n].G.header.registration) {
+			strcpy (Targs, "-T");
+			GMT_report (GMT, GMT_MSG_NORMAL, "File %s has different registration than the output grid - must resample\n", B[n].file);
+			do_sample = TRUE;
 		}
-		if (h->registration != B[n].G.header.registration){
-			GMT_report (GMT, GMT_MSG_FATAL, "File %s has different registration than the first file given\n", B[n].file);
-			return (EXIT_FAILURE);
+		if (!(GMT_IS_ZERO (B[n].G.header.inc[GMT_X] - h->inc[GMT_X]) && GMT_IS_ZERO (B[n].G.header.inc[GMT_Y] - h->inc[GMT_Y]))) {
+			sprintf (Iargs, "%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
+			GMT_report (GMT, GMT_MSG_FATAL, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
+				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
+			do_sample = TRUE;
 		}
-		if (!GMT_IS_ZERO (B[n].G.header.inc[GMT_X] - h->inc[GMT_X])){
-			GMT_report (GMT, GMT_MSG_FATAL, "File %s has different x-increment (%g) than the chosen output increment (%g)\n", B[n].file, B[n].G.header.inc[GMT_X], h->inc[GMT_X]);
-			return (EXIT_FAILURE);
-		}
-		if (!GMT_IS_ZERO (B[n].G.header.inc[GMT_Y] - h->inc[GMT_Y])){
-			GMT_report (GMT, GMT_MSG_FATAL, "File %s has different y-increment (%g) than the chosen output increment (%g)\n", B[n].file, B[n].G.header.inc[GMT_Y], h->inc[GMT_Y]);
-			return (EXIT_FAILURE);
+		if (do_sample) {
+			/* Need to add -R for case when there input grid (e.g., -R1/11/1/11 -I2) not in sync with output grid (e.g. -R0/12/0/12 -I2)  */
+			char *template = "/tmp/grdblend.tmp.XXXXXX";
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
+			sprintf (cmd, "%s %s -G%s -V%ld", Targs, Iargs, mktemp (template), GMT->current.setting.verbose);
+			if ((status = GMT_psxy_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
+				GMT_exit (EXIT_FAILURE);
+			}
+			strcpy (B[n].file, template);
+			B[n].delete = TRUE;
 		}
 		if (B[n].weight < 0.0) {	/* Negative weight means invert sense of taper */
 			B[n].weight = fabs (B[n].weight);
@@ -222,6 +232,7 @@ void sync_input_rows (struct GMT_CTRL *GMT, GMT_LONG row, struct GRDBLEND_INFO *
 				GMT_close_grd (GMT, &B[k].G);	/* Done with this file */
 				B[k].open = FALSE;
 				GMT_free (GMT, B[k].z);
+				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
 			}
 			continue;
 		}
@@ -270,7 +281,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdblend %s [API] - Blend several partially over-lapping grid files onto one grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdblend [<blendfile>] -G<grdfile> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W] [-Z<scale>]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W] [-Z<scale>]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -279,6 +290,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Relative weights are <weight> inside the given -R and cosine taper to 0 at actual grid -R.\n");
 	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
+	GMT_message (GMT, "\t   If only filename is given we interpret that as if filename - 1.0 was given.\n");
 	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
@@ -294,7 +306,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Write out weights only (only applies to a single input file) [make blend grid]\n");
 	GMT_message (GMT, "\t-Z Multiply z-values by this scale before writing to file [1]\n");
-	GMT_explain_options (GMT, "f.");
+	GMT_explain_options (GMT, "fF.");
 	
 	return (EXIT_FAILURE);
 }
@@ -370,7 +382,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error -R option: Must specify region\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive dx, dy\n");
@@ -412,7 +424,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdblend", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRf:", "r", options))) Return (error);
 	GMT_grd_init (GMT, &S.header, options, FALSE);
 	Ctrl = (struct GRDBLEND_CTRL *) New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdblend_parse (API, Ctrl, &S, options))) Return (error);
@@ -422,6 +434,8 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_fill = n_tot = 0;
 
 	GMT_memcpy (S.header.inc, Ctrl->I.inc, 2, double);
+	GMT_memcpy (S.header.wesn, GMT->common.R.wesn, 4, double);
+	S.header.registration = (GMT->common.r.active) ? GMT_PIXEL_REG : GMT_GRIDLINE_REG;
 	
 	GMT_RI_prepare (GMT, &S.header);	/* Ensure -R -I consistency and set nx, ny */
 

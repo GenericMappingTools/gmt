@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdtrack_func.c,v 1.6 2011-04-17 23:53:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -404,7 +404,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			GMT_boundcond_parse (GMT, &GC[g].edgeinfo, "g");
 			img_conv_needed = TRUE;
 		}
-		GMT_boundcond_param_prep (GMT, GC[g].G, &GC[g].edgeinfo);
+		GMT_boundcond_param_prep (GMT, GC[g].G->header, &GC[g].edgeinfo);
 
 		/* Initialize bcr structure */
 
