@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.952 2011-04-16 21:51:51 guru Exp $
+	$Id: ChangeLog,v 1.953 2011-04-17 21:01:35 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-04-17      pwessel
+	* minmax_func.c:	Did not properly reset n records after a report.
+	* mapproject_func.c:	Did not accept unit c for Cartesian distances.
+	
 2011-04-16      pwessel
 	* gmt_map.c:		The GMT_wesn_search did not handle periodic longitudes well,
 				now replaced with proper quandrant checking as in minmax.
