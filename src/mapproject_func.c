@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.5 2011-04-17 21:01:35 guru Exp $
+*	$Id: mapproject_func.c,v 1.6 2011-04-17 22:09:00 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -278,14 +278,15 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 				if (n_slash == 2 || n_slash == 1) {	/* Got -Glon0/lat0[/[+|-]units] */
 					Ctrl->G.mode = 1;
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%c%c", txt_a, txt_b, &c, &d);
-					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->G.lon), txt_a);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
 					if (n_slash == 2) {
 						Ctrl->G.sph = (c == '-') ? 0 : ((c == '+') ? 2 : 1);
 						Ctrl->G.unit = (c == '-' || c == '+') ? d : c;
 						n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->G.unit), "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					}
+					if (Ctrl->G.unit == 'c') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
+					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->G.lon), txt_a);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
 				}
 				else if (opt->arg[last] == '+') {				/* Got -G[[+|-]units]+ */
 					Ctrl->G.mode = 4;
@@ -330,6 +331,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 					n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit), "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
 				}
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since user wants spherical distances */
+				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';	/* Internally, this is Cartesian data and distances */
 				break;
 			case 'N':
 				Ctrl->N.active = TRUE;
@@ -534,6 +536,9 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 	
+	if (Ctrl->G.unit == 'X') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
+	if (Ctrl->L.unit == 'X') GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;	/* Cartesian */
+
 	if (Ctrl->G.mode && proj_type != GMT_GEO2CART) {	/* Ensure we use the selected output coordinates */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = save[GMT_X];
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
@@ -748,8 +753,8 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				pos = record[0] = 0;	/* Start with blank record */
 				GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
 				GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
-				add_to_record (GMT, record, out[x], GMT_IS_LON, TRUE);	/* Format our output x value */
-				add_to_record (GMT, record, out[y], GMT_IS_LAT, TRUE);	/* Format our output y value */
+				add_to_record (GMT, record, out[x], GMT->current.io.col_type[GMT_IN][GMT_X], TRUE);	/* Format our output x value */
+				add_to_record (GMT, record, out[y], GMT->current.io.col_type[GMT_IN][GMT_Y], TRUE);	/* Format our output y value */
 				if (Ctrl->E.active) {
 					GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignore) and update pos */
 					add_to_record (GMT, record, out[2], GMT_IS_FLOAT, TRUE);	/* Format our output z value */
@@ -868,8 +873,8 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
-					add_to_record (GMT, record, in[x], GMT_IS_LON, TRUE);	/* Format our output x value */
-					add_to_record (GMT, record, in[y], GMT_IS_LAT, TRUE);	/* Format our output y value */
+					add_to_record (GMT, record, in[x], GMT->current.io.col_type[GMT_IN][GMT_X], TRUE);	/* Format our output x value */
+					add_to_record (GMT, record, in[y], GMT->current.io.col_type[GMT_IN][GMT_Y], TRUE);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
 						strcat (record, &line[pos]);
 						strcat (record, GMT->current.setting.io_col_separator);
