@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.156 2011-04-14 22:06:15 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.157 2011-04-18 18:25:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1211,6 +1211,10 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	global = GMT_grd_is_global (C, header);
 
 	if (!global) {
+		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && header->wesn[XLO] < 0.0 && header->wesn[XHI] < 0.0) {    /* Not allow west/east both to be negative */
+			header->wesn[XLO] += 360.0;
+			header->wesn[XHI] += 360.0;
+		}
 		if (wesn[XLO] < header->wesn[XLO]) { wesn[XLO] = header->wesn[XLO]; error = TRUE; }
 		if (wesn[XHI] > header->wesn[XHI]) { wesn[XHI] = header->wesn[XHI]; error = TRUE; }
 	}
