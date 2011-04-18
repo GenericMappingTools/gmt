@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.9 2011-04-18 00:07:08 guru Exp $
+ *    $Id: grdblend_func.c,v 1.10 2011-04-18 00:07:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -156,7 +156,6 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 			do_sample = TRUE;
 		}
 		if (do_sample) {
-			/* Need to add -R for case when there input grid (e.g., -R1/11/1/11 -I2) not in sync with output grid (e.g. -R0/12/0/12 -I2)  */
 			char *template = "/tmp/grdblend.tmp.XXXXXX";
 			double wesn[4];
 			wesn[XLO] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XLO], h), h);
