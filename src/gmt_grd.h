@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.49 2011-04-12 19:50:44 remko Exp $
+ *	$Id: gmt_grd.h,v 1.50 2011-04-18 18:25:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -105,12 +105,16 @@ struct GRD_HEADER {
 /* The array wesn in the header has a name that indicates the order (west, east, south, north).
  * However, to avoid using confusing indices 0-3 we define very brief constants XLO, XHI, YLO, YHI
  * that should be used instead. */
+#ifdef DEBUG	/* Allow these to be integers so ddd can resolve them: This is to aid our debugging */
+enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
+#else
 #define XLO 0
 #define XHI 1
 #define YLO 2
 #define YHI 3
 #define ZLO 4
 #define ZHI 5
+#endif
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no
