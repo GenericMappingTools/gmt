@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.957 2011-04-18 12:41:29 remko Exp $
+	$Id: ChangeLog,v 1.958 2011-04-18 19:30:27 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-18	remko
 	* grdsample_func.c:	Allow some slack in determining whether -R exceeds grid boundaries.
+	* doc/fig/*.ps:		Copied all output of scripts and examples here for use with
+				documentation. Remember to update this after changing any scripts
+				or examples.
 
 2011-04-17      pwessel
 	* minmax_func.c:	Did not properly reset n records after a report.

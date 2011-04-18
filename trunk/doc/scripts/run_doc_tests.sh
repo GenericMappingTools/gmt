@@ -1,11 +1,11 @@
 #!/bin/bash
-#	$Id: run_doc_tests.sh,v 1.13 2011-03-27 14:00:44 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.14 2011-04-18 19:30:27 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
 # Specify archived images to check against on command line, or otherwise checks all.
 
-echo "Test GMT Documentation EPS files against archive"
+echo "Test GMT Documentation PS files against archive"
 echo "--------------------------------------"
 echo "File                            STATUS"
 echo "--------------------------------------"
@@ -13,7 +13,7 @@ echo "--------------------------------------"
 # Get the file names of all archived images
 
 if [ $# -eq 0 ] ; then
-	origs=orig/*.ps
+	origs=../fig/GMT_*.ps
 else
 	origs=$*
 fi
@@ -26,7 +26,7 @@ touch fail_count.d
 for o in $origs ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`
+	rms=`compare -density 100 -metric RMSE $f.ps ../fig/$f.ps $f.png 2>&1`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> fail_count.d
@@ -40,7 +40,7 @@ for o in $origs ; do
 done
 
 echo "--------------------------------------"
-wc -l fail_count.d | awk '{printf "GMT Documentation EPS file failures: %d\n", $1}'
+wc -l fail_count.d | awk '{printf "GMT Documentation PS file failures: %d\n", $1}'
 cat fail_count.d
 rm -f fail_count.d
 echo "--------------------------------------"

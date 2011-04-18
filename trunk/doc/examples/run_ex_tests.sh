@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_ex_tests.sh,v 1.5 2011-03-27 14:00:44 remko Exp $
+#	$Id: run_ex_tests.sh,v 1.6 2011-04-18 19:30:27 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -13,7 +13,7 @@ echo "--------------------------------------"
 # Get the file names of all archived images
 
 if [ $# -eq 0 ] ; then
-	origs=orig/*.ps
+	origs="../fig/example*.ps ../fig/anim*.ps"
 else
 	origs=$*
 fi
@@ -26,7 +26,7 @@ touch fail_count.d
 for o in $origs ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`
+	rms=`compare -density 100 -metric RMSE $f.ps ../fig/$f.ps $f.png 2>&1`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> fail_count.d

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.87 2011-04-14 05:33:51 guru Exp $
+#  $Id: GNUmakefile,v 1.88 2011-04-18 19:32:19 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -134,10 +134,10 @@ tests:
 		@cd test ; sh run_gmt_tests.sh
 
 doctests:
-		@cd doc ; $(MAKE) $@
+		@cd doc/scripts ; $(MAKE) $@
 
 cleantests:
-		@cd doc ; $(MAKE) clean
+		@cd doc/scripts ; $(MAKE) clean
 		@cd doc/examples ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
