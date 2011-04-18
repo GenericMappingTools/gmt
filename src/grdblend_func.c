@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.8 2011-04-17 23:53:25 guru Exp $
+ *    $Id: grdblend_func.c,v 1.9 2011-04-18 00:07:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -158,8 +158,18 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 		if (do_sample) {
 			/* Need to add -R for case when there input grid (e.g., -R1/11/1/11 -I2) not in sync with output grid (e.g. -R0/12/0/12 -I2)  */
 			char *template = "/tmp/grdblend.tmp.XXXXXX";
+			double wesn[4];
+			wesn[XLO] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XLO], h), h);
+			while (wesn[XLO] < h->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
+			wesn[XHI] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XHI], h), h);
+			while (wesn[XHI] > h->wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
+			wesn[YLO] = GMT_grd_row_to_y (GMT_grd_y_to_row (B[n].G.header.wesn[YLO], h), h);
+			while (wesn[YLO] < h->wesn[YLO]) wesn[YLO] += h->inc[GMT_Y];
+			wesn[YHI] = GMT_grd_row_to_y (GMT_grd_y_to_row (B[n].G.header.wesn[YHI], h), h);
+			while (wesn[YHI] > h->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];
+			
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-			sprintf (cmd, "%s %s -G%s -V%ld", Targs, Iargs, mktemp (template), GMT->current.setting.verbose);
+			sprintf (cmd, "%s %s -R%.12g/%.12g/%.12g/%.12g -G%s -V%ld", Targs, Iargs, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], mktemp (template), GMT->current.setting.verbose);
 			if ((status = GMT_psxy_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 				GMT_exit (EXIT_FAILURE);
