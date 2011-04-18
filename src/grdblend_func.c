@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.10 2011-04-18 00:07:25 guru Exp $
+ *    $Id: grdblend_func.c,v 1.11 2011-04-18 00:16:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 	GMT_LONG n = 0, nr, one_or_zero = 0, n_alloc = 0, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
 	char *line = NULL, r_in[GMT_LONG_TEXT], *sense[2] = {"normal", "inverse"};
-	char Targs[GMT_LONG_TEXT], Iargs[GMT_LONG_TEXT], cmd[BUFSIZ];
+	char Targs[GMT_LONG_TEXT], Iargs[GMT_LONG_TEXT], Rargs[GMT_LONG_TEXT], cmd[BUFSIZ];
 
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
@@ -142,7 +142,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 
 		/* If input grids have different spacing or registration we must resample */
 
-		Targs[0] = Iargs[0] = '\0';
+		Targs[0] = Iargs[0] = Rargs[0] = '\0';
 		do_sample = FALSE;
 		if (h->registration != B[n].G.header.registration) {
 			strcpy (Targs, "-T");
@@ -151,12 +151,12 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 		}
 		if (!(GMT_IS_ZERO (B[n].G.header.inc[GMT_X] - h->inc[GMT_X]) && GMT_IS_ZERO (B[n].G.header.inc[GMT_Y] - h->inc[GMT_Y]))) {
 			sprintf (Iargs, "%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
-			GMT_report (GMT, GMT_MSG_FATAL, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
+			GMT_report (GMT, GMT_MSG_NORMAL, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
 				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample = TRUE;
 		}
-		if (do_sample) {
-			char *template = "/tmp/grdblend.tmp.XXXXXX";
+		if (!(GMT_IS_ZERO (fmod (B[n].G.header.wesn[XLO] - h->wesn[XLO], h->inc[GMT_X])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[XHI] - h->wesn[XLO], h->inc[GMT_X]))
+			&& GMT_IS_ZERO (fmod (B[n].G.header.wesn[YLO] - h->wesn[YLO], h->inc[GMT_Y])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[YHI] - h->wesn[YHI], h->inc[GMT_Y])))) {
 			double wesn[4];
 			wesn[XLO] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XLO], h), h);
 			while (wesn[XLO] < h->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
@@ -166,9 +166,14 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 			while (wesn[YLO] < h->wesn[YLO]) wesn[YLO] += h->inc[GMT_Y];
 			wesn[YHI] = GMT_grd_row_to_y (GMT_grd_y_to_row (B[n].G.header.wesn[YHI], h), h);
 			while (wesn[YHI] > h->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];
-			
+			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "File %s is phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
+			do_sample = TRUE;
+		}
+		if (do_sample) {
+			char *template = "/tmp/grdblend.tmp.XXXXXX";
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-			sprintf (cmd, "%s %s -R%.12g/%.12g/%.12g/%.12g -G%s -V%ld", Targs, Iargs, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], mktemp (template), GMT->current.setting.verbose);
+			sprintf (cmd, "%s %s %s -G%s -V%ld", Targs, Iargs, Rargs, mktemp (template), GMT->current.setting.verbose);
 			if ((status = GMT_psxy_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 				GMT_exit (EXIT_FAILURE);
