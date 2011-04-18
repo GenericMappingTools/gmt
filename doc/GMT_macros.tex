@@ -22,7 +22,7 @@
 \newcommand{\GMTSITE}{gmt.soest.hawaii.edu}
 \newcommand{\gmt}{\href{http://\GMTSITE}{\textbf{GMT}}}
 
-\graphicspath{{fig/}{ppt/}{examples/}{scripts/}}
+\graphicspath{{fig/}{ppt/}}
 \ifpdf
   % Here for creating PDF output with pdfLaTeX
   \pdfcompresslevel=9
@@ -59,7 +59,7 @@
 
 \newcommand{\GMTprog}[1]{\GMTprogi{#1}\index{#1@\textsfbf{#1}}}
 
-\newcommand{\script}[2][scripts]{%
+\newcommand{\script}[2][fig]{%
    \begingroup
    \scriptsize\vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
    \verbatiminput{#1/#2.tex}%
