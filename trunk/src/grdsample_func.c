@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.7 2011-04-17 23:53:25 guru Exp $
+ *	$Id: grdsample_func.c,v 1.8 2011-04-18 12:41:29 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,12 +259,12 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	GMT_boundcond_param_prep (GMT, Gin->header, &edgeinfo);
 
 	if (GMT->common.R.active) {
-		if (!edgeinfo.nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] || Gout->header->wesn[XHI] > Gin->header->wesn[XHI])) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Selected region exceeds the X-boundaries of the grid file!\n");
+		if (!edgeinfo.nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
-		else if (!edgeinfo.nyp && (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] || Gout->header->wesn[YHI] > Gin->header->wesn[YHI])) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
+		else if (!edgeinfo.nyp && (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
