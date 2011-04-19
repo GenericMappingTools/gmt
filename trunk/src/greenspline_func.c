@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
+ *	$Id: greenspline_func.c,v 1.7 2011-04-19 19:26:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1551,7 +1551,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 			normalize = 2;
 			break;
-		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if ELLIPSOID is nor sphere) */
+		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
 			GMT_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
