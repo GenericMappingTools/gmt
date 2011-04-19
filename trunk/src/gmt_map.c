@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.276 2011-04-19 03:54:18 guru Exp $
+ *	$Id: gmt_map.c,v 1.277 2011-04-19 12:59:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6252,7 +6252,7 @@ GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG
 	 */
 
 	GMT_LONG i, j, np;
-	double *work_x = NULL, *work_y = NULL, angle, da, r0, s, c, lon, lat;
+	double *work_x = NULL, *work_y = NULL, da, r0, s, c, lon, lat;
 
 	*donut = FALSE;
 
