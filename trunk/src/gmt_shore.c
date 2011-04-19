@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.71 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmt_shore.c,v 1.72 2011-04-19 04:07:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -38,8 +38,8 @@
  * GMT_br_cleanup :		Frees up main river/border structure memory
  *
  * Author:	Paul Wessel
- * Date:	13-JUN-2000
- * Version:	4.1.x
+ * Date:	1-JAN-2010
+ * Version:	5.x
  *
  */
 
@@ -597,12 +597,9 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_BR *c, GMT_L
 }
 
 GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, GMT_LONG shift, double west, double east, struct GMT_GSHHS_POL **pol)
-                
-                     
 /* assemble: TRUE if polygons is needed */
 /* shift: TRUE if longitudes may have to be shifted */
 /* edge: Edge test for shifting */
-
 {
 	struct GMT_GSHHS_POL *p = NULL;
 	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
@@ -828,7 +825,6 @@ void GMT_br_cleanup (struct GMT_CTRL *C, struct GMT_BR *c)
 	GMT_free (C, c->bin_nseg);
 	GMT_free (C, c->bin_firstseg);
         nc_close (c->cdfid);
-	
 }
 
 GMT_LONG GMT_prep_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, GMT_LONG np, GMT_LONG sample, double step, GMT_LONG anti_bin)
@@ -915,7 +911,6 @@ GMT_LONG GMT_prep_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, GM
 				GMT_free (C, ytmp);
 				continue;
 			}
-					
 			else {
 				close = GMT_polygon_is_open (C, xtmp, ytmp, n_use);
 				n_alloc = (close) ? n_use + 1 : n_use;
