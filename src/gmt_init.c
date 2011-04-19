@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.477 2011-04-14 22:18:29 guru Exp $
+ *	$Id: gmt_init.c,v 1.478 2011-04-19 03:54:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -19,7 +19,7 @@
  * gmt_init.c contains code which is used by all GMT programs
  *
  * Author:	Paul Wessel
- * Date:	15-FEB-2000
+ * Date:	1-JAN-2010
  * Version:	5
  *
  *
@@ -86,13 +86,7 @@ static char *GMT_color_name[GMT_N_COLOR_NAMES] = {	/* Names of all the X11 color
 };
 
 static char *GMT_weekdays[7] = {	/* Days of the week in English [Default] */
-	"Sunday",
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday"
+	"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 };
 
 static char *GMT_just_string[12] = {	/* Strings to specify justification */
@@ -807,9 +801,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 	 * the variable <option>.  Only the common parameter options are covered
 	 */
 
-	char *u = NULL;
-
-	u = C->session.unit_name[C->current.setting.proj_length_unit];
+	char *u = C->session.unit_name[C->current.setting.proj_length_unit];
 
 	GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
 
@@ -1249,7 +1241,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		C->common.a.geometry = ogr_get_geometry ((char *)(s+2));
 		if (s[1] == 'G') C->common.a.clip = TRUE;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
-		C->common.a.output = TRUE;
+		C->common.a.output = TRUE;	/* We are producing, not reading an OGR/GMT file */
 		if (C->current.setting.io_seg_marker[GMT_OUT] != '>') {
 			GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
 			C->current.setting.io_seg_marker[GMT_OUT] = '>';
@@ -1331,15 +1323,9 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 				C->common.b.swab[id] = C->common.b.single_precision[id] = FALSE;
 				break;
 			case '0':	/* Number of columns */
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
+			case '1': case '2': case '3':
+			case '4': case '5': case '6':
+			case '7': case '8': case '9':
 				C->common.b.ncol[id] = atoi (&text[i]);
 				while (text[i] && isdigit ((int)text[i])) i++;
 				i--;
@@ -6222,21 +6208,18 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 GMT_LONG gmt_get_unit (struct GMT_CTRL *C, char c)
 {
-	/* Converts cC, iI, and pP into 0,1,3 */
+	/* Converts c, i, and p into 0,1,3 */
 
 	GMT_LONG i;
 	switch ((int)c) {
-		case 'C':	/* cm */
-		case 'c':
-			i = 0;
+		case 'c':	/* cm */
+			i = GMT_CM;
 			break;
-		case 'I':	/* inch */
-		case 'i':
-			i = 1;
+		case 'i':	/* inch */
+			i = GMT_INCH;
 			break;
-		case 'P':	/* point */
-		case 'p':
-			i = 3;
+		case 'p':	/* point */
+			i = GMT_PT;
 			break;
 		default:	/* error */
 			i = -1;
@@ -6882,23 +6865,10 @@ GMT_LONG GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char 
 
 GMT_LONG GMT_set_measure_unit (struct GMT_CTRL *C, char unit) {
 	/* Option to override the GMT measure unit default */
+	GMT_LONG k;
 
-	switch (unit) {
-		case 'i':
-		case 'I':
-			C->current.setting.proj_length_unit = GMT_INCH;
-			break;
-		case 'c':
-		case 'C':
-			C->current.setting.proj_length_unit = GMT_CM;
-			break;
-		case 'p':
-		case 'P':
-			C->current.setting.proj_length_unit = GMT_PT;
-			break;
-		default:
-			return (GMT_MAP_BAD_MEASURE_UNIT);
-	}
+	if ((k = gmt_get_unit (C, unit)) < 0) return (GMT_MAP_BAD_MEASURE_UNIT);
+	C->current.setting.proj_length_unit = k;
 	return (GMT_NOERROR);
 }
 
@@ -7493,14 +7463,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 /* Make dummy functions so GMT will link under WIN32 where these functions do not exist */
 
-struct passwd *getpwuid (const int uid)
-{
-	return ((struct passwd *)NULL);
-}
-
-int getuid (void) {
-	return (0);
-}
+struct passwd *getpwuid (const int uid) { return ((struct passwd *)NULL); }
+int getuid (void) { return (0); }
 
 #endif
 
@@ -7573,7 +7537,7 @@ int GMT_fprintf (FILE *stream, char *format, ...) {
 	return (0);
 }
 #if 0
-/* Comment out for now since not used */
+/* Comment out for now since not used for now */
 int GMT_fscanf (FILE *stream, char *format, ...) {
 	va_list args;
 	va_start (args, format);

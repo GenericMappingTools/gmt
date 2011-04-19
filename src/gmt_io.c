@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.251 2011-04-16 22:43:19 guru Exp $
+ *	$Id: gmt_io.c,v 1.252 2011-04-19 03:54:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,6 +101,7 @@
 #endif
 #endif
 
+/* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
 static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "integer", "integer", "integer", "double", "double", "string", "datetime"};
@@ -114,51 +115,15 @@ static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "integer", "integer", "in
  */
 
 #ifdef WIN32
-FILE *GMT_fdopen (int handle, const char *mode)
-{
-	return (fdopen (handle, mode));
-}
-
-int GMT_fgetc (FILE *stream)
-{
-	return (fgetc (stream));
-}
-
-int GMT_ungetc (int c, FILE *stream)
-{
-	return (ungetc (c, stream));
-}
-
-int GMT_fputs (const char *str, FILE *stream)
-{
-	return (fputs (str, stream));
-}
-
-int GMT_fseek (FILE *stream, long offset, int whence)
-{
-	return (fseek(stream, offset, whence));
-}
-
-long GMT_ftell (FILE *stream)
-{
-	return (ftell(stream));
-}
-
-size_t GMT_fread (void *ptr, size_t size, size_t nmemb, FILE * stream)
-{
-	return (fread (ptr, size, nmemb, stream));
-}
-
-size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream)
-{
-	return (fwrite (ptr, size, nmemb, stream));
-}
-
-void GMT_rewind (FILE *stream)
-{
-	rewind (stream);
-}
-
+FILE *GMT_fdopen (int handle, const char *mode) { return (fdopen (handle, mode)); }
+int GMT_fgetc (FILE *stream) { return (fgetc (stream)); }
+int GMT_ungetc (int c, FILE *stream) { return (ungetc (c, stream)); }
+int GMT_fputs (const char *str, FILE *stream) { return (fputs (str, stream)); }
+int GMT_fseek (FILE *stream, long offset, int whence) { return (fseek(stream, offset, whence)); }
+long GMT_ftell (FILE *stream) { return (ftell(stream)); }
+size_t GMT_fread (void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fread (ptr, size, nmemb, stream)); }
+size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream) { return (fwrite (ptr, size, nmemb, stream)); }
+void GMT_rewind (FILE *stream) { rewind (stream); }
 #endif
 
 /* This version of fgets will check for input record truncation, that is,
@@ -1504,7 +1469,7 @@ GMT_LONG GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr
 	if (GMT_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
 
-	last = n_out - 1;				/* Last record, need to output linefeed instead of delimiter */
+	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
 		if (C->common.o.active)	/* Which data column to pick */
@@ -1655,7 +1620,7 @@ void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) > 180.0) (*lon) -= 360.0;
 			break;
-		case 3:	/* Make -180 < lon < +180 [Special case where -180 is desired] */
+		case 3:	/* Make -180 < lon < +180 [Special case where +180 is not desired] */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
 			break;
@@ -2122,7 +2087,6 @@ GMT_LONG GMT_col_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, GMT_LONG ij)
 
 GMT_LONG GMT_row_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, GMT_LONG ij)
 {
-
 	/* Translates incoming ij (no padding) to gmt_ij (includes padding) for row-structured data */
 
 	r->gmt_j = r->start_row + r->y_step * (ij / r->x_period);
@@ -2316,7 +2280,7 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 			break;
 	}
 
-	if (r->binary) {
+	if (r->binary) {	/* Use the binary modes (which only matters under Windoze)  */
 		strcpy (C->current.io.r_mode, "rb");
 		strcpy (C->current.io.w_mode, "wb");
 		strcpy (C->current.io.a_mode, "ab+");
@@ -3221,20 +3185,15 @@ GMT_LONG GMT_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 	if ((p = strpbrk (scopy, "dD"))) {
 		/* We found a D or d.  */
 		if (strlen (p) < 1 || (strpbrk (&p[1], "dD:") ) ){
-			/* It is at the end, or followed by a
-				colon or another d or D.  */
+			/* It is at the end, or followed by a colon or another d or D.  */
 			return (GMT_IS_NAN);
 		}
-		/* Map it to an e, permitting FORTRAN Double
-			Precision formats.  */
+		/* Map it to an e, permitting FORTRAN Double Precision formats.  */
 		p[0] = 'e';
 	}
 	p = scopy;
 	while ((p2 = strpbrk (p, ":"))) {
-		if (strlen (p2) < 1) {
-			/* Shouldn't end with a colon  */
-			return (GMT_IS_NAN);
-		}
+		if (strlen (p2) < 1) return (GMT_IS_NAN);	/* Shouldn't end with a colon  */
 		ncolons++;
 		if (ncolons > 2) return (GMT_IS_NAN);
 		p = &p2[1];
@@ -3333,33 +3292,33 @@ GMT_LONG GMT_scanf_dim (struct GMT_CTRL *C, char *s, double *val)
 GMT_LONG GMT_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 {
 	/* s is a string from a command-line argument.
-		The argument is known to refer to a time variable.  For example, the argument is
-		a token from -R<t_min>/<t_max>/a/b[/c/d].  However, we will permit it to be in EITHER
-		-- generic floating point format, in which case we interpret it as relative time
-		   in user units since epoch;
-		OR
-		-- absolute time in a restricted format, which is to be converted to relative time.
-
-		The absolute format must be restricted because we cannot use '/' as a delimiter in an arg
-		string, but we might allow the user to use that in a data file (in C->current.setting.[in/out]put_date_format.
-		Therefore we cannot use the user's date format string here, and we hard-wire something here.
-
-		The relative format must be decodable by GMT_scanf_float().  It may optionally end in 't'
-		(which will be stripped off by this routine).
-
-		The absolute format must have a T.  If it has a clock string then it must be of the form
-		<complete_calstring>T<clockstring> or just T<clockstring>.  If it has no clockstring then
-		it must be of the form <partial or complete calstring>T.
-
-		A <clockstring> may be partial (e.g. hh or hh:mm) or complete (hh:mm:ss[.xxx]) but it must use
-		':' for a delimiter and it must be readable with "%2d:%2d:%lf".
-		Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
-		or 60.xxx on a leap second); no am/pm suffixes allowed.
-
-		A <calstring> must be of the form
-		[-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT" (Gregorian year,month,day)
-		[-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)
-		yyyy[-Www[-d]]T (ISO week calendar)
+	   The argument is known to refer to a time variable.  For example, the argument is
+	   a token from -R<t_min>/<t_max>/a/b[/c/d].  However, we will permit it to be in EITHER
+	   -- generic floating point format, in which case we interpret it as relative time
+	      in user units since epoch;
+	   OR
+	   -- absolute time in a restricted format, which is to be converted to relative time.
+           
+	   The absolute format must be restricted because we cannot use '/' as a delimiter in an arg
+	   string, but we might allow the user to use that in a data file (in C->current.setting.[in/out]put_date_format.
+	   Therefore we cannot use the user's date format string here, and we hard-wire something here.
+           
+	   The relative format must be decodable by GMT_scanf_float().  It may optionally end in 't'
+	   (which will be stripped off by this routine).
+           
+	   The absolute format must have a T.  If it has a clock string then it must be of the form
+	   <complete_calstring>T<clockstring> or just T<clockstring>.  If it has no clockstring then
+	   it must be of the form <partial or complete calstring>T.
+           
+	   A <clockstring> may be partial (e.g. hh or hh:mm) or complete (hh:mm:ss[.xxx]) but it must use
+	   ':' for a delimiter and it must be readable with "%2d:%2d:%lf".
+	   Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
+	   or 60.xxx on a leap second); no am/pm suffixes allowed.
+           
+	   A <calstring> must be of the form
+	   [-]yyyy[-mm[-dd]]T readable after first '-' with "%4d-%2d-%2dT" (Gregorian year,month,day)
+	   [-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)
+	   yyyy[-Www[-d]]T (ISO week calendar)
 
 	Upon failure, returns GMT_IS_NAN.  Upon success, sets t and returns GMT_IS_ABSTIME.
 	We have it return either ABSTIME or RELTIME to indicate which one it thinks it decoded.
@@ -3904,7 +3863,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 }
 
 void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
-{
+{	/* Pull out the label in a -L<label> option in a segment header w./w.o. quotes */
 	GMT_LONG i = 0, k, j, j0, done;
 	char *p = NULL, q[2] = {'\"', '\''};
 
@@ -4375,9 +4334,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 	char file[BUFSIZ], tmpfile[BUFSIZ], open_mode[4], *out_file = tmpfile;
 	FILE *fp = NULL;
 
-	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') {	/* Want to append to existing file */
-		append = 1;
-	}
+	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') append = 1;	/* Want to append to existing file */
 	if (use_GMT_io)	/* Use C->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
 		strcpy (open_mode, (append) ? C->current.io.a_mode : C->current.io.w_mode);
 	else			/* Force ASCII mode */
@@ -4459,7 +4416,7 @@ GMT_LONG GMT_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 	 * If dist is NULL we choose stdout. */
 
 	GMT_LONG close_file = FALSE, row = 0, append, seg, k;
-	int *fd = NULL;
+	int *fd = NULL;	/* Must be int, not GMT_LONG */
 	char file[BUFSIZ], tmpfile[BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
 
@@ -4545,15 +4502,14 @@ GMT_LONG GMT_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table)
 {	/* Writes an entire text set to file or stream */
 	GMT_LONG tbl, error, append = 0, close_file = FALSE;
-	int *fd = NULL;
+	int *fd = NULL;	/* Must be int, not GMT_LONG */
 	char file[BUFSIZ], tmpfile[BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	/* Convert any destination type to stream */
 
-	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') {	/* Want to append to existing file */
-		append = 1;
-	}
+	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') append = 1;	/* Want to append to existing file */
+
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
 			strcpy (file, (char *)dest);
@@ -5462,7 +5418,6 @@ GMT_LONG GMT_validate_aspatial (struct GMT_CTRL *C, struct GMT_OGR *G)
 	if (C->current.io.ogr != 1) return (GMT_OK);	/* No point checking further since file is not GMT/OGR */
 	for (k = 0; k < C->common.a.n_aspatial; k++) if (get_ogr_id (G, C->common.a.name[k])) return (-1);
 	return (GMT_OK);
-
 }
 
 GMT_LONG GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)

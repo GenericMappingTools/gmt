@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.3 2011-04-16 21:51:51 guru Exp $
+ *	$Id: gmt_internals.h,v 1.4 2011-04-19 03:54:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,6 +26,12 @@
 #ifndef _GMT_INTERNALS_H
 #define _GMT_INTERNALS_H
 
+EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG do_minutes, GMT_LONG do_seconds, GMT_LONG lonlat, GMT_LONG worldmap);
+EXTERN_MSC GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);
+EXTERN_MSC GMT_LONG GMT_linear_array (struct GMT_CTRL *C, double min, double max, double delta, double phase, double **array);
+EXTERN_MSC GMT_LONG GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, GMT_LONG x_or_y, double **array);
+EXTERN_MSC GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify);
+EXTERN_MSC GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 EXTERN_MSC void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, GMT_LONG n, double *min, double *max);
 EXTERN_MSC struct GMT_OGR * GMT_duplicate_ogr (struct GMT_CTRL *C, struct GMT_OGR *G);
 EXTERN_MSC void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, GMT_LONG mode);
