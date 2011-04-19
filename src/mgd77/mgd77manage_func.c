@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.5 2011-04-17 23:53:25 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.6 2011-04-19 02:01:38 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -656,7 +656,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 		/* Initialize bcr structure with 2 rows/cols boundaries */
 
-		GMT_bcr_init (GMT, G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 		
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 		interpolate = (Ctrl->Q.threshold > 0.0);
@@ -666,7 +666,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
 		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
-		GMT_bcr_init (GMT, G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 		interpolate = (Ctrl->Q.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
@@ -1043,7 +1043,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			
 			/* Set boundary conditions  */
 
-			GMT_boundcond_set (GMT, G, &edgeinfo);
+			GMT_boundcond_grid_set (GMT, G, &edgeinfo);
 			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
 				colvalue[i] = GMT->session.d_NaN;	/* In case we are outside grid */
@@ -1065,7 +1065,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (x > G->header->wesn[XHI]) continue;
 
 				if (interpolate) {	/* IMG has been corrected, and GRD is good to go */
-					colvalue[i] = GMT_get_bcr_z (GMT, G, x, y, &edgeinfo, &bcr);
+					colvalue[i] = GMT_get_bcr_z (GMT, G, x, y, &bcr);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
 					ii = GMT_grd_x_to_col (x, G->header);

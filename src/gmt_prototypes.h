@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.18 2011-04-17 23:53:25 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.19 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,8 +27,9 @@
 #define _GMT_PROTOTYPES_H
 
 /* gmt_bcr.c: */
-EXTERN_MSC void GMT_bcr_init (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG bilinear, double threshold, struct GMT_BCR *bcr);
-EXTERN_MSC double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure  */
+EXTERN_MSC void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG bilinear, double threshold, struct GMT_BCR *bcr);
+EXTERN_MSC double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure and grid */
+EXTERN_MSC GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, struct GMT_BCR *bcr, unsigned char *z);		/* Compute z(x,y) from bcr structure and image */
 
 /* gmt_customio.c: */
 
@@ -181,7 +182,8 @@ EXTERN_MSC void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], s
 EXTERN_MSC void GMT_boundcond_init (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo);
 EXTERN_MSC GMT_LONG GMT_boundcond_parse (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo, char *edgestring);
 EXTERN_MSC GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo);
-EXTERN_MSC GMT_LONG GMT_boundcond_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_EDGEINFO *edgeinfo);
+EXTERN_MSC GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_EDGEINFO *edgeinfo);
+EXTERN_MSC GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_EDGEINFO *edgeinfo);
 EXTERN_MSC GMT_LONG GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG *wrap_180);
 EXTERN_MSC GMT_LONG GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG wrap_180);
 EXTERN_MSC GMT_LONG GMT_list_cpt (struct GMT_CTRL *C, char option);

@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.959 2011-04-19 01:37:08 remko Exp $
+	$Id: ChangeLog,v 1.960 2011-04-19 02:01:37 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-04-18	pwessel
+	* gmt_support.c:	Added GMT_boundcond_image_set for images and renamed
+				GMT_boundcond_image_set to GMT_boundcond_image_grid_set.
+	* gmt_map.c:		Added GMT_img_project for efficient reprojection of images.
+				This will be used in grdimage soon.
+	
 2011-04-18	remko
 	* grdsample_func.c:	Allow some slack in determining whether -R exceeds grid boundaries.
 	* doc/fig/*.ps:		Copied all output of scripts and examples here for use with

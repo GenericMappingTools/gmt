@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.7 2011-04-17 23:53:25 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.8 2011-04-19 02:01:38 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -412,11 +412,11 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Initialize bcr structure */
 
-		GMT_bcr_init (GMT, G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 
 		/* Set boundary conditions */
 
-		GMT_boundcond_set (GMT, G, &edgeinfo);
+		GMT_boundcond_grid_set (GMT, G, &edgeinfo);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
 	
@@ -575,7 +575,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 		xx -= 360.0;
 		while (xx < G->header->wesn[XLO]) xx += 360.0;	/* Make sure we deal with 360 issues */
-		G_rot->data[ij_rot] = (float)GMT_get_bcr_z (GMT, G, xx, yy, &edgeinfo, &bcr);
+		G_rot->data[ij_rot] = (float)GMT_get_bcr_z (GMT, G, xx, yy, &bcr);
 	}	
 	
 	/* Also loop over original node locations to make sure the nearest nodes are set */
