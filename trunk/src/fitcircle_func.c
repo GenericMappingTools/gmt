@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *    $Id: fitcircle_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,11 +118,11 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tReads from input_file or standard input\n");
+	GMT_message (GMT, "\tReads from input_file or standard input.\n");
 	GMT_message (GMT, "\t-L specify norm as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-S will attempt to fit a small circle rather than a great circle.\n");
-	fprintf(stderr,"\t   Optionally append the latitude of the small circle you want to fit\n");
+	fprintf(stderr,"\t   Optionally append the latitude of the small circle you want to fit.\n");
 	GMT_explain_options (GMT, "VC0fghio:.");
 	
 	return (EXIT_FAILURE);
@@ -175,7 +175,7 @@ GMT_LONG GMT_fitcircle_parse (struct GMTAPI_CTRL *C, struct FITCIRCLE_CTRL *Ctrl
 double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LONG ndata, double *pole, GMT_LONG norm, double *work, double *circle_distance)
 {
 	/* Find the L(norm) misfit between a small circle through
-		center with pole pole.  Return misfit in radians.  */
+	   center with pole pole.  Return misfit in radians.  */
 
 	double distance, delta_distance, misfit = 0.0;
 	GMT_LONG i;

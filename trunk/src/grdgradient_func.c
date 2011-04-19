@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.7 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -123,37 +123,36 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t<infile> is name of input grid file\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Sets azimuth (0-360 CW from North (+y)) for directional derivatives\n");
+	GMT_message (GMT, "\t-A Sets azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_message (GMT, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
 	GMT_message (GMT, "\t-D Finds the direction of grad z.\n");
-	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth]\n");
-	GMT_message (GMT, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360]\n");
-	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o\n");
+	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
+	GMT_message (GMT, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
+	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o.\n");
 	GMT_message (GMT, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
 	GMT_message (GMT, "\t   -E<azim/elev> sets azimuth and elevation of light vector.\n");
 	GMT_message (GMT, "\t   -E<azim/elev/ambient/diffuse/specular/shine> sets azim, elev and\n");
 	GMT_message (GMT, "\t    other parameters that control the reflectance properties of the surface.\n");
-	GMT_message (GMT, "\t    Default values are: 0.55/0.6/0.4/10\n");
-	GMT_message (GMT, "\t    Specify '=' to get the default value (e.g. -E60/30/=/0.5)\n");
+	GMT_message (GMT, "\t    Default values are: 0.55/0.6/0.4/10.\n");
+	GMT_message (GMT, "\t    Specify '=' to get the default value (e.g. -E60/30/=/0.5).\n");
 	GMT_message (GMT, "\t   Append s to use a simpler Lambertian algorithm (note that with this form\n");
-	GMT_message (GMT, "\t   you only have to provide the azimuth and elevation parameters)\n");
-	GMT_message (GMT, "\t   Append p to use the Peucker piecewise linear approximation (simpler but faster algorithm)\n");
+	GMT_message (GMT, "\t   you only have to provide the azimuth and elevation parameters).\n");
+	GMT_message (GMT, "\t   Append p to use the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
 	GMT_message (GMT, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
 	GMT_message (GMT, "\t   This means that even if you provide other values they will be ignored.\n");
-	GMT_message (GMT, "\t-G Output file for results from -A or -D\n");
-	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions\n");
-	GMT_message (GMT, "\t   or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
-	GMT_message (GMT, "\t   [Default: Natural conditions]\n");
-	GMT_message (GMT, "\t-N Will normalize gradients so that max |grad| = <amp> [1.0]\n");
-	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0]\n");
-	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0]\n");
+	GMT_message (GMT, "\t-G Output file for results from -A or -D.\n");
+	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either:\n");
+	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
+	GMT_message (GMT, "\t   [Default: Natural conditions].\n");
+	GMT_message (GMT, "\t-N Will normalize gradients so that max |grad| = <amp> [1.0].\n");
+	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
+	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Nt<amp>/<sigma>[/<offset>] or -Ne<amp>/<sigma>[/<offset>] sets sigma\n");
-	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data]\n");
+	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D\n");
+	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D.\n");
 	GMT_explain_options (GMT, "Vf.");
 	
 	return (EXIT_FAILURE);

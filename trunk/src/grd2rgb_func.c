@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.6 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grd2rgb_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -236,21 +236,21 @@ GMT_LONG GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t  (2) A regular z grid file.  Use -C to provide a cpt file with which\n");
 	GMT_message (GMT, "\t      to convert z to r/g/b triplets. -R, -I, and -F are ignored.\n");
 	GMT_message (GMT, "\t  (3) A RGB or RGBA raw rasterfile. Since raw rasterfiles have no header, you have to\n");
-	GMT_message (GMT, "\t      give the image dimensions via -W\n");
+	GMT_message (GMT, "\t      give the image dimensions via -W.\n");
 	GMT_message (GMT, "\t      However, you may take the chance of letting the program try to\n");
 	GMT_message (GMT, "\t      guess the image dimensions (slow, via FFT spectrum).\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.  If given, we assume a z grid file is provided,\n");
 	GMT_message (GMT, "\t   else we will try to read a Sun rasterfile.\n");
 	GMT_message (GMT, "\t-G Give outputfile name template for the three red, green, blue grid files.\n");
-	GMT_message (GMT, "\t   The template MUST contain the format code %%c which will be replaced with r, g, and b.\n");
-	GMT_message (GMT, "\t   [Default is grd2rgb_%%c.nc]\n");
-	GMT_message (GMT, "\t-I Specifies grid size(s).  Append m (or c) to <dx> and/or <dy> for minutes (or seconds)\n");
-	GMT_message (GMT, "\t-L Only output the given layer (r, g, or b) [Default output all three]\n");
+	GMT_message (GMT, "\t   The template MUST contain the format code %%c which will be replaced with r, g, and b\n");
+	GMT_message (GMT, "\t   [Default is grd2rgb_%%c.nc].\n");
+	GMT_message (GMT, "\t-I Specifies grid size(s).  Append m (or c) to <dx> and/or <dy> for minutes (or seconds).\n");
+	GMT_message (GMT, "\t-L Only output the given layer (r, g, or b) [Default output all three].\n");
 	GMT_explain_options (GMT, "RV");
 	GMT_message (GMT, "\t-W Sets the size of the raw raster file. By default an RGB file (which has 3 bytes/pixel)\n");
-	GMT_message (GMT, "\t   is assumed. For RGBA files use n_bytes = 4\n");
-	GMT_message (GMT, "\t   Use -W for guessing the image size of a RGB raw file, and -W=/=/4\n");
+	GMT_message (GMT, "\t   is assumed. For RGBA files use n_bytes = 4.\n");
+	GMT_message (GMT, "\t   Use -W for guessing the image size of a RGB raw file, and -W=/=/4.\n");
 	GMT_message (GMT, "\t   if the raw image is of the RGBA type. Notice that this might be a\n");
 	GMT_message (GMT, "\t   bit slow because the guessing algorithm makes uses of FFTs.\n");
 	GMT_explain_options (GMT, "F");

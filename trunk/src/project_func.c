@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: project_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -350,8 +350,8 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.\n");
 	GMT_message (GMT, "\t   p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W.\n");
 	GMT_message (GMT, "\t   Note z refers to all input data columns beyond the required x,y\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e. -Fxyzpqrs]\n");
-	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp\n");
+	GMT_message (GMT, "\t   [Default is all fields, i.e. -Fxyzpqrs].\n");
+	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
 	GMT_message (GMT, "\t-G Means Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
 	GMT_message (GMT, "\t-L Check the Length along the projected track and use only certain points.\n");

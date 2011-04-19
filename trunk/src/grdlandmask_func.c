@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdlandmask_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -102,18 +102,18 @@ GMT_LONG GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
 	GMT_message (GMT, "\t-D Choose one of the following resolutions:\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions)\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions)\n");
-	GMT_message (GMT, "\t   i - intermediate resolution\n");
-	GMT_message (GMT, "\t   l - low resolution [Default]\n");
-	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only\n");
+	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_message (GMT, "\t   i - intermediate resolution.\n");
+	GMT_message (GMT, "\t   l - low resolution [Default].\n");
+	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_message (GMT, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
 	GMT_message (GMT, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_message (GMT, "\t   Specify this information using 1 of 2 formats:\n");
 	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
 	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1)\n");
+	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_explain_options (GMT, "VF.");
 	
 	return (EXIT_FAILURE);

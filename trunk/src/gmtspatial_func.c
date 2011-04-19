@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.10 2011-04-16 00:50:53 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.11 2011-04-19 19:10:43 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   you may append unit %s [k]; otherwise it will be based on the input data units.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
 	GMT_message (GMT, "\t   Use -M+ to place the (area, handedness) or length result in the segment header\n");
-	GMT_message (GMT, "\t   on output [Default only reports results to stdout]\n");
+	GMT_message (GMT, "\t   on output [Default only reports results to stdout].\n");
 	GMT_message (GMT, "\t-N Determines ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
 	GMT_message (GMT, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
@@ -570,11 +570,11 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
 	GMT_message (GMT, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among\n");
-	GMT_message (GMT, "\t   i for intersection\n");
-	GMT_message (GMT, "\t   u for union\n");
-	GMT_message (GMT, "\t   s for splitting polygons that straddle the Dateline\n");
-	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline\n");
+	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among:\n");
+	GMT_message (GMT, "\t   i for intersection.\n");
+	GMT_message (GMT, "\t   u for union.\n");
+	GMT_message (GMT, "\t   s for splitting polygons that straddle the Dateline.\n");
+	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline.\n");
 	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if none is given we require -R\n");
 	GMT_message (GMT, "\t   and clip against a polygon derived from the region border.\n");
 	GMT_explain_options (GMT, "VfghC2D0io:.");

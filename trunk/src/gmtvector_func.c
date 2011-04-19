@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.7 2011-04-12 13:06:43 remko Exp $
+*    $Id: gmtvector_func.c,v 1.8 2011-04-19 19:10:43 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,23 +108,23 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
-	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta\n");
-	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates\n");
+	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta.\n");
+	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates.\n");
 	GMT_message (GMT, "\t-E Automatically convert between geodetic and geocentric coordinates [no conversion].\n");
 	GMT_message (GMT, "\t   Ignored unless -fg is given.\n");
 	GMT_message (GMT, "\t-N Normalize the transformed vectors (only affects -Co output).\n");
 	GMT_message (GMT, "\t-S The secondary vector (if needed by -T), given as lon/lat, r/theta, or x/y[/z].\n");
 	GMT_message (GMT, "\t-T Specifies the desired transformation of the input data.  Choose one of\n");
-	GMT_message (GMT, "\t   -Ta gives the average of the input and secondary vector (see -S)\n");
-	GMT_message (GMT, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S)\n");
-	GMT_message (GMT, "\t   -Td gives dot-product(s) with secondary vector (see -S)\n");
-	GMT_message (GMT, "\t   -TD same as -Td, but gives the angle in degrees between the vectors\n");
-	GMT_message (GMT, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s)\n");
+	GMT_message (GMT, "\t   -Ta gives the average of the input and secondary vector (see -S).\n");
+	GMT_message (GMT, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S).\n");
+	GMT_message (GMT, "\t   -Td gives dot-product(s) with secondary vector (see -S).\n");
+	GMT_message (GMT, "\t   -TD same as -Td, but gives the angle in degrees between the vectors.\n");
+	GMT_message (GMT, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s).\n");
 	GMT_message (GMT, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
 	GMT_message (GMT, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
-	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S)\n");
+	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_explain_options (GMT, "VfgC0");
-	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -D] input columns\n");
+	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -D] input columns.\n");
 	GMT_explain_options (GMT, "D0hio:.");
 	
 	return (EXIT_FAILURE);

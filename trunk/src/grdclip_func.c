@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdclip_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdclip_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,7 +81,7 @@ GMT_LONG GMT_grdclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-Sa will set all data > high to the <above> value.\n");
 	GMT_message (GMT, "\t-Sb will set all data < low to the <below> value.\n");
-	GMT_message (GMT, "\t    above/below can be any number including NaN\n");
+	GMT_message (GMT, "\t    above/below can be any number including NaN.\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);

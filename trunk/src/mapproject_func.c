@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.6 2011-04-17 22:09:00 guru Exp $
+*	$Id: mapproject_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -156,37 +156,37 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
 	GMT_message (GMT, "\t   Upper case B or F gives azimuths of geodesics using current ellipsoid.\n");
 	GMT_message (GMT, "\t   Use o or O to get orientations (-90/90) instead of azimuths (0/360).\n");
-	GMT_message (GMT, "\t-C Returns x/y relative to projection center [Default is relative to lower left corner]\n");
-	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0]\n");
+	GMT_message (GMT, "\t-C Returns x/y relative to projection center [Default is relative to lower left corner].\n");
+	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
 	GMT_message (GMT, "\t   Units are plot units unless -F is set in which case the unit is meters.\n");
-	GMT_message (GMT, "\t-D Temporarily reset MEASURE_UNIT to be c (cm), i (inch), or p (point)\n");
+	GMT_message (GMT, "\t-D Temporarily reset MEASURE_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -F is set.\n");
 	GMT_message (GMT, "\t-E Convert (lon, lat, h) to Earth Centered Earth Fixed (ECEF) coordinates [-I for inverse].\n");
-	GMT_message (GMT, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>\n");
+	GMT_message (GMT, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>,\n");
 	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_message (GMT, "\t   If <datum> = - or not given we assume WGS-84.\n");
-	GMT_message (GMT, "\t-F Force projected values to be in actual meters [Default uses the given plot scale]\n");
-	GMT_message (GMT, "\t   Specify unit by appending f (feet) k (km), M (miles), n (nautical miles), i (inch), c (cm), or p (points) [e]\n");
+	GMT_message (GMT, "\t-F Force projected values to be in actual meters [Default uses the given plot scale].\n");
+	GMT_message (GMT, "\t   Specify unit by appending f (feet) k (km), M (miles), n (nautical miles), i (inch), c (cm), or p (points) [e].\n");
 	GMT_message (GMT, "\t-G Calculate distances to specified point OR cumulative distances along track (if point not given).\n");
 	GMT_message (GMT, "\t   Use -G[<unit>]+ to get provide <lon0> <lat0> from two extra input columns.\n");
-	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track\n");
+	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
-	GMT_message (GMT, "\t-I Means Inverse, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y]\n");
+	GMT_message (GMT, "\t-I Means Inverse, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
 	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <line.xy>.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
-	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line\n");
+	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
 	GMT_message (GMT, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");
 	GMT_message (GMT, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
 	GMT_message (GMT, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
 	GMT_message (GMT, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
-	GMT_message (GMT, "\t   -Qe shows ellipsoid parameters\n");
-	GMT_message (GMT, "\t   -Qd shows datum parameters\n");
-	GMT_message (GMT, "\t-S Means Suppress points outside region\n");
+	GMT_message (GMT, "\t   -Qe shows ellipsoid parameters.\n");
+	GMT_message (GMT, "\t   -Qd shows datum parameters.\n");
+	GMT_message (GMT, "\t-S Means Suppress points outside region.\n");
 	GMT_message (GMT, "\t-T Means coordinate transformation from datum <from> to datum <to>.\n");
 	GMT_message (GMT, "\t   Prepend h if input data are lon, lat, height [Default sets height = 0].\n");
-	GMT_message (GMT, "\t   Specify datums using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>\n");
+	GMT_message (GMT, "\t   Specify datums using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>.\n");
 	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_message (GMT, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_message (GMT, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");

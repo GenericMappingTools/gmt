@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grd2cpt_func.c,v 1.7 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t<grdfiles> names of one or more 2-D binary data sets\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
+	GMT_message (GMT, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0].\n");
 	if (GMT_list_cpt (GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_message (GMT, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_message (GMT, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
@@ -140,19 +140,19 @@ GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-L Limit the range of the data [Default uses actual min,max of data].\n");
 	GMT_message (GMT, "\t-M Use GMT defaults to set back-, foreground, and NaN colors [Default uses color table].\n");
 	GMT_message (GMT, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
-	GMT_message (GMT, "\t-Q Assign a logarithmic colortable [Default is linear]\n");
-	GMT_message (GMT, "\t   -Qi: z-values are actually log10(z). Assign colors and write z. [Default]\n");
+	GMT_message (GMT, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
+	GMT_message (GMT, "\t   -Qi: z-values are actually log10(z). Assign colors and write z [Default].\n");
 	GMT_message (GMT, "\t   -Qo: z-values are z, but take log10(z), assign colors and write z.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Sample points should Step from z_start to z_stop by z_inc [Default guesses some values].\n");
 	GMT_message (GMT, "\t-T Force color tables to be symmetric about 0. Append one modifier:\n");
-	GMT_message (GMT, "\t   - for values symmetric about zero from -|zmin| to +|zmin|\n");
-	GMT_message (GMT, "\t   + for values symmetric about zero from -|zmax| to +|zmax|\n");
-	GMT_message (GMT, "\t   _ for values symmetric about zero -+min(|zmin|,|zmax|)\n");
-	GMT_message (GMT, "\t   = for values symmetric about zero -+max(|zmin|,|zmax|)\n");
+	GMT_message (GMT, "\t   - for values symmetric about zero from -|zmin| to +|zmin|.\n");
+	GMT_message (GMT, "\t   + for values symmetric about zero from -|zmax| to +|zmax|.\n");
+	GMT_message (GMT, "\t   _ for values symmetric about zero -+min(|zmin|,|zmax|).\n");
+	GMT_message (GMT, "\t   = for values symmetric about zero -+max(|zmin|,|zmax|).\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Do not interpolate color paletter\n");
-	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals]\n");
+	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
+	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
 
 	return (EXIT_FAILURE);
 }

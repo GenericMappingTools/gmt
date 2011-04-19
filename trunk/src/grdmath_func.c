@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.9 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdmath_func.c,v 1.10 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -110,8 +110,8 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tA, B, etc are grid files, constants, or symbols (see below)\n");
-	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory)\n", GRDMATH_STACK_SIZE);
+	GMT_message (GMT, "\tA, B, etc are grid files, constants, or symbols (see below).\n");
+	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory).\n", GRDMATH_STACK_SIZE);
 	GMT_message (GMT, "\tTrigonometric operators expect radians.\n");
 	GMT_message (GMT, "\tThe operators and number of input and output arguments are:\n\n");
 	GMT_message (GMT, "\tName    #args   Returns\n");
@@ -121,22 +121,22 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t  PI	= 3.1415926...\n");
 	GMT_message (GMT, "\t  E	= 2.7182818...\n");
 	GMT_message (GMT, "\t  EULER	= 0.5772156...\n");
-	GMT_message (GMT, "\t  XMIN, XMAX, XINC or NX	= the corresponding constants\n");
-	GMT_message (GMT, "\t  YMIN, YMAX, YINC or NY	= the corresponding constants\n");
-	GMT_message (GMT, "\t  X	= grid with x-coordinates\n");
-	GMT_message (GMT, "\t  Y	= grid with y-coordinates\n");
-	GMT_message (GMT, "\t  Xn	= grid with normalized [-1|+1] x-coordinates\n");
-	GMT_message (GMT, "\t  Yn	= grid with normalized [-1|+1] y-coordinates\n");
-	GMT_message (GMT, "\n\tOPTIONS: (only used if no grid files are passed as arguments)\n\n");
+	GMT_message (GMT, "\t  XMIN, XMAX, XINC or NX	= the corresponding constants.\n");
+	GMT_message (GMT, "\t  YMIN, YMAX, YINC or NY	= the corresponding constants.\n");
+	GMT_message (GMT, "\t  X	= grid with x-coordinates.\n");
+	GMT_message (GMT, "\t  Y	= grid with y-coordinates.\n");
+	GMT_message (GMT, "\t  Xn	= grid with normalized [-1|+1] x-coordinates.\n");
+	GMT_message (GMT, "\t  Yn	= grid with normalized [-1|+1] y-coordinates.\n");
+	GMT_message (GMT, "\n\tOPTIONS: (only used if no grid files are passed as arguments).\n\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n");
 	GMT_message (GMT, "\t   will be converted from degrees lon,lat into meters (Flat-earth approximation).\n");
 	GMT_message (GMT, "\t   Default computes derivatives in units of data/grid_distance.\n");
-	GMT_message (GMT, "\t-N Do not perform strict domain check if several grids are involved\n");
-	GMT_message (GMT, "\t   [Default checks that domain is within %g * [xinc or yinc] of each other\n", GMT_SMALL);
+	GMT_message (GMT, "\t-N Do not perform strict domain check if several grids are involved.\n");
+	GMT_message (GMT, "\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
 	GMT_explain_options (GMT, "RV");
 	GMT_explain_options (GMT, "fghi");
-	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE)\n");
+	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
 	GMT_explain_options (GMT, "F.");
 	
 	return (EXIT_FAILURE);

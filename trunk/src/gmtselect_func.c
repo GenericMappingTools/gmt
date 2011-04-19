@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
+ *	$Id: gmtselect_func.c,v 1.7 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,28 +169,28 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_dist_syntax (GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_message (GMT, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
 	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t-D Choose one of the following resolutions: (Ignored unless -N is set)\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions)\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions)\n");
-	GMT_message (GMT, "\t   i - intermediate resolution\n");
-	GMT_message (GMT, "\t   l - low resolution [Default]\n");
-	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only\n");
+	GMT_message (GMT, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
+	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_message (GMT, "\t   i - intermediate resolution.\n");
+	GMT_message (GMT, "\t   l - low resolution [Default].\n");
+	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_message (GMT, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
 	GMT_message (GMT, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
 	GMT_message (GMT, "\t   to consider such points to be outside the feature [inside].\n");
 	GMT_message (GMT, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
-	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
-	GMT_message (GMT, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file\n");
-	GMT_message (GMT, "\t-I Used to reverse the tests, i.e. pass locations outside the region\n");
+	GMT_message (GMT, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
+	GMT_message (GMT, "\t-I Used to reverse the tests, i.e. pass locations outside the region.\n");
 	GMT_message (GMT, "\t   Supply a combination of cflrz where each flag means:\n");
-	GMT_message (GMT, "\t   c will pass locations beyond the minimum distance to the points in -C\n");
-	GMT_message (GMT, "\t   f will pass locations outside the polygons in -F\n");
-	GMT_message (GMT, "\t   l will pass locations beyond the minimum distance to the lines in -L\n");
-	GMT_message (GMT, "\t   r will pass locations outside the region given in -R [and -J]\n");
-	GMT_message (GMT, "\t   s will pass locations that otherwise would be skipped in -N\n");
-	GMT_message (GMT, "\t   z will pass locations outside the range given in -Z\n");
+	GMT_message (GMT, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
+	GMT_message (GMT, "\t   f will pass locations outside the polygons in -F.\n");
+	GMT_message (GMT, "\t   l will pass locations beyond the minimum distance to the lines in -L.\n");
+	GMT_message (GMT, "\t   r will pass locations outside the region given in -R [and -J].\n");
+	GMT_message (GMT, "\t   s will pass locations that otherwise would be skipped in -N.\n");
+	GMT_message (GMT, "\t   z will pass locations outside the range given in -Z.\n");
 	GMT_explain_options (GMT, "J");
 	GMT_dist_syntax (GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_message (GMT, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
@@ -198,12 +198,12 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Specify this information with s or k using 1 of 2 formats:\n");
 	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
 	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_message (GMT, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)]\n");
+	GMT_message (GMT, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
 	GMT_explain_options (GMT, "RV");
 	GMT_message (GMT, "\t-Z Assumes the 3rd data column contains z-values and we want to keep records with\n");
 	GMT_message (GMT, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
 	GMT_explain_options (GMT, "C0");
-	GMT_message (GMT, "\t   Default is 2 input columns (3 if -Z is used)\n");
+	GMT_message (GMT, "\t   Default is 2 input columns (3 if -Z is used).\n");
 	GMT_explain_options (GMT, "D0fghios:.");
 	
 	return (EXIT_FAILURE);

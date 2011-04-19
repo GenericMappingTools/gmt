@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.7 2011-04-12 16:22:30 remko Exp $
+ *	$Id: ps2raster_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -253,9 +253,9 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "As an option, a tight BoundingBox may be computed.\n\n");
 	GMT_message (GMT, "<psfile(s)> postscript file(s) to be converted.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Adjust the BoundingBox to the minimum required by the image contents\n");
-	GMT_message (GMT, "\t   Append u to strip out time-stamps (produced by GMT -U options)\n");
-	GMT_message (GMT, "\t   Append - to make sure -A is NOT activated by -W\n");
+	GMT_message (GMT, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
+	GMT_message (GMT, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");
+	GMT_message (GMT, "\t   Append - to make sure -A is NOT activated by -W.\n");
 	GMT_message (GMT, "\t   Optionally, append margin(s) to adjusted BoundingBox.\n");
 	GMT_message (GMT, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
 	GMT_message (GMT, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
@@ -264,9 +264,9 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_message (GMT, "\t   as is. Repeat to add several options [none].\n");
 	GMT_message (GMT, "\t-D Sets an alternative output directory (which must exist)\n");
-	GMT_message (GMT, "\t   [Default is same directory as PS files]\n");
+	GMT_message (GMT, "\t   [Default is same directory as PS files].\n");
 	GMT_message (GMT, "\t   Use -D. to place the output in the current directory.\n");
-	GMT_message (GMT, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others]\n");
+	GMT_message (GMT, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others].\n");
 	GMT_message (GMT, "\t-F Force the output file name. By default output names are constructed\n");
 	GMT_message (GMT, "\t   using the input names as base, which are appended with an appropriate\n");
 	GMT_message (GMT, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
@@ -276,7 +276,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Under Windows, ghostscript is not added to the system's path.\n");
 	GMT_message (GMT, "\t   So either you do it yourself, or give the full path here.\n");
 	GMT_message (GMT, "\t   (e.g. -Gc:\\programs\\gs\\gs7.05\\bin\\gswin32c).\n");
-	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted\n");
+	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
 	GMT_message (GMT, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
 	GMT_message (GMT, "\t   so that they show unrotated in Portrait mode.\n");
 	GMT_message (GMT, "\t   This is practical when converting to image formats or preparing\n");
@@ -286,16 +286,16 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_message (GMT, "\t-S Apart from executing it, also writes the ghostscript command to\n");
 	GMT_message (GMT, "\t   standard output.\n");
-	GMT_message (GMT, "\t-T Set output format [default is jpeg]\n");
-	GMT_message (GMT, "\t   b means BMP\n");
-	GMT_message (GMT, "\t   e means EPS\n");
-	GMT_message (GMT, "\t   f means PDF\n");
-	GMT_message (GMT, "\t   F means multi-page PDF (requires -F)\n");
-	GMT_message (GMT, "\t   g means PNG\n");
-	GMT_message (GMT, "\t   G means PNG (with transparency)\n");
-	GMT_message (GMT, "\t   j means JPEG\n");
-	GMT_message (GMT, "\t   m means PPM\n");
-	GMT_message (GMT, "\t   t means TIF\n");
+	GMT_message (GMT, "\t-T Set output format [default is jpeg]:\n");
+	GMT_message (GMT, "\t   b means BMP.\n");
+	GMT_message (GMT, "\t   e means EPS.\n");
+	GMT_message (GMT, "\t   f means PDF.\n");
+	GMT_message (GMT, "\t   F means multi-page PDF (requires -F).\n");
+	GMT_message (GMT, "\t   g means PNG.\n");
+	GMT_message (GMT, "\t   G means PNG (with transparency).\n");
+	GMT_message (GMT, "\t   j means JPEG.\n");
+	GMT_message (GMT, "\t   m means PPM.\n");
+	GMT_message (GMT, "\t   t means TIF.\n");
 	GMT_message (GMT, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
 	GMT_message (GMT, "\t   The EPS format can be combined with any of the other formats.\n");
 	GMT_message (GMT, "\t   For example, -Tef creates both an EPS and PDF file.\n");
@@ -324,24 +324,24 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Several modifiers allow you to specify the content in the KML file:\n");
 	GMT_message (GMT, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
 	GMT_message (GMT, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
-	GMT_message (GMT, "\t      G clamped to the ground [Default]\n");
-	GMT_message (GMT, "\t      g Append altitude (in m) relative to ground\n");
-	GMT_message (GMT, "\t      A Append absolute altitude (in m)\n");
-	GMT_message (GMT, "\t      s Append altitude (in m) relative to seafloor\n");
-	GMT_message (GMT, "\t      S clamped to the seafloor\n");
+	GMT_message (GMT, "\t      G clamped to the ground [Default].\n");
+	GMT_message (GMT, "\t      g Append altitude (in m) relative to ground.\n");
+	GMT_message (GMT, "\t      A Append absolute altitude (in m).\n");
+	GMT_message (GMT, "\t      s Append altitude (in m) relative to seafloor.\n");
+	GMT_message (GMT, "\t      S clamped to the seafloor.\n");
 	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
-	GMT_message (GMT, "\t     to transparent [no fading]\n");
+	GMT_message (GMT, "\t     to transparent [no fading].\n");
 	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
 	GMT_message (GMT, "\t     active [always active]. Image goes inactive when there are fewer\n");
 	GMT_message (GMT, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
 	GMT_message (GMT, "\t     -1 means never invisible.\n");
 	GMT_message (GMT, "\t   +n<layername> sets the name of this particular layer\n");
-	GMT_message (GMT, "\t     [\"GMT Image Overlay\"]\n");
+	GMT_message (GMT, "\t     [\"GMT Image Overlay\"].\n");
 	GMT_message (GMT, "\t   +o<foldername> sets the name of this particular folder\n");
 	GMT_message (GMT, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
-	GMT_message (GMT, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"]\n");
+	GMT_message (GMT, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
 	GMT_message (GMT, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
-	GMT_message (GMT, "\t     KML [local file]\n");
+	GMT_message (GMT, "\t     KML [local file].\n");
 
 	return (EXIT_FAILURE);
 }

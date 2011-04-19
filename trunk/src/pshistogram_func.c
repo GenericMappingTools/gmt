@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: pshistogram_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -318,31 +318,31 @@ GMT_LONG GMT_pshistogram_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s)\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t    Use / to specify separate x/y scaling.\n");
 	GMT_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t-W Sets the bin width\n");
+	GMT_message (GMT, "\t-W Sets the bin width.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-A Will plot horizontal bars [Default is vertical]\n");
-	GMT_message (GMT, "\t-C Use cpt-file to assign fill to bars based on the mid x-value\n");
-	GMT_message (GMT, "\t-F Will center the bins\n");
+	GMT_message (GMT, "\t-A Will plot horizontal bars [Default is vertical].\n");
+	GMT_message (GMT, "\t-C Use cpt-file to assign fill to bars based on the mid x-value.\n");
+	GMT_message (GMT, "\t-F Will center the bins.\n");
 	GMT_fill_syntax (GMT, 'G', "Select color/pattern for columns.");
-	GMT_message (GMT, "\t-I Will inquire about min/max x and y.  No plotting is done\n");
-	GMT_message (GMT, "\t   Append o to output the resulting x, y data\n");
-	GMT_message (GMT, "\t   Append O to output all resulting x, y data even with y=0\n");
+	GMT_message (GMT, "\t-I Will inquire about min/max x and y.  No plotting is done.\n");
+	GMT_message (GMT, "\t   Append o to output the resulting x, y data.\n");
+	GMT_message (GMT, "\t   Append O to output all resulting x, y data even with y=0.\n");
 	GMT_explain_options (GMT, "ZK");
-	GMT_pen_syntax (GMT, 'L', "Specify pen to draw histogram");
+	GMT_pen_syntax (GMT, 'L', "Specify pen to draw histogram.");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q Plot a cumulative histogram\n");
+	GMT_message (GMT, "\t-Q Plot a cumulative histogram.\n");
 	GMT_explain_options (GMT, "r");
-	GMT_message (GMT, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data\n");
+	GMT_message (GMT, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_message (GMT, "\t-S Draws a stairs-step diagram [Default is bar histogram].\n");
 	GMT_explain_options (GMT, "UVX");
 	GMT_message (GMT, "\t-Z To choose type of vertical axis.  Select from\n");
-	GMT_message (GMT, "\t   0 - Counts [Default]\n");
-	GMT_message (GMT, "\t   1 - Frequency percent\n");
-	GMT_message (GMT, "\t   2 - Log (1+counts)\n");
-	GMT_message (GMT, "\t   3 - Log (1+frequency percent)\n");
-	GMT_message (GMT, "\t   4 - Log10 (1+counts)\n");
-	GMT_message (GMT, "\t   5 - Log10 (1+frequency percent)\n");
+	GMT_message (GMT, "\t   0 - Counts [Default].\n");
+	GMT_message (GMT, "\t   1 - Frequency percent.\n");
+	GMT_message (GMT, "\t   2 - Log (1+counts).\n");
+	GMT_message (GMT, "\t   3 - Log (1+frequency percent).\n");
+	GMT_message (GMT, "\t   4 - Log10 (1+counts).\n");
+	GMT_message (GMT, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_explain_options (GMT, "C2cfhipt.");
 
 	return (EXIT_FAILURE);

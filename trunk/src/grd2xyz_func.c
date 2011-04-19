@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grd2xyz_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,28 +78,28 @@ GMT_LONG GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "\n\t<grdfiles> is one or more grid files to convert\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-N Replace z-values that equal NaN with this value [Default writes NaN]\n");
+	GMT_message (GMT, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
 	GMT_explain_options (GMT, "RV");
-	GMT_message (GMT, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz]\n");
-	GMT_message (GMT, "\t-Z sets exact specification of resulting 1-column output z-table\n");
-	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom)\n");
-	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row\n");
-	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight)\n");
-	GMT_message (GMT, "\t     Then, append T or B to indicate starting point in column\n");
-	GMT_message (GMT, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax\n");
-	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax\n");
+	GMT_message (GMT, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
+	GMT_message (GMT, "\t-Z sets exact specification of resulting 1-column output z-table.\n");
+	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
+	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row.\n");
+	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
+	GMT_message (GMT, "\t     Then, append T or B to indicate starting point in column.\n");
+	GMT_message (GMT, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
+	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
 	GMT_message (GMT, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_message (GMT, "\t     a  Ascii\n");
-	GMT_message (GMT, "\t     c  signed 1-byte character\n");
-	GMT_message (GMT, "\t     u  unsigned 1-byte character\n");
-	GMT_message (GMT, "\t     h  signed short 2-byte integer\n");
-	GMT_message (GMT, "\t     H  unsigned short 2-byte integer\n");
-	GMT_message (GMT, "\t     i  signed 4-byte integer\n");
-	GMT_message (GMT, "\t     I  unsigned 4-byte integer\n");
-	GMT_message (GMT, "\t     l  long (4- or 8-byte) integer\n");
-	GMT_message (GMT, "\t     f  4-byte floating point single precision\n");
-	GMT_message (GMT, "\t     d  8-byte floating point double precision\n");
-	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa]\n");
+	GMT_message (GMT, "\t     a  Ascii.\n");
+	GMT_message (GMT, "\t     c  signed 1-byte character.\n");
+	GMT_message (GMT, "\t     u  unsigned 1-byte character.\n");
+	GMT_message (GMT, "\t     h  signed short 2-byte integer.\n");
+	GMT_message (GMT, "\t     H  unsigned short 2-byte integer.\n");
+	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
+	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
+	GMT_message (GMT, "\t     l  long (4- or 8-byte) integer.\n");
+	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
+	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
+	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
 	GMT_explain_options (GMT, "D0fhos:.");
 	
 	return (EXIT_FAILURE);

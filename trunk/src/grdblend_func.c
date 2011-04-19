@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.11 2011-04-18 00:16:26 guru Exp $
+ *    $Id: grdblend_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -299,10 +299,10 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid\n");
-	GMT_message (GMT, "\t   Each record has three items: filename -Rw/e/s/n weight\n");
+	GMT_message (GMT, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid.\n");
+	GMT_message (GMT, "\t   Each record has three items: filename -Rw/e/s/n weight.\n");
 	GMT_message (GMT, "\t   Relative weights are <weight> inside the given -R and cosine taper to 0 at actual grid -R.\n");
-	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region\n");
+	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region.\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
 	GMT_message (GMT, "\t   If only filename is given we interpret that as if filename - 1.0 was given.\n");
 	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
@@ -314,12 +314,12 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   l The lowest input grid value determines the final value.\n");
 	GMT_message (GMT, "\t   o The last input grid overrides any previous value.\n");
 	GMT_message (GMT, "\t   u The highest input grid value determines the final value.\n");
-	GMT_message (GMT, "\t-N Set value for nodes without constraints [Default is NaN]\n");
-	GMT_message (GMT, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file]\n");
+	GMT_message (GMT, "\t-N Set value for nodes without constraints [Default is NaN].\n");
+	GMT_message (GMT, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file].\n");
 	GMT_message (GMT, "\t   Output grid must be in native binary format (i.e., not netCDF).\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Write out weights only (only applies to a single input file) [make blend grid]\n");
-	GMT_message (GMT, "\t-Z Multiply z-values by this scale before writing to file [1]\n");
+	GMT_message (GMT, "\t-W Write out weights only (only applies to a single input file) [make blend grid].\n");
+	GMT_message (GMT, "\t-Z Multiply z-values by this scale before writing to file [1].\n");
 	GMT_explain_options (GMT, "fF.");
 	
 	return (EXIT_FAILURE);

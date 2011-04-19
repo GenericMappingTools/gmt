@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: greenspline_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,45 +204,45 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t1. Specify a rectangular grid domain with options -R, -I [and optionally -r].\n");
 	GMT_message (GMT, "\t2. Supply a mask file via -T whose values are NaN or 0.  The spline will then\n");
 	GMT_message (GMT, "\t   only be evaluated at the nodes originally set to zero.\n");
-	GMT_message (GMT, "\t3. Specify a set of output locations via the -N option\n\n");
-	GMT_message (GMT, "\t-G Output data. Give name of output file\n");
+	GMT_message (GMT, "\t3. Specify a set of output locations via the -N option.\n\n");
+	GMT_message (GMT, "\t-G Output data. Give name of output file.\n");
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
 	GMT_message (GMT, "\t-A ASCII file with surface gradients V to use in the modeling.  Specify format:\n");
 	GMT_message (GMT, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
-	GMT_message (GMT, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude\n");
+	GMT_message (GMT, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
 	GMT_message (GMT, "\t   Here, X = (x, y[, z]) is the position vector, V is the gradient vector.\n");
-	GMT_message (GMT, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut>\n");
-	GMT_message (GMT, "\t   Optionally append /<filename> to save the eigenvalues to this file\n");
+	GMT_message (GMT, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut>.\n");
+	GMT_message (GMT, "\t   Optionally append /<filename> to save the eigenvalues to this file.\n");
 	GMT_message (GMT, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_message (GMT, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_message (GMT, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
-	GMT_message (GMT, "\t   Options 0 apples to Cartesian 1-D spline interpolation\n");
+	GMT_message (GMT, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
 	GMT_message (GMT, "\t     -D0 x in user units, Cartesian distances.\n");
-	GMT_message (GMT, "\t   Options 1-3 apply to Cartesian 2-D surface spline interpolation\n");
+	GMT_message (GMT, "\t   Options 1-3 apply to Cartesian 2-D surface spline interpolation.\n");
 	GMT_message (GMT, "\t     -D1 x,y in user units, Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D2 x,y in degrees, flat Earth distances in meters.\n");
 	GMT_message (GMT, "\t     -D3 x,y in degrees, spherical distances in meters.\n");
-	GMT_message (GMT, "\t   Option 4 applies to 2-D spherical surface spline interpolation\n");
+	GMT_message (GMT, "\t   Option 4 applies to 2-D spherical surface spline interpolation.\n");
 	GMT_message (GMT, "\t     -D4 x,y in degrees, use cosine of spherical distances in degrees.\n");
-	GMT_message (GMT, "\t   Option 5 applies to Cartesian 3-D volume interpolation\n");
+	GMT_message (GMT, "\t   Option 5 applies to Cartesian 3-D volume interpolation.\n");
 	GMT_message (GMT, "\t     -D5 x,y,z in user units, Cartesian distances.\n");
-	GMT_message (GMT, "\t   For option 3-4, use ELLIPSOID to select geodesic or great cicle arcs\n");
+	GMT_message (GMT, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great cicle arcs.\n");
 	GMT_message (GMT, "\t-I Specifies a regular set of output locations.  Give equidistant increment for each dimension.\n");
 	GMT_message (GMT, "\t   Requires -R for specifying the output domain.\n");
 	GMT_message (GMT, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
-	GMT_message (GMT, "\t   Only applies to -D0-2.  [Default removes linear trend, fits residuals, and restores trend]\n");
+	GMT_message (GMT, "\t   Only applies to -D0-2.  [Default removes linear trend, fits residuals, and restores trend].\n");
 	GMT_message (GMT, "\t-N ASCII file with desired output locations.\n");
 	GMT_message (GMT, "\t   The resulting ASCII coordinates and interpolation are written to file given in -G\n");
 	GMT_message (GMT, "\t   or stdout if no file specified (see -bo for binary output).\n");
-	GMT_message (GMT, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation\n");
+	GMT_message (GMT, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
 	GMT_message (GMT, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
 	GMT_message (GMT, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
 	GMT_message (GMT, "\t-S Specifies which spline to use (if needed, normalized <tension> must be between 0 and 1):\n");
-	GMT_message (GMT, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default]\n");
+	GMT_message (GMT, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
 	GMT_message (GMT, "\t   -St<tension>[/<scale>] is spline in tension (Wessel & Bercovici, 1998).\n");
 	GMT_message (GMT, "\t      Optionally, specify a length-scale [Default is grid spacing].\n");
 	GMT_message (GMT, "\t   -Sr<tension> is a regularized spline in tension (Mitasova & Mitas, 1993).\n");
@@ -250,10 +250,10 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Sp is a spherical surface spline (Parker, 1994); automatically sets -D4.\n");
 	GMT_message (GMT, "\t   -Sq is a spherical surface spline in tension (Wessel & Becker, 2008); automatically sets -D4.\n");
 	GMT_message (GMT, "\t      Use -SQ to speed up calculations by using precalculated lookup tables.\n");
-	GMT_message (GMT, "\t      Append /n to set the (odd) number of points in the spline [%d]\n", N_X);
+	GMT_message (GMT, "\t      Append /n to set the (odd) number of points in the spline [%d].\n", N_X);
 	GMT_message (GMT, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_explain_options (GMT, "VD0");
-	GMT_message (GMT, "\t   Default is 2-4 input columns depending on dimensionality (see -D)\n");
+	GMT_message (GMT, "\t   Default is 2-4 input columns depending on dimensionality (see -D).\n");
 	GMT_explain_options (GMT, "ghioF:.");
 	
 	return (EXIT_FAILURE);

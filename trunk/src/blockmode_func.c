@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmode_func.c,v 1.4 2011-04-11 21:15:32 remko Exp $
+ *    $Id: blockmode_func.c,v 1.5 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -46,10 +46,10 @@ GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Output center of block and mode z-value  [Default is mode location (but see -Q)]\n");
+	GMT_message (GMT, "\t-C Output center of block and mode z-value  [Default is mode location (but see -Q)].\n");
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
-	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y.  [Default gets mode x, mode y, mode z.]\n");
+	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W sets Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but writes only (x,y,z[,s,l,h]) Output.\n");
@@ -146,7 +146,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, GMT_LONG n, GMT_LONG k)
 	   scaled by (1/wsum), but this is constant so we don't
 	   use it here, as we are seeking a relative minimum.
 
-	   I assumed n > 2 when I wrote this.  */
+	   I assumed n > 2 when I wrote this. [WHFS] */
 
 	double top, topj, topi, bottomj, bottomi, pj, pi;
 	GMT_LONG i = 0, j = n - 1, nh = n / 2;
@@ -254,7 +254,6 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail if there are any read errors */
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
-
 		if (GMT_is_dnan (in[GMT_Z])) continue;			/* Skip if z = NaN */
 
 		/* Data record to process */

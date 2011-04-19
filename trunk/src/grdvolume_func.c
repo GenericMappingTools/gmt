@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdvolume_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -299,13 +299,13 @@ GMT_LONG GMT_grdvolume_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grdfile> is the name of the 2-D binary data set\n");
+	GMT_message (GMT, "\t<grdfile> is the name of the 2-D binary data set.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Find area and volume inside the given <cval> contour,\n");
 	GMT_message (GMT, "\t   OR search using all contours from low to high in steps of delta.\n");
 	GMT_message (GMT, "\t   [Default returns entire area and volume of grid].\n");
 	GMT_message (GMT, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
-	GMT_message (GMT, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian]\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_message (GMT, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_message (GMT, "\t-T (Or -Th): Find the contour value that yields max average height (volume/area).\n");
 	GMT_message (GMT, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
 	GMT_explain_options (GMT, "RV");

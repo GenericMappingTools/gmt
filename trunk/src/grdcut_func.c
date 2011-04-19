@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: grdcut_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,7 +85,7 @@ GMT_LONG GMT_grdcut_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
-	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs]\n");
+	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
 	GMT_explain_options (GMT, "f.");
 	
 	return (EXIT_FAILURE);

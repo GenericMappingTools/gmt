@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: pslegend_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,8 +93,8 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/w/h/just [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
-	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin]\n");
-	GMT_message (GMT, "\t(See manual page for more information and <infofile> format)\n");
+	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
+	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -103,14 +103,14 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   of the whole legend box using pstext justification codes.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Sets the clearance between legend frame and internal items [%gp/%gp]\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_message (GMT, "\t-F Draw border around the legend (using FRAME_PEN) [Default is no border]\n");
+	GMT_message (GMT, "\t-C Sets the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
+	GMT_message (GMT, "\t-F Draw border around the legend (using FRAME_PEN) [Default is no border].\n");
 	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
 	GMT_explain_options (GMT, "jK");
-	GMT_message (GMT, "\t-L Sets the linespacing factor in units of the current annotation font size [1.1]\n");
+	GMT_message (GMT, "\t-L Sets the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_explain_options (GMT, "OPR");
 	GMT_message (GMT, "\t-S Dump legend script to stdout, or optionally to file <script>.\n");
-	GMT_message (GMT, "\t   [Default is to write PostScript output]\n");
+	GMT_message (GMT, "\t   [Default is to write PostScript output].\n");
 	GMT_explain_options (GMT, "UVXpt.");
 
 	return (EXIT_FAILURE);

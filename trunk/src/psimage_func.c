@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.14 2011-04-16 22:43:19 guru Exp $
+ *	$Id: psimage_func.c,v 1.15 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,18 +109,18 @@ GMT_LONG GMT_psimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   then we use absolute value and interpolate image in PostScript.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Sets the lower left position on the map for raster image [0/0].\n");
-	GMT_message (GMT, "\t   Optionally, append justification (see pstext for codes)\n");
+	GMT_message (GMT, "\t   Optionally, append justification (see pstext for codes).\n");
 	GMT_pen_syntax (GMT, 'F', "Draws a frame around the image with the given pen.");
 	GMT_message (GMT, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
-	GMT_message (GMT, "\t   respectively. Set <color> = - for transparency [Default is black and white]\n");
+	GMT_message (GMT, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
 	GMT_message (GMT, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");
 	GMT_message (GMT, "\t   [Default no transparency].\n");
 	GMT_message (GMT, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_explain_options (GMT, "jZK");
 	GMT_message (GMT, "\t-M Force color -> monochrome image using GMT_YIQ-transformation.\n");
-	GMT_message (GMT, "\t-N Replicate image <nx> by <ny> times [Default is no replication]\n");
+	GMT_message (GMT, "\t-N Replicate image <nx> by <ny> times [Default is no replication].\n");
 	GMT_explain_options (GMT, "OPRUVXcp");
-	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning)\n");
+	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_explain_options (GMT, "t.");
 	
 	return (EXIT_FAILURE);

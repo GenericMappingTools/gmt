@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.8 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdfft_func.c,v 1.9 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -942,13 +942,13 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	
 	GMT_message (GMT, "\tin_grdfile is the input netCDF grid file\n");
 	GMT_message (GMT, "\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D spectrum (see -E)\n");
+	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D spectrum (see -E).\n");
 	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
-	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m]\n");
+	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
 	GMT_message (GMT, "\t-E Estimate spEctrum of r [x] [y].  Write f, power[f], 1 std dev(power[f]) to output file\n");
 	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
-	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:.\n");
+	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
 	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F-/-/500/100 is a low-pass filter.\n");
@@ -956,19 +956,19 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F300/- is a high-pass Gaussian filter.\n");
 	GMT_message (GMT, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order> where filter amplitudes = 0.5.\n");
 	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g.  -F300/-/2 is a high-pass 2nd-order Butterworth filter.\n");
-	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal]\n");
-	GMT_message (GMT, "\t-L Leave trend alone.  Do not remove least squares plane from data.  [Default removes plane].\n");
+	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
+	GMT_message (GMT, "\t-L Leave trend alone.  Do not remove least squares plane from data [Default removes plane].\n");
 	GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT.\n");
 	GMT_message (GMT, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
 	GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions.\n");
 	GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
 	GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
 	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended and tapered to zero.\n");
-	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0]\n");
-	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians\n");
+	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
+	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 	GMT_message (GMT, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
-	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units\n");
-	GMT_message (GMT, "\t   It also implicitly sets -L\n");
+	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
+	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
 	GMT_explain_options (GMT, "Vf.");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
 	
