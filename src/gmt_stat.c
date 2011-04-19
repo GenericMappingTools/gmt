@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.79 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmt_stat.c,v 1.80 2011-04-19 04:07:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -16,41 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- *  some stuff for significance tests.
+ *  Misc statistical and special functions.
  *
- * Author:	Walter H. F. Smith
- * Date:	12-JUN-1995
- * Version:	4.1.x
- * Revised:	12-AUG-1998
- *		06-JAN-1999 P Wessel: Added GMT_ber, GMT_bei, GMT_ker, GMT_kei
- *		12-JAN-1999 P Wessel: Added GMT_plm
- *		14-JAN-1999 P Wessel: Added GMT_erf, GMT_erfc
- *		20-JAN-1999 P Wessel: Added GMT_i0, GMT_k0
- *		26-JAN-1999 P Wessel: Added GMT_i1, GMT_k1, GMT_in, GMT_kn
- *		06-MAY-1999 P Wessel: Added GMT_dilog
- *		18-JUN-1999 W Smith:  Changed GMT_ber, GMT_bei, GMT_ker, GMT_kei
- *					to speed up telescoped power series, and
- *					include asymptotic series for x > 8.
- *		21-JUN-1999 W Smith:  Revised GMT_plm and GMT_factorial.
- *		12-AUG-1999 W Smith:  Revised GMT_sig_f() to use new routines;
- *					added GMT_f_q() and GMT_student_t_a();
- *					added GMT_f_test_new().
- *		10-SEP-1999 P Wessel: Added GMT_erfinv
- *		18-OCT-1999 P Wessel: Added sincos when not already defined
- *					Added GMT_j0, GMT_j1, GMT_jn, GMT_y0,
- *					GMT_y1, GMT_yn for platforms that do no
- *					have the bessel functions in the math lib.
- *		07-DEC-1999 P. Wessel: Added GMT_rand and GMT_nrand
- *		29-MAR-2000 W Smith: Added GMT_hypot, GMT_log1p, and GMT_atanh for
- *					platforms without native library support.
- *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoisson
- *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
- *					Added float versions of GMT_mode for grd data.
- *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
- *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
- *		24-MAR-2006 P. Wessel: Added GMT_zdist (x)
- *		06-JUL-2007 P. Wessel: Added GMT_psi () and GMT_PvQv()
- *		28-SEP-2007 R. Scharroo: Added GMT_plm_bar and made GMT_factorial public
+ * Author:	Walter H. F. Smith, P. Wessel, R. Scharroo
+ * Date:	1-JAN-2010
+ * Version:	5.x
  *
  * PUBLIC functions:
  *
@@ -89,28 +59,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
-
-GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibeta);
-GMT_LONG GMT_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam);
-GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside);
-GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob);
-double GMT_ln_gamma (struct GMT_CTRL *C, double xx);
-double GMT_cf_beta (struct GMT_CTRL *C, double a, double b, double x);
-double GMT_plm (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x);
-double GMT_factorial (struct GMT_CTRL *C, GMT_LONG n);
-double GMT_i0 (struct GMT_CTRL *C, double x);
-double GMT_i1 (struct GMT_CTRL *C, double x);
-double GMT_in (struct GMT_CTRL *C, GMT_LONG n, double x);
-double GMT_k0 (struct GMT_CTRL *C, double x);
-double GMT_k1 (struct GMT_CTRL *C, double x);
-double GMT_kn (struct GMT_CTRL *C, GMT_LONG n, double x);
-double GMT_dilog (struct GMT_CTRL *C, double x);
-double GMT_ln_gamma (struct GMT_CTRL *C, double xx);		/*	Computes natural log of the gamma function	*/
-double GMT_erfinv (struct GMT_CTRL *C, double y);
-double GMT_gammq (struct GMT_CTRL *C, double a, double x);
-void GMT_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, double *gln);
-void GMT_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, double *gln);
-void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob);
 
 #if HAVE_J0 == 0
 double GMT_j0 (double x);
@@ -179,6 +127,160 @@ GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double
 		*prob = 2.0*(1.0 - q);
 
 	return (0);
+}
+
+double GMT_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
+{
+	/* Continued fraction method called by GMT_inc_beta.  */
+
+	static GMT_LONG	itmax = 100;
+	static double eps = 3.0e-7;
+
+	double am = 1.0, bm = 1.0, az = 1.0;
+	double qab, qap, qam, bz, em, tem, d;
+	double ap, bp, app, bpp, aold;
+
+	GMT_LONG m = 0;
+
+	qab = a + b;
+	qap = a + 1.0;
+	qam = a - 1.0;
+	bz = 1.0 - qab * x / qap;
+
+	do {
+		m++;
+		em = (double)m;
+		tem = em + em;
+		d = em*(b-m)*x/((qam+tem)*(a+tem));
+		ap = az+d*am;
+		bp = bz+d*bm;
+		d = -(a+m)*(qab+em)*x/((a+tem)*(qap+tem));
+		app = ap+d*az;
+		bpp = bp+d*bz;
+		aold = az;
+		am = ap/bpp;
+		bm = bp/bpp;
+		az = app/bpp;
+		bz = 1.0;
+	} while (((fabs (az-aold) ) >= (eps * fabs (az))) && (m < itmax));
+
+	if (m == itmax) GMT_report (C, GMT_MSG_FATAL, "GMT_cf_beta:  A or B too big, or ITMAX too small.\n");
+
+	return (az);
+}
+
+double GMT_ln_gamma (struct GMT_CTRL *C, double xx)
+{
+	/* Routine to compute natural log of Gamma(x)
+		by Lanczos approximation.  Most accurate
+		for x > 1; fails for x <= 0.  No error
+		checking is done here; it is assumed
+		that this is called by GMT_ln_gamma_r()  */
+
+	static double cof[6] = {
+		 76.18009173,
+		-86.50532033,
+		 24.01409822,
+		 -1.231739516,
+		0.120858003e-2,
+		-0.536382e-5
+	};
+
+	static double stp = 2.50662827465, half = 0.5, one = 1.0, fpf = 5.5;
+	double x, tmp, ser;
+
+	GMT_LONG i;
+
+	x = xx - one;
+	tmp = x + fpf;
+	tmp = (x + half) * d_log (C,tmp) - tmp;
+	ser = one;
+	for (i = 0; i < 6; i++) {
+		x += one;
+		ser += (cof[i]/x);
+	}
+	return (tmp + d_log (C,stp*ser) );
+}
+
+GMT_LONG GMT_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
+{
+	/* Get natural logrithm of Gamma(x), x > 0.
+		To maintain full accuracy, this
+		routine uses Gamma(1 + x) / x when
+		x < 1.  This routine in turn calls
+		GMT_ln_gamma(x), which computes the
+		actual function value.  GMT_ln_gamma
+		assumes it is being called in a
+		smart way, and does not check the
+		range of x.  */
+
+	if (x > 1.0) {
+		*lngam = GMT_ln_gamma (C, x);
+		return (0);
+	}
+	if (x > 0.0 && x < 1.0) {
+		*lngam = GMT_ln_gamma (C, 1.0 + x) - d_log (C,x);
+		return (0);
+	}
+	if (x == 1.0) {
+		*lngam = 0.0;
+		return (0);
+	}
+	GMT_report (C, GMT_MSG_FATAL, "Ln Gamma:  Bad x (x <= 0).\n");
+	return (-1);
+}
+
+GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibeta)
+{
+	double bt, gama, gamb, gamab;
+
+	if (a <= 0.0) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad a (a <= 0).\n");
+		return(-1);
+	}
+	if (b <= 0.0) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad b (b <= 0).\n");
+		return(-1);
+	}
+	if (x > 0.0 && x < 1.0) {
+		GMT_ln_gamma_r(C, a, &gama);
+		GMT_ln_gamma_r(C, b, &gamb);
+		GMT_ln_gamma_r(C, (a+b), &gamab);
+		bt = exp(gamab - gama - gamb
+			+ a * d_log (C, x) + b * d_log (C, 1.0 - x) );
+
+		/* Here there is disagreement on the range of x which
+			converges efficiently.  Abramowitz and Stegun
+			say to use x < (a - 1) / (a + b - 2).  Editions
+			of Numerical Recipes thru mid 1987 say
+			x < ( (a + 1) / (a + b + 1), but the code has
+			x < ( (a + 1) / (a + b + 2).  Editions printed
+			late 1987 and after say x < ( (a + 1) / (a + b + 2)
+			in text as well as code.  What to do ? */
+
+		if (x < ( (a + 1) / (a + b + 2) ) )
+			*ibeta = bt * GMT_cf_beta (C, a, b, x) / a;
+		else
+			*ibeta = 1.0 - bt * GMT_cf_beta (C, b, a, (1.0 - x) ) / b;
+		return(0);
+	}
+	else if (x == 0.0) {
+		*ibeta = 0.0;
+		return (0);
+	}
+	else if (x == 1.0) {
+		*ibeta = 1.0;
+		return (0);
+	}
+	else if (x < 0.0) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x < 0).\n");
+		*ibeta = 0.0;
+	}
+	else if (x > 1.0) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x > 1).\n");
+		*ibeta = 1.0;
+	}
+	return (-1);
 }
 
 
@@ -251,160 +353,6 @@ GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, G
 }
 
 /* --------- LOWER LEVEL FUNCTIONS ------- */
-
-GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibeta)
-{
-	double bt, gama, gamb, gamab;
-
-	if (a <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad a (a <= 0).\n");
-		return(-1);
-	}
-	if (b <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad b (b <= 0).\n");
-		return(-1);
-	}
-	if (x > 0.0 && x < 1.0) {
-		GMT_ln_gamma_r(C, a, &gama);
-		GMT_ln_gamma_r(C, b, &gamb);
-		GMT_ln_gamma_r(C, (a+b), &gamab);
-		bt = exp(gamab - gama - gamb
-			+ a * d_log (C, x) + b * d_log (C, 1.0 - x) );
-
-		/* Here there is disagreement on the range of x which
-			converges efficiently.  Abramowitz and Stegun
-			say to use x < (a - 1) / (a + b - 2).  Editions
-			of Numerical Recipes thru mid 1987 say
-			x < ( (a + 1) / (a + b + 1), but the code has
-			x < ( (a + 1) / (a + b + 2).  Editions printed
-			late 1987 and after say x < ( (a + 1) / (a + b + 2)
-			in text as well as code.  What to do ? */
-
-		if (x < ( (a + 1) / (a + b + 2) ) )
-			*ibeta = bt * GMT_cf_beta (C, a, b, x) / a;
-		else
-			*ibeta = 1.0 - bt * GMT_cf_beta (C, b, a, (1.0 - x) ) / b;
-		return(0);
-	}
-	else if (x == 0.0) {
-		*ibeta = 0.0;
-		return (0);
-	}
-	else if (x == 1.0) {
-		*ibeta = 1.0;
-		return (0);
-	}
-	else if (x < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x < 0).\n");
-		*ibeta = 0.0;
-	}
-	else if (x > 1.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x > 1).\n");
-		*ibeta = 1.0;
-	}
-	return (-1);
-}
-
-GMT_LONG GMT_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
-{
-	/* Get natural logrithm of Gamma(x), x > 0.
-		To maintain full accuracy, this
-		routine uses Gamma(1 + x) / x when
-		x < 1.  This routine in turn calls
-		GMT_ln_gamma(x), which computes the
-		actual function value.  GMT_ln_gamma
-		assumes it is being called in a
-		smart way, and does not check the
-		range of x.  */
-
-	if (x > 1.0) {
-		*lngam = GMT_ln_gamma (C, x);
-		return (0);
-	}
-	if (x > 0.0 && x < 1.0) {
-		*lngam = GMT_ln_gamma (C, 1.0 + x) - d_log (C,x);
-		return (0);
-	}
-	if (x == 1.0) {
-		*lngam = 0.0;
-		return (0);
-	}
-	GMT_report (C, GMT_MSG_FATAL, "Ln Gamma:  Bad x (x <= 0).\n");
-	return (-1);
-}
-
-double GMT_ln_gamma (struct GMT_CTRL *C, double xx)
-{
-	/* Routine to compute natural log of Gamma(x)
-		by Lanczos approximation.  Most accurate
-		for x > 1; fails for x <= 0.  No error
-		checking is done here; it is assumed
-		that this is called by GMT_ln_gamma_r()  */
-
-	static double cof[6] = {
-		 76.18009173,
-		-86.50532033,
-		 24.01409822,
-		 -1.231739516,
-		0.120858003e-2,
-		-0.536382e-5
-	};
-
-	static double stp = 2.50662827465, half = 0.5, one = 1.0, fpf = 5.5;
-	double x, tmp, ser;
-
-	GMT_LONG i;
-
-	x = xx - one;
-	tmp = x + fpf;
-	tmp = (x + half) * d_log (C,tmp) - tmp;
-	ser = one;
-	for (i = 0; i < 6; i++) {
-		x += one;
-		ser += (cof[i]/x);
-	}
-	return (tmp + d_log (C,stp*ser) );
-}
-
-double GMT_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
-{
-	/* Continued fraction method called by GMT_inc_beta.  */
-
-	static GMT_LONG	itmax = 100;
-	static double eps = 3.0e-7;
-
-	double am = 1.0, bm = 1.0, az = 1.0;
-	double qab, qap, qam, bz, em, tem, d;
-	double ap, bp, app, bpp, aold;
-
-	GMT_LONG m = 0;
-
-	qab = a + b;
-	qap = a + 1.0;
-	qam = a - 1.0;
-	bz = 1.0 - qab * x / qap;
-
-	do {
-		m++;
-		em = (double)m;
-		tem = em + em;
-		d = em*(b-m)*x/((qam+tem)*(a+tem));
-		ap = az+d*am;
-		bp = bz+d*bm;
-		d = -(a+m)*(qab+em)*x/((a+tem)*(qap+tem));
-		app = ap+d*az;
-		bpp = bp+d*bz;
-		aold = az;
-		am = ap/bpp;
-		bm = bp/bpp;
-		az = app/bpp;
-		bz = 1.0;
-	} while (((fabs (az-aold) ) >= (eps * fabs (az))) && (m < itmax));
-
-	if (m == itmax) GMT_report (C, GMT_MSG_FATAL, "GMT_cf_beta:  A or B too big, or ITMAX too small.\n");
-
-	return (az);
-}
 
 #define ITMAX 100
 
