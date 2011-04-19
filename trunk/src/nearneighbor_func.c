@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.6 2011-04-17 23:53:25 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.7 2011-04-19 18:03:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,7 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
 	float *distance;	/* Distance of nearest datapoint to this node per sector */
-	GMT_LONG *datum;		/* Point id of this data point */
+	GMT_LONG *datum;	/* Point id of this data point */
 };
 
 struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
@@ -106,8 +106,7 @@ struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, GMT_LONG n)
 }
 
 void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, GMT_LONG n_sector, GMT_LONG sector, double distance, GMT_LONG id)
-{
-	/* Allocates node space if not already used and updates the value if closer to node than the current value */
+{	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);
 	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
@@ -117,8 +116,7 @@ void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, GMT_LON
 }
 
 void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
-{
-	/* Frees allocated node space */
+{	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */
 	GMT_free (GMT, node->distance);
@@ -153,7 +151,7 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Input file has observation weights in 4th column.\n");
 	GMT_explain_options (GMT, "C0");
-	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns\n");
+	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_explain_options (GMT, "fhiF:.");
 
 	return (EXIT_FAILURE);
@@ -380,10 +378,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				distance = GMT_distance (GMT, x0[ii], y0[jj], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				if (ii == 23 && jj == 37) {
-					k = 5;
-				}
-				k = GMT_IJ0 (Grid->header, jj, ii);	/* No padding used for gridnode array */
+				k = GMT_IJ0 (Grid->header, jj, ii);		/* No padding used for gridnode array */
 				dx = in[GMT_X] - x0[ii];	dy = in[GMT_Y] - y0[jj];
 
 				/* Check for wrap-around in x or y.  This should only occur if the

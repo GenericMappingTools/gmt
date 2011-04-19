@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.5 2011-04-09 19:20:52 guru Exp $
+ *	$Id: gmt_fft.c,v 1.6 2011-04-19 18:03:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2804,7 +2804,7 @@ GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direc
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
 	 * direction is either 0 (forward) or 1(inverse)
-	 * mode is either 0(real) or 1(compex)
+	 * mode is either 0(real) or 1(complex)
 	 */
 	GMT_LONG status;
 	if (GMT_radix2 (n))
@@ -2819,7 +2819,7 @@ GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, 
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
 	 * direction is either 0 (forward) or 1(inverse)
-	 * mode is either 0(real) or 1(compex)
+	 * mode is either 0(real) or 1(complex)
 	 */
 	GMT_LONG status;
 	if (GMT_radix2 (nx) && GMT_radix2 (ny))
