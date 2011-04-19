@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.80 2011-04-19 04:07:45 guru Exp $
+ *	$Id: gmt_stat.c,v 1.81 2011-04-19 09:02:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,27 +60,15 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-#if HAVE_J0 == 0
-double GMT_j0 (double x);
-#endif
-#if HAVE_J1 == 0
-double GMT_j1 (double x);
-#endif
-#if HAVE_JN == 0
-double GMT_jn (int n, double x);
-#endif
-#if HAVE_Y0 == 0
-double GMT_y0 (double x);
-#endif
-#if HAVE_Y1 == 0
-double GMT_y1 (double x);
-#endif
-#if HAVE_YN == 0
-double GMT_yn (int n, double x);
-#endif
-
 #if HAVE_SINCOS == 0 && HAVE_ALPHASINCOS == 0
-void sincos (double a, double *s, double *c);
+
+/* Platform does not have sincos - make a dummy one with sin and cos */
+
+void sincos (double a, double *s, double *c)
+{
+	*s = sin (a);	*c = cos (a);
+}
+
 #endif
 
 GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
@@ -1804,18 +1792,6 @@ double GMT_yn (int n, double x)
 
 #endif
 
-#if HAVE_SINCOS == 0 && HAVE_ALPHASINCOS == 0
-
-/* Platform does not have sincos - make a dummy one with sin and cos */
-
-void sincos (double a, double *s, double *c)
-{
-	*s = sin (a);
-	*c = cos (a);
-}
-
-#endif
-
 #define GMT_RAND_IQ 127773
 #define GMT_RAND_IA 16807
 #define GMT_RAND_IM INT_MAX
@@ -2183,7 +2159,7 @@ GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LO
 GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
 {
 	GMT_LONG i, istop, multiplicity;
-	double	mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
+	double mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
 	if (n == 0) return (0);
 	if (n == 1) {
@@ -2238,9 +2214,8 @@ GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_L
 void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, double *scale)
 {
 	GMT_LONG i;
-	double *dev = NULL, med;
+	double med, *dev = GMT_memory (C, NULL, n, double);
 
-	dev = GMT_memory (C, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	GMT_sort_array ((void *)dev, n, GMT_DOUBLE_TYPE);
 	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
@@ -2255,10 +2230,9 @@ void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, dou
 void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, double *scale)
 {
 	GMT_LONG i;
-	float *dev = NULL;
+	float *dev = GMT_memory (C, NULL, n, float);
 	double med;
 
-	dev = GMT_memory (C, NULL, n, float);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
 	GMT_sort_array ((void *)dev, n, GMT_FLOAT_TYPE);
 	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
@@ -2353,7 +2327,6 @@ void GMT_getmad_f_BROKEN (float *x, GMT_LONG n, double location, double *scale)
 	n_dev_stop = n / 2;
 	error = last_error = 0.0;
 	n_dev = 0;
-
 
 	while (n_dev < n_dev_stop) {
 
@@ -2530,7 +2503,6 @@ double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, GMT_LONG n, GMT_
 	return (r);
 }
 
-
 double GMT_quantile (struct GMT_CTRL *C, double *x, double q, GMT_LONG n)
 {
 	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
@@ -2669,6 +2641,7 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 #define PV_IM 1
 #define QV_RE 2
 #define QV_IM 3
+
 void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LONG *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
