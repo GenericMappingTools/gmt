@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2011-04-18 20:06:04 remko Exp $
+#	$Id: Makefile,v 1.3 2011-04-19 01:36:36 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ include ../../src/config.mk
 ALLPS=	GMT_coverlogo.ps
 
 # PS files used to make Tutorial
-TUTPS=	GMT_Environment.eps GMT_pstext_clearance.ps GMT_pstext_justify.ps \
+TUTPS=	GMT_pstext_clearance.ps GMT_pstext_justify.ps \
 	GMT_nearneighbor.ps GMT_atan.ps
 
 # PS files user to make the API documentation
@@ -85,11 +85,13 @@ DOCPS= GMT_App_E.ps $(APP_F_PS) GMT_App_G.ps $(APP_J_PS) \
 	GMT_stereographic_rect.ps GMT_stereonets.ps GMT_transverse_merc.ps \
 	GMT_winkel.ps $(RGBPS)
 
-all:	$(ALLPS) $(DOCPS) $(TUTPS) $(APIPS)
+PS	= $(ALLPS) $(DOCPS) $(TUTPS) $(APIPS)
 
 # Test if plots are OK
-test tests doctests:	all
-	bash run_doc_tests.sh
+test tests doctests:	$(PS)
+	bash run_doc_tests.sh $(PS)
+failed:	$(PS)
+	bash run_doc_tests.sh `cut -d: -f1 fail_count.d`
 
 # Cleanup, before or after
 clean:
