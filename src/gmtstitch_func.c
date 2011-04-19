@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: gmtstitch_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -122,15 +122,15 @@ GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   than all the other segments [All segments to to same output file; see -G].\n");
 	GMT_message (GMT, "\t-D writes individual segments to separate files [Default writes one multisegment file].\n");
 	GMT_message (GMT, "\t   Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d).\n");
-	GMT_message (GMT, "\t   If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen).\n");
-	GMT_message (GMT, "\t   [Default uses gmtstitch_segment_%%d.d]\n");
+	GMT_message (GMT, "\t   If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen)\n");
+	GMT_message (GMT, "\t   [Default uses gmtstitch_segment_%%d.d].\n");
 	GMT_message (GMT, "\t-L write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtstitch_link.d].\n");
 	GMT_message (GMT, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_dist_syntax (GMT, 'T', "sets cutoff distance to determine if a segment is closed.");
 	GMT_message (GMT, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
 	GMT_message (GMT, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
-	GMT_message (GMT, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>)\n");
+	GMT_message (GMT, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
 	GMT_message (GMT, "\t-Q Used with -D to write names of files to a list.  Optionally give list name [gmtstitch_list.d].\n");
 	GMT_message (GMT, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
 	GMT_explain_options (GMT, "C2D0fghio:.");

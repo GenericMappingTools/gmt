@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.9 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdsample_func.c,v 1.10 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,19 +85,18 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<old_grdfile> is data set to be resampled\n");
-	GMT_message (GMT, "\t-G Sets the name of the interpolated output grid file\n");
+	GMT_message (GMT, "\t<old_grdfile> is data set to be resampled.\n");
+	GMT_message (GMT, "\t-G Sets the name of the interpolated output grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t   When omitted: grid spacing is copied from input grid.\n");
 	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions\n");
-	GMT_message (GMT, "\t   or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
+	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_sample_syntax (GMT, 'Q', "Determines the grid interpolation mode.");
-	GMT_message (GMT, "\t-R Specifies a subregion [Default is old region]\n");
-	GMT_message (GMT, "\t-T Toggles between grid registration and pixel registration\n");
+	GMT_message (GMT, "\t-R Specifies a subregion [Default is old region].\n");
+	GMT_message (GMT, "\t-T Toggles between grid registration and pixel registration.\n");
 	GMT_explain_options (GMT, "VfF.");
 
 	return (EXIT_FAILURE);

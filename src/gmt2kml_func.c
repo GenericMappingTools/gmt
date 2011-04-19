@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: gmt2kml_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -178,49 +178,49 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Altitude mode, choose among three modes:\n");
-	GMT_message (GMT,"\t      a Absolute altitude\n");
-	GMT_message (GMT,"\t      g Altitude relative to sea surface or ground\n");
-	GMT_message (GMT,"\t      s Altitude relative to seafloor or ground\n");
-	GMT_message (GMT,"\t    Optionally, append fixed <altitude>, or x<scale>. [g0: Clamped to sea surface or ground]\n");
+	GMT_message (GMT,"\t      a Absolute altitude.\n");
+	GMT_message (GMT,"\t      g Altitude relative to sea surface or ground.\n");
+	GMT_message (GMT,"\t      s Altitude relative to seafloor or ground.\n");
+	GMT_message (GMT,"\t    Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
 	GMT_message (GMT, "\t-C Append color palette name to color symbols by third column z-value.\n");
-	GMT_message (GMT, "\t-D File with HTML snippets to use for data description [none]\n");
-	GMT_message (GMT, "\t-E Extend feature down to the ground [no extrusion]\n");
-	GMT_message (GMT, "\t-F Feature type; choose from (e)vent, (s)symbol, (t)imespan, (l)ine, or (p)olygon [s]\n");
+	GMT_message (GMT, "\t-D File with HTML snippets to use for data description [none].\n");
+	GMT_message (GMT, "\t-E Extend feature down to the ground [no extrusion].\n");
+	GMT_message (GMT, "\t-F Feature type; choose from (e)vent, (s)symbol, (t)imespan, (l)ine, or (p)olygon [s].\n");
 	GMT_message (GMT, "\t   All features expect lon, lat in the first two columns. \n");
-	GMT_message (GMT, "\t   Value or altitude is given in the third column (see -A and -C)\n");
+	GMT_message (GMT, "\t   Value or altitude is given in the third column (see -A and -C).\n");
 	GMT_message (GMT, "\t   Event requires a timestamp in the next column.\n");
 	GMT_message (GMT, "\t   Timespan requires begin and end timestamps in the next two columns (use NaN for unlimited).\n");
 	GMT_rgb_syntax (GMT, 'G', "Specify color for symbol/polygon fill (f) [lightorange;75%% transparency] or text label (n) [white].");
 	GMT_message (GMT, "\t   Use -Gf- to turn off polygon fill.\n");
 	GMT_message (GMT, "\t   Use -Gn- to turn off labels.\n");
-	GMT_message (GMT, "\t-I URL to an alternative icon used for the symbol [Google circle]\n");
-	GMT_message (GMT, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/\n");
+	GMT_message (GMT, "\t-I URL to an alternative icon used for the symbol [Google circle].\n");
+	GMT_message (GMT, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
 	GMT_message (GMT, "\t   [Default is a local icon with no directory path].\n");
-	GMT_message (GMT, "\t-K means allow for more KML code to be appended later [OFF]\n");
-	GMT_message (GMT, "\t-L Supply extended data informat via <col>:<name> strings [none]\n");
+	GMT_message (GMT, "\t-K means allow for more KML code to be appended later [OFF].\n");
+	GMT_message (GMT, "\t-L Supply extended data informat via <col>:<name> strings [none].\n");
 	GMT_message (GMT, "\t-N Controls the feature labels.\n");
 	GMT_message (GMT, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
 	GMT_message (GMT, "\t   1. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
 	GMT_message (GMT, "\t   2. Append a string that may contain the format %%d for a running feature count.\n");
-	GMT_message (GMT, "\t   3. Give no argument to indicate no labels\n");
-	GMT_message (GMT, "\t-O means append the KML code to an existing document [OFF]\n");
+	GMT_message (GMT, "\t   3. Give no argument to indicate no labels.\n");
+	GMT_message (GMT, "\t-O means append the KML code to an existing document [OFF].\n");
 	GMT_message (GMT, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or append a to use the\n");
-	GMT_message (GMT, "\t   actual domain of the data (single file only) [no region specified]\n");
-	GMT_message (GMT, "\t-S Scale for (c)ircle icon size or (n)ame label [1]\n");
-	GMT_message (GMT, "\t-T Append KML document title name [GMT Data Document]\n");
+	GMT_message (GMT, "\t   actual domain of the data (single file only) [no region specified].\n");
+	GMT_message (GMT, "\t-S Scale for (c)ircle icon size or (n)ame label [1].\n");
+	GMT_message (GMT, "\t-T Append KML document title name [GMT Data Document].\n");
 	GMT_message (GMT, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_message (GMT, "\t   -O and -K to organize features into groups.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_pen_syntax (GMT, 'W', "Specify pen attributes for lines and polygons [Default is solid line of unit thickness].");
 	GMT_message (GMT, "\t   Give width in pixels and append p.  Use -W- to turn off polygon outlines.\n");
 	GMT_message (GMT, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
-	GMT_message (GMT, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit]\n");
-	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be active [always active]\n");
+	GMT_message (GMT, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit].\n");
+	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be active [always active].\n");
 	GMT_message (GMT, "\t     layer goes inactive when there are fewer than minLOD pixels or more\n");
 	GMT_message (GMT, "\t     than maxLOD pixels visible.  -1 means never invisible.\n");
-	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque to transparent [no fading]\n");
-	GMT_message (GMT, "\t   +v turns off visibility [feature is visible]\n");
-	GMT_message (GMT, "\t   +o open document or folder when loaded [closed]\n");
+	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque to transparent [no fading].\n");
+	GMT_message (GMT, "\t   +v turns off visibility [feature is visible].\n");
+	GMT_message (GMT, "\t   +o open document or folder when loaded [closed].\n");
 	GMT_explain_options (GMT, "C2fghi:.");
 	
 	return (EXIT_FAILURE);

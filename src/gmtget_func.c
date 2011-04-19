@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtget_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtget_func.c,v 1.3 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -63,10 +63,10 @@ GMT_LONG GMT_gmtget_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to process\n");
+	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to process.\n");
 	GMT_message (GMT, "\t   [Default looks for file in current directory.  If not found,\n");
-	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
-	GMT_message (GMT, "\t-L Write one parameter value per line [Default writes all on one line]\n");
+	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults].\n");
+	GMT_message (GMT, "\t-L Write one parameter value per line [Default writes all on one line].\n");
 	
 	return (EXIT_FAILURE);
 }

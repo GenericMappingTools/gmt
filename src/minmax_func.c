@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.8 2011-04-17 21:03:10 guru Exp $
+ *    $Id: minmax_func.c,v 1.9 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -65,8 +65,7 @@ EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 GMT_LONG strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, GMT_LONG col)
-{
-	/* Alternative to GMT_ascii_output_one that strips off leading blanks first */
+{	/* Alternative to GMT_ascii_output_one that strips off leading blanks first */
 
 	GMT_LONG k;
 
@@ -81,8 +80,6 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	
-	C->E.col = -1;
 	
 	return ((void *)C);
 }
@@ -102,9 +99,9 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-A Selects reports for (a)ll [Default], per (f)ile, or per (s)egment\n");
-	GMT_message (GMT, "\t-C Formats the min and max into separate columns\n");
-	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column]\n");
+	GMT_message (GMT, "\t-A Selects reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
+	GMT_message (GMT, "\t-C Formats the min and max into separate columns.\n");
+	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
 	GMT_message (GMT, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
 	GMT_message (GMT, "\t   means we operate instead on the absolute values of the data.\n");
 	GMT_message (GMT, "\t-I Returns textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes 2+ col data).\n");
@@ -373,7 +370,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						low  = (Ctrl->I.active) ? floor (xyzmin[i] / Ctrl->I.inc[i]) * Ctrl->I.inc[i] : xyzmin[i];
 						high = (Ctrl->I.active) ? ceil  (xyzmax[i] / Ctrl->I.inc[i]) * Ctrl->I.inc[i] : xyzmax[i];
 					}
-					else {	/* Just the facts, mam */
+					else {	/* Just the facts, ma'am */
 						low = xyzmin[i];
 						high = xyzmax[i];
 					}

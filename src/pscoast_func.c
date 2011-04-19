@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.9 2011-04-15 19:00:38 guru Exp $
+ *	$Id: pscoast_func.c,v 1.10 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -170,61 +170,61 @@ GMT_LONG GMT_pscoast_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
 	GMT_explain_options (GMT, "b");
 	GMT_fill_syntax (GMT, 'C', "Sets separate color for lakes and riverlakes [Default is same as ocean].");
-	GMT_message (GMT, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed\n");
-	GMT_message (GMT, "\t      l = Lakes\n");
-	GMT_message (GMT, "\t      r = River-lakes\n");
+	GMT_message (GMT, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
+	GMT_message (GMT, "\t      l = Lakes.\n");
+	GMT_message (GMT, "\t      r = River-lakes.\n");
 	GMT_message (GMT, "\t-D Choose one of the following resolutions:\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions)\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions)\n");
-	GMT_message (GMT, "\t   i - intermediate resolution\n");
-	GMT_message (GMT, "\t   l - low resolution [Default]\n");
-	GMT_message (GMT, "\t   c - crude resolution, for busy plots that need crude continent outlines only\n");
+	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_message (GMT, "\t   i - intermediate resolution.\n");
+	GMT_message (GMT, "\t   l - low resolution [Default].\n");
+	GMT_message (GMT, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_fill_syntax (GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for land areas.\n");
 	GMT_pen_syntax (GMT, 'I', "draws rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -I option as many times as needed\n");
-	GMT_message (GMT, "\t      0 = Double-lined rivers (river-lakes)\n");
-	GMT_message (GMT, "\t      1 = Permanent major rivers\n");
-	GMT_message (GMT, "\t      2 = Additional major rivers\n");
-	GMT_message (GMT, "\t      3 = Additional rivers\n");
-	GMT_message (GMT, "\t      4 = Minor rivers\n");
-	GMT_message (GMT, "\t      5 = Intermittent rivers - major\n");
-	GMT_message (GMT, "\t      6 = Intermittent rivers - additional\n");
-	GMT_message (GMT, "\t      7 = Intermittent rivers - minor\n");
-	GMT_message (GMT, "\t      8 = Major canals\n");
-	GMT_message (GMT, "\t      9 = Minor canals\n");
-	GMT_message (GMT, "\t     10 = Irrigation canals\n");
-	GMT_message (GMT, "\t      a = All rivers and canals (0-10)\n");
-	GMT_message (GMT, "\t      r = All permanent rivers (0-4)\n");
-	GMT_message (GMT, "\t      i = All intermittent rivers (5-7)\n");
-	GMT_message (GMT, "\t      c = All canals (8-10)\n");
+	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -I option as many times as needed.\n");
+	GMT_message (GMT, "\t      0 = Double-lined rivers (river-lakes).\n");
+	GMT_message (GMT, "\t      1 = Permanent major rivers.\n");
+	GMT_message (GMT, "\t      2 = Additional major rivers.\n");
+	GMT_message (GMT, "\t      3 = Additional rivers.\n");
+	GMT_message (GMT, "\t      4 = Minor rivers.\n");
+	GMT_message (GMT, "\t      5 = Intermittent rivers - major.\n");
+	GMT_message (GMT, "\t      6 = Intermittent rivers - additional.\n");
+	GMT_message (GMT, "\t      7 = Intermittent rivers - minor.\n");
+	GMT_message (GMT, "\t      8 = Major canals.\n");
+	GMT_message (GMT, "\t      9 = Minor canals.\n");
+	GMT_message (GMT, "\t     10 = Irrigation canals.\n");
+	GMT_message (GMT, "\t      a = All rivers and canals (0-10).\n");
+	GMT_message (GMT, "\t      r = All permanent rivers (0-4).\n");
+	GMT_message (GMT, "\t      i = All intermittent rivers (5-7).\n");
+	GMT_message (GMT, "\t      c = All canals (8-10).\n");
 	GMT_explain_options (GMT, "K");
 	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
-	GMT_message (GMT, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs\n");
-	GMT_message (GMT, "\t   Specify any combination of -W, -I, -N\n");
+	GMT_message (GMT, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
+	GMT_message (GMT, "\t   Specify any combination of -W, -I, -N.\n");
 	GMT_pen_syntax (GMT, 'N', "draws boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -N option as many times as needed\n");
-	GMT_message (GMT, "\t     1 = National boundaries\n");
-	GMT_message (GMT, "\t     2 = State boundaries within the Americas\n");
-	GMT_message (GMT, "\t     3 = Marine boundaries\n");
-	GMT_message (GMT, "\t     a = All boundaries (1-3)\n");
+	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
+	GMT_message (GMT, "\t     1 = National boundaries.\n");
+	GMT_message (GMT, "\t     2 = State boundaries within the Americas.\n");
+	GMT_message (GMT, "\t     3 = Marine boundaries.\n");
+	GMT_message (GMT, "\t     a = All boundaries (1-3).\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q means terminate previously set clip-paths\n");
+	GMT_message (GMT, "\t-Q means terminate previously set clip-paths.\n");
 	GMT_fill_syntax (GMT, 'S', "Paint of clip \"wet\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for water areas.\n");
-	GMT_maprose_syntax (GMT, 'T', "Draws a north-pointing map rose centered on <lon0>/<lat0>");
+	GMT_maprose_syntax (GMT, 'T', "Draws a north-pointing map rose centered on <lon0>/<lat0>.");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "draw shorelines.  Append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed\n");
-	GMT_message (GMT, "\t      1 = Coastline\n");
-	GMT_message (GMT, "\t      2 = Lake shores\n");
-	GMT_message (GMT, "\t      3 = Island in lakes shores\n");
-	GMT_message (GMT, "\t      4 = Lake in island in lake shores\n");
-	GMT_message (GMT, "\t   When feature-specific pens are used, those not set are deactivated\n");
+	GMT_message (GMT, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
+	GMT_message (GMT, "\t      1 = Coastline.\n");
+	GMT_message (GMT, "\t      2 = Lake shores.\n");
+	GMT_message (GMT, "\t      3 = Island in lakes shores.\n");
+	GMT_message (GMT, "\t      4 = Lake in island in lake shores.\n");
+	GMT_message (GMT, "\t   When feature-specific pens are used, those not set are deactivated.\n");
 	GMT_explain_options (GMT, "XC0cpt");
 #ifdef DEBUG
-	GMT_message (GMT, "\t-+ Print only a single bin (debug option)\n");
+	GMT_message (GMT, "\t-+ Print only a single bin (debug option).\n");
 #endif
 	GMT_explain_options (GMT, ".");
 

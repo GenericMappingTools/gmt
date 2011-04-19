@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.11 2011-04-12 13:06:43 remko Exp $
+ *	$Id: pscontour_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -367,11 +367,11 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C Color palette table\n");
+	GMT_message (GMT, "\t-C Specify color palette table.\n");
 	GMT_explain_options (GMT, "jZR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Annotation label information.\n");
-	GMT_message (GMT, "\t   Give A- to disable all contour annotations implied in -C\n");
+	GMT_message (GMT, "\t   Give A- to disable all contour annotations implied in -C.\n");
 	GMT_message (GMT, "\t   <labelinfo> controls the specifics of the labels.  Append what you need:\n");
 	GMT_label_syntax (GMT, 5, 0);
 	GMT_explain_options (GMT, "b");
@@ -388,14 +388,14 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   to individual files; see manual page for more examples.\n");
 	GMT_message (GMT, "\t-G Controls placement of labels along contours.  Choose among five algorithms:\n");
 	GMT_cont_syntax (GMT, 3, 0);
-	GMT_message (GMT, "\t-I Color triangles using the cpt file\n");
+	GMT_message (GMT, "\t-I Color triangles using the cpt file.\n");
 	GMT_explain_options (GMT, "K");
 	GMT_pen_syntax (GMT, 'L', "Draws the triangular mesh with the specified pen.");
-	GMT_message (GMT, "\t-N Do NOT clip contours/image at the border [Default clips]\n");
+	GMT_message (GMT, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q File with triplets of point indices for each triangle\n");
-	GMT_message (GMT, "\t   [Default performs the Delaunay triangulation on xyz-data]\n");
-	GMT_message (GMT, "\t-S Skip xyz points outside region [Default keeps all]\n");
+	GMT_message (GMT, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
+	GMT_message (GMT, "\t-S Skip xyz points outside region [Default keeps all].\n");
 	GMT_message (GMT, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
 	GMT_message (GMT, "\t   the downward direction.  User may specify to tick only highs\n");
 	GMT_message (GMT, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
@@ -403,14 +403,14 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append :LH to plot L and H in the center of closed contours\n");
 	GMT_message (GMT, "\t   for local Lows and Highs (e.g, give :-+ to plot - and + signs).\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default]");
+	GMT_pen_syntax (GMT, 'W', "Sets pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].");
 	GMT_message (GMT, "\t   The default settings are\n");
 	P = GMT->current.setting.map_default_pen;
 	GMT_message (GMT, "\t   Contour pen: %s\n", GMT_putpen (GMT, P));
 	P.width *= 3.0;
 	GMT_message (GMT, "\t   Annotate pen: %s\n", GMT_putpen (GMT, P));
-	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file\n");
-	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file\n");
+	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
+	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
 	GMT_explain_options (GMT, "XC3D0chipt:.");
 	
 	return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: trend1d_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -486,7 +486,7 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   reduction in variance is significant at the <confidence> level.\n");
 	GMT_message (GMT, "\t   Give -I without a number to default to 0.51 confidence level.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Weighted input given, weights in 3rd column.  [Default is unweighted].\n");
+	GMT_message (GMT, "\t-W Weighted input given, weights in 3rd column [Default is unweighted].\n");
 	GMT_explain_options (GMT, "C0");
 	GMT_message (GMT, "\t   Default is 2 (or 3 if -W is set) input columns.\n");
 	GMT_explain_options (GMT, "D0fhi:.");

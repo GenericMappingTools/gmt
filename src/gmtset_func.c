@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtset_func.c,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmtset_func.c,v 1.3 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,15 +67,15 @@ GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file\n");
-	GMT_message (GMT, "\t   (The original file is retained)\n");
-	GMT_message (GMT, "\t-D Modify the default settings based on the GMT system defaults\n");
-	GMT_message (GMT, "\t   Append s to see the SI version of defaults\n");
-	GMT_message (GMT, "\t   Append u to see the US version of defaults\n");
-	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to modify\n");
+	GMT_message (GMT, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file.\n");
+	GMT_message (GMT, "\t   The original file is retained.\n");
+	GMT_message (GMT, "\t-D Modify the default settings based on the GMT system defaults.\n");
+	GMT_message (GMT, "\t   Append s to see the SI version of defaults.\n");
+	GMT_message (GMT, "\t   Append u to see the US version of defaults.\n");
+	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to modify.\n");
 	GMT_message (GMT, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
-	GMT_message (GMT, "\n\tThe modified defaults are written to the current directory as gmt.conf\n");
+	GMT_message (GMT, "\n\tThe modified defaults are written to the current directory as gmt.conf.\n");
 	
 	return (EXIT_FAILURE);
 }

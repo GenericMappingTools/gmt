@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.11 2011-04-12 13:06:43 remko Exp $
+ *	$Id: psclip_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,13 +81,13 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append t to terminate text clipping; append how many clip levels to restore or a for all [1].\n");
 	GMT_message (GMT, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
 	GMT_message (GMT, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
-	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read\n");
+	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "bZK");
-	GMT_message (GMT, "\t-N Use the outside of the polygons and the map boundary as clip paths\n");
+	GMT_message (GMT, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-T Set clip path for the entire map frame.  No input file is required\n");
+	GMT_message (GMT, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
 	GMT_explain_options (GMT, "UVXC2cfghipt:.");
 	
 	return (EXIT_FAILURE);

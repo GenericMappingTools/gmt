@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.11 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdcontour_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t<grdfile> is 2-D netCDF grid file to be contoured\n");
 	GMT_message (GMT, "\t-C Contours to be drawn can be specified in one of three ways:\n");
-	GMT_message (GMT, "\t   1. Fixed contour interval\n");
+	GMT_message (GMT, "\t   1. Fixed contour interval.\n");
 	GMT_message (GMT, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
 	GMT_message (GMT, "\t      [and optionally an individual annotation angle in col 3].\n");
 	GMT_message (GMT, "\t   3. Name of a cpt-file.\n");
@@ -185,15 +185,15 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-G Controls placement of labels along contours.  Choose from:\n");
 	GMT_cont_syntax (GMT, 3, 0);
 	GMT_explain_options (GMT, "ZK");
-	GMT_message (GMT, "\t-L Only contour inside this range\n");
+	GMT_message (GMT, "\t-L Only contour inside this range.\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours]\n");
+	GMT_message (GMT, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t   [Default is extent of grid]\n");
+	GMT_message (GMT, "\t   [Default is extent of grid].\n");
 	GMT_message (GMT, "\t-S Will Smooth contours by splining and resampling at\n");
-	GMT_message (GMT, "\t   approximately gridsize/<smooth> intervals\n");
+	GMT_message (GMT, "\t   approximately gridsize/<smooth> intervals.\n");
 	GMT_message (GMT, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
-	GMT_message (GMT, "\t   the downward direction.  User may specify to tick only highs\n");
+	GMT_message (GMT, "\t   the downward direction.  User may specify to tick only highs.\n");
 	GMT_message (GMT, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
 	GMT_message (GMT, "\t   Append spacing/ticklength (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
 	GMT_message (GMT, "\t   Append :[<labels>] to plot L and H in the center of local lows and highs.\n");
@@ -207,8 +207,8 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Contour pen:  %s\n", GMT_putpen (GMT, P));
 	P.width *= 3.0;
 	GMT_message (GMT, "\t   Annotate pen: %s\n", GMT_putpen (GMT, P));
-	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file\n");
-	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file\n");
+	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
+	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
 	GMT_explain_options (GMT, "X");
 	GMT_message (GMT, "\t-Z To subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_message (GMT, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");

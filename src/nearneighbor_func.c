@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.7 2011-04-19 18:03:19 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -146,8 +146,8 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-L Sets boundary conditions.  <flags> can be either\n");
 	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Input file has observation weights in 4th column.\n");
 	GMT_explain_options (GMT, "C0");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.11 2011-04-15 21:20:37 guru Exp $
+ *	$Id: psxy_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -249,7 +249,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infiles> is one or more files.  If no, read standard input\n");
+	GMT_message (GMT, "\t<infiles> is one or more files.  If no, read standard input.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Suppress drawing line segments as great circle arcs, i.e. draw\n");
@@ -316,10 +316,10 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_message (GMT, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_list_custom_symbols (GMT);
-	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>\n");
+	GMT_message (GMT, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
 	GMT_message (GMT, "\t   Mathangle: start/stop directions of math angle must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     Use -Smf for arrow at first angle and -Sml for last, -Smb for both [none].\n");
-	GMT_message (GMT, "\t   Quoted line: Give [d|f|n|l|x]<info>[:<labelinfo>]\n");
+	GMT_message (GMT, "\t   Quoted line: Give [d|f|n|l|x]<info>[:<labelinfo>].\n");
 	GMT_message (GMT, "\t     <code><info> controls placement of labels along lines.  Select\n");
 	GMT_cont_syntax (GMT, 7, 1);
 	GMT_message (GMT, "\t     <labelinfo> controls the label attributes.  Choose from\n");

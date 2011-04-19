@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.18 2011-04-14 16:40:06 remko Exp $
+ *	$Id: gmt_esri_io.c,v 1.19 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -427,7 +427,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG first_col, last_col, first_row, last_row, n_left;
 	GMT_LONG row, row2, col2, ij, width_in, check, error, *k = NULL;
 	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
-	char *r_mode;
+	char *r_mode = NULL;
 	short int *tmp16 = NULL;
 	unsigned int *ui = NULL;
 	unsigned short *us = NULL;

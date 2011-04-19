@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.5 2011-04-15 19:00:38 guru Exp $
+ *	$Id: sample1d_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,28 +97,28 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infile> is one or more multicolumn ASCII (or binary, see -b) tables. [Default is standard input]\n");
-	GMT_message (GMT, "\tThe independent variable (see -T) must be monotonically in/de-creasing\n");
+	GMT_message (GMT, "\t<infile> is one or more multicolumn ASCII (or binary, see -b) tables. [Default is standard input].\n");
+	GMT_message (GMT, "\tThe independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");
 	GMT_message (GMT, "\t   Append m or p to first follow meridian then parallel, or vice versa.\n");
 	GMT_message (GMT, "\t-F Sets the interpolation mode.  Choose from:\n");
-	GMT_message (GMT, "\t   l Linear interpolation\n");
-	GMT_message (GMT, "\t   a Akima spline interpolation\n");
-	GMT_message (GMT, "\t   c Cubic spline interpolation\n");
-	GMT_message (GMT, "\t   n No interpolation (nearest point)\n");
+	GMT_message (GMT, "\t   l Linear interpolation.\n");
+	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
+	GMT_message (GMT, "\t   c Cubic spline interpolation.\n");
+	GMT_message (GMT, "\t   n No interpolation (nearest point).\n");
 	GMT_message (GMT, "\t   [Default is -F%c]\n", type[GMT->current.setting.interpolant]);
-	GMT_message (GMT, "\t-I Sets equidistant grid interval <inc> [t1 - t0]\n");
+	GMT_message (GMT, "\t-I Sets equidistant grid interval <inc> [t1 - t0].\n");
 	GMT_message (GMT, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   longitude, latitude and you wish to resample this path using spherical\n");
 	GMT_message (GMT, "\t   segments with a nominal spacing of <inc> in the chosen units.\n");
 	GMT_message (GMT, "\t   See -Am|p to only sample along meridians and parallels.\n");
-	GMT_message (GMT, "\t-N The <knotfile> is an ASCII table with the desired time positions in column 0\n");
+	GMT_message (GMT, "\t-N The <knotfile> is an ASCII table with the desired time positions in column 0.\n");
 	GMT_message (GMT, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
-	GMT_message (GMT, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0])\n");
+	GMT_message (GMT, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0]).\n");
 	GMT_message (GMT, "\t-S Sets the first output point to be <start> [first multiple of inc in range].\n");
 	GMT_message (GMT, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
-	GMT_message (GMT, "\t-T Gives column number of the independent variable (time) [Default is 0 (first)]\n");
+	GMT_message (GMT, "\t-T Gives column number of the independent variable (time) [Default is 0 (first)].\n");
 	GMT_explain_options (GMT, "VC2D0fghi.");
 	
 	return (EXIT_FAILURE);

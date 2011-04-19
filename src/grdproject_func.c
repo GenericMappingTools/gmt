@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdproject_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,8 +92,8 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdproject %s [API] - Project geographical grid to/from rectangular grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdproject <in_grdfile> -G<out_grdfile> %s\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-A[k|m|n|i|c|p]] [-C[<dx/dy>]] [-D%s] [-E<dpi>]\n", GMT_inc_OPT);
-	GMT_message (GMT, "\t[-I] [-Mc|i|m] [%s]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx/dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
+	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-S[-]b|c|l|n[/<threshold>]] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -102,22 +102,23 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-G name of output grid\n");
 	GMT_explain_options (GMT, "J");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Force projected values to be in actual meters [Default uses the given map scale]\n");
-	GMT_message (GMT, "\t   Specify another unit by appending k (km), m (miles), n (nautical miles), i (inch), c (cm), or p (points)\n");
-	GMT_message (GMT, "\t-C Coordinates relative to projection center [Default is relative to lower left corner]\n");
-	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0]\n");
+	GMT_message (GMT, "\t-A Force projected values to be in actual meters [Default uses the given map scale].\n");
+	GMT_message (GMT, "\t   Specify another unit by appending (f)eet, (k)m, (M)ile, (n)autical mile,\n");
+	GMT_message (GMT, "\t   or i (inch), c (cm), or p (points) [e].\n");
+	GMT_message (GMT, "\t-C Coordinates relative to projection center [Default is relative to lower left corner].\n");
+	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
 	GMT_inc_syntax (GMT, 'D', 0);
-	GMT_message (GMT, "\t-E Sets dpi for output grid\n");
-	GMT_message (GMT, "\t-I Inverse transformation from rectangular to geographical\n");
-	GMT_message (GMT, "\t-M Temporarily reset MEASURE_UNIT to be c (cm), i (inch), m (meter), or p (point)\n");
+	GMT_message (GMT, "\t-E Sets dpi for output grid.\n");
+	GMT_message (GMT, "\t-I Inverse transformation from rectangular to geographical.\n");
+	GMT_message (GMT, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -A is set.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Determines the interpolation mode (b = B-spline, c = bicubic, l = bilinear,\n");
-	GMT_message (GMT, "\t   n = nearest-neighbor) [Default: bicubic]\n");
-	GMT_message (GMT, "\t   Optionally, prepend - to switch off antialiasing [Default: on]\n");
+	GMT_message (GMT, "\t   n = nearest-neighbor) [Default: bicubic].\n");
+	GMT_message (GMT, "\t   Optionally, prepend - to switch off antialiasing [Default: on].\n");
 	GMT_message (GMT, "\t   Append /<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
 	GMT_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-	GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5]\n");
+	GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
 	GMT_explain_options (GMT, "VF.");
 
 	return (EXIT_FAILURE);

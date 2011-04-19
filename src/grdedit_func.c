@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdedit_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,13 +92,13 @@ GMT_LONG GMT_grdedit_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "\tgrdfile is file to be modified\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Adjust dx/dy to be compatible with the file domain or -R\n");
-	GMT_message (GMT, "\t-D Enter grid information.  Specify '=' to get default value\n");
-	GMT_message (GMT, "\t-E Tranpose the entire grid (this will exchange x and y)\n");
-	GMT_message (GMT, "\t-N <file> has new xyz values to replace existing grid nodes\n");
+	GMT_message (GMT, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
+	GMT_message (GMT, "\t-D Enter grid information.  Specify '=' to get default value.\n");
+	GMT_message (GMT, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
+	GMT_message (GMT, "\t-N <file> has new xyz values to replace existing grid nodes.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S For global grids of 360 degree longitude range.\n");
-	GMT_message (GMT, "\t   Will rotate entire grid to coincide with new borders in -R\n");
+	GMT_message (GMT, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
 	GMT_message (GMT, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_message (GMT, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_message (GMT, "\t   and expands -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");

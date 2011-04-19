@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.7 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,7 +129,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Append m or p to first follow meridian then parallel, or vice versa.\n");
 	GMT_message (GMT, "\t   Ignored unless -C is used.\n");
 	GMT_message (GMT, "\t-C Create equidistant cross-profiles from input line segments.  Append\n");
-	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append desired distance unit [%s]\n", GMT_LEN_UNITS);
+	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append desired distance unit [%s].\n", GMT_LEN_UNITS);
 	GMT_message (GMT, "\t   <dz>: Distance interval along the cross-profiles.\n");
 	GMT_message (GMT, "\t   Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
 	GMT_message (GMT, "\t   Output columns are x, y, dist, z1, z2, ...\n");
@@ -137,16 +137,15 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
 	GMT_message (GMT, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
 	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions\n");
-	GMT_message (GMT, "\t   or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
-	GMT_message (GMT, "\t   [Default is natural conditions for regular grids and geographic for IMG grids]\n");
+	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
+	GMT_message (GMT, "\t   [Default is natural conditions for regular grids and geographic for IMG grids].\n");
 	GMT_sample_syntax (GMT, 'Q', "Determines the grid interpolation mode.");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Suppress output when any grid sample equals NaN\n");
+	GMT_message (GMT, "\t-S Suppress output when any grid sample equals NaN.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns]\n");
+	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
 	GMT_explain_options (GMT, "C2D0fghio:.");
 	
 	return (EXIT_FAILURE);

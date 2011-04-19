@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.4 2011-04-12 13:06:43 remko Exp $
+ *	$Id: pswiggle_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -209,24 +209,24 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<xyz_files> is one or more files.  If none, read standard input\n");
+	GMT_message (GMT, "\t<xyz_files> is one or more files.  If none, read standard input.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)]\n");
+	GMT_message (GMT, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Sets center value to be removed from z before plotting. [0]\n");
+	GMT_message (GMT, "\t-C Sets center value to be removed from z before plotting [0].\n");
 	GMT_fill_syntax (GMT, 'G', "Specify color/pattern for positive areas.");
-	GMT_message (GMT, "\t-I Set fixed projection azimuths for wiggles\n");
+	GMT_message (GMT, "\t-I Set fixed projection azimuths for wiggles.\n");
 	GMT_explain_options (GMT, "ZK");
-	GMT_message (GMT, "\t-N Fill negative wiggles instead [Default is positive]\n");
+	GMT_message (GMT, "\t-N Fill negative wiggles instead [Default is positive].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-S Draws a simple vertical scale centered on <lon0>/<lat0>.  Use -Sx to specify cartesian coordinates instead.\n");
-	GMT_message (GMT, "\t   <length> is in z-units, append unit name for labeling\n");
-	GMT_message (GMT, "\t-T Specifies track pen attributes. [Default is no track]\n");
+	GMT_message (GMT, "\t   <length> is in z-units, append unit name for labeling.\n");
+	GMT_message (GMT, "\t-T Specifies track pen attributes. [Default is no track].\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Specifies outline pen attributes [Default is no outline].");
 	GMT_explain_options (GMT, "X");
-	GMT_message (GMT, "\t-Z Gives the wiggle scale in data-units per %s\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t-Z Gives the wiggle scale in data-units per %s.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_explain_options (GMT, "C3cfghipt:.");
 	
 	return (EXIT_FAILURE);

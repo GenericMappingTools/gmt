@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmedian_func.c,v 1.4 2011-04-11 21:15:31 remko Exp $
+ *    $Id: blockmedian_func.c,v 1.5 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -46,12 +46,12 @@ GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Output center of block as location  [Default is (median x, median y), but see -Q]\n");
+	GMT_message (GMT, "\t-C Output center of block as location  [Default is (median x, median y), but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
-	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w])\n");
-	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z.  [Default gets median x, median y, median z.]\n");
-	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z]\n");
+	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
+	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
+	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W sets Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
@@ -293,7 +293,6 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail if there are any read errors */
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip all table and segment headers */
-
 		if (GMT_is_dnan (in[GMT_Z])) continue;			/* Skip if z = NaN */
 
 		/* Data record to process */

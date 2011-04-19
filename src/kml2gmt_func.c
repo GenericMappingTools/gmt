@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id: kml2gmt_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -68,7 +68,7 @@ GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tinfile is the Google Earth KML file.\n");
 	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-Z Output the z-column from the KML file [Only lon,lat is output]\n");
+	GMT_message (GMT, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
 	GMT_explain_options (GMT, "VD0:.");
 
 	return (EXIT_FAILURE);

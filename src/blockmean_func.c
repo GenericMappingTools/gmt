@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.5 2011-04-12 03:05:18 remko Exp $
+ *	$Id: blockmean_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,6 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);		/* Bail if there are any read errors */
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;			/* Skip all table and segment headers */
-		
 		if (GMT_is_dnan (in[GMT_Z])) continue;				/* Skip if z = NaN */
 
 		/* Data record to process */

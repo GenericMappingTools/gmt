@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.5 2011-04-11 21:15:31 remko Exp $
+ *	$Id: psscale_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,46 +129,46 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-D Set mid-point position and length/width for scale.\n");
-	GMT_message (GMT, "\t   Give negative length to reverse the scalebar\n");
+	GMT_message (GMT, "\t   Give negative length to reverse the scalebar.\n");
 	GMT_message (GMT, "\t   Append h for horizontal scale\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Place the desired annotations/labels on the other side of the colorscale instead\n");
-	GMT_message (GMT, "\t   Append a or l to move only the annotations or labels to the other side\n");
-	GMT_message (GMT, "\t   Append c to plot vertical labels as columns\n");
-	GMT_message (GMT, "\t-B Set scale annotation interval and label. Use y-label to set unit label\n");
-	GMT_message (GMT, "\t   If no annotation interval is set it is taken from the cpt file\n");
+	GMT_message (GMT, "\t-A Place the desired annotations/labels on the other side of the colorscale instead.\n");
+	GMT_message (GMT, "\t   Append a or l to move only the annotations or labels to the other side.\n");
+	GMT_message (GMT, "\t   Append c to plot vertical labels as columns.\n");
+	GMT_message (GMT, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
+	GMT_message (GMT, "\t   If no annotation interval is set it is taken from the cpt file.\n");
 	GMT_message (GMT, "\t-C Color palette file. If not set, stdin is read.\n");
 	GMT_message (GMT, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
 	GMT_message (GMT, "\t   add an extra column to the cpt-file with a L, U, or B\n");
-	GMT_message (GMT, "\t   to annotate Lower, Upper, or Both color segment boundaries\n");
-	GMT_message (GMT, "\t   If a categorical CPT file is given the -Li is set automatically\n");
+	GMT_message (GMT, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
+	GMT_message (GMT, "\t   If a categorical CPT file is given the -Li is set automatically.\n");
 	GMT_message (GMT, "\t-E Add sidebar triangles for back- and foreground colors.\n");
-	GMT_message (GMT, "\t   Specify b(ackground) or f(oreground) to get one only [Default is both]\n");
-	GMT_message (GMT, "\t   Optionally, append triangle height [Default is half the barwidth]\n");
-	GMT_message (GMT, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0]\n");
-	GMT_message (GMT, "\t   Alternatively, specify <lower>/<upper> intensity values\n");
+	GMT_message (GMT, "\t   Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
+	GMT_message (GMT, "\t   Optionally, append triangle height [Default is half the barwidth].\n");
+	GMT_message (GMT, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");
+	GMT_message (GMT, "\t   Alternatively, specify <lower>/<upper> intensity values.\n");
 	GMT_explain_options (GMT, "jZK");
 	GMT_message (GMT, "\t-L For equal-sized color rectangles. -B interval cannot be used.\n");
 	GMT_message (GMT, "\t   Append i to annotate the interval range instead of lower/upper.\n");
 	GMT_message (GMT, "\t   If <gap> is appended, we separate each rectangle by <gap> units and center each\n");
 	GMT_message (GMT, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete cpt table.\n");
 	GMT_message (GMT, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
-	GMT_message (GMT, "\t-M Force monochrome colorbar using GMT_YIQ transformation\n");
-	GMT_message (GMT, "\t-N Effective dots-per-inch for color scale [300]\n");
+	GMT_message (GMT, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
+	GMT_message (GMT, "\t-N Effective dots-per-inch for color scale [300].\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear]\n");
+	GMT_message (GMT, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Skip drawing color boundary lines on color scale [Default draws lines]\n");
+	GMT_message (GMT, "\t-S Skip drawing color boundary lines on color scale [Default draws lines].\n");
 	GMT_message (GMT, "\t-T Place a rectangle behind the scale [No background rectangle].\n");
 	GMT_message (GMT, "\t   Make at least one seletion of rectangle fill or outline pen.\n");
 	GMT_message (GMT, "\t   You can nudge the extent of the rectangle in all four directions\n");
 	GMT_message (GMT, "\t   by appending any of +l<off>, +r<off>, +b<off>, +t<off>.\n");
 	GMT_explain_options (GMT, "UVX");
-	GMT_message (GMT, "\t-Z Give file with colorbar-width (in %s) per color entry\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t   By default, width of entry is scaled to color range\n");
+	GMT_message (GMT, "\t-Z Give file with colorbar-width (in %s) per color entry.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t   By default, width of entry is scaled to color range,\n");
 	GMT_message (GMT, "\t   i.e., z = 0-100 gives twice the width as z = 100-150.\n");
 	GMT_explain_options (GMT, "cp");
-	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning)\n");
+	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_explain_options (GMT, "t.");
 	
 	return (EXIT_FAILURE);

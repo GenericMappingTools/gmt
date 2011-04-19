@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: triangulate_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -119,16 +119,16 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Takes derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I\n");
+	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "J");   
 	GMT_message (GMT, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
-	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle]\n");
+	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
 #ifdef TRIANGLE_D
-	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R) [Delaunay triangulation]\n");
+	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R) [Delaunay triangulation].\n");
 #endif
 	GMT_explain_options (GMT, "RVC2");
-	GMT_message (GMT, "\t-bo Writes binary (double) index table [Default is ASCII i/o]\n");
+	GMT_message (GMT, "\t-bo Writes binary (double) index table [Default is ASCII i/o].\n");
 	GMT_explain_options (GMT, "fhiF:.");
 	
 	return (EXIT_FAILURE);

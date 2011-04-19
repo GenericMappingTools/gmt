@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.5 2011-04-12 13:06:43 remko Exp $
+ *	$Id: gmtmath_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -317,9 +317,9 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tA, B, etc are table files, constants, or symbols (see below)\n");
-	GMT_message (GMT, "\tTo read stdin give filename as STDIN (which can appear more than once)\n");
-	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory)\n", GMTMATH_STACK_SIZE);
+	GMT_message (GMT, "\tA, B, etc are table files, constants, or symbols (see below).\n");
+	GMT_message (GMT, "\tTo read stdin give filename as STDIN (which can appear more than once).\n");
+	GMT_message (GMT, "\tThe stack can hold up to %d entries (given enough memory).\n", GMTMATH_STACK_SIZE);
 	GMT_message (GMT, "\tTrigonometric operators expect radians.\n");
 	GMT_message (GMT, "\tThe operators and number of input and output arguments:\n\n");
 	GMT_message (GMT, "\tName    #args   Returns\n");
@@ -329,24 +329,24 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t  PI	= 3.1415926...\n");
 	GMT_message (GMT, "\t  E	= 2.7182818...\n");
 	GMT_message (GMT, "\t  EULER	= 0.5772156...\n");
-	GMT_message (GMT, "\t  TMIN, TMAX, or TINC	= the corresponding constant\n");
-	GMT_message (GMT, "\t  N	= number of records\n");
-	GMT_message (GMT, "\t  T	= table with t-coordinates\n");
-	GMT_message (GMT, "\t  Tn	= table with normalized [-1 to +1] t-coordinates\n");
+	GMT_message (GMT, "\t  TMIN, TMAX, or TINC	= the corresponding constant.\n");
+	GMT_message (GMT, "\t  N	= number of records.\n");
+	GMT_message (GMT, "\t  T	= table with t-coordinates.\n");
+	GMT_message (GMT, "\t  Tn	= table with normalized [-1 to +1] t-coordinates.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-A Requires -N and will initialize table with file containing t and f(t) only.\n");
 	GMT_message (GMT, "\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1.\n");
 	GMT_message (GMT, "\t   No additional data files may be specified.\n");
-	GMT_message (GMT, "\t-C Change which columns to operate on [Default is all except time]\n");
+	GMT_message (GMT, "\t-C Change which columns to operate on [Default is all except time].\n");
 	GMT_message (GMT, "\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n");
-	GMT_message (GMT, "\t-F Give comma-separated list of desired columns or ranges to output (0 is first column) [Default is all]\n");
-	GMT_message (GMT, "\t-I Reverses the output sequence into descending order [ascending]\n");
+	GMT_message (GMT, "\t-F Give comma-separated list of desired columns or ranges to output (0 is first column) [Default is all].\n");
+	GMT_message (GMT, "\t-I Reverses the output sequence into descending order [ascending].\n");
 	GMT_message (GMT, "\t-L Applies operators on a per-segment basis [cumulates operations across file].\n");
-	GMT_message (GMT, "\t-N Sets the number of columns and the id of the time column (0 is first) [2/0]\n");
-	GMT_message (GMT, "\t-Q Quick scalar calculator. Shorthand for -Ca -N1/0 -T0/0/1\n");
-	GMT_message (GMT, "\t-S Only write first row upon completion of calculations [write all rows]\n");
-	GMT_message (GMT, "\t   Optionally, append l for last row or f for first row [Default]\n");
-	GMT_message (GMT, "\t-T Set domain from t_min to t_max in steps of t_inc\n");
+	GMT_message (GMT, "\t-N Sets the number of columns and the id of the time column (0 is first) [2/0].\n");
+	GMT_message (GMT, "\t-Q Quick scalar calculator. Shorthand for -Ca -N1/0 -T0/0/1.\n");
+	GMT_message (GMT, "\t-S Only write first row upon completion of calculations [write all rows].\n");
+	GMT_message (GMT, "\t   Optionally, append l for last row or f for first row [Default].\n");
+	GMT_message (GMT, "\t-T Set domain from t_min to t_max in steps of t_inc.\n");
 	GMT_message (GMT, "\t   Append + to t_inc to indicate the number of points instead.\n");
 	GMT_message (GMT, "\t   If a filename is given instead we read t coordinates from first column.\n");
 	GMT_message (GMT, "\t   If no domain is given we assume no time, i.e. only data columns are present.\n");

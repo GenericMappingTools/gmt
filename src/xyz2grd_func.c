@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.6 2011-04-12 13:06:44 remko Exp $
+ *	$Id: xyz2grd_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,35 +109,35 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append u (-Au): Keep maximum value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   Append l (-Al): Keep minimum value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   [Default (no -A option) will compute mean values]\n");
-	GMT_message (GMT, "\t-D To enter header information.  Specify '=' to get default value\n");
-	GMT_message (GMT, "\t-N Set value for nodes without input xyz triplet [Default is NaN]\n");
-	GMT_message (GMT, "\t   Z-table entries that equal <nodata> are replaced by NaN\n");
+	GMT_message (GMT, "\t-D To enter header information.  Specify '=' to get default value.\n");
+	GMT_message (GMT, "\t-N Set value for nodes without input xyz triplet [Default is NaN].\n");
+	GMT_message (GMT, "\t   Z-table entries that equal <nodata> are replaced by NaN.\n");
 	GMT_message (GMT, "\t-S Requires -Z and will swap the byte-order of the input data and write\n");
 	GMT_message (GMT, "\t   the result to <zfile> (or stdout if no file given).  No grid file created!\n");
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-Z Sets exact specification of incoming 1-column z-table\n");
-	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom)\n");
-	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row\n");
-	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight)\n");
-	GMT_message (GMT, "\t     Then, append T or B to indicate starting point in column\n");
-	GMT_message (GMT, "\t   To skip a header of size <n> bytes, append s<n> [<n> = 0]\n");
-	GMT_message (GMT, "\t   To swap byte-order in 2-byte words, append w\n");
-	GMT_message (GMT, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax\n");
-	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax\n");
+	GMT_message (GMT, "\t-Z Sets exact specification of incoming 1-column z-table.\n");
+	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
+	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row.\n");
+	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
+	GMT_message (GMT, "\t     Then, append T or B to indicate starting point in column.\n");
+	GMT_message (GMT, "\t   To skip a header of size <n> bytes, append s<n> [<n> = 0].\n");
+	GMT_message (GMT, "\t   To swap byte-order in 2-byte words, append w.\n");
+	GMT_message (GMT, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
+	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
 	GMT_message (GMT, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_message (GMT, "\t     A  Ascii (multiple floating point values per record)\n");
-	GMT_message (GMT, "\t     a  Ascii (one value per record)\n");
-	GMT_message (GMT, "\t     c  signed 1-byte character\n");
-	GMT_message (GMT, "\t     u  unsigned 1-byte character\n");
-	GMT_message (GMT, "\t     h  signed short 2-byte integer\n");
-	GMT_message (GMT, "\t     H  unsigned short 2-byte integer\n");
-	GMT_message (GMT, "\t     i  signed 4-byte integer\n");
-	GMT_message (GMT, "\t     I  unsigned 4-byte integer\n");
-	GMT_message (GMT, "\t     l  signed long (4- or 8-byte) integer\n");
-	GMT_message (GMT, "\t     f  4-byte floating point single precision\n");
-	GMT_message (GMT, "\t     d  8-byte floating point double precision\n");
-	GMT_message (GMT, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa]\n");
+	GMT_message (GMT, "\t     A  Ascii (multiple floating point values per record).\n");
+	GMT_message (GMT, "\t     a  Ascii (one value per record).\n");
+	GMT_message (GMT, "\t     c  signed 1-byte character.\n");
+	GMT_message (GMT, "\t     u  unsigned 1-byte character.\n");
+	GMT_message (GMT, "\t     h  signed short 2-byte integer.\n");
+	GMT_message (GMT, "\t     H  unsigned short 2-byte integer.\n");
+	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
+	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
+	GMT_message (GMT, "\t     l  signed long (4- or 8-byte) integer.\n");
+	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
+	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
+	GMT_message (GMT, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_message (GMT, "\t   This option assumes all nodes have data values.\n");
 	GMT_explain_options (GMT, "C3fhiF:.");
 	
@@ -315,7 +315,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		GMT->current.io.input = save;			/* Reset input pointer */
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
-		save = GMT->current.io.output;		/* Save previous output parameters */
+		save = GMT->current.io.output;			/* Save previous output parameters */
 		previous = GMT->common.b.active[GMT_OUT];
 		GMT->current.io.output = io.write_item;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
@@ -463,14 +463,14 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = FALSE;	/* No point testing */
 
 	if (Ctrl->Z.active) {	/* Need to override input method */
-		zcol = 0;
+		zcol = GMT_X;
 		save = GMT->current.io.input;
 		previous = GMT->common.b.active[GMT_IN];
 		GMT->current.io.input = io.read_item;		/* Override and use chosen input mode */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set binary as well */
 	}
 	else {
-		zcol = 2;
+		zcol = GMT_Z;
 		flag = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);	/* No padding needed for flag array */
 		GMT_memset (Grid->header->pad, 4, GMT_LONG);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = FALSE;	/* Cannot have x,y as NaNs here */
@@ -499,10 +499,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			if (Ctrl->N.active && in[zcol] == Ctrl->N.value)
-				Grid->data[gmt_ij] = GMT->session.f_NaN;
-			else
-				Grid->data[gmt_ij] = (float)in[zcol];
+			Grid->data[gmt_ij] = (Ctrl->N.active && in[zcol] == Ctrl->N.value) ? GMT->session.f_NaN : (float)in[zcol];
 		}
 		else {	/* Get x, y, z */
 			if (GMT_y_is_outside (in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */

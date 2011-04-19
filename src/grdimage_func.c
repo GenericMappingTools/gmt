@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.14 2011-04-14 15:29:35 remko Exp $
+ *	$Id: grdimage_func.c,v 1.15 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -123,18 +123,18 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Color palette file to convert z to rgb\n");
+	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.\n");
 #ifdef USE_GDAL
 	GMT_message (GMT, "\t-D Use to read an image via GDAL.  Append r to equate image region to -R region.\n");
 #endif
 	GMT_message (GMT, "\t-E Sets dpi for the projected grid which must be constructed\n");
-	GMT_message (GMT, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid]\n");
+	GMT_message (GMT, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
 	GMT_message (GMT, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
-	GMT_rgb_syntax (GMT, 'G', "Sets transparency color for images that otherwise would result in 1-bit images\n\t  ");
-	GMT_message (GMT, "\t-I Use illumination.  Append name of intensity grid file\n");
+	GMT_rgb_syntax (GMT, 'G', "Sets transparency color for images that otherwise would result in 1-bit images.\n\t  ");
+	GMT_message (GMT, "\t-I Use illumination.  Append name of intensity grid file.\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-M Force monochrome image\n");
-	GMT_message (GMT, "\t-N Do not clip image at the map boundary\n");
+	GMT_message (GMT, "\t-M Force monochrome image.\n");
+	GMT_message (GMT, "\t-N Do not clip image at the map boundary.\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_explain_options (GMT, "R");

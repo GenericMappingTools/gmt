@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: spectrum1d_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -516,12 +516,12 @@ GMT_LONG GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tOptions:\n");
 	GMT_message (GMT, "\t-C[<xycnpago>] 2 column X(t),Y(t) input; estimate Cross-spectra\n\t   [Default 1 col, X power only].\n");
 	GMT_message (GMT, "\t   Optionally specify cross-spectra output(s)  [Default is all].\n");
-	GMT_message (GMT, "\t   x = xpower, y = ypower, c = coherent power, n = noise power\n");
+	GMT_message (GMT, "\t   x = xpower, y = ypower, c = coherent power, n = noise power,\n");
 	GMT_message (GMT, "\t   p = phase, a = admittance, g = gain, o = squared coherency.\n\n");
 	GMT_message (GMT, "\t-D Set delta_time sampling interval of data [Default = 1.0].\n");
 	GMT_message (GMT, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
 	GMT_message (GMT, "\t   Output files will be named <name_stem>.xpower, etc.\n");
-	GMT_message (GMT, "\t   To save all selected spectra in a single table, use -N+<file>\n");
+	GMT_message (GMT, "\t   To save all selected spectra in a single table, use -N+<file>.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
 	GMT_explain_options (GMT, "C2D0fghi.");

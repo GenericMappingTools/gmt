@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.7 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdfilter_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -223,7 +223,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Give negative filter width to select highpass filtering [lowpass].\n");
 	GMT_message (GMT, "\t   Convolution filters:\n");
 	GMT_message (GMT, "\t     b: Boxcar : a simple averaging of all points inside filter radius.\n");
-	GMT_message (GMT, "\t     c: Cosine arch : a weighted averaging with cosine arc weights\n");
+	GMT_message (GMT, "\t     c: Cosine arch : a weighted averaging with cosine arc weights.\n");
 	GMT_message (GMT, "\t     g: Gaussian : weighted averaging with Gaussian weights.\n");
 	GMT_message (GMT, "\t   Geospatial filters:\n");
 	GMT_message (GMT, "\t     l: Lower : return minimum of all points.\n");
@@ -234,16 +234,16 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t        Append - or + to the width to instead return the smallest or largest mode.\n");
 	GMT_message (GMT, "\t     u: Upper : return maximum of all points.\n");
 	GMT_message (GMT, "\t     U: Upper- : return maximum of all -ve points.\n");
-	GMT_message (GMT, "\t-G Gets output filename for filtered grid\n");
+	GMT_message (GMT, "\t-G Gets output filename for filtered grid.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_message (GMT, "\t-N Specifies how NaNs in the input grid should be treated.  There are three options:\n");
-	GMT_message (GMT, "\t   -Ni skips all NaN values and returns a filtered value unless all are NaN [Default]\n");
+	GMT_message (GMT, "\t   -Ni skips all NaN values and returns a filtered value unless all are NaN [Default].\n");
 	GMT_message (GMT, "\t   -Np sets filtered output to NaN is any NaNs are found inside filter circle.\n");
 	GMT_message (GMT, "\t   -Nr sets filtered output to NaN if the corresponding input node was NaN.\n");
 	GMT_message (GMT, "\t      (only possible if the input and output grids are coregistered).\n");
-	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
+	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_explain_options (GMT, "Vf.");
 	

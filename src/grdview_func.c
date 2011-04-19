@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.14 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdview_func.c,v 1.15 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -331,22 +331,21 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<topofile> is data set to be plotted\n");
+	GMT_message (GMT, "\t<topofile> is data set to be plotted.\n");
 	GMT_explain_options (GMT, "jZ");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Color palette file\n");
 	GMT_message (GMT, "\t-G Use <drapefile> rather than <topofile> for color-coding.\n");
 	GMT_message (GMT, "\t   Use <topofile> as the relief and drape the image on top.\n");
-	GMT_message (GMT, "\t   Note that -Jz and -N always refers to the <topofile>\n");
+	GMT_message (GMT, "\t   Note that -Jz and -N always refers to the <topofile>.\n");
 	GMT_message (GMT, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_message (GMT, "\t   If so, you must also choose -Qi.\n");
-	GMT_message (GMT, "\t-I Gives name of intensity file and selects illumination\n");
+	GMT_message (GMT, "\t-I Gives name of intensity file and selects illumination.\n");
 	GMT_message (GMT, "\t-L Sets boundary conditions when resampling the grid.  <flags> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions\n");
-	GMT_message (GMT, "\t   or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y\n");
+	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_message (GMT, "\t   If no <flags> are set, use bilinear rather than bicubic [Default] resampling.\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
@@ -364,12 +363,12 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Sets pen attributes for various features in form <type><pen>");
-	GMT_message (GMT, "\t   <type> can be c for contours, m for mesh, and f for facade\n");
+	GMT_message (GMT, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = GMT->current.setting.map_default_pen;
 	GMT_message (GMT, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t     Requires -Qm or -Qsm to take effect.\n");
 	P.width *= 3.0;
-	GMT_message (GMT, "\t   c draw scontours on top of surface or mesh.  [Default is no contours]\n");
+	GMT_message (GMT, "\t   c draw scontours on top of surface or mesh [Default is no contours].\n");
 	GMT_message (GMT, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t     Requires -N to take effect.\n");

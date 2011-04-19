@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id: grdvector_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,30 +114,30 @@ GMT_LONG GMT_grdvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tcompx & compy are grid files with the 2 vector components.\n");
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Means grids have polar (r, theta) components [Default is Cartesian]\n");
+	GMT_message (GMT, "\t-A Means grids have polar (r, theta) components [Default is Cartesian].\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Use cpt-file to assign colors based on vector length\n");
-	GMT_message (GMT, "\t-E Center vectors on grid nodes [Default draws from grid node]\n");
+	GMT_message (GMT, "\t-C Use cpt-file to assign colors based on vector length.\n");
+	GMT_message (GMT, "\t-E Center vectors on grid nodes [Default draws from grid node].\n");
 	GMT_fill_syntax (GMT, 'G', "Select vector fill [Default is outlines only].");
-	GMT_message (GMT, "\t-I Plot only those nodes that are <dx/dy> apart [Default is all nodes]\n");
+	GMT_message (GMT, "\t-I Plot only those nodes that are <dx/dy> apart [Default is all nodes].\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip]\n");
+	GMT_message (GMT, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Select vector plot [Default is stick-plot].\n");
 	GMT_message (GMT, "\t   Optionally, specify vector parameters\n");
 	GMT_message (GMT, "\t   <params> are vectorwidth/headlength/headwidth [Default is %gp/%gp/%gp].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
 	GMT_message (GMT, "\t   Append n<size>[unit] which will cause vectors shorter than <size> to be\n");
-	GMT_message (GMT, "\t     scaled down\n");
+	GMT_message (GMT, "\t     scaled down.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Sets scale for vector length in data units per %s [1]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_message (GMT, "\t-S Sets scale for vector length in data units per %s [1].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_message (GMT, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
-	GMT_message (GMT, "\t-T Means azimuth should be converted to angles based on map projection\n");
+	GMT_message (GMT, "\t-T Means azimuth should be converted to angles based on map projection.\n");
 	GMT_explain_options (GMT, "UV");
 	GMT_pen_syntax (GMT, 'W', "Sets pen attributes.");
 	GMT_message (GMT, "\t   Default pen attributes [%s].\n", GMT_putpen(GMT, GMT->current.setting.map_default_pen));
 	GMT_explain_options (GMT, "X");
-	GMT_message (GMT, "\t-Z Means the angles provided are azimuths rather than direction\n");
+	GMT_message (GMT, "\t-Z Means the angles provided are azimuths rather than direction.\n");
 	GMT_explain_options (GMT, "cfpt.");
 	
 	return (EXIT_FAILURE);
