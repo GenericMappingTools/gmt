@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_ex_tests.sh,v 1.6 2011-04-18 19:30:27 remko Exp $
+#	$Id: run_ex_tests.sh,v 1.7 2011-04-19 01:36:36 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -10,20 +10,11 @@ echo "--------------------------------------"
 echo "File                            STATUS"
 echo "--------------------------------------"
 
-# Get the file names of all archived images
-
-if [ $# -eq 0 ] ; then
-	origs="../fig/example*.ps ../fig/anim*.ps"
-else
-	origs=$*
-fi
-
 # Now do the comparison and tally the fails in fail_count.d
 
 rm -f fail_count.d
-touch fail_count.d
 
-for o in $origs ; do
+for o in $* ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
 	rms=`compare -density 100 -metric RMSE $f.ps ../fig/$f.ps $f.png 2>&1`
@@ -42,5 +33,4 @@ done
 echo "--------------------------------------"
 wc -l fail_count.d | awk '{printf "GMT Example PS file failures: %d\n", $1}'
 cat fail_count.d
-rm -f fail_count.d
 echo "--------------------------------------"

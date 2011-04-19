@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.958 2011-04-18 19:30:27 remko Exp $
+	$Id: ChangeLog,v 1.959 2011-04-19 01:37:08 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-18	remko
@@ -7,6 +7,7 @@
 	* doc/fig/*.ps:		Copied all output of scripts and examples here for use with
 				documentation. Remember to update this after changing any scripts
 				or examples.
+	* doc/{scripts,examples}/Makefile:	Now run "make failed" to just run failed tests.
 
 2011-04-17      pwessel
 	* minmax_func.c:	Did not properly reset n records after a report.
