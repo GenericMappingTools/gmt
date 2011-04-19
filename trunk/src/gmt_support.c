@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.484 2011-04-19 02:01:38 guru Exp $
+ *	$Id: gmt_support.c,v 1.485 2011-04-19 03:54:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,7 +176,6 @@ GMT_LONG GMT_get_label_parameters (struct GMT_CTRL *C, GMT_LONG side, double lin
 GMT_LONG GMT_gnomonic_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, double x, double y);
 GMT_LONG GMT_gethsv (struct GMT_CTRL *C, char *line, double hsv[]);
 void GMT_cmyk_to_hsv (struct GMT_CTRL *C, double hsv[], double cmyk[]);
-GMT_LONG GMT_is_fancy_boundary (struct GMT_CTRL *C);
 GMT_LONG GMT_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double *lat);
 void GMT_contlabel_angle (struct GMT_CTRL *C, double x[], double y[], GMT_LONG start, GMT_LONG stop, double cangle, GMT_LONG n, struct GMT_LABEL *L, struct GMT_CONTOUR *G);
 int GMT_comp_double_asc (const void *p_1, const void *p_2);
@@ -8149,20 +8148,6 @@ void GMT_get_primary_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT_LON
 	}
 }
 
-GMT_LONG GMT_skip_second_annot (struct GMT_CTRL *C, GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary)
-{
-	GMT_LONG i, found;
-	double small;
-
-	if (primary == secondary) return (FALSE);	/* Not set, no need to skip */
-	if (secondary != item) return (FALSE);		/* Not working on secondary annotation */
-	if (!x2) return (FALSE);			/* None given */
-
-	small = (x2[1] - x2[0]) * GMT_SMALL;
-	for (i = 0, found = FALSE; !found && i < n; i++) found = (fabs (x2[i] - x) < small);
-	return (found);
-}
-
 GMT_LONG GMT_annot_pos (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos)
 {
 	/* Calculates the location of the next annotation in user units.  This is
@@ -8397,53 +8382,6 @@ double GMT_set_map_label_offsets (struct GMT_CTRL *C, GMT_LONG axis, double val0
 }
 #endif
 
-GMT_LONG GMT_is_fancy_boundary (struct GMT_CTRL *C)
-{
-	switch (C->current.proj.projection) {
-		case GMT_LINEAR:
-			return (GMT_is_geographic (C, GMT_IN));
-			break;
-		case GMT_MERCATOR:
-		case GMT_CYL_EQ:
-		case GMT_CYL_EQDIST:
-		case GMT_CYL_STEREO:
-		case GMT_MILLER:
-			return (TRUE);
-			break;
-		case GMT_ALBERS:
-		case GMT_ECONIC:
-		case GMT_LAMBERT:
-			return (!C->common.R.oblique);
-			break;
-		case GMT_STEREO:
-		case GMT_ORTHO:
-		case GMT_GENPER:
-		case GMT_LAMB_AZ_EQ:
-		case GMT_AZ_EQDIST:
-		case GMT_GNOMONIC:
-		case GMT_VANGRINTEN:
-			return (C->current.proj.polar);
-			break;
-		case GMT_POLAR:
-		case GMT_OBLIQUE_MERC:
-		case GMT_HAMMER:
-		case GMT_MOLLWEIDE:
-		case GMT_SINUSOIDAL:
-		case GMT_TM:
-		case GMT_UTM:
-		case GMT_CASSINI:
-		case GMT_WINKEL:
-		case GMT_ECKERT4:
-		case GMT_ECKERT6:
-		case GMT_ROBINSON:
-			return (FALSE);
-			break;
-		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error in GMT_is_fancy_boundary - notify developers\n");
-			return (FALSE);
-	}
-}
-
 GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify)
 {
 	GMT_LONG set_angle;
@@ -8574,18 +8512,6 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 	}
 
 	return;
-}
-
-void GMT_label_trim (struct GMT_CTRL *C, char *label, GMT_LONG stage)
-{
-	GMT_LONG i;
-	if (stage) {	/* Must remove leading stuff for 2ndary annotations */
-		for (i = 0; stage && label[i]; i++) if (!isdigit((int)label[i])) stage--;
-		while (label[i]) label[stage++] = label[i++];	/* Chop of beginning */
-		label[stage] = '\0';
-		i = strlen (label) - 1;
-		if (strchr ("WESN", label[i])) label[i] = '\0';
-	}
 }
 
 GMT_LONG GMT_polar_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, double x, double y)
