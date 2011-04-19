@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.157 2011-04-18 18:25:40 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.158 2011-04-19 09:02:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -23,8 +23,7 @@
  * These are the only PUBLIC grd io functions to be used by developers
  *
  * Author:	Paul Wessel
- * Date:	9-SEP-1992
- * Modified:	1-JAN-2010
+ * Date:	1-JAN-2010
  * Version:	5
  * 64-bit Compliant: Yes
  *

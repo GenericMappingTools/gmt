@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.42 2011-04-15 19:00:38 guru Exp $
+ *	$Id: gmt_vector.c,v 1.43 2011-04-19 09:02:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -18,8 +18,8 @@
 
 /*
  * Author:	Walter H.F. Smith
- * Date:	12-JUL-2000
- * Version:	4.1.x
+ * Date:	1-JAN-2010
+ * Version:	5.x
  */
  
 #define GMT_WITH_NO_PS
@@ -526,8 +526,7 @@ GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GM
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 
-	lon = *a_lon;
-	lat = *a_lat;
+	lon = *a_lon;	lat = *a_lat;
 
 	GMT_geo_to_cart (C, lat[0], lon[0], a, TRUE);
 	n_alloc = GMT_malloc2 (C, lon_tmp, lat_tmp, 1, 0, double);

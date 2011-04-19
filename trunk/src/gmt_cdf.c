@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.65 2011-03-21 18:36:46 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.66 2011-04-19 09:02:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,8 +25,7 @@
  * There functions are only called indirectly via the GMT_* grdio functions.
  *
  * Author:	Paul Wessel
- * Date:	9-SEP-1992
- * Modified:	06-DEC-2001
+ * Date:	1-JAN-2010
  * Version:	5
  *
  * Public functions:
@@ -227,9 +226,8 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 */
 	 
 	int  ncid;
-	GMT_LONG err;
 	size_t start[1], edge[1];
-	GMT_LONG first_col, last_col, first_row, last_row;
+	GMT_LONG first_col, last_col, first_row, last_row, err;
 	GMT_LONG i, j, width_in, height_in, i_0_out, inc, off;
 	GMT_LONG ij, kk, width_out, check, *k = NULL;
 	float *tmp = NULL;

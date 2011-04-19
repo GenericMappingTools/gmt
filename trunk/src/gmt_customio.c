@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.110 2011-04-15 21:30:10 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.111 2011-04-19 09:02:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,8 +32,7 @@
  *	3. Provide another text entry in Grdformats.txt
  *
  * Author:	Paul Wessel
- * Date:	9-SEP-1992
- * Modified:	1-JAN-2010
+ * Date:	1-JAN-2010
  * Version:	5
  *
  * Functions include:
@@ -61,16 +60,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
-
-GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h);
-GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h);
-GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header);
-GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header);
-GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header);
-GMT_LONG GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header);
-GMT_LONG GMT_native_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header);
-GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode);
-GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode);
 
 /* Defined in gmt_cdf.c */
 EXTERN_MSC GMT_LONG GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header);
@@ -111,6 +100,111 @@ EXTERN_MSC GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *hea
  *-----------------------------------------------------------*/
 
 #define	RAS_MAGIC	0x59a66a95
+
+GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
+{
+	/* Reads the header of a Sun rasterfile byte by byte
+	   since the format is defined as the byte order on the
+	   PDP-11.
+	 */
+
+	unsigned char byte[4];
+	GMT_LONG i, j, value, in[4];
+
+	for (i = 0; i < 8; i++) {
+
+		if (GMT_fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_READ_FAILED);
+
+		for (j = 0; j < 4; j++) in[j] = (GMT_LONG)byte[j];
+
+		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
+
+		switch (i) {
+			case 0:
+				h->magic = (int)value;
+				break;
+			case 1:
+				h->width = (int)value;
+				break;
+			case 2:
+				h->height = (int)value;
+				break;
+			case 3:
+				h->depth = (int)value;
+				break;
+			case 4:
+				h->length = (int)value;
+				break;
+			case 5:
+				h->type = (int)value;
+				break;
+			case 6:
+				h->maptype = (int)value;
+				break;
+			case 7:
+				h->maplength = (int)value;
+				break;
+		}
+	}
+
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
+{
+	/* Writes the header of a Sun rasterfile byte by byte
+	   since the format is defined as the byte order on the
+	   PDP-11.
+	 */
+
+	unsigned char byte[4];
+	GMT_LONG i, value;
+
+	if (h->type == RT_OLD && h->length == 0) {
+		h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
+		h->type = RT_STANDARD;
+	}
+
+	for (i = 0; i < 8; i++) {
+
+		switch (i) {
+			case 0:
+				value = h->magic;
+				break;
+			case 1:
+				value = h->width;
+				break;
+			case 2:
+				value = h->height;
+				break;
+			case 3:
+				value = h->depth;
+				break;
+			case 4:
+				value = h->length;
+				break;
+			case 5:
+				value = h->type;
+				break;
+			case 6:
+				value = h->maptype;
+				break;
+			default:
+				value = h->maplength;
+				break;
+		}
+		byte[0] = (unsigned char)((value >> 24) & 0xFF);
+		byte[1] = (unsigned char)((value >> 16) & 0xFF);
+		byte[2] = (unsigned char)((value >> 8) & 0xFF);
+		byte[3] = (unsigned char)(value & 0xFF);
+
+		if (GMT_fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_WRITE_FAILED);
+	}
+
+	return (GMT_NOERROR);
+}
 
 GMT_LONG GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Determine if file is a Sun rasterfile */
@@ -351,111 +445,6 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 }
 
-GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
-{
-	/* Reads the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
-	 */
-
-	unsigned char byte[4];
-	GMT_LONG i, j, value, in[4];
-
-	for (i = 0; i < 8; i++) {
-
-		if (GMT_fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_READ_FAILED);
-
-		for (j = 0; j < 4; j++) in[j] = (GMT_LONG)byte[j];
-
-		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
-
-		switch (i) {
-			case 0:
-				h->magic = (int)value;
-				break;
-			case 1:
-				h->width = (int)value;
-				break;
-			case 2:
-				h->height = (int)value;
-				break;
-			case 3:
-				h->depth = (int)value;
-				break;
-			case 4:
-				h->length = (int)value;
-				break;
-			case 5:
-				h->type = (int)value;
-				break;
-			case 6:
-				h->maptype = (int)value;
-				break;
-			case 7:
-				h->maplength = (int)value;
-				break;
-		}
-	}
-
-	if (h->type == RT_OLD && h->length == 0) h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
-
-	return (GMT_NOERROR);
-}
-
-GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
-{
-	/* Writes the header of a Sun rasterfile byte by byte
-	   since the format is defined as the byte order on the
-	   PDP-11.
-	 */
-
-	unsigned char byte[4];
-	GMT_LONG i, value;
-
-	if (h->type == RT_OLD && h->length == 0) {
-		h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
-		h->type = RT_STANDARD;
-	}
-
-	for (i = 0; i < 8; i++) {
-
-		switch (i) {
-			case 0:
-				value = h->magic;
-				break;
-			case 1:
-				value = h->width;
-				break;
-			case 2:
-				value = h->height;
-				break;
-			case 3:
-				value = h->depth;
-				break;
-			case 4:
-				value = h->length;
-				break;
-			case 5:
-				value = h->type;
-				break;
-			case 6:
-				value = h->maptype;
-				break;
-			default:
-				value = h->maplength;
-				break;
-		}
-		byte[0] = (unsigned char)((value >> 24) & 0xFF);
-		byte[1] = (unsigned char)((value >> 16) & 0xFF);
-		byte[2] = (unsigned char)((value >> 8) & 0xFF);
-		byte[3] = (unsigned char)(value & 0xFF);
-
-		if (GMT_fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_WRITE_FAILED);
-	}
-
-	return (GMT_NOERROR);
-}
-
 /*-----------------------------------------------------------
  * Format # :	5
  * Type :	Native binary (bit) C file
@@ -473,6 +462,39 @@ GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
  *		We use 4-byte integers to store 32 bits at the time
  * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
+
+GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
+{
+	GMT_LONG err = GMT_NOERROR;
+	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
+	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
+                err = GMT_GRDIO_READ_FAILED;
+	return (err);
+}
+
+GMT_LONG GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+{
+	/* Read GRD header structure from native binary file.  This is used by
+	 * all the native binary formats in GMT */
+
+	GMT_LONG err;
+	FILE *fp = NULL;
+
+	if (!strcmp (header->name, "=")) {	/* Read from pipe */
+#ifdef SET_IO_MODE
+		GMT_setmode (C, GMT_IN);
+#endif
+		fp = C->session.std[GMT_IN];
+	}
+	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
+
+	GMT_err_trap (GMT_native_read_grd_header (fp, header));
+
+	GMT_fclose (C, fp);
+
+	return (GMT_NOERROR);
+}
 
 GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
@@ -522,6 +544,26 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			break;
 	}
 	return (header->type);
+}
+
+GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
+{
+	GMT_LONG err = GMT_NOERROR;
+	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
+
+	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
+                err = GMT_GRDIO_WRITE_FAILED;
+	return (err);
+}
+
+GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
+{
+	GMT_LONG err = GMT_NOERROR;
+	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
+
+	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx)), SEEK_SET))
+                err = GMT_GRDIO_SEEK_FAILED;
+	return (err);
 }
 
 GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
@@ -722,59 +764,6 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
  * GRD_HEADER structure, but skip it when reading or writing the
  * header.
  */
-
-GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
-{
-	GMT_LONG err = GMT_NOERROR;
-	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
-	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
-                err = GMT_GRDIO_READ_FAILED;
-	return (err);
-}
-
-GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
-{
-	GMT_LONG err = GMT_NOERROR;
-	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
-
-	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)header->wesn, sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx), (size_t)1, fp) != 1)
-                err = GMT_GRDIO_WRITE_FAILED;
-	return (err);
-}
-
-GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
-{
-	GMT_LONG err = GMT_NOERROR;
-	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
-
-	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)header->wesn - (long)&header->nx)), SEEK_SET))
-                err = GMT_GRDIO_SEEK_FAILED;
-	return (err);
-}
-
-GMT_LONG GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
-	/* Read GRD header structure from native binary file.  This is used by
-	 * all the native binary formats in GMT */
-
-	GMT_LONG err;
-	FILE *fp = NULL;
-
-	if (!strcmp (header->name, "=")) {	/* Read from pipe */
-#ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_IN);
-#endif
-		fp = C->session.std[GMT_IN];
-	}
-	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
-		return (GMT_GRDIO_OPEN_FAILED);
-
-	GMT_err_trap (GMT_native_read_grd_header (fp, header));
-
-	GMT_fclose (C, fp);
-
-	return (GMT_NOERROR);
-}
 
 GMT_LONG GMT_native_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
