@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.5 2011-04-17 23:53:25 guru Exp $
+ *	$Id: redpol_func.c,v 1.6 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1239,8 +1239,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			Return (GMT_DATA_READ_ERROR);
 
 		GMT_boundcond_param_prep (GMT, Gdip->header, &edgeinfo_dip);
-		GMT_bcr_init (GMT, Gdip, BCR_BILINEAR, 1.0, &bcr_dip);		/* Initialize bcr structure: */
-		GMT_boundcond_set (GMT, Gdip, &edgeinfo_dip); 			/* Set boundary conditions */
+		GMT_bcr_init (GMT, Gdip->header, BCR_BILINEAR, 1.0, &bcr_dip);		/* Initialize bcr structure: */
+		GMT_boundcond_grid_set (GMT, Gdip, &edgeinfo_dip); 			/* Set boundary conditions */
 	}
 	if (Ctrl->E.dip_dec_grd) {
 		GMT_boundcond_init (GMT, &edgeinfo_dec);
@@ -1253,8 +1253,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			Return (GMT_DATA_READ_ERROR);
 
 		GMT_boundcond_param_prep (GMT, Gdec->header, &edgeinfo_dec);
-		GMT_bcr_init (GMT, Gdec, BCR_BILINEAR, 1.0, &bcr_dec);		/* Initialize bcr structure: */
-		GMT_boundcond_set (GMT, Gdec, &edgeinfo_dec); 			/* Set boundary conditions */
+		GMT_bcr_init (GMT, Gdec->header, BCR_BILINEAR, 1.0, &bcr_dec);		/* Initialize bcr structure: */
+		GMT_boundcond_grid_set (GMT, Gdec, &edgeinfo_dec); 			/* Set boundary conditions */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);		/* Disables further data input */
 
@@ -1351,15 +1351,15 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			}
 			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {	/* */
 				if (Ctrl->E.dip_grd_only) {		/* Use mag DEC = 0 */
-					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm, &edgeinfo_dip, &bcr_dip) * D2R;
+					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm, &bcr_dip) * D2R;
 					dec_m = 0;
 					tau = -cos(dip_m);
 					mu  =  0;
 					nu  = -sin(dip_m);
 				}
 				else {			/* Get central window mag DEC & DIP from grids */
-					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm, &edgeinfo_dip, &bcr_dip) * D2R;
-					dec_m = GMT_get_bcr_z(GMT, Gdec, slonm, slatm, &edgeinfo_dec, &bcr_dec) * D2R;
+					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm, &bcr_dip) * D2R;
+					dec_m = GMT_get_bcr_z(GMT, Gdec, slonm, slatm, &bcr_dec) * D2R;
 					tau = -cos(dip_m) * cos(dec_m);
 					mu  =  cos(dip_m) * sin(dec_m);
 					nu  = -sin(dip_m);
@@ -1417,8 +1417,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 						Ctrl->C.dec = out_igrf[5] * D2R;
 						Ctrl->C.dip = out_igrf[6] * D2R;
 						if (Ctrl->E.dip_grd_only) {
-							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[row], ftlat[row], &edgeinfo_dip, 
-									      &bcr_dip) * D2R;
+							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[row], ftlat[row], &bcr_dip) * D2R;
 							dec_m = 0;
 							tau1 = -cos(dip_m);
 							mu1  =  0;
@@ -1426,10 +1425,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 							dt = tau1 - tau;	dm = mu1 - mu;		dn = nu1 - nu;
 						}
 						else if (Ctrl->E.dip_dec_grd) {
-							dec_m = GMT_get_bcr_z(GMT, Gdec, ftlon[col], ftlat[row], &edgeinfo_dec, 
-									      &bcr_dec) * D2R;
-							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[col], ftlat[row], &edgeinfo_dip, 
-									      &bcr_dip) * D2R;
+							dec_m = GMT_get_bcr_z(GMT, Gdec, ftlon[col], ftlat[row], &bcr_dec) * D2R;
+							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[col], ftlat[row], &bcr_dip) * D2R;
 							tau1 = -cos(dip_m) * cos(dec_m);
 							mu1  =  cos(dip_m) * sin(dec_m);
 							nu1  = -sin(dip_m);

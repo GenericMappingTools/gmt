@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.7 2011-04-17 23:53:25 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.8 2011-04-19 02:01:38 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2920,10 +2920,10 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 
 	/* Initialize bcr structure with 2 row/col boundaries */
 
-	GMT_bcr_init (GMT, info->G, interpolant, threshold, &info->bcr);
+	GMT_bcr_init (GMT, info->G->header, interpolant, threshold, &info->bcr);
 
 	/* Set boundary conditions  */
-	GMT_boundcond_set (GMT, info->G, &info->edgeinfo);
+	GMT_boundcond_grid_set (GMT, info->G, &info->edgeinfo);
 }
 
 /* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
@@ -2963,7 +2963,7 @@ int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD7
 		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
 
 		/* Get the value from the grid - it could be NaN */
-		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y, &info->edgeinfo, &info->bcr);
+		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y, &info->bcr);
 		pts++;
 	}
 	return ((int)pts);

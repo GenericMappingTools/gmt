@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.6 2011-04-17 23:53:25 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.7 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,7 +325,7 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 		if (x > GC[g].G->header->wesn[XHI]) continue;
 
 		n_in++;	/* This point is inside the current grid's domain */
-		value[g] = GMT_get_bcr_z (GMT, GC[g].G, x, y, &GC[g].edgeinfo, &GC[g].bcr);
+		value[g] = GMT_get_bcr_z (GMT, GC[g].G, x, y, &GC[g].bcr);
 
 		if (!GMT_is_dnan (value[g])) n_set++;	/* Count value results */
 	}
@@ -408,11 +408,11 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 		/* Initialize bcr structure */
 
-		GMT_bcr_init (GMT, GC[g].G, Ctrl->Q.interpolant, Ctrl->Q.threshold, &GC[g].bcr);
+		GMT_bcr_init (GMT, GC[g].G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &GC[g].bcr);
 
 		/* Set boundary conditions  */
 
-		GMT_boundcond_set (GMT, GC[g].G, &GC[g].edgeinfo);
+		GMT_boundcond_grid_set (GMT, GC[g].G, &GC[g].edgeinfo);
 
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */

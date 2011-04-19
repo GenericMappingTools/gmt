@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.6 2011-04-17 23:53:25 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.7 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -389,7 +389,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* set boundary conditions */
 
-	GMT_boundcond_set (GMT, Surf, &edgeinfo);
+	GMT_boundcond_grid_set (GMT, Surf, &edgeinfo);
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);

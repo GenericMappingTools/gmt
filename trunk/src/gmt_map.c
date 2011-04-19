@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.274 2011-04-17 23:53:25 guru Exp $
+ *	$Id: gmt_map.c,v 1.275 2011-04-19 02:01:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6030,7 +6030,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
 	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
 	 *
-	 * We assume the calling program has initialized the O->data array to any default empty value (NaN etc).
+	 * We initialize the O->data array to NaN.
 	 *
 	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
 	 * made "interpolant" an integer (was GMT_LONG bilinear).
@@ -6056,11 +6056,11 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
 	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
 	   shaped hole the size of one cell. */
-	GMT_bcr_init (C, I, interpolant, threshold, &bcr);
+	GMT_bcr_init (C, I->header, interpolant, threshold, &bcr);
 
 	/* Set boundary conditions  */
 
-	GMT_boundcond_set (C, I, edgeinfo);
+	GMT_boundcond_grid_set (C, I, edgeinfo);
 
 	x_in  = GMT_memory (C, NULL, I->header->nx, double);
 	y_in  = GMT_memory (C, NULL, I->header->ny, double);
@@ -6159,7 +6159,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			z_int = GMT_get_bcr_z (C, I, x_proj, y_proj, edgeinfo, &bcr);
+			z_int = GMT_get_bcr_z (C, I, x_proj, y_proj, &bcr);
 
 			if (!antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (float)z_int;
@@ -6168,6 +6168,179 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 			else {						/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (float) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
+			}
+		}
+	}
+
+	/* Time to clean up our mess */
+
+	GMT_free (C, x_in);
+	GMT_free (C, y_in);
+	GMT_free (C, x_out);
+	GMT_free (C, y_out);
+	if (GMT_IS_RECT_GRATICULE(C)) {
+		GMT_free (C, x_in_proj);
+		GMT_free (C, y_in_proj);
+		GMT_free (C, x_out_proj);
+		GMT_free (C, y_out_proj);
+	}
+	if (antialias) GMT_free (C, nz);
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG antialias, GMT_LONG interpolant, double threshold, GMT_LONG inverse)
+{
+	/* Generalized image projection that deals with both interpolation and averaging effects.
+	 * It requires the input image to have 2 boundary rows/cols so that the bcr
+	 * functions can be used.  The I struct represents the input image which is either in original
+	 * (i.e., lon/lat) coordinates or projected x/y (if inverse = TRUE).
+	 *
+	 * I:	Image and header with input image on a padded image with 2 extra rows/columns
+	 * O:	Image and header for output image, no padding needed (but allowed)
+	 * edgeinfo:	Structure with information about boundary conditions on input image
+	 * antialias:	TRUE if we need to do the antialiasing STEP 1 (below)
+	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
+	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
+	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat image
+	 *
+	 * We initialize the O->data array to the NaN color.
+	 *
+	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
+	 * made "interpolant" an integer (was GMT_LONG bilinear).
+	 */
+
+	GMT_LONG col_in, row_in, ij_in, col_out, row_out, ij_out, b, nb = I->n_bands;
+	short int *nz = NULL;
+	double x_proj, y_proj, inv_nz;
+	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
+	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
+	unsigned char z_int[4];
+	struct GMT_BCR bcr;
+
+	/* Only input image MUST have at least 2 rows/cols padding */
+	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_img_project: Input image does not have sufficient (2) padding\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+
+	GMT_boundcond_param_prep (C, I->header, edgeinfo);	/* Init the BC parameters */
+
+	/* Initialize bcr structure:
+	   Threshold changed 10 Sep 07 by RS from 1.0 to <threshold> to allow interpolation closer to
+	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
+	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
+	   shaped hole the size of one cell. */
+	GMT_bcr_init (C, I->header, interpolant, threshold, &bcr);
+
+	/* Set boundary conditions  */
+
+	GMT_boundcond_image_set (C, I, edgeinfo);
+
+	x_in  = GMT_memory (C, NULL, I->header->nx, double);
+	y_in  = GMT_memory (C, NULL, I->header->ny, double);
+	x_out = GMT_memory (C, NULL, O->header->nx, double);
+	y_out = GMT_memory (C, NULL, O->header->ny, double);
+
+	/* Precalculate grid coordinates */
+
+	GMT_row_loop  (I, row_in) y_in[row_in] = GMT_grd_row_to_y (row_in, I->header);
+	GMT_col_loop2 (I, col_in) x_in[col_in] = GMT_grd_col_to_x (col_in, I->header);
+	GMT_row_loop  (O, row_out) y_out[row_out] = GMT_grd_row_to_y (row_out, O->header);
+	GMT_col_loop2 (O, col_out) x_out[col_out] = GMT_grd_col_to_x (col_out, O->header);
+
+	if (GMT_IS_RECT_GRATICULE (C)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
+		x_in_proj  = GMT_memory (C, NULL, I->header->nx, double);
+		y_in_proj  = GMT_memory (C, NULL, I->header->ny, double);
+		x_out_proj = GMT_memory (C, NULL, O->header->nx, double);
+		y_out_proj = GMT_memory (C, NULL, O->header->ny, double);
+		if (inverse) {
+			GMT_row_loop  (I, row_in)  GMT_xy_to_geo (C, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
+			GMT_col_loop2 (I, col_in)  GMT_xy_to_geo (C, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
+			GMT_row_loop  (O, row_out) GMT_geo_to_xy (C, I->header->wesn[YLO], y_out[row_out], &x_proj, &y_out_proj[row_out]);
+			GMT_col_loop2 (O, col_out) GMT_geo_to_xy (C, x_out[col_out], I->header->wesn[YLO], &x_out_proj[col_out], &y_proj);
+		}
+		else {
+			GMT_row_loop  (I, row_in) GMT_geo_to_xy (C, I->header->wesn[XLO], y_in[row_in], &x_proj, &y_in_proj[row_in]);
+			GMT_col_loop2 (I, col_in) GMT_geo_to_xy (C, x_in[col_in], I->header->wesn[YLO], &x_in_proj[col_in], &y_proj);
+			GMT_row_loop (O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
+			GMT_col_loop2 (O, col_out) {	/* Here we must also align longitudes properly */
+				GMT_xy_to_geo (C, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
+				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[col_out])) {
+					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_SMALL) x_out_proj[col_out] += 360.0;
+					while (x_out_proj[col_out] > I->header->wesn[XHI] + GMT_SMALL) x_out_proj[col_out] -= 360.0;
+				}
+			}
+		}
+	}
+
+	GMT_grd_loop (O, row_out, col_out, ij_out) for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = C->current.setting.color_patch[GMT_NAN][b];	/* So that nodes outside will have the NaN color */
+
+	/* PART 1: Project input image points and do a blockmean operation */
+
+	if (antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+		nz = GMT_memory (C, NULL, O->header->size, short int);
+		GMT_row_loop (I, row_in) {	/* Loop over the input grid row coordinates */
+			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
+			GMT_col_loop (I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
+				if (GMT_IS_RECT_GRATICULE (C))
+					x_proj = x_in_proj[col_in];
+				else if (inverse)
+					GMT_xy_to_geo (C, &x_proj, &y_proj, x_in[col_in], y_in[row_in]);
+				else {
+					if (C->current.map.outside (C, x_in[col_in], y_in[row_in])) continue;	/* Quite possible we are beyond the horizon */
+					GMT_geo_to_xy (C, x_in[col_in], y_in[row_in], &x_proj, &y_proj);
+				}
+
+				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
+
+				row_out = GMT_grd_y_to_row (y_proj, O->header);
+				if (row_out < 0 || row_out >= O->header->ny) continue;	/* Outside our grid region */
+				col_out = GMT_grd_x_to_col (x_proj, O->header);
+				if (col_out < 0 || col_out >= O->header->nx) continue;	/* Outside our grid region */
+
+				/* OK, this projected point falls inside the projected grid's rectangular domain */
+
+				ij_out = GMT_IJP (O->header, row_out, col_out);	/* The output node */
+				if (nz[ij_out] == 0) for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = 0;	/* First time, override the initial value */
+				if (nz[ij_out] < SHRT_MAX) {	/* Avoid overflow */
+					for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = (unsigned char) irint (((GMT_LONG)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_out+b])/(nz[ij_out] + 1.0));	/* Update the mean pix values inside this rect... */
+					nz[ij_out]++;		/* ..and how many points there were */
+				}
+			}
+		}
+	}
+
+	/* PART 2: Create weighted average of interpolated and observed points */
+
+	GMT_row_loop (O, row_out) {	/* Loop over the output grid row coordinates */
+		if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_out_proj[row_out];
+		GMT_col_loop (O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
+			if (GMT_IS_RECT_GRATICULE (C))
+				x_proj = x_out_proj[col_out];
+			else if (inverse)
+				GMT_geo_to_xy (C, x_out[col_out], y_out[row_out], &x_proj, &y_proj);
+			else {
+				GMT_xy_to_geo (C, &x_proj, &y_proj, x_out[col_out], y_out[row_out]);
+				if (C->current.proj.projection == GMT_GENPER && C->current.proj.g_outside) continue;	/* We are beyond the horizon */
+
+				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
+				   errors in the grid limits. */
+				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_proj)) {
+					while (x_proj < I->header->wesn[XLO] - GMT_SMALL) x_proj += 360.0;
+					while (x_proj > I->header->wesn[XHI] + GMT_SMALL) x_proj -= 360.0;
+				}
+			}
+
+			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
+
+			GMT_get_bcr_img (C, I, x_proj, y_proj, &bcr, z_int);
+
+			if (!antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
+				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = z_int[b];
+			else {						/* Weighted average between blockmean'ed and interpolated values */
+				inv_nz = 1.0 / nz[ij_out];
+				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = (unsigned char) irint ((O->data[nb*ij_out+b] + z_int[b] * inv_nz) / (nz[ij_out] + inv_nz));
 			}
 		}
 	}

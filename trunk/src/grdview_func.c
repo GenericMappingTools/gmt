@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.13 2011-04-17 23:53:25 guru Exp $
+ *	$Id: grdview_func.c,v 1.14 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -784,11 +784,11 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	/* Initialize bcr stuff */
-	GMT_bcr_init (GMT, Topo, Ctrl->L.interpolant, Ctrl->L.threshold, &t_bcr);
+	GMT_bcr_init (GMT, Topo->header, Ctrl->L.interpolant, Ctrl->L.threshold, &t_bcr);
 
 	/* Set boundary conditions  */
 
-	GMT_boundcond_set (GMT, Topo, &edgeinfo);
+	GMT_boundcond_grid_set (GMT, Topo, &edgeinfo);
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
@@ -942,7 +942,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (drape_resample) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Resampling illumination grid to drape grid resolution\n");
-			GMT_bcr_init (GMT, Intens, Ctrl->L.interpolant, Ctrl->L.threshold, &i_bcr);
+			GMT_bcr_init (GMT, Intens->header, Ctrl->L.interpolant, Ctrl->L.threshold, &i_bcr);
 			ix = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
@@ -952,7 +952,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (row, Z->header);
 			bin = 0;
 			GMT_grd_loop (Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
-				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row], &edgeinfo, &t_bcr);
+				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row], &t_bcr);
 				if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
@@ -961,7 +961,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					ix[bin] = MAX(0, MIN((GMT_LONG)floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi), last_i));
 					iy[bin] = MAX(0, MIN((GMT_LONG)floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi), last_j));
 				}
-				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row], &edgeinfo, &i_bcr);
+				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row], &i_bcr);
 				bin++;
 			}
 			GMT_free (GMT, x_drape);
@@ -1183,7 +1183,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (binij[bin].first_cont == NULL) continue;
 					for (this_cont = binij[bin].first_cont->next_cont; this_cont; this_cont = this_cont->next_cont) {
 						for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
-							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &edgeinfo, &t_bcr) : this_cont->value;
+							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &t_bcr) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
 							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
 							k++;
@@ -1309,7 +1309,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
 									xcont[k] = this_point->x;
 									ycont[k] = this_point->y;
-									zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &edgeinfo, &t_bcr) : this_cont->value;
+									zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &t_bcr) : this_cont->value;
 									if (GMT_is_dnan (zcont[k])) continue;
 									vcont[k] = this_cont->value;
 									k++;
@@ -1403,7 +1403,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
 								xcont[k] = this_point->x;
 								ycont[k] = this_point->y;
-								zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &edgeinfo, &t_bcr) : this_cont->value;
+								zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &t_bcr) : this_cont->value;
 								if (GMT_is_dnan (zcont[k])) continue;
 								vcont[k] = this_cont->value;
 								k++;
@@ -1479,7 +1479,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					pen_set = FALSE;
 					for (this_cont = start_cont; Ctrl->W.contour && this_cont; this_cont = this_cont->next_cont) {
 						for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
-							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &edgeinfo, &t_bcr) : this_cont->value;
+							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &t_bcr) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
 
 							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);

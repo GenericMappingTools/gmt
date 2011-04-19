@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.8 2011-04-18 12:41:29 remko Exp $
+ *	$Id: grdsample_func.c,v 1.9 2011-04-19 02:01:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -295,11 +295,11 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 	/* Initialize bcr structure */
 
-	GMT_bcr_init (GMT, Gin, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+	GMT_bcr_init (GMT, Gin->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
 
 	/* Set boundary conditions  */
 
-	GMT_boundcond_set (GMT, Gin, &edgeinfo);
+	GMT_boundcond_grid_set (GMT, Gin, &edgeinfo);
 
 	/* Precalculate longitudes */
 
@@ -324,7 +324,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			lat -= Gin->header->inc[GMT_Y] * edgeinfo.nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * edgeinfo.nyp;
-		GMT_col_loop (Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat, &edgeinfo, &bcr);
+		GMT_col_loop (Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat, &bcr);
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
