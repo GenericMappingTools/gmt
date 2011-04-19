@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.41 2011-03-15 02:06:31 guru Exp $
+#	$Id: GMT_usage_map.sh,v 1.42 2011-04-19 17:35:07 guru Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -23,11 +23,11 @@
 # the crontab entries on macnut right now:
 #
 # Run 1 min past midnight, every day [Creates updated hit map for GMT main page]
-# 1 0 * * * /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh > $HOME/macnut_cron1.log 2>&1
+# 1 0 * * * /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh > $HOME/macnut_cron1.log 2>&1
 # Run 1 am, every night [Makes sure my local GMT tree is up-to-date with the latest changes]
-# 0 1 * * *       /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/guru/nightly_gmt_cvsupdate.sh > $HOME/cron.log 2>&1
+# 0 1 * * *       /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT/guru/nightly_gmt_cvsupdate.sh > $HOME/cron.log 2>&1
 # Run 2 am, every day [Place the latest ChangeLog file on the SOEST web server]
-# 0 2 * * *	scp /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/ChangeLog imina:/export/imina2/httpd/htdocs/gmt/gmt >> $HOME/cron.log 2>&1
+# 0 2 * * *	scp /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT/ChangeLog imina:/export/imina2/httpd/htdocs/gmt/gmt >> $HOME/cron.log 2>&1
 
 #
 # The first cmd will scp the file /tmp/gmtregistrations from the SOEST web server and
@@ -46,7 +46,7 @@
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
 	. /sw/bin/init.sh
 	GS_LIB=/sw/share/ghostscript/8.61/lib
-	GMTHOME=/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
+	GMTHOME=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT
 	PATH=$GMTHOME/bin:$PATH
 	export PATH
 	export GS_LIB
