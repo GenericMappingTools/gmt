@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.19 2011-04-19 02:01:38 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.20 2011-04-20 03:47:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -444,6 +444,9 @@ EXTERN_MSC void GMT_normalize2v (struct GMT_CTRL *C, double *a);
 EXTERN_MSC GMT_LONG GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots);
 EXTERN_MSC void GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, GMT_LONG n, GMT_LONG nstore, double test, GMT_LONG *ierror, GMT_LONG itriag);
+EXTERN_MSC GMT_LONG GMT_gaussjordan (struct GMT_CTRL *C, double *a, GMT_LONG n, GMT_LONG ndim, double *b, GMT_LONG m, GMT_LONG mdim);
+EXTERN_MSC GMT_LONG GMT_svdcmp (struct GMT_CTRL *C, double *a, GMT_LONG m, GMT_LONG n, double *w, double *v);
+EXTERN_MSC GMT_LONG GMT_solve_svd (struct GMT_CTRL *C, double *u, GMT_LONG m, GMT_LONG n, double *v, double *w, double *b, GMT_LONG k, double *x, double cutoff);
 EXTERN_MSC void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, GMT_LONG degrees);
 EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, GMT_LONG degrees);
 

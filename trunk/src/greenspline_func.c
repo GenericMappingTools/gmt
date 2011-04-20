@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.7 2011-04-19 19:26:21 guru Exp $
+ *	$Id: greenspline_func.c,v 1.8 2011-04-20 03:47:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -123,8 +123,6 @@ struct GREENSPLINE_CTRL {
 #endif
 
 #define N_X 	100001
-
-typedef double REAL;	/* Change this to float and recompile if you only want single precision calculations */
 
 struct ZGRID {
 	GMT_LONG nz;
@@ -887,409 +885,6 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
 
 /* GENERAL NUMERICAL FUNCTIONS */
 
-/* Modified from similar function in Numerical Recipes */
-
-GMT_LONG gaussj (struct GMT_CTRL *GMT, REAL *a, GMT_LONG n, GMT_LONG ndim, REAL *b, GMT_LONG m, GMT_LONG mdim)
-{
-	GMT_LONG i, j, k, l, ll, *ipiv = NULL, *indxc = NULL, *indxr = NULL, irow = 0, icol = 0;
-	REAL big, dum, pivinv;
-	
-	ipiv  = GMT_memory (GMT, NULL, n, GMT_LONG);
-	indxc = GMT_memory (GMT, NULL, n, GMT_LONG);
-	indxr = GMT_memory (GMT, NULL, n, GMT_LONG);
-	
-	for (i = 0; i < n; i++) {
-		big = 0.0;
-		for (j = 0; j < n; j++) {
-			if (ipiv[j] != 1) {
-				for (k = 0; k < n; k++) {
-					if (ipiv[k] == 0) {
-						if ((dum = fabs (a[j*ndim+k])) >= big) {
-							big = dum;
-							irow = j;
-							icol = k;
-						}
-					}
-					else if (ipiv[k] > 1) {
-						GMT_message (GMT, "gaussj: Singular matrix!\n");
-						GMT_free (GMT, ipiv);
-						GMT_free (GMT, indxc);
-						GMT_free (GMT, indxr);
-						return (1);
-					}
-				}
-			}
-		}
-		ipiv[icol]++;
-		
-		if (irow != icol) {
-			for (l = 0; l < n; l++) {
-				dum = a[irow*ndim+l];
-				a[irow*ndim+l] = a[icol*ndim+l];
-				a[icol*ndim+l] = dum;
-			}
-			for (l = 0; l < m; l++) {
-				dum = b[irow*mdim+l];
-				b[irow*mdim+l] = b[icol*mdim+l];
-				b[icol*mdim+l] = dum;
-			}
-		}
-		
-		indxr[i] = irow;
-		indxc[i] = icol;
-		if (a[icol*ndim+icol] == 0.0) {
-			GMT_message (GMT, "gaussj: Singular matrix!\n");
-			GMT_free (GMT, ipiv);
-			GMT_free (GMT, indxc);
-			GMT_free (GMT, indxr);
-			return (1);
-		}
-		pivinv = 1.0 / a[icol*ndim+icol];
-		a[icol*ndim+icol] = 1.0;
-		for (l = 0; l < n; l++) a[icol*ndim+l] *= pivinv;
-		for (l = 0; l < m; l++)  b[icol*mdim+l] *= pivinv;
-		for (ll = 0; ll < n; ll++) {
-			if (ll != icol) {
-				dum = a[ll*ndim+icol];
-				a[ll*ndim+icol] = 0.0;
-				for (l = 0; l < n; l++) a[ll*ndim+l] -= a[icol*ndim+l] * dum;
-				for (l = 0; l < m; l++) b[ll*mdim+l] -= b[icol*mdim+l] * dum;
-			}
-		}
-	}
-	for (l = n-1; l >= 0; l--) {
-		if (indxr[l] != indxc[l]) {
-			for (k = 0; k < n; k++) {
-				dum = a[k*ndim+indxr[l]];
-				a[k*ndim+indxr[l]] = a[k*ndim+indxc[l]];
-				a[k*ndim+indxc[l]] = dum;
-			}
-		}
-	}
-	
-	GMT_free (GMT, ipiv);
-	GMT_free (GMT, indxc);
-	GMT_free (GMT, indxr);
-	
-	return (0);
-}
-
-/* Given a matrix a[0..m-1][0...n-1], this routine computes its singular
-	value decomposition, A=UWVt.  The matrix U replaces a on output.
-	The diagonal matrix of singular values W is output as a vector
-	w[0...n-1].  The matrix V (Not V transpose) is output as
-	v[0...n-1][0....n-1].  m must be greater than or equal to n; if it is
-	smaller, then a should be filled up to square with zero rows.
-	
-	Modified from Numerical Recipes -> page 68.
-*/
-
-#define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
-
-GMT_LONG svdcmp (struct GMT_CTRL *GMT, REAL *a, GMT_LONG m, GMT_LONG n, REAL *w, REAL *v)
-{
-	/* void svdcmp(REAL *a,int m,int n,REAL *w,REAL *v) */
-	
-	GMT_LONG flag,i,its,j,jj,k,l=0,nm = 0;
-	REAL c,f,h,s,x,y,z;
-	REAL anorm=0.0,tnorm, g=0.0,scale=0.0;
-	REAL *rv1 = NULL;
-	
-	if (m < n) {
-		GMT_message (GMT, "Error in SVCMP: m < n augment A with additional rows\n");
-		return (EXIT_FAILURE);
-	}
-	
-	/* allocate work space */
-		
-	rv1=(REAL *)calloc(n,sizeof(REAL));
-	if (rv1 == NULL) {
-		GMT_message (GMT, "Error in SVCMP: Can't allocate work space\n");
-		return (EXIT_FAILURE);
-	}
-	
-	/* do householder reduction to bidiagonal form */
-		
-	for (i=0;i<n;i++) {
-		l=i+1;
-		rv1[i]=scale*g;
-		g=s=scale=0.0;
-		if (i < m) {
-			for (k=i;k<m;k++) scale += fabs (a[k*n+i]);		/* a[k][i] */
-			if (scale) {
-				for (k=i;k<m;k++) {
-					a[k*n+i] /= scale;	/* a[k][i] */
-					s += a[k*n+i]*a[k*n+i];	/* a[k][i] */
-				}
-				f=a[i*n+i];	/* a[i][i] */
-				g= -1.0*SIGN(sqrt(s),f);
-				h=f*g-s;
-				a[i*n+i]=f-g;	/* a[i][i] */
-				if (i != n-1) {
-					for (j=l;j<n;j++) {
-						for (s=0.0,k=i;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
-						f=s/h;
-						for (k=i;k<m;k++) a[k*n+j] += f*a[k*n+i];	/* a[k][j] a[k][i] */
-					}
-				}
-				for (k=i;k<m;k++) a[k*n+i] *= scale;	/* a[k][i] */
-			}
-		}
-		w[i]=scale*g;
-		g=s=scale=0.0;
-		if (i <= m-1 && i != n-1) {
-			for (k=l;k<n;k++) scale += fabs (a[i*n+k]);	/* a[i][k] */
-			if (scale) {
-				for (k=l;k<n;k++) {
-					a[i*n+k] /= scale;	/* a[i][k] */
-					s += a[i*n+k]*a[i*n+k];	/* a[i][k] */
-				}
-				f=a[i*n+l];	/* a[i][l] */
-				g = -1.0*SIGN(sqrt(s),f);
-				h=f*g-s;
-				a[i*n+l]=f-g;	/* a[i][l] */
-				for (k=l;k<n;k++) rv1[k]=a[i*n+k]/h;	/* a[i][k] */
-				if (i != m-1) {
-					for (j=l;j<m;j++) {
-						for (s=0.0,k=l;k<n;k++) s += a[j*n+k]*a[i*n+k];	/*a[j][k] a[i][k] */
-						for (k=l;k<n;k++) a[j*n+k] += s*rv1[k];	/* a[j][k] */
-					}
-				}
-				for (k=l;k<n;k++) a[i*n+k] *= scale;	/* a[i][k] */
-			}
-		}
-		tnorm=fabs (w[i])+fabs (rv1[i]);
-		anorm=MAX(anorm,tnorm);
-	}
-						
-	/* accumulation of right-hand transforms */
-		
-	for (i=n-1;i>=0;i--) {
-		if (i < n-1) {
-			if (g) {
-				for (j=l;j<n;j++) v[j*n+i]=(a[i*n+j]/a[i*n+l])/g;	/* v[j][i] a[i][j] a[i][l] */
-				for (j=l;j<n;j++) {
-					for (s=0.0,k=l;k<n;k++) s += a[i*n+k]*v[k*n+j];	/* a[i][k] v[k][j] */
-					for (k=l;k<n;k++) v[k*n+j] += s*v[k*n+i];	/* v[k][j] v[k][i] */
-				}
-			}
-			for (j=l;j<n;j++) v[i*n+j]=v[j*n+i]=0.0;	/* v[i][j] v[j][i] */
-		}
-		v[i*n+i]=1.0;	/* v[i][i] */
-		g=rv1[i];
-		l=i;
-	}
-	
-	/* accumulation of left-hand transforms */
-		
-	for (i=n-1;i>=0;i--) {
-		l=i+1;
-		g=w[i];
-		if (i < n-1) for (j=l;j<n;j++) a[i*n+j]=0.0;	/* a[i][j] */
-		if (g) {
-			g=1.0/g;
-			if (i != n-1) {
-				for (j=l;j<n;j++) {
-					for (s=0.0,k=l;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
-					f=(s/a[i*n+i])*g;	/* a[i][i] */
-					for (k=i;k<m;k++) a[k*n+j] += f*a[k*n+i];	/* a[k][j] a[k][i] */
-				}
-			}
-			for (j=i;j<m;j++) a[j*n+i] *= g;	/* a[j][i] */
-		}
-		else {
-			for (j=i;j<m;j++) a[j*n+i]=0.0;	/* a[j][i] */
-		}
-		++a[i*n+i];	/* a[i][i] */
-	}
-	
-	/* diagonalization of the bidiagonal form */
-		
-	for (k=n-1;k>=0;k--) {			/* loop over singular values */
-		for (its=1;its<=30;its++) {	/* loop over allowed iterations */
-			flag=1;
-			for (l=k;l>=0;l--) {		/* test for splitting */
-				nm=l-1;
-				if (fabs(rv1[l])+anorm == anorm) {
-					flag=0;
-					break;
-				}
-				if (fabs (w[nm])+anorm == anorm) break;
-			}
-			if (flag) {
-				c=0.0;			/* cancellation of rv1[l] if l > 1 */
-				s=1.0;
-				for (i=l;i<=k;i++) {
-					f=s*rv1[i];
-					if (fabs (f)+anorm != anorm) {
-						g=w[i];
-						h=hypot (f,g);
-						w[i]=h;
-						h=1.0/h;
-						c=g*h;
-						s=(-1.0*f*h);
-						for (j=0;j<m;j++) {
-							y=a[j*n+nm];	/* a[j][nm] */
-							z=a[j*n+i];	/* a[j][i] */
-							a[j*n+nm]=(y*c)+(z*s);	/* a[j][nm] */
-							a[j*n+i]=(z*c)-(y*s);	/* a[j][i] */
-						}
-					}
-				}
-			}
-			z=w[k];
-			if (l == k) {		/* convergence */
-				if (z < 0.0) {	/* singular value is made positive */
-					w[k]= -1.0*z;
-					for (j=0;j<n;j++) v[j*n+k] *= (-1.0);	/* v[j][k] */
-				}
-				break;
-			}
-			if (its == 30) {
-				GMT_message (GMT, "Error in SVDCMP: No convergence in 30 iterations\n");
-				return (EXIT_FAILURE);
-			}
-			x=w[l];		/* shift from bottom 2-by-2 minor */
-			nm=k-1;
-			y=w[nm];
-			g=rv1[nm];
-			h=rv1[k];
-			f=((y-z)*(y+z)+(g-h)*(g+h))/(2.0*h*y);
-			g=hypot (f,1.0);
-			f=((x-z)*(x+z)+h*((y/(f+SIGN(g,f)))-h))/x;
-			
-				/* next QR transformation */
-			
-			c=s=1.0;
-			for (j=l;j<=nm;j++) {
-				i=j+1;
-				g=rv1[i];
-				y=w[i];
-				h=s*g;
-				g=c*g;
-				z=hypot(f,h);
-				rv1[j]=z;
-				c=f/z;
-				s=h/z;
-				f=(x*c)+(g*s);
-				g=(g*c)-(x*s);
-				h=y*s;
-				y=y*c;
-				for (jj=0;jj<n;jj++) {
-					x=v[jj*n+j];	/* v[jj][j] */
-					z=v[jj*n+i];	/* v[jj][i] */
-					v[jj*n+j]=(x*c)+(z*s);	/* v[jj][j] */
-					v[jj*n+i]=(z*c)-(x*s);	/* v[jj][i] */
-				}
-				z=hypot(f,h);
-				w[j]=z;		/* rotation can be arbitrary if z=0 */
-				if (z) {
-					z=1.0/z;
-					c=f*z;
-					s=h*z;
-				}
-				f=(c*g)+(s*y);
-				x=(c*y)-(s*g);
-				for (jj=0;jj<m;jj++) {
-					y=a[jj*n+j];	/* a[jj][j] */
-					z=a[jj*n+i];	/* a[jj][i] */
-					a[jj*n+j]=(y*c)+(z*s);	/* a[jj][j] */
-					a[jj*n+i]=(z*c)-(y*s);	/* a[jj][i] */
-				}
-			}
-			rv1[l]=0.0;
-			rv1[k]=f;
-			w[k]=x;
-		}
-	}
-	free ((void *)rv1);
-	return (GMT_NOERROR);
-}
-
-void mat_trans (REAL a[], GMT_LONG mrow, GMT_LONG ncol, REAL at[])
-{
-	/* Return the transpose of a */
-	GMT_LONG i, j;
-	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
-}
-
-void mat_mult (REAL a[], GMT_LONG mrow, GMT_LONG ncol, REAL b[], GMT_LONG kcol, REAL c[])
-{
-	/* Matrix multiplication a * b = c */
-	
-	GMT_LONG i, j, k, ij;
-	
-	for (i = 0; i < kcol; i++) {
-		for (j = 0; j < mrow; j++) {
-			ij = j * kcol + i;
-			c[ij] = 0.0;
-			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
-		}
-	}
-}
-
-/* Given the singular value decomposition of a matrix a[0...m-1][0...n-1]
-	solve the system of equations ax=b for x.  Input the matrices 
-	U[0....m-1][0...n-1],w[0...n-1], and V[0...n-1][0...n-1] determined from
-	svdcmp.  Also input the matrix b[0...m-1][0....k-1] and the solution vector
-	x[0....k-1][0....n-1] is output. Singular values whose ratio to the maximum
-	singular value are smaller than cutoff are zeroed out. The matrix U is
-	overwritten.
-	
-*/
-
-GMT_LONG solve_svd (struct GMT_CTRL *GMT, REAL *u, GMT_LONG m, GMT_LONG n, REAL *v, REAL *w, REAL *b, GMT_LONG k, REAL *x, double cutoff)
-{
-	REAL *ut = NULL, sing_max;
-	GMT_LONG i, j, n_use = 0;
-
-	/* allocate work space */
-		
-	ut = (REAL *)calloc(n*m,sizeof(REAL));	/* space for the transpose */
-	if (ut == NULL) {
-		GMT_message (GMT, "Error in solve_svd: Can't allocate work space\n");
-		return (-1);
-	}
-	
-	/* find maximum singular value */
-	
-	sing_max = w[0];
-	for (i = 1; i < n; i++) sing_max = MAX (sing_max, w[i]);
-		
-	/* loop through singular values removing small ones */
-		
-	for (i = 0; i < n; i++) {
-		if ((w[i]/sing_max) > cutoff) {
-			w[i] = 1.0 / w[i];
-			n_use++;
-		}
-		else
-			w[i] = 0.0;
-	}
-	
-	/* multiply V by 1/w */
-	
-	for (i = 0; i < n; i++) for (j = 0; j < n; j++) v[j*n+i] *= w[i];
-			
-	/* get transpose of U */
-		
-	mat_trans (u, m, n, ut);
-	
-	/* multiply v(1/w)ut  -> this overwrites the matrix U */
-		
-	mat_mult (v, n, n, ut, m, u);
-	
-	/* multiply this result by b to get x */
-		
-	mat_mult (u, n, m, b, k, x);
-
-	/* free work space */
-
-	free ((void *)ut);
-	
-	return (n_use);
-}
-
 /* Normalization parameters are stored in the coeff array which holds up to 7 terms
  * coeff[0]:	The mean x coordinate
  * coeff[1]:	The mean y coordinate
@@ -1487,7 +1082,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *WB_z = NULL, *WB_g = NULL, *in = NULL;
 	double mem, part, C, p_val, r, par[11], norm[7], az, grad;
-	REAL *A = NULL;
+	double *A = NULL;
 #ifdef TEST
 	double x0 = 0.0, x1 = 5.0;
 #endif
@@ -1884,11 +1479,11 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 	/* Set up linear system Ax = z */
 	
-	mem = ((double)nm * (double)nm * (double)sizeof (REAL)) / 1024.0;	/* In kb */
+	mem = ((double)nm * (double)nm * (double)sizeof (double)) / 1024.0;	/* In kb */
 	unit = 0;
 	while (mem > 1024.0 && unit < 2) { mem /= 1024.0; unit++; }	/* Select next unit */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Square matrix requires %.1f %s\n", mem, mem_unit[unit]);
-	A = GMT_memory (GMT, NULL, nm * nm, REAL);
+	A = GMT_memory (GMT, NULL, nm * nm, double);
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
@@ -1927,17 +1522,17 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
 		GMT_LONG n_use, error;
-		REAL *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0;
+		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Solve linear equations by SVD ");
 	
-		v = GMT_memory (GMT, NULL, nm * nm, REAL);
-		s = GMT_memory (GMT, NULL, nm, REAL);
-		if ((error = svdcmp (GMT, A, nm, nm, s, v))) Return (error);
+		v = GMT_memory (GMT, NULL, nm * nm, double);
+		s = GMT_memory (GMT, NULL, nm, double);
+		if ((error = GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			char format[GMT_LONG_TEXT];
-			REAL *eig = GMT_memory (GMT, NULL, nm, REAL);
-			GMT_memcpy (eig, s, nm, REAL);
+			double *eig = GMT_memory (GMT, NULL, nm, double);
+			GMT_memcpy (eig, s, nm, double);
 			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Eigen-value rations s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			if ((fp = GMT_fopen (GMT, Ctrl->C.file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error creating file %s\n", Ctrl->C.file);
@@ -1945,31 +1540,17 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			if (sizeof (REAL) == sizeof (double))
-				GMT_sort_array ((void *)eig, nm, GMT_DOUBLE_TYPE);
-			else
-				GMT_sort_array ((void *)eig, nm, GMT_FLOAT_TYPE);
+			GMT_sort_array ((void *)eig, nm, GMT_DOUBLE_TYPE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);
 			GMT_free (GMT, eig);
 			if (Ctrl->C.value < 0.0) Return (EXIT_SUCCESS);
 		}
-		b = GMT_memory (GMT, NULL, nm, REAL);
-		if (sizeof (REAL) == sizeof (double)) {
-			GMT_memcpy (b, obs, nm, REAL);
-			n_use = solve_svd (GMT, A, nm, nm, v, s, b, 1, obs, Ctrl->C.value);
-			if (n_use == -1) Return (EXIT_FAILURE);
-		}
-		else {	/* Must use temporary float array to capture result */
-			REAL *z4 = NULL;
-			for (i = 0; i < nm; i++) b[i] = (REAL)obs[i];
-			z4 = GMT_memory (GMT, NULL, nm, REAL);
-			n_use = solve_svd (GMT, A, nm, nm, v, s, b, 1, z4, Ctrl->C.value);
-			if (n_use == -1) Return (EXIT_FAILURE);
-			for (i = 0; i < nm; i++) obs[i] = (double)z4[i];
-			GMT_free (GMT, z4);
-		}
+		b = GMT_memory (GMT, NULL, nm, double);
+		GMT_memcpy (b, obs, nm, double);
+		n_use = GMT_solve_svd (GMT, A, nm, nm, v, s, b, 1, obs, Ctrl->C.value);
+		if (n_use == -1) Return (EXIT_FAILURE);
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "[%ld of %ld eigen-values used]\n", n_use, nm);
 			
 		GMT_free (GMT, s);
@@ -1979,17 +1560,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {				/* Gauss-Jordan elimination */
 		GMT_LONG error;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Solve linear equations by Gauss-Jordan elimination\n");
-		if (sizeof (REAL) == sizeof (double)) {
-			if ((error = gaussj (GMT, A, nm, nm, obs, 1, 1))) Return (error);
-		}
-		else {
-			REAL *z4 = NULL;
-			z4 = GMT_memory (GMT, NULL, nm, REAL);
-			for (i = 0; i < nm; i++) z4[i] = (REAL)obs[i];
-			if ((error = gaussj (GMT, A, nm, nm, z4, 1, 1))) Return (error);
-			for (i = 0; i < nm; i++) obs[i] = (double)z4[i];
-			GMT_free (GMT, z4);
-		}
+		if ((error = GMT_gaussjordan (GMT, A, nm, nm, obs, 1, 1))) Return (error);
 	}
 	alpha = obs;	/* Just a different name since the obs vector now holds the alpha factors */
 		
