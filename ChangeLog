@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.960 2011-04-19 02:01:37 guru Exp $
+	$Id: ChangeLog,v 1.961 2011-04-20 03:47:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-04-19	pwessel
+	* gmt_vector.c:		Now holds the Gauss-Jordan and SVD codes (num.rec) that
+				were used in greenspline_func.c.  These may eventually be
+				replaced by the most optimal LA code on each platform.
+				
 2011-04-18	pwessel
 	* gmt_support.c:	Added GMT_boundcond_image_set for images and renamed
 				GMT_boundcond_image_set to GMT_boundcond_image_grid_set.
