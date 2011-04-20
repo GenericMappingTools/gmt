@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.158 2011-04-19 09:02:43 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.159 2011-04-20 17:08:42 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1692,7 +1692,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 		sprintf (strR, "%.10f/%.10f/%.10f/%.10f", C->common.R.wesn[XLO], C->common.R.wesn[XHI],
 							  C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;
-		to_gdalread->R.active = TRUE;
+		/*to_gdalread->R.active = TRUE;*/	/* Wait untill we really know how to use it */
 	}
 
 	if ( I->header->pocket ) {				/* See if we have a band request */
