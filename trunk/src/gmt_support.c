@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.486 2011-04-20 02:43:43 guru Exp $
+ *	$Id: gmt_support.c,v 1.487 2011-04-20 18:27:47 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8708,7 +8708,7 @@ GMT_LONG GMT_grid_clip_path (struct GMT_CTRL *C, struct GRD_HEADER *h, double **
 	 * extent of the grid.
 	 */
 
-	GMT_LONG np, i, j;
+	GMT_LONG np, i, j, k;
 	double *work_x = NULL, *work_y = NULL;
 
 	*donut = FALSE;
@@ -8729,16 +8729,17 @@ GMT_LONG GMT_grid_clip_path (struct GMT_CTRL *C, struct GRD_HEADER *h, double **
 	}
 	else {	/* WESN are complex curved lines */
 
-		np = 2 * (h->nx + h->ny - 2);
+		k = (h->registration == GMT_GRIDLINE_REG) ? 1 : 0;
+		np = 2 * (h->nx - k) + 2* (h->ny - k);
 		work_x = GMT_memory (C, NULL, np, double);
 		work_y = GMT_memory (C, NULL, np, double);
-		for (i = j = 0; i < h->nx-1; i++, j++)	/* South */
+		for (i = j = 0; i < h->nx - k; i++, j++)	/* South */
 			GMT_geo_to_xy (C, h->wesn[XLO] + i * h->inc[GMT_X], h->wesn[YLO], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->ny-1; j++, i++)	/* East */
+		for (i = 0; i < h->ny - k; i++, j++)	/* East */
 			GMT_geo_to_xy (C, h->wesn[XHI], h->wesn[YLO] + i * h->inc[GMT_Y], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->nx-1; i++, j++)	/* North */
+		for (i = 0; i < h->nx - k; i++, j++)	/* North */
 			GMT_geo_to_xy (C, h->wesn[XHI] - i * h->inc[GMT_X], h->wesn[YHI], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->ny-1; j++, i++)	/* West */
+		for (i = 0; i < h->ny - k; i++, j++)	/* West */
 			GMT_geo_to_xy (C, h->wesn[XLO], h->wesn[YHI] - i * h->inc[GMT_Y], &work_x[j], &work_y[j]);
 	}
 
