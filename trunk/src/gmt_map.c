@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.277 2011-04-19 12:59:55 remko Exp $
+ *	$Id: gmt_map.c,v 1.278 2011-04-20 17:10:56 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5860,6 +5860,41 @@ GMT_LONG GMT_grdproject_init (struct GMT_CTRL *C, struct GMT_GRID *G, double *in
 	GMT_report (C, GMT_MSG_NORMAL, "Grid projection from size %ldx%ld to %dx%d\n", nx, ny, G->header->nx, G->header->ny);
 	return (GMT_NOERROR);
 }
+
+GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
+{
+	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
+		header->nx = (int)GMT_get_n (header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
+		header->ny = (int)GMT_get_n (header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
+		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+	}
+	else if (nx > 0 && ny > 0) {
+		header->nx = (int)nx;	header->ny = (int)ny;
+		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+	}
+	else if (dpi > 0) {
+		header->nx = (int)irint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - (int)offset;
+		header->ny = (int)irint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - (int)offset;
+		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+	}
+	else {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_grdproject_init: Necessary arguments not set\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	header->registration = (int)offset;
+
+	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny */
+	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
+	GMT_grd_setpad (header, C->current.io.pad);			/* Assign default pad */
+	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
+
+	GMT_report (C, GMT_MSG_NORMAL, "Grid projection from size %ldx%ld to %dx%d\n", nx, ny, header->nx, header->ny);
+	return (GMT_NOERROR);
+}
+
 
 GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG antialias, GMT_LONG interpolant, double threshold, GMT_LONG inverse)
 {
