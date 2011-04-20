@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.7 2011-04-20 02:43:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ void set_polystyle (struct GMT_FILL *fill, GMT_LONG outline, GMT_LONG active, GM
 GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG k, n_coord = 0, first = TRUE, get_z = FALSE, t1_col, t2_col,error = FALSE;
-	GMT_LONG set_nr = 0, pnt_nr = 0, index = -4, use_folder = FALSE, N = 1;
+	GMT_LONG set_nr = 0, pnt_nr = 0, index = -4, use_folder = FALSE, do_description, N = 1;
 	
 	char buffer[BUFSIZ], description[BUFSIZ], *Document[2] = {"Document", "Folder"};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
@@ -835,7 +835,18 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
 					else
 						tabs (N), printf ("<name>%s %ld</name>\n", name[Ctrl->F.mode], set_nr);
-					if (T->segment[seg]->n_rows == 1 && GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
+					description[0] = 0;
+					do_description = FALSE;
+					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
+						do_description = TRUE;
+						strcat (description, buffer);
+					}
+					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, buffer)) { 
+						if (do_description) strcat (description, " ");
+						strcat (description, buffer);
+						do_description = TRUE;
+					}
+					if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
 					tabs (N); printf ("<styleUrl>#GMT%ld</styleUrl>\n", index);
 					tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
 					print_altmode (GMT, Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);

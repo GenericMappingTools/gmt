@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.485 2011-04-19 03:54:19 guru Exp $
+ *	$Id: gmt_support.c,v 1.486 2011-04-20 02:43:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -9954,12 +9954,18 @@ GMT_LONG GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double 
 	return (err);
 }
 
+GMT_LONG straddle_dateline (double x0, double x1) {
+	if (fabs (x0 - x1) > 90.0) return (FALSE);	/* Probably Greenwhich crossing with 0/360 discontinuity */
+	if ((x0 < 180.0 && x1 > 180.0) || (x0 > 180.0 && x1 < 180.0)) return (TRUE);	/* Crossed Dateline */
+	return (FALSE);
+}
+
 GMT_LONG GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Return TRUE if this line or polygon feature contains points on either side of the Dateline */
 	GMT_LONG k, east = FALSE, west = FALSE, cross = FALSE;
 	for (k = 0; !cross && k < S->n_rows; k++) {
-		if ((S->coord[GMT_X][k] > 180.0 && S->coord[GMT_X][k] < 360.0) || (S->coord[GMT_X][k] > -180.0 && S->coord[GMT_X][k] < 0.0)) west = TRUE;
-		if ((S->coord[GMT_X][k] > 0.0 && S->coord[GMT_X][k] < 180.0) || (S->coord[GMT_X][k] > -360.0 && S->coord[GMT_X][k] < -180.0)) east = TRUE;
+		if ((S->coord[GMT_X][k] > 180.0 && S->coord[GMT_X][k] < 270.0) || (S->coord[GMT_X][k] > -180.0 && S->coord[GMT_X][k] < -90.0)) west = TRUE;
+		if ((S->coord[GMT_X][k] > 90.0 && S->coord[GMT_X][k] < 180.0) || (S->coord[GMT_X][k] > -270.0 && S->coord[GMT_X][k] < -180.0)) east = TRUE;
 		if (east && west) cross = TRUE;
 	}
 	return (cross);
@@ -9968,18 +9974,16 @@ GMT_LONG GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout)
 {	/* Create two or more feature segments by splitting them across the Dateline.
 	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
-	GMT_LONG k, n, row, col, seg, n_split, start, length, closed, ID[2], side, *pos = GMT_memory (C, NULL, S->n_rows, GMT_LONG);
-	char label[BUFSIZ], *txt = NULL, *part = "EW", *feature = "Line";
-	double r, y_max, *tmp = NULL;
+	GMT_LONG k, row, col, seg, n_split, start, length, *pos = GMT_memory (C, NULL, S->n_rows, GMT_LONG);
+	char label[BUFSIZ], *txt = NULL, *feature = "Line";
+	double r;
 	struct GMT_LINE_SEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 	
 	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, 0, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
-	closed = !GMT_polygon_is_open (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);		/* Is it a closed polygon treated as a line? */
-	n = (closed) ? S->n_rows - 1 : S->n_rows;	/* Eliminate last point if closed - add it at the end */
-	GMT_alloc_segment (C, Sx, 2*n, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
+	GMT_alloc_segment (C, Sx, 2*S->n_rows, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
 	
-	for (k = row = n_split = 0; k < n; k++) {	/* Hunt for crossings */
-		if (k && ((S->coord[GMT_X][k-1] < 180.0 && S->coord[GMT_X][k] > 180.0) || (S->coord[GMT_X][k-1] > 180.0 && S->coord[GMT_X][k] < 180.0))) {	/* Crossed Dateline */
+	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */
+		if (k && straddle_dateline (S->coord[GMT_X][k-1], S->coord[GMT_X][k])) {	/* Crossed Dateline */
 			r = (180.0 - S->coord[GMT_X][k-1]) / (S->coord[GMT_X][k] - S->coord[GMT_X][k-1]);	/* Fractional distance from k-1'th point to 180 crossing */
 			Sx->coord[GMT_X][row] = 180.0;	/* Exact longitude is known */
 			for (col = 1; col < S->n_columns; col++) Sx->coord[col][row] = S->coord[col][k-1] + r * (S->coord[col][k] - S->coord[col][k-1]);	/* Linear interpolation for other fields */
@@ -9995,40 +9999,24 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 		GMT_free (C, pos);
 		return 0;
 	}
-	/* Determine the northermost crossing */
-	for (k = start = 0, y_max = -DBL_MAX; k < n_split; k++) if (S->coord[GMT_Y][pos[k]] > y_max) y_max = S->coord[GMT_Y][start = pos[k]];
-	/* Shuffle the points so that the feature starts at the northernmost crossing */
-	length = Sx->n_rows - start;	/* Number of points from start to end of feature */
-	tmp = GMT_memory (C, NULL, start, double); 	/* Temp array to hold the initial points */
-	for (col = 0; col < S->n_columns; col++) {
-		GMT_memcpy (tmp, Sx->coord[col], start, double);	/* Save the first section up to the first crossing */
-		GMT_memcpy (Sx->coord[col], &(Sx->coord[col][start]), length, double);	/* Shuffle everything from first crossing and beyond to start of feature */
-		GMT_memcpy (&(Sx->coord[col][length]), tmp, start, double);	/* Append the saved section to the end */
-	}
-	GMT_free (C, tmp);	/* No longer needed */
-	for (k = 0; k < n_split; k++) {	/* Update the positions of crossings after the shuffling */
-		pos[k] -= start;
-		if (pos[k] < 0) pos[k] += Sx->n_rows;	/* Watch for wrap-arounds */
-	}
-	pos[n_split] = Sx->n_rows - !closed;	/* Not a position; used to get correct number of points for last segment */
+	pos[n_split] = Sx->n_rows - 1;
+	n_split++;	/* Now means number of segments */
 	L = GMT_memory (C, NULL, n_split, struct GMT_LINE_SEGMENT *);	/* Number of output segments needed are allocated here */
-	ID[0] = ID[1] = 0;	/* Output ID part numbers separate for E and W */
 	txt = (S->label) ? S->label : feature;	/* What to label the features */
+	start = 0;
 	for (seg = 0; seg < n_split; seg++) {	/* Populate the output segment coordinate arrays */
 		L[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);		/* Allocate space for one segment */
-		length = pos[seg+1] - pos[seg] + 1;	/* Length of new segment */
-		start = pos[seg];			/* First point in this segment */
+		length = pos[seg] - start + 1;	/* Length of new segment */
 		GMT_alloc_segment (C, L[seg], length, S->n_columns, TRUE);		/* Allocate array space for coordinates */
 		for (col = 0; col < S->n_columns; col++) GMT_memcpy (L[seg]->coord[col], &(Sx->coord[col][start]), length, double);	/* Copy coordinates */
 		L[seg]->range = (L[seg]->coord[GMT_X][length/2] > 180.0) ? 3 : 2;	/* Formatting ID to enable special -180 and +180 formatting on outout */
-		/* Modify label to include W|E and part number */
-		side = L[seg]->range - 2;
-		sprintf (label, "%s part %ld-%c", txt, ID[side]++, part[side]);
+		/* Modify label to part number */
+		sprintf (label, "%s part %ld", txt, seg);
 		L[seg]->label = strdup (label);
 		if (S->header) L[seg]->header = strdup (S->header);
 		if (S->ogr) GMT_duplicate_ogr_seg (C, L[seg], S);
+		start = pos[seg];
 	}
-	if (closed) for (col = 0, length--, seg--; col < S->n_columns; col++) L[seg]->coord[col][length] = Sx->coord[col][0];	/* Restore repeated point */
 	GMT_free_segment (C, Sx);
 	GMT_free (C, pos);
 	

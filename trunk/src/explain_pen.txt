@@ -8,3 +8,4 @@ or as BD(faint), BD(default), BD(thin)[BD(ner)|BD(nest)], BD(thick)[BD(er)|BD(es
 IT(color) specifies a gray shade or color (see SPECIFYING COLOR below).
 IT(style) is a combination of dashes `-' and dots `.'.
 If any of the attributes is omitted their default or previous setting will be retained.
+See BD(GMT) Cookbook & Technical Reference Chapter 4 for more information.

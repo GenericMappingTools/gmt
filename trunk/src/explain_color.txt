@@ -6,3 +6,4 @@ by a gray shade (in the range 0\-255); by a decimal color code (r/g/b, each in r
 0\-360, 0\-1, 0\-1; or c/m/y/k, each in range 0\-1); or by a hexadecimal color code (#rrggbb, as used in HTML).
 For PDF transparency, append @IT(transparency) in the 0\-100 range [0 or opaque].
 See the BD(gmtcolors) manpage for more information and a full list of color names.
+See BD(GMT) Cookbook & Technical Reference Chapter 4 for more information.

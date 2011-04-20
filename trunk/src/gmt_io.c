@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.252 2011-04-19 03:54:18 guru Exp $
+ *	$Id: gmt_io.c,v 1.253 2011-04-20 02:43:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3974,7 +3974,7 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 {	/* Write out segment-level OGR/GMT header metadata */
 	GMT_LONG k, col;
 	char *kind = "PH";
-	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"}, *quote[6] = {"", "", "\"", "\"", "", ""};
+	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"}, *quote[7] = {"", "", "\"", "\"", "\"", "", ""};
 	char buffer[BUFSIZ];
 
 	if (C->common.a.geometry == GMT_IS_POLYGON || C->common.a.geometry == GMT_IS_MULTIPOLYGON) fprintf (fp, "# @%c\n", (int)kind[S->ogr->pol_mode]);
@@ -3985,6 +3985,7 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 			switch (C->common.a.col[k]) {
 				case GMT_IS_D:	/* Pick up from -D<distance> */
 				case GMT_IS_G:	/* Pick up from -G<fill> */
+				case GMT_IS_I:	/* Pick up from -I<ID> */
 				case GMT_IS_T:	/* Pick up from -T<text> */
 				case GMT_IS_W:	/* Pick up from -W<pen> */
 				case GMT_IS_Z:	/* Pick up from -Z<value> */
@@ -4008,7 +4009,7 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
 {	/* Write out segment-level OGR/GMT header metadata */
 	GMT_LONG k, col, n, space = FALSE;
-	char *sflag[6] = {"-D", "-G", "-L", "-T", "-W", "-Z"};
+	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
 	char buffer[BUFSIZ];
 
 	if (C->common.a.output) return;		/* Input was not OGR (but output will be) */
@@ -4019,6 +4020,7 @@ void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE
 		switch (C->common.a.col[k]) {
 			case GMT_IS_D:	/* Format -D<distance> */
 			case GMT_IS_G:	/* Format -G<fill> */
+			case GMT_IS_I:	/* Format -I<ID> */
 			case GMT_IS_T:	/* Format -T<text> */
 			case GMT_IS_W:	/* Format -W<pen> */
 			case GMT_IS_Z:	/* Format -Z<value> */

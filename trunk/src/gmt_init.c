@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.478 2011-04-19 03:54:18 guru Exp $
+ *	$Id: gmt_init.c,v 1.479 2011-04-20 02:43:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1262,6 +1262,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		switch (A[0]) {	/* Watch for different multisegment header cases */
 			case 'D': col = GMT_IS_D; break;	/* Distance flag */
 			case 'G': col = GMT_IS_G; break;	/* Color flag */
+			case 'I': col = GMT_IS_I; break;	/* ID flag */
 			case 'L': col = GMT_IS_L; break;	/* Label flag */
 			case 'T': col = GMT_IS_T; break;	/* Text flag */
 			case 'W': col = GMT_IS_W; break;	/* Pen flag */
