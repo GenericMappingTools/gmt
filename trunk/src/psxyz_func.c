@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
+ *	$Id: psxyz_func.c,v 1.8 2011-04-20 18:09:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -883,6 +883,9 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (S.G.label_type == 2)	/* Get potential label from segment header */
 					GMT_extract_label (GMT, L->header, S.G.label);
 
+#if 0
+				/* This should never happen, GMT_Get_Data should already take care of this */
+
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
 					L->n_rows = GMT_malloc3 (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->coord[GMT_Z], 0, L->n_rows+1, double);
@@ -892,17 +895,16 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 
 				n = L->n_rows;
+#endif
+
 				xp = GMT_memory (GMT, NULL, n, double);
 				yp = GMT_memory (GMT, NULL, n, double);
 
 				if (polygon) {
 					GMT_plane_perspective (GMT, PSL, -1, 0.0);
-					for (i = 0; i < n; i++) {
-						GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &x_1, &y_1);
-						L->coord[GMT_X][i] = x_1;	L->coord[GMT_Y][i] = y_1;
-					}
+					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
 					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_geo_polygons (GMT, PSL, L);
+					PSL_plotpolygon (PSL, xp, yp, n);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					/* Note that this always be plotted in the XY-plane */
