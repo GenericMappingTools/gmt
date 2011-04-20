@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.104 2011-04-11 19:45:03 guru Exp $
+ *	$Id: gmt_io.h,v 1.105 2011-04-20 02:43:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,14 +157,15 @@ enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS
 #define GMT_WRITE_HEADER	1	/* Only write header and not the contents of this entity (table or segment) */
 #define GMT_WRITE_SKIP		2	/* Entirely skip this entity on output (table or segment) */
 
-/* Codes for aspatial assocation with segment header options -D -G -L -T -W -Z */
+/* Codes for aspatial assocation with segment header options -D -G -I -L -T -W -Z */
 
 #define GMT_IS_D	-1
 #define GMT_IS_G	-2
-#define GMT_IS_L	-3
-#define GMT_IS_T	-4
-#define GMT_IS_W	-5
-#define GMT_IS_Z	-6
+#define GMT_IS_I	-3
+#define GMT_IS_L	-4
+#define GMT_IS_T	-5
+#define GMT_IS_W	-6
+#define GMT_IS_Z	-7
 
 /* Error return codes */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.11 2011-04-19 19:10:43 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.12 2011-04-20 02:43:43 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -742,7 +742,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE;
+	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE, geometry = GMT_IS_POLY;
 	GMT_LONG geo = FALSE, internal = FALSE, external = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
@@ -791,8 +791,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 			
 	/* Read input data set */
-
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
+	
+	if (Ctrl->D.active) geometry = GMT_IS_LINE;
+	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D)) Return ((error = GMT_DATA_READ_ERROR));
