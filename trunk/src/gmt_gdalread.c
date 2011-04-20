@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.35 2011-04-15 21:27:09 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.36 2011-04-20 15:35:46 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -366,7 +366,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				else
 					for (m = 0; m < nYSize; m++) {
 						/*nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;*/
-						off = pad + (pad+m) * (nRGBA * nXSize + 2*pad); /* Remember, nRGBA is variable */
+						off = nRGBA * pad + (pad+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 						for (n = 0; n < nXSize; n++)
 							Ctrl->UInt8.data[nVector[n] + off] = tmp[mVector[m]+n];
 							/*Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];*/
