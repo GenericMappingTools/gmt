@@ -1,12 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.962 2011-04-20 18:16:02 remko Exp $
+	$Id: ChangeLog,v 1.963 2011-04-20 18:27:47 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-20	remko
+	* gmt_support.c:	Make GMT_grid_clip_path work with pixel oriented grids.
 	* gmt_io.c:		When closing polygons, copy all columns, not just first two;
 				required for 3D.
 	* psxyz_func.c:		Removed needless check on open polygons;
-				Plot polygon with PSL_polygon, not GMT_geo_polygons
+				Plot polygon with PSL_polygon, not GMT_geo_polygons.
 
 2011-04-19	pwessel
 	* gmt_vector.c:		Now holds the Gauss-Jordan and SVD codes (num.rec) that
