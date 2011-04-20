@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.253 2011-04-20 02:43:43 guru Exp $
+ *	$Id: gmt_io.c,v 1.254 2011-04-20 18:12:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4974,8 +4974,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 				double dlon, lon_sum = 0.0, lat_sum = 0.0;
 				dlon = T->segment[seg]->coord[GMT_X][0] - T->segment[seg]->coord[GMT_X][row-1];
 				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && T->segment[seg]->coord[GMT_Y][0] == T->segment[seg]->coord[GMT_Y][row-1])) {
-					T->segment[seg]->coord[GMT_X][row] = T->segment[seg]->coord[GMT_X][0];
-					T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
+					for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = T->segment[seg]->coord[k][0];
 					T->segment[seg]->n_rows++;
 				}
 				for (row = 0; row < T->segment[seg]->n_rows - 1; row++) {
@@ -4989,8 +4988,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 				}
 			}
 			else if (GMT_polygon_is_open (C, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], row)) {	/* Cartesian closure */
-				T->segment[seg]->coord[GMT_X][row] = T->segment[seg]->coord[GMT_X][0];
-				T->segment[seg]->coord[GMT_Y][row] = T->segment[seg]->coord[GMT_Y][0];
+				for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = T->segment[seg]->coord[k][0];
 				T->segment[seg]->n_rows++;
 			}
 			if (GMT_parse_segment_item (C, T->segment[seg]->header, "-Ph", NULL)) T->segment[seg]->pol_mode = GMT_IS_HOLE;
