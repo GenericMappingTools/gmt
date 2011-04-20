@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.278 2011-04-20 17:10:56 jluis Exp $
+ *	$Id: gmt_map.c,v 1.279 2011-04-20 18:21:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6390,11 +6390,11 @@ GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG
 			case GMT_POLYCONIC:
 				for (i = j = 0; i < C->current.map.n_lon_nodes; i++, j++)	/* South */
 					GMT_geo_to_xy (C, C->common.R.wesn[XLO] + i * C->current.map.dlon, C->common.R.wesn[YLO], &work_x[j], &work_y[j]);
-				for (i = 0; i < C->current.map.n_lat_nodes; j++, i++)	/* East */
+				for (i = 0; i < C->current.map.n_lat_nodes; i++, j++)	/* East */
 					GMT_geo_to_xy (C, C->common.R.wesn[XHI], C->common.R.wesn[YLO] + i * C->current.map.dlat, &work_x[j], &work_y[j]);
 				for (i = 0; i < C->current.map.n_lon_nodes; i++, j++)	/* North */
 					GMT_geo_to_xy (C, C->common.R.wesn[XHI] - i * C->current.map.dlon, C->common.R.wesn[YHI], &work_x[j], &work_y[j]);
-				for (i = 0; i < C->current.map.n_lat_nodes; j++, i++)	/* West */
+				for (i = 0; i < C->current.map.n_lat_nodes; i++, j++)	/* West */
 					GMT_geo_to_xy (C, C->common.R.wesn[XLO], C->common.R.wesn[YHI] - i * C->current.map.dlat, &work_x[j], &work_y[j]);
 				break;
 			case GMT_POLAR:
