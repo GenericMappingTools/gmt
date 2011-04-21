@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.111 2011-04-19 09:02:43 guru Exp $
+ *	$Id: gmt_customio.c,v 1.112 2011-04-21 15:11:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1619,6 +1619,8 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	GMT_free (C, to_gdalread);
 	GMT_free (C, from_gdalread->ColorMap);
+	for ( i = 0; i < from_gdalread->RasterCount; ++i )
+		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);
 
