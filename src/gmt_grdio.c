@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.159 2011-04-20 17:08:42 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.160 2011-04-21 02:40:45 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -952,6 +952,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		header->type			= -1;
 		header->y_order			= 1;
 		header->z_id			= -1;
+		header->n_bands 		= 1;	/* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
 		header->z_min			= C->session.d_NaN;
 		header->z_max			= C->session.d_NaN;
 		header->nan_value		= C->session.d_NaN;
@@ -1649,6 +1650,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->nx = from_gdalread->RasterXsize;
 	I->header->ny = from_gdalread->RasterYsize;
+	I->header->n_bands = from_gdalread->RasterCount;
 	I->header->registration = (int)from_gdalread->hdr[6];
 
 	/*GMT_set_grddim (C, I->header);*/		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
