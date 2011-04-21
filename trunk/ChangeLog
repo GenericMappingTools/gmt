@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.963 2011-04-20 18:27:47 remko Exp $
+	$Id: ChangeLog,v 1.964 2011-04-21 03:01:19 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-20	pwessel
+	* xyz2grd_func.c:	Added -Af|s for just keeping the first or last value to
+				be assigned to a node.  Also placed -A (no arg) under
+				compatibility (it becomes -Az).
 
 2011-04-20	remko
 	* gmt_support.c:	Make GMT_grid_clip_path work with pixel oriented grids.
