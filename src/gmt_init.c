@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.479 2011-04-20 02:43:43 guru Exp $
+ *	$Id: gmt_init.c,v 1.480 2011-04-21 08:13:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5469,6 +5469,8 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		error += gmt_strip_colonitem (C, i, out1, ":=", C->current.map.frame.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
 		error += gmt_strip_colonitem (C, i, out2, ":", C->current.map.frame.axis[i].label, out3);	/* Pull out axis label, if any */
 		gmt_handle_atcolon (C, C->current.map.frame.axis[i].label, 1);	/* Restore any @^ to @: */
+		gmt_handle_atcolon (C, C->current.map.frame.axis[i].prefix, 1);	/* Restore any @^ to @: */
+		gmt_handle_atcolon (C, C->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
 
 		error += gmt_decode_tinfo (C, i, out3, &C->current.map.frame.axis[i]);				/* Decode the annotation intervals */
 
