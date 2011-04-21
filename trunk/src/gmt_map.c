@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.279 2011-04-20 18:21:36 remko Exp $
+ *	$Id: gmt_map.c,v 1.280 2011-04-21 13:47:48 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6155,7 +6155,8 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 		}
 	}
 
-	GMT_grd_loop (O, row_out, col_out, ij_out) for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = C->current.setting.color_patch[GMT_NAN][b];	/* So that nodes outside will have the NaN color */
+	GMT_grd_loop (O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
+		for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = C->current.setting.color_patch[GMT_NAN][b];
 
 	/* PART 1: Project input image points and do a blockmean operation */
 
