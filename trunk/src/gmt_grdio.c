@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.160 2011-04-21 02:40:45 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.161 2011-04-21 15:05:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1660,6 +1660,8 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	I->header->size = GMT_grd_get_size (C, I->header);	/* Sets the nm items needed to hold this array */
 	I->header->xy_off = 0.5 * I->header->registration;
 
+	for ( i = 0; i < from_gdalread->RasterCount; ++i )
+		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, to_gdalread);
 	GMT_free (C, from_gdalread);
 
@@ -1676,7 +1678,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	GMT_LONG expand;
+	GMT_LONG expand, i;
 	struct GRD_PAD P;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
@@ -1726,6 +1728,8 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	}
 	GMT_grd_setpad (I->header, pad);	/* Copy the pad to the header */
 
+	for ( i = 0; i < from_gdalread->RasterCount; ++i )
+		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, to_gdalread);
 	GMT_free (C, from_gdalread);
 
