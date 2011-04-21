@@ -4,7 +4,7 @@
 xyz2grd \- Converting an ASCII or binary table to grid file format
 .SH SYNOPSIS
 BD(xyz2grd) IT(xyzfile) OPT(G)IT(grdfile) GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A)[BD(n|z|u|l)] ] [ GMT_GRDEDIT ] 
+GMT_Rgeo_OPT [ OPT(A)[BD(f|l|n|s|u|z)] ] [ GMT_GRDEDIT ] 
 [ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ] [ OPT(Z)[IT(flags)] ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -27,11 +27,13 @@ IT(grdfile) is the name of the binary output grid file.
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)[BD(n|z|u|l)]
-Add up multiple values that belong to the same node (same as OPT(Az)).
-Append BD(n) to simply count the number of data points that were assigned to each node.
+OPT(A)[BD(f|l|n|s|u|z)]
+By default we will calculate mean values if multiple entries fall on the same node.  Use
+OPT(A) to change this behavior, except it is ignored if OPT(Z) is given.
+Append BD(f) or BD(s) to simply keep the first or last data point that was assigned to each node.
 Append BD(l) or BD(u) to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
-[Default (no OPT(A) option) will calculate mean value].  Ignored if OPT(Z) is given.
+Append BD(n) to simply count the number of data points that were assigned to each node.
+Append BD(z) to sum multiple values that belong to the same node.
 .TP
 GMT_GRDEDIT
 Give values for IT(xname), IT(yname), IT(zname), IT(scale), IT(offset), IT(title), and IT(remark).

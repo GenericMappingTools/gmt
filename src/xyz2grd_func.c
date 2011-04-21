@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.8 2011-04-21 03:01:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,7 +32,7 @@ struct XYZ2GRD_CTRL {
 		GMT_LONG active;
 		char *file;
 	} In;
-	struct A {	/* -A[n|z|u|l] */
+	struct A {	/* -A[f|l|n|s|u|z] */
 		GMT_LONG active;
 		char mode;
 	} A;
@@ -93,7 +93,7 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "xyz2grd %s [API] - Converting [xy]z data to a GMT grid file\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: xyz2grd [<[xy]zfile(s)>] -G<grdfile> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-A[n|z|u|l]] [%s]\n", GMT_GRDEDIT);
+	GMT_message (GMT, "\t[-A[f|l|n|s|u|z]] [%s]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -104,11 +104,14 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A (or -Az): Sum up multiple entries at the same node.\n");
-	GMT_message (GMT, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
-	GMT_message (GMT, "\t   Append u (-Au): Keep maximum value if multiple entries per node.\n");
-	GMT_message (GMT, "\t   Append l (-Al): Keep minimum value if multiple entries per node.\n");
-	GMT_message (GMT, "\t   [Default (no -A option) will compute mean values]\n");
+	GMT_message (GMT, "\t-A Determines what to do if multiple entries are found for a node:\n");
+	GMT_message (GMT, "\t   -Af: Keep first value if multiple entries per node.\n");
+	GMT_message (GMT, "\t   -Al: Keep lower (minimum) value if multiple entries per node.\n");
+	GMT_message (GMT, "\t   -An: Count number of multiple entries per node instead.\n");
+	GMT_message (GMT, "\t   -As: Keep last value if multiple entries per node.\n");
+	GMT_message (GMT, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
+	GMT_message (GMT, "\t   -Az: Sum multiple entries at the same node.\n");
+	GMT_message (GMT, "\t   [Default will compute mean values].\n");
 	GMT_message (GMT, "\t-D To enter header information.  Specify '=' to get default value.\n");
 	GMT_message (GMT, "\t-N Set value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_message (GMT, "\t   Z-table entries that equal <nodata> are replaced by NaN.\n");
@@ -166,8 +169,15 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'A':
-				if (!strchr ("nluz", opt->arg[0])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Select -An, -Al, -Au, or -A[z]\n");
+#ifdef GMT_COMPAT
+				if (!opt->arg[0]) {	/* In GMT4, just -A implied -Az */
+					Ctrl->A.active = TRUE;
+					Ctrl->A.mode = 'z';
+				}
+				else
+#endif
+				if (!strchr ("flnsuz", opt->arg[0])) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Select -Af, -Al, -An, -As, -Au, or -Az\n");
 					n_errors++;
 				}
 				else {
@@ -266,7 +276,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, count = FALSE, average = TRUE, previous = 0;
 	GMT_LONG zcol, row, col, n_fields, high_low = 0, *flag = NULL;
-	GMT_LONG i, ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
+	GMT_LONG i, ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0, first_last = 0;
 	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 
 	double *in = NULL, wesn[4];
@@ -429,12 +439,18 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->A.active) {
 		switch (Ctrl->A.mode) {
+			case 'f':	/* Return the first value at each node */
+				first_last = -1;
+				break;
 			case 'n':	/* Count the number of values for each node */
 				count = TRUE;
 				average = FALSE;
 				break;
 			case 'l':	/* Return the lowest (minimum) value at each node */
 				high_low = -1;
+				break;
+			case 's':	/* Return the laSt value at each node */
+				first_last = +1;
 				break;
 			case 'u':	/* Return the upper (maximum)  value at each node */
 				high_low = +1;
@@ -514,6 +530,16 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (row == -1) row++, n_confused++;
 			if (row == Grid->header->ny) row--, n_confused++;
 			ij = GMT_IJ0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
+			if (first_last == -1) {	/* Want the first value to matter only */
+				if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
+					Grid->data[ij] = (float)in[zcol];
+					flag[ij] = 1;
+				}
+			}
+			else if (first_last == +1) {	/* Want the last value to matter only */
+				Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
+				flag[ij] = 1;
+			}
 			if (high_low) {	/* Always come here if looking for extreme values */
 				if (flag[ij]) {	/* Already assigned the first value */
 					if ((high_low == -1 && (in[zcol] < (double)Grid->data[ij])) || (high_low == +1 && (in[zcol] > (double)Grid->data[ij]))) Grid->data[ij] = (float)in[zcol];
@@ -543,7 +569,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (Grid->header->wesn[XHI], Grid->header->wesn[XLO]) && Grid->header->registration == GMT_GRIDLINE_REG) {	/* Make sure longitudes got replicated */
-			GMT_LONG ij_west, ij_east;
+			GMT_LONG ij_west, ij_east, first_bad = TRUE;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
 				ij_west = GMT_IJ0 (Grid->header, row, 0);
@@ -558,6 +584,12 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					flag[ij_west] = flag[ij_east];
 				}
 				else {	/* Both have some stuff, consolidate combined value into the west bin, then replicate to the east */
+					if (first_last) {	/* Trouble since we did not store when we added these points */
+						if (first_bad) {
+							GMT_report (GMT, GMT_MSG_NORMAL, "Using -Af|s with replicated longitude bins may give inaccurate values");
+							first_bad = FALSE;
+						}
+					}
 					if (high_low) {	/* Always come here if looking for extreme values */
 						if ((high_low == -1 && (Grid->data[ij_east] < Grid->data[ij_west])) || (high_low == +1 && (Grid->data[ij_east] > Grid->data[ij_west]))) Grid->data[ij_west] = Grid->data[ij_east];
 					}
