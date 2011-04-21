@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.8 2011-04-19 19:26:21 guru Exp $
+*	$Id: mapproject_func.c,v 1.9 2011-04-21 18:00:31 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -308,26 +308,22 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 			case 'I':
 				Ctrl->I.active = TRUE;
 				break;
-			case 'L':
+			case 'L':	/* [-L<line.xy>[/[+|-]<unit>]][+] */
 				Ctrl->L.active = TRUE;
 				Ctrl->L.file = strdup (opt->arg);
-				k = (GMT_LONG)strlen (Ctrl->L.file) - 1;
-				if (Ctrl->L.file[k] == '+') {	/* Flag to get point number instead of coordinates at nearest point on line */
+				k = (GMT_LONG)strlen (Ctrl->L.file) - 1;	/* Index of last character */
+				if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
 					Ctrl->L.mode = 3;
-					Ctrl->L.file[k] = '\0';
-					k--;
+					Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */
+					k--;	/* Now points to unit */
 				}
-				k--;
-				if (k >= 0 && (Ctrl->L.file[k] == '/' || Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) {	/* Gave [-|+]unit */
-					Ctrl->L.sph = 1;
-					slash = k;
-					if (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+') {
-						Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? 0 : 2;
-						slash--;
-						k++;
-					}
+				for (slash = k; slash && Ctrl->L.file[slash] != '/'; slash--);	/* Find location of optional slash */
+				if (slash && ((k - slash) < 3)) {	/* User appended /[+|-]<unit>[+].  (k-slash) should be either 1 or 2 unless we are confused by files with subdirs */
 					Ctrl->L.unit = Ctrl->L.file[k];
-					Ctrl->L.file[slash] = 0;
+					k--;	/* Now points to either / or the optional -/+ mode setting */
+					Ctrl->L.sph = 1;	/* Great circle distances */
+					if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? 0 : 2;	/* Gave [-|+]unit */
+					Ctrl->L.file[slash] = '\0';
 					n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit), "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
 				}
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since user wants spherical distances */
