@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.72 2011-04-19 04:07:45 guru Exp $
+ *	$Id: gmt_shore.c,v 1.73 2011-04-21 02:31:23 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,26 +43,214 @@
  *
  */
 
-#define RIVERLAKE	5	/* Fill array id for riverlakes */
-
+#define RIVERLAKE	5				/* Fill array id for riverlakes */
 #define get_level(arg) (((arg) >> 6) & 7)		/* Extract level from bit mask */
 
-GMT_LONG GMT_copy_to_shore_path (double *lon, double *lat, struct GMT_SHORE *s, GMT_LONG id);
-GMT_LONG GMT_shore_get_first_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG *side);
-GMT_LONG GMT_shore_get_position (GMT_LONG side, short int x, short int y);
-GMT_LONG GMT_shore_get_next_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG side, GMT_LONG id);
-GMT_LONG GMT_copy_to_br_path (double *lon, double *lat, struct GMT_BR *s, GMT_LONG id);
-void GMT_shore_to_degree (struct GMT_SHORE *c, short int dx, short int dy, double *lon, double *lat);
-void GMT_shore_pau_sides (struct GMT_CTRL *C, struct GMT_SHORE *c);
-void GMT_shore_path_shift (double *lon, double *lat, GMT_LONG n, double edge);
-void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost);
-void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon, double *lat);
-void shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir);
-int GMT_shore_asc_sort (const void *a, const void *b);
-int GMT_shore_desc_sort (const void *a, const void *b);
-char *GMT_shore_getpathname (struct GMT_CTRL *C, char *name, char *path);
-void GMT_shore_check (struct GMT_CTRL *C, GMT_LONG ok[5]);
-GMT_LONG GMT_res_to_int (char res);
+/* ---------- LOWER LEVEL FUNCTIONS CALLED BY THE ABOVE ------------ */
+
+void GMT_shore_to_degree (struct GMT_SHORE *c, short int dx, short int dy, double *lon, double *lat)
+{
+	*lon = c->lon_sw + ((unsigned short)dx) * c->scale;
+	*lat = c->lat_sw + ((unsigned short)dy) * c->scale;
+}
+
+void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon, double *lat)
+{
+	*lon = c->lon_sw + ((unsigned short)dx) * c->scale;
+	*lat = c->lat_sw + ((unsigned short)dy) * c->scale;
+}
+
+GMT_LONG GMT_copy_to_shore_path (double *lon, double *lat, struct GMT_SHORE *s, GMT_LONG id)
+{
+	GMT_LONG i;
+	for (i = 0; i < (GMT_LONG)s->seg[id].n; i++)
+		GMT_shore_to_degree (s, s->seg[id].dx[i], s->seg[id].dy[i], &lon[i], &lat[i]);
+	return (s->seg[id].n);
+}
+
+GMT_LONG GMT_copy_to_br_path (double *lon, double *lat, struct GMT_BR *s, GMT_LONG id)
+{
+	GMT_LONG i;
+	for (i = 0; i < (GMT_LONG)s->seg[id].n; i++)
+		GMT_br_to_degree (s, s->seg[id].dx[i], s->seg[id].dy[i], &lon[i], &lat[i]);
+	return (s->seg[id].n);
+}
+
+GMT_LONG GMT_shore_get_position (GMT_LONG side, short int x, short int y)
+{	/* Returns the position along the given side */
+	
+	return ((side%2) ? ((side == 1) ? (unsigned short)y : GSHHS_MAX_DELTA - (unsigned short)y) : ((side == 0) ? (unsigned short)x : GSHHS_MAX_DELTA - (unsigned short)x));
+}
+
+GMT_LONG GMT_shore_get_next_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG side, GMT_LONG id)
+{	/* Finds the next entry point on the given side that is further away
+	 * in the <dir> direction than previous point.  It removes the info
+	 * regarding the new entry from the GSHHS_SIDE structure */
+	 
+	GMT_LONG k, pos, n;
+	
+	if (id < 0)
+		pos = (dir == 1) ? 0 : GSHHS_MAX_DELTA;
+	else {
+		n = c->seg[id].n - 1;
+		pos = GMT_shore_get_position (side, c->seg[id].dx[n], c->seg[id].dy[n]);
+	}
+
+	if (dir == 1) {
+		for (k = 0; k < (GMT_LONG)c->nside[side] && (GMT_LONG)c->side[side][k].pos < pos; k++);
+		id = c->side[side][k].id;
+		for (k++; k < c->nside[side]; k++) c->side[side][k-1] = c->side[side][k];
+		c->nside[side]--;
+	}
+	else {
+		for (k = 0; k < (GMT_LONG)c->nside[side] && (GMT_LONG)c->side[side][k].pos > pos; k++);
+		id = c->side[side][k].id;
+		for (k++; k < c->nside[side]; k++) c->side[side][k-1] = c->side[side][k];
+		c->nside[side]--;
+	}
+	if (id >= 0) c->n_entries--;
+	return (id);
+}
+
+GMT_LONG GMT_shore_get_first_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG *side)
+{
+	GMT_LONG try = 0;
+	while (try < 4 && (c->nside[*side] == 0 || (c->nside[*side] == 1 && c->side[*side][0].id < 0))) {	/* No entries or only a corner left on this side */
+		try++;
+		*side = (*side + dir + 4) % 4;
+	}
+	if (try == 4) return (-5);
+	return (c->side[*side][0].id);
+}	
+
+int GMT_shore_asc_sort (const void *a, const void *b)
+{
+	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (-1);
+	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (1);
+	return (0);
+}
+
+int GMT_shore_desc_sort (const void *a, const void *b)
+{
+	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (1);
+	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (-1);
+	return (0);
+}
+
+void GMT_shore_pau_sides (struct GMT_CTRL *C, struct GMT_SHORE *c)
+{
+	GMT_LONG i;
+	for (i = 0; i < 4; i++) GMT_free (C, c->side[i]);
+}
+
+void GMT_free_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, GMT_LONG n)
+{
+	GMT_LONG k;
+	for (k = 0; k < n; k++) {
+		GMT_free (C, p[k].lon);
+		GMT_free (C, p[k].lat);
+	}
+}
+
+void GMT_shore_path_shift (double *lon, double *lat, GMT_LONG n, double edge)
+{
+	GMT_LONG i;
+	
+	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
+}
+
+void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost)
+{
+	GMT_LONG i;
+	
+	if (leftmost) {	/* Must check this bin differently  */
+		for (i = 0; i < n; i++) if (lon[i] >= east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
+	}
+	else {
+		for (i = 0; i < n; i++) if (lon[i] > east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
+	}
+}
+
+void shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir)
+{
+	GMT_LONG s, i, n[4];
+	
+	c->lon_corner[0] = c->lon_sw + ((dir == 1) ? c->bsize : 0.0);
+	c->lon_corner[1] = c->lon_sw + c->bsize;
+	c->lon_corner[2] = c->lon_sw + ((dir == 1) ? 0.0 : c->bsize);
+	c->lon_corner[3] = c->lon_sw;
+	c->lat_corner[0] = c->lat_sw;
+	c->lat_corner[1] = c->lat_sw + ((dir == 1) ? c->bsize : 0.0);
+	c->lat_corner[2] = c->lat_sw + c->bsize;
+	c->lat_corner[3] = c->lat_sw + ((dir == 1) ? 0.0 : c->bsize);
+
+	for (i = 0; i < 4; i++) c->nside[i] = n[i] = 1;
+	/* for (s = 0; s < c->ns; s++) if (c->seg[s].level < 3 && c->seg[s].entry < 4) c->nside[c->seg[s].entry]++; */
+	for (s = 0; s < c->ns; s++) if (c->seg[s].entry < 4) c->nside[c->seg[s].entry]++;
+	
+	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
+		c->side[i] = GMT_memory (C, NULL, c->nside[i], struct GSHHS_SIDE);
+		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
+		c->side[i][0].id = (short int)(i - 4);
+		c->n_entries += c->nside[i] - 1;
+	}
+		
+	for (s = 0; s < c->ns; s++) {	/* Add entry points */
+		/* if (c->seg[s].level > 2 || (i = c->seg[s].entry) == 4) continue; */
+		if ((i = c->seg[s].entry) == 4) continue;
+		c->side[i][n[i]].pos = (unsigned short)GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
+		c->side[i][n[i]].id = (short)s;
+		n[i]++;
+	}
+	
+	for (i = 0; i < 4; i++)	{	/* sort on position */
+		if (dir == 1)
+			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_asc_sort);
+		else
+			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_desc_sort);
+	}
+}
+
+char *GMT_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
+	/* Prepends the appropriate directory to the file name
+	 * and returns path if file is readable, NULL otherwise */
+	 
+	FILE *fp = NULL;
+	char dir[BUFSIZ];
+
+	/* This is the order of checking:
+	 * 1. Is there a file coastline.conf in current directory, C->session.USERDIR or C->session.SHAREDIR[/coast]?
+	 *    If so, use its information
+	 * 2. Look in current directory, C->session.USERDIR or C->session.SHAREDIR[/coast] for file "name".
+	 */
+	 
+	/* 1. First check for coastline.conf */
+	
+	if (GMT_getsharepath (C, "conf", "coastline", ".conf", path) || GMT_getsharepath (C, "coast", "coastline", ".conf", path)) {
+
+		/* We get here if coastline.conf exists - search among its directories for the named file */
+
+		fp = fopen (path, "r");
+		while (fgets (dir, BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
+			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
+			GMT_chop (dir);		/* Chop off LF or CR/LF */
+			sprintf (path, "%s%c%s%s", dir, DIR_DELIM, stem, ".cdf");
+			if (!access (path, R_OK)) {
+				fclose (fp);
+				return (path);
+			}
+		}
+		fclose (fp);
+	}
+	
+	/* 2. Then check for the named file itself */
+
+	if (GMT_getsharepath (C, "coast", stem, ".cdf", path)) return (path);
+
+	return (NULL);
+}
+
+/* Main Public GMT shore functions */
 
 void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 {	/* Decode GMT's -A option for coastline levels */
@@ -933,218 +1121,4 @@ GMT_LONG GMT_prep_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, GM
 	*p_old = p;
 
 	return (np_new);
-}
-
-/* ---------- LOWER LEVEL FUNCTIONS CALLED BY THE ABOVE ------------ */
-
-GMT_LONG GMT_copy_to_shore_path (double *lon, double *lat, struct GMT_SHORE *s, GMT_LONG id)
-{
-	GMT_LONG i;
-	for (i = 0; i < (GMT_LONG)s->seg[id].n; i++)
-		GMT_shore_to_degree (s, s->seg[id].dx[i], s->seg[id].dy[i], &lon[i], &lat[i]);
-	return (s->seg[id].n);
-}
-
-GMT_LONG GMT_copy_to_br_path (double *lon, double *lat, struct GMT_BR *s, GMT_LONG id)
-{
-	GMT_LONG i;
-	for (i = 0; i < (GMT_LONG)s->seg[id].n; i++)
-		GMT_br_to_degree (s, s->seg[id].dx[i], s->seg[id].dy[i], &lon[i], &lat[i]);
-	return (s->seg[id].n);
-}
-
-void GMT_shore_to_degree (struct GMT_SHORE *c, short int dx, short int dy, double *lon, double *lat)
-{
-	*lon = c->lon_sw + ((unsigned short)dx) * c->scale;
-	*lat = c->lat_sw + ((unsigned short)dy) * c->scale;
-}
-
-void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon, double *lat)
-{
-	*lon = c->lon_sw + ((unsigned short)dx) * c->scale;
-	*lat = c->lat_sw + ((unsigned short)dy) * c->scale;
-}
-
-GMT_LONG GMT_shore_get_next_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG side, GMT_LONG id)
-{
-	/* Finds the next entry point on the given side that is further away
-	 * in the <dir> direction than previous point.  It removes the info
-	 * regarding the new entry from the GSHHS_SIDE structure */
-	 
-	GMT_LONG k, pos, n;
-	
-	if (id < 0)
-		pos = (dir == 1) ? 0 : GSHHS_MAX_DELTA;
-	else {
-		n = c->seg[id].n - 1;
-		pos = GMT_shore_get_position (side, c->seg[id].dx[n], c->seg[id].dy[n]);
-	}
-
-	if (dir == 1) {
-		for (k = 0; k < (GMT_LONG)c->nside[side] && (GMT_LONG)c->side[side][k].pos < pos; k++);
-		id = c->side[side][k].id;
-		for (k++; k < c->nside[side]; k++) c->side[side][k-1] = c->side[side][k];
-		c->nside[side]--;
-	}
-	else {
-		for (k = 0; k < (GMT_LONG)c->nside[side] && (GMT_LONG)c->side[side][k].pos > pos; k++);
-		id = c->side[side][k].id;
-		for (k++; k < c->nside[side]; k++) c->side[side][k-1] = c->side[side][k];
-		c->nside[side]--;
-	}
-	if (id >= 0) c->n_entries--;
-	return (id);
-}
-
-GMT_LONG GMT_shore_get_first_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG *side)
-{
-	GMT_LONG try = 0;
-	while (try < 4 && (c->nside[*side] == 0 || (c->nside[*side] == 1 && c->side[*side][0].id < 0))) {	/* No entries or only a corner left on this side */
-		try++;
-		*side = (*side + dir + 4) % 4;
-	}
-	if (try == 4) return (-5);
-	return (c->side[*side][0].id);
-}	
-
-int GMT_shore_asc_sort (const void *a, const void *b)
-{
-	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (-1);
-	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (1);
-	return (0);
-}
-
-int GMT_shore_desc_sort (const void *a, const void *b)
-{
-	if (((struct GSHHS_SIDE *)a)->pos < ((struct GSHHS_SIDE *)b)->pos) return (1);
-	if (((struct GSHHS_SIDE *)a)->pos > ((struct GSHHS_SIDE *)b)->pos) return (-1);
-	return (0);
-}
-
-void GMT_shore_pau_sides (struct GMT_CTRL *C, struct GMT_SHORE *c)
-{
-	GMT_LONG i;
-	for (i = 0; i < 4; i++) GMT_free (C, c->side[i]);
-}
-
-void GMT_free_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, GMT_LONG n)
-{
-	GMT_LONG k;
-	for (k = 0; k < n; k++) {
-		GMT_free (C, p[k].lon);
-		GMT_free (C, p[k].lat);
-	}
-}
-
-void GMT_shore_path_shift (double *lon, double *lat, GMT_LONG n, double edge)
-{
-	GMT_LONG i;
-	
-	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
-}
-
-void GMT_shore_path_shift2old (double *lon, double *lat, GMT_LONG n, double west, double east)
-{
-	GMT_LONG i;
-	
-	/* for (i = 0; i < n; i++) if (lon[i] >= east && (lon[i]-360.0) > west) lon[i] -= 360.0; */
-	for (i = 0; i < n; i++) if (lon[i] > east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
-}
-
-void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost)
-{
-	GMT_LONG i;
-	
-	if (leftmost) {	/* Must check this bin differently  */
-		for (i = 0; i < n; i++) if (lon[i] >= east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
-	}
-	else {
-		for (i = 0; i < n; i++) if (lon[i] > east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
-	}
-}
-
-GMT_LONG GMT_shore_get_position (GMT_LONG side, short int x, short int y)
-{
-	/* Returns the position along the given side */
-	
-	return ((side%2) ? ((side == 1) ? (unsigned short)y : GSHHS_MAX_DELTA - (unsigned short)y) : ((side == 0) ? (unsigned short)x : GSHHS_MAX_DELTA - (unsigned short)x));
-}
-
-void shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir)
-{
-	GMT_LONG s, i, n[4];
-	
-	c->lon_corner[0] = c->lon_sw + ((dir == 1) ? c->bsize : 0.0);
-	c->lon_corner[1] = c->lon_sw + c->bsize;
-	c->lon_corner[2] = c->lon_sw + ((dir == 1) ? 0.0 : c->bsize);
-	c->lon_corner[3] = c->lon_sw;
-	c->lat_corner[0] = c->lat_sw;
-	c->lat_corner[1] = c->lat_sw + ((dir == 1) ? c->bsize : 0.0);
-	c->lat_corner[2] = c->lat_sw + c->bsize;
-	c->lat_corner[3] = c->lat_sw + ((dir == 1) ? 0.0 : c->bsize);
-
-	for (i = 0; i < 4; i++) c->nside[i] = n[i] = 1;
-	/* for (s = 0; s < c->ns; s++) if (c->seg[s].level < 3 && c->seg[s].entry < 4) c->nside[c->seg[s].entry]++; */
-	for (s = 0; s < c->ns; s++) if (c->seg[s].entry < 4) c->nside[c->seg[s].entry]++;
-	
-	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
-		c->side[i] = GMT_memory (C, NULL, c->nside[i], struct GSHHS_SIDE);
-		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
-		c->side[i][0].id = (short int)(i - 4);
-		c->n_entries += c->nside[i] - 1;
-	}
-		
-	for (s = 0; s < c->ns; s++) {	/* Add entry points */
-		/* if (c->seg[s].level > 2 || (i = c->seg[s].entry) == 4) continue; */
-		if ((i = c->seg[s].entry) == 4) continue;
-		c->side[i][n[i]].pos = (unsigned short)GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
-		c->side[i][n[i]].id = (short)s;
-		n[i]++;
-	}
-	
-	for (i = 0; i < 4; i++)	{	/* sort on position */
-		if (dir == 1)
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_asc_sort);
-		else
-			qsort ((void *)c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), GMT_shore_desc_sort);
-	}
-}
-
-char *GMT_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
-	/* Prepends the appropriate directory to the file name
-	 * and returns path if file is readable, NULL otherwise */
-	 
-	FILE *fp = NULL;
-	char dir[BUFSIZ];
-
-	/* This is the order of checking:
-	 * 1. Is there a file coastline.conf in current directory, C->session.USERDIR or C->session.SHAREDIR[/coast]?
-	 *    If so, use its information
-	 * 2. Look in current directory, C->session.USERDIR or C->session.SHAREDIR[/coast] for file "name".
-	 */
-	 
-	/* 1. First check for coastline.conf */
-	
-	if (GMT_getsharepath (C, "conf", "coastline", ".conf", path) || GMT_getsharepath (C, "coast", "coastline", ".conf", path)) {
-
-		/* We get here if coastline.conf exists - search among its directories for the named file */
-
-		fp = fopen (path, "r");
-		while (fgets (dir, BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
-			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
-			GMT_chop (dir);		/* Chop off LF or CR/LF */
-			sprintf (path, "%s%c%s%s", dir, DIR_DELIM, stem, ".cdf");
-			if (!access (path, R_OK)) {
-				fclose (fp);
-				return (path);
-			}
-		}
-		fclose (fp);
-	}
-	
-	/* 2. Then check for the named file itself */
-
-	if (GMT_getsharepath (C, "coast", stem, ".cdf", path)) return (path);
-
-	return (NULL);
 }

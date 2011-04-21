@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.97 2011-04-11 21:15:31 remko Exp $
+ *	$Id: gmt_nc.c,v 1.98 2011-04-21 02:31:23 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,10 +48,6 @@
 #include "gmt_internals.h"
 
 EXTERN_MSC GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
-GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job);
-void GMT_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units);
-void GMT_nc_put_units (int ncid, int varid, char *name_units);
-void GMT_nc_check_step (struct GMT_CTRL *C, GMT_LONG n, double *x, char *varname, char *file);
 
 GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
@@ -95,19 +91,56 @@ GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (id);
 }
 
-GMT_LONG GMT_nc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
-	return (GMT_nc_grd_info (C, header, 'r'));
+void GMT_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units)
+{	/* Get attributes long_name and units for given variable ID
+	 * and assign variable name if attributes are not available.
+	 * ncid, varid		: as in nc_get_att_text
+	 * nameunit		: long_name and units in form "long_name [units]"
+	 */
+	char units[GRD_UNIT_LEN];
+	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name_units, (size_t)GRD_UNIT_LEN)) nc_inq_varname (ncid, varid, name_units);
+	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN) && units[0]) sprintf (name_units, "%s [%s]", name_units, units);
 }
 
-GMT_LONG GMT_nc_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
-	return (GMT_nc_grd_info (C, header, 'u'));
+void GMT_nc_put_units (int ncid, int varid, char *name_units)
+{	/* Put attributes long_name and units for given variable ID based on
+	 * string name_unit in the form "long_name [units]".
+	 * ncid, varid		: as is nc_put_att_text
+	 * name_units		: string in form "long_name [units]"
+	 */
+	int i = 0;
+	char name[GRD_UNIT_LEN], units[GRD_UNIT_LEN];
+
+	strcpy (name, name_units);
+	units[0] = '\0';
+	while (name[i] && name[i] != '[') i++;
+	if (name[i]) {
+		strcpy (units, &name[i+1]);
+		name[i] = '\0';
+		if (name[i-1] == ' ') name[i-1] = '\0';
+	}
+	i = 0;
+	while (units[i] && units[i] != ']') i++;
+	if (units[i]) units[i] = '\0';
+	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
+	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
 
-GMT_LONG GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
-	return (GMT_nc_grd_info (C, header, 'w'));
+void GMT_nc_check_step (struct GMT_CTRL *C, GMT_LONG n, double *x, char *varname, char *file)
+{	/* Check if all steps in range are the same (within 2%) */
+	double step, step_min, step_max;
+	GMT_LONG i;
+	if (n < 2) return;
+	step_min = step_max = x[1]-x[0];
+	for (i = 2; i < n; i++) {
+		step = x[i]-x[i-1];
+		if (step < step_min) step_min = step;
+		if (step > step_max) step_max = step;
+	}
+	if (fabs (step_min-step_max)/(fabs (step_min)+fabs (step_max)) > 0.05) {
+		GMT_report (C, GMT_MSG_FATAL, "Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
+		GMT_report (C, GMT_MSG_FATAL, "Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", (x[n-1]-x[0])/(n-1), step_min, step_max);
+	}
 }
 
 GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
@@ -400,6 +433,21 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 	return (GMT_NOERROR);
 }
 
+GMT_LONG GMT_nc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+{
+	return (GMT_nc_grd_info (C, header, 'r'));
+}
+
+GMT_LONG GMT_nc_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+{
+	return (GMT_nc_grd_info (C, header, 'u'));
+}
+
+GMT_LONG GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+{
+	return (GMT_nc_grd_info (C, header, 'w'));
+}
+
 GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
@@ -624,56 +672,4 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	GMT_err_trap (nc_close (header->ncid));
 
 	return (GMT_NOERROR);
-}
-
-void GMT_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units)
-{	/* Get attributes long_name and units for given variable ID
-	 * and assign variable name if attributes are not available.
-	 * ncid, varid		: as in nc_get_att_text
-	 * nameunit		: long_name and units in form "long_name [units]"
-	 */
-	char units[GRD_UNIT_LEN];
-	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name_units, (size_t)GRD_UNIT_LEN)) nc_inq_varname (ncid, varid, name_units);
-	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN) && units[0]) sprintf (name_units, "%s [%s]", name_units, units);
-}
-
-void GMT_nc_put_units (int ncid, int varid, char *name_units)
-{	/* Put attributes long_name and units for given variable ID based on
-	 * string name_unit in the form "long_name [units]".
-	 * ncid, varid		: as is nc_put_att_text
-	 * name_units		: string in form "long_name [units]"
-	 */
-	int i = 0;
-	char name[GRD_UNIT_LEN], units[GRD_UNIT_LEN];
-
-	strcpy (name, name_units);
-	units[0] = '\0';
-	while (name[i] && name[i] != '[') i++;
-	if (name[i]) {
-		strcpy (units, &name[i+1]);
-		name[i] = '\0';
-		if (name[i-1] == ' ') name[i-1] = '\0';
-	}
-	i = 0;
-	while (units[i] && units[i] != ']') i++;
-	if (units[i]) units[i] = '\0';
-	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
-	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
-}
-
-void GMT_nc_check_step (struct GMT_CTRL *C, GMT_LONG n, double *x, char *varname, char *file)
-{	/* Check if all steps in range are the same (within 2%) */
-	double step, step_min, step_max;
-	GMT_LONG i;
-	if (n < 2) return;
-	step_min = step_max = x[1]-x[0];
-	for (i = 2; i < n; i++) {
-		step = x[i]-x[i-1];
-		if (step < step_min) step_min = step;
-		if (step > step_max) step_max = step;
-	}
-	if (fabs (step_min-step_max)/(fabs (step_min)+fabs (step_max)) > 0.05) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
-		GMT_report (C, GMT_MSG_FATAL, "Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", (x[n-1]-x[0])/(n-1), step_min, step_max);
-	}
 }
