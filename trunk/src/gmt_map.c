@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.280 2011-04-21 13:47:48 jluis Exp $
+ *	$Id: gmt_map.c,v 1.281 2011-04-21 20:25:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6093,7 +6093,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 	GMT_LONG col_in, row_in, ij_in, col_out, row_out, ij_out, b, nb = I->n_bands;
 	short int *nz = NULL;
-	double x_proj, y_proj, inv_nz;
+	double x_proj, y_proj, inv_nz, rgb[4];
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
 	unsigned char z_int[4];
@@ -6156,7 +6156,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	}
 
 	GMT_grd_loop (O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
-		for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = C->current.setting.color_patch[GMT_NAN][b];
+		for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 
 	/* PART 1: Project input image points and do a blockmean operation */
 
@@ -6186,7 +6186,10 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 				ij_out = GMT_IJP (O->header, row_out, col_out);	/* The output node */
 				if (nz[ij_out] == 0) for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = 0;	/* First time, override the initial value */
 				if (nz[ij_out] < SHRT_MAX) {	/* Avoid overflow */
-					for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = (unsigned char) irint (((GMT_LONG)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_out+b])/(nz[ij_out] + 1.0));	/* Update the mean pix values inside this rect... */
+					for (b = 0; b < nb; b++) {
+						rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_in+b])/(nz[ij_out] + 1.0);	/* Update the mean pix values inside this rect... */
+						O->data[nb*ij_out+b] = (unsigned char) irint (GMT_0_255_truncate (rgb[b]));
+					}
 					nz[ij_out]++;		/* ..and how many points there were */
 				}
 			}
@@ -6222,7 +6225,10 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = z_int[b];
 			else {						/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
-				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = (unsigned char) irint ((O->data[nb*ij_out+b] + z_int[b] * inv_nz) / (nz[ij_out] + inv_nz));
+				for (b = 0; b < nb; b++) {
+					rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + z_int[b] * inv_nz) / (nz[ij_out] + inv_nz);
+					O->data[nb*ij_out+b] = (unsigned char) irint (GMT_0_255_truncate (rgb[b]));
+				}
 			}
 		}
 	}

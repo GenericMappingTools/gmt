@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.40 2011-04-06 20:22:53 guru Exp $
+ *	$Id: gmt_colors.h,v 1.41 2011-04-21 20:25:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -63,6 +63,9 @@
 
 /* Determine if a RGB combination is in fact B/W */
 #define GMT_is_bw(rgb) (GMT_is_gray(rgb) && (GMT_eq(rgb[0],0.0) || GMT_eq(rgb[0],1.0)))
+
+/* Force component to be in 0 <= s <= 255 range */
+#define GMT_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
 
 /* Here is the definition of the GMT_PALETTE structure that is used in programs
  * that deals with coloring of items as a function of z-lookup.  Note that rgb

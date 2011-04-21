@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.15 2011-04-19 02:01:37 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.16 2011-04-21 20:25:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,7 +259,7 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
-	   B-spline or bicubic) at xx, yy. */
+	   B-spline or bicubic) at xx, yy. 8-bit components is assumed.  */
 
 	GMT_LONG i, j, ij, b, nb = G->n_bands;
 	double retval[4], wsum, wx[4], wy[4], w;
@@ -282,9 +282,13 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0)
-		for (b = 0; b < nb; b++) z[b] = (unsigned char ) irint (retval[b] / wsum);
+	if ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) {
+		for (b = 0; b < nb; b++) {
+			retval[b] /= wsum;
+			z[b] = (unsigned char) irint (GMT_0_255_truncate (retval[b]));
+		}
+	}
 	else
-		for (b = 0; b < nb; b++) z[b] = C->current.setting.color_patch[GMT_NAN][b];
+		for (b = 0; b < nb; b++) z[b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 	return (0);
 }
