@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.7 2011-04-21 03:11:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,10 +246,10 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			PFL save = GMT->current.io.output;
-			GMT_LONG previous = GMT->common.b.active[GMT_OUT];
-			GMT->current.io.output = io.write_item;	/* Override and use chosen output mode */
+			GMT_LONG previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			GMT->current.io.output = io.write_item;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
-			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) GMT->current.io.io_nan_col[0] = GMT_X;	/* Since we dont do xy here, only z */
+			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) {rst = TRUE; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
 				gmt_ij = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[gmt_ij];
@@ -258,8 +258,9 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)&d_value);
 				if (!ok) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			GMT->current.io.output = save;	/* Reset pointer */
+			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
+			if (rst) GMT->current.io.io_nan_col[0] = GMT_Z;	/* Reset to what it was */
 		}
 #ifdef GMT_COMPAT
 		else if (Ctrl->E.active) {	/* ESRI format */
