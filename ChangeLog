@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.964 2011-04-21 03:01:19 guru Exp $
+	$Id: ChangeLog,v 1.965 2011-04-22 00:02:37 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-20	jluis
+	* grdimage_func.c:	Now reprojects images using the new GMT_img_project function.
 
 2011-04-20	pwessel
 	* xyz2grd_func.c:	Added -Af|s for just keeping the first or last value to

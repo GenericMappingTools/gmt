@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.51 2011-04-21 02:37:32 jluis Exp $
+ *	$Id: gmt_grd.h,v 1.52 2011-04-22 00:02:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -172,6 +172,9 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 #define GMT_IJP(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO])
 /* New IJ0 macro using h but ignores the pad info */
 #define GMT_IJ0(h,row,col) (((GMT_LONG)(row))*((GMT_LONG)h->nx)+(GMT_LONG)(col))
+/* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
+#define GMT_IJPGI(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx*(GMT_LONG)h->n_bands)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO]*(GMT_LONG)h->n_bands)
+
 /* Obtain row and col from index */
 #define GMT_col(h,ij) ((ij) % h->mx - h->pad[XLO])
 #define GMT_row(h,ij) ((ij) / h->mx - h->pad[YHI])
