@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.16 2011-04-22 00:02:37 guru Exp $
+ *	$Id: grdimage_func.c,v 1.17 2011-04-22 00:26:13 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -710,7 +710,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 #ifdef USE_GDAL
-			node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);
+			if (!n_grids) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);
 #endif
 		}
 
