@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.7 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdpmodeler_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2 of the License.
+ *   the Free Software Foundation; version 2 or any later version.
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of

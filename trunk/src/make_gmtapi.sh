@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: make_gmtapi.sh,v 1.2 2011-03-15 02:06:36 guru Exp $
+#	$Id: make_gmtapi.sh,v 1.3 2011-04-23 02:14:13 guru Exp $
 #
 # Script that creates gmt_${suppl}.c and gmt_${suppl}.h.
 # It takes a list of all GMT programs as arguments. To use with the GMT
@@ -31,7 +31,7 @@ cat << EOF > gmt_${suppl}.c
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,7 +68,7 @@ cat << EOF > gmt_${suppl}.h
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of

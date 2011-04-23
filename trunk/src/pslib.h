@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.66 2011-03-26 20:52:08 guru Exp $
+ *	$Id: pslib.h,v 1.67 2011-04-23 02:14:13 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
+ *	the Free Software Foundation; version 2 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
