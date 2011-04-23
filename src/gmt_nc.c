@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.99 2011-04-23 00:56:08 guru Exp $
+ *	$Id: gmt_nc.c,v 1.100 2011-04-23 01:52:03 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -277,7 +277,7 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 
 	if (job == 'r') {
 		/* Get global information */
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, (size_t)GRD_TITLE_LEN8080))
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, (size_t)GRD_TITLE_LEN80))
 		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, (size_t)GRD_TITLE_LEN80);
 		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, (size_t)GRD_COMMAND_LEN320))
 		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, (size_t)GRD_COMMAND_LEN320);
