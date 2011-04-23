@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 28
-#		$Id: job28.sh,v 1.10 2011-04-23 00:54:51 guru Exp $
+#		$Id: job28.sh,v 1.11 2011-04-23 19:24:09 guru Exp $
 #
 # Purpose:	Illustrates how to mix UTM data and UTM projection
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext, mapproject
@@ -31,7 +31,7 @@ psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+
 	--FONT_LABEL=10p >> $ps
 # Annotate in km but append ,000m to annotations to get customized meter labels
 Rkm=`grdinfo Kilauea.utm.nc -C | cut -f2,3,4,5 | gmtconvert -i0-3s0.001 --IO_COL_SEPARATOR=/`
-psbasemap -R$Rkm -Jx1:160 -B5g5:,"-@:8:,000m":WSne -O --FONT_ANNOT_PRIMARY=10p \
+psbasemap -R$Rkm -Jx1:160 -B5g5:,"-@:8:000m":WSne -O --FONT_ANNOT_PRIMARY=10p \
 	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
 # Clean up
 rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
