@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.283 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_map.c,v 1.284 2011-04-23 03:53:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1294,7 +1294,7 @@ GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	inside[1] = inside_lower_boundary;	outside[1] = outside_lower_boundary;
 	L = GMT_memory (C, NULL, 2, struct GMT_LINE_SEGMENT *);	/* The two polygons */
 
-	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, 0, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, GMT_IS_0_TO_P360, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		L[side] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
