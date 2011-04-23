@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtset_func.c,v 1.3 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmtset_func.c,v 1.4 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = 0;
 	
-	char path[GMT_LONG_TEXT];
+	char path[GMT_TEXT_LEN256];
 	
 	struct GMTSET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

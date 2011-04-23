@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.7 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.8 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 	 */
 
 	GMT_LONG n_errors = 0, j, pos, n_files = 0;
-	char line[GMT_LONG_TEXT], ptr[BUFSIZ];
+	char line[GMT_TEXT_LEN256], ptr[BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -211,7 +211,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG i, k, ii, bin, ind, np, side, col_min, col_max, row_min, row_max, nx1, ny1;
 	GMT_LONG base = 3, direction, err, ij, row, col, np_new;
 
-	char line[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256];
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch;

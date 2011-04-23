@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.72 2011-04-12 03:05:19 remko Exp $
+ *	$Id: libspotter.c,v 1.73 2011-04-23 00:56:09 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -373,7 +373,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], GMT_LONG n
 GMT_LONG spotter_GPlates_pair (char *file)
 {	/* Check if given file is actually a GPlates plate pair */
 	GMT_LONG i;
-	char A[GMT_TEXT_LEN], B[GMT_TEXT_LEN];
+	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	if (sscanf (file, "%[^-]-%s", A, B) != 2) return (FALSE);
 	i = 0;	while (A[i]) if (!isupper ((int)A[i++])) return (FALSE);	/* Not all upper case tag */
 	i = 0;	while (B[i]) if (!isupper ((int)B[i++])) return (FALSE);	/* Not all upper case tag */
@@ -393,7 +393,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	double lon, lat, rot, t;
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
-	char buffer[BUFSIZ], A[GMT_TEXT_LEN], B[GMT_TEXT_LEN], txt[GMT_TEXT_LEN], comment[BUFSIZ];
+	char buffer[BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[BUFSIZ];
 	char Plates[BUFSIZ], Rotations[BUFSIZ], *this = NULL;
 	double K[9];
 

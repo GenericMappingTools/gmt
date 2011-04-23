@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *    $Id: psmeca_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -256,7 +256,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, no_size_needed;
-	char txt[GMT_LONG_TEXT], *p = NULL;
+	char txt[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -542,7 +542,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[BUFSIZ], event_title[BUFSIZ], *line, col[15][GMT_TEXT_LEN];
+	char string[BUFSIZ], event_title[BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
 
 	st_me meca;
 	struct MOMENT moment;

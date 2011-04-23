@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.9 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdfft_func.c,v 1.10 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -493,7 +493,7 @@ GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 {
 	GMT_LONG i, j, n_tokens, pos, descending;
 	double fourvals[4];
-	char line[GMT_LONG_TEXT], p[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	
 	/* Syntax is either -F[x|y]lc/hc/lp/hp (Cosine taper), -F[x|y]lo/hi (Gaussian), or 0F[x|y]lo/hi/order (Butterworth) */
 	
@@ -596,7 +596,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 *	approximation of the integral.
 	 */
 
-	char format[GMT_TEXT_LEN];
+	char format[GMT_TEXT_LEN64];
 	GMT_LONG k, nk, nused, ifreq, error, dim[4] = {1, 1, 1, 0};
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;

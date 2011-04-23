@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.8 2011-04-20 03:47:21 guru Exp $
+ *	$Id: greenspline_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -266,7 +266,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 */
 
 	GMT_LONG n_errors = 0, n_items, k, j, dimension, error;
-	char txt[6][GMT_TEXT_LEN];
+	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -1530,7 +1530,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		s = GMT_memory (GMT, NULL, nm, double);
 		if ((error = GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
-			char format[GMT_LONG_TEXT];
+			char format[GMT_TEXT_LEN256];
 			double *eig = GMT_memory (GMT, NULL, nm, double);
 			GMT_memcpy (eig, s, nm, double);
 			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Eigen-value rations s(i)/s(0) saved to %s\n", Ctrl->C.file);

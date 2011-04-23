@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.6 2011-04-17 23:53:25 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.7 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -258,7 +258,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG j, n_errors = 0, n_files = 0, pos = 0;
-	char	ptr[GMT_LONG_TEXT];
+	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
 
@@ -756,7 +756,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 	GMT_LONG n_alloc, ndata_xyz;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
-	char line[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256];
 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
@@ -772,7 +772,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
         	mag_var4 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR4);
 	
 	if (Ctrl->M.active) {	/* take a first read just to compute the central logitude */
-		while (fgets (line, GMT_LONG_TEXT, fp_xyz)) { 
+		while (fgets (line, GMT_TEXT_LEN256, fp_xyz)) { 
 			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done bellow */
 			x_min = (float)MIN(in[0], x_min);	x_max = (float)MAX(in[0], x_max);
 			y_min = (float)MIN(in[1], y_min);	y_max = (float)MAX(in[1], y_max);
@@ -783,7 +783,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 	}
 
 
-	while (fgets (line, GMT_LONG_TEXT, fp_xyz)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp_xyz)) { 
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
 				GMT_message (GMT, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
@@ -849,13 +849,13 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file) {
 	/* read file with vertex indexes of triangles */
 	GMT_LONG n_alloc, ndata_t;
 	GMT_LONG in[3];
-	char line[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256];
 
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
 	vert = GMT_memory (GMT, NULL, (size_t) n_alloc, struct VERT);
 	
-	while (fgets (line, GMT_LONG_TEXT, fp_t)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp_t)) { 
 		if(sscanf (line, "%ld %ld %ld", &in[0], &in[1], &in[2]) !=3)
 			GMT_message (GMT, "ERROR deciphering line %ld of %s\n", ndata_t+1, t_file);
 		if (ndata_t == n_alloc) {
@@ -876,13 +876,13 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, FILE *fp_r, char *raw_file, double z_di
 	/* read a file with triagles in the raw format and returns nb of triangles */
 	GMT_LONG n_alloc, ndata_r;
 	double in[9];
-	char line[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256];
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
 	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_LONG_TEXT, fp_r)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp_r)) { 
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg", 
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
 			GMT_message (GMT, "ERROR deciphering line %ld of %s\n", ndata_r+1, raw_file);
@@ -910,28 +910,28 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, FILE *fp_s, char *stl_file, double z_di
 	/* read a file with triagles in the stl format and returns nb of triangles */
 	GMT_LONG n_alloc, ndata_s;
 	double in[3];
-	char line[GMT_LONG_TEXT], text[128], ver_txt[128];
+	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
 
 	n_alloc = GMT_CHUNK;
 	ndata_s = 0;
 	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_LONG_TEXT, fp_s)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp_s)) { 
 		sscanf (line, "%s", text);
 		if (strcmp (text, "outer") == 0) {
-			fgets (line, GMT_LONG_TEXT, fp_s); /* get first vertex */
+			fgets (line, GMT_TEXT_LEN256, fp_s); /* get first vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_message (GMT, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
-			fgets (line, GMT_LONG_TEXT, fp_s); /* get second vertex */
+			fgets (line, GMT_TEXT_LEN256, fp_s); /* get second vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_message (GMT, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
-			fgets (line, GMT_LONG_TEXT, fp_s); /* get third vertex */
+			fgets (line, GMT_TEXT_LEN256, fp_s); /* get third vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_message (GMT, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
 			raw_mesh[ndata_s].t3[0] = in[0];
@@ -955,7 +955,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, FILE *fp, GMT_LONG switch_xy) {
 	/* Read file with xy points where anomaly is to be computed*/
 	GMT_LONG n_alloc, ndata, ix = 0, iy = 1;
 	double in[2];
-	char line[GMT_LONG_TEXT];
+	char line[GMT_TEXT_LEN256];
 
 	if (fp == NULL) fp = stdin;
        	n_alloc = GMT_CHUNK;
@@ -964,7 +964,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, FILE *fp, GMT_LONG switch_xy) {
 
 	data = GMT_memory (GMT, NULL, (size_t) n_alloc, struct DATA);
 
-	while (fgets (line, GMT_LONG_TEXT, fp)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
 			GMT_message (GMT, "ERROR deciphering line %ld of polygon file\n", ndata+1);
                	if (ndata == n_alloc) {

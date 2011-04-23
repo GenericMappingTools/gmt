@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
+ *	$Id: pscontour_func.c,v 1.13 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -426,7 +426,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, k, j, n, id;
-	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN];
+	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -612,7 +612,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
 	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
 
-	char cont_label[GMT_LONG_TEXT], format[GMT_LONG_TEXT];
+	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
 	struct PSCONTOUR *cont = NULL;
 	struct GMT_DATASET *D = NULL;

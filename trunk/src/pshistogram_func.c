@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -638,7 +638,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (Ctrl->A.active) {
-		char buffer[GMT_LONG_TEXT];
+		char buffer[GMT_TEXT_LEN256];
 		d_swap (GMT->current.map.frame.axis[GMT_X].item[0].interval, GMT->current.map.frame.axis[GMT_Y].item[0].interval);
 		d_swap (GMT->current.map.frame.axis[GMT_X].item[4].interval, GMT->current.map.frame.axis[GMT_Y].item[4].interval);
 		d_swap (GMT->current.map.frame.axis[GMT_X].item[5].interval, GMT->current.map.frame.axis[GMT_Y].item[5].interval);

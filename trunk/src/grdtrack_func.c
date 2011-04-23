@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -160,7 +160,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG j, n_errors = 0, ng = 0, n_files = 0;
-	char line[BUFSIZ], ta[GMT_TEXT_LEN], tb[GMT_TEXT_LEN], tc[GMT_TEXT_LEN];
+	char line[BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

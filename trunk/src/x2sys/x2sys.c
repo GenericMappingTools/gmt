@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.153 2011-04-11 21:15:32 remko Exp $
+ *	$Id: x2sys.c,v 1.154 2011-04-23 00:56:09 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -461,7 +461,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *C, GMT_LONG n)
 GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
 	GMT_LONG j, k, i, n_read = 0, pos, error = FALSE;
-	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
+	char line[BUFSIZ], buffer[GMT_TEXT_LEN64], p[BUFSIZ], c;
 	unsigned char u;
 	short int h;
 	float f;
@@ -888,7 +888,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG *nf)
 {
 	GMT_LONG n_alloc = GMT_CHUNK, n = 0;
-	char **p = NULL, line[BUFSIZ], name[GMT_TEXT_LEN];
+	char **p = NULL, line[BUFSIZ], name[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
 	*list = NULL;	*nf = 0;
@@ -922,7 +922,7 @@ GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG
 GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, GMT_LONG *nf)
 {
 	GMT_LONG n_alloc = GMT_CHUNK, n = 0;
-	char **p = NULL, line[BUFSIZ], name[GMT_TEXT_LEN];
+	char **p = NULL, line[BUFSIZ], name[GMT_TEXT_LEN64];
 	double *W = NULL, this_w;
 	FILE *fp = NULL;
 
@@ -1458,9 +1458,9 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 
 	FILE *fp = NULL;
 	struct X2SYS_COE_PAIR *P = NULL;
-	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
-	char x_txt[GMT_TEXT_LEN], y_txt[GMT_TEXT_LEN], d_txt[2][GMT_TEXT_LEN], h_txt[2][GMT_TEXT_LEN], v_txt[2][GMT_TEXT_LEN], z_txt[2][GMT_TEXT_LEN];
-	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list = NULL, **ignore = NULL, *t = NULL;
+	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], start[2][GMT_TEXT_LEN64];
+	char x_txt[GMT_TEXT_LEN64], y_txt[GMT_TEXT_LEN64], d_txt[2][GMT_TEXT_LEN64], h_txt[2][GMT_TEXT_LEN64], v_txt[2][GMT_TEXT_LEN64], z_txt[2][GMT_TEXT_LEN64];
+	char stop[2][GMT_TEXT_LEN64], info[2][3*GMT_TEXT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
 	GMT_LONG p, n_pairs, i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	GMT_LONG more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	double x, m, lon, dist[2], d_val;

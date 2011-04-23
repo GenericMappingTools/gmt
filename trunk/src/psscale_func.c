@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
+ *	$Id: psscale_func.c,v 1.7 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -184,8 +184,8 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG j, n, pos, n_errors = 0, n_files = 0;
-	char flag, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
-	char txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], p[GMT_LONG_TEXT];
+	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -350,13 +350,13 @@ double get_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double x, double *wid
 void fix_format (struct GMT_CTRL *GMT, char *unit, char *format)
 {
 	GMT_LONG i, j;
-	char text[GMT_TEXT_LEN], new_format[BUFSIZ];
+	char text[GMT_TEXT_LEN64], new_format[BUFSIZ];
 
 	/* Check if annotation units should be added */
 
 	if (unit && unit[0]) {	/* Must append the unit string */
 		if (!strchr (unit, '%'))	/* No percent signs */
-			strncpy (text, unit, (size_t)GMT_TEXT_LEN);
+			strncpy (text, unit, (size_t)GMT_TEXT_LEN64);
 		else {
 			for (i = j = 0; i < (GMT_LONG)strlen (unit); i++) {
 				text[j++] = unit[i];
@@ -381,7 +381,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	GMT_LONG i, ii, id, j, nb, ndec = -1, dec, p_val, depth, Label_justify, form;
 	GMT_LONG nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, use_labels = 0;
 	GMT_LONG reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
-	char format[GMT_LONG_TEXT], text[GMT_LONG_TEXT], test[GMT_LONG_TEXT], unit[GMT_LONG_TEXT], label[GMT_LONG_TEXT];
+	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label;
 	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, rgb[4], rrggbb[4], xp[4], yp[4];
@@ -940,7 +940,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the psscale task */
 	GMT_LONG error = FALSE, i;
 
-	char text[GMT_LONG_TEXT];
+	char text[GMT_TEXT_LEN256];
 
 	double max_intens[2], dz, *z_width = NULL;
 	double start_val, stop_val, wesn[4];

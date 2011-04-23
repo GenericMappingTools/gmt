@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.7 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.8 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -218,7 +218,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, pos, j, k;
-	char ptr[BUFSIZ], buffer[BUFSIZ], za[GMT_TEXT_LEN], zb[GMT_TEXT_LEN];
+	char ptr[BUFSIZ], buffer[BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT

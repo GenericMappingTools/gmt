@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -355,7 +355,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	 */
 
 	GMT_LONG j, k, n_errors = 0, mode, grayscale;
-	char text[BUFSIZ], txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN], txt_d[GMT_TEXT_LEN], *anti = NULL;
+	char text[BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

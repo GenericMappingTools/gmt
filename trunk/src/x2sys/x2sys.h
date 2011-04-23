@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.58 2011-03-25 22:17:43 guru Exp $
+ *	$Id: x2sys.h,v 1.59 2011-04-23 00:56:09 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -235,7 +235,7 @@ struct X2SYS_COE {	/* Holds the information for a single crossover */
 };
 
 struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of tracks */
-	char trk[2][GMT_TEXT_LEN];	/* Track names */
+	char trk[2][GMT_TEXT_LEN64];	/* Track names */
 	GMT_LONG id[2];			/* Internal ID track numbers */
 	GMT_LONG year[2];		/* Start year for each track */
 	GMT_LONG nx;			/* Number of crossovers */

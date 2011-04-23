@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.8 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdproject_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,7 +246,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, set_n = FALSE, shift_xy = FALSE, offset, k, unit = 0;
 	GMT_LONG use_nx = 0, use_ny = 0;
 
-	char format[BUFSIZ], unit_name[GRD_UNIT_LEN], scale_unit_name[GRD_UNIT_LEN];
+	char format[BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
@@ -361,7 +361,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 	ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 	if (Ctrl->A.active) {	/* Convert to chosen units */
-		strncpy (unit_name, scale_unit_name, (size_t)GRD_UNIT_LEN);
+		strncpy (unit_name, scale_unit_name, (size_t)GRD_UNIT_LEN80);
 		xmin /= GMT->current.proj.scale[GMT_X];
 		xmax /= GMT->current.proj.scale[GMT_X];
 		ymin /= GMT->current.proj.scale[GMT_Y];

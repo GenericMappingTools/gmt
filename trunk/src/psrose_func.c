@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
+ *	$Id: psrose_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -183,7 +183,7 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n, n_errors = 0, n_files = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -604,7 +604,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 
 		if (half_only) {
-			char text[GMT_TEXT_LEN];
+			char text[GMT_TEXT_LEN64];
 			if (!Ctrl->L.active) {	/* Use default labels */
 				free ((void *)Ctrl->L.w);	free ((void *)Ctrl->L.e);	free ((void *)Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.8 2011-04-19 02:01:38 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -259,7 +259,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstat[MGD77_N_STATS][GMT_TEXT_LEN], text[GMT_TEXT_LEN];
+	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstat[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 
 	GMT_LONG gotTime, landcruise, *offsetSign, newScale = FALSE, mtf1, nav_error, spike_amplitude;
 	GMT_LONG *prevOffsetSign, prevFlag, prevType, decimated = FALSE;
@@ -296,7 +296,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_TEXT_LEN);
+	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_TEXT_LEN64);
 	gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 
 	MGD77_Init (GMT, &M);
@@ -1164,7 +1164,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					diff[i][j] = D[j].number[this_grid[i].col] - G[i][j];
 
 				/* Initialize variables */
-				for (k=0; k<MGD77_N_STATS; k++) { stat[k] = stat2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN; j++) fstat[k][j]='\0'; }
+				for (k=0; k<MGD77_N_STATS; k++) { stat[k] = stat2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN64; j++) fstat[k][j]='\0'; }
 				tcrit = se = 0;
 				newScale = FALSE;
 				MaxDiff[i] = 0.0;

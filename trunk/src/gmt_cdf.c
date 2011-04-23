@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.66 2011-04-19 09:02:43 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.67 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	GMT_LONG err;
 	int i, nm[2];
 	double dummy[2];
-	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
+	char text[GRD_COMMAND_LEN320+GRD_REMARK_LEN160];
 	nc_type z_type;
 
 	/* Dimension ids, varibale ids, etc. */
@@ -98,7 +98,7 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 
 	/* Get or assign attributes */
 
-	GMT_memset (text, GRD_COMMAND_LEN+GRD_REMARK_LEN, char);
+	GMT_memset (text, GRD_COMMAND_LEN320+GRD_REMARK_LEN160, char);
 
 	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
@@ -112,8 +112,8 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
         	nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
         	GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
         	GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
-		strncpy (header->command, text, (size_t)GRD_COMMAND_LEN);
-		strncpy (header->remark, &text[GRD_COMMAND_LEN], (size_t)GRD_REMARK_LEN);
+		strncpy (header->command, text, (size_t)GRD_COMMAND_LEN320);
+		strncpy (header->remark, &text[GRD_COMMAND_LEN320], (size_t)GRD_REMARK_LEN160);
 
 		GMT_err_trap (nc_get_var_double (ncid, x_range_id, dummy));
 		header->wesn[XLO] = dummy[0];
@@ -134,10 +134,10 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	}
 	else {
 		strcpy (text, header->command);
-		strcpy (&text[GRD_COMMAND_LEN], header->remark);
-		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", (size_t)GRD_UNIT_LEN, header->x_units));
-		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", (size_t)GRD_UNIT_LEN, header->y_units));
-		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", (size_t)GRD_UNIT_LEN, header->z_units));
+		strcpy (&text[GRD_COMMAND_LEN320], header->remark);
+		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", (size_t)GRD_UNIT_LEN80, header->x_units));
+		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", (size_t)GRD_UNIT_LEN80, header->y_units));
+		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", (size_t)GRD_UNIT_LEN80, header->z_units));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, (size_t)1, &header->z_scale_factor));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, (size_t)1, &header->z_add_offset));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
@@ -148,8 +148,8 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, (size_t)1, &i));
 		}
 		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, (size_t)1, &header->registration));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", (size_t)GRD_TITLE_LEN, header->title));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", (size_t)GRD_TITLE_LEN80, header->title));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", (size_t)(GRD_COMMAND_LEN320+GRD_REMARK_LEN160), text));
 
 		GMT_err_trap (nc_enddef (ncid));
 

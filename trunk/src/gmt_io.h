@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.105 2011-04-20 02:43:43 guru Exp $
+ *	$Id: gmt_io.h,v 1.106 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -260,7 +260,7 @@ struct GMT_CLOCK_IO {
 	GMT_LONG compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	GMT_LONG twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
-	char format[GMT_TEXT_LEN];	/* Actual C format used to output clock */
+	char format[GMT_TEXT_LEN64];	/* Actual C format used to output clock */
 	char delimiter[2][2];		/* Delimiter strings in clock, e.g. ":" */
 };
 
@@ -273,7 +273,7 @@ struct GMT_DATE_IO {
 	GMT_LONG day_of_year;		/* TRUE if we do day-of-year rather than month/day */
 	GMT_LONG mw_text;		/* TRUE if we must plot the month name or Week rather than a numeral */
 	GMT_LONG compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
-	char format[GMT_TEXT_LEN];	/* Actual C format used to input/output date */
+	char format[GMT_TEXT_LEN64];	/* Actual C format used to input/output date */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
@@ -285,8 +285,8 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	GMT_LONG wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
 	GMT_LONG no_sign;		/* TRUE if we want absolute values (plot only) */
 	GMT_LONG n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
-	char x_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output longitude */
-	char y_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output latitude */
+	char x_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output longitude */
+	char y_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output latitude */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 

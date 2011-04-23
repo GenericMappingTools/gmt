@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.315 2011-04-19 03:54:18 guru Exp $
+ *	$Id: gmt_plot.c,v 1.316 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -420,7 +420,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
-	char format[GMT_LONG_TEXT];		/* format used for non-time annotations */
+	char format[GMT_TEXT_LEN256];		/* format used for non-time annotations */
 	char *axis_chr[3] = {"ns", "ew", "zz"};	/* Characters corresponding to axes */
 	char **label_c = NULL;
 	PFD xyz_fwd = NULL;
@@ -1744,7 +1744,7 @@ void GMT_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	GMT_LONG i, k, nx, ny, form, remove[2] = {0,0};
 	GMT_LONG do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, annot, is_world_save, lon_wrap_save;
-	char label[GMT_LONG_TEXT];
+	char label[GMT_TEXT_LEN256];
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
 
 	if (!(GMT_x_is_lon (C, GMT_IN) || GMT_y_is_lat (C, GMT_IN) || C->current.proj.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
@@ -2241,7 +2241,7 @@ void GMT_timestamp (struct GMT_CTRL *C, struct PSL_CTRL *P, double x, double y, 
 	 */
 
 	time_t right_now;
-	char label[GMT_LONG_TEXT], text[GMT_LONG_TEXT];
+	char label[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256];
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
@@ -2399,7 +2399,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 	GMT_LONG n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
 	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
-	char txt[GMT_LONG_TEXT], *this_label = NULL;
+	char txt[GMT_TEXT_LEN256], *this_label = NULL;
 	char *label[5] = {"km", "miles", "nautical miles", "m", "feet"}, *units[5] = {"km", "mi", "nm", "m", "ft"};
 
 	if (!ms->plot) return;

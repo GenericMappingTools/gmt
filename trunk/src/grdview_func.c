@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.15 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdview_func.c,v 1.16 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -411,7 +411,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				Ctrl->G.active = TRUE;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
 				if (n_commas == 2) {	/* Three r,g,b grids for draping */
-					char A[GMT_LONG_TEXT], B[GMT_LONG_TEXT], C[GMT_LONG_TEXT];
+					char A[GMT_TEXT_LEN256], B[GMT_TEXT_LEN256], C[GMT_TEXT_LEN256];
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
 					Ctrl->G.file[0] = strdup (A);
 					Ctrl->G.file[1] = strdup (B);
@@ -440,7 +440,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				break;
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
-					char colors[GMT_TEXT_LEN];
+					char colors[GMT_TEXT_LEN64];
 					Ctrl->N.active = TRUE;
 					n = sscanf (opt->arg, "%lf/%s", &Ctrl->N.level, colors);
 					if (n == 2) {
@@ -505,7 +505,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
 				if (j == 1) {	/* First check that the m or c is not part of a color name instead */
-					char txt_a[GMT_LONG_TEXT];
+					char txt_a[GMT_TEXT_LEN256];
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, (size_t)n);	txt_a[n] = '\0';

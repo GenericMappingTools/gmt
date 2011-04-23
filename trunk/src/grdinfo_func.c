@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -186,7 +186,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double mean = 0.0, median = 0.0, sum2 = 0.0, stdev = 0.0, scale = 0.0, rms = 0.0, x;
 
-	char format[BUFSIZ], text[GMT_TEXT_LEN];
+	char format[BUFSIZ], text[GMT_TEXT_LEN64];
 	char *type[2] = { "Gridline", "Pixel"};
 	
 	struct GRDINFO_CTRL *Ctrl = NULL;

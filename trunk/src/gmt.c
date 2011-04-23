@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.c,v 1.2 2011-03-15 02:06:35 guru Exp $
+ *	$Id: gmt.c,v 1.3 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,7 +33,7 @@
 #endif
 
 struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
-	char name[GMT_TEXT_LEN];	/* Program name */
+	char name[GMT_TEXT_LEN64];	/* Program name */
 	GMT_LONG mode;			/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
 };
 

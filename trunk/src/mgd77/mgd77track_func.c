@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77track_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -273,8 +273,8 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 	 */
 
 	GMT_LONG n_errors = 0, j, mrk = 0, error = FALSE;
-	char ms[GMT_TEXT_LEN], mc[GMT_TEXT_LEN], tmp[GMT_TEXT_LEN], mfs[GMT_TEXT_LEN], mf[GMT_TEXT_LEN];
-	char comment[BUFSIZ], mfc[GMT_TEXT_LEN], *t = NULL;
+	char ms[GMT_TEXT_LEN64], mc[GMT_TEXT_LEN64], tmp[GMT_TEXT_LEN64], mfs[GMT_TEXT_LEN64], mf[GMT_TEXT_LEN64];
+	char comment[BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -529,8 +529,8 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0, error = FALSE, first, form, both = FALSE;
 	GMT_LONG annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
 	
-       	char label[GMT_LONG_TEXT], date[GMT_TEXT_LEN], clock[GMT_TEXT_LEN];
-	char name[GMT_TEXT_LEN], **list = NULL;
+       	char label[GMT_TEXT_LEN256], date[GMT_TEXT_LEN64], clock[GMT_TEXT_LEN64];
+	char name[GMT_TEXT_LEN64], **list = NULL;
 
 	double x, y, annot_dist[2] = {0, 0}, tick_dist[2] = {0, 0}, annot_time[2] = {0, 0};
 	double *track_dist = NULL, angle, plot_x, plot_y, *lon = NULL, *lat = NULL, *track_time = NULL;
