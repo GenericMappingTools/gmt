@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.490 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_support.c,v 1.491 2011-04-23 03:53:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3250,7 +3250,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				else {					/* Label at a fixed angle */
 					G->label_angle = atof (&p[1]);
 					G->angle_type = 2;
-					GMT_lon_range_adjust (C, 2, &G->label_angle);	/* Now -180/+180 */
+					GMT_lon_range_adjust (C, GMT_IS_M180_TO_P180, &G->label_angle);	/* Now -180/+180 */
 					while (fabs (G->label_angle) > 90.0) G->label_angle -= copysign (180.0, G->label_angle);
 				}
 				break;
@@ -9923,7 +9923,7 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	double r;
 	struct GMT_LINE_SEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 	
-	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, 0, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, GMT_IS_0_TO_P360, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 	GMT_alloc_segment (C, Sx, 2*S->n_rows, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
 	
 	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */

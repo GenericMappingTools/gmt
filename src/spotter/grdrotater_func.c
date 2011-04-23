@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.11 2011-04-23 03:53:35 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -347,8 +347,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
 	
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
-	double w180, w360, e180, e360, *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
-	double wp180, wp360, ep180, ep360, spol, npol, west, east, south, north;
+	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TABLE *pol = NULL;
@@ -455,10 +454,8 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* First reconstruct the polygon outline */
 	
-	west = w360 = w180 = DBL_MAX;	east = e360 = e180 = -DBL_MAX;	south = DBL_MAX;	north = -DBL_MAX;
 	for (seg = 0; not_global && seg < pol->n_segments; seg++) {
 		if (!Ctrl->N.active) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], 2);
-		wp360 = wp180 = DBL_MAX;	ep360 = ep180 = -DBL_MAX;	spol = DBL_MAX;	npol = -DBL_MAX;
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			S = pol->segment[seg];	/* Shorthand for current segment */
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
@@ -466,37 +463,9 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			spotter_matrix_vect_mult (GMT, R, P_original, P_rotated);				/* Rotate the vector */
 			GMT_cart_to_geo (GMT, &S->coord[GMT_Y][rec], &S->coord[GMT_X][rec], P_rotated, TRUE);	/* Recover lon lat representation; TRUE to get degrees */
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-			if (S->coord[GMT_Y][rec] < south) south = S->coord[GMT_Y][rec];
-			if (S->coord[GMT_Y][rec] > north) north = S->coord[GMT_Y][rec];
-			if (S->coord[GMT_Y][rec] < spol) spol = S->coord[GMT_Y][rec];
-			if (S->coord[GMT_Y][rec] > npol) npol = S->coord[GMT_Y][rec];
-			lon = S->coord[GMT_X][rec];
-			GMT_lon_range_adjust (GMT, 0, &lon);	/* 0 <= lon < 360 */
-			if (lon < w360) w360 = lon;
-			if (lon > e360) e360 = lon;
-			if (lon < wp360) wp360 = lon;
-			if (lon > ep360) ep360 = lon;
-			GMT_lon_range_adjust (GMT, 2, &lon);	/* -180 <= lon < 180 */
-			if (lon < w180) w180 = lon;
-			if (lon > e180) e180 = lon;
-			if (lon < wp180) wp180 = lon;
-			if (lon > ep180) ep180 = lon;
 		}
-		S->pole = 0;
-		if (fabs (ep360 - wp360) < 180.0) {
-			S->min[GMT_X] = w360;
-			S->max[GMT_X] = e360;
-		}
-		else if (fabs (ep180 - wp180) < 180.0) {
-			S->min[GMT_X] = w180;
-			S->max[GMT_X] = e180;
-		}
-		else {
-			S->min[GMT_X] = 0.0;
-			S->max[GMT_X] = 360.0;
-			S->pole = irint (copysign (1.0, npol));
-		}
-		S->min[GMT_Y] = spol;	S->max[GMT_Y] = npol;
+		GMT_set_seg_minmax (GMT, S);	/* Determine min/max extent of polygon */
+		GMT_set_seg_polar (GMT, S);	/* Determine if it is a polar cap */
 	}
 	if (!Ctrl->N.active && not_global) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
@@ -516,24 +485,11 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Then, find min/max of reconstructed outline */
 	
-	GMT->common.R.wesn[YLO] = south;	GMT->common.R.wesn[YHI] = north;
 	if (global)
 		GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
-	else if (fabs (e360 - w360) < 180.0) {
-		GMT->common.R.wesn[XLO] = w360;
-		GMT->common.R.wesn[XHI] = e360;
-	}
-	else if (fabs (e180 - w180) < 180.0) {
-		GMT->common.R.wesn[XLO] = w180;
-		GMT->common.R.wesn[XHI] = e180;
-	}
-	else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) {
-		GMT->common.R.wesn[XLO] = -180.0;
-		GMT->common.R.wesn[XHI] = 180.0;
-	}
 	else {
-		GMT->common.R.wesn[XLO] = 0.0;
-		GMT->common.R.wesn[XHI] = 360.0;
+		GMT->common.R.wesn[XLO] = S->min[GMT_X];	GMT->common.R.wesn[XHI] = S->max[GMT_X];
+		GMT->common.R.wesn[YLO] = S->min[GMT_Y];	GMT->common.R.wesn[YHI] = S->max[GMT_Y];
 	}
 	
 	G_rot = GMT_create_grid (GMT);

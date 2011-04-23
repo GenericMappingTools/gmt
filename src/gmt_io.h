@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.107 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_io.h,v 1.108 2011-04-23 03:53:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -219,6 +219,13 @@ enum GMT_io {GMT_IN, GMT_OUT, GMT_ERR};
 #define GMT_IS_DIMENSION	64	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
 #define GMT_IS_UNKNOWN		128	/* Input type is not knowable without -f */
 
+/* Various ways to report longitudes */
+
+#define GMT_IS_0_TO_P360	0	/* Report 0 <= lon < 360 */
+#define GMT_IS_M360_TO_0	1	/* Report -360 < lon <= 0 */
+#define GMT_IS_M180_TO_P180	2	/* Report -180 <= lon <= +180 */
+#define GMT_IS_M180_TO_P180_GIS	3	/* Report -180 < lon < +180 */
+
 #ifdef WIN32
 /* Functions we have written to handle DLL troubles */
 EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);
@@ -252,6 +259,12 @@ EXTERN_MSC int GMT_fscanf (FILE *fp, char *format, ...);
 #endif
 
 /* Low-level structures used internally */
+
+struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude min/max range */
+	GMT_LONG quad[4];		/* Keeps track if a longitude fell in these quadrants */
+	GMT_LONG range[2];		/* The format for reporting longitude */
+	double min[2], max[2];		/* Min/max values in either -180/180 or 0/360 counting */
+};
 
 struct GMT_CLOCK_IO {
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */

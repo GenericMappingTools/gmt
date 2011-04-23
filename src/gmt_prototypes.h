@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.22 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.23 2011-04-23 03:53:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,6 +117,10 @@ EXTERN_MSC GMT_LONG GMT_PSL_Destroy_Session (struct GMT_CTRL *C, struct PSL_CTRL
 
 /* gmt_io.c: */
 
+EXTERN_MSC struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, GMT_LONG n_items);
+EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items);
+EXTERN_MSC void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x);
+EXTERN_MSC GMT_LONG GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q);
 EXTERN_MSC char *GMT_fgets (struct GMT_CTRL *C, char *line, GMT_LONG buf, FILE *fp);
 EXTERN_MSC int GMT_fclose (struct GMT_CTRL *C, FILE *stream);
 EXTERN_MSC int GMT_access (struct GMT_CTRL *C, const char *filename, int mode);		/* access wrapper */
@@ -163,6 +167,7 @@ EXTERN_MSC GMT_LONG GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR
 EXTERN_MSC GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, GMT_LONG col, char out[BUFSIZ]);
 EXTERN_MSC double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE_SEGMENT *S);
 EXTERN_MSC void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S);
+EXTERN_MSC void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S);
 EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *C, GMT_LONG mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from);
 EXTERN_MSC GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.256 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_io.c,v 1.257 2011-04-23 03:53:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1608,57 +1608,115 @@ void GMT_io_init (struct GMT_CTRL *C)
 void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
 {
 	switch (range) {	/* Adjust to the desired range */
-		case 0:		/* Make 0 <= lon < 360 */
+		case GMT_IS_0_TO_P360:		/* Make 0 <= lon < 360 */
 			while ((*lon) < 0.0) (*lon) += 360.0;
 			while ((*lon) >= 360.0) (*lon) -= 360.0;
 			break;
-		case 1:		/* Make -360 < lon <= 0 */
+		case GMT_IS_M360_TO_0:		/* Make -360 < lon <= 0 */
 			while ((*lon) <= -360.0) (*lon) += 360.0;
 			while ((*lon) > 0) (*lon) -= 360.0;
 			break;
-		case 2:	/* Make -180 < lon < +180 */
+		case GMT_IS_M180_TO_P180:	/* Make -180 < lon < +180 */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) > 180.0) (*lon) -= 360.0;
 			break;
-		case 3:	/* Make -180 < lon < +180 [Special case where +180 is not desired] */
+		case GMT_IS_M180_TO_P180_GIS:	/* Make -180 < lon < +180 [Special case where +180 is not desired] */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
 			break;
 	}
 }
 
+void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items)
+{	/* Allocate an initialize the QUAD struct needed to find min/max of longitudes */
+	GMT_LONG i;
+	
+	GMT_memset (Q, n_items, struct GMT_QUAD);	/* Set all to NULL/0 */
+	for (i = 0; i < n_items; i++) {
+		Q[i].min[0] = Q[i].min[1] = +DBL_MAX;
+		Q[i].max[0] = Q[i].max[1] = -DBL_MAX;
+		Q[i].range[0] = GMT_IS_M180_TO_P180;
+		Q[i].range[1] = GMT_IS_0_TO_P360;
+	}
+}
+
+struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, GMT_LONG n_items)
+{	/* Allocate an initialize the QUAD struct needed to find min/max of longitudes */
+	struct GMT_QUAD *Q = GMT_memory (C, NULL, n_items, struct GMT_QUAD);
+	
+	GMT_quad_reset (C, Q, n_items);
+	
+	return (Q);
+}
+
+void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x)
+{	/* Update quad array for this longitude x */
+	GMT_LONG way, quad_no;
+	for (way = 0; way < 2; way++) {
+		GMT_lon_range_adjust (C, Q->range[way], &x);	/* Set -180/180, then 0-360 range */
+		Q->min[way] = MIN (x, Q->min[way]);
+		Q->max[way] = MAX (x, Q->max[way]);
+	}
+	quad_no = (GMT_LONG)floor (x / 90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
+	if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
+	Q->quad[quad_no] = TRUE;		/* OUr x fell in this quadrant */
+}
+
+GMT_LONG GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q)
+{
+	/* Finalize longitude range settings */
+	GMT_LONG way, n_quad;
+	
+	n_quad = Q->quad[0] + Q->quad[1] + Q->quad[2] + Q->quad[3];		/* How many quadrants had data */
+	if (Q->quad[0] && Q->quad[3])		/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
+		way = 0;
+	else if (Q->quad[1] && Q->quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
+		way = 1;
+	else if (n_quad == 2 && ((Q->quad[0] && Q->quad[2]) || (Q->quad[1] && Q->quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
+		way = ((Q->max[0] - Q->min[0]) < (Q->max[1] - Q->min[1])) ? 0 : 1;
+	else					/* Either will do, use default settings */
+		way = (C->current.io.geo.range == 0) ? 1 : 0;
+	/* Final adjustments */
+	if (Q->min[way] > Q->max[way]) Q->min[way] -= 360.0;
+	if (Q->min[way] < 0.0 && Q->max[way] < 0.0) Q->min[way] += 360.0, Q->max[way] += 360.0;
+	return (way);
+}
+
 void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, GMT_LONG n, double *min, double *max)
 {	/* Return the min/max longitude in array lon using clever quadrant checking. */
-	GMT_LONG j, row, quad_no, n_quad, quad[4] = {FALSE, FALSE, FALSE, FALSE}, range[2] = {2, 0};
-	double xmin[2], xmax[2], x;
+	GMT_LONG way, row;
+	struct GMT_QUAD *Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
 
-	xmin[0] = xmin[1] = DBL_MAX; xmax[0] = xmax[1] = -DBL_MAX;
-	for (row = 0; row < n; row++) {
-		/* We must keep separate min/max for both Dateline and Greenwich conventions */
-		x = lon[row];	/* Work on a copy to avoid changing the array */
-		for (j = 0; j < 2; j++) {
-			GMT_lon_range_adjust (C, range[j], &x);	/* Set -180/180, then 0-360 range */
-			xmin[j] = MIN (x, xmin[j]);
-			xmax[j] = MAX (x, xmax[j]);
-		}
-		quad_no = (GMT_LONG)floor (x/90.0);	/* Now x is 0-360; this yields quadrants 0-3 */
-		if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
-		quad[quad_no] = TRUE;
-	}
+	/* We must keep separate min/max for both Dateline and Greenwich conventions */
+	for (row = 0; row < n; row++) GMT_quad_add (C, Q, lon[row]);
+
 	/* Finalize longitude range settings */
-	n_quad = quad[0] + quad[1] + quad[2] + quad[3];		/* How many quadrants had data */
-	if (quad[0] && quad[3])		/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
-		j = 0;
-	else if (quad[1] && quad[2])	/* Longitudes on either side of the date line, must user 0/360 notation */
-		j = 1;
-	else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
-		j = ((xmax[0] - xmin[0]) < (xmax[1] - xmin[1])) ? 0 : 1;
-	else					/* Either will do, use default settings */
-		j = (C->current.io.geo.range == 0) ? 1 : 0;
-	*min = xmin[j];		*max = xmax[j];
-	/* Final adjustments */
-	if (*min > *max) *min -= 360.0;
-	if (*min < 0.0 && *max < 0.0) *min += 360.0, *max += 360.0;
+	way = GMT_quad_finalize (C, Q);
+	*min = Q->min[way];		*max = Q->max[way];
+	GMT_free (C, Q);
+}
+
+void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+{	/* Must check if polygon is a polar cap */
+	GMT_LONG row;
+	double dlon, lon_sum = 0.0, lat_sum = 0.0;
+	
+	if (GMT_polygon_is_open (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot call GMT_set_seg_polar on an open polygon\n");
+		return;
+	}
+	for (row = 0; row < S->n_rows - 1; row++) {
+		dlon = S->coord[GMT_X][row+1] - S->coord[GMT_X][row];
+		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwich or Dateline, pick the shortest distance */
+		lon_sum += dlon;
+		lat_sum += S->coord[GMT_Y][row];
+	}
+	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* TRUE if contains a pole */
+		S->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
+		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
+		if (S->pole == -1) S->min[GMT_Y] = -90.0;
+		if (S->pole == +1) S->max[GMT_Y] = +90.0;
+	}
 }
 
 #if 0
@@ -4969,23 +5027,16 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		T->n_records += row;		/* Total number of records so far */
 		T->segment[seg]->id = seg;	/* Internal segment number */
 
+		GMT_set_seg_minmax (C, T->segment[seg]);
 		if (poly) {	/* If file contains a polygon then we must close it if needed */
 			if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
-				double dlon, lon_sum = 0.0, lat_sum = 0.0;
+				double dlon;
 				dlon = T->segment[seg]->coord[GMT_X][0] - T->segment[seg]->coord[GMT_X][row-1];
 				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && T->segment[seg]->coord[GMT_Y][0] == T->segment[seg]->coord[GMT_Y][row-1])) {
 					for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = T->segment[seg]->coord[k][0];
-					T->segment[seg]->n_rows++;
+					T->segment[seg]->n_rows++;	/* Explicitly close polygon */
 				}
-				for (row = 0; row < T->segment[seg]->n_rows - 1; row++) {
-					dlon = T->segment[seg]->coord[GMT_X][row+1] - T->segment[seg]->coord[GMT_X][row];
-					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwich or Dateline, pick the shortest distance */
-					lon_sum += dlon;
-					lat_sum += T->segment[seg]->coord[GMT_Y][row];
-				}
-				if (GMT_360_RANGE (lon_sum, 0.0)) {	/* TRUE if contains a pole */
-					T->segment[seg]->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
-				}
+				GMT_set_seg_polar (C, T->segment[seg]);
 			}
 			else if (GMT_polygon_is_open (C, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], row)) {	/* Cartesian closure */
 				for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = T->segment[seg]->coord[k][0];
@@ -4995,7 +5046,6 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			/* If this is a hole then set link from previous segment to this one */
 			if (seg && GMT_polygon_is_hole (T->segment[seg])) T->segment[seg-1]->next = T->segment[seg];
 		}
-		GMT_set_seg_minmax (C, T->segment[seg]);
 		
 		/* Reallocate to free up some memory */
 
