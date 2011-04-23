@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.965 2011-04-22 00:02:37 guru Exp $
+	$Id: ChangeLog,v 1.966 2011-04-23 02:15:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-22	pwessel
+	* ALL:			Clarify we use GNU version 2 or any later version of license
+				as we also do for GMT 4.
 
 2011-04-20	jluis
 	* grdimage_func.c:	Now reprojects images using the new GMT_img_project function.
