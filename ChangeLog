@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.966 2011-04-23 02:15:57 guru Exp $
+	$Id: ChangeLog,v 1.967 2011-04-23 21:14:31 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-23	pwessel
+	* example 28:		Now use clever smaller font-size for trailing 000s in UTM
+				annotation (thanks to Florian Wobbe).
+	* GMT_Docs.txt:		Use new GMT team group photo in the Acknowledgement pages.
 
 2011-04-22	pwessel
 	* ALL:			Clarify we use GNU version 2 or any later version of license
