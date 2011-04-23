@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdimage.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
+#	$Id: grdimage.sh,v 1.12 2011-04-23 17:37:20 remko Exp $
 
 . ../functions.sh
 header "Test grdimage for grid and pixel plots"
@@ -10,17 +10,7 @@ grdimage="grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p"
 grdcontour="grdcontour t.nc -Ct.cpt -J -R -O"
 
 makegrd () {
-xyz2grd -I1 -Gt.nc $* <<%
-0 0 0.0
-0 1 0.2
-0 2 0.4
-1 0 1.0
-1 1 1.2
-1 2 1.4
-2 0 2.0
-2 1 2.2
-2 2 2.4
-%
+grdmath $* -I1 X Y 0.2 MUL ADD = t.nc
 }
 
 label () {
