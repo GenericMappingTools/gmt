@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.124 2011-03-15 02:06:37 guru Exp $
+ *	$Id: mgd77.h,v 1.125 2011-04-23 00:56:09 guru Exp $
  * 
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -317,7 +317,7 @@ struct MGD77_AUXLIST {
 	GMT_LONG type;
 	GMT_LONG text;
 	GMT_LONG requested;
-	char header[GMT_TEXT_LEN];
+	char header[GMT_TEXT_LEN64];
 };
 
 struct MGD77_AUX_INFO {
@@ -368,7 +368,7 @@ struct MGD77_CONSTRAINT {
 	int code;				/* Which test this is */
 	GMT_LONG exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
-	char c_constraint[GMT_TEXT_LEN];	/* String value for testing */
+	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
 	PFB double_test;			/* Pointer to function performing the chosen limit test on a double */
 	PFB string_test;			/* Pointer to function performing the chosen limit test on a string */
 };

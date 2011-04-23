@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.13 2011-04-12 13:06:44 remko Exp $
+ *	$Id: grdraster_func.c,v 1.14 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,7 +204,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, n_fields, delta, error = 0;
 	double global_lon, lon_tol;
-	char path[BUFSIZ], buf[GRD_REMARK_LEN], dir[GRD_REMARK_LEN], *l = NULL, *record = NULL, *file = NULL;
+	char path[BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct GMT_STAT F;
 
@@ -726,7 +726,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG irasstart, jrasstart, n_nan, iras, jras, ij, ijras, jseek;
 	GMT_LONG error = FALSE, firstread, nmask = 0;
 
-	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN];
+	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN160];
 	unsigned char *ubuffer = NULL;
 	static unsigned char maskset[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 

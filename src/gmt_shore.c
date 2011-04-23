@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.73 2011-04-21 02:31:23 guru Exp $
+ *	$Id: gmt_shore.c,v 1.74 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -306,7 +306,7 @@ void GMT_shore_check (struct GMT_CTRL *C, GMT_LONG ok[5])
  * resolution (f, h, i, l, c) */
 {
 	GMT_LONG i, j, n_found;
-	char stem[GMT_TEXT_LEN], path[BUFSIZ], *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
+	char stem[GMT_TEXT_LEN64], path[BUFSIZ], *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
 	
 	for (i = 0; i < 5; i++) {	/* For each resolution... */
 		ok[i] = FALSE;
@@ -343,7 +343,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_TEXT_LEN], path[BUFSIZ];
+	char stem[GMT_TEXT_LEN64], path[BUFSIZ];
 	
 	sprintf (stem, "binned_GSHHS_%c", res);
 	
@@ -630,7 +630,7 @@ GMT_LONG GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_TEXT_LEN], path[BUFSIZ];
+	char stem[GMT_TEXT_LEN64], path[BUFSIZ];
 	
 	if (which == 'r')
 		sprintf (stem, "binned_river_%c", res);

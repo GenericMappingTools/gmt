@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.281 2011-04-21 20:25:08 guru Exp $
+ *	$Id: gmt_map.c,v 1.282 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6682,7 +6682,7 @@ GMT_LONG GMT_set_datum (struct GMT_CTRL *C, char *text, struct GMT_DATUM *D)
 		D->ellipsoid_id = 0;
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
-		char ellipsoid[GMT_LONG_TEXT], dr[GMT_LONG_TEXT];
+		char ellipsoid[GMT_TEXT_LEN256], dr[GMT_TEXT_LEN256];
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
 			GMT_report (C, GMT_MSG_FATAL, "Malformed <ellipsoid>:<dr> argument!\n");
 			return (-1);

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.3 2011-04-11 21:15:32 remko Exp $
+ *	$Id: x2sys_put_func.c,v 1.4 2011-04-23 00:56:09 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -185,7 +185,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL, *new_info = NULL;
 	struct X2SYS_BIX_TRACK *this_track = NULL;
 
-	char track[GMT_TEXT_LEN], line[BUFSIZ], *c_unused = NULL;
+	char track[GMT_TEXT_LEN64], line[BUFSIZ], *c_unused = NULL;
 	char track_file[BUFSIZ], index_file[BUFSIZ], old_track_file[BUFSIZ], old_index_file[BUFSIZ];
 	char track_path[BUFSIZ], index_path[BUFSIZ], old_track_path[BUFSIZ], old_index_path[BUFSIZ];
 

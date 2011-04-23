@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.19 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.20 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -367,7 +367,7 @@ GMT_LONG GMT_esri_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
 {
-	char record[BUFSIZ], item[GMT_TEXT_LEN];
+	char record[BUFSIZ], item[GMT_TEXT_LEN64];
 
 	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
 	GMT_fputs (record, fp);		/* Write a text record */
@@ -560,7 +560,7 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	GMT_LONG i2, j, j2, width_out, height_out, last, inc, off;
 	GMT_LONG first_col, last_col, first_row, last_row, kk;
 	GMT_LONG i, ij, width_in, *k = NULL;
-	char item[GMT_TEXT_LEN], c[2] = {0, 0};
+	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 	
 	if (!GMT_IS_ZERO (1.0 - (header->inc[GMT_X] / header->inc[GMT_Y]))) return (GMT_GRDIO_ESRI_NONSQUARE);	/* Only square pixels allowed */

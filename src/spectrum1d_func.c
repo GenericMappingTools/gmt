@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.6 2011-04-19 19:10:44 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.7 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,7 +259,7 @@ GMT_LONG write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C,
 {	/* Writes separate files for each output type.  Does NOT use GMT_Put_* functions */
 	GMT_LONG i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
-	char fname[GMT_LONG_TEXT];
+	char fname[GMT_TEXT_LEN256];
 	FILE *fpout = NULL;
 
 	delta_f = 1.0 / (C->window * C->dt);

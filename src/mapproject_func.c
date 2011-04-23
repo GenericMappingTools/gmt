@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.9 2011-04-21 18:00:31 guru Exp $
+*	$Id: mapproject_func.c,v 1.10 2011-04-23 00:56:09 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/*
 
 void add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG col, GMT_LONG more)
 {
-	char word[GMT_TEXT_LEN];
+	char word[GMT_TEXT_LEN64];
 	GMT_ascii_format_one (C, word, val, col);
 	strcat (record, word);
 	if (more) strcat (record, C->current.setting.io_col_separator);
@@ -204,7 +204,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 */
 
 	GMT_LONG n_slash, n, k, n_errors = 0, slash, last, geodetic_calc = FALSE;
-	char c, d, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], from[GMT_LONG_TEXT], to[GMT_LONG_TEXT];
+	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -424,7 +424,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
 	double xnear, ynear, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
 
-	char line[BUFSIZ], format[BUFSIZ], unit_name[GMT_TEXT_LEN], scale_unit_name[GMT_TEXT_LEN];
+	char line[BUFSIZ], format[BUFSIZ], unit_name[GMT_TEXT_LEN64], scale_unit_name[GMT_TEXT_LEN64];
 	char p[BUFSIZ], record[BUFSIZ];
 
 	struct GMT_TABLE *xyline = NULL;
@@ -547,7 +547,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 		ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 		if (Ctrl->F.active) {	/* Convert to GMT inches */
-			strncpy (unit_name, scale_unit_name, (size_t)GMT_TEXT_LEN);
+			strncpy (unit_name, scale_unit_name, (size_t)GMT_TEXT_LEN64);
 			xmin /= GMT->current.proj.scale[GMT_X];
 			xmax /= GMT->current.proj.scale[GMT_X];
 			ymin /= GMT->current.proj.scale[GMT_Y];

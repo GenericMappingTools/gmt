@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: pssegyz_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -182,7 +182,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG k, n_errors = 0, n_files = 0;
-	char *txt[2], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char *txt[2], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

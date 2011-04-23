@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.9 2011-04-15 19:00:38 guru Exp $
+ *	$Id: grdmask_func.c,v 1.10 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG row, col, side, d_col = 0, d_row = 0, col_0, row_0;
 	GMT_LONG tbl, seg, mode, n_pol = 0, k, ij;
 	
-	char seg_label[GMT_TEXT_LEN];
+	char seg_label[GMT_TEXT_LEN64];
 
 	float mask_val[3];
 	

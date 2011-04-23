@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
+ *	$Id: pslegend_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG k, n, n_errors = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -227,12 +227,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
 	GMT_LONG dim[4] = {1, 1, 0, 2}, status, object_ID, did_old = FALSE;
 
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT];
-	char txt_f[GMT_LONG_TEXT], key[GMT_LONG_TEXT], sub[GMT_LONG_TEXT], tmp[GMT_LONG_TEXT], just;
-	char symbol[GMT_LONG_TEXT], text[BUFSIZ], image[BUFSIZ], xx[GMT_LONG_TEXT], yy[GMT_LONG_TEXT];
-	char size[GMT_LONG_TEXT], angle[GMT_LONG_TEXT], mapscale[GMT_LONG_TEXT], font[GMT_LONG_TEXT], lspace[GMT_LONG_TEXT];
-	char tw[GMT_LONG_TEXT], jj[GMT_LONG_TEXT], sarg[GMT_LONG_TEXT], txtcolor[GMT_LONG_TEXT], buffer[BUFSIZ];
-	char bar_cpt[GMT_LONG_TEXT], bar_gap[GMT_LONG_TEXT], bar_height[GMT_LONG_TEXT], bar_opts[BUFSIZ], *opt = NULL;
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
+	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
+	char symbol[GMT_TEXT_LEN256], text[BUFSIZ], image[BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
+	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], mapscale[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], lspace[GMT_TEXT_LEN256];
+	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256], buffer[BUFSIZ];
+	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[BUFSIZ], *opt = NULL;
 	char *line = NULL, string[GMTAPI_STRLEN];
 #ifdef GMT_COMPAT
 	char save_EOF;
@@ -469,7 +469,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-					char txt_cpy[BUFSIZ], p[GMT_LONG_TEXT];
+					char txt_cpy[BUFSIZ], p[GMT_TEXT_LEN256];
 					GMT_LONG pos = 0;
 					strcpy (txt_cpy, opt);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {

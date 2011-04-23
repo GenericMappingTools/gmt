@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.4 2011-04-12 03:05:19 remko Exp $
+ *	$Id: x2sys_cross_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -746,7 +746,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 
 					if (first_crossover) {
-						char info[BUFSIZ], start[2][GMT_TEXT_LEN], stop[2][GMT_TEXT_LEN];
+						char info[BUFSIZ], start[2][GMT_TEXT_LEN64], stop[2][GMT_TEXT_LEN64];
 						GMT_memset (info, BUFSIZ, char);
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_time.h,v 1.2 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_time.h,v 1.3 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,7 +35,7 @@ struct GMT_TIME_SYSTEM {
 	double scale;			/* Converts user units to seconds */
 	double i_scale;			/* Converts seconds to user units (= 1.0/scale) */
 	GMT_LONG rata_die;		/* Rata die number of epoch */
-	char epoch[GMT_TEXT_LEN];	/* User-defined epoch for time */
+	char epoch[GMT_TEXT_LEN64];	/* User-defined epoch for time */
 	char unit;			/* User-defined time unit */
 };
 

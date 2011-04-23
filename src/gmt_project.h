@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.80 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_project.h,v 1.81 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -407,15 +407,15 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	GMT_LONG special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
-	char label[GMT_LONG_TEXT];	/* Label of the axis */
-	char unit[GMT_TEXT_LEN];	/* Axis unit appended to annotations */
-	char prefix[GMT_TEXT_LEN];	/* Axis prefix starting all annotations */
+	char label[GMT_TEXT_LEN256];	/* Label of the axis */
+	char unit[GMT_TEXT_LEN64];	/* Axis unit appended to annotations */
+	char prefix[GMT_TEXT_LEN64];	/* Axis prefix starting all annotations */
 	char *file_custom;		/* File with custom annotations */
 };
 
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
-	char header[GMT_LONG_TEXT];	/* Plot title */
+	char header[GMT_TEXT_LEN256];	/* Plot title */
 	GMT_LONG plotted_header;		/* TRUE if header has been plotted */
 	GMT_LONG plot;			/* TRUE if -B was used */
 	GMT_LONG draw_box;		/* TRUE is a 3-D Z-box is desired */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.8 2011-04-19 02:01:38 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.9 2011-04-23 00:56:09 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -143,7 +143,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	 */
 
 	GMT_LONG j, n_errors = 0, n, n_files = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

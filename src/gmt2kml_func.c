@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.7 2011-04-20 02:43:43 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.8 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,7 @@
 
 struct EXT_COL {
 	int col;			/* Column in input record */
-	char name[GMT_TEXT_LEN];	/* Name of this column */
+	char name[GMT_TEXT_LEN64];	/* Name of this column */
 };
 
 #define F_ID	0	/* Indices into arrays */
@@ -237,7 +237,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 
 	EXTERN_MSC GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item);
 	GMT_LONG n_errors = 0, pos = 0, k, n_files = 0, n_alloc = 0;
-	char buffer[BUFSIZ], p[BUFSIZ], T[4][GMT_TEXT_LEN], *c = NULL;
+	char buffer[BUFSIZ], p[BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -493,7 +493,7 @@ void print_altmode (struct GMT_CTRL *GMT, GMT_LONG extrude, GMT_LONG fmode, GMT_
 
 GMT_LONG ascii_output_one (struct GMT_CTRL *GMT, double x, GMT_LONG col)
 {	/* Used instead of GMT_ascii_output_one since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
-	char text[GMT_LONG_TEXT];
+	char text[GMT_TEXT_LEN256];
 
 	GMT_ascii_format_one (GMT, text, x, GMT->current.io.col_type[GMT_OUT][col]);
 	return (printf ("%s", text));
@@ -694,7 +694,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->N.mode == GET_LABEL) {	/* Special ASCII table processing */
 		GMT_LONG n_fields, ix, iy, n_rec = 0;
-		char in_buffer[BUFSIZ], C[4][GMT_TEXT_LEN];
+		char in_buffer[BUFSIZ], C[4][GMT_TEXT_LEN64];
 		void **record = NULL;
 		
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;

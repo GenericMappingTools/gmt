@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.208 2011-04-15 19:00:37 guru Exp $
+ *	$Id: gmt.h,v 1.209 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -210,7 +210,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
 	int *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
-	char format[3][2][GMT_LONG_TEXT];	/* Keeps the 6 formats for dd:mm:ss plot output */
+	char format[3][2][GMT_TEXT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 };
 
 struct GMT_CURRENT {

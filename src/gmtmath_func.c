@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.6 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.7 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2730,7 +2730,7 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 
 GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	GMT_LONG expect, i, check = GMT_IS_NAN, possible_number = FALSE;
-	char copy[GMT_LONG_TEXT];
+	char copy[GMT_TEXT_LEN256];
 	char *mark = NULL;
 	double tmp = 0.0;
 

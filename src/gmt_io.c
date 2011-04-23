@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.254 2011-04-20 18:12:57 remko Exp $
+ *	$Id: gmt_io.c,v 1.255 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -329,7 +329,7 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	int i, j, nvars;
 	size_t n;
 	GMT_LONG tmp_pointer;	/* To avoid 64-bit warnings */
-	char varnm[10][GMT_TEXT_LEN], long_name[GMT_LONG_TEXT], units[GMT_LONG_TEXT], varname[GMT_TEXT_LEN];
+	char varnm[10][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64];
 	struct GMT_TIME_SYSTEM time_system;
 
 	if (mode[0] != 'r') {
@@ -379,8 +379,8 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		    nc_get_att_double (C->current.io.ncid, C->current.io.varid[i], "missing_value", &C->current.io.missing_value[i])) C->current.io.missing_value[i] = C->session.d_NaN;
 
 		/* Scan for geographical or time units */
-		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "long_name", long_name, (size_t)GMT_LONG_TEXT)) long_name[0] = 0;
-		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "units", units, (size_t)GMT_LONG_TEXT)) units[0] = 0;
+		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "long_name", long_name, (size_t)GMT_TEXT_LEN256)) long_name[0] = 0;
+		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "units", units, (size_t)GMT_TEXT_LEN256)) units[0] = 0;
 		GMT_str_tolower (long_name); GMT_str_tolower (units);
 
 		if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
@@ -1456,7 +1456,7 @@ void GMT_set_bin_input (struct GMT_CTRL *C)
 
 GMT_LONG GMT_ascii_output_one (struct GMT_CTRL *C, FILE *fp, double x, GMT_LONG col)
 {
-	char text[GMT_LONG_TEXT];
+	char text[GMT_TEXT_LEN256];
 
 	GMT_ascii_format_one (C, text, x, C->current.io.col_type[GMT_OUT][col]);
 	return (fprintf (fp, "%s", text));
@@ -1789,9 +1789,9 @@ GMT_LONG GMT_A_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 GMT_LONG GMT_a_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 {	/* Only reads one item regardless of *n */
 	GMT_LONG i;
-	char line[GMT_TEXT_LEN];
+	char line[GMT_TEXT_LEN64];
 	*n = 0;
-	if (!fgets (line, GMT_TEXT_LEN, fp)) {	/* Read was unsuccessful */
+	if (!fgets (line, GMT_TEXT_LEN64, fp)) {	/* Read was unsuccessful */
 		C->current.io.status = GMT_IO_EOF;
 		return (-1);
 	}
@@ -2692,7 +2692,7 @@ void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S,
 	/* Craft the actual C-format to use for input/output clock strings */
 
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
-		char fmt[GMT_LONG_TEXT];
+		char fmt[GMT_TEXT_LEN256];
 		if (S->compact)
 			sprintf (S->format, "%%" GMT_LL "d");
 		else
@@ -2731,7 +2731,7 @@ void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, G
 	 */
 
 	GMT_LONG k, ywidth, no_delim;
-	char fmt[GMT_LONG_TEXT];
+	char fmt[GMT_TEXT_LEN256];
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
@@ -2822,7 +2822,7 @@ GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C)
 		sprintf (S->y_format, "%s", C->current.setting.format_float_out);
 	}
 	else {			/* Some form of dd:mm:ss */
-		char fmt[GMT_LONG_TEXT];
+		char fmt[GMT_TEXT_LEN256];
 		sprintf (S->x_format, "%%3.3" GMT_LL "d");
 		sprintf (S->y_format, "%%2.2" GMT_LL "d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
@@ -2859,7 +2859,7 @@ void GMT_plot_C_format (struct GMT_CTRL *C)
 
 	/* Determine the plot geographic location formats. */
 
-	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_memset (C->current.plot.format[i][j], GMT_LONG_TEXT, char);
+	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_memset (C->current.plot.format[i][j], GMT_TEXT_LEN256, char);
 
 	GMT_get_dms_order (C, C->current.setting.format_geo_map, S);	/* Get the order of degree, min, sec in output formats */
 
@@ -2881,7 +2881,7 @@ void GMT_plot_C_format (struct GMT_CTRL *C)
 		strcat (S->y_format, "%s");
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
-		char fmt[GMT_LONG_TEXT];
+		char fmt[GMT_TEXT_LEN256];
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
@@ -3138,7 +3138,7 @@ GMT_LONG GMT_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 	*/
 
 	GMT_LONG retval = GMT_IS_FLOAT, k, id, im, ncolons, negate = FALSE;
-	char scopy[GMT_TEXT_LEN], suffix, *p = NULL, *p2 = NULL;
+	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
 
 	k = (GMT_LONG)strlen (s);
@@ -3178,7 +3178,7 @@ GMT_LONG GMT_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 		}
 		k--;
 	}
-	if (k >= GMT_TEXT_LEN) return (GMT_IS_NAN);
+	if (k >= GMT_TEXT_LEN64) return (GMT_IS_NAN);
 	strncpy (scopy, s, (size_t)k);				/* Copy all but the suffix  */
 	scopy[k] = 0;
 	ncolons = 0;
@@ -3247,7 +3247,7 @@ GMT_LONG GMT_scanf_float (char *s, double *val)
 	On failure, return GMT_IS_NAN and do not touch val.
 	*/
 
-	char scopy[GMT_TEXT_LEN], *p = NULL;
+	char scopy[GMT_TEXT_LEN64], *p = NULL;
 	double x;
 	GMT_LONG j, k;
 
@@ -3261,7 +3261,7 @@ GMT_LONG GMT_scanf_float (char *s, double *val)
 	if (k == 1) return (GMT_IS_NAN);	/* A string ending in e would be invalid  */
 	/* Make a copy of s in scopy, mapping the d or D to an e */
 	j = (GMT_LONG)strlen (s);
-	if (j > GMT_TEXT_LEN) return (GMT_IS_NAN);
+	if (j > GMT_TEXT_LEN64) return (GMT_IS_NAN);
 	j -= k;
 	strncpy (scopy, s, (size_t)j );
 	scopy[j] = 'e';
@@ -3414,7 +3414,7 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
 
-	char calstring[GMT_TEXT_LEN], clockstring[GMT_TEXT_LEN], *p = NULL;
+	char calstring[GMT_TEXT_LEN64], clockstring[GMT_TEXT_LEN64], *p = NULL;
 	double x;
 	GMT_LONG callen, clocklen, rd;
 
@@ -3941,7 +3941,7 @@ void GMT_write_ogr_header (struct GMT_CTRL *C, FILE *fp, struct GMT_OGR *G)
 
 void GMT_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, GMT_LONG col, GMT_LONG type, struct GMT_OGR_SEG *G)
 {
-	char text[GMT_TEXT_LEN];
+	char text[GMT_TEXT_LEN64];
 	
 	switch (type) {
 		case GMTAPI_TEXT:
@@ -4797,7 +4797,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments;
 	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col;
 	GMT_LONG cdf = 0, n_head_alloc = GMT_TINY_CHUNK;
-	char open_mode[4], file[BUFSIZ], line[GMT_TEXT_LEN];
+	char open_mode[4], file[BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = NULL;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.30 2011-03-15 02:06:36 guru Exp $
+ *	$Id: gmt_plot.h,v 1.31 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -127,7 +127,7 @@ struct GMT_SYMBOL {
 	GMT_LONG v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	GMT_LONG v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
 
-	char string[GMT_TEXT_LEN];	/* Character code to plot (could be octal) */
+	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
 
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */

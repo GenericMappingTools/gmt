@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtdefaults_func.c,v 1.4 2011-04-19 19:10:43 guru Exp $
+ *	$Id: gmtdefaults_func.c,v 1.5 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ GMT_LONG GMT_gmtdefaults (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error;
 	
-	char path[GMT_LONG_TEXT];
+	char path[GMT_TEXT_LEN256];
 	
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

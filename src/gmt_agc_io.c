@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.33 2011-03-28 17:39:42 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.34 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -61,7 +61,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define RECORDLENGTH 	(ZBLOCKWIDTH*ZBLOCKHEIGHT + PREHEADSIZE + POSTHEADSIZE)
 
 # define AGCHEADINDICATOR	"agchd:"
-# define PARAMSIZE		(GMT_LONG)((GRD_REMARK_LEN - HEADINDSIZE) / BUFFHEADSIZE)
+# define PARAMSIZE		(GMT_LONG)((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
 GMT_LONG ReadRecord (FILE *fpi, GMT_LONG recnum, float *z)
 {	/* Reads one block of data, including pre- and post-headers */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $ 
+ *    $Id: pspolar_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -198,7 +198,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0, n;
-	char txt[GMT_TEXT_LEN],txt_b[GMT_TEXT_LEN],txt_c[GMT_TEXT_LEN], txt_d[GMT_TEXT_LEN];
+	char txt[GMT_TEXT_LEN64],txt_b[GMT_TEXT_LEN64],txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -360,8 +360,8 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
 
-	char *line, col[4][GMT_TEXT_LEN];
-	char pol, stacode[GMT_TEXT_LEN];
+	char *line, col[4][GMT_TEXT_LEN64];
+	char pol, stacode[GMT_TEXT_LEN64];
 
 	struct PSPOLAR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */

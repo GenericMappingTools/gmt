@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.12 2011-04-20 02:43:43 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.13 2011-04-23 00:56:08 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -591,7 +591,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 	 */
 
 	GMT_LONG n_files[2] = {0, 0}, pos, n, n_errors = 0;
-	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN], p[GMT_LONG_TEXT], *s = NULL;
+	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *s = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -1199,7 +1199,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		GMT_LONG tbl, seg, seg2, ID, row, first, last, n, p, np, n_inside, *count = NULL;
-		char seg_label[GMT_TEXT_LEN], record[BUFSIZ], *kind[2] = {"Middle point", "All points"};
+		char seg_label[GMT_TEXT_LEN64], record[BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
@@ -1263,7 +1263,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %ld-%ld already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
-							char buffer[BUFSIZ], txt[GMT_TEXT_LEN];
+							char buffer[BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
 							if (S->header) { strcpy (buffer, S->header); free ((void *)S->header); }
 							sprintf (txt, " -Z%ld", ID);

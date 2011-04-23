@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.98 2011-04-21 02:31:23 guru Exp $
+ *	$Id: gmt_nc.c,v 1.99 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -54,7 +54,7 @@ GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
 	int ncid, z_id = -1, j = 0, id = 13, nvars, ndims, err;
 	nc_type z_type;
-	char varname[GRD_VARNAME_LEN];
+	char varname[GRD_VARNAME_LEN80];
 
 	/* Extract levels name from variable name */
 	strcpy (varname, header->varname);
@@ -97,9 +97,9 @@ void GMT_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units
 	 * ncid, varid		: as in nc_get_att_text
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
-	char units[GRD_UNIT_LEN];
-	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name_units, (size_t)GRD_UNIT_LEN)) nc_inq_varname (ncid, varid, name_units);
-	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN) && units[0]) sprintf (name_units, "%s [%s]", name_units, units);
+	char units[GRD_UNIT_LEN80];
+	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name_units, (size_t)GRD_UNIT_LEN80)) nc_inq_varname (ncid, varid, name_units);
+	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN80) && units[0]) sprintf (name_units, "%s [%s]", name_units, units);
 }
 
 void GMT_nc_put_units (int ncid, int varid, char *name_units)
@@ -109,7 +109,7 @@ void GMT_nc_put_units (int ncid, int varid, char *name_units)
 	 * name_units		: string in form "long_name [units]"
 	 */
 	int i = 0;
-	char name[GRD_UNIT_LEN], units[GRD_UNIT_LEN];
+	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
 
 	strcpy (name, name_units);
 	units[0] = '\0';
@@ -148,7 +148,7 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 	GMT_LONG j, err;
 	int old_fill_mode;
 	double dummy[2], *xy = NULL;
-	char dimname[GRD_UNIT_LEN], coord[8];
+	char dimname[GRD_UNIT_LEN80], coord[8];
 	nc_type z_type;
 	double t_value[3];
 
@@ -277,11 +277,11 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 
 	if (job == 'r') {
 		/* Get global information */
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, (size_t)GRD_TITLE_LEN))
-		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, (size_t)GRD_TITLE_LEN);
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, (size_t)GRD_COMMAND_LEN))
-		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, (size_t)GRD_COMMAND_LEN);
-		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, (size_t)GRD_REMARK_LEN);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, (size_t)GRD_TITLE_LEN8080))
+		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, (size_t)GRD_TITLE_LEN80);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, (size_t)GRD_COMMAND_LEN320))
+		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, (size_t)GRD_COMMAND_LEN320);
+		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, (size_t)GRD_REMARK_LEN160);
 		nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->registration);
 
 		/* Create enough memory to store the x- and y-coordinate values */

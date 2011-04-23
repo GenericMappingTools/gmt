@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.13 2011-04-19 19:10:44 guru Exp $
+ *	$Id: pstext_func.c,v 1.14 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,8 +207,8 @@ GMT_LONG check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
 	
 	GMT_LONG n, k;
-	char size[GMT_LONG_TEXT], angle[GMT_LONG_TEXT], font[GMT_LONG_TEXT], just[GMT_LONG_TEXT], txt[BUFSIZ];
-	char spacing[GMT_LONG_TEXT], width[GMT_LONG_TEXT], pjust[GMT_LONG_TEXT];
+	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[BUFSIZ];
+	char spacing[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256], pjust[GMT_TEXT_LEN256];
 	
 	if (mode) {	/* Paragraph control record */
 		n = sscanf (buffer, "%s %s %s %s %s %s %s\n", size, angle, font, just, spacing, width, pjust);
@@ -331,7 +331,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG j, k, pos, n_errors = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], p[BUFSIZ];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -481,7 +481,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	GMT_LONG ix, iy, nscan;
-	char txt_x[GMT_LONG_TEXT], txt_y[GMT_LONG_TEXT], txt_z[GMT_LONG_TEXT];
+	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
 	if (has_z) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
@@ -518,10 +518,10 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[BUFSIZ], buffer[BUFSIZ], pjust_key[5], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char text[BUFSIZ], buffer[BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 #ifdef GMT_COMPAT
-	char this_size[GMT_LONG_TEXT], this_font[GMT_LONG_TEXT], just_key[5], txt_f[GMT_LONG_TEXT];
+	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
 	GMT_LONG is_old_format = GMTAPI_NOTSET;
 #endif
 	struct PSTEXT_INFO T;

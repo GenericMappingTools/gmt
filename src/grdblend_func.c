@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
+ *    $Id: grdblend_func.c,v 1.13 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,7 +84,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	GMT_LONG invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
 	GMT_LONG open;					/* TRUE if file is currently open */
 	GMT_LONG delete;				/* TRUE if file was produced by grdsample to deal with different registartion/increments */
-	char file[GMT_LONG_TEXT];			/* Name of grid file */
+	char file[GMT_TEXT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
 	float *z;					/* Row vector holding the current row from this file */
@@ -112,8 +112,8 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG n = 0, nr, one_or_zero = 0, n_alloc = 0, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
-	char *line = NULL, r_in[GMT_LONG_TEXT], *sense[2] = {"normal", "inverse"};
-	char Targs[GMT_LONG_TEXT], Iargs[GMT_LONG_TEXT], Rargs[GMT_LONG_TEXT], cmd[BUFSIZ];
+	char *line = NULL, r_in[GMT_TEXT_LEN256], *sense[2] = {"normal", "inverse"};
+	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[BUFSIZ];
 
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
@@ -591,7 +591,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
-		char empty[GMT_TEXT_LEN];
+		char empty[GMT_TEXT_LEN64];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, S.header.nx, S.header.ny);
 		if (n_fill == n_tot)
 			GMT_report (GMT, GMT_MSG_NORMAL, "All nodes assigned values\n");

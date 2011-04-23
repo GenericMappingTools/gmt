@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: backtracker_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -198,7 +198,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 	 */
 
 	GMT_LONG n_errors = 0, k;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

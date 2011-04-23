@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.162 2011-04-21 15:09:28 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.163 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,7 +117,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	 */
 	
 	GMT_LONG i = 0, val, j;
-	char code[GMT_TEXT_LEN], tmp[BUFSIZ];
+	char code[GMT_TEXT_LEN64], tmp[BUFSIZ];
 
 	GMT_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
@@ -200,7 +200,7 @@ void GMT_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   output data types for columns 0, 1, and 2.
 	*/
 	GMT_LONG i;
-	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
+	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN80], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;
@@ -262,7 +262,7 @@ void GMT_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	GMT_LONG i;
-	char string[3][GMT_LONG_TEXT], *units = NULL;
+	char string[3][GMT_TEXT_LEN256], *units = NULL;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
 
@@ -728,22 +728,22 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 		if (ptr[0] != '=') {
 			switch (entry) {
 				case 0:
-					GMT_memset (h->x_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"Warning: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
-					strncpy (h->x_units, ptr, (size_t)GRD_UNIT_LEN);
+					GMT_memset (h->x_units, GRD_UNIT_LEN80, char);
+					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
+						"Warning: X unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
+					strncpy (h->x_units, ptr, (size_t)GRD_UNIT_LEN80);
 					break;
 				case 1:
-					GMT_memset (h->y_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
-					strncpy (h->y_units, ptr, (size_t)GRD_UNIT_LEN);
+					GMT_memset (h->y_units, GRD_UNIT_LEN80, char);
+					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
+						"Warning: Y unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
+					strncpy (h->y_units, ptr, (size_t)GRD_UNIT_LEN80);
 					break;
 				case 2:
-					GMT_memset (h->z_units, GRD_UNIT_LEN, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN);
-					strncpy (h->z_units, ptr, (size_t)GRD_UNIT_LEN);
+					GMT_memset (h->z_units, GRD_UNIT_LEN80, char);
+					if (strlen(ptr) >= GRD_UNIT_LEN80) GMT_report (C, GMT_MSG_FATAL, 
+						"Warning: Z unit string exceeds upper length of %d characters (truncated)\n", GRD_UNIT_LEN80);
+					strncpy (h->z_units, ptr, (size_t)GRD_UNIT_LEN80);
 					break;
 				case 3:
 					h->z_scale_factor = atof (ptr);
@@ -752,14 +752,14 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					h->z_add_offset = atof (ptr);
 					break;
 				case 5:
-					if (strlen(ptr) >= GRD_TITLE_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"Warning: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN);
-					strncpy (h->title, ptr, (size_t)GRD_TITLE_LEN);
+					if (strlen(ptr) >= GRD_TITLE_LEN80) GMT_report (C, GMT_MSG_FATAL, 
+						"Warning: Title string exceeds upper length of %d characters (truncated)\n", GRD_TITLE_LEN80);
+					strncpy (h->title, ptr, (size_t)GRD_TITLE_LEN80);
 					break;
 				case 6:
-					if (strlen(ptr) >= GRD_REMARK_LEN) GMT_report (C, GMT_MSG_FATAL, 
-						"Warning: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN);
-					strncpy (h->remark, ptr, (size_t)GRD_REMARK_LEN);
+					if (strlen(ptr) >= GRD_REMARK_LEN160) GMT_report (C, GMT_MSG_FATAL, 
+						"Warning: Remark string exceeds upper length of %d characters (truncated)\n", GRD_REMARK_LEN160);
+					strncpy (h->remark, ptr, (size_t)GRD_REMARK_LEN160);
 					break;
 				default:
 					break;
@@ -943,7 +943,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 	GMT_LONG i, len;
 
 	if (update)	/* Only clean the command history */
-		GMT_memset (header->command, GRD_COMMAND_LEN, char);
+		GMT_memset (header->command, GRD_COMMAND_LEN320, char);
 	else {		/* Wipe the slate clean */
 		GMT_memset (header, 1, struct GRD_HEADER);
 
@@ -972,9 +972,9 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		GMT_Create_Args (API, &argc, &argv, options);
 		strcpy (header->command, C->init.progname);
 		len = strlen (header->command);
-		for (i = 0; len < GRD_COMMAND_LEN && i < argc; i++) {
+		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;
-			if (len > GRD_COMMAND_LEN) continue;
+			if (len > GRD_COMMAND_LEN320) continue;
 			strcat (header->command, " ");
 			strcat (header->command, argv[i]);
 		}

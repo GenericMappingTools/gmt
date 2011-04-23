@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.6 2011-04-19 02:01:38 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.7 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -88,8 +88,8 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 	} F;
 	struct I {	/* -I */
 		GMT_LONG active;
-		char c_abbrev[GMT_TEXT_LEN];
-		char c_units[GMT_TEXT_LEN];
+		char c_abbrev[GMT_TEXT_LEN64];
+		char c_units[GMT_TEXT_LEN64];
 		char c_name[MGD77_COL_NAME_LEN];
 		char c_comment[MGD77_COL_COMMENT_LEN];
 		char c_size;
@@ -540,7 +540,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	nc_type c_nc_type;
 	
 	char line[BUFSIZ], p[BUFSIZ], history[BUFSIZ], **list = NULL;
-	char not_given[GMT_TEXT_LEN], word[BUFSIZ], **tmp_string = NULL, *text = NULL;
+	char not_given[GMT_TEXT_LEN64], word[BUFSIZ], **tmp_string = NULL, *text = NULL;
 	signed char LEN = 0, OLDLEN = 0;
 	
 	double i_dx = 0, i_dy = 0, x, y, match_value, single_val, dist_scale = 1.0;
@@ -601,8 +601,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
-	memset ((void *)not_given, (int)Ctrl->E.value, (size_t)GMT_TEXT_LEN);	/* Text representing "no text value" */
-	not_given[GMT_TEXT_LEN-1] = '\0';
+	memset ((void *)not_given, (int)Ctrl->E.value, (size_t)GMT_TEXT_LEN64);	/* Text representing "no text value" */
+	not_given[GMT_TEXT_LEN64-1] = '\0';
 	fp_err = (In.verbose_dest == 1) ? GMT->session.std[GMT_OUT] : GMT->session.std[GMT_ERR];
 	
 	if (Ctrl->A.mode == MODE_c) {	/* Calculate values to be stored */
@@ -1153,7 +1153,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			 */
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
-			char ID[16], date[16], field[GMT_TEXT_LEN], efile[BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN], answer[BUFSIZ], code[BUFSIZ], kind, YorN;
+			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[BUFSIZ], code[BUFSIZ], kind, YorN;
 			GMT_LONG n_recs, rec, number, type, it, id, key, n_E77_flags, from, to, day, month, year, item;
 			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0;
 			unsigned int *flags = NULL, pattern;

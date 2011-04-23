@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.488 2011-04-21 02:31:23 guru Exp $
+ *	$Id: gmt_support.c,v 1.489 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -789,7 +789,7 @@ GMT_LONG GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 {
 	GMT_LONG n, end, pos, i, error = 0;
 	double fb_rgb[4];
-	char f, word[GMT_LONG_TEXT];
+	char f, word[GMT_TEXT_LEN256];
 
 	if (!line) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getfill\n"); GMT_exit (EXIT_FAILURE); }
 
@@ -888,7 +888,7 @@ GMT_LONG GMT_colorname2index (struct GMT_CTRL *C, char *name)
 	/* Return index into structure with colornames and r/g/b */
 
 	GMT_LONG k;
-	char Lname[GMT_TEXT_LEN];
+	char Lname[GMT_TEXT_LEN64];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
@@ -901,7 +901,7 @@ GMT_LONG GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 {
 	int n, i, count, irgb[3];
 	double hsv[4], cmyk[5];
-	char buffer[GMT_TEXT_LEN], *t = NULL;
+	char buffer[GMT_TEXT_LEN64], *t = NULL;
 
 	if (!line) {
 		GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getrgb\n");
@@ -989,7 +989,7 @@ GMT_LONG GMT_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 {
 	int n, i, count, irgb[3];
 	double rgb[4], cmyk[5];
-	char buffer[GMT_TEXT_LEN], *t = NULL;
+	char buffer[GMT_TEXT_LEN64], *t = NULL;
 
 	if (!line) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_gethsv\n"); GMT_exit (EXIT_FAILURE); }
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
@@ -1080,7 +1080,7 @@ void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size)
 
 	int i, j, k = 0, n, last = 0, n_slash;
 	double rgb[4];
-	char buffer[BUFSIZ], color[GMT_LONG_TEXT], *p = NULL;
+	char buffer[BUFSIZ], color[GMT_TEXT_LEN256], *p = NULL;
 
 	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
 
@@ -1186,7 +1186,7 @@ GMT_LONG GMT_getfont (struct GMT_CTRL *C, char *buffer, struct GMT_FONT *F)
 {
 	GMT_LONG i, k, n;
 	double pointsize;
-	char size[GMT_LONG_TEXT], name[GMT_LONG_TEXT], fill[GMT_LONG_TEXT], line[BUFSIZ], *s = NULL;
+	char size[GMT_TEXT_LEN256], name[GMT_TEXT_LEN256], fill[GMT_TEXT_LEN256], line[BUFSIZ], *s = NULL;
 
 	if (!buffer) {
 		GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getfont\n");
@@ -1198,9 +1198,9 @@ GMT_LONG GMT_getfont (struct GMT_CTRL *C, char *buffer, struct GMT_FONT *F)
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
-	GMT_memset (size, GMT_LONG_TEXT, char);
-	GMT_memset (name, GMT_LONG_TEXT, char);
-	GMT_memset (fill, GMT_LONG_TEXT, char);
+	GMT_memset (size, GMT_TEXT_LEN256, char);
+	GMT_memset (name, GMT_TEXT_LEN256, char);
+	GMT_memset (fill, GMT_TEXT_LEN256, char);
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
@@ -1296,7 +1296,7 @@ GMT_LONG GMT_name2pen (struct GMT_CTRL *C, char *name)
 	/* Return index into structure with pennames and width, for given name */
 
 	GMT_LONG i, k;
-	char Lname[GMT_TEXT_LEN];
+	char Lname[GMT_TEXT_LEN64];
 
 	strcpy (Lname, name);
 	GMT_str_tolower (Lname);
@@ -1363,7 +1363,7 @@ GMT_LONG GMT_penunit (struct GMT_CTRL *C, char c, double *pen_scale)
 GMT_LONG GMT_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	GMT_LONG i, n, pos, unit = GMT_PT;
 	double width;
-	char tmp[GMT_LONG_TEXT], string[BUFSIZ], ptr[BUFSIZ];
+	char tmp[GMT_TEXT_LEN256], string[BUFSIZ], ptr[BUFSIZ];
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do */
 	n = strlen (line) - 1;
@@ -1446,7 +1446,7 @@ GMT_LONG GMT_is_penstyle (struct GMT_CTRL *C, char *word)
 GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 {
 	GMT_LONG i, n;
-	char width[GMT_LONG_TEXT], color[GMT_LONG_TEXT], style[GMT_LONG_TEXT], line[BUFSIZ];
+	char width[GMT_TEXT_LEN256], color[GMT_TEXT_LEN256], style[GMT_TEXT_LEN256], line[BUFSIZ];
 
 	if (!buffer || !buffer[0]) return (FALSE);		/* Nothing given: return silently, leaving P in tact */
 
@@ -1456,9 +1456,9 @@ GMT_LONG GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 
 	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
 
-	GMT_memset (width, GMT_LONG_TEXT, char);
-	GMT_memset (color, GMT_LONG_TEXT, char);
-	GMT_memset (style, GMT_LONG_TEXT, char);
+	GMT_memset (width, GMT_TEXT_LEN256, char);
+	GMT_memset (color, GMT_TEXT_LEN256, char);
+	GMT_memset (style, GMT_TEXT_LEN256, char);
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -1694,7 +1694,7 @@ GMT_LONG GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *u
 	 * Distances computed will be in the unit selected.
 	 */
 	GMT_LONG last, d_flag = 1, start = 1, way;
-	char copy[GMT_TEXT_LEN];
+	char copy[GMT_TEXT_LEN64];
 
 	/* Syntax:  -S[-|+]<radius>[d|e|f|k|m|M|n|s]  */
 
@@ -1971,9 +1971,9 @@ GMT_LONG GMT_read_cpt (struct GMT_CTRL *C, void *source, GMT_LONG source_type, G
 	GMT_LONG n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0, color_model, id, k;
 	GMT_LONG gap, error = FALSE, close_file = FALSE, check_headers = TRUE, n_cat_records = 0;
 	double dz;
-	char T0[GMT_TEXT_LEN], T1[GMT_TEXT_LEN], T2[GMT_TEXT_LEN], T3[GMT_TEXT_LEN], T4[GMT_TEXT_LEN];
-	char T5[GMT_TEXT_LEN], T6[GMT_TEXT_LEN], T7[GMT_TEXT_LEN], T8[GMT_TEXT_LEN], T9[GMT_TEXT_LEN];
-	char line[BUFSIZ], clo[GMT_TEXT_LEN], chi[GMT_TEXT_LEN], c, cpt_file[BUFSIZ];
+	char T0[GMT_TEXT_LEN64], T1[GMT_TEXT_LEN64], T2[GMT_TEXT_LEN64], T3[GMT_TEXT_LEN64], T4[GMT_TEXT_LEN64];
+	char T5[GMT_TEXT_LEN64], T6[GMT_TEXT_LEN64], T7[GMT_TEXT_LEN64], T8[GMT_TEXT_LEN64], T9[GMT_TEXT_LEN64];
+	char line[BUFSIZ], clo[GMT_TEXT_LEN64], chi[GMT_TEXT_LEN64], c, cpt_file[BUFSIZ];
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
 
@@ -3222,7 +3222,7 @@ void GMT_contlabel_init (struct GMT_CTRL *C, struct GMT_CONTOUR *G, GMT_LONG mod
 GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 {
 	GMT_LONG k, bad = 0, pos = 0, g_set = FALSE;
-	char p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
+	char p[BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], c;
 	char *specs = NULL;
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
@@ -3386,7 +3386,7 @@ GMT_LONG GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GM
 {
 	/* Interpret the contour-label information string and set structure items */
 	GMT_LONG k, j = 0, error = 0;
-	char txt_a[GMT_LONG_TEXT], c, *p = NULL;
+	char txt_a[GMT_TEXT_LEN256], c, *p = NULL;
 
 	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
@@ -3531,7 +3531,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 
 	GMT_LONG i, k, n, error = 0, pos, n_alloc = GMT_SMALL_CHUNK;
 	double x, y, step = 0.0;
-	char buffer[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT];
+	char buffer[BUFSIZ], p[BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (G->do_interpolate) step = C->current.setting.map_line_step / C->current.proj.scale[GMT_X] / C->current.proj.M_PR_DEG;
@@ -4519,7 +4519,7 @@ char * GMT_make_filename (char *template, GMT_LONG fmt[], double z, GMT_LONG clo
 GMT_LONG GMT_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, GMT_LONG xl, GMT_LONG fj, struct GMT_CONTOUR *G)
 {
 	GMT_LONG label_OK = TRUE, i, k;
-	char format[GMT_LONG_TEXT];
+	char format[GMT_TEXT_LEN256];
 	struct GMT_CONTOUR_LINE *S = NULL;
 
 	if (G->isolate) {	/* Must determine if the proposed label is withing radius distance of any other label already accepted */
@@ -6642,7 +6642,7 @@ GMT_LONG GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 	/* Pass text as &argv[i][2] */
 
 	GMT_LONG j = 0, i, n_slash, error = 0, k = 0, options;
-	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_len[GMT_LONG_TEXT];
+	char txt_cpy[BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_sx[GMT_TEXT_LEN256], txt_sy[GMT_TEXT_LEN256], txt_len[GMT_TEXT_LEN256];
 
 	if (!text) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getscale\n"); GMT_exit (EXIT_FAILURE); }
 
@@ -6779,7 +6779,7 @@ GMT_LONG GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 GMT_LONG GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 {
 	GMT_LONG j = 0, i, error = 0, colon, plus, slash, k, pos, order[4] = {3,1,0,2};
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], tmpstring[GMT_LONG_TEXT], p[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], tmpstring[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 
 	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
 	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
@@ -7294,7 +7294,7 @@ void GMT_list_custom_symbols (struct GMT_CTRL *C)
 	/* Opens up C->init.custom_symbols.lis and dislays the list of custom symbols */
 
 	FILE *fp = NULL;
-	char list[GMT_LONG_TEXT], buffer[BUFSIZ];
+	char list[GMT_TEXT_LEN256], buffer[BUFSIZ];
 
 	/* Open the list in $C->session.SHAREDIR */
 
@@ -7968,7 +7968,7 @@ GMT_LONG gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, cha
 	 */
 	GMT_LONG k = 0, nc, found, n_alloc = GMT_SMALL_CHUNK, n_annot = 0, n_int = 0, text, error = 0;
 	double *x = NULL;
-	char **L = NULL, line[BUFSIZ], str[GMT_TEXT_LEN], type[8], txt[BUFSIZ];
+	char **L = NULL, line[BUFSIZ], str[GMT_TEXT_LEN64], type[8], txt[BUFSIZ];
 	FILE *fp = GMT_fopen (C, A->file_custom, "r");
 
 	text = ((item == 'a' || item == 'i') && labels);
@@ -8174,7 +8174,7 @@ double GMT_set_map_label_offsets (struct GMT_CTRL *C, GMT_LONG axis, double val0
 
 	GMT_LONG ndec, as_is, flip, both;
 	double v0, v1, tmp_offset, off, angle, sign, len;
-	char text_l[GMT_LONG_TEXT], text_u[GMT_LONG_TEXT];
+	char text_l[GMT_TEXT_LEN256], text_u[GMT_TEXT_LEN256];
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 
 	both = GMT_upper_and_lower_items (C,axis);							/* Two levels of annotations? */
@@ -8513,7 +8513,7 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 /* worldmap:	T/F, whatever C->current.map.is_world is */
 {
 	GMT_LONG k, n_items, sign, d, m, s, m_sec, level, type, h_pos = 0, zero_fix = FALSE;
-	char hemi[3], format[GMT_TEXT_LEN];
+	char hemi[3], format[GMT_TEXT_LEN64];
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -8745,7 +8745,7 @@ GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, GMT_LONG justify)
 
 GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUSTOM_SYMBOL **S) {
 	GMT_LONG k, nc = 0, last, error = 0, do_fill, do_pen, first = TRUE;
-	char file[BUFSIZ], buffer[BUFSIZ], col[8][GMT_TEXT_LEN], var[8], OP[8], constant[GMT_TEXT_LEN];
+	char file[BUFSIZ], buffer[BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
 	char *fill_p = NULL, *pen_p = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
@@ -9084,7 +9084,7 @@ GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO *
 	 * MACRO = ARG1 ARG2 ... ARGN : comments on what they do */
 
 	GMT_LONG n = 0, k = 0, n_alloc = 0, pos = 0;
-	char line[BUFSIZ], name[GMT_TEXT_LEN], item[GMT_TEXT_LEN], args[BUFSIZ];
+	char line[BUFSIZ], name[GMT_TEXT_LEN64], item[GMT_TEXT_LEN64], args[BUFSIZ];
 	struct MATH_MACRO *macro = NULL;
 	FILE *fp = NULL;
 	EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */

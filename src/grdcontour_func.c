@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.12 2011-04-19 19:10:44 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.13 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,7 +227,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0, j, k, n, id;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -599,7 +599,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
 
 	char *cont_type = NULL, *cont_do_tick = NULL;
-	char cont_label[GMT_LONG_TEXT], format[GMT_LONG_TEXT];
+	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
 	double aval, cval, small, xyz[2][3], small_x, small_y, z_range, wesn[4], rgb[4];
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;

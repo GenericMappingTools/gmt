@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.4 2011-04-12 03:05:18 remko Exp $
+ *	$Id: filter1d_func.c,v 1.5 2011-04-23 00:56:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG n_errors = 0;
-	char c, txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN];
+	char c, txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

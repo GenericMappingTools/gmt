@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *    $Id: psvelo_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -162,7 +162,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, n, no_size_needed, n_set;
-	char txt[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -279,7 +279,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
 
 	char *station_name;
-	char *line, col[12][GMT_TEXT_LEN];
+	char *line, col[12][GMT_TEXT_LEN64];
 
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */

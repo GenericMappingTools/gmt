@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.8 2011-04-19 19:10:43 guru Exp $
+*    $Id: gmtvector_func.c,v 1.9 2011-04-23 00:56:08 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -139,7 +139,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	 */
 
 	GMT_LONG  n, n_in, n_errors = 0, n_files = 0;
-	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN];
+	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -239,7 +239,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 GMT_LONG decode_vector (struct GMT_CTRL *C, char *arg, double coord[], GMT_LONG cartesian, GMT_LONG geocentric) {
 	GMT_LONG n, n_out, n_errors = 0, ix, iy;
-	char txt_a[GMT_TEXT_LEN], txt_b[GMT_TEXT_LEN], txt_c[GMT_TEXT_LEN];
+	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	
 	ix = (C->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	n = n_out = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);

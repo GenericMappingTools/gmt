@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *    $Id: pscoupe_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -250,11 +250,11 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0, no_size_needed, syscoord;
-	char txt[GMT_LONG_TEXT], *p = NULL;
+	char txt[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	double lon1, lat1, lon2, lat2, tmp1, tmp2, tmp3, tmp4, tmp5;
-	char newfile[GMT_LONG_TEXT], extracted_file[GMT_LONG_TEXT];
+	char newfile[GMT_TEXT_LEN256], extracted_file[GMT_TEXT_LEN256];
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -590,7 +590,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[BUFSIZ], *line, col[15][GMT_TEXT_LEN];
+	char event_title[BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
 
 	struct nodal_plane NP1, NP2;
 	st_me meca, mecar;

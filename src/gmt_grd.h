@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.52 2011-04-22 00:02:37 guru Exp $
+ *	$Id: gmt_grd.h,v 1.53 2011-04-23 00:56:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -38,12 +38,12 @@
 #define GMT_PIXEL_REG		1
 
 /* These 4 lengths must NOT be changed as they are part of grd definition */
-#define GRD_COMMAND_LEN	320
-#define GRD_REMARK_LEN	160
-#define GRD_TITLE_LEN	 80
-#define GRD_UNIT_LEN	 80
+#define GRD_COMMAND_LEN320	320
+#define GRD_REMARK_LEN160	160
+#define GRD_TITLE_LEN80	 	80
+#define GRD_UNIT_LEN80	 	80
 
-#define GRD_VARNAME_LEN	 80
+#define GRD_VARNAME_LEN80	80
 
 struct GRD_HEADER {
 /* Do not change the first three items. They are copied verbatim to the native grid header */
@@ -60,8 +60,8 @@ struct GRD_HEADER {
 	GMT_LONG size;			/* Actual number of items required to hold this grid (mx * my) */
 	GMT_LONG pad[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	GMT_LONG BC[4];			/* Padding on west, east, south, north sides [0,0,0,0] */
-	char name[GMT_LONG_TEXT];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
-	char varname[GRD_VARNAME_LEN];	/* NetCDF: variable name */
+	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
 	int z_id;			/* NetCDF: id of z field */
 	int ncid;			/* NetCDF: file ID */
@@ -78,12 +78,12 @@ struct GRD_HEADER {
 	double inc[2];			/* x and y increment */
 	double z_scale_factor;		/* grd values must be multiplied by this */
 	double z_add_offset;		/* After scaling, add this */
-	char x_units[GRD_UNIT_LEN];	/* units in x-direction */
-	char y_units[GRD_UNIT_LEN];	/* units in y-direction */
-	char z_units[GRD_UNIT_LEN];	/* grid value units */
-	char title[GRD_TITLE_LEN];	/* name of data set */
-	char command[GRD_COMMAND_LEN];	/* name of generating command */
-	char remark[GRD_REMARK_LEN];	/* comments re this data set */
+	char x_units[GRD_UNIT_LEN80];	/* units in x-direction */
+	char y_units[GRD_UNIT_LEN80];	/* units in y-direction */
+	char z_units[GRD_UNIT_LEN80];	/* grid value units */
+	char title[GRD_TITLE_LEN80];	/* name of data set */
+	char command[GRD_COMMAND_LEN320];	/* name of generating command */
+	char remark[GRD_REMARK_LEN160];	/* comments re this data set */
 };
 
 /*-----------------------------------------------------------------------------------------

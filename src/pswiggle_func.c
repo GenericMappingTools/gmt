@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.5 2011-04-19 19:10:44 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -150,7 +150,7 @@ void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 {	/* Draws a basic vertical scale bar at (x0,y0) and labels it as specified */
 	GMT_LONG form;
 	double dy, off, xx[4], yy[4];
-	char txt[GMT_LONG_TEXT];
+	char txt[GMT_TEXT_LEN256];
 
 	GMT_setpen (GMT, PSL, &GMT->current.setting.map_tick_pen);
 
@@ -246,7 +246,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG j, k, wantx, wanty, n_errors = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], *units = NULL;
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

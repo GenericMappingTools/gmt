@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.268 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77.c,v 1.269 2011-04-23 00:56:09 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -728,7 +728,7 @@ int MGD77_Decode_Header (struct GMT_CTRL *C, struct MGD77_HEADER_PARAMS *P, char
 void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
 	GMT_LONG i, k, pos, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
-	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN];
+	char copy[151], p[GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
 	struct tm *T;
@@ -2349,7 +2349,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 * The presence of the : also turns the automatic use of ALL flags off.
 	 */
 
-	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
+	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	int j, k, constraint, n;
 	GMT_LONG pos, i;
 	GMT_LONG exact, all_exact;
@@ -4916,8 +4916,8 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	int cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG rec = 0, pos;
 	GMT_LONG sorted, mgd77;
-	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
-	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
+	char line[BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[BUFSIZ];
+	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN64], word[BUFSIZ], *p, *f;
 	char **list;
 	FILE *fp;
 
@@ -5008,8 +5008,8 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	int cruise_id, id, i, n_aux;
 	GMT_LONG rec = 0, pos;
 	GMT_LONG sorted, mgd77;
-	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
-	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
+	char line[BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[BUFSIZ];
+	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN64], word[BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
