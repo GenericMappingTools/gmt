@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.967 2011-04-23 21:14:31 guru Exp $
+	$Id: ChangeLog,v 1.968 2011-04-24 17:12:23 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-24	jluis
+	* grdimage_func.c:	Accepts to illuminate an image read via GDAL with an 
+				illumination grid computed with grdgradient.
 
 2011-04-23	pwessel
 	* example 28:		Now use clever smaller font-size for trailing 000s in UTM
