@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.18 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdimage_func.c,v 1.19 2011-04-24 17:11:58 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -358,7 +358,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0}, *NaN_rgb = NULL, wesn[4];
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
-	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
+	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL, *G2 = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_EDGEINFO edgeinfo;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
@@ -397,10 +397,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {
 		/* One more test though */
-		if (Ctrl->I.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: cannot use -D and -I options.\n");
-			Return (EXIT_FAILURE);
-		}
 		if (Ctrl->D.mode && !GMT->common.R.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = FALSE;
@@ -542,10 +538,32 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->I.file), 
 			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
-		if (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny) {
+		if (n_grids && (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
+
+#ifdef USE_GDAL
+		if (Ctrl->D.active && (I->header->nx != Intens_orig->header->nx || I->header->ny != Intens_orig->header->ny)) {
+			/* Resize illumination grid to the image's size */
+
+			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
+			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[BUFSIZ];
+			/* Create option list, register G as input source via reference */
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Intens_orig, NULL, (void *)Intens_orig, &object_ID)) 
+				return (EXIT_FAILURE);
+			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_OUT, (void **)&G2, NULL, (void *)G2, &object_ID)) 
+				return (EXIT_FAILURE);
+			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
+			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
+			status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd);	/* Do the resampling */
+			G2->header->n_bands = 1;		/* FCK POINT - Should not be needed */
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
+			Intens_orig = G2;
+		}
+#endif
+
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
@@ -584,7 +602,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->I.active) {
 			Intens_proj = GMT_create_grid (GMT);
 
-			GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
+			if (n_grids)
+				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
+			else
+				GMT_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);	/* FCK POINT regs are different */
 			if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
 				nx_proj = Intens_orig->header->nx;
 				ny_proj = Intens_orig->header->ny;
@@ -615,21 +636,17 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (n_grids) {
-		nm = Grid_proj[0]->header->nm;
-		nx = Grid_proj[0]->header->nx;
-		ny = Grid_proj[0]->header->ny;
 		Grid_proj[0]->header->n_bands = 1;
 		header_work = Grid_proj[0]->header;	/* Later when need to refer to the header, use this copy */
 	}
 #ifdef USE_GDAL
-	if (Ctrl->D.active) {
-		nm = Img_proj->header->nm;
-		nx = Img_proj->header->nx;
-		ny = Img_proj->header->ny;
-
+	if (Ctrl->D.active)
 		header_work = Img_proj->header;	/* Later when need to refer to the header, use this copy */
-	}
 #endif
+
+	nm = header_work->nm;
+	nx = header_work->nx;
+	ny = header_work->ny;
 
 	GMT_plotinit (API, PSL, options);
 
@@ -665,7 +682,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				node = kk + (normal_x ? col : nx - col - 1);
 #ifdef USE_GDAL
 				if (Ctrl->D.active) {
-					index = GMT_NAN - 3;	/* Ensures no illumination done later */
 					if (!Ctrl->In.do_rgb) {
 						rgb[0] = r_table[(int)Img_proj->data[node]];
 						if (do_indexed) {
@@ -697,7 +713,13 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else
 					index = GMT_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
 
-				if (Ctrl->I.active && index != GMT_NAN - 3) GMT_illuminate (GMT, Intens_proj->data[node], rgb);
+				//if (Ctrl->I.active && index != GMT_NAN - 3) GMT_illuminate (GMT, Intens_proj->data[node], rgb);
+				if (Ctrl->I.active && index != GMT_NAN - 3) {
+					if (!n_grids) {		/* Here we are illuminating an image. Must recompute "node" with the GMT_IJP macro */
+						node = GMT_IJP (Intens_proj->header, actual_row, 0) + (normal_x ? col : nx - col - 1);
+					}
+					GMT_illuminate (GMT, Intens_proj->data[node], rgb);
+				}
 				
 				if (P && P->is_gray)	/* Color table only has grays, pick r */
 					bitimage_8[byte++] = GMT_u255 (rgb[0]);
@@ -744,7 +766,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_proj[k]);
 	}
 	if (Ctrl->I.active) {
-		if (need_to_project) /* Must remove locally created grids */
+		if (need_to_project || !n_grids) /* Must remove locally created grids */
 			GMT_free_grid (GMT, &Intens_proj, TRUE);
 		else
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_proj);
