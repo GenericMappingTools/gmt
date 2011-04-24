@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdproject_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,12 +60,6 @@ struct GRDPROJECT_CTRL {
 		GMT_LONG active;
 		char unit;
 	} M;
-	struct S {	/* -S[-]b|c|l|n[/<threshold>] */
-		GMT_LONG active;
-		GMT_LONG antialias;
-		GMT_LONG interpolant;
-		double threshold;
-	} S;
 };
 
 void *New_grdproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -74,7 +68,6 @@ void *New_grdproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C = GMT_memory (GMT, NULL, 1, struct GRDPROJECT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->S.antialias = TRUE; C->S.interpolant = BCR_BICUBIC; C->S.threshold = 0.5;
 		
 	return ((void *)C);
 }
@@ -94,7 +87,7 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: grdproject <in_grdfile> -G<out_grdfile> %s\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx/dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
 	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S[-]b|c|l|n[/<threshold>]] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -113,13 +106,7 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -A is set.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Determines the interpolation mode (b = B-spline, c = bicubic, l = bilinear,\n");
-	GMT_message (GMT, "\t   n = nearest-neighbor) [Default: bicubic].\n");
-	GMT_message (GMT, "\t   Optionally, prepend - to switch off antialiasing [Default: on].\n");
-	GMT_message (GMT, "\t   Append /<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
-	GMT_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-	GMT_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
-	GMT_explain_options (GMT, "VF.");
+	GMT_explain_options (GMT, "VnF.");
 
 	return (EXIT_FAILURE);
 }
@@ -132,7 +119,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, n_files = 0, set_n = FALSE;
+	GMT_LONG n_errors = 0, n_files = 0, set_n = FALSE;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[BUFSIZ];
@@ -190,32 +177,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				GMT_getinc (GMT, format, Ctrl->D.inc);
 				break;
 #endif
-			case 'S':	/* Interpolation mode */
-				Ctrl->S.active = TRUE;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case '-':
-							Ctrl->S.antialias = FALSE; break;
-						case 'n':
-							Ctrl->S.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->S.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->S.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->S.interpolant = BCR_BICUBIC; break;
-						case '/':
-							Ctrl->S.threshold = atof (&opt->arg[j+1]);
-							j = 3; break;
-						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: The -S option has changed meaning. Use -S[-]b|c|l|n[/threshold] to specify interpolation mode.\n");
-							n_errors++;
-							j = 3;
-							break;
-					}
-				}
-				break;
-
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -234,7 +195,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "Syntax error -D option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "Syntax error -E option: Must specify positive dpi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), "Syntax error -S option: threshold must be in [0,1] range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -266,7 +226,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdproject", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "r" GMT_OPT("F"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJR", "nr" GMT_OPT("F"), options))) Return (error);
 	Ctrl = (struct GRDPROJECT_CTRL *) New_grdproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdproject_parse (API, Ctrl, options))) Return (error);
 
@@ -450,7 +410,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		GMT_grd_project (GMT, Rect, Geo, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, TRUE);
+		GMT_grd_project (GMT, Rect, Geo, &edgeinfo, TRUE);
 
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Geo);
 	}
@@ -493,7 +453,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Rect, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
-		GMT_grd_project (GMT, Geo, Rect, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);
+		GMT_grd_project (GMT, Geo, Rect, &edgeinfo, FALSE);
 		GMT_grd_init (GMT, Rect->header, options, TRUE);
 
 		/* Modify output rect header if -A, -C, -M have been set */

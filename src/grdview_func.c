@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.17 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdview_func.c,v 1.18 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -74,9 +74,7 @@ struct GRDVIEW_CTRL {
 	} I;
 	struct L {	/* -L<flag> */
 		GMT_LONG active;
-		GMT_LONG interpolant;
 		char mode[4];
-		double threshold;
 	} L;
 	struct N {	/* -N<level>[/<color>] */
 		GMT_LONG active;
@@ -302,7 +300,6 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
 	C->Q.dpi = 100;
 	GMT_init_fill (GMT, &C->Q.fill, GMT->PSL->init.page_rgb[0], GMT->PSL->init.page_rgb[1], GMT->PSL->init.page_rgb[2]);
-	C->L.interpolant = BCR_BICUBIC; C->L.threshold = 1.0;
 	C->S.value = 1;
 	return ((void *)C);
 }
@@ -324,7 +321,7 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdview %s [API] - Plot topofiles in 3-D\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdview <topofile> %s [-B<tickinfo>] [-C<cpt_file>]\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-G<drapefile> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensfile>] [%s] [-K] [-L[<flags>]]\n", GMT_Jz_OPT);
+	GMT_message (GMT, "\t[-G<drapefile> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensfile>] [%s] [-K] [-L<flag>]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-S<smooth>] [-T[s][o[<pen>]]] [%s] [%s] [-W<type><pen>]\n\t[%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -342,12 +339,11 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_message (GMT, "\t   If so, you must also choose -Qi.\n");
 	GMT_message (GMT, "\t-I Gives name of intensity file and selects illumination.\n");
-	GMT_message (GMT, "\t-L Sets boundary conditions when resampling the grid.  <flags> can be either\n");
+	GMT_explain_options (GMT, "ZK");
+	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
 	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-	GMT_message (GMT, "\t   If no <flags> are set, use bilinear rather than bicubic [Default] resampling.\n");
-	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
 	GMT_message (GMT, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_explain_options (GMT, "OP");
@@ -431,12 +427,8 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* BC and interpolation mode */
-				if (opt->arg[0]) {
-					Ctrl->L.active = TRUE;
-					strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
-				}
-				else
-					Ctrl->L.interpolant = BCR_BILINEAR;
+				Ctrl->L.active = TRUE;
+				strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
 				break;
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
@@ -593,7 +585,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdview", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>" GMT_OPT("E"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options))) Return (error);
 	Ctrl = (struct GRDVIEW_CTRL *) New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdview_parse (API, Ctrl, &edgeinfo, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -783,7 +775,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	/* Initialize bcr stuff */
-	GMT_bcr_init (GMT, Topo->header, Ctrl->L.interpolant, Ctrl->L.threshold, &t_bcr);
+	GMT_bcr_init (GMT, Topo->header, GMT->common.n.interpolant, GMT->common.n.threshold, &t_bcr);
 
 	/* Set boundary conditions  */
 
@@ -941,7 +933,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (drape_resample) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Resampling illumination grid to drape grid resolution\n");
-			GMT_bcr_init (GMT, Intens->header, Ctrl->L.interpolant, Ctrl->L.threshold, &i_bcr);
+			GMT_bcr_init (GMT, Intens->header, GMT->common.n.interpolant, GMT->common.n.threshold, &i_bcr);
 			ix = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.10 2011-04-23 03:53:35 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -53,8 +53,8 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	fprintf(stderr,"mgd77sniffer %s - Along-track quality control of MGD77 cruises\n\n", MGD77_VERSION);
 	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-Afieldabbrev,scale,offset] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_message (GMT, "\t[-gfieldabbrev,imggrid,scale,mode[,latmax]] [-Gfieldabbrev,grid] [-H] [-Ifieldabbrev,rec1,recN] [-K]\n");
-	GMT_message (GMT, "\t[-Lcustom_limits_file ] [-N] [-Q[b|c|l|n][[/]<threshold>]] [%s] [-Sd|s|t]\n",GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Tgap] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [-V] [%s]\n\n", GMT_bo_OPT);
+	GMT_message (GMT, "\t[-Lcustom_limits_file ] [-N] [%s] [-Sd|s|t] [-Tgap]\n",GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [-V] [%s] [%s]\n\n", GMT_bo_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -127,13 +127,6 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Use nautical units.\n");
 	GMT_message (GMT, "\t-P Flag regression statistics that are outside the specified confidence level.\n");
 	GMT_message (GMT, "\t   (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%%.)\n");
-	GMT_message (GMT, "\t-Q Quick mode, use bilinear rather than bicubic [Default] interpolation.\n");
-	GMT_message (GMT, "\t   Alternatively, select interpolation mode by adding b = B-spline, c = bicubic,\n");
-	GMT_message (GMT, "\t   l = bilinear, or n = nearest-neighbor.\n");
-	GMT_message (GMT, "\t   Optionally, append <threshold> in the range [0,1]. [Default = 1 requires all\n");
-	GMT_message (GMT, "\t   4 or 16 nodes to be non-NaN.], <threshold> = 0.5 will interpolate about 1/2 way\n");
-	GMT_message (GMT, "\t   from a non-NaN to a NaN node, while 0.1 will go about 90%% of the way, etc.\n");
-	GMT_message (GMT, "\t   -Q0 will return the value of the nearest node instead of interpolating (Same as -Qn).\n");
 	GMT_message (GMT, "\t-S Specify gradient type for along-track excessive slope  checking.\n");
 	GMT_message (GMT, "\t  -Sd Calculate change in z values along track (dz)\n");
 	GMT_message (GMT, "\t  -Ss Calculate spatial gradients (dz/ds) [default]\n");
@@ -146,6 +139,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
 	GMT_message (GMT, "\t-V runs in verbose mode.\n\n");
 	GMT_message (GMT, "\t-b output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
+	GMT_explain_options (GMT, "n");
 	GMT_message (GMT, "\tMGD77 FIELD INFO:\n");
 	GMT_message (GMT, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_message (GMT, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");
@@ -224,14 +218,13 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], custom_maxGap = FALSE, report_raw = FALSE;
 	GMT_LONG decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
 	GMT_LONG argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
-	GMT_LONG interpolant = BCR_BICUBIC, dtc_index = 0;
-	GMT_LONG pos = 0;
+	GMT_LONG dtc_index = 0, pos = 0;
 
 	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
 
 	double time_factor = 1.0, distance_factor = 1.0, maxTime, west=0.0, east=0.0, north=0.0, south=0.0, adjustDC[32];
 	double test_slope[5] = {0.1, 10.0, MGD77_METERS_PER_FATHOM, MGD77_FATHOMS_PER_METER}, adjustScale[32];
-	double max_speed, min_speed, MGD77_NaN, maxSlope[MGD77_N_NUMBER_FIELDS], maxGap, threshold = 1.0;
+	double max_speed, min_speed, MGD77_NaN, maxSlope[MGD77_N_NUMBER_FIELDS], maxGap;
 	double percent_limit, sim_m[8], sim_b[8], nav_on_land_threshold;
 	time_t clock;
 
@@ -505,26 +498,6 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				percent_limit = atof (opt->arg);
 				sprintf (fpercent_limit, GMT->current.setting.format_float_out, percent_limit);
 				break;
-			case 'Q':	/* Interpolation parameters */
-				interpolant = BCR_BILINEAR;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case 'n':
-							interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							interpolant = BCR_BILINEAR; break;
-						case 'b':
-							interpolant = BCR_BSPLINE; break;
-						case 'c':
-							interpolant = BCR_BICUBIC; break;
-						case '/':
-						default:
-							threshold = atof (&opt->arg[j]);
-							if (j == 0 && threshold < GMT_SMALL) interpolant = BCR_NEARNEIGHBOR;
-							j = 3; break;
-					}
-				}
-				break;
 			case 'S':	/* Specify spatial gradients, time gradients, or value differences along-track */
 				if (opt->arg[0] == 'd') {
 					derivative = "DIFF";
@@ -795,7 +768,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (i = 0; i < n_grids; i++) {
 		if (!simulate)
 			/* Open and store grid file */
-			read_grid (GMT, &this_grid[i], GMT->common.R.wesn, interpolant, threshold);
+			read_grid (GMT, &this_grid[i], GMT->common.R.wesn, GMT->common.n.interpolant, GMT->common.n.threshold);
 	}
 
 	if (n_grids) {
@@ -2920,7 +2893,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 
 	/* Initialize bcr structure with 2 row/col boundaries */
 
-	GMT_bcr_init (GMT, info->G->header, interpolant, threshold, &info->bcr);
+	GMT_bcr_init (GMT, info->G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &info->bcr);
 
 	/* Set boundary conditions  */
 	GMT_boundcond_grid_set (GMT, info->G, &info->edgeinfo);

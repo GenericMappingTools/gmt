@@ -8,12 +8,10 @@
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
 BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(Ei)|IT(dpi) ]
-[ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] [ GMT_Jz_OPT ]
-[ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] 
-[ OPT(S)[BD(-)]BD(b)|BD(c)|BD(l)|BD(n)[BD(/)IT(threshold)] ]
-[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_p_OPT ] [ OPT(tr) ]
+[ GMT_B_OPT ] [ OPT(Ei)|IT(dpi) ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 
+[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
+[ GMT_Rgeoz_OPT ] [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_n_OPT ] [ GMT_p_OPT ] [ OPT(tr) ]
 .SH DESCRIPTION
 BD(grdimage) reads one 2-D grid file and produces a gray-shaded (or colored) map by plotting
 rectangles centered on each grid node and assigning them a gray-shade (or color) based on the z-value.
@@ -30,7 +28,7 @@ is inversely projected back onto the input grid after which a value is interpola
 surrounding input grid values. By default bi-cubic interpolation is used.
 Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
 projected onto the same pixel, their average will dominate in the calculation of the pixel
-value. Interpolation and aliasing is controlled with the OPT(S) option.
+value. Interpolation and aliasing is controlled with the OPT(n) option.
 .br
 The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid.
@@ -95,12 +93,12 @@ Make grid nodes with z = NaN transparent, using the colormasking feature in IT(P
 You may ask for a larger IT(w/e/s/n) region to have more room between the image and the axes.
 A smaller region than specified in the grid file will result in a subset of the grid
 [Default is the region given by the grid file].
-#include "explain_-Sint.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_-n.txt"
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"

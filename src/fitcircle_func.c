@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.7 2011-04-23 02:14:12 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.8 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -425,7 +425,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		strcat (record, item);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
 		latsum = -latsum;
-		lonsum = d_atan2d (-cross_sum[1], -cross_sum[0]);
+		lonsum = d_atan2d (-cross_sum[GMT_Y], -cross_sum[GMT_X]);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL1 S Hemisphere Great Circle Pole (Cross-Averaged)");
@@ -493,7 +493,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		strcat (record, item);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);
 		latsum = -latsum;
-		lonsum = d_atan2d (-gcpole[1], -gcpole[0]);
+		lonsum = d_atan2d (-gcpole[GMT_Y], -gcpole[GMT_X]);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		sprintf (record, format, lonsum, latsum);
 		sprintf (item, "\tL2 S Hemisphere Great Circle Pole (Eigenval Method)");

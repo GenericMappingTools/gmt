@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,11 +71,6 @@ struct GRDTRACK_CTRL {
 		GMT_LONG active;
 		char mode[4];
 	} L;
-	struct Q {	/* -Q[b|c|l|n][[/]<threshold>] */
-		GMT_LONG active;
-		GMT_LONG interpolant;
-		double threshold;
-	} Q;
 	struct S {	/* -S */
 		GMT_LONG active;
 	} S;
@@ -90,7 +85,6 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C = GMT_memory (GMT, NULL, 1, struct GRDTRACK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->Q.interpolant = BCR_BICUBIC; C->Q.threshold = 1.0;
 	return ((void *)C);
 }
 
@@ -109,8 +103,8 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sampling of 2-D gridded data set(s) along 1-D trackline\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <xyfile> -G<grd1> -G<grd2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [-L<flag>] [-Q[b|c|l|n][[/]<threshold>]] [%s] [-S] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-D<dfile>] [-L<flag>] [%s] [-S] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -141,7 +135,6 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_message (GMT, "\t   [Default is natural conditions for regular grids and geographic for IMG grids].\n");
-	GMT_sample_syntax (GMT, 'Q', "Determines the grid interpolation mode.");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Suppress output when any grid sample equals NaN.\n");
 	GMT_explain_options (GMT, "V");
@@ -237,34 +230,10 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				break;
 #ifdef GMT_COMPAT
 			case 'N':	/* Backwards compatible */
-				Ctrl->Q.interpolant = BCR_NEARNEIGHBOR;
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -Qn instead.\n");
+				GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
 				break;
 #endif
-			case 'Q':	/* Interpolation mode */
-				Ctrl->Q.active = TRUE;
-				Ctrl->Q.interpolant = BCR_BILINEAR;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case 'n':
-							Ctrl->Q.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->Q.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->Q.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->Q.interpolant = BCR_BICUBIC; break;
-						case '/':
-						default:
-							Ctrl->Q.threshold = atof (&opt->arg[j]);
-							if (j == 0 && Ctrl->Q.threshold < GMT_SMALL) {
-								Ctrl->Q.interpolant = BCR_NEARNEIGHBOR;
-								GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -Q0 deprecated. Use -Qn instead.\n");
-							}
-							j = 3; break;
-					}
-				}
-				break;
 			case 'S':
 				Ctrl->S.active = TRUE;
 				break;
@@ -281,7 +250,6 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0), "Syntax error -Q: Threshold must be in [0,1] range\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
@@ -357,7 +325,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdtrack", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinos>" GMT_OPT("HMm"), options))) Return (error);
 	Ctrl = (struct GRDTRACK_CTRL *) New_grdtrack_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrack_parse (API, Ctrl, options))) Return (error);
 
@@ -407,7 +375,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 		/* Initialize bcr structure */
 
-		GMT_bcr_init (GMT, GC[g].G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &GC[g].bcr);
+		GMT_bcr_init (GMT, GC[g].G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &GC[g].bcr);
 
 		/* Set boundary conditions  */
 

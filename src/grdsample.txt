@@ -4,12 +4,12 @@
 grdsample \- Resample a grid file onto a new grid
 .SH SYNOPSIS
 BD(grdsample) IT(in_grdfile) OPT(G)IT(out_grdfile) [ GMT_I_OPT ] 
-[ OPT(L)IT(flag) ] [ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ]
-[ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ] [ GMT_r_OPT ]
+[ OPT(L)IT(flag) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 
+[ GMT_fi_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
 BD(grdsample) reads a grid file and interpolates it to create a new grid file with either:  a different registration 
 (OPT(r) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
-(OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(Q)) is used, requiring boundary conditions (OPT(L)).  
+(OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(n)) is used, requiring boundary conditions (OPT(L)).  
 Note that using OPT(R) only is equivalent to BD(grdcut) or BD(grdedit \-S).  BD(grdsample) safely 
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
 BD(grdfft) or BD(grdfilter).
@@ -36,7 +36,6 @@ Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is p
 x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless the grid is
 automatically recognized as periodic.]  
-#include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
 OPT(T)
@@ -44,6 +43,7 @@ Translate between grid and pixel registration;  if the input is
 grid-registered, the output will be pixel-registered and vice-versa.
 #include "explain_-V.txt"
 #include "explain_-f.txt"
+#include "explain_-n.txt"
 #include "explain_nodereg.txt"
 #include "explain_help.txt"
 #include "explain_float.txt"
@@ -51,8 +51,8 @@ grid-registered, the output will be pixel-registered and vice-versa.
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
-first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [OPT(Q)]
-uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [OPT(n)]
+uses only a 2 by 2 neighborhood, but yields only zero-order continuity.  Use bicubic when smoothness is 
 important.  Use bilinear to minimize the propagation of NaNs.
 .SH EXAMPLES
 To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:

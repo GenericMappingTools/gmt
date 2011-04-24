@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.11 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdsample_func.c,v 1.12 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,11 +48,6 @@ struct GRDSAMPLE_CTRL {
 		GMT_LONG active;
 		char mode[4];
 	} L;
-	struct Q {	/* -Q[b|c|l|n][[/]<threshold>] */
-		GMT_LONG active;
-		GMT_LONG interpolant;
-		double threshold;
-	} Q;
 	struct T {	/* -T */
 		GMT_LONG active;
 	} T;
@@ -64,7 +59,6 @@ void *New_grdsample_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GRDSAMPLE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->Q.interpolant = BCR_BICUBIC; C->Q.threshold = 1.0;
 	return ((void *)C);
 }
 
@@ -81,7 +75,7 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdsample %s [API] - Resample a grid file onto a new grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdsample <old_grdfile> -G<new_grdfile> [%s] [-L<flag>]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q[b|c|l|n][[/]<threshold>]] [%s] [-T] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[%s] [-T] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -94,10 +88,9 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-	GMT_sample_syntax (GMT, 'Q', "Determines the grid interpolation mode.");
 	GMT_message (GMT, "\t-R Specifies a subregion [Default is old region].\n");
 	GMT_message (GMT, "\t-T Toggles between grid registration and pixel registration.\n");
-	GMT_explain_options (GMT, "VfF.");
+	GMT_explain_options (GMT, "VfnF.");
 
 	return (EXIT_FAILURE);
 }
@@ -110,7 +103,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[BUFSIZ];
@@ -154,30 +147,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				GMT_getinc (GMT, format, Ctrl->I.inc);
 				break;
 #endif
-			case 'Q':	/* Interpolation mode */
-				Ctrl->Q.active = TRUE;
-				Ctrl->Q.interpolant = BCR_BILINEAR;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case 'n':
-							Ctrl->Q.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->Q.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->Q.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->Q.interpolant = BCR_BICUBIC; break;
-						case '/':
-						default:
-							Ctrl->Q.threshold = atof (&opt->arg[j]);
-							if (j == 0 && Ctrl->Q.threshold < GMT_SMALL) {
-								Ctrl->Q.interpolant = BCR_NEARNEIGHBOR;
-								GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -Q0 deprecated. Use -Qn instead.\n");
-							}
-							j = 3; break;
-					}
-				}
-				break;
+
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				Ctrl->T.active = TRUE;
 				break;
@@ -190,8 +160,6 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0), 
-					"Syntax error -Q: threshold must be in [0,1] range\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active, 
@@ -228,7 +196,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdsample", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRf", "r" GMT_OPT("F"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRf", "nr" GMT_OPT("F"), options))) Return (error);
 	Ctrl = (struct GRDSAMPLE_CTRL *) New_grdsample_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdsample_parse (API, Ctrl, &edgeinfo, options))) Return (error);
 
@@ -294,7 +262,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 	/* Initialize bcr structure */
 
-	GMT_bcr_init (GMT, Gin->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+	GMT_bcr_init (GMT, Gin->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
 
 	/* Set boundary conditions  */
 

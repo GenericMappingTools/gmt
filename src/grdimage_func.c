@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.19 2011-04-24 17:11:58 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.20 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -69,12 +69,6 @@ struct GRDIMAGE_CTRL {
 	struct Q {	/* -Q */
 		GMT_LONG active;
 	} Q;
-	struct S {	/* -S[-]b|c|l|n[/<threshold>] */
-		GMT_LONG active;
-		GMT_LONG antialias;
-		GMT_LONG interpolant;
-		double threshold;
-	} S;
 };
 
 void *New_grdimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -85,7 +79,6 @@ void *New_grdimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
 	C->G.b_rgb[0] = C->G.b_rgb[1] = C->G.b_rgb[2] = 1.0;
-	C->S.antialias = TRUE; C->S.interpolant = BCR_BICUBIC; C->S.threshold = 0.5;
 
 	return ((void *)C);
 }
@@ -109,8 +102,8 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #else
 	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-C<cpt_file>] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
 #endif
-	GMT_message (GMT, "\t[-I<intensity_file>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-S[-]b|c|l|n[/<threshold>]] [-T]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[-I<intensity_file>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-T]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -138,8 +131,7 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_sample_syntax (GMT, 'S', "Determines the grid interpolation mode.");
-	GMT_explain_options (GMT, "UVXcfpt.");
+	GMT_explain_options (GMT, "UVXcfnpt.");
 
 	return (EXIT_FAILURE);
 }
@@ -229,29 +221,6 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = TRUE;
 				break;
-			case 'S':	/* Interpolation mode */
-				Ctrl->S.active = TRUE;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case '-':
-							Ctrl->S.antialias = FALSE; break;
-						case 'n':
-							Ctrl->S.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->S.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->S.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->S.interpolant = BCR_BICUBIC; break;
-						case '/':
-							Ctrl->S.threshold = atof (&opt->arg[j+1]);
-							j = 3; break;
-						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: The -S option has changed meaning. Use -S[-]b|c|l|n[/threshold] to specify interpolation mode.\n");
-							j = 3; break;
-					}
-				}
-				break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -280,8 +249,6 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 					"Syntax error -E option: dpi must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
 					"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.threshold < 0.0 || Ctrl->S.threshold > 1.0), 
-					"Syntax error -S option: threshold must be in [0,1] range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -383,7 +350,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdimage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>", options))) Return (error);
 	Ctrl = (struct GRDIMAGE_CTRL *) New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdimage_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -495,7 +462,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
-	if (GMT_grd_setregion (GMT, header_work, wesn, need_to_project * Ctrl->S.interpolant)) {
+	if (GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
 		/* No grid to plot; just do empty map and bail */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_plotinit (API, PSL, options);
@@ -585,7 +552,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			Img_proj->data = GMT_memory (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
-			GMT_img_project (GMT, I, Img_proj, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);
+			GMT_img_project (GMT, I, Img_proj, &edgeinfo, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
 		}
 #endif
@@ -596,7 +563,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Grid_proj[k], inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
 			Grid_proj[k]->data = GMT_memory (GMT, NULL, Grid_proj[k]->header->size, float);
-			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);
+			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], &edgeinfo, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_orig[k]);
 		}
 		if (Ctrl->I.active) {
@@ -612,7 +579,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Intens_proj, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
-			GMT_grd_project (GMT, Intens_orig, Intens_proj, &edgeinfo, Ctrl->S.antialias, Ctrl->S.interpolant, Ctrl->S.threshold, FALSE);
+			GMT_grd_project (GMT, Intens_orig, Intens_proj, &edgeinfo, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 		}
 		resampled = TRUE;

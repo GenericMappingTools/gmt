@@ -1,5 +1,5 @@
 .TP
-OPT(S)
+OPT(n)
 Select the interpolation mode by adding \fBb\fP for B-spline smoothing,
 \fBc\fP for bicubic interpolation, \fBl\fP for bilinear interpolation, or
 \fBn\fP for nearest-neighbor value (for example to plot categorical data).
