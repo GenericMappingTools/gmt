@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_N.sh,v 1.14 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_N.sh,v 1.15 2011-04-24 13:56:46 remko Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
@@ -21,7 +21,7 @@ fs=9
 dy=0.15
 
 n_pages=`gmtmath -Q $n $n_cols DIV CEIL $n_rows_p1 SUB 0 MAX $n_rows DIV CEIL 1 ADD =`
-touch ../GMT_Appendix_N_inc.tex
+touch GMT_Appendix_N_inc.tex
 
 p=0
 s=0
@@ -31,7 +31,7 @@ while [ $p -lt $n_pages ]; do
 		max_rows=$n_rows_p1
 	else
 		max_rows=$n_rows
-		echo "\GMTfig[h]{GMT_App_N_$p}{Additional custom plot symbols}" >> ../GMT_Appendix_N_inc.tex
+		echo "\GMTfig[h]{GMT_App_N_$p}{Additional custom plot symbols}" >> GMT_Appendix_N_inc.tex
 	fi
 	
 	n_rows_to_go=`gmtmath -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
@@ -79,3 +79,7 @@ EOF
 	pstext -R -J -O $$.text -F+f${fs}p,white >> GMT_App_N_$p.ps
 	rm -f $$.lines $$.symbols $$.text $$.bars
 done
+
+if ! test -s GMT_Appendix_N_inc.tex ; then
+	rm -f GMT_Appendix_N_inc.tex
+fi

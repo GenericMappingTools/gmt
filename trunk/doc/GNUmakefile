@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.56 2011-04-23 02:14:12 guru Exp $
+#	$Id: GNUmakefile,v 1.57 2011-04-24 13:56:46 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -57,8 +57,9 @@ TUTTEX=GMT_Tutorial.tex $(ALLTEX)
 
 # PS, PDF and TEX files used to make API documentation
 APIPS=
-APIPDF=$(APIPS:.ps=.pdf)
-APITEX=GMT_API.tex $(ALLTEX)
+APIPDF=	$(APIPS:.ps=.pdf)
+APITEX=	GMT_API.tex $(ALLTEX)
+APIIMG=	fig/GMT4_mode.png fig/GMT5_mode.png
 
 # PS files created from example scripts
 EX_PS=	fig/example_01.ps fig/example_02.ps fig/example_03.ps fig/example_04.ps \
@@ -85,10 +86,10 @@ IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
 RGBPS=	fig/GMT_RGBchart_a4.ps fig/GMT_RGBchart_letter.ps fig/GMT_RGBchart_tabloid.ps
 
 # PS files for GMT_Docs created from scripts. Scripts have to be converted to TeX (with comments)
-DOCPS0=fig/GMT_App_P_1.ps fig/GMT_App_P_2.ps fig/GMT_App_M_2.ps
+DOCPS0=	fig/GMT_App_P_1.ps fig/GMT_App_P_2.ps fig/GMT_App_M_2.ps
 
 # PS files for GMT_Docs created from scripts. Scripts have to be converted to TeX (without comments)
-DOCPS1=fig/GMT_App_K_1.ps fig/GMT_App_K_2.ps fig/GMT_App_K_3.ps fig/GMT_App_K_4.ps \
+DOCPS1=	fig/GMT_App_K_1.ps fig/GMT_App_K_2.ps fig/GMT_App_K_3.ps fig/GMT_App_K_4.ps \
 	fig/GMT_App_K_5.ps fig/GMT_-B_custom.ps \
 	fig/GMT_App_O_1.ps fig/GMT_App_O_2.ps fig/GMT_App_O_3.ps \
 	fig/GMT_App_O_4.ps fig/GMT_App_O_5.ps fig/GMT_App_O_6.ps fig/GMT_App_O_7.ps \
@@ -110,7 +111,7 @@ DOCPS1=fig/GMT_App_K_1.ps fig/GMT_App_K_2.ps fig/GMT_App_K_3.ps fig/GMT_App_K_4.
 	fig/GMT_winkel.ps
 
 # PS files for GMT_Docs created from scripts. Scripts do not need to be converted to TeX.
-DOCPS2=fig/GMT_-B_geo_1.ps fig/GMT_-B_geo_2.ps fig/GMT_-B_linear.ps fig/GMT_-B_log.ps \
+DOCPS2=	fig/GMT_-B_geo_1.ps fig/GMT_-B_geo_2.ps fig/GMT_-B_linear.ps fig/GMT_-B_log.ps \
 	fig/GMT_-B_pow.ps fig/GMT_utm_zones.ps \
 	fig/GMT_-J.ps fig/GMT_-OK.ps fig/GMT_-P.ps fig/GMT_-R.ps fig/GMT_-U.ps \
 	fig/GMT_-XY.ps fig/GMT_registration.ps fig/GMT_App_E.ps \
@@ -121,20 +122,18 @@ DOCPS2=fig/GMT_-B_geo_1.ps fig/GMT_-B_geo_2.ps fig/GMT_-B_linear.ps fig/GMT_-B_l
 	fig/GMT_color_interpolate.ps
 
 # Prepared images for GMT_Docs
-DOCIMG=	fig/JLuis.png fig/Scharroo.png fig/Smith.png fig/Wessel.png \
-	ppt/formatpicture.png ppt/rendering.png \
-	fig/gimp-panel.png fig/gimp-sliders.png fig/hsv-cone.png
+DOCIMG=	fig/GMT5_Summit_2011.png fig/gimp-panel.png fig/gimp-sliders.png fig/hsv-cone.png \
+	ppt/formatpicture.png ppt/rendering.png
 
 # All PS, EPS and PDF files for GMT_Docs
 DOCPS=	$(DOCPS0) $(DOCPS1) $(DOCPS2) $(ALLPS) $(RGBPS)
 DOCPDF= $(DOCPS:.ps=.pdf) $(IS_EPS:.eps=.pdf) $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf)
 
 # All TEX files needed for GMT_Docs
-DOCTEX= \
-	GMT_Docs.tex GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex GMT_Appendix_D.tex \
+DOCTEX= GMT_Docs.tex GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex GMT_Appendix_D.tex \
 	GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex GMT_Appendix_H.tex GMT_Appendix_I.tex \
 	GMT_Appendix_J.tex GMT_Appendix_K.tex GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex \
-	GMT_Appendix_N_inc.tex GMT_Appendix_O.tex GMT_Appendix_P.tex \
+	GMT_Appendix_O.tex GMT_Appendix_P.tex \
 	GMT_Chapter_1.tex GMT_Chapter_2.tex GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex \
 	GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex \
 	GMT_Frontmatter.tex $(DOCPS0:.ps=.tex) $(DOCPS1:.ps=.tex) $(EX_PS:.ps=.tex) $(AN_PS:.ps=.tex) $(DEF_TEX) $(ALLTEX)
@@ -217,7 +216,7 @@ pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCIMG) $(DOCTEX)
 	\ln -f fig/GMT_RGBchart_*.pdf pdf
 	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
-pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
+pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTIMG) $(TUTTEX)
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	$(PDFLATEX) GMT_Tutorial
 	$(PDFLATEX) GMT_Tutorial
@@ -228,7 +227,7 @@ pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
 	\mv GMT_Tutorial.pdf $@
 	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
-pdf/GMT_API.pdf:	$(APIPDF) $(APITEX)
+pdf/GMT_API.pdf:	$(APIPDF) $(APIIMG) $(APITEX)
 	\rm -f GMT_API.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	$(PDFLATEX) GMT_API
 	$(PDFLATEX) GMT_API
