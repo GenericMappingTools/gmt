@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.8 2011-04-24 01:21:48 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.9 2011-04-24 20:47:41 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -98,11 +98,6 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 		GMT_LONG active;
 		char code[2];
 	} N;
-	struct Q {	/* -Q[b|c|l|n][[/]<threshold>] */
-		GMT_LONG active;
-		GMT_LONG interpolant;
-		double threshold;
-	} Q;
 };
 
 void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -117,8 +112,6 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C->A.parameters[IMG_SCALE] = 1.0;	/* IMG data scaling */
 	C->C.mode = 2;
 	C->E.value = '9';
-	C->Q.interpolant = BCR_BICUBIC;
-	C->Q.threshold = 1.0;
  	return ((void *)C);
 }
 
@@ -135,7 +128,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT,"mgd77manage %s - Manage the content of MGD77+ files\n\n", MGD77_VERSION);
 	GMT_message (GMT,"usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-Dname1,name2,...]\n");
 	GMT_message (GMT,"\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_message (GMT,"\t[-Ne|k|m|n[+|-]] [-Q[b|c|l|n][[/]<threshold>]] [-V] [%s]\n\n", GMT_bi_OPT);
+	GMT_message (GMT,"\t[-Ne|k|m|n[+|-]] [-V] [%s] [%s]\n\n", GMT_bi_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -214,14 +207,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_message (GMT, "\t   (e) meter, (k) km, (m) miles, or (n) nautical miles [Default is -Nk]\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_message (GMT, "\t-Q Quick mode, use bilinear rather than bicubic [Default] interpolation.\n");
-	GMT_message (GMT, "\t   Alternatively, select interpolation mode by adding b = B-spline, c = bicubic,\n");
-	GMT_message (GMT, "\t   l = bilinear, or n = nearest-neighbor.\n");
-	GMT_message (GMT, "\t   Optionally, append <threshold> in the range [0,1]. [Default = 1 requires all\n");
-	GMT_message (GMT, "\t   4 or 16 nodes to be non-NaN.], <threshold> = 0.5 will interpolate about 1/2 way\n");
-	GMT_message (GMT, "\t   from a non-NaN to a NaN node, while 0.1 will go about 90%% of the way, etc.\n");
-	GMT_message (GMT, "\t   -Q0 will return the value of the nearest node instead of interpolating (Same as -Qn).\n");
-	GMT_explain_options (GMT, "VC0");
+	GMT_explain_options (GMT, "VC0n");
 	
 	return (EXIT_FAILURE);
 }
@@ -479,26 +465,6 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				}
 				break;
 				
-			case 'Q':	/* Interpolation parameters */
-				Ctrl->Q.interpolant = BCR_BILINEAR;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case 'n':
-							Ctrl->Q.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->Q.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->Q.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->Q.interpolant = BCR_BICUBIC; break;
-						case '/':
-						default:
-							Ctrl->Q.threshold = atof (&opt->arg[j]);
-							if (j == 0 && Ctrl->Q.threshold < GMT_SMALL) Ctrl->Q.interpolant = BCR_NEARNEIGHBOR;
-							j = 3; break;
-					}
-				}
-				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -513,8 +479,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
 	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
-	n_errors += GMT_check_condition (GMT, !got_grid && Ctrl->Q.interpolant != BCR_BICUBIC, "Syntax error -Q: Requires -Ag|i\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.threshold < 0.0 || Ctrl->Q.threshold > 1.0, "Syntax error -Q: threshold must be in [0,1] range\n");
+	n_errors += GMT_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Syntax error -n: Requires -Ag|i\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
 		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN, "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
 		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN, "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
@@ -655,18 +620,18 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 		/* Initialize bcr structure with 2 rows/cols boundaries */
 
-		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
 		
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
-		interpolate = (Ctrl->Q.threshold > 0.0);
+		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
 		G = GMT_create_grid (GMT);
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
 		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
 		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
-		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
-		interpolate = (Ctrl->Q.threshold > 0.0);
+		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
+		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
 		GMT_LONG n_ave = 0;

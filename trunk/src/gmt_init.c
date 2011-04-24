@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.483 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_init.c,v 1.484 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -533,6 +533,15 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t-i Sets alternate input column order [Default reads all columns in order].\n");
 			break;
 
+		case 'n':	/* -n option for grid resampling parameters in BCR */
+
+			GMT_message (C, "\t-n[-]b|c|l|n[/<threshold>] Determines the grid interpolation mode\n");
+			GMT_message (C, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
+			GMT_message (C, "\t   Optionally, prepend - to switch off antialiasing (except for l) [Default: on].\n");
+			GMT_message (C, "\t   Append /<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
+			GMT_message (C, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
+			GMT_message (C, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
+
 		case 'o':	/* -o option for output column order */
 
 			GMT_message (C, "\t-o Sets alternate output column order [Default writes all columns in order].\n");
@@ -773,17 +782,6 @@ void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 	GMT_message (C, "\t   directions to both magnetic and geographic north [Default is just geographic].\n");
 	GMT_message (C, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
 	GMT_message (C, "\t   Append +<gints>/<mints> to override default annotation/tick interval(s) [10/5/1/30/5/1].\n");
-}
-
-void GMT_sample_syntax (struct GMT_CTRL *C, char option, char *string)
-{
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
-	GMT_message (C, "\t-%c %s\n", option, string);
-	GMT_message (C, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic]\n");
-	GMT_message (C, "\t   Optionally, prepend - to switch off antialiasing (except for l) [Default: on]\n");
-	GMT_message (C, "\t   Append /<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
-	GMT_message (C, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-	GMT_message (C, "\t   about half way from a non-NaN to a NaN node [Default: 0.5]\n");
 }
 
 void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
@@ -1844,7 +1842,7 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 			break;	/* Already set, or will be reset below  */
 	}
 	k++;	/* Skip to start of gap value */
-	if (txt[k] == '-' || txt[k] == '+') k++;	/* SKip sign */
+	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip sign */
 	if ((C->common.g.gap[i] = atof (&txt[k])) == 0.0) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Gap value must be non-zero\n");
 		return (1);
@@ -1894,6 +1892,37 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	if ((C->common.g.col[i] + 1) > C->common.g.n_col) C->common.g.n_col = C->common.g.col[i] + 1;	/* Needed when checking since it may otherwise not be read */
 	C->common.g.n_methods++;
 	return (0);
+}
+
+GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
+{	/* Parse the -n option for 2-D grid resampling parameters */
+	GMT_LONG j, err = 0;
+	for (j = 0; !err && j < 3 && item[j]; j++) {
+		switch (item[j]) {
+			case '-':
+				C->common.n.antialias = FALSE; break;
+			case 'n':
+				C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
+			case 'l':
+				C->common.n.interpolant = BCR_BILINEAR; break;
+			case 'b':
+				C->common.n.interpolant = BCR_BSPLINE; break;
+			case 'c':
+				C->common.n.interpolant = BCR_BICUBIC; break;
+			case '/':
+				C->common.n.threshold = atof (&item[j+1]);
+				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
+					GMT_report (C, GMT_MSG_FATAL, "Error: In -n, threshold must be in [0,1] range\n");
+					err = 1;
+				}
+				j = 3; break;
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Error: Use -n[-]b|c|l|n[/threshold] to set 2-D grid interpolation mode.\n");
+				err = 1;
+				j = 3; break;
+		}
+	}
+	return (err);
 }
 
 GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
@@ -6874,7 +6903,7 @@ GMT_LONG GMT_set_measure_unit (struct GMT_CTRL *C, char unit) {
 GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char *item)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
-	 * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -o, -p, -s, -:, -- and -^.
+	 * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -s, -:, -- and -^.
 	 * The list passes all of these that we should consider.
 	 */
 
@@ -7035,6 +7064,11 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", option);
 			break;
 #endif
+
+		case 'n':
+			error += (GMT_more_than_once (C, C->common.n.active) || gmt_parse_n_option (C, item));
+			C->common.n.active = TRUE;
+			break;
 
 		case 'o':
 			error += (GMT_more_than_once (C, C->common.o.active) || gmt_parse_o_option (C, item));
@@ -7437,6 +7471,9 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	GMT_geo_C_format (C);
 	GMT_plot_C_format (C);
+	
+	/* Set default for -n parameters */
+	C->common.n.antialias = TRUE; C->common.n.interpolant = BCR_BICUBIC; C->common.n.threshold = 0.5;
 
 	if (C->PSL) {	/* PSL was initialized */
 		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */

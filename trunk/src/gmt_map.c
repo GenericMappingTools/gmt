@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.284 2011-04-23 03:53:35 guru Exp $
+ *	$Id: gmt_map.c,v 1.285 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5896,7 +5896,7 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 }
 
 
-GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG antialias, GMT_LONG interpolant, double threshold, GMT_LONG inverse)
+GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG inverse)
 {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It requires the input grid to have 2 boundary rows/cols so that the bcr
@@ -5906,11 +5906,12 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	 * I:	Grid and header with input grid on a padded grid with 2 extra rows/columns
 	 * O:	Grid and header for output grid, no padding needed (but allowed)
 	 * edgeinfo:	Structure with information about boundary conditions on input grid
+	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
+	 *
+	 * In addition, these settings (via -n) control interpolation:
 	 * antialias:	TRUE if we need to do the antialiasing STEP 1 (below)
 	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
 	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
-	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
-	 *
 	 * We initialize the O->data array to NaN.
 	 *
 	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
@@ -5937,7 +5938,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
 	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
 	   shaped hole the size of one cell. */
-	GMT_bcr_init (C, I->header, interpolant, threshold, &bcr);
+	GMT_bcr_init (C, I->header, C->common.n.interpolant, C->common.n.threshold, &bcr);
 
 	/* Set boundary conditions  */
 
@@ -5984,7 +5985,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 	/* PART 1: Project input grid points and do a blockmean operation */
 
-	if (antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		nz = GMT_memory (C, NULL, O->header->size, short int);
 		GMT_row_loop (I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
@@ -6042,7 +6043,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 			z_int = GMT_get_bcr_z (C, I, x_proj, y_proj, &bcr);
 
-			if (!antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
+			if (!C->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (float)z_int;
 			else if (GMT_is_dnan (z_int))		/* Take the average of what we accumulated */
 				O->data[ij_out] /= nz[ij_out];		/* Plain average */
@@ -6065,12 +6066,12 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 		GMT_free (C, x_out_proj);
 		GMT_free (C, y_out_proj);
 	}
-	if (antialias) GMT_free (C, nz);
+	if (C->common.n.antialias) GMT_free (C, nz);
 
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG antialias, GMT_LONG interpolant, double threshold, GMT_LONG inverse)
+GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG inverse)
 {
 	/* Generalized image projection that deals with both interpolation and averaging effects.
 	 * It requires the input image to have 2 boundary rows/cols so that the bcr
@@ -6080,10 +6081,12 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	 * I:	Image and header with input image on a padded image with 2 extra rows/columns
 	 * O:	Image and header for output image, no padding needed (but allowed)
 	 * edgeinfo:	Structure with information about boundary conditions on input image
+	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat image
+	 *
+	 * In addition, these settings (via -n) control interpolation:
 	 * antialias:	TRUE if we need to do the antialiasing STEP 1 (below)
 	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
 	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
-	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat image
 	 *
 	 * We initialize the O->data array to the NaN color.
 	 *
@@ -6112,7 +6115,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
 	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
 	   shaped hole the size of one cell. */
-	GMT_bcr_init (C, I->header, interpolant, threshold, &bcr);
+	GMT_bcr_init (C, I->header, C->common.n.interpolant, C->common.n.threshold, &bcr);
 
 	/* Set boundary conditions  */
 
@@ -6160,7 +6163,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 	/* PART 1: Project input image points and do a blockmean operation */
 
-	if (antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		nz = GMT_memory (C, NULL, O->header->size, short int);
 		GMT_row_loop (I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
@@ -6221,7 +6224,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 			GMT_get_bcr_img (C, I, x_proj, y_proj, &bcr, z_int);
 
-			if (!antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
+			if (!C->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = z_int[b];
 			else {						/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
@@ -6245,7 +6248,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 		GMT_free (C, x_out_proj);
 		GMT_free (C, y_out_proj);
 	}
-	if (antialias) GMT_free (C, nz);
+	if (C->common.n.antialias) GMT_free (C, nz);
 
 	return (GMT_NOERROR);
 }

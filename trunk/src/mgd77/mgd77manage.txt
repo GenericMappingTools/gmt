@@ -6,7 +6,7 @@ mgd77manage \- Manage extra columns in MGD77+ files
 BD(mgd77manage) IT(NGDC-ids) [ OPT(A)[BD(+)]BD(a)|BD(c)|BD(d)|BD(D)|BD(e)|BD(E)|BD(g)|BD(i)|BD(n)|BD(t)|BD(T)IT(fileinfo) ] 
 [ OPT(C)BD(f)|BD(g)|BD(e) ] [ OPT(D)IT(abbrev1),IT(abbrev2),...) ] [ OPT(E)IT(empty) ] [ OPT(F) ] 
 [ OPT(I)IT(abbrev)/IT(name)/IT(unit)/BD(t)/IT(scale)/IT(offset)/IT(comment) ] [ OPT(Ne)|BD(k)|BD(m)|BD(n) ] 
-[ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
+[ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_n_OPT ]
 .SH DESCRIPTION
 BD(mgd77manage) deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
@@ -71,11 +71,11 @@ the verification status.
 .br
 .sp
 BD(g) Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see OPT(Q)).  Append name of a GMT grid file.
+bicubic interpolation (however, see OPT(n)).  Append name of a GMT grid file.
 .br
 .sp
 BD(i) Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see OPT(Q)).  Append the img grid filename, followed by the comma-separated data scale (typically 1 or 0.1),
+bicubic interpolation (however, see OPT(n)).  Append the img grid filename, followed by the comma-separated data scale (typically 1 or 0.1),
 the IMG file mode (0-3), and optionally the img grid max latitude [80.738].  The modes stand for the following:
 (0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
@@ -132,12 +132,12 @@ one word (e.g., "Corrected Depth").
 OPT(Ne)|BD(k)|BD(m)|BD(n)
 Specify the distance unit used when using OPT(Ad)|BD(D) by appending BD(e) (meter), BD(k) (km),
 BD(m) (miles), or BD(n) (nautical miles). [Default is OPT(Nk) (km)].
-#include "explain_-Q.txt"
 Only relevant when OPT(Ag)|BD(i) is selected.  
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 This applies to the input 1- or 2-column data files specified under some of the OPT(A) options.
 The binary input option is only available for numerical data columns.
+#include "explain_-n.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
 To append Geosat/ERS-1 gravity version 11.2 as an extra data column in the cruises

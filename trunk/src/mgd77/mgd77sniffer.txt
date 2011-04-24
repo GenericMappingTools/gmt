@@ -7,9 +7,8 @@ BD(mgd77sniffer) IT(NGDC-ids) [ OPT(A)IT(fieldabbrev),IT(scale),IT(offset) ] [ O
 [ OPT(D)BD(d)|BD(e)|BD(E)|BD(f)|BD(l)|BD(m)|BD(s)|BD(v)[IT(r)] ] [ OPT(g)IT(fieldabbrev),IT(imggrid),IT(scale),IT(mode) ] 
 [ OPT(G)IT(fieldabbrev),IT(grid) ] [ OPT(H) ] [ OPT(I)IT(fieldabbrev),IT(rec1),IT(recN) ] 
 [ OPT(K) ] [ OPT(L)IT(custom-limits-file) ] [ OPT(N) ]
-[ OPT(Q)[BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)] ]
 [ GMT_Rgeo_OPT ] [ OPT(S)BD(d)|BD(s)|BD(t) ] 
-[ OPT(T)IT(gap) ] [ GMT_V_OPT ] [ OPT(W)BD(c)|BD(g)|BD(o)|BD(s)|BD(t)|BD(v)|BD(x) ] [ GMT_bo_OPT ]
+[ OPT(T)IT(gap) ] [ GMT_V_OPT ] [ OPT(W)BD(c)|BD(g)|BD(o)|BD(s)|BD(t)|BD(v)|BD(x) ] [ GMT_bo_OPT ] [ GMT_n_OPT ]
 .SH DESCRIPTION
 BD(mgd77sniffer) scans old (pre-Y2K) and new format ASCII MGD77 files for errors using point-by-point
 sanity checking, along-track detection of excessive slopes, and optional comparison of
@@ -198,7 +197,6 @@ Use nautical units.
 OPT(P)
 Flag regression statistics that are outside the specified confidence level.
 (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%.)
-#include "explain_-Q.txt"
 #include "explain_-Rgeo.txt"
 .TP
 OPT(S)BD(d)|BD(s)|BD(t)
@@ -230,6 +228,7 @@ OPT(D) options.
 OPT(b)
 output binary data for OPT(D)d|f|s|v option.  Append BD(s) for single and BD(d) for double
 precision [Default is double].
+#include "explain_-n.txt"
 #include "explain_help.txt"
 
 .SH MGD77 FIELD INFO

@@ -12,15 +12,15 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 .SH SYNOPSIS
 BD(grdview) IT(relief_file) GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(C)IT(cptfile)]
-[ OPT(G)IT(drapefile) | OPT(G)IT(grd_r),IT(grd_g),IT(grd_b) ] [ OPT(I)IT(intensfile) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
-[ OPT(L)[IT(flags)] ] [ OPT(N)IT(level)[/IT(color)] ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(Q)IT(type)[BD(g)] ] [ GMT_Rgeoz_OPT ] [ OPT(S)IT(smooth) ] 
-[ OPT(T)[BD(s)][BD(o)[IT(pen)]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)BD(type)IT(pen) ] [ GMT_X_OPT ]
-[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
+[ OPT(G)IT(drapefile) | OPT(G)IT(grd_r),IT(grd_g),IT(grd_b) ] [ OPT(I)IT(intensfile) ] 
+[ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)[IT(flags)] ] [ OPT(N)IT(level)[/IT(color)] ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(type)[BD(g)] ] [ GMT_Rgeoz_OPT ] [ OPT(S)IT(smooth) ] 
+[ OPT(T)[BD(s)][BD(o)[IT(pen)]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)BD(type)IT(pen) ] 
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_n_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
 BD(grdview) reads a 2-D grid file and produces a 3-D perspective plot by 
 drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
-to a rasterimage.  Options include draping a data set on top of a surface, plotting of contours on top of the
+to a raster image.  Options include draping a data set on top of a surface, plotting of contours on top of the
 surface, and apply artificial illumination based on intensities provided in a separate grid file.
 .SH REQUIRED ARGUMENTS
 .TP
@@ -109,6 +109,7 @@ You must also select OPT(N) for the facade outline to be drawn.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_-n.txt"
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"

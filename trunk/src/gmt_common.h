@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.25 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_common.h,v 1.26 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,7 +20,7 @@
  * Holds current selections for the family of common GMT options.
  *
  * Author: 	Paul Wessel
- * Date:	01-OCT-2009
+ * Date:	01-JAN-2011
  * Version:	5 API
  */
  
@@ -136,6 +136,12 @@ struct GMT_COMMON {
 		GMT_LONG active;
 		GMT_LONG n_cols;
 	} i;
+	struct n {	/* -n[-]b|c|l|n[/threshold] */
+		GMT_LONG active;
+		GMT_LONG antialias;
+		GMT_LONG interpolant;
+		double threshold;
+	} n;
 	struct o {	/* -o<col>|<colrange>,.. */
 		GMT_LONG active;
 		GMT_LONG n_cols;

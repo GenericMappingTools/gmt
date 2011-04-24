@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: project_func.c,v 1.8 2011-04-24 20:47:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,9 +48,11 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		GMT_LONG active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct G {	/* -G<inc> */
+	struct G {	/* -G<inc>[/<lat>] */
 		GMT_LONG active;
+		GMT_LONG mode;
 		double inc;
+		double lat;
 	} G;
 	struct L {	/* -L[w][<l_min>/<l_max>] */
 		GMT_LONG active;
@@ -306,6 +308,7 @@ void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
+	C->G.lat = 90.0;	/* Great circle path */
 	return ((void *)C);
 }
 
@@ -449,7 +452,13 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 				break;
 			case 'G':
 				Ctrl->G.active = TRUE;
-				Ctrl->G.inc = atof (opt->arg);
+				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/lat */
+					Ctrl->G.mode = 1;
+					Ctrl->G.inc = atof (txt_a);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
+				}
+				else
+					Ctrl->G.inc = atof (opt->arg);
 				break;
 			case 'L':
 				Ctrl->L.active = TRUE;
@@ -500,6 +509,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0, "Syntax error -G option: Must specify a positive increment\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active, "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option: Cannot be used with -fg\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode, "Syntax error -N option: Cannot be used with -G<dist>/<lat>\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -593,7 +603,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG j, k, n_fields, mode, error = FALSE;
 	GMT_LONG pure_ascii, skip, z_first = TRUE;
 
-	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
+	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0, shrink = 1.0;
 	double theta = 0.0, d_along, *in = NULL;
 	double a[3], b[3], x[3], xt[3], center[3], e[9];
 
@@ -694,12 +704,55 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 		if (Ctrl->T.active)
 			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, Ctrl->C.y, Ctrl->C.x, center, Ctrl->T.active);
-		else
+		else {
 			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
+			if (Ctrl->G.mode) {	/* Want small-circle path from C to E */
+				double s, c, s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
+				GMT_LONG done, pos = (Ctrl->G.lat > 0.0);
+				radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
+				if (radius > fabs (Ctrl->G.lat)) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Your -C and -E are too far apart for a small-circle with latitude %g. Revert to great-circle\n", Ctrl->G.lat);
+					Ctrl->G.mode = 0;
+				}
+				else {	/* Find small circle pole so C and E are |lat| degrees from it. */
+					for (k = 0; k < 3; k++) m[k] = a[k] + b[k];	/* Mid point along A-B */
+					GMT_normalize3v (GMT, m);
+					s_hi = (pos) ? 90.0 : 0.0;
+					s_lo = (pos) ? 0.0 : -90.0;
+					done = FALSE;
+					do {	/* Trial for finding pole S */
+						s_mid = 0.5 * (s_lo + s_hi);
+						sincosd (s_mid, &s, &c);
+						for (k = 0; k < 3; k++) x[k] = P.pole[k] * s + m[k] * c;
+						GMT_normalize3v (GMT, x);
+						radius = d_acosd (GMT_dot3v (GMT, a, x)); 
+						if (fabs (radius - Ctrl->G.lat) < 0.1)
+							done = TRUE;
+						else if (radius > fabs (Ctrl->G.lat)) {
+							if (pos) s_hi = s_mid; else s_lo = s_mid;
+						}
+						else {
+							if (pos) s_lo = s_mid; else s_hi = s_mid;
+						}
+					} while (!done);
+					GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
+					sin_lat_to_pole = c;
+					shrink = c;
+					GMT_cross3v (GMT, P.pole, a, x);
+					GMT_normalize3v (GMT, x);
+					GMT_cross3v (GMT, x, P.pole, ap);
+					GMT_normalize3v (GMT, ap);
+					GMT_cross3v (GMT, P.pole, b, x);
+					GMT_normalize3v (GMT, x);
+					GMT_cross3v (GMT, x, P.pole, bp);
+					GMT_normalize3v (GMT, bp);
+					Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp)) * shrink;
+				}
+			}
+		}
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
-			Ctrl->L.max = GMT_dot3v (GMT, a,b);
-			Ctrl->L.max = d_acosd (Ctrl->L.max);
+			if (!Ctrl->G.mode) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
 			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}

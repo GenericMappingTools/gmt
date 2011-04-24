@@ -5,10 +5,8 @@ grdproject \- Forward and Inverse map transformation of 2-D grid files
 .SH SYNOPSIS
 BD(grdproject) IT(in_grdfile) OPT(G)IT(out_grdfile) GMT_J_OPT
 [ OPT(A)[BD(c|i|p|e|f|k|M|n)] ] [ OPT(C)[IT(dx/dy)] ] [ OPT(D)GMT_inc_OPT ] 
-[ OPT(E)IT(dpi) ] [ OPT(I) ] 
-[ OPT(Mc)|BD(i)|BD(p) ] [ GMT_Rgeo_OPT ]
-[ OPT(S)[BD(-)]BD(b)|BD(c)|BD(l)|BD(n)[BD(/)IT(threshold)] ]
-[ GMT_V_OPT ] [ GMT_r_OPT ]
+[ OPT(E)IT(dpi) ] [ OPT(I) ] [ OPT(Mc)|BD(i)|BD(p) ] [ GMT_Rgeo_OPT ]
+[ GMT_V_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
 BD(grdproject) will do one of two things depending whether OPT(I) has been set.  If set, it
 will transform a gridded data set from a rectangular coordinate system onto a geographical
@@ -18,7 +16,7 @@ is inversely projected back onto the input grid after which a value is interpola
 surrounding input grid values. By default bi-cubic interpolation is used.
 Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
 projected onto the same new node, their average will dominate in the calculation of the new
-node value. Interpolation and aliasing is controlled with the OPT(S) option.
+node value. Interpolation and aliasing is controlled with the OPT(n) option.
 The new node spacing may be determined in one of several ways by specifying the grid spacing,
 number of nodes, or resolution.  Nodes not constrained by input data are set to NaN.
 .br
@@ -64,8 +62,8 @@ Append BD(c), BD(i), or BD(p) to indicate that cm, inch, or point should be the 
 #include "explain_-R.txt"
 You may ask to project only a subset of the grid by specifying a smaller input IT(w/e/s/n) region
 [Default is the region given by the grid file].
-#include "explain_-Sint.txt"
 #include "explain_-V.txt"
+#include "explain_-n.txt"
 #include "explain_nodereg.txt"
 #include "explain_help.txt"
 #include "explain_grd_inout.txt"

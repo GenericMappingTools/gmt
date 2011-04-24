@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.135 2011-04-07 00:55:30 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.136 2011-04-24 20:47:40 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -950,6 +950,18 @@ read all the data columns in the file, starting with the first column.
 Using \Opt{i} modifies that process.  For instance, to use the 4th, 7th, and
 3rd data column as the required {it x,y,z} to \GMTprog{blockmean} you would
 specify \Opt{i}3,6,2 (since 0 is the first column).
+
+\subsection{Grid resampling parameters: The \Opt{n} option}
+\index{\Opt{n} (Grid resampling parameters)}
+\index{Resampling \Opt{n}}
+\label{sec:resample}
+The \Opt{n}\emph{columns} option controls parameters that are
+used when 2-D grids are resampled.  You can select the type
+of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
+\Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
+For programs that support it, antialiasing is by default on;
+optionally, prepend \fB-\fP to switch off antialiasing.
+
 
 \subsection{Output columns selection: The \Opt{o} option}
 \index{\Opt{o} (Output columns selection)}
