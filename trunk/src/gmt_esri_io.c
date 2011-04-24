@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.21 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.22 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,7 +33,7 @@
 #if WORDS_BIGENDIAN == 0
 #define MY_ENDIAN 'L'	/* This machine is Little endian */
 #else
-#define MY_ENDIAN 'B'	/* This machine is Little endian */
+#define MY_ENDIAN 'B'	/* This machine is Big endian */
 #endif
 #endif
 
@@ -48,7 +48,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	fgets (record, BUFSIZ, fp);	/* Just get first line. Not using GMT_fgets since we may be reading a binary file */ 
 	GMT_fclose (C, fp);
 	if (strncmp (record, "ncols ", 6) ) {	/* Failed to find "ncols"; probably a binary file */
-		char *file, *not_used = NULL;
+		char *file = NULL, *not_used = NULL;
 		size_t name_len;
 
 		/* If it got here, see if a companion .hdr file exists (must test upper & lower cases names) */
@@ -96,9 +96,8 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 				strcpy (header->title, file);		/* Store the file name with all extensions removed.
 								   	We'll use this to create header from file name info */
 			}
-			else if ( ((header->name[name_len - 1] == 't') || (header->name[name_len - 1] == 'T')) && 
-				((strstr (header->name, ".hgt") || strstr (header->name, ".HGT"))) ) {
-				/* Possibly a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
+			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
+				/* Probably a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
 				if ((file[len-4] == 'E' || file[len-4] == 'e' || file[len-4] == 'W' || file[len-4] == 'w') &&
 					(file[len-7] == 'N' || file[len-7] == 'n' || file[len-7] == 'S' || file[len-7] == 's')) {
 					header->flags[0] = 'B';	/* SRTM1|3 are Big Endians */

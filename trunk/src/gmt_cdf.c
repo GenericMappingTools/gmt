@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.68 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.69 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,17 +153,13 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 
 		GMT_err_trap (nc_enddef (ncid));
 
-		dummy[0] = header->wesn[XLO];
-		dummy[1] = header->wesn[XHI];
+		dummy[0] = header->wesn[XLO];	dummy[1] = header->wesn[XHI];
 		GMT_err_trap (nc_put_var_double (ncid, x_range_id, dummy));
-		dummy[0] = header->wesn[YLO];
-		dummy[1] = header->wesn[YHI];
+		dummy[0] = header->wesn[YLO];	dummy[1] = header->wesn[YHI];
 		GMT_err_trap (nc_put_var_double (ncid, y_range_id, dummy));
-		dummy[0] = header->inc[GMT_X];
-		dummy[1] = header->inc[GMT_Y];
+		dummy[0] = header->inc[GMT_X];	dummy[1] = header->inc[GMT_Y];
 		GMT_err_trap (nc_put_var_double (ncid, inc_id, dummy));
-		nm[0] = header->nx;
-		nm[1] = header->ny;
+		nm[0] = header->nx;	nm[1] = header->ny;
 		GMT_err_trap (nc_put_var_int (ncid, nm_id, nm));
 		if (header->z_min <= header->z_max) {
 			dummy[0] = header->z_min; dummy[1] = header->z_max;

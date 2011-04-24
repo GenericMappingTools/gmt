@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.54 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_grd.h,v 1.55 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,7 @@ struct GRD_HEADER {
 	double xy_off;			/* 0.0 (registration == 0) or 0.5 ( == 1) */
 	char flags[4];			/* Flags used for ESRI grids */
 	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-/* The following elements should not be changed. They are copied verbatim to the native grid header */
+/* The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
 	double z_min;			/* Minimum z value */
 	double z_max;			/* Maximum z value */
@@ -119,7 +119,7 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no
- * overhead.  Note: GMT_x_to_col does not use nx but we included it for symmetry reasons.
+ * overhead.  Note: GMT_x_to_col does not need nx but we included it for symmetry reasons.
  * GMT_y_to_row must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j'. */
@@ -156,11 +156,11 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 #define GMT_get_nm(nx,ny) (((GMT_LONG)(nx)) * ((GMT_LONG)(ny)))
 #define GMT_grd_get_nm(h) (((GMT_LONG)(h->nx)) * ((GMT_LONG)(h->ny)))
 
-/* This macro copies the given pad into the header */
+/* GMT_grd_setpad copies the given pad into the header */
 
 #define GMT_grd_setpad(h,newpad) memcpy ((void *)(h)->pad, (void *)newpad, 4*sizeof(GMT_LONG))
 
-/* This next one computes grid size including the padding, and doubles it if complex values */
+/* GMT_grd_get_size computes grid size including the padding, and doubles it if complex values */
 
 #define GMT_grd_get_size(C,h) (((h->complex_mode > 0) + 1) * h->mx * h->my)
 

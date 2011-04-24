@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.7 2011-04-23 00:56:09 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.8 2011-04-24 01:21:48 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -128,7 +128,7 @@ void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD77_CONTROL *In)
+GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -165,7 +165,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MG
 	GMT_message (GMT, "\t      If filename is - we read from stdin.  Only records with mathcing distance will have data assigned.\n");
 	GMT_message (GMT, "\t   D: Same as d but we interpolate between the dist,data pairs to fill in all data records.\n");
 	GMT_message (GMT, "\t   e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look\n");
-	GMT_message (GMT, "\t      for the <cruise>.e77 file in the current directory or in MGD77_HOME/E77 [%s/E77]\n", In->MGD77_HOME);
+	GMT_message (GMT, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77\n");
 	GMT_message (GMT, "\t      By default we will apply recommended header (h) and systematic fixes (f) and set all data bit flags.\n");
 	GMT_message (GMT, "\t      Append a combination of these flags to change the default accordingly:\n");
 	GMT_message (GMT, "\t        h = Ignore all header recommendations\n");
@@ -561,9 +561,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 
-	MGD77_Init (GMT, &In);			/* Initialize MGD77 Machinery */
-	if (options && options->option == '?') return (GMT_mgd77manage_usage (API, GMTAPI_USAGE, &In));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77manage_usage (API, GMTAPI_SYNOPSIS, &In));	/* Return the synopsis */
+	if (options && options->option == '?') return (GMT_mgd77manage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77manage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -576,8 +575,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	
 	GMT_boundcond_init (GMT, &edgeinfo);
+	MGD77_Init (GMT, &In);			/* Initialize MGD77 Machinery */
 
 	/* Default e77_skip_mode will apply header and fix corrections if prefix is Y and set all data bits */
 	

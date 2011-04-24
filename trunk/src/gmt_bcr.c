@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.17 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.18 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -73,30 +73,12 @@
  *
  *	GMT_bcr_init		Initialize structure for convolution interpolation
  *	GMT_get_bcr_z		Get interpolated grid value by convolution
- *	GMT_get_bcr_img		Get interpolated image value by convolution
+ *	GMT_get_bcr_img		Get interpolated image value(s) by convolution
  */
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
-
-void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
-{
-	/* Initialize interpolant and threshold */
-	bcr->interpolant = interpolant;
-	bcr->threshold = threshold;
-	if (interpolant == BCR_NEARNEIGHBOR)
-		bcr->n = 1;
-	else if (interpolant == BCR_BILINEAR)
-		bcr->n = 2;
-	else
-		bcr->n = 4;
-
-	/* Initialize rx_inc, ry_inc, and offset */
-	bcr->rx_inc = 1.0 / h->inc[GMT_X];
-	bcr->ry_inc = 1.0 / h->inc[GMT_Y];
-	bcr->offset = (h->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
-}
 
 GMT_LONG gmt_brc_reject (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, double yy)
 {
@@ -224,6 +206,26 @@ GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR 
 	return (ij);
 }
 
+/* MAIN FUNCTIONS */
+
+void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
+{
+	/* Initialize interpolant and threshold */
+	bcr->interpolant = interpolant;
+	bcr->threshold = threshold;
+	if (interpolant == BCR_NEARNEIGHBOR)
+		bcr->n = 1;
+	else if (interpolant == BCR_BILINEAR)
+		bcr->n = 2;
+	else
+		bcr->n = 4;
+
+	/* Initialize rx_inc, ry_inc, and offset */
+	bcr->rx_inc = 1.0 / h->inc[GMT_X];
+	bcr->ry_inc = 1.0 / h->inc[GMT_Y];
+	bcr->offset = (h->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
+}
+
 double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy, struct GMT_BCR *bcr)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)
@@ -235,9 +237,9 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 	
-	if (gmt_brc_reject (C, G->header, xx, yy)) return (C->session.d_NaN);
+	if (gmt_brc_reject (C, G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
 
-	/* Determine nearest node ij and set weights */
+	/* Determine nearest node ij and set weights wx, wy */
 	
 	ij = gmt_brc_prep (C, G->header, bcr, xx, yy, wx, wy);
 
@@ -259,16 +261,16 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
-	   B-spline or bicubic) at xx, yy. 8-bit components is assumed.  */
+	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
 	GMT_LONG i, j, ij, b, nb = G->n_bands;
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 	
-	if (gmt_brc_reject (C, G->header, xx, yy)) return (1);
+	if (gmt_brc_reject (C, G->header, xx, yy)) return (1);	/* NaNs or outside */
 
-	/* Determine nearest node ij and set weights */
+	/* Determine nearest node ij and set weights wx wy */
 	
 	ij = gmt_brc_prep (C, G->header, bcr, xx, yy, wx, wy);
 
@@ -282,7 +284,7 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) {
+	if ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
 			z[b] = (unsigned char) irint (GMT_0_255_truncate (retval[b]));

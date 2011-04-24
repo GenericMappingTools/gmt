@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.164 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.165 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,6 +66,7 @@ struct GRD_PAD {
 	GMT_LONG expand;
 };
 
+/* These functions live in other files and are extern'ed in here */
 EXTERN_MSC GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
@@ -132,21 +133,20 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		val = GMT_grd_format_decoder (C, code);
 		if (val < 0) return (val);
 		header->type = val;
-		if ( val == 22 && header->name[i+2] && header->name[i+2] == '?' ) {	/* A SUBDATASET request for GDAL */
-			char *pch;
-			pch = strstr(&header->name[i+3], "::");
-			if ( pch ) {		/* The file name was omited within the SUBDATASET. Must put it there for GDAL */
+		if (val == GMT_GRD_IS_GDAL && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
+			char *pch = strstr(&header->name[i+3], "::");
+			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
 				tmp[0] = '\0';
-				strncpy(tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
-				strcat(tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
-				strcat(tmp, &pch[1]);
+				strncpy (tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
+				strcat (tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
+				strcat (tmp, &pch[1]);
 				strcpy (header->name, tmp);
 			}
 			else
 				strcpy (header->name, &header->name[i+3]);
 			magic = 0;	/* We don't want it to try to prepend any path */
 		}
-		else if ( val == 22 && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
+		else if ( val == GMT_GRD_IS_GDAL && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
 		}
@@ -156,7 +156,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (val != 22 || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (val != GMT_GRD_IS_GDAL || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
@@ -1597,7 +1597,7 @@ GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex_mode, GMT_LONG *
 }
 
 GMT_LONG GMT_check_url_name (char *fname) {
-	/* File names starting as below should not be tested for existance or reading permitions as they
+	/* File names starting as below should not be tested for existance or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns TRUE. All cases are read via GDAL support. */
 	if ( !strncmp(fname,"http:",5)        || 
@@ -1629,7 +1629,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
 	if (i && file[i+1] == 'b') {
 		/* Yes we do. Put the band string into the 'pocket' where GMT_read_image will look and finish the request */
-		I->header->pocket = strdup(&file[i+2]);
+		I->header->pocket = strdup (&file[i+2]);
 		file[i] = '\0';
 	}
 
@@ -1653,7 +1653,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	I->header->n_bands = from_gdalread->RasterCount;
 	I->header->registration = (int)from_gdalread->hdr[6];
 
-	/*GMT_set_grddim (C, I->header);*/		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
+	/* GMT_set_grddim (C, I->header);*/		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
 	I->header->mx = GMT_grd_get_nxpad (I->header, I->header->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
 	I->header->my = GMT_grd_get_nypad (I->header, I->header->pad);
 	I->header->nm = GMT_grd_get_nm (I->header);		/* Sets the number of actual data items */
@@ -1662,7 +1662,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 
 	GMT_free (C, to_gdalread);
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )
-		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+		free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);
 
