@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.80 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.81 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * C->current.setting.time_system.scale + C->current.setting.time_system.epoch_t0 * GMT_DAY2SEC_F);
-	*rd = splitinteger (C, t_sec, 86400, s) + C->current.setting.time_system.rata_die;
+	*rd = splitinteger (C, t_sec, GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
 }
 
 /* Modulo functions.  The C operation "x%y" and the POSIX 
@@ -103,41 +103,37 @@ GMT_LONG cal_imod (GMT_LONG x, GMT_LONG y) {
 }
 
 /* kday functions:
-	Let kday be the day of the week, defined with 0 = Sun,
-	1 = Mon, etc. through 6 = Sat.  (Note that ISO day of
-	the week is the same for all of these except ISO Sunday
-	is 7.)  Since rata die 1 is a Monday, we have kday from
-	rd is simply cal_imod(rd, 7).  The various functions
-	below take an rd and find another rd related to the first
-	through the fact that the related day falls on a given
-	kday of the week.  */
+   Let kday be the day of the week, defined with 0 = Sun,
+   1 = Mon, etc. through 6 = Sat.  (Note that ISO day of
+   the week is the same for all of these except ISO Sunday
+   is 7.)  Since rata die 1 is a Monday, we have kday from
+   rd is simply cal_imod(rd, 7).  The various functions
+   below take an rd and find another rd related to the first
+   through the fact that the related day falls on a given
+   kday of the week.  */
 
 GMT_LONG kday_on_or_before (GMT_LONG date, GMT_LONG kday) {
-/*	Given date and kday, return the date of the nearest kday
-	on or before the given date.
-*/
+	/* Given date and kday, return the date of the nearest kday
+	   on or before the given date. */
 	return ((GMT_LONG)(date - cal_imod ((GMT_LONG)(date-kday), 7)));
 }
 
 GMT_LONG kday_after (GMT_LONG date, GMT_LONG kday) {
-/*	Given date and kday, return the date of the nearest kday
-	after the given date.
-*/
+	/* Given date and kday, return the date of the nearest kday
+	   after the given date. */
 	return (kday_on_or_before (date+7, kday));
 }
 
 GMT_LONG kday_before (GMT_LONG date, GMT_LONG kday) {
-/*	Given date and kday, return the date of the nearest kday
-	before the given date.
-*/
+	/* Given date and kday, return the date of the nearest kday
+	   before the given date. */
 	return (kday_on_or_before (date-1, kday));
 }
 
 GMT_LONG nth_kday (GMT_LONG n, GMT_LONG kday, GMT_LONG date) {
-/*	Given date, kday, and n, return the date of the n'th
-	kday before or after the given date, according to the
-	sign of n.
-*/
+	/* Given date, kday, and n, return the date of the n'th
+	   kday before or after the given date, according to the
+	   sign of n. */
 	if (n > 0)
 		return ((GMT_LONG) (7*n + kday_before (date, kday)));
 	else
@@ -145,10 +141,9 @@ GMT_LONG nth_kday (GMT_LONG n, GMT_LONG kday, GMT_LONG date) {
 }
 
 GMT_LONG gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month) {
-
 	/* Return the number of days in a month,
-		using the gregorian leap year rule.
-	Months are numbered from 1 to 12.  */
+	   using the gregorian leap year rule.
+	   Months are numbered from 1 to 12.  */
 	
 	GMT_LONG k;
 	
@@ -159,16 +154,16 @@ GMT_LONG gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month) {
 		return ((month < 8) ? 30 + k : 31 - k);
 	}
 	
-	k = (GMT_is_gleap (C, year) ) ? 29 : 28;
+	k = (GMT_is_gleap (C, year)) ? 29 : 28;
 	return (k);
 }
 
 /* Proleptic Gregorian Calendar operations  */
 
 GMT_LONG GMT_is_gleap (struct GMT_CTRL *C, GMT_LONG gyear) {
-/*	Given integer proleptic gregorian calendar year,
-	return TRUE if it is a Gregorian leap year; 
-	else return FALSE.  */
+	/* Given integer proleptic gregorian calendar year,
+	   return TRUE if it is a Gregorian leap year; 
+	   else return FALSE.  */
 	
 	GMT_LONG y400;
 	
@@ -182,8 +177,8 @@ GMT_LONG GMT_is_gleap (struct GMT_CTRL *C, GMT_LONG gyear) {
 }
 
 GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG gd) {
-/*	Given gregorian calendar year, month, day of month, 
-	return the rata die integer day number.  */
+	/* Given gregorian calendar year, month, day of month, 
+	   return the rata die integer day number.  */
 	
 	double s;
 	GMT_LONG day_offset, yearm1, rd;
@@ -202,7 +197,7 @@ GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LON
 }
 
 GMT_LONG gyear_from_rd (GMT_LONG date) {
-/*	Given rata die integer day number, return proleptic Gregorian year  */
+	/* Given rata die integer day number, return proleptic Gregorian year  */
 
 	GMT_LONG d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
@@ -225,8 +220,8 @@ GMT_LONG gyear_from_rd (GMT_LONG date) {
 /* ISO calendar routine  */
 
 GMT_LONG GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LONG id) {
-/*	Given ISO calendar year, week, day of week, 
-	return the rata die integer day number.  */
+	/* Given ISO calendar year, week, day of week, 
+	   return the rata die integer day number.  */
 	
 	GMT_LONG rdtemp;
 	
@@ -238,8 +233,8 @@ GMT_LONG GMT_rd_from_iywd (struct GMT_CTRL *C, GMT_LONG iy, GMT_LONG iw, GMT_LON
 /* Set calendar struct data from fixed date:  */
 
 void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal) {
-/*	Given rata die integer day number, load calendar structure
-	with proleptic Gregorian and ISO calendar values.  */
+	/* Given rata die integer day number, load calendar structure
+	   with proleptic Gregorian and ISO calendar values.  */
 	
 	GMT_LONG prior_days, corexn, tempdate, tempyear;
 	
@@ -250,13 +245,10 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	/* proleptic Gregorian operations:  */
 
 	gcal->year = gyear_from_rd (date);
-	
 	prior_days = date - GMT_rd_from_gymd (C, gcal->year, 1, 1);
-
 	gcal->day_y = (GMT_LONG)prior_days + 1;
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, 3, 1);
-	
 	if (date < tempdate)
 		corexn = 0;
 	else
@@ -280,29 +272,29 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, GMT_LONG y2) {
 
 	/* Convert 2-digit year to 4-digit year, using 
-		C->current.setting.time_Y2K_offset_year.
-		
-		The sense of time_Y2K_offset_year is that it
-		is the first year representable in the
-		2-digit set.  For example, if the set
-		runs from 1950 to 2049, then time_Y2K_offset_year
-		should be given as 1950, and then if a
-		two-digit year is from 50 to 99 it will
-		return 1900 plus that amount.  If it is
-		from 00 to 49, it will return 2000 plus
-		that amount.
-		
-		Below, we do a modulo operation and some
-		add/subtract to compute y100, y200, fraction
-		from C->current.setting.time_Y2K_offset_year.  Because these
-		are constants during any run of a GMT program,
-		they could be computed once in gmt_init, but
-		we do them over and over again here, to make
-		this routine deliberately slow.  I am writing
-		the time code in August 2001, and people who
-		haven't fixed their Y2K bug data by now will
-		be punished.
-		*/
+	   C->current.setting.time_Y2K_offset_year.
+	   
+	   The sense of time_Y2K_offset_year is that it
+	   is the first year representable in the
+	   2-digit set.  For example, if the set
+	   runs from 1950 to 2049, then time_Y2K_offset_year
+	   should be given as 1950, and then if a
+	   two-digit year is from 50 to 99 it will
+	   return 1900 plus that amount.  If it is
+	   from 00 to 49, it will return 2000 plus
+	   that amount.
+	   
+	   Below, we do a modulo operation and some
+	   add/subtract to compute y100, y200, fraction
+	   from C->current.setting.time_Y2K_offset_year.  Because these
+	   are constants during any run of a GMT program,
+	   they could be computed once in gmt_init, but
+	   we do them over and over again here, to make
+	   this routine deliberately slow.  I am writing
+	   the time code in August 2001, and people who
+	   haven't fixed their Y2K bug data by now will
+	   be punished.
+	*/
 
 	/* The C->current.time.Y2K_fix structure is initialized in C->current.io.info_init once  */
 		
@@ -312,11 +304,11 @@ GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, GMT_LONG y2) {
 GMT_LONG GMT_g_ymd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 
 	/* Check year, month, day values to see if they
-		are an appropriate date in the proleptic
-		Gregorian calendar.  Returns TRUE if it
-		thinks the month and/or day have bad
-		values.  Returns FALSE if this looks like
-		a valid calendar date.  */
+	   are an appropriate date in the proleptic
+	   Gregorian calendar.  Returns TRUE if it
+	   thinks the month and/or day have bad
+	   values.  Returns FALSE if this looks like
+	   a valid calendar date.  */
 	
 	GMT_LONG k;
 	
@@ -332,14 +324,14 @@ GMT_LONG GMT_g_ymd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG m, GMT_LONG 
 GMT_LONG GMT_iso_ywd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG w, GMT_LONG d) {
 
 	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
-		values to see if they form a probably
-		appropriate date in the ISO calendar based
-		on weeks.  This is only a gross error check;
-		I don't verify that a particular date actually
-		exists on the ISO calendar.
-		Returns TRUE if it appears something is out
-		of range, including negative year.
-		Returns FALSE if it looks like things are OK.
+	   values to see if they form a probably
+	   appropriate date in the ISO calendar based
+	   on weeks.  This is only a gross error check;
+	   I don't verify that a particular date actually
+	   exists on the ISO calendar.
+	   Returns TRUE if it appears something is out
+	   of range, including negative year.
+	   Returns FALSE if it looks like things are OK.
 	*/
 	
 	if (y < 0 || w < 1 || w > 53 || d < 1 || d > 7) return (TRUE);
@@ -352,8 +344,8 @@ GMT_LONG GMT_iso_ywd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG w, GMT_LON
 GMT_LONG GMT_hms_is_bad (struct GMT_CTRL *C, GMT_LONG h, GMT_LONG m, double s) {
 
 	/* Check range of hours, min, and seconds.
-		Returns TRUE if it appears something is out of range.
-		Returns FALSE if it looks like things are OK.
+	   Returns TRUE if it appears something is out of range.
+	   Returns FALSE if it looks like things are OK.
 	*/
 	
 	if (h < 0 || h > 23 || m < 0 || m > 59 || s < 0.0 || s >= 61.0) return (TRUE);
@@ -363,10 +355,9 @@ GMT_LONG GMT_hms_is_bad (struct GMT_CTRL *C, GMT_LONG h, GMT_LONG m, double s) {
 
 void gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 
-	/* Given time in internal units, load cal and clock info
-		in cal.
-		Note: uses 0 through 23 for hours (no am/pm inside here).
-		Note: does not yet deal w/ leap seconds; modulo math here.
+	/* Given time in internal units, load cal and clock info in cal.
+	   Note: uses 0 through 23 for hours (no am/pm inside here).
+	   Note: does not yet deal w/ leap seconds; modulo math here.
 	*/
 	
 	GMT_LONG rd, i;
@@ -376,8 +367,8 @@ void gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
 	i = splitinteger (C, x, 60, &cal->sec);
-	cal->hour = i / 60;
-	cal->min  = i % 60;
+	cal->hour = i / GMT_MIN2SEC_I;
+	cal->min  = i % GMT_MIN2SEC_I;
 	return;
 }
 
@@ -482,7 +473,7 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 void small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, GMT_LONG init) {
 
 	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
-		0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
+	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
 	
 	double x;
 	
@@ -531,29 +522,28 @@ void small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, G
 }
 
 void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_LONG init) {
-	/*   
-	Unchanged by this routine:
-		p->step is a positive interval width;
-		p->unit is set to a time axis unit;
-		These must be in valid ranges tested by GMT_verify_time_step().
-		p->init sets action to take; see below.
+	/* Unchanged by this routine:
+	     p->step is a positive interval width;
+	     p->unit is set to a time axis unit;
+	     These must be in valid ranges tested by GMT_verify_time_step().
+	     p->init sets action to take; see below.
 	
-	Let a and b be points in time, both exactly on the start of intervals
-		defined by p->step and p->unit (e.g. 6 hours, 3 months), and
-		such that b > a and b is the start of the next interval after a.
+	  Let a and b be points in time, both exactly on the start of intervals
+	     defined by p->step and p->unit (e.g. 6 hours, 3 months), and
+	     such that b > a and b is the start of the next interval after a.
 	
-	Let cc[0], dt[0], sd[0], rd[0] contain representations of time a.
-	Let cc[1], dt[1], sd[1], rd[1] contain representations of time b.
+	  Let cc[0], dt[0], sd[0], rd[0] contain representations of time a.
+	  Let cc[1], dt[1], sd[1], rd[1] contain representations of time b.
 	
-	if (init) {
+	  if (init) {
 		dt_in must contain a GMT interval time;
 		a and b will be found and set such that a <= dt_in < b;
-	}
-	else {
+	  }
+	  else {
 		dt_in is not used;
 		b is copied to a;
 		the next b is found;
-	}
+	  }
 	
 	Warning:  Current operation of GMT_gcal_from_rd() only sets the
 	calendar components of struct GMT_gcal.  That's OK for this

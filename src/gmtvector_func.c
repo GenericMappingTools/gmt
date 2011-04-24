@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.10 2011-04-23 02:14:12 guru Exp $
+*    $Id: gmtvector_func.c,v 1.11 2011-04-24 01:21:48 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,7 +103,7 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfiles (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,at) in first columns.\n");
+	GMT_message (GMT, "\tinfiles (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in first 2-3 columns.\n");
 	GMT_message (GMT, "\t  If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
 	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -450,12 +450,12 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					case DO_DOT2D:	/* Get angle between 2-D vectors */
 						if (!single) GMT_normalize2v (GMT, vector_1);
 						vector_3[0] = GMT_dot2v (GMT, vector_1, vector_2);
-						if (Ctrl->T.degree) vector_3[0] = R2D * acos (vector_3[0]);
+						if (Ctrl->T.degree) vector_3[0] = acosd (vector_3[0]);
 						break;
 					case DO_DOT3D:	/* Get angle between 3-D vectors */
 						if (!single) GMT_normalize3v (GMT, vector_1);
 						vector_3[0] = GMT_dot3v (GMT, vector_1, vector_2);
-						if (Ctrl->T.degree) vector_3[0] = R2D * acos (vector_3[0]);
+						if (Ctrl->T.degree) vector_3[0] = acosd (vector_3[0]);
 						break;
 					case DO_CROSS:	/* Get cross-product of 3-D vectors */
 						GMT_cross3v (GMT, vector_1, vector_2, vector_3);

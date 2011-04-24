@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.35 2011-04-23 02:14:12 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.36 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,7 +118,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	struct GMT_STAT buf;
 
 	if (!strcmp (file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (GMT_STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 	if (GMT_fread ((void *)recdata, sizeof(float), (size_t)RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
@@ -134,7 +134,7 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	if (ny <= 0) return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
 	predicted_size = irint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
-	if (predicted_size == buf.st_size) return (GMT_grd_format_decoder (C, "af"));
+	if (predicted_size == buf.st_size) return (GMT_grd_format_decoder (C, "af"));	/* Yes, appears to be an AGC grid */
 	return (GMT_GRDIO_BAD_VAL);
 }
 
@@ -277,8 +277,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	}
 	GMT_free (C, k);
 
-	header->nx = (int)width_in;
-	header->ny = (int)height_in;
+	header->nx = (int)width_in;	header->ny = (int)height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	GMT_fclose (C, fp);

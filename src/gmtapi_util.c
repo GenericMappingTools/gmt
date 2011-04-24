@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.45 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.46 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, struct GMT_MATRIX *M)
 GMT_LONG GMTAPI_need_grdpadding (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return TRUE here, otherwise FALSE. */
-	int k;
+	GMT_LONG k;
 	
 	for (k = 0; k < 4; k++) if (h->pad[k] < pad[k]) return (TRUE);
 	return (FALSE);
@@ -2192,6 +2192,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	 *   GMT_IS_CPT:	A GMT_PALETTE structure:
 	 *   GMT_IS_DATASET:	A GMT_DATASET structure:
 	 *   GMT_IS_TEXTSET:	A GMT_TEXTSET structure:
+	 *   GMT_IS_IMAGE:	A GMT_IMAGE structure:
 	 *   GMT_IS_GRID:	A GMT_GRID structure:
 	 * method:	Specifies by what method we will export this data set:
 	 *   GMT_IS_FILE:	A file name is given via output.  The program will write data to this file

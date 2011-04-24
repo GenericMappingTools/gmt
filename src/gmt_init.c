@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.482 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_init.c,v 1.483 2011-04-24 01:21:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,6 +57,7 @@
 #include "gmt_internals.h"
 
 #ifdef DEBUG
+/* This is used to help is find memory leaks */
 struct MEMORY_TRACKER *GMT_mem_keeper;
 #endif
 /*--------------------------------------------------------------------*/
@@ -416,7 +417,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 			GMT_message (C, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
 			GMT_message (C, "\t   and upper right corners of a rectangular area.\n");
-			GMT_message (C, "\t   -Rg -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
+			GMT_message (C, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
 			GMT_message (C, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
 			break;
 
@@ -5333,20 +5334,13 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 		/* else s is either 0 or points to the next segment */
 
 		switch (unit) {	/* Determine if we have intervals or moments */
-			case 'Y':
-			case 'y':
-			case 'O':
-			case 'o':
-			case 'K':
-			case 'k':
-			case 'J':
-			case 'j':
-			case 'D':
-			case 'd':
-			case 'R':
-			case 'r':
-			case 'U':
-			case 'u':
+			case 'Y':	case 'y':
+			case 'O':	case 'o':
+			case 'K':	case 'k':
+			case 'J':	case 'j':
+			case 'D':	case 'd':
+			case 'R':	case 'r':
+			case 'U':	case 'u':
 				if (A->type == GMT_TIME && flag == 'a') flag = 'i';
 				time_interval_unit = TRUE;
 				break;
@@ -7506,8 +7500,8 @@ void GMT_setmode (struct GMT_CTRL *C, int i_or_o)
 
 #endif	/* SET_IO_MODE */
 
-#include <stdarg.h>
 #if defined (WIN32) || defined (__MINGW32__)
+#include <stdarg.h>
 #ifdef GMT_MATLAB
 #include "mex.h"
 #endif
