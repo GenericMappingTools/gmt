@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.81 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.82 2011-04-24 22:56:15 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * C->current.setting.time_system.scale + C->current.setting.time_system.epoch_t0 * GMT_DAY2SEC_F);
-	*rd = splitinteger (C, t_sec, GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
+	*rd = splitinteger (C, t_sec, (GMT_LONG)GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
 }
 
 /* Modulo functions.  The C operation "x%y" and the POSIX 
