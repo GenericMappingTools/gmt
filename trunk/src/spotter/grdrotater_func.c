@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.13 2011-04-25 08:59:47 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.14 2011-04-25 16:43:55 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -191,11 +191,6 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 			case 'N':
 				Ctrl->N.active = TRUE;
 				break;
-#ifdef GMT_COMPAT
-			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
-				break;
-#endif
 			case 'S':
 				Ctrl->S.active = TRUE;
 				break;
@@ -337,7 +332,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdrotater", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghion>" GMT_OPT("HMmQ"), options))) Return (error);
 	if (GMT_Find_Option (API, 'f', options, &ptr)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = (struct GRDROTATER_CTRL *) New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdrotater_parse (API, Ctrl, options))) Return (error);

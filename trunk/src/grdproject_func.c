@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.14 2011-04-25 00:50:32 jluis Exp $
+ *	$Id: grdproject_func.c,v 1.15 2011-04-25 16:46:48 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -123,7 +123,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[BUFSIZ];
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
 #endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -177,11 +176,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				if (jj == 0) jj = ii;
 				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
 				GMT_getinc (GMT, format, Ctrl->D.inc);
-				break;
-#endif
-#ifdef GMT_COMPAT
-			case 'S':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'S', opt->arg);
 				break;
 #endif
 			default:	/* Report bad options */

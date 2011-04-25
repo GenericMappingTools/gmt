@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.486 2011-04-25 00:21:07 guru Exp $
+ *	$Id: gmt_init.c,v 1.487 2011-04-25 16:43:02 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6931,12 +6931,48 @@ GMT_LONG GMT_set_measure_unit (struct GMT_CTRL *C, char unit) {
 	return (GMT_NOERROR);
 }
 
+#ifdef GMT_COMPAT
+GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item) {
+	/* Use to parse various -S -Q options when backwardsness has been enabled */
+	GMT_LONG j;
+	
+	GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", (int)option);
+	
+	for (j = 0; j < 3 && item[j]; j++) {
+		switch (item[j]) {
+			case '-':
+				C->common.n.antialias = FALSE; break;
+			case 'n':
+				C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
+			case 'l':
+				C->common.n.interpolant = BCR_BILINEAR; break;
+			case 'b':
+				C->common.n.interpolant = BCR_BSPLINE; break;
+			case 'c':
+				C->common.n.interpolant = BCR_BICUBIC; break;
+			case '/':
+				C->common.n.threshold = atof (&item[j+1]);
+				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
+					GMT_report (C, GMT_MSG_FATAL, "Error: Interpolation threshold must be in [0,1] range\n");
+					return (1);
+				}
+				break;
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error: Specify -%c[-]b|c|l|n[/threshold] to set grid interpolation mode.\n", option);
+				return (1);
+				break;
+		}
+	}
+	return (GMT_NOERROR);
+}
+#endif
+
 #define GMT_more_than_once(C,active) (GMT_check_condition (C, active, "Warning: Option -%c given more than once\n", option))
 
 GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char *item)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
-	 * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -s, -:, -- and -^.
+	 * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
 	 * The list passes all of these that we should consider.
 	 */
 
@@ -6951,8 +6987,6 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 		case 'E': GMT_COMPAT_OPT ('p'); break;
 		case 'F': GMT_COMPAT_OPT ('r'); break;
 		case 'H': GMT_COMPAT_OPT ('h'); break;
-		case 'Q': GMT_COMPAT_OPT ('n'); break;
-		case 'S': GMT_COMPAT_OPT ('s'); GMT_COMPAT_OPT ('n'); break;
 	}
 #endif
 
@@ -6992,6 +7026,14 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			GMT_more_than_once (C, C->common.P.active);
 			C->common.P.active = TRUE;
 			break;
+
+#ifdef GMT_COMPAT
+		case 'Q':
+		case 'S':
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -n instead.\n", option);
+			error += backwards_SQ_parsing (C, option, item);
+			break;
+#endif
 
 		case 'R':
 			error += (GMT_more_than_once (C, C->common.R.active) || gmt_parse_R_option (C, item));
@@ -7176,42 +7218,6 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 	return (error);
 }
-
-#ifdef GMT_COMPAT
-GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item) {
-	/* Use to parse various -S -Q options when backwardsness has been enabled */
-	GMT_LONG j;
-	
-	GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", (int)option);
-	
-	for (j = 0; j < 3 && item[j]; j++) {
-		switch (item[j]) {
-			case '-':
-				C->common.n.antialias = FALSE; break;
-			case 'n':
-				C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
-			case 'l':
-				C->common.n.interpolant = BCR_BILINEAR; break;
-			case 'b':
-				C->common.n.interpolant = BCR_BSPLINE; break;
-			case 'c':
-				C->common.n.interpolant = BCR_BICUBIC; break;
-			case '/':
-				C->common.n.threshold = atof (&item[j+1]);
-				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Interpolation threshold must be in [0,1] range\n");
-					return (1);
-				}
-				break;
-			default:
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: Specify -%c[-]b|c|l|n[/threshold] to set grid interpolation mode.\n", option);
-				return (1);
-				break;
-		}
-	}
-	return (GMT_NOERROR);
-}
-#endif
 
 GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, double *t0) {
 
