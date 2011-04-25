@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.24 2011-04-25 00:50:32 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.25 2011-04-25 16:49:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,9 +148,7 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 	GMT_LONG n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef GMT_COMPAT
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
-#endif
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -223,11 +221,6 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = TRUE;
 				break;
-#ifdef GMT_COMPAT
-			case 'S':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'S', opt->arg);
-				break;
-#endif
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -267,56 +260,40 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	 * nx/ny are set accordingly.  Not that some of these may change
 	 * if GMT_project_init is called at a later stage */
 
-	GMT_LONG row, col, all_lats = FALSE, all_lons = FALSE;
-	double lon, lat, x, y;
+	GMT_LONG i, np, donut, all_lats = FALSE, all_lons = FALSE;
+	double *x = NULL, *y = NULL;
 
 	r->nx = g->nx;	r->ny = g->ny;
 	r->registration = g->registration;
 	r->n_bands = g->n_bands;
 
-	if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_width != 0.0) {
-		GMT_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
-		return;
-	}
+	/* By default, use entire plot region */
+
+	GMT_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
+	
+	if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {
 		all_lats = GMT_180_RANGE (g->wesn[YHI], g->wesn[YLO]);
 		all_lons = GMT_360_RANGE (g->wesn[XHI], g->wesn[XLO]);
-		if (all_lons && all_lats) {	/* Whole globe, get rectangular box */
-			GMT_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
-			return;
-		}
+		if (all_lons && all_lats) return;	/* Whole globe */
 	}
 	
-	/* Must search for extent along perimeter */
+	/* Must search for extent along perimeter, computed by GMT_grid_clip_path */
 
-	r->wesn[XLO] = r->wesn[YLO] = +DBL_MAX;
-	r->wesn[XHI] = r->wesn[YHI] = -DBL_MAX;
+	np = GMT_grid_clip_path (GMT, g, &x, &y, &donut);
 
-	for (col = 0; col < g->nx; col++) {	/* South and north sides */
-		lon = GMT_grd_col_to_x (col, g);
-		GMT_geo_to_xy (GMT, lon, g->wesn[YLO], &x, &y);
-		r->wesn[XLO] = MIN (r->wesn[XLO], x);	r->wesn[XHI] = MAX (r->wesn[XHI], x);
-		r->wesn[YLO] = MIN (r->wesn[YLO], y);	r->wesn[YHI] = MAX (r->wesn[YHI], y);
-		GMT_geo_to_xy (GMT, lon, g->wesn[YHI], &x, &y);
-		r->wesn[XLO] = MIN (r->wesn[XLO], x);	r->wesn[XHI] = MAX (r->wesn[XHI], x);
-		r->wesn[YLO] = MIN (r->wesn[YLO], y);	r->wesn[YHI] = MAX (r->wesn[YHI], y);
+	if (!all_lons) {	/* If not full 360, reassign min/max for x */
+		r->wesn[XLO] = +DBL_MAX, r->wesn[XHI] = -DBL_MAX;
+		for (i = 0; i < np; i++) r->wesn[XLO] = MIN (r->wesn[XLO], x[i]), r->wesn[XHI] = MAX (r->wesn[XHI], x[i]);
 	}
-	for (row = 0; row < g->ny; row++) {	/* East and west sides */
-		lat = GMT_grd_row_to_y (row, g);
-		GMT_geo_to_xy (GMT, g->wesn[XLO], lat, &x, &y);
-		r->wesn[XLO] = MIN (r->wesn[XLO], x);	r->wesn[XHI] = MAX (r->wesn[XHI], x);
-		r->wesn[YLO] = MIN (r->wesn[YLO], y);	r->wesn[YHI] = MAX (r->wesn[YHI], y);
-		GMT_geo_to_xy (GMT, g->wesn[XHI], lat, &x, &y);
-		r->wesn[XLO] = MIN (r->wesn[XLO], x);	r->wesn[XHI] = MAX (r->wesn[XHI], x);
-		r->wesn[YLO] = MIN (r->wesn[YLO], y);	r->wesn[YHI] = MAX (r->wesn[YHI], y);
+	if (!all_lats) {	/* If not full -90/+90, reassign min/max for y */
+		r->wesn[YLO] = +DBL_MAX, r->wesn[YHI] = -DBL_MAX;
+		for (i = 0; i < np; i++) r->wesn[YLO] = MIN (r->wesn[YLO], y[i]), r->wesn[YHI] = MAX (r->wesn[YHI], y[i]);
 	}
-	if (all_lons) {	/* Full 360, use min/max for x */
-		r->wesn[XLO] = GMT->current.proj.rect[XLO];	r->wesn[XHI] = GMT->current.proj.rect[XHI];
-	}
-	if (all_lats) {	/* Full -90/+90, use min/max for y */
-		r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
-	}
+
+	GMT_free (GMT, x);
+	GMT_free (GMT, y);
 }
 
 #define Return(code) {Free_grdimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
@@ -492,6 +469,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 #endif
 
+	GMT_plotinit (API, PSL, options);
+
+	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+
+	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL,GMT->session.no_rgb, 3);
+
 	GMT_boundcond_init (GMT, &edgeinfo);
 
 	/* Read data */
@@ -599,7 +582,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, &tmp_header);
 		}
 		if (Ctrl->I.active) Intens_proj = Intens_orig;
-		if (n_grids) grid_registration = Grid_orig[0]->header->registration;
+		if (n_grids)
+			grid_registration = Grid_orig[0]->header->registration;
 #ifdef USE_GDAL
 		else {
 			GMT_memcpy (&tmp_header, I->header, 1, struct GRD_HEADER);
@@ -621,12 +605,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	nm = header_work->nm;
 	nx = header_work->nx;
 	ny = header_work->ny;
-
-	GMT_plotinit (API, PSL, options);
-
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
 
 	if (P && P->has_pattern) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Patterns in cpt file only apply to -T\n");
 	GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate pixel colors\n");
