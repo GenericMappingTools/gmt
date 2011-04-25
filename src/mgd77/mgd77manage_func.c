@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.9 2011-04-24 20:47:41 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.10 2011-04-25 00:04:09 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -207,7 +207,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_message (GMT, "\t   (e) meter, (k) km, (m) miles, or (n) nautical miles [Default is -Nk]\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_explain_options (GMT, "VC0n");
+	GMT_explain_options (GMT, "VC0n" GMT_OPT("Q"));
 	
 	return (EXIT_FAILURE);
 }
