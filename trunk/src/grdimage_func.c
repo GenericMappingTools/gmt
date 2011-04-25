@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.25 2011-04-25 16:49:33 remko Exp $
+ *	$Id: grdimage_func.c,v 1.26 2011-04-25 17:22:24 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -309,7 +309,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0}, *NaN_rgb = NULL, wesn[4];
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
-	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL, *G2 = NULL;
+	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_EDGEINFO edgeinfo;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
@@ -322,6 +322,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG do_indexed = FALSE;
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
+	struct GMT_GRID *G2 = NULL;
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -561,8 +562,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
+#ifdef USE_GDAL
 			else
 				GMT_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);	/* FCK POINT regs are different */
+#endif
 			if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
 				nx_proj = Intens_orig->header->nx;
 				ny_proj = Intens_orig->header->ny;
@@ -665,7 +668,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else
 					index = GMT_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
 
-				//if (Ctrl->I.active && index != GMT_NAN - 3) GMT_illuminate (GMT, Intens_proj->data[node], rgb);
 				if (Ctrl->I.active && index != GMT_NAN - 3) {
 					if (!n_grids) {		/* Here we are illuminating an image. Must recompute "node" with the GMT_IJP macro */
 						node = GMT_IJP (Intens_proj->header, actual_row, 0) + (normal_x ? col : nx - col - 1);
@@ -673,7 +675,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_illuminate (GMT, Intens_proj->data[node], rgb);
 				}
 				
-				if (P && P->is_gray)	/* Color table only has grays, pick r */
+				if (P && P->is_gray)		/* Color table only has grays, pick r */
 					bitimage_8[byte++] = GMT_u255 (rgb[0]);
 				else if (Ctrl->M.active)	/* Convert rgb to gray using the GMT_YIQ transformation */
 					bitimage_8[byte++] = GMT_u255 (GMT_YIQ (rgb));
@@ -683,9 +685,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = TRUE;
 				}
 			}
-#ifdef USE_GDAL
+
 			if (!n_grids) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);
-#endif
 		}
 
 		if (P && Ctrl->Q.active) {	/* Check that we found an unused r/g/b value so colormasking will work OK */
