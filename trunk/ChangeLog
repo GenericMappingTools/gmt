@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.973 2011-04-25 19:21:59 jluis Exp $
+	$Id: ChangeLog,v 1.974 2011-04-25 21:36:19 remko Exp $
 -----------------------------------------------------------------------------------------
 				
 2011-04-25	remko
 	* grdimage_func.c:	Add half a cell at edge when projecting pixel grid.
+	* gmt_map.c:		When longitude spans 360 in Lambert projection, set is_world = TRUE.
+	* gmt_grdio.c (GMT_grd_setregion):	Keep grid longitude range when map.is_world.		
+	* gmt_grd.h:		Restrict GMT_is_subgrid to actual subgrids.
 
 2011-04-25	jluis
 	* gmt_map.c:		Removed GMT_grdproject_init in favor of GMT_project_init
