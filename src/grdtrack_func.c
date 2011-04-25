@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.12 2011-04-25 00:15:26 remko Exp $
+ *	$Id: grdtrack_func.c,v 1.13 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,13 +67,6 @@ struct GRDTRACK_CTRL {
 		GMT_LONG mode[MAX_GRIDS];
 		GMT_LONG type[MAX_GRIDS];	/*HIDDEN */
 	} G;
-	struct L {	/* -L<flag> */
-		GMT_LONG active;
-		char mode[4];
-	} L;
-	struct S {	/* -S */
-		GMT_LONG active;
-	} S;
 	struct Z {	/* -Z */
 		GMT_LONG active;
 	} Z;
@@ -103,8 +96,8 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sampling of 2-D gridded data set(s) along 1-D trackline\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <xyfile> -G<grd1> -G<grd2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [-L<flag>] [%s] [-S] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-D<dfile>] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -130,16 +123,10 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_message (GMT, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
 	GMT_message (GMT, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
-	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-	GMT_message (GMT, "\t   [Default is natural conditions for regular grids and geographic for IMG grids].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Suppress output when any grid sample equals NaN.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_explain_options (GMT, "C2D0fghio:.");
+	GMT_explain_options (GMT, "C2D0fghinos:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -156,6 +143,9 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	char line[BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
+#ifdef GMT_COMPAT
+	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+#endif
 
 	GMT_memset (line, BUFSIZ, char);
 
@@ -217,14 +207,14 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 #ifdef GMT_COMPAT
 				if (opt->arg[0]) {
 #endif
-					Ctrl->L.active = TRUE;
-					strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
 #ifdef GMT_COMPAT
 				}
 				else {
 					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is obsolete (but is processed correctly).  Please use -f instead.\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -f instead.\n");
 				}
 #endif
 				break;
@@ -234,9 +224,18 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
 				break;
 #endif
-			case 'S':
-				Ctrl->S.active = TRUE;
+
+#ifdef GMT_COMPAT
+			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
+				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
 				break;
+#endif
+#ifdef GMT_COMPAT
+			case 'S':
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
+				GMT->current.setting.io_nan_mode = 3;
+				break;
+#endif
 			case 'Z':
 				Ctrl->Z.active = TRUE;
 				break;
@@ -341,7 +340,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_boundcond_init (GMT, &GC[g].edgeinfo);
-		if (Ctrl->L.active) GMT_boundcond_parse (GMT, &GC[g].edgeinfo, Ctrl->L.mode);
+		if (GMT->common.n.active) GMT_boundcond_parse (GMT, &GC[g].edgeinfo, GMT->common.n.BC);
 		if (GC[g].edgeinfo.gn) {
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
@@ -467,7 +466,6 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, in[GMT_X], in[GMT_Y], value);
 			if (status == -1) continue;					/* Point is outside the region of all grids */
-			if (Ctrl->S.active && status < Ctrl->G.n_grids) continue;	/* One or more sampled values are NaN and -S is active */
 
 			if (Ctrl->Z.active)	/* Simply print out values */
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)value);

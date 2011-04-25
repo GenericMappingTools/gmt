@@ -1,6 +1,7 @@
 .TP
 GMT_s_OPT
 Suppress output for records whose \fIz\fP-value equals NaN [Default outputs all records].
+Append BD(a) to skip records where at least one field equal NaN.
 Append BD(r) to reverse the suppression, i.e., only output the records whose
 \fIz\fP-value equals NaN.  Alternatively, indicate a comma-separated list of
 all columns or column ranges to consider for this NaN test.

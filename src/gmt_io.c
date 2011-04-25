@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.257 2011-04-23 03:53:35 guru Exp $
+ *	$Id: gmt_io.c,v 1.258 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1341,6 +1341,10 @@ GMT_LONG GMT_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols)
 		return (TRUE);	/* Skip record since we cannot access that many columns */
 	}
 	if (!C->current.setting.io_nan_mode) return (FALSE);				/* Normal case; output the record */
+	if (C->current.setting.io_nan_mode == 3) {	/* -sa: Skip records if any NaNs are found */
+		for (c = 0; c < n_cols; c++) if (GMT_is_dnan (cols[c]))  return (TRUE);	/* Found a NaN so we skip */
+		return (FALSE);	/* No NaNs, output record */
+	}
 	for (c = n_nan = 0; c < C->current.io.io_nan_ncols; c++) {			/* Check each of the specified columns set via -s */
 		if (C->current.io.io_nan_col[c] >= n_cols) continue;			/* Input record does not have this column */
 		if (GMT_is_dnan (cols[C->current.io.io_nan_col[c]])) n_nan++;		/* Count the nan columns found */

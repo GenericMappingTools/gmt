@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.26 2011-04-24 20:47:41 guru Exp $
+ *	$Id: gmt_common.h,v 1.27 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -136,11 +136,12 @@ struct GMT_COMMON {
 		GMT_LONG active;
 		GMT_LONG n_cols;
 	} i;
-	struct n {	/* -n[-]b|c|l|n[/threshold] */
+	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
 		GMT_LONG active;
-		GMT_LONG antialias;
-		GMT_LONG interpolant;
-		double threshold;
+		GMT_LONG antialias;	/* Defaults to TRUE, if supported */
+		GMT_LONG interpolant;	/* Defaults to BCR_BICUBIC */
+		char BC[4];		/* For BC settings via +bg|xy */
+		double threshold;	/* Defaults to 0.5 */
 	} n;
 	struct o {	/* -o<col>|<colrange>,.. */
 		GMT_LONG active;

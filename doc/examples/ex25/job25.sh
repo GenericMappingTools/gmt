@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 25
-#		$Id: job25.sh,v 1.10 2011-03-15 02:06:31 guru Exp $
+#		$Id: job25.sh,v 1.11 2011-04-25 00:21:06 guru Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
@@ -32,8 +32,8 @@ cat << END > key.cpt
 END
 # Create the final plot and overlay coastlines
 gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
-grdimage key.nc -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \
-	-U/-0.75i/-0.95i/"Example 25 in Cookbook" > $ps
+grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \
+	-U/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > $ps
 pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
 # Place an explanatory legend below
 pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/0.3i/TC -Y-0.2i -Fthick >> $ps << END

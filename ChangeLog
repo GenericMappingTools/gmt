@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.969 2011-04-25 00:15:26 remko Exp $
+	$Id: ChangeLog,v 1.970 2011-04-25 00:21:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-24	pwessel
+	* gmt*.c:		Introduced common option -n[b|c|l|n][+a][+b<BC>][+t<threshold>]
+				that can be used to change grid interpolation parameters.
+				Replaces a mix of -S, -Q, -L options across many programs.
+				Those -L -Q -S options are still processed under compatibility mode.
+	* Option -s:		New modifier a (i.e., -sa) to suppress output of any data record
+				where one or more fields equal NaN.
+	* grdtrack_func.c:	Replaced -S with common option -sa (backwards compatible).
 
 2011-04-24	remko
 	* GMT_App_N.sh:		Remove GMT_Appendix_N_1.tex when empty.

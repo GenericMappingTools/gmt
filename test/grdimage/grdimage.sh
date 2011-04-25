@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdimage.sh,v 1.12 2011-04-23 17:37:20 remko Exp $
+#	$Id: grdimage.sh,v 1.13 2011-04-25 00:21:07 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for grid and pixel plots"
@@ -27,11 +27,11 @@ $grdimage -O -K -R0/2/0/2 -X4c
 $grdimage -O -K -R-0.5/1.5/0/2 -X4c
 $grdimage -O -K -R-1/3/-1/3 -X4c
 
-$grdimage -E50 -Sl -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c ; $grdcontour -K
-label "$3" "-E50 -Sl"
-$grdimage -E50 -Sl -O -K -R0/2/0/2 -X4c ; $grdcontour -K
-$grdimage -E50 -Sl -O -K -R-0.5/1.5/0/2 -X4c ; $grdcontour -K
-$grdimage -E50 -Sl -O -K -R-1/3/-1/3 -X4c ; $grdcontour -K
+$grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c -nl ; $grdcontour -K
+label "$3" "-E50 -nl"
+$grdimage -E50 -O -K -R0/2/0/2 -X4c ; $grdcontour -K -nl
+$grdimage -E50 -O -K -R-0.5/1.5/0/2 -X4c ; $grdcontour -K -nl
+$grdimage -E50 -O -K -R-1/3/-1/3 -X4c ; $grdcontour -K -nl
 
 $grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c ; $grdcontour -K
 label "$3" -E50

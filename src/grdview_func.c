@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.19 2011-04-25 00:15:26 remko Exp $
+ *	$Id: grdview_func.c,v 1.20 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,10 +72,6 @@ struct GRDVIEW_CTRL {
 		GMT_LONG active;
 		char *file;
 	} I;
-	struct L {	/* -L<flag> */
-		GMT_LONG active;
-		char mode[4];
-	} L;
 	struct N {	/* -N<level>[/<color>] */
 		GMT_LONG active;
 		GMT_LONG facade;
@@ -321,10 +317,10 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdview %s [API] - Plot topofiles in 3-D\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdview <topofile> %s [-B<tickinfo>] [-C<cpt_file>]\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-G<drapefile> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensfile>] [%s] [-K] [-L<flag>]\n", GMT_Jz_OPT);
+	GMT_message (GMT, "\t[-G<drapefile> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensfile>] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-S<smooth>] [-T[s][o[<pen>]]] [%s] [%s] [-W<type><pen>]\n\t[%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -340,10 +336,6 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If so, you must also choose -Qi.\n");
 	GMT_message (GMT, "\t-I Gives name of intensity file and selects illumination.\n");
 	GMT_explain_options (GMT, "ZK");
-	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_message (GMT, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
 	GMT_message (GMT, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_explain_options (GMT, "OP");
@@ -368,12 +360,12 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t     Requires -N to take effect.\n");
-	GMT_explain_options (GMT, "Xcpt.");
+	GMT_explain_options (GMT, "Xcnpt.");
 	
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct GMT_EDGEINFO *edgeinfo, struct GMT_OPTION *options)
+GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdview and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -385,8 +377,6 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 	GMT_LONG n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-
-	GMT_boundcond_init (GMT, edgeinfo);
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -426,10 +416,12 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 				Ctrl->I.active = TRUE;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
-			case 'L':	/* BC and interpolation mode */
-				Ctrl->L.active = TRUE;
-				strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
+#ifdef GMT_COMPAT
+			case 'L':	/* BCs */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
 				break;
+#endif
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
 					char colors[GMT_TEXT_LEN64];
@@ -542,7 +534,6 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "Syntax error -Qi option: Must specify positive dpi\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "Syntax error -T option: Cannot specify -JZ|z\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option: smooth value must be positive\n");
-	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -587,11 +578,13 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT = GMT_begin_module (API, "GMT_grdview", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options))) Return (error);
 	Ctrl = (struct GRDVIEW_CTRL *) New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdview_parse (API, Ctrl, &edgeinfo, options))) Return (error);
+	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
+	GMT_boundcond_init (GMT, &edgeinfo);
+	if (GMT->common.n.active) GMT_boundcond_parse (GMT, &edgeinfo, GMT->common.n.BC);
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */

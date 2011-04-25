@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: rendering.sh,v 1.4 2011-03-15 02:06:45 guru Exp $
+#	$Id: rendering.sh,v 1.5 2011-04-25 00:21:07 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for rendering issues"
@@ -37,10 +37,10 @@ pstext -R -J -F+f16p,Helvetica-Bold+jBL -O -K -N <<< "180 35 $1"
 makecpt -Cpolar -T-1/1/0.5 -Z -D > t.cpt
 
 psscale -D3i/-0.4i/6i/0.4ih -Ct.cpt -P -K -Y2i > $ps
-render -Sn >> $ps
-render -Sl -Y2i >> $ps
-render -Sb -Y2i >> $ps
-render -Sc -Y2i >> $ps
+render -nn >> $ps
+render -nl -Y2i >> $ps
+render -nb -Y2i >> $ps
+render -nc -Y2i >> $ps
 psxy -R -J /dev/null -O >> $ps
 
 rm -f t.nc t.cpt

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.22 2011-04-25 00:16:47 remko Exp $
+ *	$Id: grdimage_func.c,v 1.23 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,7 +148,9 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 	GMT_LONG n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-
+#ifdef GMT_COMPAT
+	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+#endif
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -221,6 +223,11 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = TRUE;
 				break;
+#ifdef GMT_COMPAT
+			case 'S':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
+				n_errors += backwards_SQ_parsing (GMT, 'S', opt->arg);
+				break;
+#endif
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
