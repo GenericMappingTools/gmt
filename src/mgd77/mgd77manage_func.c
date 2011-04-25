@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.11 2011-04-25 00:21:07 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.12 2011-04-25 08:59:47 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -334,7 +334,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, k, n_cruises = 0, got_table, got_grid, strings;
+	GMT_LONG n_errors = 0, k, n_cruises = 0, got_table, got_grid, strings;
 	nc_type c_nc_type;
 	char file[BUFSIZ];
 	struct GMT_OPTION *opt = NULL;

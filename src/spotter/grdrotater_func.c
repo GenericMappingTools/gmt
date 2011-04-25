@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.12 2011-04-25 00:15:26 remko Exp $
+ *	$Id: grdrotater_func.c,v 1.13 2011-04-25 08:59:47 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -58,11 +58,6 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 	struct N {	/* -N */
 		GMT_LONG active;
 	} N;
-	struct Q {	/* -Q[b|c|l|n][[/]<threshold>] */
-		GMT_LONG active;
-		GMT_LONG interpolant;
-		double threshold;
-	} Q;
 	struct S {	/* -S */
 		GMT_LONG active;
 	} S;
@@ -78,7 +73,6 @@ void *New_grdrotater_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C = GMT_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->Q.interpolant = BCR_BICUBIC; C->Q.threshold = 1.0;
 	
 	return ((void *)C);
 }
@@ -100,8 +94,8 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT,"grdrotater %s - Finite rotation reconstruction of geographic grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdrotater <grdfile> -E[+]<euler.d> OR -eplon/plat/prot -G<rotgrid> [-F<polygonfile>]\n");
-	GMT_message (GMT, "\t[-D<rotoutline>] [-N] [-Q[b|c|l|n][[/]<threshold>]] [%s] [-S] [-T<time>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] > projpol\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_message (GMT, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] > projpol\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -118,17 +112,10 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area of the grid\n");
 	GMT_message (GMT, "\t   that should be projected [Default projects entire grid]\n");
 	GMT_message (GMT, "\t-N Do not output the rotated polygon or grid outline\n");
-	GMT_message (GMT, "\t-Q Quick mode, use bilinear rather than bicubic [Default] interpolation.\n");
-	GMT_message (GMT, "\t   Alternatively, select interpolation mode by adding b = B-spline, c = bicubic,\n");
-	GMT_message (GMT, "\t   l = bilinear, or n = nearest-neighbor.\n");
-	GMT_message (GMT, "\t   Optionally, append <threshold> in the range [0,1]. [Default = 1 requires all\n");
-	GMT_message (GMT, "\t   4 or 16 nodes to be non-NaN.], <threshold> = 0.5 will interpolate about 1/2 way\n");
-	GMT_message (GMT, "\t   from a non-NaN to a NaN node, while 0.1 will go about 90%% of the way, etc.\n");
-	GMT_message (GMT, "\t   -Q0 will return the value of the nearest node instead of interpolating (Same as -Qn).\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline\n");
 	GMT_message (GMT, "\t-T sets the time of reconstruction, if -E is used.\n");
-	GMT_explain_options (GMT, "VC2D0ghi:.");
+	GMT_explain_options (GMT, "VC2D0ghin:.");
 	
 	return (EXIT_FAILURE);
 
@@ -142,7 +129,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, n, n_files = 0;
+	GMT_LONG n_errors = 0, n, n_files = 0;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -204,30 +191,11 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 			case 'N':
 				Ctrl->N.active = TRUE;
 				break;
-			case 'Q':
-				Ctrl->Q.active = TRUE;
-				Ctrl->Q.interpolant = BCR_BILINEAR;
-				for (j = 0; j < 3 && opt->arg[j]; j++) {
-					switch (opt->arg[j]) {
-						case 'n':
-							Ctrl->Q.interpolant = BCR_NEARNEIGHBOR; break;
-						case 'l':
-							Ctrl->Q.interpolant = BCR_BILINEAR; break;
-						case 'b':
-							Ctrl->Q.interpolant = BCR_BSPLINE; break;
-						case 'c':
-							Ctrl->Q.interpolant = BCR_BICUBIC; break;
-						case '/':
-						default:
-							Ctrl->Q.threshold = atof (&opt->arg[j]);
-							if (j == 0 && Ctrl->Q.threshold < GMT_SMALL) {
-								Ctrl->Q.interpolant = BCR_NEARNEIGHBOR;
-								GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -Q0 deprecated. Use -Qn instead.\n");
-							}
-							j = 3; break;
-					}
-				}
+#ifdef GMT_COMPAT
+			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
+				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
 				break;
+#endif
 			case 'S':
 				Ctrl->S.active = TRUE;
 				break;
@@ -411,7 +379,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Initialize bcr structure */
 
-		GMT_bcr_init (GMT, G->header, Ctrl->Q.interpolant, Ctrl->Q.threshold, &bcr);
+		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
 
 		/* Set boundary conditions */
 

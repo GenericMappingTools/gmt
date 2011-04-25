@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.47 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.48 2011-04-25 08:59:47 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -304,6 +304,7 @@ for each of the over 30 projections available in \GMT. \\
 \index{\Opt{h} (header records)|(}
 \index{\Opt{i} (input column selection)|(}
 \index{\Opt{o} (output column selection)|(}
+\index{\Opt{n} (grid interpolation settings)|(}
 \index{\Opt{p} (perspective views)|(}
 \index{\Opt{r} (grid registration)|(}
 \index{\Opt{s} (NaN handling)|(}
@@ -343,6 +344,7 @@ for each of the over 30 projections available in \GMT. \\
 \Opt{h}[\textbf{i}$|$\textbf{i}][\emph{n\_headers}]		&	ASCII [input$|$output] tables have header record[s] \\ \hline
 \Opt{i}\emph{columns}		&	Selection of input columns \\ \hline
 \Opt{o}\emph{columns}		&	Selection of output columns \\ \hline
+\Opt{n}[\emph{type}][{\bf +a}][{\bf b}{\it BC}][{\bf +t}{\it threshold}] 		&	Set grid interpolation mode \\ \hline
 \Opt{p}\emph{azim/elev}[/\emph{zlevel}][{\bf +w}\emph{lon0/lat0}[/\emph{z0}]][{\bf +v}\emph{x0/y0}]	&	Control 3-D perspective view \\ \hline
 \Opt{r}	&	Sets grid registration \\ \hline
 \Opt{s}[\textbf{z}$|$\emph{cols}]	&	Control treatment of NaN records \\ \hline
@@ -527,6 +529,7 @@ for each of the over 30 projections available in \GMT. \\
 \index{\Opt{h} (header records)|)}
 \index{\Opt{i} (input column selection)|)}
 \index{\Opt{o} (output column selection)|)}
+\index{\Opt{n} (grid interpolation settings)|)}
 \index{\Opt{p} (perspective views)|)}
 \index{\Opt{r} (grid registration)|)}
 \index{\Opt{s} (NaN handling)|)}
