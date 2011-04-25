@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.970 2011-04-25 00:21:06 guru Exp $
+	$Id: ChangeLog,v 1.971 2011-04-25 00:57:26 jluis Exp $
 -----------------------------------------------------------------------------------------
+				
+2011-04-25	jluis
+	* gmt_map.c		Removed GMT_grdproject_init in favor of GMT_project_init
+				that takes as second input a GRD_HEADER pointer instead of
+				pointers to GMT_GRID or GMT_IMAGE containers.
 
 2011-04-24	pwessel
 	* gmt*.c:		Introduced common option -n[b|c|l|n][+a][+b<BC>][+t<threshold>]
