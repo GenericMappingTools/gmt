@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id: job32.sh,v 1.3 2011-04-25 00:21:06 guru Exp $
+#		$Id: job32.sh,v 1.4 2011-04-25 23:56:33 remko Exp $
 #
 # Purpose:	Illustrate draping of an image over topography
 # GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
@@ -28,7 +28,7 @@ Rflag=-R3/9/50/54
 # We make an gradient grid as well, which we will use to "illuminate" the flag.
 
 # grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
-grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
+grdgradient topo.nc -E315/20/0.9/0.4/0.8/20 -Gillum.nc -Ne0.6
 
 # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 # "Yellow" to the upper half.
