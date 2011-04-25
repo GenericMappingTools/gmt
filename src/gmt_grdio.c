@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.167 2011-04-25 20:58:28 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.168 2011-04-25 21:31:53 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1100,6 +1100,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 			break;
 	}
 	if (h->registration == GMT_PIXEL_REG) off += 0.5;
+
 	/* Initial assignment of wesn */
 	wesn[YLO] = C->common.R.wesn[YLO] - off * h->inc[GMT_Y], wesn[YHI] = C->common.R.wesn[YHI] + off * h->inc[GMT_Y];
 	if (GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]) && GMT_x_is_lon (C, GMT_IN)) off = 0.0;
@@ -1149,6 +1150,10 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 			while (wesn[XLO] < C->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
 			while (wesn[XHI] > C->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
 		}
+		return (1);
+	}
+	if (C->current.map.is_world) {
+		wesn[XLO] = h->wesn[XLO], wesn[XHI] = h->wesn[XHI];
 		return (1);
 	}
 
