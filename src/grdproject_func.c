@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.13 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdproject_func.c,v 1.14 2011-04-25 00:50:32 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -245,6 +245,11 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	unit = GMT_check_scalingopt (GMT, 'A', Ctrl->A.unit, scale_unit_name);
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+
+	if (Ctrl->I.active) {	/* Must flip the column types since in is Cartesian and out is geographic */
+		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;	/* Inverse projection expects x,y and gives lon, lat */
+		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+	}
 	
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
@@ -374,7 +379,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			use_nx = Rect->header->nx;
 			use_ny = Rect->header->ny;
 		}
-		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Geo, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Geo->header);
 		Geo->data = GMT_memory (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, TRUE);
@@ -457,7 +462,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
-		GMT_err_fail (GMT, GMT_grdproject_init (GMT, Rect, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
 		GMT_grd_project (GMT, Geo, Rect, &edgeinfo, FALSE);
