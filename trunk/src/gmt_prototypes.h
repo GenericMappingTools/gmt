@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.25 2011-04-25 00:15:26 remko Exp $
+ *	$Id: gmt_prototypes.h,v 1.26 2011-04-25 00:48:28 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -297,7 +297,6 @@ EXTERN_MSC GMT_LONG GMT_map_outside (struct GMT_CTRL *C, double lon, double lat)
 EXTERN_MSC void GMT_azim_to_angle (struct GMT_CTRL *C, double lon, double lat, double c, double azim, double *angle);
 EXTERN_MSC GMT_LONG GMT_geo_to_xy (struct GMT_CTRL *C, double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (struct GMT_CTRL *C, double x, double y, double z, double *x_out, double *y_out);
-EXTERN_MSC GMT_LONG GMT_grdproject_init (struct GMT_CTRL *C, struct GMT_GRID *G, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset);
 EXTERN_MSC GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset);
 EXTERN_MSC GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[]);
 EXTERN_MSC double GMT_x_to_xx (struct GMT_CTRL *C, double x);
