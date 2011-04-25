@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.166 2011-04-25 00:15:26 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.167 2011-04-25 20:58:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1472,6 +1472,7 @@ struct GMT_GRID *GMT_create_grid (struct GMT_CTRL *C)
 	G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
 	GMT_grd_setpad (G->header, C->current.io.pad);	/* Use the system pad setting by default */
 	G->header->pocket = NULL;			/* Char pointer to hold whatever we may temporarilly need to store */
+	G->header->n_bands = 1;				/* Since all grids only have 1 layer */
 
 	return (G);
 }
