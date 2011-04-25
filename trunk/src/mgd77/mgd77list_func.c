@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.6 2011-04-23 00:56:09 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.7 2011-04-25 00:21:07 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -150,7 +150,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT,"mgd77list %s - Extract data from MGD77 files\n\n", MGD77_VERSION);
 	GMT_message (GMT,"usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[code]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
-	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][e|k|n|m]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][e|k|n|M]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Sa<startdist>[unit]] [-Sb<stopdist>[unit]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s]\n\n", GMT_bo_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -279,7 +279,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
 	GMT_message (GMT, "\t   e Metric units I (meters, m/s)\n");
 	GMT_message (GMT, "\t   k Metric units II (km, km/hr)\n");
-	GMT_message (GMT, "\t   m British/US units (miles, miles/hr)\n");
+	GMT_message (GMT, "\t   M British/US units (miles, miles/hr)\n");
 	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots)\n");
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse]\n");
 	GMT_message (GMT, "\t-Q Only return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
@@ -489,20 +489,26 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
+#ifdef GMT_COMPAT
+				if (opt->arg[1] == 'm') {
+					GMT_message (GMT, "Warning -N: Unit m for miles is deprecated; use M instead\n");
+					opt->arg[1] = 'M';
+				}
+#endif
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						Ctrl->N.active[N_D] = TRUE;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
-						if (!strchr ("ekmn", (int)Ctrl->N.unit[N_D][0])) {
-							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, m, or n\n");
+						if (!strchr ("ekMn", (int)Ctrl->N.unit[N_D][0])) {
+							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, M, or n\n");
 							n_errors++;
 						}
 						break;
 					case 's':	/* Speed unit selection */
 						Ctrl->N.active[N_S] = TRUE;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
-						if (!strchr ("ekmn", (int)Ctrl->N.unit[N_S][0])) {
-							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, m, or n\n");
+						if (!strchr ("ekMn", (int)Ctrl->N.unit[N_S][0])) {
+							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, M, or n\n");
 							n_errors++;
 						}
 					default:
@@ -825,7 +831,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get km. dt is in sec so 3600 gives  km/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(km/hr)");
 			break;
-		case 'm':
+		case 'M':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives  miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(mi/hr)");
 			break;
@@ -841,7 +847,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		case 'k':
 			strcpy (auxlist[MGD77_AUX_SP].header, "d(km)");
 			break;
-		case 'm':
+		case 'M':
 			strcpy (auxlist[MGD77_AUX_SP].header, "d(miles)");
 			break;
 		case 'n':

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.269 2011-04-23 00:56:09 guru Exp $
+ *	$Id: mgd77.c,v 1.270 2011-04-25 00:21:07 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3015,7 +3015,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 		case 'k':	/* km */
 			*scale = 1000.0;
 			break;
-		case 'm':	/* miles */
+		case 'M':	/* miles */
 			*scale = MGD77_METERS_PER_M;
 			break;
 		case 'n':	/* nautical miles */

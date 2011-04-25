@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT Appendix P, example 2
-#		$Id: GMT_App_P_2.sh,v 1.6 2011-03-15 02:06:29 guru Exp $
+#		$Id: GMT_App_P_2.sh,v 1.7 2011-04-25 00:21:07 guru Exp $
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast
@@ -24,7 +24,7 @@ grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
 makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
 
 # The grdimage command creates the history file $GMT_TMPDIR/.gmtcommands4
-grdimage $GMT_TMPDIR/lat.nc -Sl -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K > $ps
+grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
 pscoast -R -J -O -Dc -A5000 -Gwhite -B60g30/30g30 >> $ps
 
 # Clean up all temporary files and the temporary directory

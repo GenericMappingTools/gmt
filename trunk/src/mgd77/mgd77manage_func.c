@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.10 2011-04-25 00:04:09 remko Exp $
+ *	$Id: mgd77manage_func.c,v 1.11 2011-04-25 00:21:07 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -205,7 +205,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      -I is ignored by -Ae\n");
 	GMT_message (GMT, "\t   Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.\n");
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
-	GMT_message (GMT, "\t   (e) meter, (k) km, (m) miles, or (n) nautical miles [Default is -Nk]\n");
+	GMT_message (GMT, "\t   (e) meter, (k) km, (M) miles, or (n) nautical miles [Default is -Nk]\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
 	GMT_explain_options (GMT, "VC0n" GMT_OPT("Q"));
 	
@@ -339,6 +339,9 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	char file[BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
+#ifdef GMT_COMPAT
+	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+#endif
 
 	GMT_memset (file, BUFSIZ, char);
 	
@@ -459,12 +462,23 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 			case 'N':	/* Set distance units */
 				Ctrl->N.active = TRUE;
 				Ctrl->N.code[0] = opt->arg[0];
-				if (!strchr ("ekmn", (int)Ctrl->N.code[0])) {
-					GMT_message (GMT, "Error -N: Unit must be e, k, m, or n\n");
+#ifdef GMT_COMPAT
+				if (Ctrl->N.code[0] == 'm') {
+					GMT_message (GMT, "Warning -N: Unit m for miles is deprecated; use M instead\n");
+					Ctrl->N.code[0] = 'M';
+				}
+#endif
+				if (!strchr ("ekMn", (int)Ctrl->N.code[0])) {
+					GMT_message (GMT, "Error -N: Unit must be e, k, M, or n\n");
 					n_errors++;
 				}
 				break;
 				
+#ifdef GMT_COMPAT
+			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
+				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;

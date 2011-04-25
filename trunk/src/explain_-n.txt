@@ -1,10 +1,2 @@
 .TP
-OPT(n)
-Select the interpolation mode by adding \fBb\fP for B-spline smoothing,
-\fBc\fP for bicubic interpolation, \fBl\fP for bilinear interpolation, or
-\fBn\fP for nearest-neighbor value (for example to plot categorical data).
-Optionally, prepend \fB-\fP to switch off antialiasing.
-Add \fB/\fP\fIthreshold\fP to control how close to nodes with NaNs the interpolation will go.
-A \fIthreshold\fP of 1.0 requires all (4 or 16) nodes involved in interpolation
-to be non-NaN. 0.5 will interpolate about half way from a non-NaN value; 0.1 will go about 90% of the way, etc.
-[Default is bicubic interpolation with antialiasing and a threshold of 0.5].
+GMT_n_OPT Select interpolation mode for grids.

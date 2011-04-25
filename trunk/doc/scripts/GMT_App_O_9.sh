@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_O_9.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_O_9.sh,v 1.11 2011-04-25 00:21:07 guru Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
@@ -16,7 +16,7 @@ cat << EOF > ttt.cpt
 3	lightyellow	6	lightyellow
 6	lightgreen	100	lightgreen
 EOF
-grdimage -Sc/1 ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K > GMT_App_O_9.ps
+grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc/1 > GMT_App_O_9.ps
 grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u"hour"+v+s8+f17 -GL80W/31N/17W/26N,17W/28N/17W/50N \
 	-S2 >> GMT_App_O_9.ps
 psxy -R -J -Wfatter,white great_NY_Canaries.d -O -K  >> GMT_App_O_9.ps

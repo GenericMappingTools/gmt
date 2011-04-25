@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.9 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.10 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,10 +55,6 @@ struct GRDGRADIENT_CTRL {
 		GMT_LONG active;
 		char *file;
 	} G;
-	struct L {	/* -L<flag> */
-		GMT_LONG active;
-		char mode[4];
-	} L;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
 		GMT_LONG active;
 		GMT_LONG mode;	/* 1 = atan, 2 = exp */
@@ -116,8 +112,8 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdgradient %s [API] - Compute directional gradients from grid files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdgradient <infile> -G<outfile> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
-	GMT_message (GMT, "[-E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]>] [-L<flag>]\n");
-	GMT_message (GMT, "[-N[t_or_e][<amp>[/<sigma>[/<offset>]]]] [%s] [-S<slopefile>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "[-E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]>]\n");
+	GMT_message (GMT, "[-N[t_or_e][<amp>[/<sigma>[/<offset>]]]] [%s] [-S<slopefile>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -141,11 +137,6 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
 	GMT_message (GMT, "\t   This means that even if you provide other values they will be ignored.\n");
 	GMT_message (GMT, "\t-G Output file for results from -A or -D.\n");
-	GMT_message (GMT, "\t-L Sets boundary conditions.  <flag> can be either:\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-	GMT_message (GMT, "\t   [Default: Natural conditions].\n");
 	GMT_message (GMT, "\t-N Will normalize gradients so that max |grad| = <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
@@ -153,12 +144,12 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D.\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_explain_options (GMT, "Vfn.");
 	
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_EDGEINFO *edgeinfo, struct GMT_OPTION *options)
+GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -172,7 +163,6 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_boundcond_init (GMT, edgeinfo);
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -242,17 +232,20 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 				Ctrl->G.active = TRUE;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
+#ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				Ctrl->L.active = TRUE;
-				strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
 				/* in this case are 2 lines bellow we code it here */
-				if (! strcmp (Ctrl->L.mode, "g")) {
+				if (!strcmp (GMT->common.n.BC, "g")) {
 					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 				}
 				break;
+#endif
+
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
@@ -297,8 +290,6 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = FALSE;
 	}
 
-	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
-
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -334,7 +325,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT = GMT_begin_module (API, "GMT_grdgradient", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRf:", "", options))) Return (error);
 	Ctrl = (struct GRDGRADIENT_CTRL *) New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdgradient_parse (API, Ctrl, &edgeinfo, options))) Return (error);
+	if ((error = GMT_grdgradient_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
@@ -374,6 +365,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);
 	if (GMT_is_subset (Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	GMT_grd_init (GMT, Surf->header, options, TRUE);
+	GMT_boundcond_init (GMT, &edgeinfo);
+	GMT_boundcond_parse (GMT, &edgeinfo, GMT->common.n.BC);
 	GMT_boundcond_param_prep (GMT, Surf->header, &edgeinfo);
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 

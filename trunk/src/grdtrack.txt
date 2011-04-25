@@ -5,8 +5,8 @@ grdtrack \- Sampling of 2-D grided data set(s) along 1-D trackline (a sequence o
 .SH SYNOPSIS
 BD(grdtrack) IT(xyfile) OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
 [ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] 
-[ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
-[ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
+[ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(grdtrack) reads one or more grid files (or a Sandwell/Smith IMG files) and a table (from file or
 standard input) with (x,y) [or (lon,lat)] positions 
@@ -64,9 +64,6 @@ x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical c
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
 the grid is automatically recognized as periodic.]
 #include "explain_-R.txt"
-.TP
-OPT(S)
-Suppress the output of interpolated points that result in NaN values.
 #include "explain_-V.txt"
 .TP
 OPT(Z)
@@ -84,6 +81,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-icols.txt"
 #include "explain_-n.txt"
 #include "explain_-ocols.txt"
+#include "explain_-s.txt"
 #include "explain_help.txt"
 #include "explain_distunits.txt"
 #include "explain_precision.txt"

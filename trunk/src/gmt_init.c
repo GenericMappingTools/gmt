@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.485 2011-04-25 00:04:09 remko Exp $
+ *	$Id: gmt_init.c,v 1.486 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -535,10 +535,15 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			GMT_message (C, "\t-n[-]b|c|l|n[/<threshold>] Determines the grid interpolation mode\n");
+			GMT_message (C, "\t-n[b|c|l|n][+a][+b<BC>][+t<threshold>] Determines the grid interpolation mode.\n");
 			GMT_message (C, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
-			GMT_message (C, "\t   Optionally, prepend - to switch off antialiasing (except for l) [Default: on].\n");
-			GMT_message (C, "\t   Append /<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
+			GMT_message (C, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
+			GMT_message (C, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
+			GMT_message (C, "\t   g for geographic boundary conditions, or one or both of\n");
+			GMT_message (C, "\t   x for periodic boundary conditions on x,\n");
+			GMT_message (C, "\t   y for periodic boundary conditions on y.\n");
+			GMT_message (C, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
+			GMT_message (C, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
 			GMT_message (C, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
 			GMT_message (C, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
 
@@ -562,7 +567,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 's':	/* Output control for records where z are NaN */
 
 			GMT_message (C, "\t-s Suppress output for records whose z-value (col = 2) equals NaN [Default prints all records].\n");
-			GMT_message (C, "\t   Append a column number to examine another column instead [2].\n");
+			GMT_message (C, "\t   Append <cols> to examine other column(s) instead [2].\n");
+			GMT_message (C, "\t   Append a to suppress records where any column equals NaN.\n");
 			GMT_message (C, "\t   Append r to reverse the suppression (only output z = NaN records).\n");
 			break;
 
@@ -1094,7 +1100,7 @@ GMT_LONG gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 
 	if (!item || !item[0]) {	/* Nothing further to parse; just set defaults */
 		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = TRUE;
-		return (0);
+		return (GMT_NOERROR);
 	}
 	j = 0;
 	if (item[j] == 'i') k = j++;	/* -hi[nrecs] given */
@@ -1133,7 +1139,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 			C->common.R.wesn[XLO] = -180.0, C->common.R.wesn[XHI] = 180.0;
 		C->common.R.wesn[YLO] = -90.0;	C->common.R.wesn[YHI] = +90.0;
 		C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-		return (0);
+		return (GMT_NOERROR);
 	}
 	if (!GMT_access (C, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
@@ -1145,7 +1151,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		GMT_memcpy (C->common.R.wesn, C->current.io.grd_info.grd.wesn, 4, double);
 		C->common.R.wesn[ZLO] = C->current.io.grd_info.grd.z_min;	C->common.R.wesn[ZHI] = C->current.io.grd_info.grd.z_max;
 		C->current.io.grd_info.active = TRUE;
-		return (0);
+		return (GMT_NOERROR);
 	}
 	if (item[0] == 'g' || item[0] == 'd') {	/* Here we have a region appended to -Rd|g */
 		C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
@@ -1397,7 +1403,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 			col[GMT_X] = GMT_IS_LON;
 			col[GMT_Y] = GMT_IS_LAT;
 		}
-		return (0);
+		return (GMT_NOERROR);
 	}
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
@@ -1438,7 +1444,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 		else
 			for (i = start; i <= stop; i++) col[i] = code;
 	}
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int compare_cols (const void *point_1, const void *point_2)
@@ -1513,7 +1519,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 	}
 	qsort ((void *)C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), compare_cols);
 	C->common.i.n_cols = k;
-	return (0);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
@@ -1544,14 +1550,14 @@ GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
 		}
 	}
 	C->common.o.n_cols = k;
-	return (0);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	GMT_LONG n;
 	char *this = NULL;
-	if (!text) return (0);
+	if (!text) return (GMT_NOERROR);
 	if ((this = strchr (text, '='))) {	/* Got --PAR=VALUE */
 		this[0] = '\0';	/* Temporarily remove the '=' character */
 		n = GMT_setparameter (C, text, &this[1]);
@@ -1590,8 +1596,8 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, GMT_LONG n_req) {
 	 * Return value is the number of errors that where found.
 	 */
 
-	if (!C->common.b.active[GMT_IN]) return (0);	/* Let machinery figure out input cols for ascii */
-	if (C->common.b.netcdf[GMT_IN]) return (0);	/* Done separately */
+	if (!C->common.b.active[GMT_IN]) return (GMT_NOERROR);	/* Let machinery figure out input cols for ascii */
+	if (C->common.b.netcdf[GMT_IN]) return (GMT_NOERROR);	/* Done separately */
 
 	/* These are specific tests for binary input */
 
@@ -1623,7 +1629,7 @@ GMT_LONG gmt_parse_U_option (struct GMT_CTRL *C, char *item) {
 	/* Parse the -U option.  Full syntax: -U[<just>/<dx>/<dy>/][c|<label>] */
 
 	C->current.setting.map_logo = TRUE;
-	if (!item || !item[0]) return (0);	/* Just basic -U with no args */
+	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
 	for (i = n_slashes = 0; item[i]; i++) {
 		if (item[i] == '/') n_slashes++;	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
@@ -1892,38 +1898,63 @@ GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	}
 	if ((C->common.g.col[i] + 1) > C->common.g.n_col) C->common.g.n_col = C->common.g.col[i] + 1;	/* Needed when checking since it may otherwise not be read */
 	C->common.g.n_methods++;
-	return (0);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
-{	/* Parse the -n option for 2-D grid resampling parameters */
-	GMT_LONG j, err = 0;
-	for (j = 0; !err && j < 3 && item[j]; j++) {
-		switch (item[j]) {
-			case '-':
-				C->common.n.antialias = FALSE; break;
-			case 'n':
-				C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
-			case 'l':
-				C->common.n.interpolant = BCR_BILINEAR; break;
-			case 'b':
-				C->common.n.interpolant = BCR_BSPLINE; break;
-			case 'c':
-				C->common.n.interpolant = BCR_BICUBIC; break;
-			case '/':
-				C->common.n.threshold = atof (&item[j+1]);
-				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: In -n, threshold must be in [0,1] range\n");
-					err = 1;
+{	/* Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */
+	GMT_LONG pos = 0, j, k = 1;
+	char p[GMT_TEXT_LEN256];
+
+	switch (item[0]) {
+		case '+':	/* Means no mode was specified so we get the default */
+			C->common.n.interpolant = BCR_BICUBIC; k = 0; break;
+		case 'n':
+			C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
+		case 'l':
+			C->common.n.interpolant = BCR_BILINEAR; break;
+		case 'b':
+			C->common.n.interpolant = BCR_BSPLINE; break;
+		case 'c':
+			C->common.n.interpolant = BCR_BICUBIC; break;
+		default:
+			GMT_report (C, GMT_MSG_FATAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
+			return (1);
+			break;
+	}
+
+	/* Now look for +modifiers */
+
+	while ((GMT_strtok (&item[k], "+", &pos, p))) {
+		switch (p[0]) {
+			case 'a':	/* Turn off antialias */
+				C->common.n.antialias = FALSE;
+				break;
+			case 'b':	/* Set BCs */
+				strncpy (C->common.n.BC, &p[1], (size_t)4);
+				for (j = 0; j < strlen (C->common.n.BC); j++) {
+					switch (C->common.n.BC[j]) {
+						case 'g': case 'x': case 'y': break;
+						default:
+							GMT_report (C, GMT_MSG_FATAL, "Error -n: +b<BC> requires <BC> to be g, x, y, or xy\n");
+							break;
+					}
 				}
-				j = 3; break;
-			default:
-				GMT_report (C, GMT_MSG_FATAL, "Error: Use -n[-]b|c|l|n[/threshold] to set 2-D grid interpolation mode.\n");
-				err = 1;
-				j = 3; break;
+				break;
+			case 't':	/* Set interpolation threshold */
+				C->common.n.threshold = atof (&p[1]);
+				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
+					GMT_report (C, GMT_MSG_FATAL, "Error -n: Interpolation threshold must be in [0,1] range\n");
+					return (1);
+				}
+				break;
+			default:	/* Bad modifier */
+				GMT_report (C, GMT_MSG_FATAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
+				return (1);
+				break;
 		}
 	}
-	return (err);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
@@ -2003,7 +2034,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	GMT_LONG error = 0, i, n, start, stop, pos = 0, tmp[GMT_MAX_COLUMNS];
 	char p[BUFSIZ], *c = NULL;
-	/* Parse the -s option.  Full syntax: -s[<cols>][r] */
+	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
 
 	GMT_memset (C->current.io.io_nan_col, GMT_MAX_COLUMNS, GMT_LONG);
 	C->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
@@ -2011,7 +2042,8 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	C->current.setting.io_nan_mode = 1;	/* Plain -s */
 	if (!item || !item[0]) return (FALSE);	/* Nothing more to do */
 	n = strlen (item);
-	if (item[n-1] == 'r') C->current.setting.io_nan_mode = 2, n--;	/* Set -sr */
+	if (item[n-1] == 'a') C->current.setting.io_nan_mode = 3, n--;		/* Set -sa */
+	else if (item[n-1] == 'r') C->current.setting.io_nan_mode = 2, n--;	/* Set -sr */
 	if (n == 0) return (FALSE);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
@@ -2117,7 +2149,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (error) GMT_message (C, "Error: %ld conversion errors in file %s!\n", error, file);
 
-	return (0);
+	return (GMT_NOERROR);
 }
 
 void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
@@ -5637,7 +5669,7 @@ GMT_LONG gmt_scale_or_width (struct GMT_CTRL *C, char *scale_or_width, double *v
 			return (1);
 		}
 	}
-	return (0);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
@@ -7145,6 +7177,42 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 	return (error);
 }
 
+#ifdef GMT_COMPAT
+GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item) {
+	/* Use to parse various -S -Q options when backwardsness has been enabled */
+	GMT_LONG j;
+	
+	GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", (int)option);
+	
+	for (j = 0; j < 3 && item[j]; j++) {
+		switch (item[j]) {
+			case '-':
+				C->common.n.antialias = FALSE; break;
+			case 'n':
+				C->common.n.interpolant = BCR_NEARNEIGHBOR; break;
+			case 'l':
+				C->common.n.interpolant = BCR_BILINEAR; break;
+			case 'b':
+				C->common.n.interpolant = BCR_BSPLINE; break;
+			case 'c':
+				C->common.n.interpolant = BCR_BICUBIC; break;
+			case '/':
+				C->common.n.threshold = atof (&item[j+1]);
+				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
+					GMT_report (C, GMT_MSG_FATAL, "Error: Interpolation threshold must be in [0,1] range\n");
+					return (1);
+				}
+				break;
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error: Specify -%c[-]b|c|l|n[/threshold] to set grid interpolation mode.\n", option);
+				return (1);
+				break;
+		}
+	}
+	return (GMT_NOERROR);
+}
+#endif
+
 GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, double *t0) {
 
 	/* Read a string which must be in one of these forms:
@@ -7176,7 +7244,7 @@ GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, doubl
 
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */
-	return (0);
+	return (GMT_NOERROR);
 }
 
 GMT_LONG GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYSTEM *time_system) {

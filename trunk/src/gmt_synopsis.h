@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.21 2011-04-24 20:47:41 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.22 2011-04-25 00:21:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -58,7 +58,7 @@
 #define GMT_h_OPT	"-h[i|o][<nrec>]"
 #define GMT_ho_OPT	"-ho[<nrec>]"
 #define GMT_i_OPT	"-i<cols>[l][s<scale>][o<offset>][,...]"
-#define GMT_n_OPT	"-n[-]b|c|l|n[/<threshold>]"
+#define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>/<elev>[/zlevel][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r"

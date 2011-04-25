@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id: job32.sh,v 1.2 2011-04-15 01:03:40 remko Exp $
+#		$Id: job32.sh,v 1.3 2011-04-25 00:21:06 guru Exp $
 #
 # Purpose:	Illustrate draping of an image over topography
 # GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
@@ -48,7 +48,7 @@ grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p15
 # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 # So we write out the borders, pipe them through grdtack and then plot them with psxyz.
 
-pscoast $Rflag -Df -M -N1 | grdtrack -Gtopo.nc -S | psxyz $Rplot -J -JZ -p -W1p,white -O -K >> $ps
+pscoast $Rflag -Df -M -N1 | grdtrack -Gtopo.nc -sa | psxyz $Rplot -J -JZ -p -W1p,white -O -K >> $ps
 
 # Finally, we add dots and names for three cities.
 # Again, grdtrack is used to put the dots "at elevation".
@@ -59,7 +59,7 @@ cat << EOF > cities.txt
 07:07:03 50:43:09 Bonn
 EOF
 
-grdtrack -Gtopo.nc -S cities.txt | psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> $ps
+grdtrack -Gtopo.nc -sa cities.txt | psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> $ps
 pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.txt >> $ps
 
 # cleanup
