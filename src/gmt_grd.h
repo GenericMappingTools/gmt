@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.55 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_grd.h,v 1.56 2011-04-25 21:33:01 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -199,8 +199,8 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
  * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.
  */
 
-/* GMT_is_subset is TRUE if wesn is set unless wesn equals the grid region */
-#define GMT_is_subset(h,R) ((R[XHI] > R[XLO] && R[YHI] > R[YLO]) && !(R[XLO] == h->wesn[XLO] && R[XHI] == h->wesn[XHI] && R[YLO] == h->wesn[YLO] && R[YHI] == h->wesn[YHI]))
+/* GMT_is_subset is TRUE if wesn is set unless wesn and wesn cuts through the grid region */
+#define GMT_is_subset(h,R) (R[XHI] > R[XLO] && R[YHI] > R[YLO] && (R[XLO] > h->wesn[XLO] || R[XHI] < h->wesn[XHI] || R[YLO] > h->wesn[YLO] || R[YHI] < h->wesn[YHI]))
 /* GMT_grd_same_region is TRUE if two grids have the exact same regions */
 #define GMT_grd_same_region(G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
 /* GMT_y_is_outside is TRUE if y is outside the given range */
