@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.317 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_plot.c,v 1.318 2011-04-25 00:15:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -88,10 +88,6 @@ EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1,
 EXTERN_MSC GMT_LONG gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
 
 #define GMT_ELLIPSE_APPROX 72
-
-GMT_LONG GMT_grid_clip_path (struct GMT_CTRL *C, struct GRD_HEADER *h, double **x, double **y, GMT_LONG *donut);
-void GMT_grid_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GRD_HEADER *h, double rgb[], GMT_LONG flag);
-void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P);
 
 /* Local variables to this file */
 

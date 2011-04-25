@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.21 2011-04-24 22:57:37 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.22 2011-04-25 00:16:47 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -350,7 +350,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdimage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>" GMT_OPT("S"), options))) Return (error);
 	Ctrl = (struct GRDIMAGE_CTRL *) New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdimage_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
@@ -462,7 +462,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
-	if (GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
+	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
 		/* No grid to plot; just do empty map and bail */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_plotinit (API, PSL, options);

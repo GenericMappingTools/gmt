@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.9 2011-04-25 00:15:26 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -250,7 +250,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
-	if (GMT_grd_setregion (GMT, G_age->header, GMT->common.R.wesn, BCR_BILINEAR)) {
+	if (!GMT_grd_setregion (GMT, G_age->header, GMT->common.R.wesn, BCR_BILINEAR)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "No grid values inside selected region - aborting\n");
 		Return (EXIT_FAILURE);
 	}
