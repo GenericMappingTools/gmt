@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.972 2011-04-25 16:55:07 remko Exp $
+	$Id: ChangeLog,v 1.973 2011-04-25 19:21:59 jluis Exp $
 -----------------------------------------------------------------------------------------
 				
 2011-04-25	remko
@@ -9,6 +9,7 @@
 	* gmt_map.c:		Removed GMT_grdproject_init in favor of GMT_project_init
 				that takes as second input a GRD_HEADER pointer instead of
 				pointers to GMT_GRID or GMT_IMAGE containers.
+	* grdimage_func.c:	When illuminating an image if -R is not set use grid limits
 
 2011-04-24	pwessel
 	* gmt*.c:		Introduced common option -n[b|c|l|n][+a][+b<BC>][+t<threshold>]
