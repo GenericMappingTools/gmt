@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.285 2011-04-24 20:47:41 guru Exp $
+ *	$Id: gmt_map.c,v 1.286 2011-04-25 00:51:37 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5827,40 +5827,6 @@ GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n,
 
 /* Routines to transform grdfiles to/from map projections */
 
-GMT_LONG GMT_grdproject_init (struct GMT_CTRL *C, struct GMT_GRID *G, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
-{
-	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
-		G->header->nx = (int)GMT_get_n (G->header->wesn[XLO], G->header->wesn[XHI], inc[GMT_X], offset);
-		G->header->ny = (int)GMT_get_n (G->header->wesn[YLO], G->header->wesn[YHI], inc[GMT_Y], offset);
-		G->header->inc[GMT_X] = GMT_get_inc (G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, offset);
-		G->header->inc[GMT_Y] = GMT_get_inc (G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, offset);
-	}
-	else if (nx > 0 && ny > 0) {
-		G->header->nx = (int)nx;	G->header->ny = (int)ny;
-		G->header->inc[GMT_X] = GMT_get_inc (G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, offset);
-		G->header->inc[GMT_Y] = GMT_get_inc (G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, offset);
-	}
-	else if (dpi > 0) {
-		G->header->nx = (int)irint ((G->header->wesn[XHI] - G->header->wesn[XLO]) * dpi) + 1 - (int)offset;
-		G->header->ny = (int)irint ((G->header->wesn[YHI] - G->header->wesn[YLO]) * dpi) + 1 - (int)offset;
-		G->header->inc[GMT_X] = GMT_get_inc (G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, offset);
-		G->header->inc[GMT_Y] = GMT_get_inc (G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, offset);
-	}
-	else {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_grdproject_init: Necessary arguments not set\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-	G->header->registration = (int)offset;
-
-	GMT_RI_prepare (C, G->header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_err_pass (C, GMT_grd_RI_verify (C, G->header, 1), "");
-	GMT_grd_setpad (G->header, C->current.io.pad);			/* Assign default pad */
-	GMT_set_grddim (C, G->header);	/* Set all dimensions before returning */
-
-	GMT_report (C, GMT_MSG_NORMAL, "Grid projection from size %ldx%ld to %dx%d\n", nx, ny, G->header->nx, G->header->ny);
-	return (GMT_NOERROR);
-}
-
 GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
@@ -5881,7 +5847,7 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_grdproject_init: Necessary arguments not set\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT_project_init: Necessary arguments not set\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	header->registration = (int)offset;
