@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.287 2011-04-25 16:55:24 remko Exp $
+ *	$Id: gmt_map.c,v 1.288 2011-04-25 20:19:10 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2927,6 +2927,7 @@ GMT_LONG GMT_map_init_lambert (struct GMT_CTRL *C) {
 		C->current.map.right_edge = (PFD) GMT_right_conic;
 	}
 	GMT_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[4]);
+	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
 	C->current.map.n_lat_nodes = 2;
 	C->current.map.frame.horizontal = TRUE;
 	GMT_geo_to_xy (C, C->current.proj.central_meridian, C->current.proj.pole, &C->current.proj.c_x0, &C->current.proj.c_y0);
