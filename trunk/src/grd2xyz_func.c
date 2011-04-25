@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.9 2011-04-25 16:47:58 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -199,7 +199,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grd2xyz", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "hos>" GMT_OPT("HS"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "hos>" GMT_OPT("H"), options))) Return (error);
 	Ctrl = (struct GRD2XYZ_CTRL *)New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2xyz_parse (API, Ctrl, &io, options))) Return (error);
 	
