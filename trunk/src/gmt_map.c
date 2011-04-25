@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.286 2011-04-25 00:51:37 jluis Exp $
+ *	$Id: gmt_map.c,v 1.287 2011-04-25 16:55:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,11 +49,12 @@
  *	GMT_geo_to_xy_line :	Same for polygons
  *	GMT_geoz_to_xy :	Generic 3-D lon/lat/z to x/y
  *	GMT_grd_project :	Generalized grid projection with interpolation
- *	GMT_grdproject_init :	Initialize parameters for grid transformations
  *	GMT_great_circle_dist :	Returns great circle distance in degrees
+ *	GMT_img_project :	Generalized image projection with interpolation
  *	GMT_map_outside :	Generic function determines if we're outside map boundary
  *	GMT_map_path :		Return GMT_latpath or GMT_lonpath
  *	GMT_map_setup :		Initialize map projection
+ *	GMT_project_init :	Initialize parameters for grid/image transformations
  *	GMT_xy_to_geo :		Generic inverse x/y to lon/lat projection
  *	GMT_xyz_to_xy :		Generic xyz to xy projection
  *	GMT_xyz_to_xy_n :	Same for an array
