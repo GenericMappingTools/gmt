@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.23 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdimage_func.c,v 1.24 2011-04-25 00:50:32 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -265,7 +265,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
 	 * nx/ny are set accordingly.  Not that some of these may change
-	 * if GMT_grdproject_init is called at a later stage */
+	 * if GMT_project_init is called at a later stage */
 
 	GMT_LONG row, col, all_lats = FALSE, all_lons = FALSE;
 	double lon, lat, x, y;
@@ -568,7 +568,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header);
 			if (!grid_registration)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
-			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Grid_proj[k], inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
+			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
 			Grid_proj[k]->data = GMT_memory (GMT, NULL, Grid_proj[k]->header->size, float);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], &edgeinfo, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_orig[k]);
@@ -584,7 +584,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				nx_proj = Intens_orig->header->nx;
 				ny_proj = Intens_orig->header->ny;
 			}
-			GMT_err_fail (GMT, GMT_grdproject_init (GMT, Intens_proj, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
+			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, &edgeinfo, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
