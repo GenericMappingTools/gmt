@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
+ *	$Id: grdproject_func.c,v 1.12 2011-04-25 00:04:09 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdproject", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VJR", "nr" GMT_OPT("F"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJR", "nr" GMT_OPT("FS"), options))) Return (error);
 	Ctrl = (struct GRDPROJECT_CTRL *) New_grdproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdproject_parse (API, Ctrl, options))) Return (error);
 

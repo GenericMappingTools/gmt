@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.12 2011-04-25 00:04:09 remko Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -281,7 +281,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77sniffer", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "", options))) return (error);
+	if ((error = GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options))) return (error);
 
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);

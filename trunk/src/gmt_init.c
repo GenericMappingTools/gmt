@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.484 2011-04-24 20:47:41 guru Exp $
+ *	$Id: gmt_init.c,v 1.485 2011-04-25 00:04:09 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1060,6 +1060,7 @@ GMT_LONG GMT_default_error (struct GMT_CTRL *C, char option)
 #endif
 		case 'h': error += C->common.h.active == 0; break;
 		case 'i': error += C->common.i.active == 0; break;
+		case 'n': error += C->common.n.active == 0; break;
 		case 'o': error += C->common.o.active == 0; break;
 #ifdef GMT_COMPAT
 		case 'Z': break;
@@ -6911,6 +6912,18 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 	if (!list || !strchr (list, option)) return (FALSE);	/* Not a common option we accept */
 
+#ifdef GMT_COMPAT
+#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n", option, new); option = new; }
+	/* Translate some options */
+	switch (option) {
+		case 'E': GMT_COMPAT_OPT ('p'); break;
+		case 'F': GMT_COMPAT_OPT ('r'); break;
+		case 'H': GMT_COMPAT_OPT ('h'); break;
+		case 'Q': GMT_COMPAT_OPT ('n'); break;
+		case 'S': GMT_COMPAT_OPT ('s'); GMT_COMPAT_OPT ('n'); break;
+	}
+#endif
+
 	switch (option) {	/* Handle parsing of this option, if allowed here */
 
 		case 'B':
@@ -7044,10 +7057,6 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			C->common.g.active = TRUE;
 			break;
 
-#ifdef GMT_COMPAT
-		case 'H':	/* Backwards compatibility */
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -H is deprecated. Use -h instead.\n");
-#endif
 		case 'h':
 			error += (GMT_more_than_once (C, C->common.h.active) || gmt_parse_h_option (C, item));
 			C->common.h.active = TRUE;
@@ -7075,28 +7084,16 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			C->common.o.active = TRUE;
 			break;
 
-#ifdef GMT_COMPAT
-		case 'E':	/* Backwards compatibility */
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated. Use -p instead.\n");
-#endif
 		case 'p':
 			error += (GMT_more_than_once (C, C->common.p.active) || gmt_parse_p_option (C, item));
 			C->common.p.active = TRUE;
 			break;
 
-#ifdef GMT_COMPAT
-		case 'F':
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -F is deprecated. Use -r instead.\n");
-#endif
 		case 'r':
 			error += GMT_more_than_once (C, C->common.r.active);
 			C->common.r.active = TRUE;
 			break;
 
-#ifdef GMT_COMPAT
-		case 'S':
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -S is deprecated. Use -s instead.\n");
-#endif
 		case 's':
 			error += (GMT_more_than_once (C, C->common.s.active) || gmt_parse_s_option (C, item));
 			C->common.s.active = TRUE;
