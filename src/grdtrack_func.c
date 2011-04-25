@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.13 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.14 2011-04-25 16:45:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,9 +143,6 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	char line[BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef GMT_COMPAT
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
-#endif
 
 	GMT_memset (line, BUFSIZ, char);
 
@@ -223,14 +220,6 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -N deprecated. Use -nn instead.\n");
 				break;
-#endif
-
-#ifdef GMT_COMPAT
-			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
-				break;
-#endif
-#ifdef GMT_COMPAT
 			case 'S':
 				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
 				GMT->current.setting.io_nan_mode = 3;
@@ -324,7 +313,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdtrack", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinos>" GMT_OPT("HMm"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinos>" GMT_OPT("HMmQ"), options))) Return (error);
 	Ctrl = (struct GRDTRACK_CTRL *) New_grdtrack_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrack_parse (API, Ctrl, options))) Return (error);
 

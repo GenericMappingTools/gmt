@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.14 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdsample_func.c,v 1.15 2011-04-25 16:45:10 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,7 +99,6 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[BUFSIZ];
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
 #endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -137,15 +136,8 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 				}
 				break;
-#endif
-#ifdef GMT_COMPAT
-			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
-				break;
-#endif
-
-#ifdef GMT_COMPAT
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
 				Ctrl->I.active = TRUE;
 				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
 				if (jj == 0) jj = ii;
@@ -153,7 +145,6 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				GMT_getinc (GMT, format, Ctrl->I.inc);
 				break;
 #endif
-
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				Ctrl->T.active = TRUE;
 				break;
