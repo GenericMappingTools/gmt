@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.136 2011-04-24 20:47:40 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.137 2011-04-25 08:59:47 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -249,7 +249,7 @@ sometimes a number or character string immediately after the letter.
 
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
-The 23 switches in Table~\ref{tbl:switches} have the same meaning
+The 24 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (although some programs may not use all of them).
 These options will be described here as well as in the manual pages,
 as is vital that you understand how to use these options.  We will present
@@ -275,6 +275,7 @@ these options in order of importance (some are use a lot more than others).
 \index{\Opt{g} (detect data gaps)}%
 \index{\Opt{h} (header records)}%
 \index{\Opt{i} (select input columns)}%
+\index{\Opt{n} (control grid interpolation settings)}%
 \index{\Opt{o} (select output columns)}%
 \index{\Opt{p} (set perspective view)}%
 \index{\Opt{r} (set pixel registration)}%
@@ -301,6 +302,7 @@ these options in order of importance (some are use a lot more than others).
 \Opt{g}	&	Identify data gaps based on supplied criteria  \\ \hline
 \Opt{h}	&	Specifies that input/output tables have header record(s)  \\ \hline
 \Opt{i}	&	Specifies which input columns to read  \\ \hline
+\Opt{n}	&	Specifies grid interpolation settings  \\ \hline
 \Opt{o}	&	Specifies which output columns to write  \\ \hline
 \Opt{p}	&	Controls perspective views for plots  \\ \hline
 \Opt{r}	&	Sets the grid registration to pixel [Default is gridline]  \\ \hline
@@ -308,7 +310,7 @@ these options in order of importance (some are use a lot more than others).
 \Opt{t}	&	Change layer PDF transparency  \\ \hline
 \Opt{:}	&	Assumes input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
 \end{tabular}
-\caption{The 23 standardized \gmt\ command line switches.}
+\caption{The 24 standardized \gmt\ command line switches.}
 \label{tbl:switches}
 \end{table} 
 
@@ -955,13 +957,20 @@ specify \Opt{i}3,6,2 (since 0 is the first column).
 \index{\Opt{n} (Grid resampling parameters)}
 \index{Resampling \Opt{n}}
 \label{sec:resample}
-The \Opt{n}\emph{columns} option controls parameters that are
+The \Opt{n}\emph{type} option controls parameters that are
 used when 2-D grids are resampled.  You can select the type
 of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
 \Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
 For programs that support it, antialiasing is by default on;
-optionally, prepend \fB-\fP to switch off antialiasing.
-
+optionally, append {\bf +a} to switch off antialiasing.
+Control boundary conditions by appending {\bf b}{\it BC},
+where {\it BC} is either {\bf g} for geographic conditions
+or one (or both) of  {\bf x} and {\bf y} fpr periodic boundary
+conditions.  Finally, append {\bf +t}{\it threshold} to control
+how close to nodes with NaN the interpolation should go.  A
+{\it threshold} of 1.0 requires all (4 or 16) nodes involved in the
+interpolation to be non-NaN. 0.5 will interpolate about half way from a
+non-NaN value; 0.1 will go about 90\% of the way, etc.
 
 \subsection{Output columns selection: The \Opt{o} option}
 \index{\Opt{o} (Output columns selection)}
@@ -1048,7 +1057,8 @@ find $nx = ny = 3$.
 
 We can use this option to suppress output for records whose {\it z}-value equals NaN
 (by default we output all records).  Alternatively, append {\bf r} to reverse the suppression,
-i.e., only output the records whose {\it z}-value equals NaN.  Alternatively, indicate
+i.e., only output the records whose {\it z}-value equals NaN.  Use \Opt{sa} to suppress
+output records where one or more fields equal NaN.  Finally, you can supply
 a comma-separated list of all columns or column ranges to consider for this NaN test.
 
 \subsection{Layer PDF transparency: The \Opt{t} option}
