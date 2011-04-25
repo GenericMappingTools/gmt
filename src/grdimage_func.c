@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.26 2011-04-25 17:22:24 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.27 2011-04-25 19:21:32 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -345,7 +345,16 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;
 
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
-		
+
+	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
+	if (Ctrl->I.active) {	/* Illumination wanted */
+
+		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read intensity file\n");
+
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->I.file), 
+			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	}
+
 #ifdef USE_GDAL
 	if (Ctrl->D.active) {
 		/* One more test though */
@@ -354,10 +363,21 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Ctrl->D.mode = FALSE;
 		}
 
+		if (Ctrl->I.active && GMT->common.R.active) {
+			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
+			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Requested region exceeds illumination extents\n");
+				Return (EXIT_FAILURE);
+			}
+		}
+
+		if (!Ctrl->D.mode && Ctrl->I.active && !GMT->common.R.active)	/* Apply illumination to an image but no -R provided */
+			GMT_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
+
 		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, 
 			(void **)&(Ctrl->In.file[0]), (void **)&I)) Return (GMT_DATA_READ_ERROR);
 
-		if (Ctrl->D.mode && GMT->common.R.active) {
+		if ( (Ctrl->D.mode && GMT->common.R.active) || (!Ctrl->D.mode && Ctrl->I.active) ) {
 			GMT_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
 			/* Get actual size of each pixel */
 			dx = GMT_get_inc (I->header->wesn[XLO], I->header->wesn[XHI], I->header->nx, I->header->registration);
@@ -491,9 +511,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read intensity file\n");
 
-		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->I.file), 
-			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-
+		/* Remember, the illumination header was already read at the top */
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->I.file), 
 			(void **)&Intens_orig)) Return (GMT_DATA_READ_ERROR);	/* Get grid data */
 		if (n_grids && (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny)) {
@@ -511,9 +529,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Intens_orig, NULL, (void *)Intens_orig, &object_ID)) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
+
 			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_OUT, (void **)&G2, NULL, (void *)G2, &object_ID)) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
+
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
 			status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd);	/* Do the resampling */
 			G2->header->n_bands = 1;		/* FCK POINT - Should not be needed */
@@ -564,7 +584,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 #ifdef USE_GDAL
 			else
-				GMT_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);	/* FCK POINT regs are different */
+				GMT_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);
 #endif
 			if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
 				nx_proj = Intens_orig->header->nx;
