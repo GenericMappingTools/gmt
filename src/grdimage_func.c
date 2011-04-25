@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.27 2011-04-25 19:21:32 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.28 2011-04-25 20:58:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -367,6 +367,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
 			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Requested region exceeds illumination extents\n");
+				GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 				Return (EXIT_FAILURE);
 			}
 		}
