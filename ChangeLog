@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.968 2011-04-24 17:12:23 jluis Exp $
+	$Id: ChangeLog,v 1.969 2011-04-25 00:15:26 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2011-04-24	remko
+	* GMT_App_N.sh:		Remove GMT_Appendix_N_1.tex when empty.
+	* gmt_grdio.c (GMT_grd_setregion):	Return value now 0, 1, 2 instead of 1, 0, 0;
+				Hence add ! before GMT_grd_setregion where it was used before.
+	* gmt_init.c:		Take care of translation from -S or -Q to common option -n.
+				
 2011-04-24	jluis
 	* grdimage_func.c:	Accepts to illuminate an image read via GDAL with an 
 				illumination grid computed with grdgradient.
@@ -9,7 +15,7 @@
 2011-04-23	pwessel
 	* example 28:		Now use clever smaller font-size for trailing 000s in UTM
 				annotation (thanks to Florian Wobbe).
-	* GMT_Docs.txt:		Use new GMT team group photo in the Acknowledgement pages.
+	* GMT_Frontmatter.tex:	Use new GMT team group photo in the Acknowledgement pages.
 
 2011-04-22	pwessel
 	* ALL:			Clarify we use GNU version 2 or any later version of license

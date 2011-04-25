@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.11 2011-04-23 03:53:35 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.12 2011-04-25 00:15:26 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -390,7 +390,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
-		if (GMT_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
+		if (!GMT_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "No grid values inside selected region - aborting\n");
 			Return (EXIT_FAILURE);
 		}

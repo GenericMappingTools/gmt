@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.11 2011-04-24 20:47:41 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.12 2011-04-25 00:15:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -353,7 +353,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 			if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
-			if (GMT_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
+			if (!GMT_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 				GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&GC[g].G);
 				Return (GMT_OK);

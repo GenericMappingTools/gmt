@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.165 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.166 2011-04-25 00:15:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1074,6 +1074,11 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 	 * - When the grid is pixel oriented, the limits need to go outward by another 0.5 cells
 	 * - When the region is global, do not extend the longitudes outward (otherwise you create wrap-around issues)
 	 * So to determine the boundary, we go inward from there.
+	 *
+	 * Return values are as follows:
+	 * 0 = Grid is entirely outside Region
+	 * 1 = Region is equal to or entirely inside Grid
+	 * 2 = All other
 	 */
 
 	GMT_LONG grid_global;
@@ -1122,7 +1127,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 		/* If North or South pole are within the map boundary, we need all longitudes but restrict latitudes */
 		if (!C->current.map.outside (C, 0.0, +90.0)) wesn[XLO] = h->wesn[XLO], wesn[XHI] = h->wesn[XHI], wesn[YHI] = h->wesn[YHI];
 		if (!C->current.map.outside (C, 0.0, -90.0)) wesn[XLO] = h->wesn[XLO], wesn[XHI] = h->wesn[XHI], wesn[YLO] = h->wesn[YLO];
-		return (0);
+		return (grid_global ? 1 : 2);
 	}
 
 	/* First set and check latitudes since they have no complications */
@@ -1131,7 +1136,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 
 	if (wesn[YHI] <= wesn[YLO]) {	/* Grid must be outside chosen -R */
 		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Your grid y's or latitudes appear to be outside the map region and will be skipped.\n");
-		return (1);
+		return (0);
 	}
 
 	/* Periodic grid with 360 degree range is easy */
@@ -1144,7 +1149,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 			while (wesn[XLO] < C->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
 			while (wesn[XHI] > C->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
 		}
-		return (0);
+		return (1);
 	}
 
 	/* Shift a geographic grid 360 degrees up or down to maximize the amount of longitude range */
@@ -1166,9 +1171,9 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 
 	if (wesn[XHI] <= wesn[XLO]) {	/* Grid is outside chosen -R in longitude */
 		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (grid_global ? 1 : 2);
 }
 
 GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HEADER *header)

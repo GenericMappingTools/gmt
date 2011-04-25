@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.9 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdvector_func.c,v 1.10 2011-04-25 00:15:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -332,7 +332,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Determine the wesn to be used to read the grid file */
 
-	if (GMT_grd_setregion (GMT, Grid[0]->header, wesn, BCR_BILINEAR)) {
+	if (!GMT_grd_setregion (GMT, Grid[0]->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
