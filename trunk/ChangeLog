@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.971 2011-04-25 00:57:26 jluis Exp $
+	$Id: ChangeLog,v 1.972 2011-04-25 16:55:07 remko Exp $
 -----------------------------------------------------------------------------------------
 				
+2011-04-25	remko
+	* grdimage_func.c:	Add half a cell at edge when projecting pixel grid.
+
 2011-04-25	jluis
-	* gmt_map.c		Removed GMT_grdproject_init in favor of GMT_project_init
+	* gmt_map.c:		Removed GMT_grdproject_init in favor of GMT_project_init
 				that takes as second input a GRD_HEADER pointer instead of
 				pointers to GMT_GRID or GMT_IMAGE containers.
 
@@ -20,7 +23,6 @@
 	* GMT_App_N.sh:		Remove GMT_Appendix_N_1.tex when empty.
 	* gmt_grdio.c (GMT_grd_setregion):	Return value now 0, 1, 2 instead of 1, 0, 0;
 				Hence add ! before GMT_grd_setregion where it was used before.
-	* gmt_init.c:		Take care of translation from -S or -Q to common option -n.
 				
 2011-04-24	jluis
 	* grdimage_func.c:	Accepts to illuminate an image read via GDAL with an 
