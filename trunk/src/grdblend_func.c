@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.15 2011-04-26 21:39:37 guru Exp $
+ *    $Id: grdblend_func.c,v 1.16 2011-04-26 23:57:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -46,6 +46,11 @@
 #define BLEND_LAST	3
 
 struct GRDBLEND_CTRL {
+	struct In {	/* Input files */
+		GMT_LONG active;
+		char **file;
+		GMT_LONG n;	/* If n > 1 we probably got *.grd or something */
+	} In;
 	struct G {	/* -G<grdfile> */
 		GMT_LONG active;
 		char *file;
@@ -80,10 +85,11 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	GMT_LONG in_j0, in_j1, out_j0, out_j1;		/* Indices of outer and inner y-coordinates (in output grid coordinates) */
 	GMT_LONG offset;				/* grid offset when the grid extends beyond north */
 	long skip;					/* Byte offset to skip in native binary files */
+	GMT_LONG ignore;				/* TRUE if the grid is entirely outside desired region */
 	GMT_LONG outside;				/* TRUE if the current output row is outside the range of this grid */
-	GMT_LONG invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
+	GMT_LONG invert;				/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
 	GMT_LONG open;					/* TRUE if file is currently open */
-	GMT_LONG delete;				/* TRUE if file was produced by grdsample to deal with different registartion/increments */
+	GMT_LONG delete;				/* TRUE if file was produced by grdsample to deal with different registration/increments */
 	char file[GMT_TEXT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
@@ -109,34 +115,61 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG n = 0, nr, one_or_zero = 0, n_alloc = 0, type, n_fields, do_sample, status;
+GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
+	GMT_LONG n = 0, nr, one_or_zero = 0, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
-	char *line = NULL, r_in[GMT_TEXT_LEN256], *sense[2] = {"normal", "inverse"};
+	char *sense[2] = {"normal", "inverse"};
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[BUFSIZ];
+	struct BLEND_LIST {
+		char *file;
+		char *region;
+		double weight;
+	} *L = NULL;
 
-	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
-	while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
-		if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;	/* Skip comment lines or blank lines */
-
-		if (n == n_alloc) n_alloc = GMT_malloc (GMT, B, n, n_alloc, struct GRDBLEND_INFO);
-		GMT_memset (&B[n], 1, struct GRDBLEND_INFO);	/* Initialize memory */
-		nr = sscanf (line, "%s %s %lf", B[n].file, r_in, &B[n].weight);
-		if (nr < 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
-			return (EXIT_FAILURE);
+	if (n_files > 1) {	/* Got a bunch of grid files */
+		L = GMT_memory (GMT, NULL, n_files, struct BLEND_LIST);
+		for (n = 0; n < n_files; n++) {
+			L[n].file = strdup (files[n]);
+			L[n].region = strdup ("-");	/* inner == outer region */
+			L[n].weight = 1.0;		/* Default weight */
 		}
+	}
+	else {	/* Must read blend file */
+		GMT_LONG n_alloc = 0;
+		char *line = NULL, r_in[GMT_TEXT_LEN256], file[GMT_TEXT_LEN256];
+		double weight;
+		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
+		while ((n_fields = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, (void **)&line)) != EOF) {	/* Keep returning records until we have no more files */
+			if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;	/* Skip comment lines or blank lines */
+			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
+			if (nr < 1) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
+				return (EXIT_FAILURE);
+			}
+			if (n == n_alloc) n_alloc = GMT_malloc (GMT, L, n, n_alloc, struct BLEND_LIST);
+			L[n].file = strdup (file);
+			L[n].region = strdup (r_in);
+			L[n].weight = (nr == 1) ? 1.0 : weight;	/* Default weight if not given */
+			n++;
+		}
+		GMT_reset_meminc (GMT);
+		n_files = n;
+	}
+	
+	B = GMT_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
+	
+	for (n = 0; n < n_files; n++) {	/* Process each input grid */
+		strcpy (B[n].file, L[n].file);
 		GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Read header structure */
-		if (nr == 1 || !strcmp (r_in, "-")) {	/* Set inner = outer region */
-			B[n].wesn[XLO] = B[n].G.header.wesn[XLO];	B[n].wesn[XHI] = B[n].G.header.wesn[XHI];
-			B[n].wesn[YLO] = B[n].G.header.wesn[YLO];	B[n].wesn[YHI] = B[n].G.header.wesn[YHI];
-		}
-		else	/* Must decode the -R string */
-			decode_R (GMT, &r_in[2], B[n].wesn);	/* Decode inner region */
-		if (nr == 1) B[n].weight = 1.0;	/* Default weight if not given */
+		B[n].weight = L[n].weight;
+		if (!strcmp (L[n].region, "-"))
+			GMT_memcpy (B[n].wesn, B[n].G.header.wesn, 4, double);	/* Set inner = outer region */
+		else
+			decode_R (GMT, &L[n].region[2], B[n].wesn);	/* Must decode the -R string */
 		/* Skip the file if its outer region does not lie within the final grid region */
 		if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside final grid region (skipped)\n", B[n].file);
+			B[n].ignore = TRUE;
 			continue;
 		}
 
@@ -225,21 +258,23 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GRDB
 			B[n].G.header.name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
 		GMT_close_grd (GMT, &B[n].G);
-
-		n++;
 	}
 
-	n_alloc = GMT_malloc (GMT, B, 0, n, struct GRDBLEND_INFO);
+	for (n = 0; n < n_files; n++) {
+		free ((void *)L[n].file);
+		free ((void *)L[n].region);
+	}
+	GMT_free (GMT, L);
 	*blend = B;
-	GMT_reset_meminc (GMT);
 
-	return (n);
+	return (n_files);
 }
 
 void sync_input_rows (struct GMT_CTRL *GMT, GMT_LONG row, struct GRDBLEND_INFO *B, GMT_LONG n_blend, double half) {
 	GMT_LONG k;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
+		if (B[k].ignore) continue;
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = TRUE;
 			if (B[k].open) {
@@ -294,7 +329,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdblend %s [API] - Blend several partially over-lapping grid files onto one grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdblend [<blendfile>] -G<grdfile> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: grdblend [<blendfile> | <grd1> <grd2> ...] -G<grdfile> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W] [-Z<scale>]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -305,6 +340,8 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region.\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
 	GMT_message (GMT, "\t   If only filename is given we interpret that as if filename - 1.0 was given.\n");
+	GMT_message (GMT, "\tAlternatively, if all grids have the same weight (1) and inner region should equal the outer,\n");
+	GMT_message (GMT, "\tthen you can instead list all the grid files on the command line (e.g., patches_*.nc).\n");
 	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
@@ -333,7 +370,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, err;
+	GMT_LONG n_errors = 0, n_alloc = 0, err;
 	char type;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -342,6 +379,9 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+				Ctrl->In.active = TRUE;
+				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = GMT_memory (GMT, Ctrl->In.file, n_alloc, char *);
+				Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
@@ -455,12 +495,18 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if (Ctrl->In.n == 1) {	/* Got a blend file */
+		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
+		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	}
 
-	n_blend = init_blend_job (GMT, &S.header, &blend);
+	n_blend = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
 
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (Ctrl->In.n > 1) {	/* Free some memory */
+		for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]);
+		GMT_free (GMT, Ctrl->In.file);
+	}
+	else if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (Ctrl->W.active && n_blend > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Only applies when there is a single input grid file\n");

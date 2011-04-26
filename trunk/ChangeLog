@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.982 2011-04-26 21:34:07 remko Exp $
+	$Id: ChangeLog,v 1.983 2011-04-26 23:57:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-26	pwessel
+	* grdblend_func.c:	Can now take a list of grids (e.g., *.nc) instead of the
+				blendfile when all weights should be 1 and the interior
+				region should be set to the gridfile region.
 
 2011-04-26	remko
 	* test/grdview/cuerpo.sh:	New test based on query by Eduardo Suarez.
