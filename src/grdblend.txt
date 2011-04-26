@@ -3,7 +3,7 @@
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS
-BD(grdblend) IT(blendfile) OPT(G)IT(grdfile) GMT_I_OPT GMT_Rgeo_OPT 
+BD(grdblend) [ IT(blendfile) | IT(grd1) IT(grd2) ... ] OPT(G)IT(grdfile) GMT_I_OPT GMT_Rgeo_OPT 
 [ OPT(C)BD(f)|BD(l)|BD(o)|BD(u) ] [ OPT(N)IT(nodata) ] [ OPT(Q) ] [ OPT(Z)IT(scale) ] 
 [ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
@@ -25,6 +25,9 @@ However, if a negative IT(wr) is given then the sense of tapering is inverted (i
 domain).  If the inner region should instead exactly match the grid region then specify a - instead of the OPT(R)-setting.
 Finally, if only a gridfile name is found we will use the grid domain as inner region and set weight to 1.
 If the ASCII file is not given BD(grdblend) will read standard input.
+Alternatively, if you have more than one grid file to blend and you wish (a) all input grids to have the same
+weight (1) and (b) all grids should use their region as the interior region, then you may simply list all
+the grids on the command line instead of providing a IT(blendfile).
 .TP
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the binary output grid file.
@@ -77,6 +80,12 @@ Then run
 .br
 .sp
 BD(grdblend) blend.job OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> BD(-V)
+.br
+.sp
+To blend all the grids called MB_*.nc given them all equal weight, try
+.br
+.sp
+BD(grdblend) MB_*.nc OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> BD(-V)
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2xyz (1),
