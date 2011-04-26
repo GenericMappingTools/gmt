@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.20 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_gdalread.h,v 1.21 2011-04-26 14:42:54 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,6 +20,25 @@
 #include "ogr_srs_api.h"
 #include "cpl_string.h"
 #include "cpl_conv.h"
+
+/* Structure to control which options are transmited to GMT_gdalwrite */
+struct GDALWRITE_CTRL {
+	char	*driver;
+	char	*type;
+	double	ULx, ULy;
+	double	x_inc, y_inc;
+	int	geog;
+	int	nx, ny;
+	int	n_bands;
+	int	flipud;
+	int	registration;
+	void	*data;
+	struct GD_C {	/* Color map */
+		int active;
+		int n_colors;
+		float *cpt;
+	} C;
+};
 
 /* Structure to control which options are transmited to GMT_gdalread */
 struct GDALREAD_CTRL {
