@@ -199,6 +199,7 @@ for all GMT programs.  No space between the option flag and the associated argum
 #include "explain_-g_full.txt"
 #include "explain_-h_full.txt"
 #include "explain_-icols_full.txt"
+#include "explain_-n_full.txt"
 #include "explain_-ocols_full.txt"
 #include "explain_perspective_full.txt"
 #include "explain_nodereg_full.txt"
