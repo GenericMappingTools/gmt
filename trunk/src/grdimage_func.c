@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.29 2011-04-26 02:40:01 remko Exp $
+ *	$Id: grdimage_func.c,v 1.30 2011-04-26 14:45:41 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -41,10 +41,18 @@ struct GRDIMAGE_CTRL {
 		char *file;
 	} C;
 #ifdef USE_GDAL
-	struct D {	/* -D to read gdal file */
+	struct D {	/* -D to read GDAL file */
 		GMT_LONG active;
 		GMT_LONG mode;	/* Use info of -R option to reference image */
 	} D;
+	struct F {	/* -D to write a GDAL file */
+		GMT_LONG active;
+		char *file;
+	} F;
+	struct d {	/* -d to set the GDAL diver */
+		GMT_LONG active;
+		char *driver;
+	} d;
 #endif
 	struct E {	/* -Ei|<dpi> */
 		GMT_LONG active;
@@ -168,6 +176,14 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 			case 'D':	/* Get via GDAL */
 				Ctrl->D.active = TRUE;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
+				break;
+			case 'F':	/* Get image file name to write via GDAL */
+				Ctrl->F.active = TRUE;
+				Ctrl->F.file = strdup (opt->arg);
+				break;
+			case 'd':	/* Get GDAL driver name */
+				Ctrl->d.active = TRUE;
+				Ctrl->d.driver = strdup (opt->arg);
 				break;
 #endif
 			case 'E':	/* Sets dpi */
@@ -342,6 +358,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
+	struct GDALWRITE_CTRL *to_GDALW = NULL;
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -411,6 +428,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (I->ProjRefPROJ4 != NULL) GMT_report (GMT, GMT_MSG_NORMAL, "Data projection (Proj4 type)\n\t%s\n", I->ProjRefPROJ4);
 
 		header_work = I->header;	/* OK, that's what what we'll use to send to GMT_grd_setregion */
+	}
+	if ( (Ctrl->d.active && !Ctrl->F.active) || (!Ctrl->d.active && Ctrl->F.active) ) {
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -d implies -F and vice-versa.\n");
+		if (Intens_orig) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
+		Return (EXIT_FAILURE);
 	}
 #endif
 
@@ -769,6 +791,30 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	dx = GMT_get_inc (header_work->wesn[XLO], header_work->wesn[XHI], header_work->nx, header_work->registration);
 	dy = GMT_get_inc (header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);
 
+#ifdef USE_GDAL
+	if (Ctrl->d.active) {
+		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
+		to_GDALW->driver = Ctrl->d.driver;
+		to_GDALW->type = strdup("byte");
+		to_GDALW->flipud = 0;
+		to_GDALW->geog = 0;
+		to_GDALW->nx = (int)nx;
+		to_GDALW->ny = (int)ny;
+		to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
+		to_GDALW->registration = 1;
+		if (!need_to_project) {
+			to_GDALW->ULx = GMT->common.R.wesn[XHI];
+			to_GDALW->ULy = GMT->common.R.wesn[YHI];
+		}
+		else {
+			to_GDALW->ULx = Img_proj->header->wesn[XHI];	/* OK, this is still wrong because coordinates are not projected ones */
+			to_GDALW->ULy = Img_proj->header->wesn[YHI];
+		}
+		to_GDALW->x_inc = dx;
+		to_GDALW->y_inc = dy;
+	}
+#endif
+
 	/* Set lower left position of image on map */
 
 	x0 = header_work->wesn[XLO];	y0 = header_work->wesn[YLO];
@@ -782,7 +828,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Creating PostScript image ");
 
-	if (P && P->is_gray) for (kk = 0, P->is_bw = TRUE; P->is_bw && kk < nm; kk++) if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = FALSE;
+	if (P && P->is_gray) 
+		for (kk = 0, P->is_bw = TRUE; P->is_bw && kk < nm; kk++) 
+			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = FALSE;
 
 	if (P && P->is_bw) {	/* Can get away with 1 bit image */
 		GMT_LONG nx8, shift, b_or_w, nx_pixels, k8;
@@ -830,9 +878,16 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, bitimage_8);
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "24-bit color image\n");
+#ifdef USE_GDAL
+		if (Ctrl->d.active) {
+			to_GDALW->data = (void *)bitimage_24;
+			GMT_gdalwrite(GMT, Ctrl->F.file, to_GDALW);
+		}
+		else
+#endif
 		PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_24, (Ctrl->Q.active ? -1 : 1) * 
 				    nx, ny, (Ctrl->E.device_dpi ? -24 : 24));
+
 		GMT_free (GMT, bitimage_24);
 	}
 
@@ -859,6 +914,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_free_image (GMT, &Img_proj, TRUE);
 		else
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Img_proj);
+	}
+	if (Ctrl->d.active) {
+		GMT_free (GMT, to_GDALW);
+		free((void *)Ctrl->d.driver);
+		free((void *)Ctrl->F.file);
 	}
 #endif
 
