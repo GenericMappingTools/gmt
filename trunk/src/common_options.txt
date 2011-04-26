@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: common_options.txt,v 1.31 2011-04-25 16:40:21 remko Exp $
+ *	$Id: common_options.txt,v 1.32 2011-04-26 00:34:39 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,7 +70,7 @@
 #define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(nrec)]
 #define GMT_ho_OPT	OPT(ho)[IT(nrec)]
 #define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)],IT(...)]
-#define GMT_n_OPT	OPT(n)[BD(b)|BD(c)|BD(l)|BD(n)][BD(+a)][BD(+b)/IT(BC)][BD(+t)/IT(threshold)]
+#define GMT_n_OPT	OPT(n)[BD(b)|BD(c)|BD(l)|BD(n)][BD(+a)][BD(+b)IT(BC)][BD(+t)IT(threshold)]
 #define GMT_o_OPT	OPT(o)IT(cols)[,IT(...)]
 #define GMT_p_OPT	OPT(p)IT(azim)/IT(elev)[/IT(zlevel)][BD(+w)IT(lon0)/IT(lat0)[/IT(z0)]][BD(+v)IT(x0)/IT(y0)]
 #define GMT_r_OPT	OPT(r)
