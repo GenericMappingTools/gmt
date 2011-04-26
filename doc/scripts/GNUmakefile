@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2011-04-23 02:14:12 guru Exp $
+#	$Id: GNUmakefile,v 1.1 2011-04-26 00:15:18 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -69,7 +69,7 @@ DOCPS= GMT_App_E.ps $(APP_F_PS) GMT_App_G.ps $(APP_J_PS) \
 	GMT_-B_time1.ps GMT_-B_time2.ps GMT_-B_time3.ps \
 	GMT_-B_time4.ps GMT_-B_time5.ps GMT_-B_time6.ps GMT_-B_time7.ps \
 	GMT_-B_pow.ps GMT_utm_zones.ps \
-	GMT_-J.ps GMT_-OK.ps GMT_-P.ps GMT_-R.ps GMT_-U.ps \
+	GMT_-J.ps GMT_-OK.ps GMT_-P.ps GMT_-R.ps \
 	GMT_-XY.ps GMT_registration.ps \
 	GMT_Defaults_1a.ps GMT_Defaults_1b.ps GMT_Defaults_1c.ps GMT_volcano.ps \
 	GMT_color_interpolate.ps $(SQRT_PS) GMT_linear_cal.ps GMT_linear_d.ps GMT_polar.ps \
@@ -85,11 +85,17 @@ DOCPS= GMT_App_E.ps $(APP_F_PS) GMT_App_G.ps $(APP_J_PS) \
 	GMT_stereographic_rect.ps GMT_stereonets.ps GMT_transverse_merc.ps \
 	GMT_winkel.ps $(RGBPS)
 
-PS	= $(ALLPS) $(DOCPS) $(TUTPS) $(APIPS)
+# PS files that should not be tested
+NOPS=	GMT_-U.ps
 
-# Test if plots are OK
+PS	= $(ALLPS) $(DOCPS) $(TUTPS) $(APIPS) $(NOPS)
+TESTPS	= $(ALLPS) $(DOCPS) $(TUTPS) $(APIPS)
+
+all:	$(PS)
+
+# Test if plots are OK (excluding GMT_-U.ps)
 test tests doctests:	$(PS)
-	bash run_doc_tests.sh $(PS)
+	bash run_doc_tests.sh $(TESTPS)
 failed:	$(PS)
 	bash run_doc_tests.sh `cut -d: -f1 fail_count.d`
 
@@ -105,7 +111,7 @@ $(APP_F_PS):	GMT_App_F.sh
 $(APP_J_PS):	GMT_App_J.sh
 	$(MAKE) APP=J run_app
 
-$(APP_N_PS) GMT_Appendix_N_inc.tex:	GMT_App_N.sh
+$(APP_N_PS):	GMT_App_N.sh
 	$(MAKE) APP=N run_app
 
 $(APP_O_PS):	GMT_App_O.sh $(APP_O_PS:.ps=.sh)
@@ -122,7 +128,7 @@ $(RGBPS):	GMT_RGBchart.sh
 $(DOCPS) $(TUTPS) $(APIPS):	functions.sh
 
 # How to run the scripts to make PS files
-.sh.ps:
+%.ps:	%.sh
 	bash $*.sh
 
 # Additional dependency for some graphs
