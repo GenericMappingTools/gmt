@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdimage.sh,v 1.13 2011-04-25 00:21:07 guru Exp $
+#	$Id: grdimage.sh,v 1.14 2011-04-26 02:34:54 remko Exp $
 
 . ../functions.sh
 header "Test grdimage for grid and pixel plots"
@@ -15,7 +15,7 @@ grdmath $* -I1 X Y 0.2 MUL ADD = t.nc
 
 label () {
 pstext -R -J -N -F+f10p+jBR -O -K <<%
--1.4 1.5 xyz2grd $1
+-1.4 1.5 grdmath $1
 -1.4 1.0 grdimage $2
 %
 }
