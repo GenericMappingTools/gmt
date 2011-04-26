@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.176 2011-04-26 21:39:37 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.177 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		if (val < 0) return (val);
 		header->type = val;
 	}
-	if (header->type == GMT_grd_format_decoder (C, "af")) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
+	if (header->type == GMT_GRD_IS_AF) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
 	return (GMT_NOERROR);
 }
 

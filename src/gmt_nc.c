@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.101 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_nc.c,v 1.102 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -52,7 +52,7 @@ EXTERN_MSC GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_H
 GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
-	int ncid, z_id = -1, j = 0, id = 13, nvars, ndims, err;
+	int ncid, z_id = -1, j = 0, nvars, ndims, err;
 	nc_type z_type;
 	char varname[GRD_VARNAME_LEN80];
 
@@ -85,10 +85,16 @@ GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 
 	GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
-	id += ((z_type == NC_BYTE) ? 2 : z_type);
+	switch (z_type) {
+		case NC_BYTE:	header->type = GMT_GRD_IS_NB; break;
+		case NC_SHORT:	header->type = GMT_GRD_IS_NS; break;
+		case NC_INT:	header->type = GMT_GRD_IS_NI; break;
+		case NC_FLOAT:	header->type = GMT_GRD_IS_NF; break;
+		case NC_DOUBLE:	header->type = GMT_GRD_IS_ND; break;
+		default:		header->type = GMT_GRDIO_UNKOWN_TYPE; break;
+	}
 	nc_close (ncid);
-	header->type = id;
-	return (id);
+	return (header->type);
 }
 
 void GMT_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units)
@@ -220,7 +226,14 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Get the z data type and determine its dimensions */
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		GMT_err_trap (nc_inq_vardimid (ncid, z_id, dims));
-		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
+		switch (z_type) {
+			case NC_BYTE:	header->type = GMT_GRD_IS_NB; break;
+			case NC_SHORT:	header->type = GMT_GRD_IS_NS; break;
+			case NC_INT:	header->type = GMT_GRD_IS_NI; break;
+			case NC_FLOAT:	header->type = GMT_GRD_IS_NF; break;
+			case NC_DOUBLE:	header->type = GMT_GRD_IS_ND; break;
+			default:		header->type = GMT_GRDIO_UNLNOWN_TYPE; break;
+		}
 
 		/* Get the ids of the x and y (and depth and time) coordinate variables */
 		for (i = 0; i < ndims; i++) {
@@ -249,19 +262,13 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		GMT_err_trap (nc_def_dim (ncid, coord, (size_t) header->ny, &dims[0]));
 		GMT_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
 
-		switch (GMT_grdformats[header->type][1]) {
-			case 'b':
-				z_type = NC_BYTE; break;
-			case 's':
-				z_type = NC_SHORT; break;
-			case 'i':
-				z_type = NC_INT; break;
-			case 'f':
-				z_type = NC_FLOAT; break;
-			case 'd':
-				z_type = NC_DOUBLE; break;
-			default:
-				z_type = NC_NAT;
+		switch (header->type) {
+			case GMT_GRD_IS_NB: z_type = NC_BYTE; break;
+			case GMT_GRD_IS_NS: z_type = NC_SHORT; break;
+			case GMT_GRD_IS_NI: z_type = NC_INT; break;
+			case GMT_GRD_IS_NF: z_type = NC_FLOAT; break;
+			case GMT_GRD_IS_ND: z_type = NC_DOUBLE; break;
+			default: z_type = NC_NAT;
 		}
 
 		/* Variable name is given, or defaults to "z" */
@@ -557,22 +564,22 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 
-	switch (GMT_grdformats[header->type][1]) {
-		case 'b':
+	switch (header->type) {
+		case GMT_GRD_IS_NB:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5, limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
-		case 's':
+		case GMT_GRD_IS_NS:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5, limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
-		case 'i':
+		case GMT_GRD_IS_NI:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5, limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
-		case 'f':
+		case GMT_GRD_IS_NF:
 			z_type = NC_FLOAT; break;
-		case 'd':
+		case GMT_GRD_IS_ND:
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;

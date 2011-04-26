@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.22 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.23 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		}
 	}
 
-	header->type = GMT_grd_format_decoder (C, "ei");
+	header->type = GMT_GRD_IS_EI;
 	return (header->type);
 }
 
