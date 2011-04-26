@@ -1,4 +1,4 @@
-#	$Id: common.mk,v 1.8 2011-04-23 02:14:12 guru Exp $
+#	$Id: common.mk,v 1.9 2011-04-26 17:52:48 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,7 +24,7 @@
 #
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #
-#	Date:		01-NOV-2006
+#	Date:		01-MAY-2011
 #-------------------------------------------------------------------------------
 #	GMTSRCDIR must be initialized before including this file
 #	Set GMTSRCDIR to blank in main and ../ in supplements
@@ -33,8 +33,6 @@
 # Source include files:
 
 GMT_H	= $(GMTSRCDIR)gmt.h \
-	  $(GMTSRCDIR)gmt_bcr.h \
-	  $(GMTSRCDIR)gmt_boundcond.h \
 	  $(GMTSRCDIR)gmt_calclock.h \
 	  $(GMTSRCDIR)gmt_colors.h \
 	  $(GMTSRCDIR)gmt_common.h \

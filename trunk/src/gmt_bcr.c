@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.18 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.19 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ GMT_LONG gmt_brc_reject (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, do
 	return (0);	/* Good to use */
 }
 
-GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR *bcr, double xx, double yy, double wx[], double wy[])
+GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
 	GMT_LONG i, j, ij;
 	double x, y, wp, wq, w;
@@ -106,10 +106,10 @@ GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
-	x = (xx - h->wesn[XLO]) * bcr->rx_inc - bcr->offset;
-	y = (h->wesn[YHI] - yy) * bcr->ry_inc - bcr->offset;
+	x = (xx - h->wesn[XLO]) * h->r_inc[GMT_X] - h->xy_off;
+	y = (h->wesn[YHI] - yy) * h->r_inc[GMT_Y] - h->xy_off;
 
-	if (bcr->interpolant == BCR_NEARNEIGHBOR) {
+	if (h->bcr_interpolant == BCR_NEARNEIGHBOR) {
 		/* Find the indices (i,j) of the closest node. */
 		i = irint (x);
 		j = irint (y);
@@ -125,7 +125,7 @@ GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR 
 		y -= (double)j;
 
 		/* For 4x4 interpolants, move over one more cell to the upper left corner */
-		if (bcr->n == 4) { i--; j--; }
+		if (h->bcr_n == 4) { i--; j--; }
 	}
 
 	/* Normally, one would expect here a check on the value (i,j) to make sure that the
@@ -140,7 +140,7 @@ GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR 
 
 	/* Build weights */
 
-	switch (bcr->interpolant) {
+	switch (h->bcr_interpolant) {
 	case BCR_NEARNEIGHBOR:
 		wx[0] = wy[0] = 1.0;
 		break;
@@ -207,7 +207,7 @@ GMT_LONG gmt_brc_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_BCR 
 }
 
 /* MAIN FUNCTIONS */
-
+#if 0
 void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize interpolant and threshold */
@@ -220,13 +220,10 @@ void GMT_bcr_init (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG interpolan
 	else
 		bcr->n = 4;
 
-	/* Initialize rx_inc, ry_inc, and offset */
-	bcr->rx_inc = 1.0 / h->inc[GMT_X];
-	bcr->ry_inc = 1.0 / h->inc[GMT_Y];
-	bcr->offset = (h->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
 }
+#endif
 
-double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy, struct GMT_BCR *bcr)
+double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
@@ -241,11 +238,11 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 
 	/* Determine nearest node ij and set weights wx, wy */
 	
-	ij = gmt_brc_prep (C, G->header, bcr, xx, yy, wx, wy);
+	ij = gmt_brc_prep (C, G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
-	for (j = 0; j < bcr->n; j++) {
-		for (i = 0; i < bcr->n; i++) {
+	for (j = 0; j < G->header->bcr_n; j++) {
+		for (i = 0; i < G->header->bcr_n; i++) {
 			if (!GMT_is_fnan (G->data[ij+i])) {
 				w = wx[i] * wy[j];
 				retval += G->data[ij+i] * w;
@@ -254,10 +251,10 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 		}
 		ij += G->header->mx;
 	}
-	return ( ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) ? retval / wsum : C->session.d_NaN);
+	return ( ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) ? retval / wsum : C->session.d_NaN);
 }
 
-GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, struct GMT_BCR *bcr, unsigned char *z)
+GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
 {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
@@ -272,19 +269,19 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 
 	/* Determine nearest node ij and set weights wx wy */
 	
-	ij = gmt_brc_prep (C, G->header, bcr, xx, yy, wx, wy);
+	ij = gmt_brc_prep (C, G->header, xx, yy, wx, wy);
 
 	GMT_memset (retval, 4, double);
 	wsum = 0.0;
-	for (j = 0; j < bcr->n; j++) {
-		for (i = 0; i < bcr->n; i++) {
+	for (j = 0; j < G->header->bcr_n; j++) {
+		for (i = 0; i < G->header->bcr_n; i++) {
 			w = wx[i] * wy[j];
 			wsum += w;
 			for (b = 0; b < nb; b++) retval[b] += G->data[nb*(ij+i)+b] * w;
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV_LIMIT - bcr->threshold) > 0.0) {	/* OK to evaluate result */
+	if ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
 			z[b] = (unsigned char) irint (GMT_0_255_truncate (retval[b]));

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.20 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdview_func.c,v 1.21 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -558,8 +558,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GRDVIEW_CONT *start_cont = NULL, *this_cont = NULL, *last_cont = NULL;
 	struct GRDVIEW_POINT *this_point = NULL, *last_point = NULL;
 	struct GMT_GRID *Drape[3] = {NULL, NULL, NULL}, *Topo = NULL, *Intens = NULL, *Z = NULL;
-	struct GMT_EDGEINFO edgeinfo;
-	struct GMT_BCR t_bcr, i_bcr;
 	struct GRDVIEW_BIN *binij = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GRDVIEW_CTRL *Ctrl = NULL;
@@ -583,8 +581,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
-	GMT_boundcond_init (GMT, &edgeinfo);
-	if (GMT->common.n.active) GMT_boundcond_parse (GMT, &edgeinfo, GMT->common.n.BC);
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
@@ -657,8 +653,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else
 		Z = Topo;
-
-	GMT_boundcond_param_prep (GMT, Topo->header, &edgeinfo);
 
 	xval = GMT_memory (GMT, NULL, Topo->header->nx, double);
 	yval = GMT_memory (GMT, NULL, Topo->header->ny, double);
@@ -766,13 +760,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-
-	/* Initialize bcr stuff */
-	GMT_bcr_init (GMT, Topo->header, GMT->common.n.interpolant, GMT->common.n.threshold, &t_bcr);
-
-	/* Set boundary conditions  */
-
-	GMT_boundcond_grid_set (GMT, Topo, &edgeinfo);
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
@@ -926,7 +913,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (drape_resample) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Resampling illumination grid to drape grid resolution\n");
-			GMT_bcr_init (GMT, Intens->header, GMT->common.n.interpolant, GMT->common.n.threshold, &i_bcr);
 			ix = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, GMT_LONG);
 			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
@@ -936,7 +922,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (row, Z->header);
 			bin = 0;
 			GMT_grd_loop (Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
-				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row], &t_bcr);
+				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row]);
 				if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
@@ -945,7 +931,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					ix[bin] = MAX(0, MIN((GMT_LONG)floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi), last_i));
 					iy[bin] = MAX(0, MIN((GMT_LONG)floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi), last_j));
 				}
-				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row], &i_bcr);
+				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
 			}
 			GMT_free (GMT, x_drape);
@@ -1167,7 +1153,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (binij[bin].first_cont == NULL) continue;
 					for (this_cont = binij[bin].first_cont->next_cont; this_cont; this_cont = this_cont->next_cont) {
 						for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
-							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &t_bcr) : this_cont->value;
+							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
 							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
 							k++;
@@ -1293,7 +1279,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
 									xcont[k] = this_point->x;
 									ycont[k] = this_point->y;
-									zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &t_bcr) : this_cont->value;
+									zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k]) : this_cont->value;
 									if (GMT_is_dnan (zcont[k])) continue;
 									vcont[k] = this_cont->value;
 									k++;
@@ -1387,7 +1373,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
 								xcont[k] = this_point->x;
 								ycont[k] = this_point->y;
-								zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k], &t_bcr) : this_cont->value;
+								zcont[k] = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, xcont[k], ycont[k]) : this_cont->value;
 								if (GMT_is_dnan (zcont[k])) continue;
 								vcont[k] = this_cont->value;
 								k++;
@@ -1463,7 +1449,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					pen_set = FALSE;
 					for (this_cont = start_cont; Ctrl->W.contour && this_cont; this_cont = this_cont->next_cont) {
 						for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
-							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y, &t_bcr) : this_cont->value;
+							z_val = (Ctrl->G.active) ? GMT_get_bcr_z (GMT, Topo, (double)this_point->x, (double)this_point->y) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
 
 							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);

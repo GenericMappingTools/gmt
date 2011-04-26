@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.9 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -248,7 +248,7 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, struct GMT_EDGEINFO *edgeinfo, struct GMT_OPTION *options) {
+GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to redpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -261,8 +261,6 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
-
-	GMT_boundcond_init (GMT, edgeinfo);
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -417,7 +415,6 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	struct	XYZOKB_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gout = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct	GMT_EDGEINFO edgeinfo;
 
 	data = NULL, triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;
@@ -436,7 +433,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	GMT = GMT_begin_module (API, "GMT_xyzokb", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VR:", "", options))) Return (error);
 	Ctrl = (struct XYZOKB_CTRL *) New_xyzokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_xyzokb_parse (API, Ctrl, &edgeinfo, options))) Return (error);
+	if ((error = GMT_xyzokb_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the redpol main code ----------------------------*/
 
@@ -506,7 +503,6 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);
 	
-		GMT_boundcond_param_prep (GMT, Gout->header, &edgeinfo);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 

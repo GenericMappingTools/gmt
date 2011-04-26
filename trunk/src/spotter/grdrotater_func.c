@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.14 2011-04-25 16:43:55 remko Exp $
+ *	$Id: grdrotater_func.c,v 1.15 2011-04-26 17:52:49 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -315,8 +315,6 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TABLE *pol = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
-	struct GMT_EDGEINFO edgeinfo;
-	struct GMT_BCR bcr;
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *G = NULL, *G_rot = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;
@@ -366,19 +364,6 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read grid file\n");
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-
-		GMT_boundcond_init (GMT, &edgeinfo);
-		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
-	
-		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
-
-		/* Initialize bcr structure */
-
-		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
-
-		/* Set boundary conditions */
-
-		GMT_boundcond_grid_set (GMT, G, &edgeinfo);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
 	
@@ -494,7 +479,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 		xx -= 360.0;
 		while (xx < G->header->wesn[XLO]) xx += 360.0;	/* Make sure we deal with 360 issues */
-		G_rot->data[ij_rot] = (float)GMT_get_bcr_z (GMT, G, xx, yy, &bcr);
+		G_rot->data[ij_rot] = (float)GMT_get_bcr_z (GMT, G, xx, yy);
 	}	
 	
 	/* Also loop over original node locations to make sure the nearest nodes are set */

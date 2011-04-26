@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.46 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.47 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1185,12 +1185,13 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
-				if (size > I->header->size) return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
+				if (size > I->header->size) return (GMT_Report_Error (API, GMT_IMAGE_READ_ERROR));
 			}
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading image from file %s\n", (char *)(*S->ptr));
 			if (GMT_err_pass (API->GMT, GMT_read_image (API->GMT, (char *)(*S->ptr), I, S->wesn, 
 								API->GMT->current.io.pad, complex_mode), (char *)(*S->ptr))) 
-				return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
+				return (GMT_Report_Error (API, GMT_IMAGE_READ_ERROR));
+			if (GMT_err_pass (API->GMT, GMT_image_BC_set (API->GMT, I), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_IMAGE_BC_ERROR));	/* Set boundary conditions */
 			I->alloc_mode = GMT_ALLOCATED;
 			break;
 			
@@ -1395,6 +1396,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			if (GMT_err_pass (API->GMT, GMT_read_grd (API->GMT, (char *)(*S->ptr), G->header, G->data, S->wesn, 
 							API->GMT->current.io.pad, complex_mode), (char *)(*S->ptr))) 
 				return (GMT_Report_Error (API, GMT_GRID_READ_ERROR));
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), (char *)(*S->ptr))) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			G->alloc_mode = GMT_ALLOCATED;
 			break;
 			

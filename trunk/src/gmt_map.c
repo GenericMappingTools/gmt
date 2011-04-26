@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.288 2011-04-25 20:19:10 remko Exp $
+ *	$Id: gmt_map.c,v 1.289 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5864,7 +5864,7 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 }
 
 
-GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG inverse)
+GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O, GMT_LONG inverse)
 {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It requires the input grid to have 2 boundary rows/cols so that the bcr
@@ -5873,7 +5873,6 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	 *
 	 * I:	Grid and header with input grid on a padded grid with 2 extra rows/columns
 	 * O:	Grid and header for output grid, no padding needed (but allowed)
-	 * edgeinfo:	Structure with information about boundary conditions on input grid
 	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
 	 *
 	 * In addition, these settings (via -n) control interpolation:
@@ -5891,26 +5890,12 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	double x_proj, y_proj, z_int, inv_nz;
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
-	struct GMT_BCR bcr;
 
 	/* Only input grid MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_grd_project: Input grid does not have sufficient (2) padding\n");
 		GMT_exit (EXIT_FAILURE);
 	}
-
-	GMT_boundcond_param_prep (C, I->header, edgeinfo);	/* Init the BC parameters */
-
-	/* Initialize bcr structure:
-	   Threshold changed 10 Sep 07 by RS from 1.0 to <threshold> to allow interpolation closer to
-	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
-	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
-	   shaped hole the size of one cell. */
-	GMT_bcr_init (C, I->header, C->common.n.interpolant, C->common.n.threshold, &bcr);
-
-	/* Set boundary conditions  */
-
-	GMT_boundcond_grid_set (C, I, edgeinfo);
 
 	x_in  = GMT_memory (C, NULL, I->header->nx, double);
 	y_in  = GMT_memory (C, NULL, I->header->ny, double);
@@ -6009,7 +5994,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			z_int = GMT_get_bcr_z (C, I, x_proj, y_proj, &bcr);
+			z_int = GMT_get_bcr_z (C, I, x_proj, y_proj);
 
 			if (!C->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (float)z_int;
@@ -6039,7 +6024,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG inverse)
+GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *O, GMT_LONG inverse)
 {
 	/* Generalized image projection that deals with both interpolation and averaging effects.
 	 * It requires the input image to have 2 boundary rows/cols so that the bcr
@@ -6068,26 +6053,12 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
 	unsigned char z_int[4];
-	struct GMT_BCR bcr;
 
 	/* Only input image MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_img_project: Input image does not have sufficient (2) padding\n");
 		GMT_exit (EXIT_FAILURE);
 	}
-
-	GMT_boundcond_param_prep (C, I->header, edgeinfo);	/* Init the BC parameters */
-
-	/* Initialize bcr structure:
-	   Threshold changed 10 Sep 07 by RS from 1.0 to <threshold> to allow interpolation closer to
-	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
-	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
-	   shaped hole the size of one cell. */
-	GMT_bcr_init (C, I->header, C->common.n.interpolant, C->common.n.threshold, &bcr);
-
-	/* Set boundary conditions  */
-
-	GMT_boundcond_image_set (C, I, edgeinfo);
 
 	x_in  = GMT_memory (C, NULL, I->header->nx, double);
 	y_in  = GMT_memory (C, NULL, I->header->ny, double);
@@ -6190,7 +6161,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			GMT_get_bcr_img (C, I, x_proj, y_proj, &bcr, z_int);
+			GMT_get_bcr_img (C, I, x_proj, y_proj, z_int);
 
 			if (!C->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = z_int[b];

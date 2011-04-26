@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.210 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt.h,v 1.211 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,8 +125,6 @@ extern "C" {
 #include "gmt_io.h"		/* Defines structures and macros for table i/o */
 #include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_shore.h"		/* Defines structures used when reading shore database */
-#include "gmt_boundcond.h"	/* Boundary conditions for grids */
-#include "gmt_bcr.h"		/* Grid resampling functions */
 #include "gmt_calclock.h"	/* Calendar/time functions */
 #include "gmt_symbol.h"		/* Custom symbol functions */
 #include "gmt_contour.h"	/* Contour label structure and functions */

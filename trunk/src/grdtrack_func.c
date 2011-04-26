@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.14 2011-04-25 16:45:57 remko Exp $
+ *	$Id: grdtrack_func.c,v 1.15 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,10 +30,8 @@
 #define MAX_GRIDS BUFSIZ	/* Change and recompile if we need to sample more than BUFSIZ grids */
 
 struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
-	struct GMT_BCR bcr;
 	struct GMT_GRID *G;
-	struct GMT_EDGEINFO edgeinfo;
-	GMT_LONG type;
+	GMT_LONG type;	/* 0 = regular grid, 1 = img grid */
 };
 
 struct GRDTRACK_CTRL {
@@ -109,7 +107,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t     1 = img file w/ constraints coded, interpolate to get data at track.\n");
 	GMT_message (GMT, "\t     2 = img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
 	GMT_message (GMT, "\t     3 = img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	GMT_message (GMT, "\t   For mode 2|3 you may want to consider the -Q<threshold> setting.\n");
+	GMT_message (GMT, "\t   For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
 	GMT_message (GMT, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");
@@ -256,10 +254,10 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 		value[g] = GMT->session.d_NaN;	/* In case the point is outside only some of the grids */
 		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
 
-		while ((y < GC[g].G->header->wesn[YLO]) && (GC[g].edgeinfo.nyp > 0)) y += (GC[g].G->header->inc[GMT_Y] * GC[g].edgeinfo.nyp);
+		while ((y < GC[g].G->header->wesn[YLO]) && (GC[g].G->header->nyp > 0)) y += (GC[g].G->header->inc[GMT_Y] * GC[g].G->header->nyp);
 		if (y < GC[g].G->header->wesn[YLO]) continue;
 
-		while ((y > GC[g].G->header->wesn[YHI]) && (GC[g].edgeinfo.nyp > 0)) y -= (GC[g].G->header->inc[GMT_Y] * GC[g].edgeinfo.nyp);
+		while ((y > GC[g].G->header->wesn[YHI]) && (GC[g].G->header->nyp > 0)) y -= (GC[g].G->header->inc[GMT_Y] * GC[g].G->header->nyp);
 		if (y > GC[g].G->header->wesn[YHI]) continue;
 
 		if (GC[g].type == 1) {	/* This grid is in Mercator x/y units - must use Mercator x0, y0 */
@@ -273,14 +271,14 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, GMT_L
 				while (x < GC[g].G->header->wesn[XLO]) x += 360.0;
 			}
 		}
-		while ((x < GC[g].G->header->wesn[XLO]) && (GC[g].edgeinfo.nxp > 0)) x += (GC[g].G->header->inc[GMT_X] * GC[g].edgeinfo.nxp);
+		while ((x < GC[g].G->header->wesn[XLO]) && (GC[g].G->header->nxp > 0)) x += (GC[g].G->header->inc[GMT_X] * GC[g].G->header->nxp);
 		if (x < GC[g].G->header->wesn[XLO]) continue;
 
-		while ((x > GC[g].G->header->wesn[XHI]) && (GC[g].edgeinfo.nxp > 0)) x -= (GC[g].G->header->inc[GMT_X] * GC[g].edgeinfo.nxp);
+		while ((x > GC[g].G->header->wesn[XHI]) && (GC[g].G->header->nxp > 0)) x -= (GC[g].G->header->inc[GMT_X] * GC[g].G->header->nxp);
 		if (x > GC[g].G->header->wesn[XHI]) continue;
 
 		n_in++;	/* This point is inside the current grid's domain */
-		value[g] = GMT_get_bcr_z (GMT, GC[g].G, x, y, &GC[g].bcr);
+		value[g] = GMT_get_bcr_z (GMT, GC[g].G, x, y);
 
 		if (!GMT_is_dnan (value[g])) n_set++;	/* Count value results */
 	}
@@ -328,12 +326,6 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
 	
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
-		GMT_boundcond_init (GMT, &GC[g].edgeinfo);
-		if (GMT->common.n.active) GMT_boundcond_parse (GMT, &GC[g].edgeinfo, GMT->common.n.BC);
-		if (GC[g].edgeinfo.gn) {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-		}
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->G.file[g]), (void **)&GC[g].G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
@@ -355,20 +347,8 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		else {	/* Sandwell/Smith Mercator grids */
 			GC[g].G = GMT_create_grid (GMT);
 			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], TRUE);
-			if (GMT_360_RANGE (GC[g].G->header->wesn[XHI], GC[g].G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &GC[g].edgeinfo, "g");
-			GMT_boundcond_parse (GMT, &GC[g].edgeinfo, "g");
 			img_conv_needed = TRUE;
 		}
-		GMT_boundcond_param_prep (GMT, GC[g].G->header, &GC[g].edgeinfo);
-
-		/* Initialize bcr structure */
-
-		GMT_bcr_init (GMT, GC[g].G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &GC[g].bcr);
-
-		/* Set boundary conditions  */
-
-		GMT_boundcond_grid_set (GMT, GC[g].G, &GC[g].edgeinfo);
-
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	

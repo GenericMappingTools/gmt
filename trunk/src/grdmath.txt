@@ -4,7 +4,7 @@
 grdmath \- Reverse Polish Notation calculator for grid files
 .SH SYNOPSIS
 BD(grdmath) [ GMT_I_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] 
-[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ]
+[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]
 IT(operand) [ IT(operand) ] BD(OPERATOR) [ IT(operand) ] BD(OPERATOR) ... BD(=) IT(outgrdfile)
 .SH DESCRIPTION
 BD(grdmath) will perform operations like add, subtract, multiply, and divide
@@ -45,6 +45,7 @@ and BD(INSIDE).
 #include "explain_-g.txt"
 #include "explain_-h.txt"
 #include "explain_-icols.txt"
+#include "explain_-n.txt"
 #include "explain_nodereg.txt"
 Only used with OPT(R) OPT(I).
 #include "explain_help.txt"

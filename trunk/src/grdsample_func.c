@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.15 2011-04-25 16:45:10 remko Exp $
+ *	$Id: grdsample_func.c,v 1.16 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,8 +176,6 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	
 	double *lon = NULL, lat;
 
-	struct GMT_EDGEINFO edgeinfo;
-	struct GMT_BCR bcr;
 	struct GRDSAMPLE_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -200,8 +198,6 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	GMT_boundcond_init (GMT, &edgeinfo);
-	GMT_boundcond_parse (GMT, &edgeinfo, GMT->common.n.BC);
 
 	Gout = GMT_create_grid (GMT);
 	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
@@ -220,14 +216,13 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_set_grddim (GMT, Gout->header);
-	GMT_boundcond_param_prep (GMT, Gin->header, &edgeinfo);
 
 	if (GMT->common.R.active) {
-		if (!edgeinfo.nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {
+		if (!Gout->header->nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
-		else if (!edgeinfo.nyp && (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL)) {
+		else if (!Gout->header->nyp && (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
@@ -257,38 +252,31 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X] || Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval may lead to aliasing");
 	}
-	/* Initialize bcr structure */
-
-	GMT_bcr_init (GMT, Gin->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
-
-	/* Set boundary conditions  */
-
-	GMT_boundcond_grid_set (GMT, Gin, &edgeinfo);
 
 	/* Precalculate longitudes */
 
 	lon = GMT_memory (GMT, NULL, Gout->header->nx, double);
 	for (col = 0; col < Gout->header->nx; col++) {
 		lon[col] = GMT_grd_col_to_x (col, Gout->header);
-		if (!edgeinfo.nxp)
+		if (!Gout->header->nxp)
 			/* Nothing */;
 		else if (lon[col] > Gin->header->wesn[XHI])
-			lon[col] -= Gin->header->inc[GMT_X] * edgeinfo.nxp;
+			lon[col] -= Gin->header->inc[GMT_X] * Gout->header->nxp;
 		else if (lon[col] < Gin->header->wesn[XLO])
-			lon[col] += Gin->header->inc[GMT_X] * edgeinfo.nxp;
+			lon[col] += Gin->header->inc[GMT_X] * Gout->header->nxp;
 	}
 
 	/* Loop over input point and estinate output values */
 	
 	GMT_row_loop (Gout, row) {
 		lat = GMT_grd_row_to_y (row, Gout->header);
-		if (!edgeinfo.nyp)
+		if (!Gout->header->nyp)
 			/* Nothing */;
 		else if (lat > Gin->header->wesn[YHI])
-			lat -= Gin->header->inc[GMT_Y] * edgeinfo.nyp;
+			lat -= Gin->header->inc[GMT_Y] * Gout->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
-			lat += Gin->header->inc[GMT_Y] * edgeinfo.nyp;
-		GMT_col_loop (Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat, &bcr);
+			lat += Gin->header->inc[GMT_Y] * Gout->header->nyp;
+		GMT_col_loop (Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */

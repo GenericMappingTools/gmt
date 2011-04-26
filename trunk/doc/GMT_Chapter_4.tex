@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.138 2011-04-25 09:05:25 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.139 2011-04-26 17:52:48 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -950,7 +950,7 @@ The \Opt{i}\emph{columns} option allows you to specify which
 input file data columns to use and it what order.  By default, \GMT\ will
 read all the data columns in the file, starting with the first column.
 Using \Opt{i} modifies that process.  For instance, to use the 4th, 7th, and
-3rd data column as the required {it x,y,z} to \GMTprog{blockmean} you would
+3rd data column as the required {\it x,y,z} to \GMTprog{blockmean} you would
 specify \Opt{i}3,6,2 (since 0 is the first column).
 
 \subsection{Grid interpolation parameters: The \Opt{n} option}
@@ -963,10 +963,14 @@ of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
 \Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
 For programs that support it, antialiasing is by default on;
 optionally, append {\bf +a} to switch off antialiasing.
-Control boundary conditions by appending {\bf +b}{\it BC},
+By default, boundary conditions are set according to the grid type and extent.
+Change boundary conditions by appending {\bf +b}{\it BC},
 where {\it BC} is either {\bf g} for geographic boundary conditions
-or one (or both) of  {\bf x} and {\bf y} for periodic boundary
-conditions.  Finally, append {\bf +t}{\it threshold} to control
+or one (or both) of  {\bf n} and {\bf p} for natural or periodic boundary
+conditions, respectively.  Append {\bf x} or {\bf y} to only apply the condition
+in one dimension.  E.g., \Opt{nb+nxpy} would imply natural boundary conditions in
+the {\it x} direction and periodic conditions in the {\it y} direction.
+Finally, append {\bf +t}{\it threshold} to control
 how close to nodes with NaN the interpolation should go.  A
 {\it threshold} of 1.0 requires all (4 or 16) nodes involved in the
 interpolation to be non-NaN. 0.5 will interpolate about half way from a

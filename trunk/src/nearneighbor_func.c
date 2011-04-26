@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.9 2011-04-23 02:14:13 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.10 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,10 +50,6 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 		GMT_LONG active;
 		char *file;
 	} G;
-	struct L {	/* -L<flag> */
-		GMT_LONG active;
-		char mode[4];
-	} L;
 	struct N {	/* -N<sectors> */
 		GMT_LONG active;
 		GMT_LONG sectors, min_sectors;
@@ -157,7 +153,7 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_EDGEINFO *edgeinfo, struct GMT_OPTION *options)
+GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to nearneighbor and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -168,8 +164,6 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 	GMT_LONG n, n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-
-	GMT_boundcond_init (GMT, edgeinfo);
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -200,12 +194,19 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 					n_errors++;
 				}
 				break;
+#ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				if (opt->arg[0]) {
-					Ctrl->L.active = TRUE;
-					strncpy (Ctrl->L.mode, opt->arg, (size_t)4);
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+				/* We turn on geographic coordinates if -Lg is given by faking -fg */
+				/* But since GMT_parse_f_option is private to gmt_init and all it does */
+				/* in this case are 2 lines bellow we code it here */
+				if (!strcmp (GMT->common.n.BC, "g")) {
+					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 				}
 				break;
+#endif
 			case 'N':	/* Sectors */
 				Ctrl->N.active = TRUE;
 				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
@@ -238,7 +239,6 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
-	if (Ctrl->L.active && GMT_boundcond_parse (GMT, edgeinfo, Ctrl->L.mode)) n_errors++;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -258,7 +258,6 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 	struct NEARNEIGHBOR_NODE **grid_node = NULL;
 	struct NEARNEIGHBOR_POINT *point = NULL;
 	struct NEARNEIGHBOR_CTRL *Ctrl = NULL;
@@ -274,9 +273,9 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_nearneighbor", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "hinrs" GMT_OPT("FH"), options))) Return (error);
 	Ctrl = (struct NEARNEIGHBOR_CTRL *) New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_nearneighbor_parse (API, Ctrl, &edgeinfo, options))) Return (error);
+	if ((error = GMT_nearneighbor_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
@@ -294,8 +293,6 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	idx = 1.0 / Grid->header->inc[GMT_X];
 	idy = 1.0 / Grid->header->inc[GMT_Y];
-
-	GMT_boundcond_param_prep (GMT, Grid->header, &edgeinfo);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 
@@ -331,8 +328,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	x_width = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];		y_width = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
 	half_x_width = 0.5 * x_width;			half_y_width = 0.5 * y_width;
 	n = n_read = 0;
-	replicate_x = (edgeinfo.nxp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate column */
-	replicate_y = (edgeinfo.nyp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate row */
+	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate column */
+	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 
@@ -366,12 +363,12 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
 
 			jj = row;
-			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &edgeinfo, &wrap_180)) continue;	/* Outside y-range */
+			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
 
 			for (col = col_0 - d_col[jj]; col <= (col_0 + d_col[jj]); col++) {
 
 				ii = col;
-				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, &edgeinfo, wrap_180)) continue;	/* Outside x-range */ 
+				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
 
 				/* Here, (ii,jj) is index of a node (k) inside the grid */
 
@@ -387,8 +384,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				   For longitudes the dx obviously cannot exceed 180 (half_x_width)
 				   since we could then go the other direction instead.
 				*/
-				if (edgeinfo.nxp && fabs (dx) > half_x_width) dx -= copysign (x_width, dx);
-				if (edgeinfo.nyp && fabs (dy) > half_y_width) dy -= copysign (y_width, dy);
+				if (Grid->header->nxp && fabs (dx) > half_x_width) dx -= copysign (x_width, dx);
+				if (Grid->header->nyp && fabs (dy) > half_y_width) dy -= copysign (y_width, dy);
 
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
@@ -403,13 +400,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (ii == 0) 	/* Must replicate left to right column */
 						assign_node (GMT, &grid_node[k+x_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (ii == edgeinfo.nxp)	/* Must replicate right to left column */
+					else if (ii == Grid->header->nxp)	/* Must replicate right to left column */
 						assign_node (GMT, &grid_node[k-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (jj == 0)	/* Must replicate top to bottom row */
 						assign_node (GMT, &grid_node[k+y_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (jj == edgeinfo.nyp)	/* Must replicate bottom to top row */
+					else if (jj == Grid->header->nyp)	/* Must replicate bottom to top row */
 						assign_node (GMT, &grid_node[k-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}

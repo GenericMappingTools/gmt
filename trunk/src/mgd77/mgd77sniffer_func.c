@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.12 2011-04-25 00:04:09 remko Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.13 2011-04-26 17:52:49 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2885,18 +2885,7 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 
 		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, TRUE);
 	}
-
 	info->mx = info->G->header->nx + 4;
-	if (GMT_360_RANGE (info->G->header->wesn[XHI], info->G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &info->edgeinfo, "g");
-
-	GMT_boundcond_param_prep (GMT, info->G->header, &info->edgeinfo);
-
-	/* Initialize bcr structure with 2 row/col boundaries */
-
-	GMT_bcr_init (GMT, info->G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &info->bcr);
-
-	/* Set boundary conditions  */
-	GMT_boundcond_grid_set (GMT, info->G, &info->edgeinfo);
 }
 
 /* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
@@ -2929,14 +2918,14 @@ int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD7
 		}
 
 		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
-		while ((x < info->G->header->wesn[XLO]) && (info->edgeinfo.nxp > 0)) x += (info->G->header->inc[GMT_X] * info->edgeinfo.nxp);
+		while ((x < info->G->header->wesn[XLO]) && (info->G->header->nxp > 0)) x += (info->G->header->inc[GMT_X] * info->G->header->nxp);
 		if (x < info->G->header->wesn[XLO]) continue;  /* West of our area */
 
-		while ((x > info->G->header->wesn[XHI]) && (info->edgeinfo.nxp > 0)) x -= (info->G->header->inc[GMT_X] * info->edgeinfo.nxp);
+		while ((x > info->G->header->wesn[XHI]) && (info->G->header->nxp > 0)) x -= (info->G->header->inc[GMT_X] * info->G->header->nxp);
 		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
 
 		/* Get the value from the grid - it could be NaN */
-		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y, &info->bcr);
+		g[n_grid][rec] = GMT_get_bcr_z (GMT, info->G, x, y);
 		pts++;
 	}
 	return ((int)pts);

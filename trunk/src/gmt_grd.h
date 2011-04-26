@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.56 2011-04-25 21:33:01 remko Exp $
+ *	$Id: gmt_grd.h,v 1.57 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -58,8 +58,8 @@ struct GRD_HEADER {
 	GMT_LONG nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
 	GMT_LONG n_bands;		/* Number of bands. Used only with IMAGE containers and macros to get ij index from row,col, band */
 	GMT_LONG size;			/* Actual number of items required to hold this grid (mx * my) */
-	GMT_LONG pad[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
-	GMT_LONG BC[4];			/* Padding on west, east, south, north sides [0,0,0,0] */
+	GMT_LONG pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
+	GMT_LONG BC[4];			/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
@@ -68,9 +68,18 @@ struct GRD_HEADER {
 	int t_index[3];			/* NetCDF: index of higher coordinates */
 	int xy_dim[2];			/* NetCDF: dimension order of x and y; normally {1, 0} */
 	double nan_value;		/* Missing value as stored in grid file */
-	double xy_off;			/* 0.0 (registration == 0) or 0.5 ( == 1) */
+	double xy_off;			/* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
+	double r_inc[2];		/* Reciprocal incs, i.e. 1/inc */
 	char flags[4];			/* Flags used for ESRI grids */
 	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
+	GMT_LONG bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
+	GMT_LONG bcr_n;			/* Width of the interpolation function */
+	GMT_LONG nxp;			/* if X periodic, nxp > 0 is the period in pixels  */
+	GMT_LONG nyp;			/* if Y periodic, nxp > 0 is the period in pixels  */
+	GMT_LONG gn;			/* TRUE if top    edge will be set as N pole  */
+	GMT_LONG gs;			/* TRUE if bottom edge will be set as S pole  */
+	
 /* The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
 	double z_min;			/* Minimum z value */

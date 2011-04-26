@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-#	$Id: gmtapi_errors.d,v 1.2 2011-03-15 02:06:36 guru Exp $
+#	$Id: gmtapi_errors.d,v 1.3 2011-04-26 17:52:49 guru Exp $
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,7 @@ GMT_FILE_NOT_FOUND
 GMT_BAD_PERMISSION
 GMT_GRID_READ_ERROR
 GMT_GRID_WRITE_ERROR
+GMT_GRID_BC_ERROR
 GMT_DATA_READ_ERROR
 GMT_DATA_WRITE_ERROR
 GMT_N_COLS_VARY
@@ -72,3 +73,5 @@ GMT_NOT_A_VALID_IO_MODE
 GMT_ACCESS_NOT_ENABLED
 GMT_ARG_IS_NULL
 GMT_OGR_ONE_TABLE_ONLY
+GMT_IMAGE_READ_ERROR
+GMT_IMAGE_BC_ERROR

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.168 2011-04-25 21:31:53 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.169 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -479,6 +479,8 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	GMT_grd_do_scaling (grid, header->size, header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
+	GMT_BC_init (C, header);	/* Initialize grid interpolation and boundary condition parameters */
+	
 	return (GMT_NOERROR);
 }
 
@@ -934,6 +936,8 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->nm = GMT_grd_get_nm (h);		/* Sets the number of actual data items */
 	h->size = GMT_grd_get_size (C, h);	/* Sets the nm items needed to hold this array */
 	h->xy_off = 0.5 * h->registration;
+	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
+	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
 void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, GMT_LONG update)
@@ -1397,6 +1401,8 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 		GMT_memcpy (C->common.R.wesn, wesn, 4, double);
 		C->common.J.active = FALSE;
 	}
+	GMT_BC_init (C, Grid->header);	/* Initialize grid interpolation and boundary condition parameters */
+	GMT_grd_BC_set (C, Grid);	/* Set boundary conditions */
 	return (GMT_NOERROR);
 }
 
@@ -1458,8 +1464,8 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	nx1 = G->header->nx - 1;	/* Last column */
 	GMT_row_loop (G, row) {
 		kf = GMT_IJP (G->header, row,   0);				/* Index of first column this row  */
-		kl = GMT_IJ0 (G->header, row, nx1);				/* Index of last column this row */
-		for (k = 1; k <= G->header->pad[XLO]; k++) G->data[kf-k] = 0.0;	/* Zero the left pad at this row*/
+		kl = GMT_IJP (G->header, row, nx1);				/* Index of last column this row */
+		for (k = 1; k <= G->header->pad[XLO]; k++) G->data[kf-k] = 0.0;	/* Zero the left pad at this row */
 		for (k = 1; k <= G->header->pad[XHI]; k++) G->data[kl+k] = 0.0;	/* Zero the left pad at this row */
 	}
 	if (G->header->pad[YLO]) {
@@ -1745,6 +1751,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);
+	GMT_BC_init (C, I->header);	/* Initialize image interpolation and boundary condition parameters */
 
 	return (GMT_NOERROR);
 }

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.42 2011-03-15 02:06:37 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.43 2011-04-26 17:52:49 guru Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -94,8 +94,6 @@ struct BAD_SECTION {	/* To flag a range of records as bad for given field */
 
 struct MGD77_GRID_INFO {
 	struct GMT_GRID *G;
-	struct GMT_EDGEINFO edgeinfo;
-	struct GMT_BCR bcr;
 	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate, n_nan;
 	double scale, max_lat;
 	char abbrev[8];
