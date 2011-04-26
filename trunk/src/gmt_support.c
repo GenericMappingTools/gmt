@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.497 2011-04-26 22:11:22 guru Exp $
+ *	$Id: gmt_support.c,v 1.498 2011-04-26 22:38:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -9534,7 +9534,7 @@ GMT_LONG GMT_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			if (!ID[0]) sprintf (ID, "%*.*ld", ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
 			if (Tout->segment[seg]->header) free ((void *)Tout->segment[seg]->header);
-			sprintf (buffer, "> Segment label -L%s", ID);
+			sprintf (buffer, "Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
@@ -9597,7 +9597,7 @@ GMT_LONG GMT_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			if (!ID[0]) sprintf (ID, "%*.*ld", ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
 			if (Tout->segment[seg]->header) free ((void *)Tout->segment[seg]->header);
-			sprintf (buffer, "> Segment label -L%s", ID);
+			sprintf (buffer, "Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
