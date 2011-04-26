@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.494 2011-04-26 18:25:48 guru Exp $
+ *	$Id: gmt_support.c,v 1.495 2011-04-26 20:48:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -9606,7 +9606,7 @@ GMT_LONG GMT_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			if (!ID[0]) sprintf (ID, "%*.*ld", ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
 			if (Tout->segment[seg]->header) free ((void *)Tout->segment[seg]->header);
-			sprintf (buffer, "> Segment label -L%s\n", ID);
+			sprintf (buffer, "> Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
@@ -9669,7 +9669,7 @@ GMT_LONG GMT_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *
 			if (!ID[0]) sprintf (ID, "%*.*ld", ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
 			if (Tout->segment[seg]->header) free ((void *)Tout->segment[seg]->header);
-			sprintf (buffer, "> Segment label -L%s\n", ID);
+			sprintf (buffer, "> Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
 	}
@@ -9695,7 +9695,8 @@ GMT_LONG GMT_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	 * cross_length is the desired length of cross-profiles, in meters.
 	 * across_ds is the sampling interval to use along the cross-profiles.
 	 * n_cols sets how many data columns beyond x,y,d should be allocated.
-	 * Dout is the new data set with all the crossing profiles;
+	 * Dout is the new data set with all the crossing profiles; it will
+	 * have 4 + n_cols columns, where the first 4 are x,y,d,az.
 	 */
 
 	int ndig, sdig;
@@ -9799,7 +9800,7 @@ GMT_LONG GMT_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 						sprintf (ID, "%*.*ld-%*.*ld", sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "> Cross profile number -L%s at %8.3f/%07.3f az=%05.1f\n",
+				sprintf (buffer, "> Cross profile number -L%s at %8.3f/%07.3f az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
@@ -9901,7 +9902,7 @@ GMT_LONG GMT_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 						sprintf (ID, "%*.*ld-%*.*ld", sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "> Cross profile number -L%s at %g/%g az=%05.1f\n",
+				sprintf (buffer, "> Cross profile number -L%s at %g/%g az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 

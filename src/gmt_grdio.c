@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.171 2011-04-26 20:01:12 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.172 2011-04-26 20:48:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1339,6 +1339,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 	
+	GMT_report (C, GMT_MSG_NORMAL, "Reading img grid from file %s\n", imgfile);
 	GMT_grd_init (C, Grid->header, NULL, FALSE);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
 	
