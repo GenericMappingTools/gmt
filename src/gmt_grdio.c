@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.169 2011-04-26 17:52:48 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.170 2011-04-26 18:25:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -349,13 +349,14 @@ GMT_LONG GMT_grd_pad_status (struct GRD_HEADER *header, GMT_LONG *pad)
 	}
 }
 
-GMT_LONG GMT_padspace (struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, struct GRD_PAD *P)
+GMT_LONG GMT_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, struct GRD_PAD *P)
 {	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
+	GMT_LONG wrap, n_sides = 0;
 	double wesn2[4];
 	
 	/* First copy over original settings to the Pad structure */
@@ -369,17 +370,30 @@ GMT_LONG GMT_padspace (struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, s
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (FALSE);	/* No padding requested */
 	
 	/* Determine if data exist for a pad on all four sides.  If not we give up */
-	if ((wesn2[XLO] = wesn[XLO] - pad[XLO] * header->inc[GMT_X]) < header->wesn[XLO]) return (FALSE);
-	if ((wesn2[XHI] = wesn[XHI] + pad[XHI] * header->inc[GMT_X]) > header->wesn[XHI]) return (FALSE);
-	if ((wesn2[YLO] = wesn[YLO] - pad[YLO] * header->inc[GMT_Y]) < header->wesn[YLO]) return (FALSE);
-	if ((wesn2[YHI] = wesn[YHI] + pad[YHI] * header->inc[GMT_Y]) > header->wesn[YHI]) return (FALSE);
+	wrap = GMT_grd_is_global (C, header);	/* If global wrap then we cannot be outside */
+	if ((wesn2[XLO] = wesn[XLO] - pad[XLO] * header->inc[GMT_X]) < header->wesn[XLO] && !wrap)	/* Cannot extend west/xmin */
+		{ n_sides++; wesn2[XLO] = wesn[XLO]; }
+	else	/* OK to load left pad with data */
+		P->pad[XLO] = 0;
+	if ((wesn2[XHI] = wesn[XHI] + pad[XHI] * header->inc[GMT_X]) > header->wesn[XHI] && !wrap)	/* Cannot extend east/xmax */
+		{ n_sides++; wesn2[XHI] = wesn[XHI]; }
+	else	/* OK to load right pad with data */
+		P->pad[XHI] = 0;
+	if ((wesn2[YLO] = wesn[YLO] - pad[YLO] * header->inc[GMT_Y]) < header->wesn[YLO])	/* Cannot extend south/ymin */
+		{ n_sides++; wesn2[YLO] = wesn[YLO]; }
+	else	/* OK to load bottom pad with data */
+		P->pad[YLO] = 0;
+	if ((wesn2[YHI] = wesn[YHI] + pad[YHI] * header->inc[GMT_Y]) > header->wesn[YHI])	/* Cannot extend north/ymax */
+		{ n_sides++; wesn2[YHI] = wesn[YHI]; }
+	else	/* OK to load top pad with data */
+		P->pad[YHI] = 0;
+	if (n_sides == 4) return (FALSE);	/* No can do */
 	
-	/* Here we know that there is enough input data to fill the BC pad with actual data values */
+	/* Here we know that there is enough input data to fill some or all of the BC pad with actual data values */
+	/* We have temporarily set padding to zero (since the pad is now part of the region) for those sides we can extend */
 	
 	/* Temporarily enlarge the region so it now includes the padding we need */
 	GMT_memcpy (P->wesn, wesn2, 4, double);
-	/* Temporarily set padding to zero (since the pad is now part of the region) */
-	GMT_memset (P->pad, 4, GMT_LONG);
 	
 	return (TRUE);	/* Return TRUE so the calling function can take appropriate action */
 }
@@ -459,19 +473,19 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	GMT_LONG expand, err;
+	GMT_LONG expand, err, k;
 	struct GRD_PAD P;
 
-	expand = GMT_padspace (header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
+	expand = GMT_padspace (C, header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
 
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 	
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
-		header->nx -= (int)(pad[XLO] + pad[XHI]);
-		header->ny -= (int)(pad[YLO] + pad[YHI]);
+		header->nx -= (int)(P.pad[XLO] + P.pad[XHI]);
+		header->ny -= (int)(P.pad[YLO] + P.pad[YHI]);
 		GMT_memcpy (header->wesn, wesn, 4, double);
 		header->nm = GMT_get_nm (header->nx, header->ny);
-		GMT_setnval (header->BC, 4, GMT_BC_IS_DATA);
+		for (k = 0; k < 4; k++) if (P.pad[k] == 0) header->BC[k]= GMT_BC_IS_DATA;
 	}
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_grd_setpad (header, pad);		/* Copy the pad to the header */
@@ -1701,7 +1715,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 
-	expand = GMT_padspace (I->header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
+	expand = GMT_padspace (C, I->header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
 
 	/*GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, image, P.wesn, P.pad, complex_mode));*/
 
@@ -1738,11 +1752,11 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	I->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
-		I->header->nx -= (int)(pad[XLO] + pad[XHI]);
-		I->header->ny -= (int)(pad[YLO] + pad[YHI]);
+		I->header->nx -= (int)(P.pad[XLO] + P.pad[XHI]);
+		I->header->ny -= (int)(P.pad[YLO] + P.pad[YHI]);
 		GMT_memcpy (I->header->wesn, wesn, 4, double);
 		I->header->nm = GMT_get_nm (I->header->nx, I->header->ny);
-		GMT_setnval (I->header->BC, 4, GMT_BC_IS_DATA);
+		for (i = 0; i < 4; i++) if (P.pad[i] == 0) I->header->BC[i]= GMT_BC_IS_DATA;
 	}
 	GMT_grd_setpad (I->header, pad);	/* Copy the pad to the header */
 
