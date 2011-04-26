@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.177 2011-04-26 22:06:24 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.178 2011-04-26 22:11:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1369,7 +1369,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	Grid->header->wesn[XHI] = MIN (GMT_IMG_MAXLON, ceil (Grid->header->wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X]);
 	if (Grid->header->wesn[XLO] > Grid->header->wesn[XHI]) Grid->header->wesn[XLO] -= 360.0;
 	Grid->header->wesn[YLO] = MAX (0.0, floor (Grid->header->wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
-	Grid->header->wesn[YHI] = MIN (C->current.proj.rect[YHI], ceil (Grid->header->wesn[YHI] * Grid->header->r_inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
+	Grid->header->wesn[YHI] = MIN (C->current.proj.rect[YHI], ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
 	/* Allocate grid memory */
 
 	Grid->header->registration = GMT_PIXEL_REG;	/* These are always pixel grids */

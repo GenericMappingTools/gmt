@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.496 2011-04-26 21:39:37 guru Exp $
+ *	$Id: gmt_support.c,v 1.497 2011-04-26 22:11:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -9728,7 +9728,7 @@ GMT_LONG GMT_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 						sprintf (ID, "%*.*ld-%*.*ld", sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "> Cross profile number -L%s at %8.3f/%07.3f az=%05.1f",
+				sprintf (buffer, "Cross profile number -L%s at %8.3f/%07.3f az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 
