@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.14 2011-04-26 22:36:44 guru Exp $
+ *	$Id: grdmath_func.c,v 1.15 2011-04-26 22:53:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2973,7 +2973,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("IMNRVbfr", opt->option)) continue;
+		if (strchr ("IMNRVbfnr", opt->option)) continue;
 		/* if (opt->option == GMTAPI_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
@@ -3062,6 +3062,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				if (info.ASCII_file) free ((void *)info.ASCII_file);
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
+				alloc_mode[nstack] = 1;
 				info.ASCII_file = strdup (opt->arg);
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "(%s) ", opt->arg);
 			}
