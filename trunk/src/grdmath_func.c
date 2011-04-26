@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.13 2011-04-26 21:39:37 guru Exp $
+ *	$Id: grdmath_func.c,v 1.14 2011-04-26 22:36:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1494,8 +1494,12 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	struct GMT_TABLE *line = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	if (GMT_is_geographic (GMT, GMT_IN))	/* Spherical (in degrees) */
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical (in degrees) */
 		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
+#ifdef GMT_COMPAT
+		GMT_report (GMT, GMT_MSG_COMPAT, "Warning: LDIST returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n");
+#endif
+	}
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
@@ -1909,8 +1913,12 @@ void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	if (GMT_is_geographic (GMT, GMT_IN))	/* Spherical, in degrees */
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical, in degrees */
 		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
+#ifdef GMT_COMPAT
+		GMT_report (GMT, GMT_MSG_COMPAT, "Warning: PDIST returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n");
+#endif
+	}
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
