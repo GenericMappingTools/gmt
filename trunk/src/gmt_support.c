@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.491 2011-04-23 03:53:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.492 2011-04-26 02:40:01 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8643,55 +8643,6 @@ double GMT_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2,
 	if (direction < 0.0) direction += 360.0;
 	if (direction >= 360.0) direction -= 360.0;
 	return (direction);
-}
-
-GMT_LONG GMT_grid_clip_path (struct GMT_CTRL *C, struct GRD_HEADER *h, double **x, double **y, GMT_LONG *donut)
-{
-	/* This function returns a clip path corresponding to the
-	 * extent of the grid.
-	 */
-
-	GMT_LONG np, i, j, k;
-	double *work_x = NULL, *work_y = NULL;
-
-	*donut = FALSE;
-
-	if (GMT_IS_RECT_GRATICULE(C)) {	/* Where wesn are straight hor/ver lines */
-		np = 4;
-		work_x = GMT_memory (C, NULL, np, double);
-		work_y = GMT_memory (C, NULL, np, double);
-		GMT_geo_to_xy (C, h->wesn[XLO], h->wesn[YLO], &work_x[0], &work_y[0]);
-		GMT_geo_to_xy (C, h->wesn[XHI], h->wesn[YHI], &work_x[2], &work_y[2]);
-		if (work_x[0] < C->current.proj.rect[XLO]) work_x[0] = C->current.proj.rect[XLO];
-		if (work_x[2] > C->current.proj.rect[XHI]) work_x[2] = C->current.proj.rect[XHI];
-		if (work_y[0] < C->current.proj.rect[YLO]) work_y[0] = C->current.proj.rect[YLO];
-		if (work_y[2] > C->current.proj.rect[YHI]) work_y[2] = C->current.proj.rect[YHI];
-		work_x[3] = work_x[0];	work_x[1] = work_x[2];
-		work_y[1] = work_y[0];	work_y[3] = work_y[2];
-
-	}
-	else {	/* WESN are complex curved lines */
-
-		k = (h->registration == GMT_GRIDLINE_REG) ? 1 : 0;
-		np = 2 * (h->nx - k) + 2* (h->ny - k);
-		work_x = GMT_memory (C, NULL, np, double);
-		work_y = GMT_memory (C, NULL, np, double);
-		for (i = j = 0; i < h->nx - k; i++, j++)	/* South */
-			GMT_geo_to_xy (C, h->wesn[XLO] + i * h->inc[GMT_X], h->wesn[YLO], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->ny - k; i++, j++)	/* East */
-			GMT_geo_to_xy (C, h->wesn[XHI], h->wesn[YLO] + i * h->inc[GMT_Y], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->nx - k; i++, j++)	/* North */
-			GMT_geo_to_xy (C, h->wesn[XHI] - i * h->inc[GMT_X], h->wesn[YHI], &work_x[j], &work_y[j]);
-		for (i = 0; i < h->ny - k; i++, j++)	/* West */
-			GMT_geo_to_xy (C, h->wesn[XLO], h->wesn[YHI] - i * h->inc[GMT_Y], &work_x[j], &work_y[j]);
-	}
-
-	if (!(*donut)) np = GMT_compact_line (C, work_x, work_y, np, FALSE, (int *)0);
-
-	*x = work_x;
-	*y = work_y;
-
-	return (np);
 }
 
 double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level)

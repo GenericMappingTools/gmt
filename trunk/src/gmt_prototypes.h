@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.26 2011-04-25 00:48:28 jluis Exp $
+ *	$Id: gmt_prototypes.h,v 1.27 2011-04-26 02:40:01 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,8 +113,6 @@ EXTERN_MSC GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P);
 EXTERN_MSC GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_OPTION *options);
 EXTERN_MSC GMT_LONG GMT_PSL_Create_Session (struct GMT_CTRL *C, struct PSL_CTRL **P);
 EXTERN_MSC GMT_LONG GMT_PSL_Destroy_Session (struct GMT_CTRL *C, struct PSL_CTRL *P);
-EXTERN_MSC void GMT_grid_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GRD_HEADER *h, double rgb[], GMT_LONG flag);
-EXTERN_MSC void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P);
 #endif
 
 /* gmt_io.c: */
@@ -211,7 +209,6 @@ EXTERN_MSC GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[],
 EXTERN_MSC GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line);
 EXTERN_MSC char * GMT_make_filename (char *template, GMT_LONG fmt[], double z, GMT_LONG closed, GMT_LONG count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_grid_clip_path (struct GMT_CTRL *C, struct GRD_HEADER *h, double **x, double **y, GMT_LONG *donut);
 
 /* gmt_calclock.c: */
 

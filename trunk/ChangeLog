@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.975 2011-04-26 00:40:17 remko Exp $
+	$Id: ChangeLog,v 1.976 2011-04-26 02:40:01 remko Exp $
 -----------------------------------------------------------------------------------------
 				
 2011-04-25	remko
@@ -9,6 +9,7 @@
 	* gmt_grd.h:		Restrict GMT_is_subgrid to actual subgrids.
 	* gmt.txt:		Added -n option.
 	* explain_-n_full.txt:	Fixed typos, fixed wrong GMT_n_OPT
+	* gmt_plot.c, gmt_support.c:	Removed GMT_grid_clip_*.
 
 2011-04-25	jluis
 	* gmt_map.c:		Removed GMT_grdproject_init in favor of GMT_project_init

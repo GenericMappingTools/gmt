@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.318 2011-04-25 00:15:26 remko Exp $
+ *	$Id: gmt_plot.c,v 1.319 2011-04-26 02:40:01 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2116,33 +2116,6 @@ void GMT_vertical_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, GMT_LONG mode)
 	GMT_plane_perspective (C, P, old_plane, old_level);
 }
 
-void GMT_grid_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GRD_HEADER *h, double rgb[], GMT_LONG flag)
-{
-	/* This function sets up a clip path so that only plotting
-	 * inside the grid domain will be drawn on paper. map_setup
-	 * must have been called first.  If r >= 0, the map area will
-	 * first be painted in the r,g,b colors specified.  flag can
-	 * be 0-3, as described in PSL_beginclipping().
-	 */
-
-	GMT_LONG np, donut;
-	double *work_x = NULL, *work_y = NULL;
-
-	np = GMT_grid_clip_path (C, h, &work_x, &work_y, &donut);
-
-	PSL_comment (P, "Activate Grid clip path\n");
-	if (donut) {
-		PSL_beginclipping (P, work_x, work_y, np, rgb, 1);
-		PSL_beginclipping (P, &work_x[np], &work_y[np], np, rgb, 2);
-	}
-	else
-		PSL_beginclipping (P, work_x, work_y, np, rgb, flag);
-
-	GMT_free (C, work_x);
-	GMT_free (C, work_y);
-	C->current.ps.clip = +1;		/* Tell GMT that clipping was turned on */
-}
-
 void GMT_map_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, double rgb[], GMT_LONG flag)
 {
 	/* This function sets up a clip path so that only plotting
@@ -2175,15 +2148,6 @@ void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 	/* Restores the original clipping path for the plot */
 
 	PSL_comment (P, "Deactivate Map clip path\n");
-	PSL_endclipping (P, 1);		/* Reduce polygon clipping by one level */
-	C->current.ps.clip = -1;	/* Communicate this to GMT */
-}
-
-void GMT_grid_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
-{
-	/* Restores the clipping path that existed prior to GMT_grid_clip_path was called */
-
-	PSL_comment (P, "Deactivate Grid clip path\n");
 	PSL_endclipping (P, 1);		/* Reduce polygon clipping by one level */
 	C->current.ps.clip = -1;	/* Communicate this to GMT */
 }
