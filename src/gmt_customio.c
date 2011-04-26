@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.113 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_customio.c,v 1.114 2011-04-26 14:39:26 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1453,6 +1453,7 @@ GMT_LONG GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 #ifdef USE_GDAL
 #include "gmt_gdalread.c"
+#include "gmt_gdalwrite.c"
 /* Experimental GDAL support */
 /*-----------------------------------------------------------
  * Format # :	22
