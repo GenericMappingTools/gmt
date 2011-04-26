@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.10 2011-04-25 00:21:07 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.11 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -309,7 +309,6 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale;
 	
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
@@ -365,9 +364,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);
 	if (GMT_is_subset (Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	GMT_grd_init (GMT, Surf->header, options, TRUE);
-	GMT_boundcond_init (GMT, &edgeinfo);
-	GMT_boundcond_parse (GMT, &edgeinfo, GMT->common.n.BC);
-	GMT_boundcond_param_prep (GMT, Surf->header, &edgeinfo);
+
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
@@ -379,10 +376,6 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* TRUE if input is a read-only array */
 	
-	/* set boundary conditions */
-
-	GMT_boundcond_grid_set (GMT, Surf, &edgeinfo);
-
 	if (GMT_is_geographic (GMT, GMT_IN)) {
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.12 2011-04-25 08:59:47 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.13 2011-04-26 17:52:49 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -168,16 +168,16 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t        s = Ignore data record bitflags pertaining to data slopes (gradients).\n");
 	GMT_message (GMT, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y]\n");
 	GMT_message (GMT, "\t      Note: Previous E77 information will be removed prior to processing this E77 information.\n");
-	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -Q).\n");
+	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -n).\n");
 	GMT_message (GMT, "\t      Append filename of the GMT grid.\n");
-	GMT_message (GMT, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -Q).\n");
+	GMT_message (GMT, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n).\n");
 	GMT_message (GMT, "\t      Give filename and append comma-separated scale, mode, and optionally max latitude [%g].\n", GMT_IMG_MAXLAT_80);
 	GMT_message (GMT, "\t      The scale (0.1 or 1) is used to multiply after read; give mode as follows:\n");
 	GMT_message (GMT, "\t        0 = img file w/ no constraint code, interpolate to get data at track.\n");
 	GMT_message (GMT, "\t        1 = img file w/ constraints coded, interpolate to get data at track.\n");
 	GMT_message (GMT, "\t        2 = img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
 	GMT_message (GMT, "\t        3 = img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	GMT_message (GMT, "\t        For mode 2|3 you may want to consider the -Q<value> setting.\n");
+	GMT_message (GMT, "\t        For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
 	GMT_message (GMT, "\t   n: Give filename with (rec_no, data) for a new column.  We expect a two-column file\n");
 	GMT_message (GMT, "\t      with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_message (GMT, "\t      If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.\n");
@@ -530,8 +530,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct MGD77_CONTROL In;
 	struct MGD77_DATASET *D = NULL;
 	struct GMT_GRID *G = NULL;
-	struct GMT_EDGEINFO edgeinfo;
-	struct GMT_BCR bcr;
 	struct MGD77_CARTER Carter;
 	struct MGD77MANAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -554,7 +552,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	GMT_boundcond_init (GMT, &edgeinfo);
 	MGD77_Init (GMT, &In);			/* Initialize MGD77 Machinery */
 
 	/* Default e77_skip_mode will apply header and fix corrections if prefix is Y and set all data bits */
@@ -628,23 +625,13 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
 	
-		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
-	
-		/* Initialize bcr structure with 2 rows/cols boundaries */
-
-		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
-		
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
 		G = GMT_create_grid (GMT);
 		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], (GMT_LONG)irint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
-		if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) GMT_boundcond_parse (GMT, &edgeinfo, "g");
-		GMT_boundcond_param_prep (GMT, G->header, &edgeinfo);
-		GMT_bcr_init (GMT, G->header, GMT->common.n.interpolant, GMT->common.n.threshold, &bcr);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
@@ -1019,10 +1006,6 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			yvar = (double *)D->values[iy];
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
-			/* Set boundary conditions  */
-
-			GMT_boundcond_grid_set (GMT, G, &edgeinfo);
-			
 			for (i = n_sampled = 0; i < D->H.n_records; i++) {
 				colvalue[i] = GMT->session.d_NaN;	/* In case we are outside grid */
 	
@@ -1036,14 +1019,14 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (y < G->header->wesn[YLO] || y > G->header->wesn[YHI]) continue;
 
-				while ((x < G->header->wesn[XLO]) && (edgeinfo.nxp > 0)) x += (G->header->inc[GMT_X] * edgeinfo.nxp);
+				while ((x < G->header->wesn[XLO]) && (G->header->nxp > 0)) x += (G->header->inc[GMT_X] * G->header->nxp);
 				if (x < G->header->wesn[XLO]) continue;
 
-				while ((x > G->header->wesn[XHI]) && (edgeinfo.nxp > 0)) x -= (G->header->inc[GMT_X] * edgeinfo.nxp);
+				while ((x > G->header->wesn[XHI]) && (G->header->nxp > 0)) x -= (G->header->inc[GMT_X] * G->header->nxp);
 				if (x > G->header->wesn[XHI]) continue;
 
 				if (interpolate) {	/* IMG has been corrected, and GRD is good to go */
-					colvalue[i] = GMT_get_bcr_z (GMT, G, x, y, &bcr);
+					colvalue[i] = GMT_get_bcr_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
 					ii = GMT_grd_x_to_col (x, G->header);

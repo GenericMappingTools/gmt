@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.11 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdmath_func.c,v 1.12 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -104,8 +104,8 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdmath %s [API] - Reverse Polish Notation (RPN) calculator for grid files (element by element)\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdmath [%s] [%s] [-M] [-N] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
+	GMT_message (GMT, "usage: grdmath [%s] [%s] [-M] [-N] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
 	GMT_message (GMT, "	A B op C op D op ... = outfile\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -137,7 +137,7 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "RV");
 	GMT_explain_options (GMT, "fghi");
 	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
-	GMT_explain_options (GMT, "F.");
+	GMT_explain_options (GMT, "nF.");
 	
 	return (EXIT_FAILURE);
 }
@@ -589,9 +589,7 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 {
 	GMT_LONG row, col, node, mx;
 	double cy;
-	char mode[2] = {'\0', '\0'};
 	float *z = NULL, *cx = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 	
 	/* Curvature (Laplacian). */
 
@@ -605,11 +603,8 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_boundcond_init (GMT, &edgeinfo);
-	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
-	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
-	GMT_boundcond_grid_set (GMT, stack[last], &edgeinfo);	/* Set the pad nodes using the BCs */
+	GMT_BC_init (GMT, stack[last]->header);	/* Initialize grid interpolation and boundary condition parameters */
+	GMT_grd_BC_set (GMT, stack[last]);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -626,7 +621,6 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	}
 
 	GMT_memcpy (stack[last]->data, z, info->size, float);
-	GMT_boundcond_grid_set (GMT, stack[last], &edgeinfo);	/* Update the pad nodes using the BCs */
 	GMT_free (GMT, z);
 	GMT_free (GMT, cx);
 }
@@ -702,10 +696,8 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 /*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd derivative.  */
 {
 	GMT_LONG row, col, node, mx;
-	char mode[2] = {'\0', '\0'};
 	double *cx = NULL, cy;
 	float *z = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 
 	/* Cross derivative d2/dxy = d2/dyx  */
 
@@ -719,11 +711,8 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_boundcond_init (GMT, &edgeinfo);
-	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
-	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
-	GMT_boundcond_grid_set (GMT, stack[last], &edgeinfo);	/* Set the nodes using the BCs */
+	GMT_BC_init (GMT, stack[last]->header);	/* Initialize grid interpolation and boundary condition parameters */
+	GMT_grd_BC_set (GMT, stack[last]);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -740,7 +729,6 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	}
 
 	GMT_memcpy (stack[last]->data, z, info->size, float);
-	GMT_boundcond_grid_set (GMT, stack[last], &edgeinfo);	/* Update the pad nodes using the BCs */
 	GMT_free (GMT, z);
 	GMT_free (GMT, cx);
 }
@@ -993,9 +981,7 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 /*OPERATOR: EXTREMA 1 1 Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere.  */
 {
 	GMT_LONG row, col, node, mx1, dx, dy, diag, product;
-	char mode[2] = {'\0', '\0'};
 	float *z = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 
 	/* Find local extrema in grid */
 
@@ -1009,11 +995,8 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_boundcond_init (GMT, &edgeinfo);
-	if (GMT_is_geographic (GMT, GMT_IN)) mode[0] = 'g';	/* Geographic coordinates */
-	GMT_boundcond_parse (GMT, &edgeinfo, "g");		/* Select BCs */
-	GMT_boundcond_param_prep (GMT, stack[last]->header, &edgeinfo);	/* Set parameters for selected BCs */
-	GMT_boundcond_grid_set (GMT, stack[last], &edgeinfo);	/* Set the nodes using the BCs */
+	GMT_BC_init (GMT, stack[last]->header);	/* Initialize grid interpolation and boundary condition parameters */
+	GMT_grd_BC_set (GMT, stack[last]);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -2826,7 +2809,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_grdmath", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghirs" GMT_OPT("F"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options))) Return (error);
 	Ctrl = (struct GRDMATH_CTRL *) New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return (error);
 

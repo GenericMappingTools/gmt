@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.30 2011-04-26 14:45:41 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.31 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -346,7 +346,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
@@ -538,8 +537,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL,GMT->session.no_rgb, 3);
 
-	GMT_boundcond_init (GMT, &edgeinfo);
-
 	/* Read data */
 
 	for (k = 0; k < n_grids; k++) {
@@ -605,7 +602,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			Img_proj->data = GMT_memory (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
-			GMT_img_project (GMT, I, Img_proj, &edgeinfo, FALSE);
+			GMT_img_project (GMT, I, Img_proj, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
 		}
 #endif
@@ -616,7 +613,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
 			Grid_proj[k]->data = GMT_memory (GMT, NULL, Grid_proj[k]->header->size, float);
-			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], &edgeinfo, FALSE);
+			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_orig[k]);
 		}
 		if (Ctrl->I.active) {
@@ -634,7 +631,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
-			GMT_grd_project (GMT, Intens_orig, Intens_proj, &edgeinfo, FALSE);
+			GMT_grd_project (GMT, Intens_orig, Intens_proj, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 		}
 		resampled = TRUE;

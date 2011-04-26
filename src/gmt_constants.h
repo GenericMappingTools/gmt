@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_constants.h,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_constants.h,v 1.7 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,5 +129,18 @@
 #define GMT_FFT_INV		1
 #define GMT_FFT_REAL		0
 #define GMT_FFT_COMPLEX		1
+
+/* Various grid/image interpolation modes */
+#define BCR_NEARNEIGHBOR	0
+#define BCR_BILINEAR		1
+#define BCR_BSPLINE		2
+#define BCR_BICUBIC		3
+
+/* Various grid/image boundary conditions */
+#define GMT_BC_IS_NOTSET	0
+#define GMT_BC_IS_NATURAL	1
+#define GMT_BC_IS_PERIODIC	2
+#define GMT_BC_IS_POLE		3
+#define GMT_BC_IS_DATA		4
 
 #endif  /* _GMT_CONSTANTS_H */

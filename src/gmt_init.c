@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.487 2011-04-25 16:43:02 remko Exp $
+ *	$Id: gmt_init.c,v 1.488 2011-04-26 17:52:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1931,12 +1931,13 @@ GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 				C->common.n.antialias = FALSE;
 				break;
 			case 'b':	/* Set BCs */
+				C->common.n.bc_set = TRUE;
 				strncpy (C->common.n.BC, &p[1], (size_t)4);
 				for (j = 0; j < strlen (C->common.n.BC); j++) {
 					switch (C->common.n.BC[j]) {
 						case 'g': case 'x': case 'y': break;
 						default:
-							GMT_report (C, GMT_MSG_FATAL, "Error -n: +b<BC> requires <BC> to be g, x, y, or xy\n");
+							GMT_report (C, GMT_MSG_FATAL, "Error -n: +b<BC> requires <BC> to be g or p[x|y], n[x|y]\n");
 							break;
 					}
 				}

@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.977 2011-04-26 14:46:06 jluis Exp $
+	$Id: ChangeLog,v 1.978 2011-04-26 17:52:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-26	jluis
@@ -8,6 +8,16 @@
 	* grdimage_func.c:	Add new (still undocumented) options -d & -F to allow saving
 				images directly in raster formats via GDAL.
 				
+2011-04-26	pwessel
+	* gmt_support.c:	All boundcond functions modified as old structs EDGEINFO and
+				BCR are simplified into a few parameters in the GRDHEADER,
+				eliminating overhead.
+	* gmt_grdio.c:		Grid boundary conditions are applied immediately after the read
+				stage, so all program reading grids will have correct boundary
+				rows/cols already set.
+	* *.c:			All programs needing grid interpolation no longer have to explicitly
+				parse, init, and set boundary conditions.
+
 2011-04-25	remko
 	* grdimage_func.c:	Add half a cell at edge when projecting pixel grid.
 	* gmt_map.c:		When longitude spans 360 in Lambert projection, set is_world = TRUE.

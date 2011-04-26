@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.15 2011-04-25 16:46:48 remko Exp $
+ *	$Id: grdproject_func.c,v 1.16 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -213,7 +213,6 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
 
 	struct GMT_GRID *Geo = NULL, *Rect = NULL;
-	struct GMT_EDGEINFO edgeinfo;
 	struct GRDPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
@@ -365,8 +364,6 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Rect)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-		GMT_boundcond_init (GMT, &edgeinfo);
-
 		offset = Rect->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 		if (set_n) {
@@ -416,7 +413,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		GMT_grd_project (GMT, Rect, Geo, &edgeinfo, TRUE);
+		GMT_grd_project (GMT, Rect, Geo, TRUE);
 
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Geo);
 	}
@@ -424,7 +421,6 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Geo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-		GMT_boundcond_init (GMT, &edgeinfo);
 
 		Rect = GMT_create_grid (GMT);
 		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
@@ -459,7 +455,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
-		GMT_grd_project (GMT, Geo, Rect, &edgeinfo, FALSE);
+		GMT_grd_project (GMT, Geo, Rect, FALSE);
 		GMT_grd_init (GMT, Rect->header, options, TRUE);
 
 		/* Modify output rect header if -A, -C, -M have been set */

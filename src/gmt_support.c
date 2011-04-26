@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.492 2011-04-26 02:40:01 remko Exp $
+ *	$Id: gmt_support.c,v 1.493 2011-04-26 17:52:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5751,13 +5751,7 @@ GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n
  *
  */
 
-void GMT_boundcond_init (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo)
-{
-	edgeinfo->nxp = edgeinfo->nyp = 0;
-	edgeinfo->gn = edgeinfo->gs = FALSE;
-	return;
-}
-
+#if 0
 GMT_LONG GMT_boundcond_parse (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo, char *edgestring)
 {
 	/* Parse string beginning at argv[i][2] and load user's
@@ -5835,17 +5829,102 @@ GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GRD_HEADER *header
 	GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_param_prep determined edgeinfo: gn = %li, gs = %li, nxp = %li, nyp = %li\n", edgeinfo->gn, edgeinfo->gs, edgeinfo->nxp, edgeinfo->nyp);
 	return (GMT_NOERROR);
 }
+#endif
 
-GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_EDGEINFO *edgeinfo)
+GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
+{	/* Initialize grid boundary conditions based on grid header and -n settings */
+	GMT_LONG i = 0, type;
+	char *kind[5] = {"not set", "natural", "periodic", "geographic", "data-derived"};
+	
+	if (C->common.n.bc_set) {	/* Override BCs via -n+<BC> */
+		while (C->common.n.BC[i]) {
+			switch (C->common.n.BC[i]) {
+				case 'g':	/* Geographic sets everything */
+					h->gn = h->gs = TRUE;
+					h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_POLE;
+					break;
+				case 'n':	/* Natural BCs */
+					if (C->common.n.BC[i+1] == 'x') { h->BC[0] = h->BC[1] = GMT_BC_IS_NATURAL; i++; }
+					else if (C->common.n.BC[i+1] == 'y') { h->BC[2] = h->BC[3] = GMT_BC_IS_NATURAL; i++; }
+					else h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_NATURAL;
+					break;
+				case 'p':	/* Periodic BCs */
+					if (C->common.n.BC[i+1] == 'x') { h->BC[0] = h->BC[1] = GMT_BC_IS_PERIODIC; h->nxp = -1; i++; }
+					else if (C->common.n.BC[i+1] == 'y') { h->BC[2] = h->BC[3] = GMT_BC_IS_PERIODIC; h->nyp = -1; i++; }
+					else { h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_PERIODIC; h->nxp = h->nyp = -1; }
+					break;
+				default:
+					GMT_report (C, GMT_MSG_FATAL, "Error: Cannot parse boundary condition %s\n", C->common.n.BC);
+					return (-1);
+					break;
+			}
+			i++;
+		}
+		if (h->gn && !(h->BC[0] == GMT_BC_IS_POLE && h->BC[1] == GMT_BC_IS_POLE && h->BC[2] == GMT_BC_IS_POLE && h->BC[3] == GMT_BC_IS_POLE)) {
+			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT boundary condition g overrides n[x|y] or p[x|y]\n");
+			h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_POLE;
+		}
+	}
+	else {	/* Determine BC based on whether grid is geographic or not */
+		type = (GMT_x_is_lon (C, GMT_IN)) ? GMT_BC_IS_POLE : GMT_BC_IS_NATURAL;
+		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = type;
+	}
+
+	/* Check if geographic conditions can be used with this grid */
+	if (h->gn && !GMT_grd_is_global (C, h)) {
+		/* User has requested geographical conditions, but grid is not global */
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning: longitude range too small; geographic boundary condition changed to natural.\n");
+		h->nxp = h->nyp = 0;
+		h->gn  = h->gs = FALSE;
+		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
+	}
+	else if (GMT_grd_is_global (C, h)) {	/* Grid is truly global */
+		double xtest = fmod (180.0, h->inc[GMT_X]) / h->inc[GMT_X];
+		/* xtest should be within GMT_SMALL of zero or of one.  */
+		if (xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
+			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning: x_inc does not divide 180; geographic boundary condition changed to natural.\n");
+			h->nxp = h->nyp = 0;
+			h->gn  = h->gs = FALSE;
+			for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
+		}
+		else {
+			h->nxp = irint (360.0 / h->inc[GMT_X]);
+			h->nyp = 0;
+			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
+			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
+			if (!h->gs) h->BC[2] = GMT_BC_IS_NATURAL;
+			if (!h->gn) h->BC[3] = GMT_BC_IS_NATURAL;
+		}
+	}
+	else {	/* Either periodic or natural */
+		if (h->nxp != 0) h->nxp = (h->registration == GMT_PIXEL_REG) ? h->nx : h->nx - 1;
+		if (h->nyp != 0) h->nyp = (h->registration == GMT_PIXEL_REG) ? h->ny : h->ny - 1;
+	}
+	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for left   edge: %s\n", kind[h->BC[0]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for right  edge: %s\n", kind[h->BC[1]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for bottom edge: %s\n", kind[h->BC[2]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for top    edge: %s\n", kind[h->BC[3]]);
+
+	/* Set this grid's interpolation parameters */
+
+	h->bcr_interpolant = C->common.n.interpolant;
+	h->bcr_threshold = C->common.n.threshold;
+	h->bcr_n = (h->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : ((h->bcr_interpolant == BCR_BILINEAR) ? 2 : 4);
+	
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 {
 	/* Set two rows of padding (pad[] can be larger) around data according
-	   to desired boundary condition info in edgeinfo.
+	   to desired boundary condition info in thet header.
 	   Returns -1 on problem, 0 on success.
 	   If either x or y is periodic, the padding is entirely set.
 	   However, if neither is true (this rules out geographical also)
 	   then all but three corner-most points in each corner are set.
            
-	   As written, not ready to use with "surface" for GMT v4, because
+	   As written, not ready to use with "surface" for GMT 5, because
 	   assumes left/right is +/- 1 and down/up is +/- mx.  In "surface"
 	   the amount to move depends on the current mesh size, a parameter
 	   not used here.
@@ -5882,7 +5961,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 	/* Initialize stuff:  */
 
 	mx = G->header->mx;
-	nxp2 = edgeinfo->nxp / 2;	/* Used for 180 phase shift at poles  */
+	nxp2 = G->header->nxp / 2;	/* Used for 180 phase shift at poles  */
 
 	iw = G->header->pad[XLO];	/* i for west-most data column */
 	iwo1 = iw - 1;		/* 1st column outside west  */
@@ -5904,17 +5983,17 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 	jso2 = jso1 + mx;	/* 2nd row outside south  */
 	jsi1 = js - mx;		/* 1st row  inside south  */
 
-	mxnyp = mx * edgeinfo->nyp;
+	mxnyp = mx * G->header->nyp;
 
 	jno1k = jno1 + mxnyp;	/* data rows periodic to boundary rows  */
 	jno2k = jno2 + mxnyp;
 	jso1k = jso1 - mxnyp;
 	jso2k = jso2 - mxnyp;
 
-	iwo1k = iwo1 + edgeinfo->nxp;	/* data cols periodic to bndry cols  */
-	iwo2k = iwo2 + edgeinfo->nxp;
-	ieo1k = ieo1 - edgeinfo->nxp;
-	ieo2k = ieo2 - edgeinfo->nxp;
+	iwo1k = iwo1 + G->header->nxp;	/* data cols periodic to bndry cols  */
+	iwo2k = iwo2 + G->header->nxp;
+	ieo1k = ieo1 - G->header->nxp;
+	ieo2k = ieo2 - G->header->nxp;
 
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
@@ -5924,7 +6003,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 		to change the condition to Natural in that case, with warning.  */
 
 	if (G->header->registration == GMT_GRIDLINE_REG) {	/* A pole can only be a grid node with gridline registration */
-		if (edgeinfo->gn) {	/* North pole case */
+		if (G->header->gn) {	/* North pole case */
 			bok = 0;
 			if (GMT_is_fnan (G->data[jn + iw])) {	/* First is NaN so all should be NaN */
 				for (i = iw+1; i <= ie; i++) if (!GMT_is_fnan (G->data[jn + i])) bok++;
@@ -5935,7 +6014,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: Inconsistent grid values at North pole.\n");
 		}
 
-		if (edgeinfo->gs) {	/* South pole case */
+		if (G->header->gs) {	/* South pole case */
 			bok = 0;
 			if (GMT_is_fnan (G->data[js + iw])) {	/* First is NaN so all should be NaN */
 				for (i = iw+1; i <= ie; i++) if (!GMT_is_fnan (G->data[js + i])) bok++;
@@ -5949,9 +6028,9 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 
 	/* Start with the case that x is not periodic, because in that case we also know that y cannot be polar.  */
 
-	if (edgeinfo->nxp <= 0) {	/* x is not periodic  */
+	if (G->header->nxp <= 0) {	/* x is not periodic  */
 
-		if (edgeinfo->nyp > 0) {	/* y is periodic  */
+		if (G->header->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw; i <= ie; i++) {
 				G->data[jno1 + i] = G->data[jno1k + i];
@@ -6059,7 +6138,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 			G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 		}
 
-		if (edgeinfo->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
+		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2; i <= ieo2; i++) {
 				G->data[jno1 + i] = G->data[jno1k + i];
 				G->data[jno2 + i] = G->data[jno2k + i];
@@ -6074,7 +6153,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 
 		/* Do north (top) boundary:  */
 
-		if (edgeinfo->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
+		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
@@ -6084,7 +6163,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%edgeinfo->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				G->data[jno1 + i] = G->data[j1p + i180];
 				G->data[jno2 + i] = G->data[j2p + i180];
 			}
@@ -6098,8 +6177,8 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 			for (i = iwo1; i <= ieo1; i++) {
 				G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
 			}
-			G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + edgeinfo->nxp];
-			G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - edgeinfo->nxp];
+			G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + G->header->nxp];
+			G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - G->header->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -6109,8 +6188,8 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 				G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
 			}
-			G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + edgeinfo->nxp];
-			G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - edgeinfo->nxp];
+			G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + G->header->nxp];
+			G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, north (top) is Natural.  */
 			G->header->BC[YHI] = GMT_BC_IS_NATURAL;
@@ -6118,7 +6197,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
-		if (edgeinfo->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
+		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
@@ -6128,7 +6207,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%edgeinfo->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				G->data[jso1 + i] = G->data[j1p + i180];
 				G->data[jso2 + i] = G->data[j2p + i180];
 			}
@@ -6142,8 +6221,8 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 			for (i = iwo1; i <= ieo1; i++) {
 				G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
-			G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + edgeinfo->nxp];
-			G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - edgeinfo->nxp];
+			G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + G->header->nxp];
+			G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - G->header->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -6153,8 +6232,8 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 				G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
-			G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + edgeinfo->nxp];
-			G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - edgeinfo->nxp];
+			G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + G->header->nxp];
+			G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, south (bottom) is Natural.  */
 			G->header->BC[YLO] = GMT_BC_IS_NATURAL;
@@ -6166,7 +6245,7 @@ GMT_LONG GMT_boundcond_grid_set (struct GMT_CTRL *C, struct GMT_GRID *G, struct 
 	}
 }
 
-GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struct GMT_EDGEINFO *edgeinfo)
+GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 {
 	/* Set two rows of padding (pad[] can be larger) around data according
 	   to desired boundary condition info in edgeinfo.
@@ -6214,7 +6293,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 	/* Initialize stuff:  */
 
 	mx = G->header->mx;
-	nxp2 = edgeinfo->nxp / 2;	/* Used for 180 phase shift at poles  */
+	nxp2 = G->header->nxp / 2;	/* Used for 180 phase shift at poles  */
 
 	iw = G->header->pad[XLO];	/* i for west-most data column */
 	iwo1 = iw - 1;		/* 1st column outside west  */
@@ -6236,17 +6315,17 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 	jso2 = jso1 + mx;	/* 2nd row outside south  */
 	jsi1 = js - mx;		/* 1st row  inside south  */
 
-	mxnyp = mx * edgeinfo->nyp;
+	mxnyp = mx * G->header->nyp;
 
 	jno1k = jno1 + mxnyp;	/* data rows periodic to boundary rows  */
 	jno2k = jno2 + mxnyp;
 	jso1k = jso1 - mxnyp;
 	jso2k = jso2 - mxnyp;
 
-	iwo1k = iwo1 + edgeinfo->nxp;	/* data cols periodic to bndry cols  */
-	iwo2k = iwo2 + edgeinfo->nxp;
-	ieo1k = ieo1 - edgeinfo->nxp;
-	ieo2k = ieo2 - edgeinfo->nxp;
+	iwo1k = iwo1 + G->header->nxp;	/* data cols periodic to bndry cols  */
+	iwo2k = iwo2 + G->header->nxp;
+	ieo1k = ieo1 - G->header->nxp;
+	ieo2k = ieo2 - G->header->nxp;
 
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
@@ -6256,12 +6335,12 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 		to change the condition to Natural in that case, with warning.  */
 
 	if (G->header->registration == GMT_GRIDLINE_REG) {	/* A pole can only be a grid node with gridline registration */
-		if (edgeinfo->gn) {	/* North pole case */
+		if (G->header->gn) {	/* North pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (G->data[nb*(jn + i)+b] != G->data[nb*(jn + iw)+b]) bok++;
 			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: Inconsistent image values at North pole.\n");
 		}
-		if (edgeinfo->gs) {	/* South pole case */
+		if (G->header->gs) {	/* South pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (G->data[nb*(js + i)+b] != G->data[nb*(js + iw)+b]) bok++;
 			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: Inconsistent grid values at South pole.\n");
@@ -6270,9 +6349,9 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 
 	/* Start with the case that x is not periodic, because in that case we also know that y cannot be polar.  */
 
-	if (edgeinfo->nxp <= 0) {	/* x is not periodic  */
+	if (G->header->nxp <= 0) {	/* x is not periodic  */
 
-		if (edgeinfo->nyp > 0) {	/* y is periodic  */
+		if (G->header->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw; i <= ie; i++) {
 				for (b = 0; b < nb; b++) {
@@ -6402,7 +6481,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 			}
 		}
 
-		if (edgeinfo->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
+		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2; i <= ieo2; i++) {
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno1 + i)+b] = G->data[nb*(jno1k + i)+b];
@@ -6419,7 +6498,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 
 		/* Do north (top) boundary:  */
 
-		if (edgeinfo->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
+		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
@@ -6429,7 +6508,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%edgeinfo->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jno2 + i)+b] = G->data[nb*(j2p + i180)+b];
@@ -6448,8 +6527,8 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + edgeinfo->nxp)+b];
-				G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - edgeinfo->nxp)+b];
+				G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + G->header->nxp)+b];
+				G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -6462,8 +6541,8 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + edgeinfo->nxp)+b];
-				G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - edgeinfo->nxp)+b];
+				G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + G->header->nxp)+b];
+				G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* End of X is periodic, north (top) is Natural.  */
@@ -6472,7 +6551,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
-		if (edgeinfo->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
+		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
@@ -6482,7 +6561,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%edgeinfo->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jso1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jso2 + i)+b] = G->data[nb*(j2p + i180)+b];
@@ -6501,8 +6580,8 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + edgeinfo->nxp)+b];
-				G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - edgeinfo->nxp)+b];
+				G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + G->header->nxp)+b];
+				G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - G->header->nxp)+b];
 			}
 
 
@@ -6516,8 +6595,8 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + edgeinfo->nxp)+b];
-				G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - edgeinfo->nxp)+b];
+				G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + G->header->nxp)+b];
+				G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* End of X is periodic, south (bottom) is Natural.  */
@@ -6530,7 +6609,7 @@ GMT_LONG GMT_boundcond_image_set (struct GMT_CTRL *C, struct GMT_IMAGE *G, struc
 	}
 }
 
-GMT_LONG GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG *wrap_180) {
+GMT_LONG GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER *h, GMT_LONG *wrap_180) {
 	/* Adjusts the j (y-index) value if we are dealing with some sort of periodic boundary
 	* condition.  If a north or south pole condition we must "go over the pole" and access
 	* the longitude 180 degrees away - this is achieved by passing the wrap_180 flag; the
@@ -6541,24 +6620,24 @@ GMT_LONG GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER
 	*/
 
 	if ((*j) < 0) {	/* Depending on BC's we wrap around or we are above the top of the domain */
-		if (edgeinfo->gn) {	/* N Polar condition - adjust j and set wrap flag */
+		if (h->gn) {	/* N Polar condition - adjust j and set wrap flag */
 			(*j) = GMT_abs (*j) - h->registration;
 			(*wrap_180) = TRUE;	/* Go "over the pole" */
 		}
-		else if (edgeinfo->nyp) {	/* Periodic in y */
-			(*j) += edgeinfo->nyp;
+		else if (h->nyp) {	/* Periodic in y */
+			(*j) += h->nyp;
 			(*wrap_180) = FALSE;
 		}
 		else
 			return (TRUE);	/* We are outside the range */
 	}
 	else if ((*j) >= h->ny) {	/* Depending on BC's we wrap around or we are below the bottom of the domain */
-		if (edgeinfo->gs) {	/* S Polar condition - adjust j and set wrap flag */
+		if (h->gs) {	/* S Polar condition - adjust j and set wrap flag */
 			(*j) += h->registration - 2;
 			(*wrap_180) = TRUE;	/* Go "over the pole" */
 		}
-		else if (edgeinfo->nyp) {	/* Periodic in y */
-			(*j) -= edgeinfo->nyp;
+		else if (h->nyp) {	/* Periodic in y */
+			(*j) -= h->nyp;
 			(*wrap_180) = FALSE;
 		}
 		else
@@ -6570,7 +6649,7 @@ GMT_LONG GMT_y_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *j, struct GRD_HEADER
 	return (FALSE);	/* OK, we are inside grid now for sure */
 }
 
-GMT_LONG GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG wrap_180) {
+GMT_LONG GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER *h, GMT_LONG wrap_180) {
 	/* Adjusts the i (x-index) value if we are dealing with some sort of periodic boundary
 	* condition.  If a north or south pole condition we must "go over the pole" and access
 	* the longitude 180 degrees away - this is achieved by examining the wrap_180 flag and take action.
@@ -6581,19 +6660,19 @@ GMT_LONG GMT_x_out_of_bounds (struct GMT_CTRL *C, GMT_LONG *i, struct GRD_HEADER
 	/* Depending on BC's we wrap around or leave as is. */
 
 	if ((*i) < 0) {	/* Potentially outside to the left of the domain */
-		if (edgeinfo->nxp)	/* Periodic in x - always inside grid */
-			(*i) += edgeinfo->nxp;
+		if (h->nxp)	/* Periodic in x - always inside grid */
+			(*i) += h->nxp;
 		else	/* Sorry, you're outside */
 			return (TRUE);
 	}
 	else if ((*i) >= h->nx) {	/* Potentially outside to the right of the domain */
-		if (edgeinfo->nxp)	/* Periodic in x -always inside grid */
-			(*i) -= edgeinfo->nxp;
+		if (h->nxp)	/* Periodic in x -always inside grid */
+			(*i) -= h->nxp;
 		else	/* Sorry, you're outside */
 			return (TRUE);
 	}
 
-	if (wrap_180) (*i) = ((*i) + (edgeinfo->nxp / 2)) % edgeinfo->nxp;	/* Must move 180 degrees */
+	if (wrap_180) (*i) = ((*i) + (h->nxp / 2)) % h->nxp;	/* Must move 180 degrees */
 
 	return (FALSE);	/* OK, we are inside grid now for sure */
 }
