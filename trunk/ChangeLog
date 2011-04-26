@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.978 2011-04-26 17:52:48 guru Exp $
+	$Id: ChangeLog,v 1.979 2011-04-26 18:25:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-26	jluis
@@ -15,6 +15,8 @@
 	* gmt_grdio.c:		Grid boundary conditions are applied immediately after the read
 				stage, so all program reading grids will have correct boundary
 				rows/cols already set.
+				Now we use data BCs is at least one of the edges in a subset grid
+				can be extended to include original data.
 	* *.c:			All programs needing grid interpolation no longer have to explicitly
 				parse, init, and set boundary conditions.
 

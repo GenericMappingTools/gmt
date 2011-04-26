@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.493 2011-04-26 17:52:49 guru Exp $
+ *	$Id: gmt_support.c,v 1.494 2011-04-26 18:25:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5834,7 +5834,7 @@ GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GRD_HEADER *header
 GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Initialize grid boundary conditions based on grid header and -n settings */
 	GMT_LONG i = 0, type;
-	char *kind[5] = {"not set", "natural", "periodic", "geographic", "data-derived"};
+	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	
 	if (C->common.n.bc_set) {	/* Override BCs via -n+<BC> */
 		while (C->common.n.BC[i]) {
