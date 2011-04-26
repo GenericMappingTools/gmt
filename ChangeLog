@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.976 2011-04-26 02:40:01 remko Exp $
+	$Id: ChangeLog,v 1.977 2011-04-26 14:46:06 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-26	jluis
+	* gmt_gdalwrite.c:	New function to write files via GDAL (very little testing)
+	* gmt_gdalread.h:	Add new struct to interface with GMT_gdalwrite
+	* grdimage_func.c:	Add new (still undocumented) options -d & -F to allow saving
+				images directly in raster formats via GDAL.
 				
 2011-04-25	remko
 	* grdimage_func.c:	Add half a cell at edge when projecting pixel grid.
