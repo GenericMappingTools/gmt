@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.102 2011-04-26 22:06:24 remko Exp $
+ *	$Id: gmt_nc.c,v 1.103 2011-04-26 22:12:29 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,9 +50,9 @@
 EXTERN_MSC GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 
 GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{	/* Returns type 18 (=nf) for new NetCDF grid,
-	   type 10 (=cf) for old NetCDF grids and -1 upon error */
-	int ncid, z_id = -1, j = 0, nvars, ndims, err;
+{	/* Returns type GMT_GRD_IS_N? (=n?) for new NetCDF grid,
+	   type GMT_GRD_IS_C? (=c?) for old NetCDF grids and -1 upon error */
+	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = FALSE;
 	nc_type z_type;
 	char varname[GRD_VARNAME_LEN80];
 
@@ -69,7 +69,7 @@ GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (GMT_access (C, header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	if (nc_open (header->name, NC_NOWRITE, &ncid)) return (GMT_GRDIO_OPEN_FAILED);
 	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {	/* Old style GMT netCDF grid */
-		id = 5;
+		old = TRUE;
 		if (nc_inq_varid (ncid, "z", &z_id)) return (GMT_GRDIO_NO_VAR);
 	}
 	else if (varname[0]) {	/* ?<varname> used */
@@ -86,12 +86,12 @@ GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	switch (z_type) {
-		case NC_BYTE:	header->type = GMT_GRD_IS_NB; break;
-		case NC_SHORT:	header->type = GMT_GRD_IS_NS; break;
-		case NC_INT:	header->type = GMT_GRD_IS_NI; break;
-		case NC_FLOAT:	header->type = GMT_GRD_IS_NF; break;
-		case NC_DOUBLE:	header->type = GMT_GRD_IS_ND; break;
-		default:		header->type = GMT_GRDIO_UNKOWN_TYPE; break;
+		case NC_BYTE:	header->type = old ? GMT_GRD_IS_CB : GMT_GRD_IS_NB; break;
+		case NC_SHORT:	header->type = old ? GMT_GRD_IS_CS : GMT_GRD_IS_NS; break;
+		case NC_INT:	header->type = old ? GMT_GRD_IS_CI : GMT_GRD_IS_NI; break;
+		case NC_FLOAT:	header->type = old ? GMT_GRD_IS_CF : GMT_GRD_IS_NF; break;
+		case NC_DOUBLE:	header->type = old ? GMT_GRD_IS_CD : GMT_GRD_IS_ND; break;
+		default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
 	}
 	nc_close (ncid);
 	return (header->type);
@@ -232,7 +232,7 @@ GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 			case NC_INT:	header->type = GMT_GRD_IS_NI; break;
 			case NC_FLOAT:	header->type = GMT_GRD_IS_NF; break;
 			case NC_DOUBLE:	header->type = GMT_GRD_IS_ND; break;
-			default:		header->type = GMT_GRDIO_UNLNOWN_TYPE; break;
+			default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
 		}
 
 		/* Get the ids of the x and y (and depth and time) coordinate variables */
