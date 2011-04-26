@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.170 2011-04-26 18:25:48 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.171 2011-04-26 20:01:12 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1240,16 +1240,15 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 
 	if (!global) {
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && header->wesn[XLO] < 0.0 && header->wesn[XHI] < 0.0) {    /* Not allow west/east both to be negative */
-			header->wesn[XLO] += 360.0;
-			header->wesn[XHI] += 360.0;
+			header->wesn[XLO] += 360.0, wesn[XLO] += 360.0;
+			header->wesn[XHI] += 360.0, wesn[XHI] += 360.0;
 		}
-		if (wesn[XLO] < header->wesn[XLO]) { wesn[XLO] = header->wesn[XLO]; error = TRUE; }
-		if (wesn[XHI] > header->wesn[XHI]) { wesn[XHI] = header->wesn[XHI]; error = TRUE; }
+		if (header->wesn[XLO] - wesn[XLO] > GMT_SMALL) wesn[XLO] = header->wesn[XLO], error = TRUE;
+		if (wesn[XHI] - header->wesn[XHI] > GMT_SMALL) wesn[XHI] = header->wesn[XHI], error = TRUE;
 	}
-	if (wesn[YLO] < header->wesn[YLO]) { wesn[YLO] = header->wesn[YLO]; error = TRUE; }
-	if (wesn[YHI] > header->wesn[YHI]) { wesn[YHI] = header->wesn[YHI]; error = TRUE; }
-	if (error) GMT_report (C, GMT_MSG_FATAL, "Warning: Subset exceeds data domain. Subset reduced to common region.\n");
-	error = FALSE;
+	if (header->wesn[YLO] - wesn[YLO] > GMT_SMALL) wesn[YLO] = header->wesn[YLO], error = TRUE;
+	if (wesn[YHI] - header->wesn[YHI] > GMT_SMALL) wesn[YHI] = header->wesn[YHI], error = TRUE;
+	if (error) GMT_report (C, GMT_MSG_FATAL, "Warning: Region exceeds grid domain. Region reduced to grid domain.\n");
 
 	if (!(C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->inc[GMT_X];
