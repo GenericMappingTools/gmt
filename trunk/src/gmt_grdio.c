@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.175 2011-04-26 21:32:40 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.176 2011-04-26 21:39:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -684,15 +684,15 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 
 		/* Get dimension of subregion */
 
-		*width  = irint ((wesn[XHI] - wesn[XLO]) / header->inc[GMT_X]) + one_or_zero;
-		*height = irint ((wesn[YHI] - wesn[YLO]) / header->inc[GMT_Y]) + one_or_zero;
+		*width  = irint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + one_or_zero;
+		*height = irint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + one_or_zero;
 
 		/* Get first and last row and column numbers */
 
-		*first_col = (GMT_LONG)floor ((wesn[XLO] - header->wesn[XLO]) / header->inc[GMT_X] + small);
-		*last_col  = (GMT_LONG)ceil  ((wesn[XHI] - header->wesn[XLO]) / header->inc[GMT_X] - small) - 1 + one_or_zero;
-		*first_row = (GMT_LONG)floor ((header->wesn[YHI] - wesn[YHI]) / header->inc[GMT_Y] + small);
-		*last_row  = (GMT_LONG)ceil  ((header->wesn[YHI] - wesn[YLO]) / header->inc[GMT_Y] - small) - 1 + one_or_zero;
+		*first_col = (GMT_LONG)floor ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X] + small);
+		*last_col  = (GMT_LONG)ceil  ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X] - small) - 1 + one_or_zero;
+		*first_row = (GMT_LONG)floor ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y] + small);
+		*last_row  = (GMT_LONG)ceil  ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y] - small) - 1 + one_or_zero;
 	}
 
 	k = GMT_memory (C, NULL, *width, GMT_LONG);
@@ -1009,8 +1009,8 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	GMT_LONG col, row, k, ij, n_shift, width, n_warn = 0;
 	float *tmp = NULL;
 
-	n_shift = irint (shift / G->header->inc[GMT_X]);
-	width = irint (360.0 / G->header->inc[GMT_X]);
+	n_shift = irint (shift * G->header->r_inc[GMT_X]);
+	width = irint (360.0 * G->header->r_inc[GMT_X]);
 	if (width > G->header->nx) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot rotate grid, width is too small\n");
 		return;
@@ -1132,10 +1132,10 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 		else
 			shift_x = 0.0;
 
-		wesn[XLO] = h->wesn[XLO] + irint ((wesn[XLO] - h->wesn[XLO] + shift_x) / h->inc[GMT_X]) * h->inc[GMT_X];
-		wesn[XHI] = h->wesn[XHI] + irint ((wesn[XHI] - h->wesn[XLO] + shift_x) / h->inc[GMT_X]) * h->inc[GMT_X];
-		wesn[YLO] = h->wesn[YLO] + irint ((wesn[YLO] - h->wesn[YLO]) / h->inc[GMT_Y]) * h->inc[GMT_Y];
-		wesn[YHI] = h->wesn[YHI] + irint ((wesn[YHI] - h->wesn[YLO]) / h->inc[GMT_Y]) * h->inc[GMT_Y];
+		wesn[XLO] = h->wesn[XLO] + irint ((wesn[XLO] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
+		wesn[XHI] = h->wesn[XHI] + irint ((wesn[XHI] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
+		wesn[YLO] = h->wesn[YLO] + irint ((wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
+		wesn[YHI] = h->wesn[YHI] + irint ((wesn[YHI] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
 
 		/* Make sure we do not exceed grid domain (which can happen if C->common.R.wesn exceeds the grid limits) */
 		if (wesn[XLO] < h->wesn[XLO] && !grid_global) wesn[XLO] = h->wesn[XLO];
@@ -1150,8 +1150,8 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 	}
 
 	/* First set and check latitudes since they have no complications */
-	wesn[YLO] = MAX (h->wesn[YLO], h->wesn[YLO] + floor ((wesn[YLO] - h->wesn[YLO]) / h->inc[GMT_Y] + GMT_SMALL) * h->inc[GMT_Y]);
-	wesn[YHI] = MIN (h->wesn[YHI], h->wesn[YLO] + ceil  ((wesn[YHI] - h->wesn[YLO]) / h->inc[GMT_Y] - GMT_SMALL) * h->inc[GMT_Y]);
+	wesn[YLO] = MAX (h->wesn[YLO], h->wesn[YLO] + floor ((wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y] + GMT_SMALL) * h->inc[GMT_Y]);
+	wesn[YHI] = MIN (h->wesn[YHI], h->wesn[YLO] + ceil  ((wesn[YHI] - h->wesn[YLO]) * h->r_inc[GMT_Y] - GMT_SMALL) * h->inc[GMT_Y]);
 
 	if (wesn[YHI] <= wesn[YLO]) {	/* Grid must be outside chosen -R */
 		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Your grid y's or latitudes appear to be outside the map region and will be skipped.\n");
@@ -1161,8 +1161,8 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 	/* Periodic grid with 360 degree range is easy */
 
 	if (grid_global) {
-		wesn[XLO] = h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) / h->inc[GMT_X] + GMT_SMALL) * h->inc[GMT_X];
-		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) / h->inc[GMT_X] - GMT_SMALL) * h->inc[GMT_X];
+		wesn[XLO] = h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X] + GMT_SMALL) * h->inc[GMT_X];
+		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X] - GMT_SMALL) * h->inc[GMT_X];
 		/* For the odd chance that xmin or xmax are outside the region: bring them in */
 		if (wesn[XHI] - wesn[XLO] >= 360.0) {
 			while (wesn[XLO] < C->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
@@ -1189,8 +1189,8 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 		h->wesn[XHI] += shift_x;
 	}
 
-	wesn[XLO] = MAX (h->wesn[XLO], h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) / h->inc[GMT_X] + GMT_SMALL) * h->inc[GMT_X]);
-	wesn[XHI] = MIN (h->wesn[XHI], h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) / h->inc[GMT_X] - GMT_SMALL) * h->inc[GMT_X]);
+	wesn[XLO] = MAX (h->wesn[XLO], h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X] + GMT_SMALL) * h->inc[GMT_X]);
+	wesn[XHI] = MIN (h->wesn[XHI], h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * h->r_inc[GMT_X] - GMT_SMALL) * h->inc[GMT_X]);
 
 	if (wesn[XHI] <= wesn[XLO]) {	/* Grid is outside chosen -R in longitude */
 		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
@@ -1253,7 +1253,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	if (!(C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->inc[GMT_X];
 
-		val = header->wesn[XLO] + irint ((wesn[XLO] - header->wesn[XLO]) / header->inc[GMT_X]) * header->inc[GMT_X];
+		val = header->wesn[XLO] + irint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XLO] - val);
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
 		if (dx > small) {
@@ -1262,7 +1262,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 			GMT_report (C, GMT_MSG_FATAL, "Warning: w reset to %g\n", wesn[XLO]);
 		}
 
-		val = header->wesn[XLO] + irint ((wesn[XHI] - header->wesn[XLO]) / header->inc[GMT_X]) * header->inc[GMT_X];
+		val = header->wesn[XLO] + irint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) dx = fmod (dx, 360.0);
 		if (dx > GMT_SMALL) {
@@ -1275,14 +1275,14 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
 	small = GMT_SMALL * header->inc[GMT_Y];
 
-	val = header->wesn[YLO] + irint ((wesn[YLO] - header->wesn[YLO]) / header->inc[GMT_Y]) * header->inc[GMT_Y];
+	val = header->wesn[YLO] + irint ((wesn[YLO] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		wesn[YLO] = val;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
 		GMT_report (C, GMT_MSG_FATAL, "Warning: s reset to %g\n", wesn[YLO]);
 	}
 
-	val = header->wesn[YLO] + irint ((wesn[YHI] - header->wesn[YLO]) / header->inc[GMT_Y]) * header->inc[GMT_Y];
+	val = header->wesn[YLO] + irint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		wesn[YHI] = val;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
@@ -1369,7 +1369,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	Grid->header->wesn[XHI] = MIN (GMT_IMG_MAXLON, ceil (Grid->header->wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X]);
 	if (Grid->header->wesn[XLO] > Grid->header->wesn[XHI]) Grid->header->wesn[XLO] -= 360.0;
 	Grid->header->wesn[YLO] = MAX (0.0, floor (Grid->header->wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
-	Grid->header->wesn[YHI] = MIN (C->current.proj.rect[YHI], ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
+	Grid->header->wesn[YHI] = MIN (C->current.proj.rect[YHI], ceil (Grid->header->wesn[YHI] * Grid->header->r_inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
 	/* Allocate grid memory */
 
 	Grid->header->registration = GMT_PIXEL_REG;	/* These are always pixel grids */
@@ -1379,9 +1379,9 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	Grid->data = GMT_memory (C, NULL, Grid->header->size, float);
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
-	first_i = (GMT_LONG)floor (Grid->header->wesn[XLO] / Grid->header->inc[GMT_X]);				/* first tile partly or fully inside region */
+	first_i = (GMT_LONG)floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]);				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
-	n_skip = (GMT_LONG)floor ((C->current.proj.rect[YHI] - Grid->header->wesn[YHI]) / Grid->header->inc[GMT_Y]);	/* Number of rows clearly above y_max */
+	n_skip = (GMT_LONG)floor ((C->current.proj.rect[YHI] - Grid->header->wesn[YHI]) * Grid->header->r_inc[GMT_Y]);	/* Number of rows clearly above y_max */
 	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 	i2 = GMT_memory (C, NULL, n_cols, short int);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.10 2011-04-26 17:52:49 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.11 2011-04-26 21:39:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -253,8 +253,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
-	double x_left, x_right, y_top, y_bottom, idx, idy, factor;
-	double half_y_width, y_width, half_x_width, x_width, three_over_radius;
+	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;
+	double half_y_width, y_width, half_x_width, x_width;
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -291,9 +291,6 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active))) Return (error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 
-	idx = 1.0 / Grid->header->inc[GMT_X];
-	idy = 1.0 / Grid->header->inc[GMT_Y];
-
 	GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
@@ -315,9 +312,9 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		d_row = (GMT_LONG) (ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y])) + 0.1);
 	}
 	else {	/* Plain Cartesian data */
-		max_d_col = (GMT_LONG) (ceil (Ctrl->S.radius * idx) + 0.1);
+		max_d_col = (GMT_LONG) (ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_X]) + 0.1);
 		for (row = 0; row < Grid->header->ny; row++) d_col[row] = max_d_col;
-		d_row = (GMT_LONG) (ceil (Ctrl->S.radius * idy) + 0.1);
+		d_row = (GMT_LONG) (ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_Y]) + 0.1);
 		actual_max_d_col = max_d_col;
 	}
 

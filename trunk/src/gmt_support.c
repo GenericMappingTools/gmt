@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.495 2011-04-26 20:48:13 guru Exp $
+ *	$Id: gmt_support.c,v 1.496 2011-04-26 21:39:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,10 +29,9 @@
  * Modules in this file:
  *
  *	GMT_akima		Akima's 1-D spline
- *	GMT_boundcond_init	Initialize struct GMT_EDGEINFO to unset flags
- *	GMT_boundcond_parse	Set struct GMT_EDGEINFO to user's requests
- *	GMT_boundcond_param_prep	Set struct GMT_EDGEINFO to what is doable
- *	GMT_boundcond_grid_set	Set two rows of padding according to bound cond
+ *	GMT_BC_init		Initialize BCs for a grid or image
+ *	GMT_grd_BC_set		Set two rows of padding according to bound cond for grid
+ *	GMT_image_BC_set	Set two rows of padding according to bound cond for image
  *	GMT_check_rgb		Check rgb for valid range
  *	GMT_chop		Chops off any CR or LF at end of string
  *	GMT_chop_ext		Chops off the trailing .xxx (file extension)
@@ -1869,6 +1868,9 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			GMT_report (C, GMT_MSG_NORMAL, "y_max adjusted to %g\n", h->wesn[YHI]);
 		}
 	}
+	
+	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];
+	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
 struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
@@ -4231,8 +4233,8 @@ void GMT_orient_contour (struct GMT_CTRL *C, struct GMT_GRID *G, double *x, doub
 	if (n < 2) return;		/* Cannot work on a single point */
 
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
-		fx[k] = (x[k] - G->header->wesn[XLO]) / G->header->inc[GMT_X] - G->header->xy_off;
-		fy[k] = (G->header->wesn[YHI] - y[k]) / G->header->inc[GMT_Y] - G->header->xy_off;
+		fx[k] = (x[k] - G->header->wesn[XLO]) * G->header->r_inc[GMT_X] - G->header->xy_off;
+		fy[k] = (G->header->wesn[YHI] - y[k]) * G->header->r_inc[GMT_Y] - G->header->xy_off;
 	}
 
 	/* Get(i,j) of the lower left node in the rectangle containing this contour segment.
@@ -5748,88 +5750,14 @@ GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n
  * Author:	W H F Smith
  * Date:	17 April 1998
  * Revised:	5  May 1998
- *
+ * Notes PW, April-2011: BCs are now set after a grid or image is read,
+ * thus all programs load grids with all BCs set. Contents of old structs
+ * GMT_BCR and GMT_EDGEINFO folded into GRDHEADER. Remaining functions
+ * were renamed and are now
+ * 	GMT_BC_init		- Determines and sets what BCs to use
+ *	GMT_grd_BC_set		- Sets the BCs on a grid
+ *	GMT_image_BC_set	- Sets the BCs on an image
  */
-
-#if 0
-GMT_LONG GMT_boundcond_parse (struct GMT_CTRL *C, struct GMT_EDGEINFO *edgeinfo, char *edgestring)
-{
-	/* Parse string beginning at argv[i][2] and load user's
-		requests in edgeinfo->  Return success or failure.
-		Requires that edgeinfo previously initialized to
-		zero/FALSE stuff.  Expects g or (x and or y) is
-		all that is in string.  */
-
-	GMT_LONG i = 0, ier = FALSE;
-
-	while (!ier && edgestring[i]) {
-		switch (edgestring[i]) {
-			case 'g':
-			case 'G':
-				edgeinfo->gn = TRUE;
-				edgeinfo->gs = TRUE;
-				break;
-			case 'x':
-			case 'X':
-				edgeinfo->nxp = -1;
-				break;
-			case 'y':
-			case 'Y':
-				edgeinfo->nyp = -1;
-				break;
-			default:
-				ier = TRUE;
-				break;
-
-		}
-		i++;
-	}
-
-	if (ier) return (-1);
-
-	if (edgeinfo->gn && (edgeinfo->nxp == -1 || edgeinfo->nxp == -1) )
-		GMT_report (C, GMT_MSG_FATAL, "Warning: GMT boundary condition g overrides x or y\n");
-
-	return (GMT_NOERROR);
-}
-
-GMT_LONG GMT_boundcond_param_prep (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_EDGEINFO *edgeinfo)
-{
-	/* Called when edgeinfo holds user's choices.  Sets edgeinfo according to choices and header.  */
-
-	double xtest;
-
-	if (edgeinfo->gn && !GMT_grd_is_global (C, header)) {
-		/* User has requested geographical conditions, but grid is not global */
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: x range too small; g boundary condition ignored.\n");
-		edgeinfo->nxp = edgeinfo->nyp = 0;
-		edgeinfo->gn  = edgeinfo->gs = FALSE;
-		return (GMT_NOERROR);
-	}
-
-	if (GMT_grd_is_global (C, header)) {	/* Grid is truly global */
-		xtest = fmod (180.0, header->inc[GMT_X]) / header->inc[GMT_X];
-		/* xtest should be within GMT_SMALL of zero or of one.  */
-		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
-			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
-			GMT_report (C, GMT_MSG_VERBOSE, "Warning: x_inc does not divide 180; g boundary condition ignored.\n");
-			edgeinfo->nxp = edgeinfo->nyp = 0;
-			edgeinfo->gn  = edgeinfo->gs = FALSE;
-			return (GMT_NOERROR);
-		}
-		edgeinfo->nxp = irint (360.0 / header->inc[GMT_X]);
-		edgeinfo->nyp = 0;
-		edgeinfo->gn = ( (fabs(header->wesn[YHI] - 90.0) ) < (GMT_SMALL * header->inc[GMT_Y]) );
-		edgeinfo->gs = ( (fabs(header->wesn[YLO] + 90.0) ) < (GMT_SMALL * header->inc[GMT_Y]) );
-	}
-	else {
-		if (edgeinfo->nxp != 0) edgeinfo->nxp = (header->registration == GMT_PIXEL_REG) ? header->nx : header->nx - 1;
-		if (edgeinfo->nyp != 0) edgeinfo->nyp = (header->registration == GMT_PIXEL_REG) ? header->ny : header->ny - 1;
-	}
-	GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_param_prep determined edgeinfo: gn = %li, gs = %li, nxp = %li, nyp = %li\n", edgeinfo->gn, edgeinfo->gs, edgeinfo->nxp, edgeinfo->nyp);
-	return (GMT_NOERROR);
-}
-#endif
 
 GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Initialize grid boundary conditions based on grid header and -n settings */
@@ -5879,7 +5807,7 @@ GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
 	}
 	else if (GMT_grd_is_global (C, h)) {	/* Grid is truly global */
-		double xtest = fmod (180.0, h->inc[GMT_X]) / h->inc[GMT_X];
+		double xtest = fmod (180.0, h->inc[GMT_X]) * h->r_inc[GMT_X];
 		/* xtest should be within GMT_SMALL of zero or of one.  */
 		if (xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
@@ -5889,7 +5817,7 @@ GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
 		}
 		else {
-			h->nxp = irint (360.0 / h->inc[GMT_X]);
+			h->nxp = irint (360.0 * h->r_inc[GMT_X]);
 			h->nyp = 0;
 			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
 			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
@@ -9902,7 +9830,7 @@ GMT_LONG GMT_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 						sprintf (ID, "%*.*ld-%*.*ld", sdig, sdig, seg_no, ndig, ndig, row);
 				}
 				S->label = strdup (ID);
-				sprintf (buffer, "> Cross profile number -L%s at %g/%g az=%05.1f",
+				sprintf (buffer, "Cross profile number -L%s at %g/%g az=%05.1f",
 					ID, Tin->segment[seg]->coord[GMT_X][row], Tin->segment[seg]->coord[GMT_Y][row], orientation);
 				S->header = strdup (buffer);
 

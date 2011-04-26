@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.11 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdmask_func.c,v 1.12 2011-04-26 21:39:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -275,8 +275,8 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			d_row = (GMT_LONG)ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y]));
 		}
 		else {	/* Cartesian */
-			d_col = (GMT_LONG)ceil (Ctrl->S.radius / Grid->header->inc[GMT_X]);
-			d_row = (GMT_LONG)ceil (Ctrl->S.radius / Grid->header->inc[GMT_Y]);
+			d_col = (GMT_LONG)ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_X]);
+			d_row = (GMT_LONG)ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_Y]);
 		}
 	}
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.10 2011-04-25 00:15:26 remko Exp $
+ *	$Id: grdvector_func.c,v 1.11 2011-04-26 21:39:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -385,14 +385,14 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
 		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
-		d_row = irint (Ctrl->I.inc[GMT_Y] / Grid[0]->header->inc[GMT_Y]);
-		d_col = irint (Ctrl->I.inc[GMT_X] / Grid[0]->header->inc[GMT_X]);
+		d_row = irint (Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y]);
+		d_col = irint (Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X]);
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
-		row_0 = irint ((Grid[0]->header->wesn[YHI] - tmp) / Grid[0]->header->inc[GMT_Y]);
+		row_0 = irint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
 		tmp = floor (Grid[0]->header->wesn[XLO] / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		if (tmp < Grid[0]->header->wesn[XLO]) tmp += Ctrl->I.inc[GMT_X];
-		col_0 = irint ((tmp - Grid[0]->header->wesn[XLO]) / Grid[0]->header->inc[GMT_X]);
+		col_0 = irint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {

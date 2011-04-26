@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: surface_func.c,v 1.11 2011-04-26 21:39:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -141,7 +141,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	float *lower, *upper;		/* arrays for minmax values, if set */
 	double low_limit, high_limit;	/* Constrains on range of solution */
 	double grid_xinc, grid_yinc;	/* size of each grid cell for a given grid factor */
-	double r_xinc, r_yinc, r_grid_xinc, r_grid_yinc;	/* Reciprocals  */
+	double r_grid_xinc, r_grid_yinc;	/* Reciprocals  */
 	double converge_limit;		/* Convergence limit */
 	double radius;			/* Search radius for initializing grid  */
 	double tension;			/* Tension parameter on the surface  */
@@ -1095,8 +1095,8 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 	if ( iu[ij] == 5 ) continue;
 	 	x0 = h->wesn[XLO] + i*h->inc[GMT_X];
 	 	y0 = h->wesn[YLO] + j*h->inc[GMT_Y];
-	 	dx = (C->data[k].x - x0)*C->r_xinc;
-	 	dy = (C->data[k].y - y0)*C->r_yinc;
+	 	dx = (C->data[k].x - x0)*h->r_inc[GMT_X];
+	 	dy = (C->data[k].y - y0)*h->r_inc[GMT_Y];
  
 	 	du_dx = 0.5 * (u[ij + move_over[6]] - u[ij + move_over[5]]);
 	 	du_dy = 0.5 * (u[ij + move_over[2]] - u[ij + move_over[9]]);
@@ -1153,8 +1153,8 @@ void remove_planar_trend (struct SURFACE_INFO *C)
 
 	for (i = 0; i < C->npoints; i++) {
 
-		xx = (C->data[i].x - h->wesn[XLO]) * C->r_xinc;
-		yy = (C->data[i].y - h->wesn[YLO]) * C->r_yinc;
+		xx = (C->data[i].x - h->wesn[XLO]) * h->r_inc[GMT_X];
+		yy = (C->data[i].y - h->wesn[YLO]) * h->r_inc[GMT_Y];
 		zz = C->data[i].z;
 
 		sx += xx;
@@ -1183,8 +1183,8 @@ void remove_planar_trend (struct SURFACE_INFO *C)
 	C->plane_c2 = c / d;
 
 	for (i = 0; i < C->npoints; i++) {
-		xx = (C->data[i].x - h->wesn[XLO]) * C->r_xinc;
-		yy = (C->data[i].y - h->wesn[YLO]) * C->r_yinc;
+		xx = (C->data[i].x - h->wesn[XLO]) * h->r_inc[GMT_X];
+		yy = (C->data[i].y - h->wesn[YLO]) * h->r_inc[GMT_Y];
 		C->data[i].z -= (float)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
 }
@@ -1839,8 +1839,6 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	C.mx = C.nx + 4;
 	C.my = C.ny + 4;
 	C.mxmy = C.Grid->header->size;
-	C.r_xinc = 1.0 / C.Grid->header->inc[GMT_X];
-	C.r_yinc = 1.0 / C.Grid->header->inc[GMT_Y];
 	GMT_Surface_Global.x_min = C.Grid->header->wesn[XLO];
 	GMT_Surface_Global.y_min = C.Grid->header->wesn[YLO];
 

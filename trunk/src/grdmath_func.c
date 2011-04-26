@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.12 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdmath_func.c,v 1.13 2011-04-26 21:39:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2153,7 +2153,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 		GMT_report (GMT, GMT_MSG_FATAL, "DX shift (B) must be a constant in ROTX (no calculations performed)\n");
 		return;
 	}
-	shift = irint (factor[last] / info->G->header->inc[GMT_X]);	/* Shift of nodes */
+	shift = irint (factor[last] * info->G->header->r_inc[GMT_X]);	/* Shift of nodes */
 
 	if (constant[prev] || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->nx;	/* Same thing */

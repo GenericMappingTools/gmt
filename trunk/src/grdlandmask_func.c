@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.9 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.10 2011-04-26 21:39:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -215,7 +215,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch;
-	double i_dx, i_dy, del_off, dummy, *x = NULL, *y = NULL;
+	double dummy, *x = NULL, *y = NULL;
 
 	struct GMT_SHORE c;
 	struct GMT_GRID *Grid = NULL;
@@ -288,9 +288,6 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	i_dx = 1.0 / Grid->header->inc[GMT_X];
-	i_dy = 1.0 / Grid->header->inc[GMT_Y];
-	del_off = Grid->header->xy_off;
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	/* All data nodes are thus initialized to 0 */
 	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
@@ -354,12 +351,12 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (p[k].lat[i] < ymin) ymin = p[k].lat[i];
 					if (p[k].lat[i] > ymax) ymax = p[k].lat[i];
 				}
-				col_min = (GMT_LONG)MAX (0, ceil (xmin * i_dx_inch - del_off - GMT_CONV_LIMIT));
+				col_min = (GMT_LONG)MAX (0, ceil (xmin * i_dx_inch - Grid->header->xy_off - GMT_CONV_LIMIT));
 				if (col_min > nx1) col_min = 0;
-				col_max = (GMT_LONG)MIN (nx1, floor (xmax * i_dx_inch - del_off + GMT_CONV_LIMIT));
+				col_max = (GMT_LONG)MIN (nx1, floor (xmax * i_dx_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
 				if (col_max <= 0 || col_max < col_min) col_max = nx1;
-				row_min = (GMT_LONG)MAX (0, ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - del_off - GMT_CONV_LIMIT));
-				row_max = (GMT_LONG)MIN (ny1, floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - del_off + GMT_CONV_LIMIT));
+				row_min = (GMT_LONG)MAX (0, ceil ((GMT->current.proj.rect[YHI] - ymax) * i_dy_inch - Grid->header->xy_off - GMT_CONV_LIMIT));
+				row_max = (GMT_LONG)MIN (ny1, floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV_LIMIT));
 
 				for (row = row_min; row <= row_max; row++) {
 					for (col = col_min; col <= col_max; col++) {
@@ -394,10 +391,10 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Determine nodes to initialize */
 
-			row_min = (GMT_LONG)MAX (0, ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * i_dy - del_off));
-			row_max = (GMT_LONG)MIN (ny1, floor ((Grid->header->wesn[YHI] - c.lat_sw) * i_dy - del_off));
-			col_min = (GMT_LONG)ceil (fmod (c.lon_sw - Grid->header->wesn[XLO] + 360.0, 360.0) * i_dx - del_off);
-			col_max = (GMT_LONG)floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO] + 360.0, 360.0) * i_dx - del_off);
+			row_min = (GMT_LONG)MAX (0, ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
+			row_max = (GMT_LONG)MIN (ny1, floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
+			col_min = (GMT_LONG)ceil (fmod (c.lon_sw - Grid->header->wesn[XLO] + 360.0, 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
+			col_max = (GMT_LONG)floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO] + 360.0, 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
 			if (wrap && col_max < col_min) col_max += Grid->header->nx;
 			for (row = row_min; row <= row_max; row++) {
 				for (col = col_min; col <= col_max; col++) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psmask_func.c,v 1.9 2011-04-26 21:39:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -591,8 +591,8 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			dj = (GMT_LONG)ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y]) + GMT_CONV_LIMIT);
 		}
 		else {
-			di = irint (0.5 * Ctrl->S.radius / Grid->header->inc[GMT_X] + GMT_CONV_LIMIT);
-			dj = irint (0.5 * Ctrl->S.radius / Grid->header->inc[GMT_Y] + GMT_CONV_LIMIT);
+			di = irint (0.5 * Ctrl->S.radius * Grid->header->r_inc[GMT_X] + GMT_CONV_LIMIT);
+			dj = irint (0.5 * Ctrl->S.radius * Grid->header->r_inc[GMT_Y] + GMT_CONV_LIMIT);
 		}
 
 		if (make_plot) GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
