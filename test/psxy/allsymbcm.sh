@@ -1,5 +1,5 @@
-#!/bin/sh
-#	$Id: allsymbcm.sh,v 1.4 2011-03-22 16:37:13 remko Exp $
+#!/bin/bash
+#	$Id: allsymbcm.sh,v 1.5 2011-04-26 19:29:44 remko Exp $
 #
 # Plot psxy symbols under CM default unit
 
