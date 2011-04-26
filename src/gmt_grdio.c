@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.174 2011-04-26 20:56:28 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.175 2011-04-26 21:32:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -133,7 +133,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		val = GMT_grd_format_decoder (C, code);
 		if (val < 0) return (val);
 		header->type = val;
-		if (val == GMT_GRD_IS_GDAL && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
+		if (val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
 			char *pch = strstr(&header->name[i+3], "::");
 			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
 				tmp[0] = '\0';
@@ -146,7 +146,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 				strcpy (header->name, &header->name[i+3]);
 			magic = 0;	/* We don't want it to try to prepend any path */
 		}
-		else if ( val == GMT_GRD_IS_GDAL && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
+		else if ( val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
 		}
@@ -156,7 +156,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (val != GMT_GRD_IS_GDAL || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (val != GMT_GRD_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
