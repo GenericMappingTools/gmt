@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.31 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdimage_func.c,v 1.32 2011-04-26 21:30:20 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,14 +45,11 @@ struct GRDIMAGE_CTRL {
 		GMT_LONG active;
 		GMT_LONG mode;	/* Use info of -R option to reference image */
 	} D;
-	struct F {	/* -D to write a GDAL file */
+	struct A {	/* -D to write a GDAL file */
 		GMT_LONG active;
 		char *file;
-	} F;
-	struct d {	/* -d to set the GDAL diver */
-		GMT_LONG active;
 		char *driver;
-	} d;
+	} A;
 #endif
 	struct E {	/* -Ei|<dpi> */
 		GMT_LONG active;
@@ -153,7 +150,7 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	GMT_LONG n_errors = 0, n_files = 0, n = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -177,13 +174,19 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 				Ctrl->D.active = TRUE;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
-			case 'F':	/* Get image file name to write via GDAL */
-				Ctrl->F.active = TRUE;
-				Ctrl->F.file = strdup (opt->arg);
-				break;
-			case 'd':	/* Get GDAL driver name */
-				Ctrl->d.active = TRUE;
-				Ctrl->d.driver = strdup (opt->arg);
+			case 'A':	/* Get image file name plus driver name to write via GDAL */
+				Ctrl->A.active = TRUE;
+				Ctrl->A.file = strdup (opt->arg);
+				n = strlen(Ctrl->A.file) - 1;
+				while (Ctrl->A.file[n] != '=' && n > 0) n--;
+				if (n == 0) {
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR: missing driver name in option -A.\n");
+					n_errors++;
+				}
+				else {
+					Ctrl->A.file[n] = '\0';		/* Strip =driver from file name */
+					Ctrl->A.driver = strdup(&Ctrl->A.file[n+1]);
+				}
 				break;
 #endif
 			case 'E':	/* Sets dpi */
@@ -338,6 +341,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE;
 	GMT_LONG k, byte, nx, ny, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	GMT_LONG colormask_offset = 0, nm, node, kk, try;
+	GMT_LONG node_RGBA = 0;		/* Counter for the RGB(A) image array. */
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
@@ -352,7 +356,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GRD_HEADER *header_work;	/* Pointer to a GMT header for the image or grid */
 
 #ifdef USE_GDAL
-	GMT_LONG node_RGBA = 0;		/* Counter for the RGB(A) image array */
 	GMT_LONG do_indexed = FALSE;
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
@@ -427,11 +430,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (I->ProjRefPROJ4 != NULL) GMT_report (GMT, GMT_MSG_NORMAL, "Data projection (Proj4 type)\n\t%s\n", I->ProjRefPROJ4);
 
 		header_work = I->header;	/* OK, that's what what we'll use to send to GMT_grd_setregion */
-	}
-	if ( (Ctrl->d.active && !Ctrl->F.active) || (!Ctrl->d.active && Ctrl->F.active) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -d implies -F and vice-versa.\n");
-		if (Intens_orig) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
-		Return (EXIT_FAILURE);
 	}
 #endif
 
@@ -789,9 +787,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	dy = GMT_get_inc (header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);
 
 #ifdef USE_GDAL
-	if (Ctrl->d.active) {
+	if (Ctrl->A.active) {
 		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
-		to_GDALW->driver = Ctrl->d.driver;
+		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");
 		to_GDALW->flipud = 0;
 		to_GDALW->geog = 0;
@@ -876,9 +874,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {
 #ifdef USE_GDAL
-		if (Ctrl->d.active) {
+		if (Ctrl->A.active) {
 			to_GDALW->data = (void *)bitimage_24;
-			GMT_gdalwrite(GMT, Ctrl->F.file, to_GDALW);
+			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 		}
 		else
 #endif
@@ -912,10 +910,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Img_proj);
 	}
-	if (Ctrl->d.active) {
+	if (Ctrl->A.active) {
 		GMT_free (GMT, to_GDALW);
-		free((void *)Ctrl->d.driver);
-		free((void *)Ctrl->F.file);
+		free((void *)Ctrl->A.driver);
+		free((void *)Ctrl->A.file);
 	}
 #endif
 
