@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.115 2011-04-26 21:32:40 remko Exp $
+ *	$Id: gmt_customio.c,v 1.116 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -215,7 +215,7 @@ GMT_LONG GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (GMT_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
 	if (h.magic != RAS_MAGIC) return (GMT_GRDIO_NOT_RAS);
 	if (h.type != 1 || h.depth != 8) return (GMT_GRDIO_NOT_8BIT_RAS);
-	header->type = GMT_grd_format_decoder (C, "rb");
+	header->type = GMT_GRD_IS_RB;
 	return (header->type);
 }
 
@@ -519,25 +519,25 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			mx = (GMT_LONG) ceil (t_head.nx / 32.0);
 			nm = mx * ((GMT_LONG)t_head.ny);
 			if ((buf.st_size - GRD_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
-				header->type = GMT_grd_format_decoder (C, "bm");
+				header->type = GMT_GRD_IS_BM;
 			else	/* No, junk data */
 				return (GMT_GRDIO_BAD_VAL);
 			break;
 		case 1:	/* 1-byte elements */
-			header->type = GMT_grd_format_decoder (C, "bb");
+			header->type = GMT_GRD_IS_BB;
 			break;
 		case 2:	/* 2-byte short int elements */
-			header->type = GMT_grd_format_decoder (C, "bs");
+			header->type = GMT_GRD_IS_BS;
 			break;
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
 			if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV_LIMIT)
-				header->type = GMT_grd_format_decoder (C, "bf");
+				header->type = GMT_GRD_IS_BF;
 			else
-				header->type = GMT_grd_format_decoder (C, "bi");
+				header->type = GMT_GRD_IS_BI;
 			break;
 		case 8:	/* 8-byte elements */
-			header->type = GMT_grd_format_decoder (C, "bd");
+			header->type = GMT_GRD_IS_BD;
 			break;
 		default:	/* Garbage */
 			return (GMT_GRDIO_BAD_VAL);
@@ -1112,9 +1112,9 @@ GMT_LONG GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (GMT_fread (id, sizeof (char), (size_t)4, fp) < (size_t)4) return (GMT_GRDIO_READ_FAILED);
 	GMT_fclose (C, fp);
 	if (!strncmp (id, "DSBB", (size_t)4))
-		header->type = GMT_grd_format_decoder (C, "sf");
+		header->type = GMT_GRD_IS_SF;
 	else if (!strncmp (id, "DSRB", (size_t)4))
-		header->type = GMT_grd_format_decoder (C, "sd");
+		header->type = GMT_GRD_IS_SD;
 	else
 		return (GMT_GRDIO_BAD_VAL);	/* Neither */
 	return (header->type);
@@ -1186,14 +1186,14 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 	else {					/* Version 7 format */
 		if (GMT_read_srfheader7 (fp, &h7))  return (GMT_GRDIO_READ_FAILED);
-		if ( (h7.len_d != (h7.nx * h7.ny * 8)) || (!strcmp (h7.id2, "GRID")) ) return (GMT_GRDIO_SURF7_UNSUPPORTED);
+		if (h7.len_d != h7.nx * h7.ny * 8 || !strcmp (h7.id2, "GRID")) return (GMT_GRDIO_SURF7_UNSUPPORTED);
 		header->type = GMT_GRD_IS_SD;
 	}
 
 	GMT_fclose (C, fp);
 
 	header->registration = GMT_GRIDLINE_REG;	/* Grid node registration */
-	if (header->type == 6) {
+	if (header->type == GMT_GRD_IS_SF) {
 		strcpy (header->title, "Grid originally in Surfer 6 format");
 		header->nx = (int)h6.nx;		header->ny = (int)h6.ny;
 		header->wesn[XLO] = h6.wesn[XLO];	header->wesn[XHI] = h6.wesn[XHI];
@@ -1202,7 +1202,7 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		header->inc[GMT_X] = GMT_get_inc (h6.wesn[XLO], h6.wesn[XHI], h6.nx, header->registration);
 		header->inc[GMT_Y] = GMT_get_inc (h6.wesn[YLO], h6.wesn[YHI], h6.ny, header->registration);
 	}
-	else {			/* Format 7 */
+	else {			/* Format GMT_GRD_IS_SD */
 		strcpy (header->title, "Grid originally in Surfer 7 format");
 		header->nx = h7.nx;		header->ny = h7.ny;
 		header->wesn[XLO] = h7.x_min;	header->wesn[YLO] = h7.y_min;
@@ -1281,7 +1281,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (C, header->name, "rb")) != NULL) {	/* Skip header */
-		if (header->type == 6) {	/* Version 6 */
+		if (header->type == GMT_GRD_IS_SF) {	/* Surfer Version 6 */
 			if (GMT_fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 		}
 		else {			/* Version 7  (skip also the first 12 bytes) */

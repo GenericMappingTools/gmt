@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.48 2011-04-12 03:05:18 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.49 2011-04-26 22:06:24 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -188,7 +188,7 @@ GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	/* Check the magic number and size of header */
 	if (ok == -1) return (-1);	/* Not this kind of file */
-	header->type = GMT_grd_format_decoder (C, "rf");
+	header->type = GMT_GRD_IS_RF;
 	return (header->type);
 }
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.7 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdedit_func.c,v 1.8 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -221,7 +221,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) 
 		Return (GMT_DATA_READ_ERROR);	/* Get header only */
 
-	if ((G->header->type == 6 || G->header->type == 20) && Ctrl->T.active) {
+	if ((G->header->type == GMT_GRD_IS_SF || G->header->type == GMT_GRD_IS_SD) && Ctrl->T.active) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_report (GMT, GMT_MSG_FATAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);

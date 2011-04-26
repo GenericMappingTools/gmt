@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.69 2011-04-24 01:21:47 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.70 2011-04-26 22:06:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,16 +66,16 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 		GMT_err_trap (nc_def_var (ncid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
 		GMT_err_trap (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
-		switch (GMT_grdformats[header->type][1]) {
-			case 'b':
+		switch (header->type) {
+			case GMT_GRD_IS_CB:
 				z_type = NC_BYTE; break;
-			case 's':
+			case GMT_GRD_IS_CS:
 				z_type = NC_SHORT; break;
-			case 'i':
+			case GMT_GRD_IS_CI:
 				z_type = NC_INT; break;
-			case 'f':
+			case GMT_GRD_IS_CF:
 				z_type = NC_FLOAT; break;
-			case 'd':
+			case GMT_GRD_IS_CD:
 				z_type = NC_DOUBLE; break;
 			default:
 				z_type = NC_NAT;
@@ -92,7 +92,14 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
         	GMT_err_trap (nc_inq_varid (ncid, "dimension", &nm_id));
         	GMT_err_trap (nc_inq_varid (ncid, "z", &z_id));
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
-		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 5;
+		switch (z_type) {
+			case NC_BYTE:	header->type = GMT_GRD_IS_CB; break;
+			case NC_SHORT:	header->type = GMT_GRD_IS_CS; break;
+			case NC_INT:	header->type = GMT_GRD_IS_CI; break;
+			case NC_FLOAT:	header->type = GMT_GRD_IS_CF; break;
+			case NC_DOUBLE:	header->type = GMT_GRD_IS_CD; break;
+			default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
+		}
 	}
 	header->z_id = z_id;
 
@@ -299,22 +306,22 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 
-	switch (GMT_grdformats[header->type][1]) {
-		case 'b':
+	switch (header->type) {
+		case GMT_GRD_IS_CB:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
-		case 's':
+		case GMT_GRD_IS_CS:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
-		case 'i':
+		case GMT_GRD_IS_CI:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
-		case 'f':
+		case GMT_GRD_IS_CF:
 			z_type = NC_FLOAT; break;
-		case 'd':
+		case GMT_GRD_IS_CD:
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;
