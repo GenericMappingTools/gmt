@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_RGBchart.sh,v 1.8 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_RGBchart.sh,v 1.9 2011-04-26 00:19:57 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
@@ -67,7 +67,6 @@ gmtlogo $xoff $yoff $scale >> $ps
 H=`gmtmath -Q $HEIGHT $ROW DIV =`
 pslegend -R -J -O -Dx0/0/$WIDTH/$H/BL >> $ps <<END
 L $fontsizeL 1 BR Values are R/G/B. Names are case-insensitive.
-G 2p
 L $fontsizeL 1 BR Optionally, use GREY instead of GRAY.
 END
 
