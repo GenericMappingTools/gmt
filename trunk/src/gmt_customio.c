@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.114 2011-04-26 14:39:26 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.115 2011-04-26 21:32:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1182,12 +1182,12 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	if (!strncmp (id, "DSBB", (size_t)4)) {		/* Version 6 format */
 		if (GMT_read_srfheader6 (fp, &h6)) return (GMT_GRDIO_READ_FAILED);
-		header->type = 6;
+		header->type = GMT_GRD_IS_SF;
 	}
 	else {					/* Version 7 format */
 		if (GMT_read_srfheader7 (fp, &h7))  return (GMT_GRDIO_READ_FAILED);
 		if ( (h7.len_d != (h7.nx * h7.ny * 8)) || (!strcmp (h7.id2, "GRID")) ) return (GMT_GRDIO_SURF7_UNSUPPORTED);
-		header->type = 20;
+		header->type = GMT_GRD_IS_SD;
 	}
 
 	GMT_fclose (C, fp);
@@ -1486,7 +1486,7 @@ GMT_LONG GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) 
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
-	header->type = GMT_GRD_IS_GDAL;
+	header->type = GMT_GRD_IS_GD;
 	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");
 	header->nx = from_gdalread->RasterXsize, header->ny = from_gdalread->RasterYsize;
@@ -1648,198 +1648,189 @@ GMT_LONG GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 void GMT_grdio_init (struct GMT_CTRL *C) {
 	GMT_LONG id;
 
-	/* FORMAT # 0: DEFAULT: GMT netCDF-based (float) grdio, same as # 18 */
+	/* FORMAT: GMT native binary (float) grdio [No loop over 1 &2 due to MS bug]*/
 
-	id = 0;
-	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
-	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
-	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
-	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
-	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
-
-	/* FORMAT # 1: GMT native binary (float) grdio [No loop over 1 &2 due to MS bug]*/
-
-	id = 1;
+	id = GMT_GRD_IS_BF;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_native_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_native_write_grd;
 
-	/* FORMAT # 2: GMT native binary (short) grdio */
+	/* FORMAT: GMT native binary (short) grdio */
 
-	id = 2;
+	id = GMT_GRD_IS_BS;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_native_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_native_write_grd;
 
-	/* FORMAT # 3: SUN 8-bit standard rasterfile grdio */
+	/* FORMAT: SUN 8-bit standard rasterfile grdio */
 
-	id = 3;
+	id = GMT_GRD_IS_RB;
 	C->session.readinfo[id]   = (PFL) GMT_ras_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_ras_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_ras_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_ras_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_ras_write_grd;
 
-	/* FORMAT # 4: GMT native binary (byte) grdio */
+	/* FORMAT: GMT native binary (byte) grdio */
 
-	id = 4;
+	id = GMT_GRD_IS_BB;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_native_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_native_write_grd;
 
-	/* FORMAT # 5: GMT native binary (bit) grdio */
+	/* FORMAT: GMT native binary (bit) grdio */
 
-	id = 5;
+	id = GMT_GRD_IS_BS;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_bit_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_bit_write_grd;
 
-	/* FORMAT # 6: GMT native binary (float) grdio (Surfer format) */
+	/* FORMAT: GMT native binary (float) grdio (Surfer format) */
 
-	id = 6;
+	id = GMT_GRD_IS_SF;
 	C->session.readinfo[id]   = (PFL) GMT_srf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_srf_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_srf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_srf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_srf_write_grd;
 
-	/* FORMAT # 7: GMT netCDF-based (byte) grdio */
+	/* FORMAT: GMT netCDF-based (byte) grdio */
 
-	id = 7;
+	id = GMT_GRD_IS_CB;
 	C->session.readinfo[id]   = (PFL) GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_cdf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_cdf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_cdf_write_grd;
 
-	/* FORMAT # 8: GMT netCDF-based (short) grdio */
+	/* FORMAT: GMT netCDF-based (short) grdio */
 
-	id = 8;
+	id = GMT_GRD_IS_CS;
 	C->session.readinfo[id]   = (PFL) GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_cdf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_cdf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_cdf_write_grd;
 
-	/* FORMAT # 9: GMT netCDF-based (int) grdio */
+	/* FORMAT: GMT netCDF-based (int) grdio */
 
-	id = 9;
+	id = GMT_GRD_IS_CI;
 	C->session.readinfo[id]   = (PFL) GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_cdf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_cdf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_cdf_write_grd;
 
-	/* FORMAT # 10: GMT netCDF-based (float) grdio */
+	/* FORMAT: GMT netCDF-based (float) grdio */
 
-	id = 10;
+	id = GMT_GRD_IS_CF;
 	C->session.readinfo[id]   = (PFL) GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_cdf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_cdf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_cdf_write_grd;
 
-	/* FORMAT # 11: GMT netCDF-based (double) grdio */
+	/* FORMAT: GMT netCDF-based (double) grdio */
 
-	id = 11;
+	id = GMT_GRD_IS_CD;
 	C->session.readinfo[id]   = (PFL) GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_cdf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_cdf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_cdf_write_grd;
 
-	/* FORMAT # 12: NOAA NGDC MGG grid format */
+	/* FORMAT: NOAA NGDC MGG grid format */
 
-	id = 12;
+	id = GMT_GRD_IS_RF;
 	C->session.readinfo[id]   = (PFL) mgg2_read_grd_info;
 	C->session.updateinfo[id] = (PFL) mgg2_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) mgg2_write_grd_info;
 	C->session.readgrd[id]    = (PFL) mgg2_read_grd;
 	C->session.writegrd[id]   = (PFL) mgg2_write_grd;
 
-	/* FORMAT # 13: GMT native binary (int) grdio */
+	/* FORMAT: GMT native binary (int) grdio */
 
-	id = 13;
+	id = GMT_GRD_IS_BI;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_native_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_native_write_grd;
 
-	/* FORMAT # 14: GMT native binary (double) grdio */
+	/* FORMAT: GMT native binary (double) grdio */
 
-	id = 14;
+	id = GMT_GRD_IS_BD;
 	C->session.readinfo[id]   = (PFL) GMT_native_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_native_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_native_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_native_write_grd;
 
-	/* FORMAT # 15: GMT netCDF-based (byte) grdio (COARDS compliant) */
+	/* FORMAT: GMT netCDF-based (byte) grdio (COARDS compliant) */
 
-	id = 15;
+	id = GMT_GRD_IS_NB;
 	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
 
-	/* FORMAT # 16: GMT netCDF-based (short) grdio (COARDS compliant) */
+	/* FORMAT: GMT netCDF-based (short) grdio (COARDS compliant) */
 
-	id = 16;
+	id = GMT_GRD_IS_NS;
 	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
 
-	/* FORMAT # 17: GMT netCDF-based (int) grdio (COARDS compliant) */
+	/* FORMAT: GMT netCDF-based (int) grdio (COARDS compliant) */
 
-	id = 17;
+	id = GMT_GRD_IS_NI;
 	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
 
-	/* FORMAT # 18: GMT netCDF-based (float) grdio (COARDS compliant) */
+	/* FORMAT: GMT netCDF-based (float) grdio (COARDS compliant) */
 
-	id = 18;
+	id = GMT_GRD_IS_NF;
 	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
 
-	/* FORMAT # 19: GMT netCDF-based (double) grdio (COARDS compliant) */
+	/* FORMAT: GMT netCDF-based (double) grdio (COARDS compliant) */
 
-	id = 19;
+	id = GMT_GRD_IS_ND;
 	C->session.readinfo[id]   = (PFL) GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_nc_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_nc_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_nc_write_grd;
 
-	/* FORMAT # 20: GMT native binary (double) grdio (Surfer format) */
+	/* FORMAT: GMT native binary (double) grdio (Surfer format) */
 
-	id = GMT_GRD_IS_GOLDEN7;
+	id = GMT_GRD_IS_SD;
 	C->session.readinfo[id]   = (PFL) GMT_srf_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_srf_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_srf_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_srf_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_srf_write_grd;
 
-	/* FORMAT # 21: GMT native binary (float) grdio (AGC format) */
+	/* FORMAT: GMT native binary (float) grdio (AGC format) */
 
-	id = 21;
+	id = GMT_GRD_IS_AF;
 	C->session.readinfo[id]   = (PFL) GMT_agc_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_agc_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_agc_write_grd_info;
@@ -1847,9 +1838,9 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	C->session.writegrd[id]   = (PFL) GMT_agc_write_grd;
 
 #ifdef USE_GDAL
-	/* FORMAT # 22: Import via the GDAL interface */
+	/* FORMAT: Import via the GDAL interface */
 
-	id = GMT_GRD_IS_GDAL;
+	id = GMT_GRD_IS_GD;
 	C->session.readinfo[id]   = (PFL) GMT_gdal_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_gdal_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_gdal_write_grd_info;
@@ -1857,18 +1848,18 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	C->session.writegrd[id]   = (PFL) GMT_gdal_write_grd;
 #endif
 
-	/* FORMAT # 23: ESRI Arc/Info ASCII Interchange Grid format (integer) */
+	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (integer) */
 
-	id = 23;
+	id = GMT_GRD_IS_EI;
 	C->session.readinfo[id]   = (PFL) GMT_esri_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_esri_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_esri_write_grd_info;
 	C->session.readgrd[id]    = (PFL) GMT_esri_read_grd;
 	C->session.writegrd[id]   = (PFL) GMT_esri_writei_grd;
 
-	/* FORMAT # 24: ESRI Arc/Info ASCII Interchange Grid format (float) */
+	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (float) */
 
-	id = 24;
+	id = GMT_GRD_IS_EF;
 	C->session.readinfo[id]   = (PFL) GMT_esri_read_grd_info;
 	C->session.updateinfo[id] = (PFL) GMT_esri_write_grd_info;
 	C->session.writeinfo[id]  = (PFL) GMT_esri_write_grd_info;

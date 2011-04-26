@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.94 2011-04-14 05:33:51 guru Exp $
+#  $Id: GNUmakefile,v 1.95 2011-04-26 21:32:40 remko Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -53,7 +53,7 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
+FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h gmt_grdkeys.h grdreformat.h gmt_keywords.h gmt_keycases.h \
 	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
 	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
 	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
@@ -114,13 +114,18 @@ Fonts.i:		../share/pslib/PS_font_info.d
 gmt_datums.h:		Datums.txt
 			grep -v '^#' Datums.txt | $(AWK) -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
-# Must create gmt_grdformats.h, grdreformat.h, and grdinfo.h from Grdformats.txt
+# Must create gmt_grdformats.h, gmt_grdkeys.h, grdreformat.h, and grdinfo.h from Grdformats.txt
 
 gmt_grdformats.h:	Grdformats.txt
-			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -' Grdformats.txt | sort -n)) | $(AWK) '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
+			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -|DEFAULT|GDAL$(GDAL_INC)' Grdformats.txt | sort -n)) | \
+			$(AWK) '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
+
+gmt_grdkeys.h:		Grdformats.txt
+			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -|DEFAULT|GDAL$(GDAL_INC)' Grdformats.txt | sort -n)) | \
+			tr '[a-z]' '[A-Z]' | $(AWK) '{printf "#define GMT_GRD_IS_%s\t%d\n", $$3, NR-1}' > $@
 
 grdreformat.h:		Grdformats.txt
-			grep -v '#' Grdformats.txt |  $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
+			grep -v '#|GDAL$(GDAL_INC)' Grdformats.txt |  $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
 			echo "/* grdreformat.h	[Created by src/GNUmakefile] */" > $@
 			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
 			cat tmp0.txt >> $@
@@ -128,10 +133,10 @@ grdreformat.h:		Grdformats.txt
 			rm -f tmp0.txt
 
 grdreformat_man.i:	Grdformats.txt
-			egrep -v '#' Grdformats.txt |  $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
+			egrep -v '#|GDAL$(GDAL_INC)' Grdformats.txt |  $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
 
 grdinfo.h:		Grdformats.txt
-			grep -v '#' Grdformats.txt |  $(AWK) '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
+			grep -v '#|GDAL$(GDAL_INC)' Grdformats.txt |  $(AWK) '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
 			echo "/* grdinfo.h	[Created by src/GNUmakefile] */" > $@
 			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRD_TYPES %d\nchar *GMT_grd_type[N_GRD_TYPES] = {\n", $$1}' >> $@
 			cat tmp0.txt >> $@

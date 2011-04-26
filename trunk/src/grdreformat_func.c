@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdreformat_func.c,v 1.6 2011-04-26 21:32:39 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -166,12 +166,12 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	type[1] = Grid->header->type;
 	strcpy (fname[1], Grid->header->name);
 
-	if (type[1] == GMT_GRD_IS_GOLDEN7) {	/* Golden Surfer format 7 (double) is read-only */
+	if (type[1] == GMT_GRD_IS_SD) {	/* Golden Surfer format 7 (double) is read-only */
 		GMT_report (GMT, GMT_MSG_FATAL, "Grid format sd (Golden Software Surfer format 7 (double)) is read-only!\n");
 		Return (EXIT_FAILURE);
 	}
 #ifdef USE_GDAL
-	if (type[1] == GMT_GRD_IS_GDAL) {	/* GDAL format is read-only */
+	if (type[1] == GMT_GRD_IS_GD) {	/* GDAL format is read-only */
 		GMT_report (GMT, GMT_MSG_FATAL, "Grid format gd (GDAL) is read-only!\n");
 		Return (EXIT_FAILURE);
 	}

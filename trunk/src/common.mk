@@ -1,4 +1,4 @@
-#	$Id: common.mk,v 1.9 2011-04-26 17:52:48 guru Exp $
+#	$Id: common.mk,v 1.10 2011-04-26 21:32:40 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -46,6 +46,7 @@ GMT_H	= $(GMTSRCDIR)gmt.h \
 	  $(GMTSRCDIR)gmt_gdalread.h \
 	  $(GMTSRCDIR)gmt_grd.h \
 	  $(GMTSRCDIR)gmt_grdio.h \
+	  $(GMTSRCDIR)gmt_grdkeys.h \
 	  $(GMTSRCDIR)gmt_hash.h \
 	  $(GMTSRCDIR)gmt_init.h \
 	  $(GMTSRCDIR)gmt_io.h \
