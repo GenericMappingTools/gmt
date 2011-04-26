@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.979 2011-04-26 18:25:48 guru Exp $
+	$Id: ChangeLog,v 1.980 2011-04-26 20:01:11 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-26	remko
+	* test/grdview/cuerpo.sh:	New test based on query by Eduardo Suarez.
+	* gmt_grdio.c:		GMT_adjust_loose_wesn failed on grid with lon bounds both < 0.
 
 2011-04-26	jluis
 	* gmt_gdalwrite.c:	New function to write files via GDAL (very little testing)
