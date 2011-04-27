@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_ex_tests.sh,v 1.7 2011-04-19 01:36:36 remko Exp $
+#	$Id: run_ex_tests.sh,v 1.8 2011-04-27 17:13:58 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -31,6 +31,10 @@ for o in $* ; do
 done
 
 echo "--------------------------------------"
-wc -l fail_count.d | awk '{printf "GMT Example PS file failures: %d\n", $1}'
-cat fail_count.d
-echo "--------------------------------------"
+if test -s fail_count.d ; then
+	wc -l fail_count.d | awk '{printf "GMT Example PS file failures: %d\n", $1}'
+	cat fail_count.d
+	echo "--------------------------------------"
+else
+	rm -f fail_count.d
+fi
