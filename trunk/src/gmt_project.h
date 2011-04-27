@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.82 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_project.h,v 1.83 2011-04-27 22:11:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -202,6 +202,7 @@ struct GMT_PROJ {
 
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
 	double rect[4], zmin, zmax;	/* Extreme projected values */
+	double rect_m[4];		/* Extreme projected original meter values */
 	double scale[3];		/* Scaling for meters to map-distance (typically inch) conversion (x, y, z) */
 	double i_scale[3];		/* Inverse Scaling for meters to map-distance (typically inch) conversion (x, y, z) */
 	double z_level;			/* Level at which to draw basemap [0] */

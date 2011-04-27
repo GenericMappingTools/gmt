@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.986 2011-04-27 20:28:40 remko Exp $
+	$Id: ChangeLog,v 1.987 2011-04-27 22:11:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-27	pwessel
+	* gmt_map.c:		Store projected min/max in meters in current->rect_m[].
 
 2011-04-27	remko
 	* gmt_customio.c:	Now contains grid format descriptions and IDs.
