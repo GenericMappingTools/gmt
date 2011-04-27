@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.258 2011-04-25 00:21:07 guru Exp $
+ *	$Id: gmt_io.c,v 1.259 2011-04-27 00:56:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4366,7 +4366,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_NORMAL, "Writing data segment to file %s\n", out_file);
-			if (ascii && C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_fputs (table->header[k], fp);
+			if (ascii && C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_fprintf (fp, "%s\nb", table->header[k]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) GMT_build_segheader_from_ogr (C, fp, table->segment[seg]);	/* We have access to OGR metadata */
@@ -4527,7 +4527,7 @@ GMT_LONG GMT_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 
 	if (io_mode < GMT_WRITE_SEGMENTS) {
 		if (C->current.io.io_header[GMT_OUT]) {
-			for (k = 0; k < table->n_headers; k++) GMT_fputs (table->header[k], fp);
+			for (k = 0; k < table->n_headers; k++) GMT_fprintf (fp, "%s\n", table->header[k]);
 		}
 	}
 	for (seg = 0; seg < table->n_segments; seg++) {
@@ -4544,7 +4544,7 @@ GMT_LONG GMT_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_NORMAL, "Writing Text Table segment to file %s\n", out_file);
-			if (C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_fputs (table->header[k], fp);
+			if (C->current.io.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_fprintf (fp, "%s\n", table->header[k]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
