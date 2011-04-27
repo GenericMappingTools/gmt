@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.97 2011-04-27 02:07:15 remko Exp $
+#  $Id: GNUmakefile,v 1.98 2011-04-27 15:35:24 remko Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -53,9 +53,9 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation, defined in the GNUmakefile (hence the dependency)
 
-FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h gmt_grdkeys.h grdreformat.h \
+FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdkeys.h \
 	gmt_keywords.h gmt_keycases.h \
-	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
+	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
 	gmtmath_func.h gmtmath_op.h gmtmath_explain.h gmtmath_man.i \
 	grdmath_func.h grdmath_op.h grdmath_explain.h grdmath_man.i \
 	grdreformat_man.i gmtapi_errstr.h gmtapi_errno.h \
@@ -116,29 +116,15 @@ Fonts.i:		../share/pslib/PS_font_info.d
 gmt_datums.h:		Datums.txt
 			grep -v '^#' Datums.txt | $(AWK) -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
-# Must create gmt_grdformats.h, gmt_grdkeys.h, grdreformat.h, and grdinfo.h from Grdformats.txt
+# Must create gmt_grdkeys.h and grdreformat_man.i from Grdformats.txt
 
-gmt_grdformats.h:	Grdformats.txt
-			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -|DEFAULT' Grdformats.txt | sort -n)) | \
-			$(AWK) '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
+gmt_grdkeys.h:		gmt_customio.c
+			egrep 'session.grdformat.* = ' gmt_customio.c | egrep -v 'not supported' | cut -d\" -f2 | \
+			tr '[a-z]' '[A-Z]' | $(AWK) '{printf "#define GMT_GRD_IS_%s\t%d\n", $$1, NR-1}' > $@
 
-gmt_grdkeys.h:		Grdformats.txt
-			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -|DEFAULT' Grdformats.txt | sort -n)) | \
-			tr '[a-z]' '[A-Z]' | $(AWK) '{printf "#define GMT_GRD_IS_%s\t%d\n", $$3, NR-1}' > $@
-
-grdreformat.h:		Grdformats.txt
-			egrep -v '#' Grdformats.txt | $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
-			echo "/* grdreformat.h	[Created by src/GNUmakefile] */" > $@
-			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
-			cat tmp0.txt >> $@
-			echo "		};" >> $@
-			rm -f tmp0.txt
-
-grdreformat_man.i:	Grdformats.txt
-			egrep -v '#' Grdformats.txt | $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
-
-grdinfo.h:		Grdformats.txt
-			egrep -v '#|^  -' Grdformats.txt | $(AWK) '{printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}' | sort -n -k1 | cut -f2 > $@
+grdreformat_man.i:	gmt_customio.c
+			egrep 'session.grdformat.* = ' gmt_customio.c | egrep -v 'not supported' | cut -d\" -f2 | \
+			$(AWK) '{printf "BD(%s)\t%s\n.br\n", $$1, substr($$0,6,length($$0)-5)}'  > $@
 
 # Must create gmt_prognames.h, gmtprogs_inc.h and gmt_progpurpose.h for gmt.c from GMTprogs.txt
 
@@ -153,12 +139,12 @@ gmt_progpurpose.h:	$(FUNCS_C)
 
 # Add all the dimensions to gmt_dimensions.h
 
-gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.h gmt_keywords.h \
+gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdkeys.h gmt_keywords.h \
 			gmt_media_name.h gmt_pennames.h gmt_unique.h gmt_prognames.h
 			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` > $@
 			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
 			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
-			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdformats.h` >> $@
+			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdkeys.h` >> $@
 			printf "#define GMT_N_KEYS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_keywords.h` >> $@
 			printf "#define GMT_N_MEDIA\t\t%d\t/* Lines in %s */\n" `wc -l gmt_media_name.h` >> $@
 			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@

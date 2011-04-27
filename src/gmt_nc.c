@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.103 2011-04-26 22:12:29 remko Exp $
+ *	$Id: gmt_nc.c,v 1.104 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -479,9 +479,9 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 
 	/* Check type: is file in old NetCDF format or not at all? */
 
-	if (GMT_grdformats[header->type][0] == 'c')
+	if (C->session.grdformat[header->type][0] == 'c')
 		return (GMT_cdf_read_grd (C, header, grid, wesn, pad, complex_mode));
-	else if (GMT_grdformats[header->type][0] != 'n')
+	else if (C->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);

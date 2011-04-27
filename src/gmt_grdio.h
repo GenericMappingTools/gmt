@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.56 2011-04-26 21:32:40 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.57 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,8 +49,6 @@
 
 #define GMT_GRD_IS_GOLDEN7	GMT_GRD_IS_SD
 #define GMT_GRD_IS_GDAL		GMT_GRD_IS_GD
-
-EXTERN_MSC GMT_LONG GMT_grdformats [GMT_N_GRD_FORMATS][2];
 
 #include "gmt_customio.h"
 

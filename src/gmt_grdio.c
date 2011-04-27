@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.179 2011-04-27 02:07:15 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.180 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,10 +55,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
-
-GMT_LONG GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
-#include "gmt_grdformats.h"
-};
 
 struct GRD_PAD {
 	double wesn[4];
@@ -249,7 +245,7 @@ void GMT_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			GMT_format_calendar (C, date, clock, &C->current.io.date_output, &C->current.io.clock_output, FALSE, 1, 0.0);
 			sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
 			/* Warning for non-double grids */
-			if (i == 2 && GMT_grdformats[header->type][1] != 'd') GMT_report (C, GMT_MSG_FATAL, "Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n");
+			if (i == 2 && C->session.grdformat[header->type][1] != 'd') GMT_report (C, GMT_MSG_FATAL, "Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n");
 			break;
 		}
 	}
@@ -528,7 +524,7 @@ GMT_LONG GMT_grd_data_size (struct GMT_CTRL *C, GMT_LONG format, double *nan_val
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
-	switch (GMT_grdformats[format][1]) {
+	switch (C->session.grdformat[format][1]) {
 		case 'b':
 			if (GMT_is_dnan (*nan_value)) *nan_value = CHAR_MIN;
 			return (sizeof (char));
@@ -549,7 +545,7 @@ GMT_LONG GMT_grd_data_size (struct GMT_CTRL *C, GMT_LONG format, double *nan_val
 			return (sizeof (double));
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Unknown grid data type: %c\n", (int)GMT_grdformats[format][1]);
+			GMT_report (C, GMT_MSG_FATAL, "Unknown grid data type: %c\n", C->session.grdformat[format][1]);
 			return (GMT_GRDIO_UNKNOWN_TYPE);
 	}
 }
@@ -558,20 +554,20 @@ GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
 {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
 
-	GMT_LONG id;
+	GMT_LONG id, i, j;
 
-	if (isdigit ((int)code[0])) {	/* File format number given, convert directly */
-		id = atoi (code);
- 		if (id < 0 || id >= GMT_N_GRD_FORMATS) return (GMT_GRDIO_UNKNOWN_ID);
+	if (isdigit ((int)code[0])) {	/* File format number given, look for old code */
+		j = atoi (code);
+		for (i = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
+			if (C->session.grdcode[i] == j) id = i;
+		}
 	}
 	else {	/* Character code given */
-		GMT_LONG i;
 		for (i = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
-			if (GMT_grdformats[i][0] == code[0] && GMT_grdformats[i][1] == code[1]) id = i;
+			if (C->session.grdformat[i][0] == code[0] && C->session.grdformat[i][1] == code[1]) id = i;
 		}
-
-		if (id == -1) return (GMT_GRDIO_UNKNOWN_ID);
 	}
+	if (id == -1) return (GMT_GRDIO_UNKNOWN_ID);
 
 	return (id);
 }
@@ -814,13 +810,13 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 		G->header.z_scale_factor = 1.0;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
-	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
+	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
 		if (header) GMT_nc_grd_info (C, &G->header, mode);
 		G->edge[0] = G->header.nx;
 		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
-	else if (GMT_grdformats[G->header.type][0] == 'n') {		/* Open netCDF file, COARDS-compliant format */
+	else if (C->session.grdformat[G->header.type][0] == 'n') {		/* Open netCDF file, COARDS-compliant format */
 		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
 		if (header) GMT_nc_grd_info (C, &G->header, mode);
 		G->edge[0] = 1;
@@ -840,9 +836,9 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	G->check = !GMT_is_dnan (G->header.nan_value);
 	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
 
-	if (GMT_grdformats[G->header.type][1] == 'm')	/* Bit mask */
+	if (C->session.grdformat[G->header.type][1] == 'm')	/* Bit mask */
 		G->n_byte = irint (ceil (G->header.nx / 32.0)) * G->size;
-	else if (GMT_grdformats[G->header.type][0] == 'r' && GMT_grdformats[G->header.type][1] == 'b')	/* Sun Raster */
+	else if (C->session.grdformat[G->header.type][0] == 'r' && C->session.grdformat[G->header.type][1] == 'b')	/* Sun Raster */
 		G->n_byte = irint (ceil (G->header.nx / 2.0)) * 2 * G->size;
 	else	/* All other */
 		G->n_byte = G->header.nx * G->size;
@@ -857,7 +853,7 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 void GMT_close_grd (struct GMT_CTRL *C, struct GMT_GRDFILE *G)
 {
 	GMT_free (C, G->v_row);
-	if (GMT_grdformats[G->header.type][0] == 'c' || GMT_grdformats[G->header.type][0] == 'n')
+	if (C->session.grdformat[G->header.type][0] == 'c' || C->session.grdformat[G->header.type][0] == 'n')
 		nc_close (G->fid);
 	else
 		GMT_fclose (C, G->fp);
@@ -871,7 +867,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 
 	GMT_LONG i, err;
 
-	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
+	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = GMT_abs (row_no);
 			G->start[0] = G->row * G->edge[0];
@@ -880,7 +876,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 		GMT_err_trap (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
 	}
-	else if (GMT_grdformats[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
+	else if (C->session.grdformat[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = GMT_abs (row_no);
 			G->start[0] = G->header.ny - 1 - G->row;
@@ -899,7 +895,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 
 		if (GMT_fread (G->v_row, (size_t)G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (i = 0; i < G->header.nx; i++) {
-			row[i] = GMT_decode (C, G->v_row, i, GMT_grdformats[G->header.type][1]);	/* Convert whatever to float */
+			row[i] = GMT_decode (C, G->v_row, i, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
 			if (G->check && row[i] == G->header.nan_value) row[i] = C->session.f_NaN;
 		}
 	}
@@ -920,7 +916,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG 
 	GMT_grd_do_scaling (row, (GMT_LONG)G->header.nx, G->scale, G->offset);
 	for (i = 0; i < G->header.nx; i++) if (GMT_is_fnan (row[i]) && G->check) row[i] = (float)G->header.nan_value;
 
-	switch (GMT_grdformats[G->header.type][0]) {
+	switch (C->session.grdformat[G->header.type][0]) {
 		case 'c':
 			GMT_err_trap (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 			if (G->auto_advance) G->start[0] += G->edge[0];
@@ -930,7 +926,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG 
 			if (G->auto_advance) G->start[0] --;
 			break;
 		default:
-			for (i = 0; i < G->header.nx; i++) GMT_encode (C, tmp, i, row[i], GMT_grdformats[G->header.type][1]);
+			for (i = 0; i < G->header.nx; i++) GMT_encode (C, tmp, i, row[i], C->session.grdformat[G->header.type][1]);
 			if (GMT_fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp) < (size_t)G->header.nx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 

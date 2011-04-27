@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.17 2011-04-27 00:56:59 guru Exp $
+ *    $Id: grdblend_func.c,v 1.18 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -242,7 +242,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		B[n].wyd = M_PI * h->inc[GMT_Y] / (B[n].wesn[YLO] - B[n].G.header.wesn[YLO]);
 
 		if (B[n].out_j0 < 0) {	/* Must skip to first row inside the present -R */
-			type = GMT_grdformats[B[n].G.header.type][0];
+			type = GMT->session.grdformat[B[n].G.header.type][0];
 			if (type == 'c')	/* Old-style, 1-D netcdf grid */
 				B[n].offset = B[n].G.header.nx * GMT_abs (B[n].out_j0);
 			else if (type == 'n')	/* New, 2-D netcdf grid */
@@ -444,7 +444,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 	if ((err = GMT_grd_get_format (GMT, Ctrl->G.file, &(S->header), FALSE)) != GMT_NOERROR){
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); n_errors++;
 	}
-	type = (char)GMT_grdformats[S->header.type][0];
+	type = GMT->session.grdformat[S->header.type][0];
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (type == 'c' || type == 'n'), "Syntax error -Q option: Output grid file cannot be netCDF format\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

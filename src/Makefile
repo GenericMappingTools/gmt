@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.69 2011-04-26 17:52:48 guru Exp $
+#	$Id: Makefile,v 1.70 2011-04-27 15:35:24 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -170,13 +170,11 @@ $(LIBPS_O) $(PSLDEMO_O):	$(PS_H)
 
 blockmean.o blockmedian.o blockmode.o:	block_subs.h
 gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c gmt_esri_io.c gmt_gdalread.c
-gmt_grdio.o:	gmt_grdformats.h
 gmt_init.o:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_unique.h \
 		gmt_keycases.h gmt_keywords.h gmt_media_name.h gmt_media_size.h
 gmt_support.o:	gmt_color_rgb.h gmt_pennames.h
 gmtmath_func.o:	gmtmath_func.h gmtmath_op.h gmtmath_explain.h
 grdmath_func.o:	grdmath_func.h grdmath_op.h grdmath_explain.h
-grdreformat.o:	grdreformat.h
 gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o \
 gmt_io.o gmt_map.o gmt_nc.o gmt_plot.o gmt_proj.o gmt_shore.o gmt_stat.o \
 gmt_fft.o gmt_support.o gmt_vector.o gmtapi_util.o:	gmt_internals.h
