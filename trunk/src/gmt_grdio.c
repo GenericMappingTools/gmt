@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.181 2011-04-27 17:14:27 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.182 2011-04-27 18:20:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,6 +70,7 @@ EXTERN_MSC GMT_LONG GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *head
 EXTERN_MSC GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -165,18 +166,20 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		if ((val = GMT_is_nc_grid (C, header)) >= 0) return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
 		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED) return (val);
-		/* Then check for native GMT grid */
+		/* Then check for native binary GMT grid */
 		if (GMT_is_native_grid (C, header) >= 0) return (GMT_NOERROR);
-		/* Next check for Sun raster GMT grid */
+		/* Next check for Sun raster grid */
 		if (GMT_is_ras_grid (C, header) >= 0) return (GMT_NOERROR);
 		/* Then check for Golden Software surfer grid */
 		if (GMT_is_srf_grid (C, header) >= 0) return (GMT_NOERROR);
-		/* Then check for NGDC GRD98 GMT grid */
+		/* Then check for NGDC GRD98 grid */
 		if (GMT_is_mgg2_grid (C, header) >= 0) return (GMT_NOERROR);
-		/* Then check for AGC GMT grid */
+		/* Then check for AGC grid */
 		if (GMT_is_agc_grid (C, header) >= 0) return (GMT_NOERROR);
-		/* Then check for ESRI GMT grid */
+		/* Then check for ESRI grid */
 		if (GMT_is_esri_grid (C, header) >= 0) return (GMT_NOERROR);
+		/* Then check for GDAL grid */
+		if (GMT_is_gdal_grid (C, header) >= 0) return (GMT_NOERROR);
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from C->current.setting.io_gridfile_format */
