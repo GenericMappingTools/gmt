@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.253 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pslib.c,v 1.254 2011-04-27 02:07:36 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -3647,7 +3647,7 @@ PSL_LONG psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsi
 	h->height = (int)(try - lly);
 	h->depth = 0;
 	h->length = (int)n;
-	h->type = 4;
+	h->type = RT_EPS;
 	h->maptype = RMT_NONE;
 	h->maplength = 0;
 	h->xorigin = (int)llx;

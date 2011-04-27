@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.67 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pslib.h,v 1.68 2011-04-27 02:07:36 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -327,6 +327,7 @@ struct imageinfo {
 #define RT_STANDARD	1		/* Standard, unencoded Sun rasterfile */
 #define RT_BYTE_ENCODED	2		/* Run-length-encoded Sun rasterfile */
 #define RT_FORMAT_RGB	3		/* [X]RGB instead of [X]BGR Sun rasterfile */
+#define RT_EPS		4		/* Encapsulated PostScript format */
 #define RMT_NONE	0		/* maplength is expected to be 0 */
 #define RMT_EQUAL_RGB	1		/* red[maplength/3], green[], blue[] follow */
 
