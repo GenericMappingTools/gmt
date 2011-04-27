@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.180 2011-04-27 15:35:24 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.181 2011-04-27 17:14:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1232,9 +1232,12 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	global = GMT_grd_is_global (C, header);
 
 	if (!global) {
-		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && header->wesn[XLO] < 0.0 && header->wesn[XHI] < 0.0) {    /* Not allow west/east both to be negative */
-			header->wesn[XLO] += 360.0, wesn[XLO] += 360.0;
-			header->wesn[XHI] += 360.0, wesn[XHI] += 360.0;
+		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
+			/* If longitudes are all west of range or all east of range, try moving them by 360 degrees east or west */
+			if (header->wesn[XHI] < wesn[XLO])
+				header->wesn[XLO] += 360.0, header->wesn[XHI] += 360.0;
+			else if (header->wesn[XLO] > wesn[XHI])
+				header->wesn[XLO] -= 360.0, header->wesn[XHI] -= 360.0;
 		}
 		if (header->wesn[XLO] - wesn[XLO] > GMT_SMALL) wesn[XLO] = header->wesn[XLO], error = TRUE;
 		if (wesn[XHI] - header->wesn[XHI] > GMT_SMALL) wesn[XHI] = header->wesn[XHI], error = TRUE;
