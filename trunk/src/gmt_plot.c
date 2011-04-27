@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.319 2011-04-26 02:40:01 remko Exp $
+ *	$Id: gmt_plot.c,v 1.320 2011-04-27 20:28:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1454,7 +1454,7 @@ void GMT_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
 	GMT_LONG i, justify, annot_type, flip;	
 
-	len = GMT_get_annot_offset (C, &flip, level);
+	len = GMT_get_annot_offset (C, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 	for (i = 0; i < nx; i++) {
 
@@ -1480,7 +1480,12 @@ void GMT_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 
 		if (annot) {
 			if (GMT_annot_too_crowded (C, xx[i], yy[i], sides[i])) continue;
-			if (flip) justify = GMT_flip_justify (C, justify);
+			if (C->current.proj.three_D && C->current.proj.z_project.cos_az > 0) {	/* Rotate annotation when seen "from North" */
+				if (!flip) justify = GMT_flip_justify (C, justify);
+				text_angle += 180.0;
+			}
+			else
+				if (flip) justify = GMT_flip_justify (C, justify);
 			PSL_plottext (P, xx[i], yy[i], C->current.setting.font_annot[level].size, label, text_angle, justify, form);
 		}
 	}
