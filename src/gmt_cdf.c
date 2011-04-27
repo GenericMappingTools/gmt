@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.70 2011-04-26 22:06:24 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.71 2011-04-27 02:07:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,18 +67,12 @@ GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 		GMT_err_trap (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
 		switch (header->type) {
-			case GMT_GRD_IS_CB:
-				z_type = NC_BYTE; break;
-			case GMT_GRD_IS_CS:
-				z_type = NC_SHORT; break;
-			case GMT_GRD_IS_CI:
-				z_type = NC_INT; break;
-			case GMT_GRD_IS_CF:
-				z_type = NC_FLOAT; break;
-			case GMT_GRD_IS_CD:
-				z_type = NC_DOUBLE; break;
-			default:
-				z_type = NC_NAT;
+			case GMT_GRD_IS_CB: z_type = NC_BYTE; break;
+			case GMT_GRD_IS_CS: z_type = NC_SHORT; break;
+			case GMT_GRD_IS_CI: z_type = NC_INT; break;
+			case GMT_GRD_IS_CF: z_type = NC_FLOAT; break;
+			case GMT_GRD_IS_CD: z_type = NC_DOUBLE; break;
+			default:			z_type = NC_NAT;
 		}
 
 		dims[0]	= xysize_dim;

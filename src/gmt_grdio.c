@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.178 2011-04-26 22:11:22 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.179 2011-04-27 02:07:15 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -565,12 +565,9 @@ GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
  		if (id < 0 || id >= GMT_N_GRD_FORMATS) return (GMT_GRDIO_UNKNOWN_ID);
 	}
 	else {	/* Character code given */
-		GMT_LONG i, group;
-		for (i = group = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
-			if (GMT_grdformats[i][0] == (short)code[0]) {
-				group = code[0];
-				if (GMT_grdformats[i][1] == (short)code[1]) id = i;
-			}
+		GMT_LONG i;
+		for (i = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
+			if (GMT_grdformats[i][0] == code[0] && GMT_grdformats[i][1] == code[1]) id = i;
 		}
 
 		if (id == -1) return (GMT_GRDIO_UNKNOWN_ID);
@@ -966,7 +963,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		GMT_memset (header, 1, struct GRD_HEADER);
 
 		/* Set the variables that are not initialized to 0/FALSE/NULL */
-		header->z_scale_factor		= 1.0;
+		header->z_scale_factor	= 1.0;
 		header->type			= -1;
 		header->y_order			= 1;
 		header->z_id			= -1;

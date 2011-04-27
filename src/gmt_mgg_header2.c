@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.49 2011-04-26 22:06:24 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.50 2011-04-27 02:07:14 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -152,23 +152,23 @@ static void MGG2_2GMT (struct GMT_CTRL *C, MGG_GRID_HEADER_2 *mgg, struct GRD_HE
 	
 	/* Do not memset the gmt header since it has the file name set */
 	
-	gmt->type = GMT_grd_format_decoder (C, "rf");
-	gmt->registration    = mgg->cellRegistration;
-	one_or_zero	    = 1 - gmt->registration;
-	gmt->nx             = mgg->lonNumCells;
-	gmt->wesn[XLO]          = dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
-	gmt->inc[GMT_X]          = dms2degrees(0, 0, mgg->lonSpacing);
-	gmt->wesn[XHI]          = gmt->wesn[XLO] + (gmt->inc[GMT_X] * (gmt->nx - one_or_zero));
+	gmt->type = GMT_GRD_IS_RF;
+	gmt->registration = mgg->cellRegistration;
+	one_or_zero = 1 - gmt->registration;
+	gmt->nx = mgg->lonNumCells;
+	gmt->wesn[XLO] = dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
+	gmt->inc[GMT_X] = dms2degrees(0, 0, mgg->lonSpacing);
+	gmt->wesn[XHI] = gmt->wesn[XLO] + (gmt->inc[GMT_X] * (gmt->nx - one_or_zero));
 
-	gmt->ny             = mgg->latNumCells;
-	gmt->wesn[YHI]          = dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
-	gmt->inc[GMT_Y]          = dms2degrees(0, 0, mgg->latSpacing);
-	gmt->wesn[YLO]          = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->ny - one_or_zero));
+	gmt->ny = mgg->latNumCells;
+	gmt->wesn[YHI] = dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
+	gmt->inc[GMT_Y] = dms2degrees(0, 0, mgg->latSpacing);
+	gmt->wesn[YLO] = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->ny - one_or_zero));
  
-	gmt->z_min          = (double)mgg->minValue / (double)mgg->precision;
-	gmt->z_max          = (double)mgg->maxValue / (double)mgg->precision;
+	gmt->z_min = (double)mgg->minValue / (double)mgg->precision;
+	gmt->z_max = (double)mgg->maxValue / (double)mgg->precision;
 	gmt->z_scale_factor = 1.0;
-	gmt->z_add_offset   = 0;
+	gmt->z_add_offset = 0.0;
 }
 
 GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.96 2011-04-27 01:11:49 remko Exp $
+#  $Id: GNUmakefile,v 1.97 2011-04-27 02:07:15 remko Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -127,7 +127,7 @@ gmt_grdkeys.h:		Grdformats.txt
 			tr '[a-z]' '[A-Z]' | $(AWK) '{printf "#define GMT_GRD_IS_%s\t%d\n", $$3, NR-1}' > $@
 
 grdreformat.h:		Grdformats.txt
-			egrep -v '#' Grdformats.txt |  $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
+			egrep -v '#' Grdformats.txt | $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
 			echo "/* grdreformat.h	[Created by src/GNUmakefile] */" > $@
 			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
 			cat tmp0.txt >> $@
@@ -135,15 +135,10 @@ grdreformat.h:		Grdformats.txt
 			rm -f tmp0.txt
 
 grdreformat_man.i:	Grdformats.txt
-			egrep -v '#' Grdformats.txt |  $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
+			egrep -v '#' Grdformats.txt | $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
 
 grdinfo.h:		Grdformats.txt
-			grep -v '#' Grdformats.txt |  $(AWK) '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
-			echo "/* grdinfo.h	[Created by src/GNUmakefile] */" > $@
-			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRD_TYPES %d\nchar *GMT_grd_type[N_GRD_TYPES] = {\n", $$1}' >> $@
-			cat tmp0.txt >> $@
-			echo "};" >> $@
-			rm -f tmp0.txt
+			egrep -v '#|^  -' Grdformats.txt | $(AWK) '{printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}' | sort -n -k1 | cut -f2 > $@
 
 # Must create gmt_prognames.h, gmtprogs_inc.h and gmt_progpurpose.h for gmt.c from GMTprogs.txt
 
