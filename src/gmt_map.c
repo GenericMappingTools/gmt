@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.289 2011-04-26 17:52:49 guru Exp $
+ *	$Id: gmt_map.c,v 1.290 2011-04-27 22:11:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1826,6 +1826,9 @@ void GMT_xy_search (struct GMT_CTRL *C, double *x0, double *x1, double *y0, doub
 void GMT_map_setxy (struct GMT_CTRL *C, double xmin, double xmax, double ymin, double ymax)
 {	/* Set x/y parameters */
 
+	C->current.proj.rect_m[XLO] = xmin;	C->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
+	C->current.proj.rect_m[YLO] = ymin;	C->current.proj.rect_m[YHI] = ymax;
+	GMT_report (C, GMT_MSG_DEBUG, "Projected values in meters: %g %g %g %g\n", xmin, xmax, ymin, ymax);
 	C->current.proj.rect[XHI] = (xmax - xmin) * C->current.proj.scale[GMT_X];
 	C->current.proj.rect[YHI] = (ymax - ymin) * C->current.proj.scale[GMT_Y];
 	C->current.proj.origin[GMT_X] = -xmin * C->current.proj.scale[GMT_X];
