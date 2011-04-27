@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.984 2011-04-27 17:17:21 remko Exp $
+	$Id: ChangeLog,v 1.985 2011-04-27 18:21:08 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-04-27	remko
 	* gmt_customio.c:	Now contains grid format descriptions and IDs.
 	* Grdformat.txt, gmt_grdformats.h, grdinfo.h, grdreformat.h:	Removed, no longer needed.
 	* gmt_grdio.c:		Better handling of grids off by 360 degrees in longitude.
+				Included in magic: look if grid can be read by GDAL.
+	* gmt_gdalread.c:	Added GMT_is_gdal_grid.
 
 2011-04-26	pwessel
 	* grdblend_func.c:	Can now take a list of grids (e.g., *.nc) instead of the
