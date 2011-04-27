@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.32 2011-04-26 21:30:20 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.33 2011-04-27 16:48:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -291,12 +291,6 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	GMT_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
 	
 	if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
-
-	if (GMT_IS_RECT_GRATICULE(GMT)) {	/* Where wesn are straight hor/ver lines */
-		GMT_geo_to_xy (GMT, g->wesn[XLO], g->wesn[YLO], &r->wesn[XLO], &r->wesn[YLO]);
-		GMT_geo_to_xy (GMT, g->wesn[XHI], g->wesn[YHI], &r->wesn[XHI], &r->wesn[YHI]);
-		return;
-	}
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {
 		all_lats = GMT_180_RANGE (g->wesn[YHI], g->wesn[YLO]);
