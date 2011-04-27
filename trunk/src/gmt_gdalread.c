@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.37 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_gdalread.c,v 1.38 2011-04-27 18:20:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -31,6 +31,20 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
 int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
+
+GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	GDALDatasetH hDataset;
+
+	GDALAllRegister();
+	hDataset = GDALOpen(header->name, GA_ReadOnly);
+
+	if (hDataset == NULL) return (GMT_GRDIO_BAD_VAL);
+	GMT_report (C, GMT_MSG_NORMAL, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
+	GDALClose (hDataset);
+	header->type = GMT_GRD_IS_GD;
+
+	return (header->type);
+}
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
