@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.8 2011-04-27 02:07:15 remko Exp $
+ *	$Id: grdinfo_func.c,v 1.9 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,10 +26,6 @@
  */
 
 #include "gmt.h"
-
-char *GMT_grd_type[GMT_N_GRD_FORMATS] = {
-#include "grdinfo.h"	/* Array with gridtype names */
-};
 
 /* Control structure for grdinfo */
 
@@ -367,7 +363,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					"%s: Unknown registration! Probably not a GMT grid\n", G->header->name);
 			if (G->header->type >= 0 && G->header->type < GMT_N_GRD_FORMATS)
 				GMT_fprintf (GMT->session.std[GMT_OUT], 
-					"%s: Grid file format: %c%c (# %" GMT_LL "d) %s\n", G->header->name, (int)GMT_grdformats[G->header->type][0], (int)GMT_grdformats[G->header->type][1], G->header->type, GMT_grd_type[G->header->type-1]);
+					"%s: Grid file format: %s\n", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
 				GMT_fprintf (GMT->session.std[GMT_OUT], 
 					"%s: Unrecognized grid file format! Probably not a GMT grid\n", G->header->name);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.211 2011-04-26 17:52:48 guru Exp $
+ *	$Id: gmt.h,v 1.212 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -253,6 +253,8 @@ struct GMT_SESSION {
 	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	GMT_LONG n_shorthands;			/* Length of arrray with shorthand information */
+	GMT_LONG grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
+	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
 	PFL readinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid read header functions */
 	PFL updateinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid update header functions */
 	PFL writeinfo[GMT_N_GRD_FORMATS];	/* Pointers to grid write header functions */

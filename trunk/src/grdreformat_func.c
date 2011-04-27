@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.6 2011-04-26 21:32:39 remko Exp $
+ *	$Id: grdreformat_func.c,v 1.7 2011-04-27 15:35:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,7 +55,6 @@ void Free_grdreformat_Ctrl (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *C) {	
 
 GMT_LONG GMT_grdreformat_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
-#include "grdreformat.h"	/* Defines N_GRDTXT_LINES and char *grd_formats[N_GRDTXT_LINES] array used in usage message */
 	GMT_LONG i;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -73,11 +72,7 @@ GMT_LONG GMT_grdreformat_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "rfV.");
 
 	GMT_message (GMT, "\n	The following grid file formats are supported:\n\n");
-#ifdef USE_GDAL
-	for (i = 0; i < N_GRDTXT_LINES; i++) GMT_message (GMT, "\t%s\n", grd_formats[i]);
-#else
-	for (i = 0; i < N_GRDTXT_LINES; i++) if (!strstr (grd_formats[i], "GDAL")) GMT_message (GMT, "\t%s\n", grd_formats[i]);
-#endif
+	for (i = 0; i < GMT_N_GRD_FORMATS; i++) if (!strstr (GMT->session.grdformat[i], "not supported")) GMT_message (GMT, "\t%s\n", GMT->session.grdformat[i]);
 	return (EXIT_FAILURE);
 }
 
@@ -179,8 +174,8 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
-		GMT_report (GMT, GMT_MSG_NORMAL, "Translating file %s (format = %ld) to file %s (format = %ld)\n", fname[0], type[0], fname[1], type[1]);
-		if (mode && GMT_grdformats[type[1]][0] != 'c' && GMT_grdformats[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_FATAL, "No grd header will be written\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
+		if (mode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_FATAL, "No grd header will be written\n");
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
