@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.16 2011-04-26 23:57:58 guru Exp $
+ *    $Id: grdblend_func.c,v 1.17 2011-04-27 00:56:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -116,7 +116,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 }
 
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
-	GMT_LONG n = 0, nr, one_or_zero = 0, type, n_fields, do_sample, status;
+	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"};
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[BUFSIZ];
@@ -380,7 +380,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 
 			case '<':	/* Skip input files */
 				Ctrl->In.active = TRUE;
-				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = GMT_memory (GMT, Ctrl->In.file, n_alloc, char *);
+				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = GMT_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
 				Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
 				break;
 
