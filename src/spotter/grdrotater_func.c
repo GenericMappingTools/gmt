@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.15 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.16 2011-04-27 22:50:03 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -438,6 +438,10 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 		GMT->common.R.wesn[XLO] = S->min[GMT_X];	GMT->common.R.wesn[XHI] = S->max[GMT_X];
 		GMT->common.R.wesn[YLO] = S->min[GMT_Y];	GMT->common.R.wesn[YHI] = S->max[GMT_Y];
+		/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
+		GMT_lon_range_adjust (GMT,  GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
+		GMT_lon_range_adjust (GMT,  GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
+		if (GMT->common.R.wesn[XLO] > GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	
 	G_rot = GMT_create_grid (GMT);
@@ -516,9 +520,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write reconstructed grid\n");
 
-	strcpy (G_rot->header->x_units, "degree");
-	strcpy (G_rot->header->y_units, "degree");
-	sprintf (G_rot->header->remark, "Grid rotated using lon lat omega = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
+	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G_rot)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
