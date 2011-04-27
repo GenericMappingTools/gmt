@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.8 2011-04-16 22:43:19 guru Exp $
+/* $Id: img2grd_func.c,v 1.9 2011-04-27 03:53:51 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -145,6 +145,7 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   -T3 for new img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Refer Mercator coordinates to img source origin [Default sets lower left to 0,0].\n");
+	GMT_message (GMT, "\t   Requires -M.\n");
 	GMT_message (GMT, "\t-E Resample to the specified -R [Ignored if -M is given].\n");
 	GMT_message (GMT, "\t   (Default gives the exact -R of the Mercator grid).\n");
 	GMT_message (GMT, "\t-M Write a Mercator grid [Default writes a geographic grid].\n");
@@ -258,6 +259,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error: Must specify output type in the range 0-3 with -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error: Requires a maximum longitude >= 360.0 with -W.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error: Requires a positive value with -I.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->M.active, "Syntax error: -C requires -M.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -446,7 +448,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->M.active) {
 		sprintf (Merc->header->x_units, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);
 		sprintf (Merc->header->y_units, "Spherical Mercator projected Latitude, -Jm1, length from %.12g", bottom);
-		sprintf (Merc->header->remark, "Spherical Mercator Projected with -Jm1 -R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		sprintf (Merc->header->remark, "Spherical Mercator Projected with -Jm1 -R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], south2, north2);
 	}
 	else {
 		sprintf (Merc->header->x_units, "longitude [degrees_east]");
@@ -589,7 +591,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		strcpy (s_out_ID, Ctrl->G.file);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere  --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
 	if ((status = GMT_grdproject_cmd (API, 0, (void *)cmd))) Return (GMT_RUNTIME_ERROR);	/* Inverse project the grid or fail */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Merc);
+	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Merc);
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
 		/* Preparing source and destination for GMT_grdsample */
 		/* a. Register the Geographic grid returned by GMT_grdproject to be the source read by GMT_grdsample by passing a pointer */
