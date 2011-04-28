@@ -166,7 +166,7 @@ F	Encode sign using WESN suffix
 G	Same as F but with a leading space before suffix
 .br
 .sp
-The default is +D.
+The default is D.
 .TP
 .B FORMAT_FLOAT_MAP
 Format (C language printf syntax) to be used when plotting double precision floating point numbers on maps.
