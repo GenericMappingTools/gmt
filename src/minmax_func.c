@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.11 2011-04-23 03:53:35 guru Exp $
+ *    $Id: minmax_func.c,v 1.12 2011-04-28 01:58:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -314,9 +314,9 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			
 			do_report = TRUE;
  			for (i = 0; i < ncol; i++) if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_LON) {	/* Must finalize longitudes first */
-				j = GMT_quad_finalize (GMT, Q);
-				GMT->current.io.geo.range = j;		/* Override this setting explicitly */
-				xyzmin[i] = Q[i].min[j];	xyzmax[GMT_X] = Q[i].max[j];
+				j = GMT_quad_finalize (GMT, &Q[i]);
+				GMT->current.io.geo.range = Q[i].range[j];		/* Override this setting explicitly */
+				xyzmin[i] = Q[i].min[j];	xyzmax[i] = Q[i].max[j];
 			}
 			if (give_r_string) {	/* Return -R string */
 				west  = floor (xyzmin[GMT_X] / Ctrl->I.inc[0]) * Ctrl->I.inc[0];
