@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.33 2011-04-27 16:48:37 remko Exp $
+ *	$Id: grdimage_func.c,v 1.34 2011-04-28 23:00:20 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -416,6 +416,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			dx = GMT_get_inc (I->header->wesn[XLO], I->header->wesn[XHI], I->header->nx, I->header->registration);
 			dy = GMT_get_inc (I->header->wesn[YLO], I->header->wesn[YHI], I->header->ny, I->header->registration);
 			I->header->inc[GMT_X] = dx;	I->header->inc[GMT_Y] = dy;
+			I->header->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
+			I->header->r_inc[GMT_Y] = 1.0 / dy;
 		}
 
 		Ctrl->In.do_rgb = (I->n_bands >= 3);
@@ -796,8 +798,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			to_GDALW->ULy = GMT->common.R.wesn[YHI];
 		}
 		else {
-			to_GDALW->ULx = Img_proj->header->wesn[XHI];	/* OK, this is still wrong because coordinates are not projected ones */
-			to_GDALW->ULy = Img_proj->header->wesn[YHI];
+			to_GDALW->ULx = GMT->current.proj.rect_m[XLO];
+			to_GDALW->ULy = GMT->current.proj.rect_m[YHI];
+			//to_GDALW->ULx = Img_proj->header->wesn[XHI];	/* OK, this is still wrong because coordinates are not projected ones */
+			//to_GDALW->ULy = Img_proj->header->wesn[YHI];
 		}
 		to_GDALW->x_inc = dx;
 		to_GDALW->y_inc = dy;
