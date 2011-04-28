@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.9 2011-04-28 03:05:13 guru Exp $
+ *	$Id: project_func.c,v 1.10 2011-04-28 08:56:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -511,7 +511,6 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active, "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode, "Syntax error -N option: Cannot be used with -G<dist>/<lat>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && !Ctrl->C.active && !Ctrl->E.active, "Syntax error -G option: The -G<dist>/<lat> option requires -C, -E\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -606,7 +605,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG pure_ascii, skip, z_first = TRUE;
 
 	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
-	double theta = 0.0, d_along, sign = 1.0, *in = NULL;
+	double theta = 0.0, d_along, sign = 1.0, s, c, *in = NULL;
 	double a[3], b[3], x[3], xt[3], center[3], e[9];
 
 	struct PROJECT_DATA *p_data = NULL;
@@ -704,12 +703,22 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	else {
-		if (Ctrl->T.active)
+		if (Ctrl->T.active) {
 			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, Ctrl->C.y, Ctrl->C.x, center, Ctrl->T.active);
+			if (Ctrl->G.mode) {	/* Want small-circle path about T; must adjust C to be at right lat */
+				Ctrl->G.lat = 90 - Ctrl->G.lat;
+				sign = copysign (1.0, Ctrl->G.lat);
+				sincosd (Ctrl->G.lat, &s, &c);
+				GMT_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, a, TRUE);
+				for (k = 0; k < 3; k++) x[k] = sign * (P.pole[k] * s + a[k] * c);
+				GMT_cart_to_geo (GMT, &(Ctrl->C.y), &(Ctrl->C.x), x, TRUE);
+				sin_lat_to_pole = c;
+			}
+		}
 		else {
 			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
 			if (Ctrl->G.mode) {	/* Want small-circle path from C to E */
-				double s, c, s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
+				double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
 				GMT_LONG done;
 				radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
 				if (radius > fabs (Ctrl->G.lat)) {
