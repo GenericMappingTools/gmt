@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.8 2011-04-24 20:47:41 guru Exp $
+ *	$Id: project_func.c,v 1.9 2011-04-28 03:05:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -322,7 +322,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "project %s [API] - Project data onto line or great circle, generate track, or translate coordinates\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: project [files] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
-	GMT_message (GMT, "\t[-F<flags>] [-G<dist>] [-L[w][<l_min>/<l_max>]]\n");
+	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<lat>]] [-L[w][<l_min>/<l_max>]]\n");
 	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -357,6 +357,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
 	GMT_message (GMT, "\t-G Means Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
+	GMT_message (GMT, "\t   Optionally, append /<lat> for a small circle path through C and E (requires -C -E).\n");
 	GMT_message (GMT, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_message (GMT, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_message (GMT, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
@@ -510,6 +511,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active, "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode, "Syntax error -N option: Cannot be used with -G<dist>/<lat>\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && !Ctrl->C.active && !Ctrl->E.active, "Syntax error -G option: The -G<dist>/<lat> option requires -C, -E\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -603,8 +605,8 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG j, k, n_fields, mode, error = FALSE;
 	GMT_LONG pure_ascii, skip, z_first = TRUE;
 
-	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0, shrink = 1.0;
-	double theta = 0.0, d_along, *in = NULL;
+	double xx, yy, cos_theta, sin_theta, sin_lat_to_pole = 1.0;
+	double theta = 0.0, d_along, sign = 1.0, *in = NULL;
 	double a[3], b[3], x[3], xt[3], center[3], e[9];
 
 	struct PROJECT_DATA *p_data = NULL;
@@ -708,36 +710,33 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
 			if (Ctrl->G.mode) {	/* Want small-circle path from C to E */
 				double s, c, s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
-				GMT_LONG done, pos = (Ctrl->G.lat > 0.0);
+				GMT_LONG done;
 				radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
 				if (radius > fabs (Ctrl->G.lat)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Your -C and -E are too far apart for a small-circle with latitude %g. Revert to great-circle\n", Ctrl->G.lat);
+					GMT_report (GMT, GMT_MSG_FATAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with latitude %g. Revert to great-circle.\n", radius, Ctrl->G.lat);
 					Ctrl->G.mode = 0;
 				}
 				else {	/* Find small circle pole so C and E are |lat| degrees from it. */
 					for (k = 0; k < 3; k++) m[k] = a[k] + b[k];	/* Mid point along A-B */
 					GMT_normalize3v (GMT, m);
-					s_hi = (pos) ? 90.0 : 0.0;
-					s_lo = (pos) ? 0.0 : -90.0;
+					sign = copysign (1.0, Ctrl->G.lat);
+					s_hi = 90.0;	s_lo = 0.0;
 					done = FALSE;
 					do {	/* Trial for finding pole S */
 						s_mid = 0.5 * (s_lo + s_hi);
-						sincosd (s_mid, &s, &c);
+						sincosd (sign * s_mid, &s, &c);
 						for (k = 0; k < 3; k++) x[k] = P.pole[k] * s + m[k] * c;
 						GMT_normalize3v (GMT, x);
 						radius = d_acosd (GMT_dot3v (GMT, a, x)); 
-						if (fabs (radius - Ctrl->G.lat) < 0.1)
+						if (fabs (radius - fabs (Ctrl->G.lat)) < 0.1)
 							done = TRUE;
-						else if (radius > fabs (Ctrl->G.lat)) {
-							if (pos) s_hi = s_mid; else s_lo = s_mid;
-						}
-						else {
-							if (pos) s_lo = s_mid; else s_hi = s_mid;
-						}
+						else if (radius > fabs (Ctrl->G.lat))
+							s_hi = s_mid;
+						else
+							s_lo = s_mid;
 					} while (!done);
 					GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 					sin_lat_to_pole = c;
-					shrink = c;
 					GMT_cross3v (GMT, P.pole, a, x);
 					GMT_normalize3v (GMT, x);
 					GMT_cross3v (GMT, x, P.pole, ap);
@@ -746,7 +745,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_normalize3v (GMT, x);
 					GMT_cross3v (GMT, x, P.pole, bp);
 					GMT_normalize3v (GMT, bp);
-					Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp)) * shrink;
+					Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp)) * sin_lat_to_pole;
 				}
 			}
 		}
@@ -810,7 +809,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else {
 			GMT_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, TRUE);
 			for (i = 0; i < P.n_used; i++) {
-				make_euler_matrix (P.pole, e, p_data[i].a[2] / sin_lat_to_pole);
+				make_euler_matrix (P.pole, e, sign * p_data[i].a[2] / sin_lat_to_pole);
 				matrix_3v (e,x,xt);
 				GMT_cart_to_geo (GMT, &(p_data[i].a[5]), &(p_data[i].a[4]), xt, TRUE);
 			}

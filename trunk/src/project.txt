@@ -4,7 +4,7 @@
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
 .SH SYNOPSIS
 BD(project) [ IT(infile) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
-[ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist) ]
+[ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(lat)] ]
 [ OPT(L)[BD(w)][IT(l_min)/IT(l_max)] ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
 [ OPT(T)IT(px)/IT(py) ] [ GMT_V_OPT ] [ OPT(W)IT(w_min)/IT(w_max) ]
 [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
@@ -87,7 +87,8 @@ If the OPT(G) option is selected, the output will be IT(rsp).
 .TP
 OPT(G)IT(dist)
 IT(dist) Generate mode.  No input is read.  Create (IT(r), IT(s), IT(p)) output points every IT(dist) units of IT(p).  See 
-OPT(Q) option.
+OPT(Q) option. Alternatively, append /IT(lat) for a small circle that goes through the center (OPT(C)) and end points (OPT(E));
+requires OPT(C) and OPT(E).  Note, the center and end point cannot be farther apart than 2*|IT(lat)|.
 .TP
 OPT(L)[BD(w)][IT(l_min)/IT(l_max)]
 Length controls.  Project only those points whose IT(p) coordinate is within IT(l_min) < IT(p) < IT(l_max).  
