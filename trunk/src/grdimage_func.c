@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.34 2011-04-28 23:00:20 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.35 2011-04-28 23:37:29 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -570,7 +570,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
 			status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd);	/* Do the resampling */
 			G2->header->n_bands = 1;		/* FCK POINT - Should not be needed */
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
+			GMT_free_grid (GMT, &Intens_orig, TRUE);
 			Intens_orig = G2;
 		}
 #endif
