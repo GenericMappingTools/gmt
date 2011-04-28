@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.15 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psxy_func.c,v 1.16 2011-04-28 01:02:47 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -613,7 +613,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	/* For most symbols, the data columns beyond two will be dimensions that either have the units appended (e.g., 2c)
-	 * or they are assumed to be in the current measure unit (PROJ_LENGH_UNIT).  We therefore set the in_col_type to be
+	 * or they are assumed to be in the current measure unit (PROJ_LENGTH_UNIT).  We therefore set the in_col_type to be
 	 * GMT_IS_DIMENSION for these so that unit conversions are handled correctly.  However, some symbols also require
 	 * angles via the input data file.  S.n_nondim and S.nondim_col are used to reset the in_col_type back to GMT_IS_FLOAT
 	 * for those columns are expected to contain angles.  When NO SYMBOL is specified in -S we must parse the ASCII data

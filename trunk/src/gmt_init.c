@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.488 2011-04-26 17:52:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.489 2011-04-28 01:02:47 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3261,7 +3261,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_MEASURE_UNIT: GMT_COMPAT_CHANGE ("PROJ_LENGH_UNIT");
+		case GMTCASE_MEASURE_UNIT: GMT_COMPAT_CHANGE ("PROJ_LENGTH_UNIT");
 #endif
 		case GMTCASE_PROJ_LENGTH_UNIT:
 			if (lower_value[0] == 'c')
