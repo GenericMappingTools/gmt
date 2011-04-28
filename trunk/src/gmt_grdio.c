@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.182 2011-04-27 18:20:28 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.183 2011-04-28 03:01:39 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,7 +70,9 @@ EXTERN_MSC GMT_LONG GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *head
 EXTERN_MSC GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
+#ifdef USE_GDAL
 EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
+#endif
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -178,8 +180,10 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 		if (GMT_is_agc_grid (C, header) >= 0) return (GMT_NOERROR);
 		/* Then check for ESRI grid */
 		if (GMT_is_esri_grid (C, header) >= 0) return (GMT_NOERROR);
+#ifdef USE_GDAL
 		/* Then check for GDAL grid */
 		if (GMT_is_gdal_grid (C, header) >= 0) return (GMT_NOERROR);
+#endif
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from C->current.setting.io_gridfile_format */
