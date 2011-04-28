@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.183 2011-04-28 03:01:39 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.184 2011-04-28 22:48:31 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1649,9 +1649,9 @@ GMT_LONG GMT_check_url_name (char *fname) {
 #ifdef USE_GDAL
 GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
 	int i;
+	double dumb;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
-
 
 	/* Allocate new control structures */
 	to_gdalread   = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
@@ -1686,13 +1686,17 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	I->header->ny = from_gdalread->RasterYsize;
 	I->header->n_bands = from_gdalread->RasterCount;
 	I->header->registration = (int)from_gdalread->hdr[6];
+	I->header->wesn[XLO] = from_gdalread->Corners.LL[0];
+	I->header->wesn[XHI] = from_gdalread->Corners.UR[0];
+	I->header->wesn[YLO] = from_gdalread->Corners.LL[1];
+	I->header->wesn[YHI] = from_gdalread->Corners.UR[1];
+	if (I->header->wesn[YHI] < I->header->wesn[YLO]) {	/* Simple images have that annoying origin at UL and y positive down */
+		dumb = I->header->wesn[YHI];
+		I->header->wesn[YHI] = I->header->wesn[YLO];
+		I->header->wesn[YLO] = dumb;
+	}
 
-	/* GMT_set_grddim (C, I->header);*/		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
-	I->header->mx = GMT_grd_get_nxpad (I->header, I->header->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
-	I->header->my = GMT_grd_get_nypad (I->header, I->header->pad);
-	I->header->nm = GMT_grd_get_nm (I->header);		/* Sets the number of actual data items */
-	I->header->size = GMT_grd_get_size (C, I->header);	/* Sets the nm items needed to hold this array */
-	I->header->xy_off = 0.5 * I->header->registration;
+	GMT_set_grddim (C, I->header);		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
 
 	GMT_free (C, to_gdalread);
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )
