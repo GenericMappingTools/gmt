@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.11 2011-04-23 02:14:13 guru Exp $
+*	$Id: mapproject_func.c,v 1.12 2011-04-28 01:02:47 jluis Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Returns x/y relative to projection center [Default is relative to lower left corner].\n");
 	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
 	GMT_message (GMT, "\t   Units are plot units unless -F is set in which case the unit is meters.\n");
-	GMT_message (GMT, "\t-D Temporarily reset PROJ_LENGH_UNIT to be c (cm), i (inch), or p (point).\n");
+	GMT_message (GMT, "\t-D Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -F is set.\n");
 	GMT_message (GMT, "\t-E Convert (lon, lat, h) to Earth Centered Earth Fixed (ECEF) coordinates [-I for inverse].\n");
 	GMT_message (GMT, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>,\n");
