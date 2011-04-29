@@ -323,7 +323,7 @@ OPT(G) Revert to default fill (none if not set on command line)
 .br
 OPT(W)IT(pen) Use the new IT(pen) and turn outline on
 .br
-OPT(W) Revert to default pen ()MAP_DEFAULT_PENBD( if not set on command line)
+OPT(W) Revert to default pen BD(MAP_DEFAULT_PEN) (if not set on command line)
 .br
 OPT(W-) Turn outline off
 .br
