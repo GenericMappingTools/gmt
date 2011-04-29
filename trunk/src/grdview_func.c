@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.22 2011-04-29 21:17:27 guru Exp $
+ *	$Id: grdview_func.c,v 1.23 2011-04-29 21:33:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -145,6 +145,9 @@ struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y)
 	return (point);
 }
 
+#if 0
+/* Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
+
 void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, GMT_LONG draw_plane, double plane_level)
 {
 	GMT_LONG row, col, ij;
@@ -183,6 +186,7 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, GMT_LONG d
 		}
 	}
 }
+#endif
 
 double get_intensity (struct GMT_CTRL *GMT, struct GMT_GRID *I, GMT_LONG k)
 {
@@ -668,7 +672,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	sw = GMT_IJP (Topo->header, Topo->header->ny - 1, 0);
 	se = GMT_IJP (Topo->header, Topo->header->ny - 1, Topo->header->nx - 1);
 
+#if 0
 	grdview_init_setup (GMT, Topo, Ctrl->N.active, Ctrl->N.level);	/* Find projected min/max in y-direction */
+#endif
 
 	i_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? 0 : Z->header->nx - 2;
 	i_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? Z->header->nx - 1 : -1;
