@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.13 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psclip_func.c,v 1.14 2011-04-29 23:31:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,16 +29,13 @@
 #include "pslib.h"
 #include "gmt.h"
 
-#define CLIP_POL	0	/* Terminate polygon clipping */
-#define CLIP_TXT	1	/* Terminate textbased clipping */
-#define CLIP_STEXT	2	/* Undo one level of textclipping and plot current straight text */
-#define CLIP_CTEXT	3	/* Undo one level of textclipping and plot current curved text */
+#define CLIP_STEXT	-1	/* Undo one level of textclipping and plot current straight text */
+#define CLIP_CTEXT	-2	/* Undo one level of textclipping and plot current curved text */
 
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
 		GMT_LONG active;
-		GMT_LONG mode;	/* 1 if we are to plot text previously used to set a straight clip path; 2 for curved */
-		GMT_LONG n;	/* Number of levels to undo [1] */
+		GMT_LONG n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
 	} C;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -102,7 +99,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, k = 0;
+	GMT_LONG n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -118,17 +115,19 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 
 			case 'C':	/* Turn clipping off */
 				Ctrl->C.active = TRUE;
-				if (opt->arg[0] == 'p') { k = 1; Ctrl->C.mode = CLIP_POL; }	/* Default anyway */
-				if (opt->arg[0] == 's') { k = 1; Ctrl->C.mode = CLIP_STEXT; }
-				if (opt->arg[0] == 'c') { k = 1; Ctrl->C.mode = CLIP_CTEXT; }
-				if (opt->arg[0] == 't') { k = 1; Ctrl->C.mode = CLIP_TXT; }
-				if (opt->arg[k]) {	/* Gave argument for how many levels */
-					if (isdigit ((int)opt->arg[k])) Ctrl->C.n = atoi (&opt->arg[k]);
-					else if (opt->arg[k] == 'a') Ctrl->C.n = (Ctrl->C.mode == CLIP_POL) ? PSL_ALL_CLIP_POL : PSL_ALL_CLIP_TXT;
-					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Correct syntax is -C[s|c|t|p[<n>|a]]\n");
-						n_errors++;
-					}
+				Ctrl->C.n = 1;
+				switch (opt->arg[0]) {
+					case 's': Ctrl->C.n = CLIP_STEXT; break;
+					case 'c': Ctrl->C.n = CLIP_CTEXT; break;
+					case 'a': Ctrl->C.n = PSL_ALL_CLIP; break;
+					default:
+						if (isdigit ((int)opt->arg[0]))
+							Ctrl->C.n = atoi (&opt->arg[0]);
+						else {
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
+							n_errors++;
+						}
+						break;
 				}
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
@@ -161,31 +160,27 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG mode, GMT_LONG n)
+void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG n)
 {
-	if (mode == CLIP_POL) {
-		PSL_endclipping (PSL, n);	/* Reduce polygon clipping by n levels [1] */
-		if (n == PSL_ALL_CLIP_POL)
+	switch (n) {
+		case CLIP_STEXT:
+			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
+			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
+			GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed straight text\n");
+			break;
+		case CLIP_CTEXT:
+			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
+			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
+			GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed curved text\n");
+			break;
+		case PSL_ALL_CLIP:
+			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
 			GMT_report (C, GMT_MSG_NORMAL, "Restore ALL polygon clip levels\n");
-		else
+			break;
+		default:
+			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
 			GMT_report (C, GMT_MSG_NORMAL, "Restore %ld polygon clip levels\n", n);
-	}
-	else if (mode == CLIP_TXT) {
-		PSL_endclipping (PSL, -n);	/* Reduce polygon clipping by n levels [1] */
-		if (n == PSL_ALL_CLIP_TXT)
-			GMT_report (C, GMT_MSG_NORMAL, "Restore ALL text clip levels\n");
-		else
-			GMT_report (C, GMT_MSG_NORMAL, "Restore %ld text clip levels\n", n);
-	}
-	else if (mode == CLIP_STEXT) {
-		PSL_endclipping (PSL, -1);	/* Undo last text clipping levels */
-		PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-		GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed straight text\n");
-	}
-	else if (mode == CLIP_CTEXT) {
-		PSL_endclipping (PSL, -1);	/* Undo last text clipping levels */
-		PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
-		GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed curved text\n");
+			break;
 	}
 }
 
@@ -221,17 +216,15 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!GMT->current.proj.x_off_supplied && GMT->common.O.active) GMT->current.setting.map_origin[GMT_X] = 0.0;
 	if (!GMT->current.proj.y_off_supplied && GMT->common.O.active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
-	if (Ctrl->C.mode == CLIP_POL) {	/* Only keep track of polygon clip levels */
-		if (Ctrl->C.active)
-			GMT->current.ps.clip = -Ctrl->C.n;	/* Program terminates n levels of prior clipping */
-		else
-			GMT->current.ps.clip = +1;		/* Program adds one new level of clipping */
-	}
+	if (Ctrl->C.active)
+		GMT->current.ps.clip = MIN (-1, -Ctrl->C.n);	/* Program terminates n levels of prior clipping */
+	else
+		GMT->current.ps.clip = +1;		/* Program adds one new level of clipping */
 
 	GMT_plotinit (API, PSL, options);
 
-	if (Ctrl->C.active && !GMT->current.map.frame.plot) {	/* Just undo previous clip-path(s), no basemap needed so no -R -J parsing */
-		gmt_terminate_clipping (GMT, PSL, Ctrl->C.mode, Ctrl->C.n);
+	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
+	if (Ctrl->C.active && !GMT->current.map.frame.plot) {	/* No basemap needed so no -R -J parsing */
 		GMT_plotend (GMT, PSL);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 
@@ -244,16 +237,13 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-	if (Ctrl->C.active) {	/* Undo previous clip-path(s) and draw basemap */
-		gmt_terminate_clipping (GMT, PSL, Ctrl->C.mode, Ctrl->C.n);
-		GMT_map_basemap (GMT, PSL);
-	}
-	else {	/* Start new clip_path */
+	GMT_map_basemap (GMT, PSL);
+
+	if (!Ctrl->C.active) {	/* Start new clip_path */
 		GMT_LONG tbl, seg, i, first = !Ctrl->N.active;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;
-		GMT_map_basemap (GMT, PSL);
 
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 1);	/* Must clip map */
 
