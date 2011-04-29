@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.262 2011-04-29 19:35:41 guru Exp $
+ *	$Id: gmt_io.c,v 1.263 2011-04-29 19:45:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4343,7 +4343,6 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 			break;
 	}
 	if (io_mode < GMT_WRITE_SEGMENTS) {
-		GMT_report (C, GMT_MSG_NORMAL, "Writing data table to %s\n", file);
 		if (ascii && C->current.io.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
