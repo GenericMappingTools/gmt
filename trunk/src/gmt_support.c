@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.499 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_support.c,v 1.500 2011-04-29 23:20:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,7 +43,6 @@
  *	GMT_cspline		Natural cubic 1-D spline solver
  *	GMT_csplint		Natural cubic 1-D spline evaluator
  *	GMT_delaunay		Performs a Delaunay triangulation
- *	GMT_epsinfo		Fill out info need for PostScript header
  *	GMT_free		Memory deallocation
  *	GMT_get_annot_label	Construct degree/minute label
  *	GMT_get_annot_offset	Return offset in inches for text annotation
