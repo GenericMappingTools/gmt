@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.5 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_internals.h,v 1.6 2011-04-29 23:23:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,6 @@ EXTERN_MSC GMT_LONG GMT_annot_pos (struct GMT_CTRL *C, double min, double max, s
 EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
 EXTERN_MSC float GMT_decode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, GMT_LONG type);
 EXTERN_MSC void GMT_encode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, float z, GMT_LONG type);
-EXTERN_MSC struct EPS * GMT_epsinfo (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, GMT_LONG justify);
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *C, char *name);
 EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *C);
