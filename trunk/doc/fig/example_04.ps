@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jan 16 2011 09:50:09) [64-bit] Document from GMT_grdcontour
+%%Title: GMT v5.0.0a (CVS Apr 29 2011 15:40:40) [64-bit] [C4] Document from GMT_grdcontour
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Jan 16 15:55:20 2011
+%%CreationDate: Fri Apr 29 16:04:19 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -47,26 +47,27 @@
 /FQ {/fs {} def}!
 /O0 {/os {N} def}!
 /O1 {/os {P S} def}!
-/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR fs os}!
-/Sb {M dup 0 D exch 0 exch D neg 0 D fs os}!
+/FO {fs os}!
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
 /SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
-  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR fs os}!
-/Sc {N 3 -1 roll 0 360 arc fs os}!
-/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D fs os}!
-/Se {N MS T R scale 0 0 1 0 360 arc MR fs os}!
-/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR fs os}!
-/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR fs os}!
-/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR fs os}!
-/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR fs os}!
-/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR fs os}!
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Sc {N 3 -1 roll 0 360 arc FO}!
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
 /Sp {N 3 -1 roll 0 360 arc F}!
-/SP {M {D} repeat fs os}!
-/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D fs os}!
-/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D fs os}!
-/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR fs os}!
-/SV {0 exch M 0 D D D D D 0 D fs os}!
-/Sv {0 0 M D D 0 D D D D D 0 D D fs os}!
-/Sw {2 copy M 5 2 roll arc fs os}!
+/SP {M {D} repeat FO}!
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
+/SV {0 exch M 0 D D D D D 0 D FO}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
+/Sw {2 copy M 5 2 roll arc FO}!
 /Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 /Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
 /S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
@@ -295,7 +296,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -485,22 +486,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -523,12 +525,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -541,7 +542,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -558,14 +562,14 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 0 A
 FQ
 O0
-450 450 T
+375 375 T
 
 % PostScript produced by:
-%%GMT:  grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P -X1.5i -Y1.5i -U/-1.25i/-1.25i/Example 4 in Cookbook
+%%GMT:  grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P -X1.25i -Y1.25i -U/-0.5i/-1i/Example 4 in Cookbook
 %%PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 % Begin GMT time-stamp
 V
--375 -375 T
+-150 -300 T
 1 W
 /PSL_g_w 110 def
 /PSL_g_h 45 def
@@ -606,7 +610,7 @@ clipsave
 2025 0 D
 0 1011 D
 -2025 0 D
-eoclip N
+PSL_eoclip N
 /PSL_setlinepen {1 W 0 A [] 0 B} def
 /PSL_setboxpen {1 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
@@ -4820,9 +4824,9 @@ P S
 -8 12 D
 -3 12 D
 P S
-PSL_clip_on {cliprestore /PSL_clip_on false def} if
+PSL_cliprestore
 25 PSL_straight_text_labels
-cliprestore
+PSL_cliprestore
 PSL_GPP setmatrix
 0 A
 0 A
@@ -4840,13 +4844,13 @@ O0
 0 15 D
 -1 0 D
 {0 A} FS
-fs os
+FO
 1314 284 M
 -79 39 D
 -7 -11 D
 9 -28 D
 77 0 D
-fs os
+FO
 945 472 M
 5 11 D
 0 -10 D
@@ -4861,7 +4865,7 @@ fs os
 23 -40 D
 14 2 D
 1 0 D
-fs os
+FO
 1215 384 M
 0 14 D
 -33 21 D
@@ -4872,7 +4876,7 @@ fs os
 22 -4 D
 7 -28 D
 56 16 D
-fs os
+FO
 706 571 M
 44 -19 D
 15 14 D
@@ -4881,7 +4885,7 @@ fs os
 -25 -2 D
 -19 -11 D
 -6 -22 D
-fs os
+FO
 1080 439 M
 20 -5 D
 19 16 D
@@ -4889,7 +4893,7 @@ fs os
 -7 -18 D
 42 -4 D
 0 1 D
-fs os
+FO
 1080 404 M
 5 -15 D
 21 11 D
@@ -4897,12 +4901,12 @@ fs os
 -16 -2 D
 8 -10 D
 0 -1 D
-fs os
+FO
 1132 368 M
 -9 -11 D
 20 3 D
 -11 8 D
-fs os
+FO
 1237 284 M
 1 -2 D
 -32 -37 D
@@ -4921,7 +4925,7 @@ fs os
 -17 17 D
 -8 4 D
 -77 0 D
-fs os
+FO
 2 W
 135 0 M 0 -21 D S
 135 1011 M 0 20 D S
@@ -4949,18 +4953,18 @@ fs os
 2025 863 M 21 0 D S
 135 1052 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 58 F0
-(-164Ê) bc Z
-405 1052 M (-162Ê) bc Z
-675 1052 M (-160Ê) bc Z
-945 1052 M (-158Ê) bc Z
-1215 1052 M (-156Ê) bc Z
-1485 1052 M (-154Ê) bc Z
-1755 1052 M (-152Ê) bc Z
-2025 1052 M (-150Ê) bc Z
-2067 0 M (18Ê) ml Z
-2067 284 M (20Ê) ml Z
-2067 571 M (22Ê) ml Z
-2067 863 M (24Ê) ml Z
+V 180 R (-164Ê) tc Z U
+405 1052 M V 180 R (-162Ê) tc Z U
+675 1052 M V 180 R (-160Ê) tc Z U
+945 1052 M V 180 R (-158Ê) tc Z U
+1215 1052 M V 180 R (-156Ê) tc Z U
+1485 1052 M V 180 R (-154Ê) tc Z U
+1755 1052 M V 180 R (-152Ê) tc Z U
+2025 1052 M V 180 R (-150Ê) tc Z U
+2067 0 M V 180 R (18Ê) mr Z U
+2067 284 M V 180 R (20Ê) mr Z U
+2067 571 M V 180 R (22Ê) mr Z U
+2067 863 M V 180 R (24Ê) mr Z U
 21 W
 1 A
 -10 0 M 0 284 D S
@@ -5024,7 +5028,7 @@ O0
 0 660 T
 
 % PostScript produced by:
-%%GMT:  grdview HI_topo4.nc -R195/210/18/25/-6/4 -Jm0.45i -Jz0.34i -p60/30 -Czero.cpt -N-6/lightgray -Qsm -O -K -B2/2/2:Topo (km):neswZ \
+%%GMT:  grdview HI_topo4.nc -R195/210/18/25/-6/4 -Jm0.45i -Jz0.34i -p60/30 -Czero.cpt -O -K -N-6/lightgray -Qsm -B2/2/2:Topo (km):neswZ \
 %%GMT:+ -Y2.2i
 %%PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 /PSL_GPP matrix currentmatrix def [-0.5 -0.433013 0.866025 -0.25 1012.5 1129.5] concat
@@ -21474,7 +21478,7 @@ O1
 10 -3 D
 22 -6 D
 10 -3 D
-fs os
+FO
 1888 965 M
 -12 -8 D
 -5 -4 D
@@ -21788,7 +21792,7 @@ fs os
 6 5 D
 5 5 D
 12 10 D
-fs os
+FO
 /PSL_GPP matrix currentmatrix def [0.866025 -0.25 0 0.866025 0 -1306.19] concat
 0 1800 T
 /PSL_sign -1 def
@@ -21862,7 +21866,7 @@ clipsave
 3000 0 D
 0 3000 D
 -3000 0 D
-eoclip N
+PSL_eoclip N
 975 1725 M PSL_font_encode 33 get 0 eq {Standard+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
 250 F33
 V MU 0 0 M (H) FP 213 F33 (AWAIIAN) FP 250 F33 ( R) FP 213 F33 (IDGE) FP pathbbox N pop exch pop add U -2 div 0 G
@@ -21870,7 +21874,7 @@ V MU 0 0 M (H) FP 213 F33 (AWAIIAN) FP 250 F33 ( R) FP 213 F33 (IDGE) FP pathbbo
 213 F33 (AWAIIAN) Z
 250 F33 ( R) Z
 213 F33 (IDGE) Z
-cliprestore
+PSL_cliprestore
 %%PageTrailer
 0 0 T 300 300 scale 0 A
 showpage
