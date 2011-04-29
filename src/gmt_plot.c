@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.322 2011-04-29 23:36:47 remko Exp $
+ *	$Id: gmt_plot.c,v 1.323 2011-04-29 23:44:20 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3661,7 +3661,7 @@ GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_O
 GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P) {
 	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
 	if (C->current.ps.clip != P->current.nclip)
-		GMT_report (C, GMT_MSG_FATAL, "Command was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.clip, P->current.nclip);
+		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.clip, P->current.nclip);
 	PSL_endplot (P, !C->common.K.active);
 	return (0);
 }

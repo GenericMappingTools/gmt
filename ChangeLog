@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.992 2011-04-29 03:08:10 guru Exp $
+	$Id: ChangeLog,v 1.993 2011-04-29 23:44:20 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-29	remko
+	* job04*.sh:		Made ex 4 and 4c more similar and rotated color bar.
+	* grdview_func.c:	Removed grdview_init_setup because it produces unexpected results.
+
+2011-04-28	remko
+	* grdview_func.c:	Removed grdview_init_setup because it yields unpredictable
+				results and prevends lineup of different 3D plots.
 
 2011-04-28	pwessel
 	* gmt_constants.h:	Declare and use GMT_BUFSIZ 4096 throughout.
@@ -10,7 +18,7 @@
 	* spotter/grdrotater_func.c:	Ensure that output grid xmin/xmax honors the current
 				FORMAT_GEO_OUT range settings.
 	* mapproject_func.c:	Used GMT_IN instead of GMT_OUT in output format of longitudes.
-	*project_func.c:	Added modification -Gdist/lat to generate small circles of given
+	* project_func.c:	Added modification -Gdist/lat to generate small circles of given
 				lat that goes through points set by -C and -E.
 				Bug: The original -G -T combination failed to produce great circles.
 
