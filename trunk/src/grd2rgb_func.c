@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -267,7 +267,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0, pos, entry, guess = FALSE;
-	char ptr[BUFSIZ];
+	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	
@@ -353,7 +353,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG i, row, col, error = 0, index, ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
-	char grdfile[BUFSIZ];
+	char grdfile[GMT_BUFSIZ];
 	
 	unsigned char *picture = NULL;
 	

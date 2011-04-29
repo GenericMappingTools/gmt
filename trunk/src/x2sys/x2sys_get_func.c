@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_get_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_get_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -172,7 +172,7 @@ int find_leg (char *name, struct X2SYS_BIX *B, int n)
 
 GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	char *y_match = NULL, *n_match = NULL, line[BUFSIZ], *p = NULL;
+	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ], *p = NULL;
 	
 	int *in_bin_flag = NULL;	/* Match type in struct X2SYS_BIX_TRACK */
 	
@@ -251,7 +251,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_message (GMT, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (EXIT_FAILURE);
 			}
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
 				if ((p = strchr (line, '.'))) line[(int)(p-line)] = '\0';	/* Remove extension */

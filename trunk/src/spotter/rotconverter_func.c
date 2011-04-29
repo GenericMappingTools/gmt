@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: rotconverter_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -253,7 +253,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	char *start_text[2] = {"tstart(My)", "astart(deg)"};	/* Misc. column titles for rates or angles */
 	char *end_text[2] = {"tend(My)", "aend(deg)"};
 	char *time_text[2] = {"ttime(My)", "tangle(deg)"};
-	char record[BUFSIZ];
+	char record[GMT_BUFSIZ];
 
 	struct GMT_OPTION *ptr = NULL, *opt = NULL;
 	struct ROTCONVERTER_CTRL *Ctrl = NULL;

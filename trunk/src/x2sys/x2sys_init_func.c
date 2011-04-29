@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -255,8 +255,8 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifndef WIN32
 	struct passwd *pw;
 #endif
-	char tag_file[BUFSIZ], track_file[BUFSIZ], bin_file[BUFSIZ], def_file[BUFSIZ];
-	char path_file[BUFSIZ], path[BUFSIZ], line[BUFSIZ];
+	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
+	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
 	GMT_LONG error = FALSE;
 
@@ -421,7 +421,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_message (GMT, "Could not create %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
-	while (fgets (line, BUFSIZ, fp_def)) fprintf (fp, "%s", line);
+	while (fgets (line, GMT_BUFSIZ, fp_def)) fprintf (fp, "%s", line);
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, def_file, fp), def_file);
 	fclose (fp_def);	/* Close local def file */
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.4 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_merge_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG  i, j, k, n_alloc, n_base, n_merge, merge_start, error;
 	GMT_LONG *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL, *map_merge_end = NULL;
-	char line[BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL, *c_not_used = NULL;
+	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL, *c_not_used = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -163,7 +163,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Read in the main COEs dbase and store the pair track names */
 	n_base = 0;		k = 1;
-	while (fgets (line, BUFSIZ, fp_base)) {	/*  */
+	while (fgets (line, GMT_BUFSIZ, fp_base)) {	/*  */
 		if (line[0] == '>') {
 			map_base_start[n_base] = k;
 			if (n_base) map_base_end[n_base-1] = k - 1;
@@ -186,7 +186,7 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Read in the updated COEs dbase and store the pair track names */
 	n_alloc = GMT_CHUNK;
 	n_merge = 0;		k = 1;
-	while (fgets (line, BUFSIZ, fp_merge)) {	/*  */
+	while (fgets (line, GMT_BUFSIZ, fp_merge)) {	/*  */
 		if (line[0] == '>') {
 			map_merge_start[n_merge] = k;
 			if (n_merge) map_merge_end[n_merge-1] = k - 1;
@@ -209,17 +209,17 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Jump comment lines in both files and osition the file poiter into the first data line */
 	k = 0;
-	while (fgets (line, BUFSIZ, fp_merge) && line[0] == '#') k++;	/* Jump the comment lines in the to-merge file */
+	while (fgets (line, GMT_BUFSIZ, fp_merge) && line[0] == '#') k++;	/* Jump the comment lines in the to-merge file */
 	rewind (fp_merge);
-	for (i = 0; i < k; i++) c_not_used = fgets (line, BUFSIZ, fp_merge);
+	for (i = 0; i < k; i++) c_not_used = fgets (line, GMT_BUFSIZ, fp_merge);
 
 	k = 0;
-	while (fgets (line, BUFSIZ, fp_base) && line[0] == '#') {
+	while (fgets (line, GMT_BUFSIZ, fp_base) && line[0] == '#') {
 		fprintf (stdout, "%s", line);
 		k++;
 	}
 	rewind (fp_base);
-	for (i = 0; i < k; i++) c_not_used = fgets (line, BUFSIZ, fp_base);
+	for (i = 0; i < k; i++) c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
 
 	/* Do the merging. COEs present in file dbase2 replace their pairs in dbase1 */
 	merge_start = 0;
@@ -227,24 +227,24 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (j = merge_start; j < n_merge; j++) {
 			if (!strcmp(pairs_base[i], pairs_merge[j])) {		 /* Update these COEs */
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
-					c_not_used = fgets (line, BUFSIZ, fp_merge);
+					c_not_used = fgets (line, GMT_BUFSIZ, fp_merge);
 					fprintf (stdout, "%s", line);
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++)	/* Advance also in the base file */
-					c_not_used = fgets (line, BUFSIZ, fp_base);
+					c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
 
 				merge_start = j + 1;
 				break;		/* Since we found this to update, no need to continue seeking for another repetition */
 			}
 			else if (j == (n_merge - 1)) {	/* Not equal. So do not to update, just recopy */
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
-					c_not_used = fgets (line, BUFSIZ, fp_base);
+					c_not_used = fgets (line, GMT_BUFSIZ, fp_base);
 					fprintf (stdout, "%s", line);
 				}
 			}
 		}
 		if (merge_start == n_merge) {	/* Copy the rest of dbase1 file and stop */
-			while (fgets (line, BUFSIZ, fp_base))
+			while (fgets (line, GMT_BUFSIZ, fp_base))
 				fprintf (stdout, "%s", line);
 			break;			/* Not very elegant way of stopping, but we are done */
 		}

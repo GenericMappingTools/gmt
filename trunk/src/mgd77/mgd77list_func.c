@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.7 2011-04-25 00:21:07 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -309,7 +309,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, k, code;
-	char *t = NULL, buffer[BUFSIZ];
+	char *t = NULL, buffer[GMT_BUFSIZ];
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -657,7 +657,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
 	GMT_LONG need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
 	
-	char fx_setting[BUFSIZ], **list = NULL, **item_names = NULL;
+	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
 	
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, *out = NULL;
@@ -742,7 +742,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
 	if (M.adjust_time) Ctrl->D.stop  = MGD77_time2utime (GMT, &M, Ctrl->D.stop);
 	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxilliary columns */
-		char path[BUFSIZ];
+		char path[GMT_BUFSIZ];
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
 			if (access (path, R_OK)) {
@@ -864,7 +864,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		char path[BUFSIZ];
+		char path[GMT_BUFSIZ];
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
 			if (access (path, R_OK)) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -376,7 +376,7 @@ double compute_robust_weight (struct GMT_GRID *R, struct GMT_GRID *W)
 void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, GMT_LONG n_model)
 {	/* Do reports if gmtdefs.verbose = NORMAL or above  */
 	GMT_LONG i;
-	char pbasis[10][16], format[BUFSIZ];
+	char pbasis[10][16], format[GMT_BUFSIZ];
 
 	sprintf (pbasis[0], "Mean");
 	sprintf (pbasis[1], "X");
@@ -463,7 +463,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	GMT_LONG trivial, weighted, error = 0, i, k, ierror = 0, iterations;
 	
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 
 	double chisq, old_chisq, zero_test = 1.0e-08, scale = 1.0, dv;
 	double *xval = NULL;	/* Pointer for array of change of variable: x[i]  */

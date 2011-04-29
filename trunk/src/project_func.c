@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.11 2011-04-29 00:20:01 guru Exp $
+ *	$Id: project_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -523,7 +523,7 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 {
 	GMT_LONG n_items, i, j, k, error, pure_ascii;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
-	char record[BUFSIZ], text[BUFSIZ];
+	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
 	if (Ctrl->S.active) qsort ((void *)p_data, (size_t)P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 

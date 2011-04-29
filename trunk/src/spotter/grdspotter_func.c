@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -616,13 +616,13 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			FILE *fp = NULL;
 			GMT_LONG Qid;
 			double wq, eq, sq, nq;
-			char line[BUFSIZ];
+			char line[GMT_BUFSIZ];
 			
 			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: -Q info file unreadable/nonexistent\n");
 				exit (EXIT_FAILURE);
 			}
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;
 				k = sscanf (line, "%*s %ld %lf %lf %lf %lf", &Qid, &wq, &eq, &sq, &nq);
 				ID_info[Ctrl->Q.id].ok = TRUE;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.254 2011-04-27 02:07:36 remko Exp $
+ *	$Id: pslib.c,v 1.255 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -518,7 +518,7 @@ PSL_LONG PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label,
 {	/* Expects PSL_beginaxes to have been called first */
 	PSL_LONG annot_justify, label_justify, i, j, ndig = 0, k, reverse = FALSE;
 	double angle, dy, scl, val, annot_off, label_off, xx, sign, x, y, length, val0, val1;
-	char text[BUFSIZ], format[BUFSIZ];
+	char text[PSL_BUFSIZ], format[PSL_BUFSIZ];
 
 	k = 2 * (side % 2);	/* Start index for x [0] or y [2] in axis_limit */
 	/* Get position and limit values from PSL_beginaxes settings */
@@ -1761,8 +1761,8 @@ PSL_LONG PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fonts
 	new_anchor = (fontsize > 0.0);
 	fontsize = fabs (fontsize);
 
-	if (strlen (text) >= (BUFSIZ-1)) {
-		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", BUFSIZ);
+	if (strlen (text) >= (PSL_BUFSIZ-1)) {
+		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", PSL_BUFSIZ);
 		return (PSL_BAD_TEXT);
 	}
 
@@ -1838,8 +1838,8 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char 
 	PSL_LONG font, sub, super, small, old_font;
 	double small_size, size, scap_size;
 
-	if (strlen (text) >= (BUFSIZ-1)) {
-		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", BUFSIZ);
+	if (strlen (text) >= (PSL_BUFSIZ-1)) {
+		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", PSL_BUFSIZ);
 		return (PSL_BAD_TEXT);
 	}
 
@@ -1867,8 +1867,8 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char 
 	 * Use @@ to print a single @
 	 */
 
-	piece  = PSL_memory (PSL, NULL, 2 * BUFSIZ, char);
-	piece2 = PSL_memory (PSL, NULL, BUFSIZ, char);
+	piece  = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
+	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
 	font = old_font = PSL->current.font_no;
 	size = fontsize;
@@ -2025,8 +2025,8 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 	psl_putfont (PSL, fontsize);
 
 	if (text) {
-		if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
-			PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long - text not plotted!\n", BUFSIZ);
+		if (strlen (text) >= (PSL_BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
+			PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long - text not plotted!\n", PSL_BUFSIZ);
 			return (PSL_BAD_TEXT);
 		}
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
@@ -2081,8 +2081,8 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 	 * Use @@ to print a single @
 	 */
 
-	piece  = PSL_memory (PSL, NULL, 2 * BUFSIZ, char);
-	piece2 = PSL_memory (PSL, NULL, BUFSIZ, char);
+	piece  = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
+	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
 	/* Now we can start printing text items */
 
@@ -3113,7 +3113,7 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 	}
 	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
 		PSL_LONG code;
-		char cmd[BUFSIZ], tmp_file[32];
+		char cmd[PSL_BUFSIZ], tmp_file[32];
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
 		sprintf (cmd, "convert %s %s", file, tmp_file);
 		if (system (cmd)) {
@@ -3512,7 +3512,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 	else if (strcmp ("ISOLatin1", PSL->init.encoding) == 0)
 		he = 3;
 
-	string = PSL_memory (PSL, NULL, 2 * BUFSIZ, char);
+	string = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
 	while (text[i]) {
 		if (he && text[i] == '@') {
 			i++;
@@ -4474,8 +4474,8 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, const char *version)
 {
 	FILE *in = NULL;
-	char buf[BUFSIZ];
-	char fullname[BUFSIZ];
+	char buf[PSL_BUFSIZ];
+	char fullname[PSL_BUFSIZ];
 	PSL_LONG i, first = TRUE;
 
 	psl_getsharepath (PSL, "pslib", fname, ".ps", fullname);
@@ -4485,7 +4485,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, const char *v
 		PSL_exit (EXIT_FAILURE);
 	}
 
-	while (fgets (buf, BUFSIZ, in)) {
+	while (fgets (buf, PSL_BUFSIZ, in)) {
 		if (version[0] && first) {
 			first = FALSE;
 			if (!strstr (buf, "$Id:") || !strstr (buf, version)) PSL_message (PSL, PSL_MSG_FATAL, "Warning: PSL expects %s of %s\n", version, fullname);
@@ -4517,8 +4517,8 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 {
 	FILE *in = NULL;
 	PSL_LONG i = 0, n_alloc = 64, n_GMT_fonts;
-	char buf[BUFSIZ];
-	char fullname[BUFSIZ];
+	char buf[PSL_BUFSIZ];
+	char fullname[PSL_BUFSIZ];
 
 	/* Loads the available fonts for this installation */
 
@@ -4533,7 +4533,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 
 	PSL->internal.font = PSL_memory (PSL, NULL, n_alloc, struct PSL_FONT);
 
-	while (fgets (buf, BUFSIZ, in)) {
+	while (fgets (buf, PSL_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %" PSL_LL "d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Trouble decoding font info for font %ld\n", i);
@@ -4562,7 +4562,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 			PSL_exit (EXIT_FAILURE);
 		}
 
-		while (fgets (buf, BUFSIZ, in)) {
+		while (fgets (buf, PSL_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
 			if (sscanf (buf, "%s %lf %" PSL_LL "d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
@@ -4584,7 +4584,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 PSL_LONG psl_pattern_init (struct PSL_CTRL *PSL, PSL_LONG image_no, char *imagefile)
 {
 	PSL_LONG i, status;
-	char name[BUFSIZ], file[BUFSIZ];
+	char name[PSL_BUFSIZ], file[PSL_BUFSIZ];
 	unsigned char *picture = NULL;
 	struct imageinfo h;
 	PSL_LONG found;
@@ -4669,7 +4669,7 @@ PSL_LONG psl_patch (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG np)
 
 char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 {	/* Writes the dash pattern */
-	static char text[BUFSIZ];
+	static char text[PSL_BUFSIZ];
 	char mark = '[';
 	size_t len = 0;
 	if (pattern && pattern[0]) {
@@ -4689,7 +4689,7 @@ char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 
 char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[])
 {
-	static char text[BUFSIZ];
+	static char text[PSL_BUFSIZ];
 
 	if (PSL_eq (rgb[0], -1.0)) {
 		/* Ignore, no color set */
@@ -4832,10 +4832,10 @@ PSL_LONG psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, PSL_LONG nx
 PSL_LONG psl_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try)
 {
 	PSL_LONG nested;
-	char buf[BUFSIZ];
+	char buf[PSL_BUFSIZ];
 
 	nested = 0; *llx = 1; *trx = 0;
-	while (fgets(buf, BUFSIZ, fp) != NULL) {
+	while (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
 		if (!nested && !strncmp(buf, "%%BoundingBox:", (size_t)14)) {
 			if (!strstr(buf, "(atend)")) {
 				if (sscanf(strchr(buf, ':') + 1, "%" PSL_LL "d %" PSL_LL "d %" PSL_LL "d %" PSL_LL "d", llx, lly, trx, try) < 4) return 1;

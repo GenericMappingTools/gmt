@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	GMT_LONG i, ij, k, error, dim[4] = {1, 0, 0, 0};
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2 = 6371007.1810 * 6371007.1810, dist = GMT->session.d_NaN;
-	char segment_header[BUFSIZ];
+	char segment_header[GMT_BUFSIZ];
 	struct GMT_DATASET *Dout[2] = {NULL, NULL};
 	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
 	if (get_area == 2) /* Steradians */
@@ -168,7 +168,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, error, dim[4] = {1, 0, 0, 0};
 	
-	char segment_header[BUFSIZ];
+	char segment_header[GMT_BUFSIZ];
 	
 	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN, V1[3], V2[3], V3[3];
 	double *plat = NULL, *plon = NULL, R2 = 6371007.1810 * 6371007.1810;
@@ -452,7 +452,7 @@ GMT_LONG GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_
 
 GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	char *mode[2] = {"Delaunay", "Voronoi"}, header[BUFSIZ];
+	char *mode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
 	GMT_LONG n = 0, n_alloc, n_dup = 0, n_fields;
 	GMT_LONG error = FALSE, first = FALSE, steradians = FALSE;

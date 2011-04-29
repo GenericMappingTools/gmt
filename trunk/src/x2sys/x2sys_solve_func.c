@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_solve_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_solve_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -284,7 +284,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 {
 	/* Reads a list with track names and their origin times (needed for -Et) */
 	int n_alloc = GMT_CHUNK, n = 0;
-	char **p, line[BUFSIZ], name[GMT_TEXT_LEN64], date[GMT_TEXT_LEN64];
+	char **p, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], date[GMT_TEXT_LEN64];
 	double *T;
 	FILE *fp;
 
@@ -296,7 +296,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	p = GMT_memory (GMT, NULL, n_alloc, char *);
 	T = GMT_memory (GMT, NULL, n_alloc, double);
 
-	while (fgets (line, BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (GMT, line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %s", name, date);
 		p[n] = (char *) strdup (name);
@@ -328,7 +328,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	char **trk_list = NULL;
-	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[BUFSIZ];
+	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
 	GMT_LONG error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL};
 	GMT_LONG n_par = 0, n, m, t, n_tracks = 0, n_active;
@@ -529,13 +529,13 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {	/* Ascii input with track names */
 		char file_TAG[GMT_TEXT_LEN64], file_column[GMT_TEXT_LEN64], *not_used = NULL;
-		not_used = GMT_fgets (GMT, line, BUFSIZ, fp);	/* Read first line with TAG and column */
+		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Read first line with TAG and column */
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
 			GMT_message (GMT, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);	
 		}
-		while (GMT_fgets (GMT, line, BUFSIZ, fp)) {    /* Not yet EOF */
+		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
 			if (line[0] == '#') continue;	/* Skip other comments */
 			switch (Ctrl->E.mode) {	/* Handle input differently depending on what is expected */
 				case F_IS_CONSTANT:

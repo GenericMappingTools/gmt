@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.15 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdraster_func.c,v 1.16 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,7 +204,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, n_fields, delta, error = 0;
 	double global_lon, lon_tol;
-	char path[BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
+	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct GMT_STAT F;
 

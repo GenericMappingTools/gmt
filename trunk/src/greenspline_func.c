@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: greenspline_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -336,7 +336,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = TRUE;
 				if (strchr (opt->arg, '/')) {
-					char tmp[BUFSIZ];
+					char tmp[GMT_BUFSIZ];
 					sscanf (opt->arg, "%lf/%s", &Ctrl->C.value, tmp);
 					Ctrl->C.file = strdup (tmp);
 				}

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.991 2011-04-29 00:20:01 guru Exp $
+	$Id: ChangeLog,v 1.992 2011-04-29 03:08:10 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-04-28	pwessel
+	* gmt_constants.h:	Declare and use GMT_BUFSIZ 4096 throughout.
 
 2011-04-27	pwessel
 	* gmt_map.c:		Store projected min/max in meters in current->rect_m[].

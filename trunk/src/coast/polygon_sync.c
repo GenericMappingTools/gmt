@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.8 2011-04-12 13:06:43 remko Exp $
+ *	$Id: polygon_sync.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -15,7 +15,7 @@ struct POLYGON {
 
 int main (int argc, char **argv) {
 	int i, n_id[5], id1, id2, res, father, error = 0, *link[5], *level[5];
-	char *kind = "fhilc", file[BUFSIZ], line[BUFSIZ];
+	char *kind = "fhilc", file[GMT_BUFSIZ], line[GMT_BUFSIZ];
 	FILE *fp;
 	
 	argc = GMT_begin (argc, argv);
@@ -60,7 +60,7 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {
-		fgets (line, BUFSIZ, fp);
+		fgets (line, GMT_BUFSIZ, fp);
 		sscanf (line, "%d %d %d %d %d %d %d %d %d %d ", &link[0][id1], &level[0][id1], &link[1][id1], &level[1][id1], &link[2][id1], &level[2][id1], &link[3][id1], &level[3][id1], &link[4][id1], &level[4][id1]);
 		for (res = 0; res < 5; res++) {
 			if (res > 0 && link[res][id1] >= 0 && level[res][id1] != level[FULL][id1]) {

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.21 2011-04-11 21:15:32 remko Exp $
+ *	$Id: cm4_functions.c,v 1.22 2011-04-29 03:08:12 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -151,7 +151,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double *essq;		/* was [13680] */
 	double *ecto;		/* was [16416] */
 	double *hyto;		/* was [49248] */
-	char line[BUFSIZ], *c_unused = NULL;
+	char line[GMT_BUFSIZ], *c_unused = NULL;
 
 	FILE *fp;
 
@@ -181,11 +181,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		return 1;
 	}
 
-	c_unused = fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf);
-	c_unused = fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%d", &lum1);
-	c_unused = fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%lf %lf %lf %lf", &epch, &re, &rp, &rm);
 	for (j = 0; j < lsmf; ++j)
 		i_unused = fscanf (fp, "%d", &bord[j]);
@@ -300,7 +300,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			dstx = (double *) calloc((size_t)(n_Dst_rows * 24), sizeof(double));
 			/* One improvment would be to compute year_min/year_max and retain only the needed data in dstx */
 
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				sscanf (&line[3], "%2d %2d", &jyr, &jmon);
 				sscanf (&line[8], "%2d", &jdom);
 				for (i = 0; i < 24; ++i)
@@ -349,7 +349,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				return 1;
 			}
 			jaft = 0;
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[9] != '-') {
 					sscanf (line, "%d %d %d", &jyr, &jmon, &jf107);
 					if (jaft == 0) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77path_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -132,7 +132,7 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, n_cruises = 0, n_paths, error = FALSE;
 	
-	char path[BUFSIZ], **list = NULL;
+	char path[GMT_BUFSIZ], **list = NULL;
 	
 	struct MGD77_CONTROL M;
 	struct MGD77PATH_CTRL *Ctrl = NULL;

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.60 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys.h,v 1.61 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,8 +157,8 @@ struct X2SYS_INFO {
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
-	char fflags[BUFSIZ];		/* Text copy of selected columns */
-	char path[BUFSIZ];		/* Full path to current data file */
+	char fflags[GMT_BUFSIZ];		/* Text copy of selected columns */
+	char path[GMT_BUFSIZ];		/* Full path to current data file */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 

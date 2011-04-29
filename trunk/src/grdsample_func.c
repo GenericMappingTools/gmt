@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.16 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdsample_func.c,v 1.17 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 	GMT_LONG n_errors = 0, n_files = 0;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 #endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -172,7 +172,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	GMT_LONG error = 0, ij, row, col;
 	
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 	
 	double *lon = NULL, lat;
 

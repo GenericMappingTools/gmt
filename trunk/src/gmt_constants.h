@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_constants.h,v 1.7 2011-04-26 17:52:48 guru Exp $
+ *	$Id: gmt_constants.h,v 1.8 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,6 +72,7 @@
 #define GMT_TEXT_LEN64	64
 #define GMT_TEXT_LEN256	256
 #define GMT_MAX_COLUMNS	4096		/* Limit on number of columns in data tables (not grids) */
+#define GMT_BUFSIZ	4096		/* Size of char record for i/o */
 #define CNULL		((char *)NULL)
 #define GMT_CM		0
 #define GMT_INCH	1

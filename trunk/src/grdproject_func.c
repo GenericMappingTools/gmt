@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.16 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdproject_func.c,v 1.17 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	GMT_LONG n_errors = 0, n_files = 0, set_n = FALSE;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 #endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -207,7 +207,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, set_n = FALSE, shift_xy = FALSE, offset, k, unit = 0;
 	GMT_LONG use_nx = 0, use_ny = 0;
 
-	char format[BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
+	char format[GMT_BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
@@ -248,7 +248,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
 		GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	else {	/* If -R was not given we infer the option via the input grid */
-		char opt_R[BUFSIZ];
+		char opt_R[GMT_BUFSIZ];
 		struct GMT_GRID *G = NULL;
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		GMT_memcpy (wesn, G->header->wesn, 4, double);

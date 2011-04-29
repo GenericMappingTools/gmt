@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.11 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pscoast_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -608,7 +608,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		GMT_LONG id = 0;
-		char header[BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
+		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
 		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);

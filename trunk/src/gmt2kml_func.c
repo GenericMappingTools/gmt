@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.9 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.10 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -237,7 +237,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 
 	EXTERN_MSC GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item);
 	GMT_LONG n_errors = 0, pos = 0, k, n_files = 0, n_alloc = 0;
-	char buffer[BUFSIZ], p[BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
+	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -562,9 +562,9 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG k, n_coord = 0, first = TRUE, get_z = FALSE, t1_col, t2_col,error = FALSE;
 	GMT_LONG set_nr = 0, pnt_nr = 0, index = -4, use_folder = FALSE, do_description, N = 1;
 	
-	char buffer[BUFSIZ], description[BUFSIZ], *Document[2] = {"Document", "Folder"};
+	char buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], *Document[2] = {"Document", "Folder"};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
-	char label[BUFSIZ], *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
+	char label[GMT_BUFSIZ], *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 
 	double rgb[4], out[5];
 
@@ -676,7 +676,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		tabs (--N); printf ("</Style>\n");
 	}
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
-		char line[BUFSIZ];
+		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
 		if ((fp = GMT_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
 			GMT_message (GMT, "Could not open description file %s\n", Ctrl->D.file);
@@ -684,7 +684,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		tabs (N++); printf ("<description>\n");
 		tabs (N++); printf ("<![CDATA[\n");
-		while (GMT_fgets (GMT, line, BUFSIZ, fp)) tabs (N), printf ("%s", line);
+		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) tabs (N), printf ("%s", line);
 		GMT_fclose (GMT, fp);
 		tabs (--N); printf ("]]>\n");
 		tabs (--N); printf ("</description>\n");
@@ -694,7 +694,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->N.mode == GET_LABEL) {	/* Special ASCII table processing */
 		GMT_LONG n_fields, ix, iy, n_rec = 0;
-		char in_buffer[BUFSIZ], C[4][GMT_TEXT_LEN64];
+		char in_buffer[GMT_BUFSIZ], C[4][GMT_TEXT_LEN64];
 		void **record = NULL;
 		
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
 {
 	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, pad[4];
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 	double delta_cell, target;
 	struct CELL *cell = NULL;
 	

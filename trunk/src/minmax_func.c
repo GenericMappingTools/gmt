@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.12 2011-04-28 01:58:26 guru Exp $
+ *    $Id: minmax_func.c,v 1.13 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -232,7 +232,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG brackets = FALSE, work_on_abs_value, do_report;
 	GMT_LONG i, j, ncol = 0, n = 0, n_fields, save_range, mode, done;
 
-	char file[BUFSIZ], chosen[BUFSIZ], record[BUFSIZ], buffer[BUFSIZ], delimeter[2];
+	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, value;
 	double west, east, south, north, low, high, e_min = DBL_MAX, e_max = -DBL_MAX;
@@ -261,7 +261,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimeter[1] = '\0';
 	mode = (Ctrl->C.active) ? GMT_WRITE_DOUBLE : GMT_WRITE_TEXT;
-	GMT_memset (file, BUFSIZ, char);
+	GMT_memset (file, GMT_BUFSIZ, char);
 	
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);

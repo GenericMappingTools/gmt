@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.11 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0, j, entry, pos, n_opt_args = 0;
-	char ptr[BUFSIZ];
+	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -300,7 +300,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad;
 	GMT_LONG p[4], row, col, ij, ij0, index, n, n_used = 0, new_grid = FALSE;
 	
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 	
 	double dx_grid, dy_grid, x_factor, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output;

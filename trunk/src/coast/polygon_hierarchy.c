@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.10 2011-04-12 13:06:42 remko Exp $
+ *	$Id: polygon_hierarchy.c,v 1.11 2011-04-29 03:08:12 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
 	int i, j, n_id[5], id1, id2, dx, res, go, ix_shift, c, in, cont_no_1, cont_no_2, *link[5], *level[5];
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double x_shift = 0.0;
-	char *kind = "fhilc", file[BUFSIZ];
+	char *kind = "fhilc", file[GMT_BUFSIZ];
 	FILE *fp;
 	
 	argc = GMT_begin (argc, argv);

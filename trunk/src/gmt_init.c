@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.489 2011-04-28 01:02:47 jluis Exp $
+ *	$Id: gmt_init.c,v 1.490 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1127,7 +1127,7 @@ GMT_LONG GMT_check_region (struct GMT_CTRL *C, double wesn[])
 
 GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	GMT_LONG i, icol, pos, got, col_type[2], expect_to_read, error = 0;
-	char text[BUFSIZ], string[BUFSIZ];
+	char text[GMT_BUFSIZ], string[GMT_BUFSIZ];
 	double p[6];
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
@@ -1241,7 +1241,7 @@ GMT_LONG gmt_parse_Y_option (struct GMT_CTRL *C, char *text)
 GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 {	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
 	GMT_LONG col, pos = 0;
-	char p[BUFSIZ], name[BUFSIZ], A[64], *s = NULL, *c = NULL;
+	char p[GMT_BUFSIZ], name[GMT_BUFSIZ], A[64], *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
 		C->common.a.geometry = ogr_get_geometry ((char *)(s+2));
@@ -1376,7 +1376,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 {
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 
-	char copy[BUFSIZ], p[BUFSIZ], *c = NULL;
+	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
 	GMT_LONG i, k = 1, start = -1, stop = -1, ic, pos = 0, code, *col = NULL;
 	GMT_LONG both_i_and_o = FALSE;
 
@@ -1391,8 +1391,8 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 		k = 0;
 	}
 
-	GMT_memset (copy, BUFSIZ, char);	/* Clean the copy */
-	strncpy (copy, &arg[k], (size_t)BUFSIZ);	/* arg should NOT have a leading i|o part */
+	GMT_memset (copy, GMT_BUFSIZ, char);	/* Clean the copy */
+	strncpy (copy, &arg[k], (size_t)GMT_BUFSIZ);	/* arg should NOT have a leading i|o part */
 
 	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
 		if (both_i_and_o) {
@@ -1459,7 +1459,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 {
 	/* Routine will decode the -i<col>|<colrange>[l][s<scale>][o<offset>],... arguments */
 
-	char copy[BUFSIZ], p[BUFSIZ], *c = NULL;
+	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
 #ifdef GMT_COMPAT
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #endif
@@ -1468,9 +1468,9 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -i requires an argument */
 
-	GMT_memset (copy, BUFSIZ, char);	/* Get a clean copy */
-	strncpy (copy, arg, (size_t)BUFSIZ);
-	for (i = 0; i < BUFSIZ; i++) C->current.io.col_skip[i] = TRUE;	/* Initially, no input column is requested */
+	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
+	strncpy (copy, arg, (size_t)GMT_BUFSIZ);
+	for (i = 0; i < GMT_BUFSIZ; i++) C->current.io.col_skip[i] = TRUE;	/* Initially, no input column is requested */
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		convert = 0, scale = 0.0, offset = 0.0;
@@ -1526,13 +1526,13 @@ GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
 {
 	/* Routine will decode the -o<col>|<colrange>,... arguments */
 
-	char copy[BUFSIZ], p[BUFSIZ], *c = NULL;
+	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
 	GMT_LONG i, k = 0, start = -1, stop = -1, pos = 0;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
-	GMT_memset (copy, BUFSIZ, char);	/* Get a clean copy */
-	strncpy (copy, arg, (size_t)BUFSIZ);
+	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
+	strncpy (copy, arg, (size_t)GMT_BUFSIZ);
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
@@ -2034,7 +2034,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 
 GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	GMT_LONG error = 0, i, n, start, stop, pos = 0, tmp[GMT_MAX_COLUMNS];
-	char p[BUFSIZ], *c = NULL;
+	char p[GMT_BUFSIZ], *c = NULL;
 	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
 
 	GMT_memset (C->current.io.io_nan_col, GMT_MAX_COLUMNS, GMT_LONG);
@@ -2120,7 +2120,7 @@ void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, GMT_LONG n_it
 GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 {
 	GMT_LONG error = 0, rec = 0;
-	char line[BUFSIZ], keyword[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
+	char line[GMT_BUFSIZ], keyword[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
@@ -2129,7 +2129,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 
 	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 
-	while (fgets (line, BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (line);	/* Get rid of [\r]\n */
 		if (rec == 1 && (strlen (line) < 7 || line[6] != '5')) {
@@ -2239,7 +2239,7 @@ GMT_LONG gmt_true_false_or_error (char *value, GMT_LONG *answer)
 GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 {
 	FILE *fp = NULL;
-	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
+	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], full[16], abbrev[16], c[16], dwu;
 	char *months[12];
 
 	GMT_LONG i, nm = 0, nw = 0, nu = 0;
@@ -2257,7 +2257,7 @@ GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 		strcpy (C->current.setting.time_language, "us");
 	}
 
-	while (fgets (line, BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%c %" GMT_LL "d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (dwu == 'M') {	/* Month record */
@@ -2311,7 +2311,7 @@ void gmt_free_user_media (struct GMT_CTRL *C) {	/* Free any user-specified media
 GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified media formats */
 	GMT_LONG n = 0, n_alloc = 0;
 	double w, h;
-	char line[BUFSIZ], file[BUFSIZ], media[GMT_TEXT_LEN64];
+	char line[GMT_BUFSIZ], file[GMT_BUFSIZ], media[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
 	GMT_getsharepath (C, "conf", "gmt_custom_media", ".conf", file);
@@ -2319,7 +2319,7 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 
 	gmt_free_user_media (C);	/* Free any previously allocated user-specified media formats */
 	GMT_set_meminc (C, GMT_TINY_CHUNK);	/* Only allocate a small amount */
-	while (fgets (line, BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
@@ -2434,11 +2434,11 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	GMT_LONG i, ival, case_val, pos, manual, error = FALSE;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[BUFSIZ];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 	double dval;
 
 	if (!value) return (TRUE);		/* value argument missing */
-	strncpy (lower_value, value, (size_t)BUFSIZ);	/* Get a lower case version */
+	strncpy (lower_value, value, (size_t)GMT_BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 
 	case_val = GMT_hash_lookup (C, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
@@ -3439,7 +3439,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 }
 
 char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
-{	/* value must hold at least BUFSIZ chars */
+{	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_TEXT_LEN256];
 	GMT_LONG case_val, error = FALSE;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
@@ -4138,7 +4138,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 {
 	GMT_LONG error = 0, rec = 0;
-	char line[BUFSIZ], keyword[GMT_TEXT_LEN256], string[GMT_TEXT_LEN256];
+	char line[GMT_BUFSIZ], keyword[GMT_TEXT_LEN256], string[GMT_TEXT_LEN256];
 	FILE *fpi = NULL, *fpo = NULL;
 
 	if (file[0] == '-' && !file[1])
@@ -4161,7 +4161,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 
-	while (fgets (line, BUFSIZ, fpi)) {
+	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
 		GMT_chop (line);	/* Get rid of [\r]\n */
 		if (rec == 1) {	/* Copy version from gmt.conf */
@@ -4210,7 +4210,7 @@ void GMT_putdefaults (struct GMT_CTRL *C, char *this_file)	/* Dumps the GMT para
 
 void GMT_getdefaults (struct GMT_CTRL *C, char *this_file)	/* Read user's gmt.conf file and initialize parameters */
 {
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 
 	if (this_file)	/* Defaults file is specified */
 		GMT_loaddefaults (C, this_file);
@@ -4438,11 +4438,11 @@ void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, 
 GMT_LONG GMT_get_ellipsoid (struct GMT_CTRL *C, char *name)
 {
 	GMT_LONG i, n;
-	char line[BUFSIZ];
+	char line[GMT_BUFSIZ];
 	double pol_radius;
 #ifdef GMT_COMPAT
 	FILE *fp = NULL;
-	char path[BUFSIZ];
+	char path[GMT_BUFSIZ];
 	double slop;
 #endif
 
@@ -4480,7 +4480,7 @@ GMT_LONG GMT_get_ellipsoid (struct GMT_CTRL *C, char *name)
 
 	if ((fp = fopen (name, "r")) != NULL || (fp = fopen (path, "r")) != NULL) {
 		/* Found file, now get parameters */
-		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
+		while (fgets (line, GMT_BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
 		fclose (fp);
 		n = sscanf (line, "%s %" GMT_LL "d %lf %lf %lf", C->current.setting.ref_ellipsoid[i].name,
 			&C->current.setting.ref_ellipsoid[i].date, &C->current.setting.ref_ellipsoid[i].eq_radius,
@@ -4581,7 +4581,7 @@ GMT_LONG GMT_get_char_encoding (struct GMT_CTRL *C, char *name)
 
 void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and initialize shorthand notation */
 	GMT_LONG n = 0, n_alloc = 0;
-	char file[BUFSIZ], line[BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
+	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
 	C->session.n_shorthands = 0;	/* By default there are no shorthands unless .gmt_io is found */
@@ -4590,7 +4590,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 	if ((fp = fopen (file, "r")) == NULL) return;
 
 	GMT_set_meminc (C, GMT_TINY_CHUNK);	/* Only allocate a small amount */
-	while (fgets (line, BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
 			GMT_report (C, GMT_MSG_FATAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
@@ -4653,8 +4653,8 @@ void gmt_file_unlock (struct GMT_CTRL *C, int fd, struct flock *lock)
 GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 {
 	GMT_LONG id, done = FALSE;
-	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ], *not_used = NULL;
-	char option[GMT_TEXT_LEN64], value[BUFSIZ];
+	char line[GMT_BUFSIZ], hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ], *not_used = NULL;
+	char option[GMT_TEXT_LEN64], value[GMT_BUFSIZ];
 	FILE *fp = NULL;	/* For .gmtcommands file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 #ifdef FLOCK
@@ -4669,7 +4669,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	not_used = getcwd (cwd, (size_t)BUFSIZ);
+	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s%c.gmtcommands", C->session.TMPDIR, DIR_DELIM);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
@@ -4692,7 +4692,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 	 * File ends when we find EOF
 	 */
 
-	while (!done && fgets (line, BUFSIZ, fp)) {
+	while (!done && fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments lines */
 		GMT_chop (line);		/* Remove linefeed,CR */
 		if (line[0] == '\0') continue;	/* Skip blank lines */
@@ -4720,7 +4720,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 {
 	GMT_LONG id;
-	char hfile[BUFSIZ], cwd[BUFSIZ], *not_used = NULL;
+	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ], *not_used = NULL;
 	FILE *fp = NULL;	/* For .gmtcommands file */
 #ifdef FLOCK
 	struct flock lock;
@@ -4734,7 +4734,7 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	not_used = getcwd (cwd, (size_t)BUFSIZ);
+	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
 		sprintf (hfile, "%s%c.gmtcommands", C->session.TMPDIR, DIR_DELIM);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
@@ -4919,7 +4919,7 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 
 void GMT_set_env (struct GMT_CTRL *C)
 {
-	char *this = NULL, path[BUFSIZ];
+	char *this = NULL, path[GMT_BUFSIZ];
 
 	/* Determine C->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
@@ -5163,11 +5163,11 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 	 * an array with coordinates and labels, and set interval to TRUE if applicable.
 	 */
 	GMT_LONG k, n_errors = 0;
-	char line[BUFSIZ], type[8];
+	char line[GMT_BUFSIZ], type[8];
 	FILE *fp = GMT_fopen (C, A->file_custom, "r");
 
 	GMT_memset (n_int, 4, GMT_LONG);
-	while (GMT_fgets (C, line, BUFSIZ, fp)) {
+	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%*s %s", type);
 		k = 0;
@@ -5476,7 +5476,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	 *	-Bs must be in addition to -B[p].
 	 */
 
-	char out1[BUFSIZ], out2[BUFSIZ], out3[BUFSIZ], info[3][BUFSIZ];
+	char out1[GMT_BUFSIZ], out2[GMT_BUFSIZ], out3[GMT_BUFSIZ], info[3][GMT_BUFSIZ];
 	struct GMT_PLOT_AXIS *A = NULL;
 	GMT_LONG i, j, k, error = 0;
 
@@ -5521,7 +5521,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		if (!info[i][0]) continue;
 
 		gmt_handle_atcolon (C, info[i], 0);	/* Temporarily modify text escape @: to @^ to avoid : parsing trouble */
-		GMT_enforce_rgb_triplets (C, info[i], BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+		GMT_enforce_rgb_triplets (C, info[i], GMT_BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 		error += gmt_strip_colonitem (C, i, info[i], ":,", C->current.map.frame.axis[i].unit, out1);	/* Pull out annotation unit, if any */
 		error += gmt_strip_colonitem (C, i, out1, ":=", C->current.map.frame.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
 		error += gmt_strip_colonitem (C, i, out2, ":", C->current.map.frame.axis[i].label, out3);	/* Pull out axis label, if any */
@@ -5683,7 +5683,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	GMT_LONG i, j, k = 9, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	GMT_LONG n_slashes = 0, width_given, last_pos, error = FALSE, skip = FALSE;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
-	char mod, args_cp[BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char mod, args_cp[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	char txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], last_char;
 	char txt_arr[11][GMT_TEXT_LEN256];
 
@@ -7334,7 +7334,7 @@ void GMT_set_pad (struct GMT_CTRL *C, GMT_LONG pad)
 GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 {
 	GMT_LONG i = 0, n_GMT_fonts, n_alloc = 0;
-	char buf[BUFSIZ], fullname[BUFSIZ];
+	char buf[GMT_BUFSIZ], fullname[GMT_BUFSIZ];
 	FILE *in = NULL;
 
 	/* Loads the available fonts for this installation */
@@ -7348,7 +7348,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 	}
 
 	GMT_set_meminc (C, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	while (fgets (buf, BUFSIZ, in)) {
+	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
@@ -7368,7 +7368,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 			GMT_exit (EXIT_FAILURE);
 		}
 
-		while (fgets (buf, BUFSIZ, in)) {
+		while (fgets (buf, GMT_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (i == n_alloc) n_alloc = GMT_malloc (C, C->session.font, i, n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
@@ -7618,13 +7618,13 @@ void GMT_setmode (struct GMT_CTRL *C, int i_or_o)
    defined as macro, implemented as a function. */
 int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 #ifdef GMT_MATLAB
-	char line[BUFSIZ];
+	char line[GMT_BUFSIZ];
 #endif
 	va_list args;
 	va_start (args, format);
 #ifdef GMT_MATLAB
 	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
-	vsnprintf (line, BUFSIZ, format, args);
+	vsnprintf (line, GMT_BUFSIZ, format, args);
 	mexPrintf ("%s", line);
 #else
 	vfprintf (C->session.std[GMT_ERR], format, args);

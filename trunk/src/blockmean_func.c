@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.7 2011-04-23 02:14:12 guru Exp $
+ *	$Id: blockmean_func.c,v 1.8 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -161,7 +161,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 
 	struct GMT_GRID *Grid = NULL;
 	struct BLK_PAIR *xy = NULL, *zw = NULL;

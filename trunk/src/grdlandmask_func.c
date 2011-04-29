@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.10 2011-04-26 21:39:37 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 	 */
 
 	GMT_LONG n_errors = 0, j, pos, n_files = 0;
-	char line[GMT_TEXT_LEN256], ptr[BUFSIZ];
+	char line[GMT_TEXT_LEN256], ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.270 2011-04-25 00:21:07 guru Exp $
+ *	$Id: mgd77.c,v 1.271 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -476,7 +476,7 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct
 
 int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
-	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ], *not_used = NULL;
+	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[GMT_BUFSIZ], *not_used = NULL;
 	int i, sequence, err, n_eols, c, n;
 	struct GMT_STAT buf;
 
@@ -502,7 +502,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 #else
 
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
-		not_used = fgets (line, BUFSIZ, F->fp);
+		not_used = fgets (line, GMT_BUFSIZ, F->fp);
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
@@ -510,7 +510,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 	}
 	else {
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
+		while (fgets (line, GMT_BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
 		rewind (F->fp);					/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
@@ -521,7 +521,7 @@ int MGD77_Read_Header_Record_asc (struct GMT_CTRL *C, char *file, struct MGD77_C
 		MGD77_header[sequence] = GMT_memory (C, NULL, MGD77_HEADER_LENGTH + 1, char);
 		if ((err = MGD77_Read_Header_Sequence (C, F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
-	if (F->format == MGD77_FORMAT_TBL) not_used = fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
+	if (F->format == MGD77_FORMAT_TBL) not_used = fgets (line, GMT_BUFSIZ, F->fp);			/* Skip the column header for tables */
 
 	for (i = 0; i < 2; i++) H->mgd77[i] = GMT_memory (C, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
 
@@ -1463,7 +1463,7 @@ int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct MGD77_C
 	int n_vars, n_dims, dims[2];
 	int id, c, i, c_id[2], err;
 	size_t count[2] = {0, 0}, length;
-	char name[32], text[BUFSIZ];
+	char name[32], text[GMT_BUFSIZ];
 
 	if (MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 
@@ -1873,11 +1873,11 @@ int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 {
 	int len, i, k, nwords, value, yyyy, mm, dd, nconv;
 	GMT_LONG rata_die;
-	char line[BUFSIZ], currentField[10];
+	char line[GMT_BUFSIZ], currentField[10];
 	GMT_LONG may_convert;
 	double secs, tz;
 
-	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
@@ -1949,10 +1949,10 @@ int MGD77_Read_Data_Record_tbl (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	int j, n9, nwords, k, yyyy, mm, dd;
 	GMT_LONG pos, i;
 	GMT_LONG rata_die;
-	char line[BUFSIZ], p[BUFSIZ];
+	char line[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	double tz, secs;
 
-	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
+	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
@@ -2026,7 +2026,7 @@ int MGD77_View_Line (struct GMT_CTRL *C, FILE *fp, char *MGD77line)	/* View a si
 {
 /*	char line[MGD77_RECORD_LENGTH];
 	strcpy (MGD77line,line); */
-	if (!(fgets (MGD77line, BUFSIZ, fp))) return FALSE;	/* Read one line from the file */
+	if (!(fgets (MGD77line, GMT_BUFSIZ, fp))) return FALSE;	/* Read one line from the file */
 	if (!(fputs (MGD77line, fp))) return FALSE;		/* Put the line back on the stream */
 	return TRUE;
 }
@@ -2233,7 +2233,7 @@ void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	F->rec_no = F->n_out_columns = F->bit_pattern[0] = F->bit_pattern[1] = F->n_constraints = F->n_exact = F->n_bit_tests = 0;
 	F->no_checking = FALSE;
 	memset ((void *)F->NGDC_id, 0, (size_t)(MGD77_COL_ABBREV_LEN * sizeof (char)));
-	memset ((void *)F->path, 0, (size_t)(BUFSIZ * sizeof (char)));
+	memset ((void *)F->path, 0, (size_t)(GMT_BUFSIZ * sizeof (char)));
 	F->fp = NULL;
 	F->nc_id = F->nc_recid = MGD77_NOT_SET;
 	F->format = MGD77_FORMAT_ANY;
@@ -2349,7 +2349,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 * The presence of the : also turns the automatic use of ALL flags off.
 	 */
 
-	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
+	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	int j, k, constraint, n;
 	GMT_LONG pos, i;
 	GMT_LONG exact, all_exact;
@@ -2520,7 +2520,7 @@ void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
 	GMT_LONG i, n_alloc = GMT_SMALL_CHUNK;
-	char file[BUFSIZ], line[BUFSIZ];
+	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
 	FILE *fp = NULL;
 
 	MGD77_Set_Home (C, F);
@@ -2540,7 +2540,7 @@ void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	}
 
 	F->MGD77_datadir = GMT_memory (C, NULL, n_alloc, char *);
-	while (GMT_fgets (C, line, BUFSIZ, fp)) {
+	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
 		GMT_chop (line);
@@ -2594,7 +2594,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 
 	GMT_LONG i, j, k, n = 0, n_dig, length, all, NGDC_ID_likely, n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
-	char **L = NULL, *d_name = NULL, line[BUFSIZ], this_arg[BUFSIZ], *flist = NULL;
+	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
 #ifdef WIN32
 	FILE *fp = NULL;
 #else
@@ -2624,7 +2624,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			GMT_report (C, GMT_MSG_FATAL, "Warning: Unable to open file list %s\n", flist);
 			return (-1);
 		}
-		while (GMT_fgets (C, line, BUFSIZ, fp)) {
+		while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
 			if (n == (int)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
@@ -2669,7 +2669,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i]);
 			system (line);
 			fp = fopen (".tmpdir", "r");
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of CR/LF issues */
 				d_name = line;
 #else
@@ -2752,7 +2752,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	 */
 	int id, fmt, f_start, f_stop, k, has_suffix = MGD77_NOT_SET;
 	GMT_LONG append = FALSE;
-	char geo_path[BUFSIZ];
+	char geo_path[GMT_BUFSIZ];
 
 	for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given track name contains one of the 3 possible extensions */
 		if (strchr (track, '.') && (strlen(track)-strlen(MGD77_suffix[k])) > 0 && !strncmp (&track[strlen(track)-strlen(MGD77_suffix[k])], MGD77_suffix[k], strlen(MGD77_suffix[k]))) has_suffix = k;
@@ -3893,7 +3893,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [BUFSIZ], *not_used = NULL;
+	char buffer [GMT_BUFSIZ], *not_used = NULL;
 	int  i;
 
 	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
@@ -3906,8 +3906,8 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
                 return (-1);
         }
 
-	for (i = 0; i < 4; i++) not_used = fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
-	not_used = fgets (buffer, BUFSIZ, fp);
+	for (i = 0; i < 4; i++) not_used = fgets (buffer, GMT_BUFSIZ, fp);	/* Skip 4 headers */
+	not_used = fgets (buffer, GMT_BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
 		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
@@ -3915,7 +3915,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	}
 
         for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
-                if (!fgets (buffer, BUFSIZ, fp)) {
+                if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read correction # %d\n", i);
 			return (-1);
 		}
@@ -3924,8 +3924,8 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 
 	/* Read the offset table */
 
-	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	not_used = fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, GMT_BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, GMT_BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
 		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
@@ -3933,7 +3933,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	}
 
         for (i = 0; i < N_CARTER_OFFSETS; i++) {
-                 if (!fgets (buffer, BUFSIZ, fp)) {
+                 if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read offset # %d\n", i);
 			return (-1);
 		}
@@ -3942,8 +3942,8 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 
 	/* Read the zone table */
 
-	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	not_used = fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, GMT_BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, GMT_BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
 		fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
@@ -3951,7 +3951,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	}
 
         for (i = 0; i < N_CARTER_BINS; i++) {
-                 if (!fgets (buffer, BUFSIZ, fp)) {
+                 if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			fprintf (G->session.std[GMT_ERR], "MGD77_carter_init: Could not read offset # %d\n", i);
 			return (-1);
 		}
@@ -4916,8 +4916,8 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	int cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG rec = 0, pos;
 	GMT_LONG sorted, mgd77;
-	char line[BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[BUFSIZ];
-	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN64], word[BUFSIZ], *p, *f;
+	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
+	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p, *f;
 	char **list;
 	FILE *fp;
 
@@ -4931,7 +4931,7 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	sorted = (mode & 1);	/* TRUE if we pass a sorted trackname list */
 	mgd77  = (mode & 2);	/* TRUE if this is being used with MGD77 data via mgd77list */
 
-	while (GMT_fgets (C, line, BUFSIZ, fp)) {
+	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (line);	/* Deal with CR/LF issues */
@@ -5008,8 +5008,8 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	int cruise_id, id, i, n_aux;
 	GMT_LONG rec = 0, pos;
 	GMT_LONG sorted, mgd77;
-	char line[BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[BUFSIZ];
-	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN64], word[BUFSIZ], *p, *f;
+	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
+	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
@@ -5045,7 +5045,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	C_table = GMT_memory (C, NULL, n_cruises, struct MGD77_CORRTABLE *);
 	for (cruise_id = 0; cruise_id < n_cruises; cruise_id++) C_table[cruise_id] = GMT_memory (C, NULL, MGD77_SET_COLS, struct MGD77_CORRTABLE);
 
-	while (GMT_fgets (C, line, BUFSIZ, fp)) {
+	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (line);	/* Deal with CR/LF issues */
@@ -5347,7 +5347,7 @@ GMT_LONG MGD77_fake_times (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct M
 
 void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
 {
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 	MGD77_Set_Home (C, F);
 
 	memset ((void *)CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */

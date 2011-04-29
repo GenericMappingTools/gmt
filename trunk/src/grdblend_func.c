@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.18 2011-04-27 15:35:24 remko Exp $
+ *    $Id: grdblend_func.c,v 1.19 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,7 +101,7 @@ EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct G
 
 void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	GMT_LONG i, pos, error = 0;
-	char text[BUFSIZ];
+	char text[GMT_BUFSIZ];
 
 	/* Needed to decode the inner region -Rw/e/s/n string */
 
@@ -119,7 +119,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"};
-	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[BUFSIZ];
+	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
 	struct BLEND_LIST {
 		char *file;
 		char *region;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.9 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -134,7 +134,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
 {
 	GMT_LONG i, start, stop, pos, col;
-	char p[BUFSIZ];
+	char p[GMT_BUFSIZ];
 
 	/* decode_columns is used to handle the parsing of -C<cols>.  */
 	

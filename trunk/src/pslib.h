@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.68 2011-04-27 02:07:36 remko Exp $
+ *	$Id: pslib.h,v 1.69 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -64,6 +64,8 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 /* Number of PostScript points in one inch */
 
 #define PSL_POINTS_PER_INCH	72.0
+
+#define PSL_BUFSIZ	4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
 
 /* PSL codes for geometric symbols as expected by PSL_plotsymbol */
 
@@ -245,7 +247,7 @@ struct PSL_CTRL {
 		struct EPS *eps;		/* structure with Document info			*/
 	} init;
 	struct CURRENT {	/* Variables and settings that changes via PSL_* calls */
-		char string[BUFSIZ];		/* Last text string plotted			*/
+		char string[PSL_BUFSIZ];	/* Last text string plotted			*/
 		char style[512];		/* Current setdash pattern			*/
 		char bw_format[8];		/* Format used for grayshade value		*/
 		char rgb_format[64];		/* Same, for RGB color triplets			*/
@@ -255,7 +257,7 @@ struct PSL_CTRL {
 		double linewidth;		/* Current pen thickness			*/
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
-		double fontsize;		/* Current font size			*/
+		double fontsize;		/* Current font size				*/
 		PSL_LONG font_no;		/* Current font number				*/
 		PSL_LONG outline;		/* Current outline				*/
 	} current;
@@ -265,7 +267,7 @@ struct PSL_CTRL {
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		PSL_LONG verbose;		/* TRUE for verbose output, FALSE remains quiet	*/
 		PSL_LONG comments;		/* TRUE for writing comments to output, FALSE strips all comments */
-		PSL_LONG overlay;		/* TRUE if overlay (-O)		*/
+		PSL_LONG overlay;		/* TRUE if overlay (-O)				*/
 		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
 		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
 		PSL_LONG image_format;		/* 0 writes images in ascii, 2 uses binary	*/
@@ -278,10 +280,10 @@ struct PSL_CTRL {
 		PSL_LONG line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter] */
 		PSL_LONG miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
 		double bb[4];			/* Boundingbox arguments			*/
-		PSL_LONG ix, iy;			/* Absolute coordinates of last point		*/
+		PSL_LONG ix, iy;		/* Absolute coordinates of last point		*/
 		double p_width;			/* Paper width in points, set in PSL_beginplot();	*/
 		double p_height;		/* Paper height in points, set in PSL_beginplot();	*/
-		PSL_LONG length;			/* Image row output byte counter		*/
+		PSL_LONG length;		/* Image row output byte counter		*/
 		PSL_LONG n_userimages;		/* Number of specified custom patterns		*/
 		double dpu;			/* PS dots per unit.  Must be set through PSL_beginplot();		*/
 		double dpp;			/* PS dots per point.  Must be set through PSL_beginplot();		*/

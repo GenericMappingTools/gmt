@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psscale_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -350,7 +350,7 @@ double get_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double x, double *wid
 void fix_format (struct GMT_CTRL *GMT, char *unit, char *format)
 {
 	GMT_LONG i, j;
-	char text[GMT_TEXT_LEN64], new_format[BUFSIZ];
+	char text[GMT_TEXT_LEN64], new_format[GMT_BUFSIZ];
 
 	/* Check if annotation units should be added */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -152,7 +152,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 	GMT_LONG n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 	
 	/* Scale factor for spectral estimates should be 1/4 of amount given in
 		Bendat & Piersol eqn 11-102 because I compute 2 * fft in my

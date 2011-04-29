@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psxyz_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -357,7 +357,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG n_cols_start = 3, n_fields, error = GMT_NOERROR;
 	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
 
-	char buffer[BUFSIZ], *text_rec = NULL;
+	char buffer[GMT_BUFSIZ], *text_rec = NULL;
 
 	void **record = NULL;	/* Opaque pointer to either a text or double record */
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_report_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_report_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -348,7 +348,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
 		int n_out, n1;
-		char file[BUFSIZ];
+		char file[GMT_BUFSIZ];
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
 		struct COE_ADJLIST *adj = NULL;

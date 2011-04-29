@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.15 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.16 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 
 #include "gmt.h"
 
-#define MAX_GRIDS BUFSIZ	/* Change and recompile if we need to sample more than BUFSIZ grids */
+#define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
 struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
 	struct GMT_GRID *G;
@@ -138,11 +138,11 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG j, n_errors = 0, ng = 0, n_files = 0;
-	char line[BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
+	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_memset (line, BUFSIZ, char);
+	GMT_memset (line, GMT_BUFSIZ, char);
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -293,7 +293,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	GMT_LONG status, error, n_points = 0, n_read = 0, g, k, img_conv_needed = FALSE;
 	
-	char line[BUFSIZ];
+	char line[GMT_BUFSIZ];
 
 	double *value, wesn[4];
 
@@ -413,7 +413,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 
-		GMT_memset (line, BUFSIZ, char);
+		GMT_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {
 			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we are outputting z all columns */
 			GMT->common.b.ncol[GMT_OUT] = Ctrl->G.n_grids;

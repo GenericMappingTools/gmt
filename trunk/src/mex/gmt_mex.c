@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.c,v 1.4 2011-04-23 02:14:13 guru Exp $
+ *	$Id: gmt_mex.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,8 +99,8 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		i_string = (char *) mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
 		GMT_LONG col, in_ID;
-		//char buffer[BUFSIZ];
-		i_string = (char *) mxMalloc (BUFSIZ);
+		//char buffer[GMT_BUFSIZ];
+		i_string = (char *) mxMalloc (GMT_BUFSIZ);
 		*V = GMT_create_vector (API->GMT, n_cols);
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			(*V)->data[col] = mxGetData (prhs[col]);
@@ -137,8 +137,8 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
  	else {			/* Input via matrix and either info array or x,y arrays */
 		GMT_LONG row, col, gmt_ij, in_ID;
 		double *z = NULL;
-		//char buffer[BUFSIZ];
-		i_string = (char *) mxMalloc(BUFSIZ);
+		//char buffer[GMT_BUFSIZ];
+		i_string = (char *) mxMalloc(GMT_BUFSIZ);
 
 		*G = GMT_create_grid (API->GMT);
 		GMT_grd_init (API->GMT, (*G)->header, NULL, FALSE);
@@ -279,7 +279,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, GMT_LONG mode)
 {	/* Create the command based on options, src, and dist, which depends slightly on output type */
 	char *cmd;
-	cmd = (char *)mxMalloc (BUFSIZ);
+	cmd = (char *)mxMalloc (GMT_BUFSIZ);
 	if (mode == GMT_IS_GRID) {
 		if (dest)
 			sprintf (cmd, "%s %s -G%s", src, options, dest);
@@ -427,7 +427,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	GMT_LONG data_type;		/* Either GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	GMT_LONG geometry;		/* Either GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
-	char buffer[BUFSIZ];		/* Temp buffer */
+	char buffer[GMT_BUFSIZ];		/* Temp buffer */
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
 	void **ptr = NULL;		/* Void pointer used to point to either L or R side pointer argument */
 	

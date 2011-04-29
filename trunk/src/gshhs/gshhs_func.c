@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+/*	$Id: gshhs_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -141,7 +141,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double w, e, s, n, area, f_area;
 	
-	char source, container[8], ancestor[8], header[BUFSIZ], *name[2] = {"polygon", "line"};
+	char source, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
 	
 	FILE *fp = NULL;
 	

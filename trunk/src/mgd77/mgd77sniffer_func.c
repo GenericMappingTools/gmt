@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.13 2011-04-26 17:52:49 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.14 2011-04-29 03:08:12 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -229,7 +229,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	time_t clock;
 
 	char c, tmp_min[16], tmp_max[16], tmp_maxSlope[16], tmp_area[16], *derivative;
-	char *custom_limit_file = NULL, custom_limit_line[BUFSIZ], arguments[BUFSIZ], buffer[BUFSIZ];
+	char *custom_limit_file = NULL, custom_limit_line[GMT_BUFSIZ], arguments[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
 	char field_abbrev[8], *speed_units = "m/s", *distance_units = "km";
 	char *display = NULL, fpercent_limit[8], **list;
 
@@ -613,7 +613,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			return (EXIT_FAILURE);
 	 	}
 		else {
-			while (GMT_fgets (GMT, custom_limit_line, BUFSIZ, custom_fp)) {
+			while (GMT_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
 				GMT_chop (custom_limit_line);					/* Rid the world of CR/LF */
 				if (sscanf (custom_limit_line,"%s %s %s %s %s", field_abbrev, tmp_min, tmp_max, tmp_maxSlope, tmp_area) == 5) {
 					i = 0;
@@ -2942,7 +2942,7 @@ GMT_LONG decimate (struct GMT_CTRL *GMT, double *new, double *orig, GMT_LONG ncl
 	int **bin2d;
 	double *dorig, *dnew;
 #ifdef DUMP_DECIMATE
-	char buffer[BUFSIZ];
+	char buffer[GMT_BUFSIZ];
 #endif
 
 	/* Create a 2-D bin table */

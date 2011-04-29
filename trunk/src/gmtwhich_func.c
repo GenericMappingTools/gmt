@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtwhich_func.c,v 1.5 2011-04-23 02:14:12 guru Exp $
+ *    $Id: gmtwhich_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -104,7 +104,7 @@ GMT_LONG GMT_gmtwhich (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = 0;
 	
-	char path[BUFSIZ], *Yes = "Y", *No = "N";
+	char path[GMT_BUFSIZ], *Yes = "Y", *No = "N";
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL;
