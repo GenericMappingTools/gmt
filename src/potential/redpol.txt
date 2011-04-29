@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH REDPOL 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH REDPOL 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
 .SH NAME
 redpol \- Compute the Continuous Reduction To the Pole, AKA differential RTP.
 .SH SYNOPSIS

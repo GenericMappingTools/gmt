@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH DIMFILTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH DIMFILTER 1 MANDATE GMT_STRING "Generic Mapping Tools [misc supplement]"
 .SH NAME
 dimfilter \- Directional filtering of 2-D gridded files in the space (or time) domain
 .SH SYNOPSIS

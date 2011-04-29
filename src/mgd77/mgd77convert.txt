@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH MGD77CONVERT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH MGD77CONVERT 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS

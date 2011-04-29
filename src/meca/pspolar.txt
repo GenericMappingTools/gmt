@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH PSPOLAR 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH PSPOLAR 1 MANDATE GMT_STRING "Generic Mapping Tools [meca supplement]"
 .SH NAME
 BD(pspolar)\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS

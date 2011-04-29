@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH PSMECA 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH PSMECA 1 MANDATE GMT_STRING "Generic Mapping Tools [meca supplement]"
 .SH NAME
 psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS

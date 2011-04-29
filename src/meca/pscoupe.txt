@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH PSCOUPE 1 MANDATE GMT_STRING "Generic Mapping Tools"   
+.TH PSCOUPE 1 MANDATE GMT_STRING "Generic Mapping Tools [meca supplement]"   
 .SH NAME
 pscoupe \- Plot cross-sections of focal mechanisms. 
 .SH SYNOPSIS

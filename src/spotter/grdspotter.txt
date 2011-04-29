@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GRDSPOTTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GRDSPOTTER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
 grdspotter \- Create CVA image directly from gravity or bathymetry grids 
 .SH SYNOPSIS

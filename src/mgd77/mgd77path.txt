@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH MGD77PATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH MGD77PATH 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
 .SH SYNOPSIS

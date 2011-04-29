@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH X2SYS_GET 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH X2SYS_GET 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS

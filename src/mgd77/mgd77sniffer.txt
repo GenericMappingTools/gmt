@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH MGD77SNIFFER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH MGD77SNIFFER 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
 mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
