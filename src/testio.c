@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testio.c,v 1.3 2011-04-23 02:14:13 guru Exp $
+ *	$Id: testio.c,v 1.4 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-$year by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	GMT_LONG status = 0, in_ID, out_ID, row, col, ij;
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 	float x[4] = {1.0, 2.0, 3.0, 4.0}, y[4] = {0.5, 1.5, 2.5, 3.5}, z[4] = {3.3f, 8.1f, 2.9f, 4.4f};
-	char i_string[GMTAPI_STRLEN], o_string[GMTAPI_STRLEN], buffer[BUFSIZ];
+	char i_string[GMTAPI_STRLEN], o_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ];
 	struct GMT_VECTOR *Vi = NULL, *Vo = NULL;
 	struct GMT_GRID *G = NULL;
 	

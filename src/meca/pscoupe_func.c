@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -590,7 +590,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
+	char event_title[GMT_BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
 
 	struct nodal_plane NP1, NP2;
 	st_me meca, mecar;

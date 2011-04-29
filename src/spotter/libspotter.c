@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.74 2011-04-23 02:14:13 guru Exp $
+ *	$Id: libspotter.c,v 1.75 2011-04-29 03:08:12 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -393,8 +393,8 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	double lon, lat, rot, t;
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
-	char buffer[BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[BUFSIZ];
-	char Plates[BUFSIZ], Rotations[BUFSIZ], *this = NULL;
+	char buffer[GMT_BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[GMT_BUFSIZ];
+	char Plates[GMT_BUFSIZ], Rotations[GMT_BUFSIZ], *this = NULL;
 	double K[9];
 
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
@@ -405,7 +405,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			GMT_exit (EXIT_FAILURE);
 		}
 		A_id = B_id = 0;
-		while ((A_id == 0 || B_id == 0) && GMT_fgets (C, buffer, BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
+		while ((A_id == 0 || B_id == 0) && GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
 			sscanf (buffer, "%" GMT_LL "d %s %[^\n]", &id, txt, comment);
 			if (A_id == 0 && !strcmp (txt, A)) A_id = id;
@@ -436,7 +436,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	e = GMT_memory (C, NULL, n_alloc, struct EULER);
 	if (flowline) total_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
-	while (GMT_fgets (C, buffer, BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
+	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
 		if (GPlates) {
@@ -559,7 +559,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 	GMT_LONG i = 0, n, n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
 	struct HOTSPOT *e = NULL;
-	char buffer[BUFSIZ], create, fit, plot;
+	char buffer[GMT_BUFSIZ], create, fit, plot;
 	double P[3];
 
 	if ((fp = GMT_fopen (C, file, "r")) == NULL) {
@@ -569,7 +569,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 
 	e = GMT_memory (C, NULL, n_alloc, struct HOTSPOT);
 
-	while (GMT_fgets (C, buffer, BUFSIZ, fp) != NULL) {
+	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) e[i].id = (int)i;	/* Minimal lon, lat, abbrev */

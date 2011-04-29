@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.15 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pstext_func.c,v 1.16 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,7 +207,7 @@ GMT_LONG check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
 	
 	GMT_LONG n, k;
-	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[BUFSIZ];
+	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[GMT_BUFSIZ];
 	char spacing[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256], pjust[GMT_TEXT_LEN256];
 	
 	if (mode) {	/* Paragraph control record */
@@ -331,7 +331,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG j, k, pos, n_errors = 0;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[BUFSIZ];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -518,7 +518,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[BUFSIZ], buffer[BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 #ifdef GMT_COMPAT
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
@@ -677,12 +677,12 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					continue;
 				}
 				GMT_chop (line);	/* Chop of line feed */
-				GMT_enforce_rgb_triplets (GMT, line, BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+				GMT_enforce_rgb_triplets (GMT, line, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 				if (line[0] == 0) {	/* Blank line marked by single NULL character, replace by \r */
 					n_add = 1;
 					while ((length + n_add) > txt_alloc) {
-						txt_alloc += BUFSIZ;
+						txt_alloc += GMT_BUFSIZ;
 						paragraph = GMT_memory (GMT, paragraph, txt_alloc, char);
 					}
 					strcat (paragraph, "\r");
@@ -691,7 +691,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (Ctrl->Q.active) GMT_str_setcase (GMT, line, Ctrl->Q.mode);
 					n_add = strlen (line) + 1;
 					while ((length + n_add) > txt_alloc) {
-						txt_alloc += BUFSIZ;
+						txt_alloc += GMT_BUFSIZ;
 						paragraph = GMT_memory (GMT, paragraph, txt_alloc, char);
 					}
 					if (length) strcat (paragraph, " ");
@@ -766,7 +766,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Here, in_text holds the text we wish to plot */
 
-			GMT_enforce_rgb_triplets (GMT, in_txt, BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+			GMT_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) GMT_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
 			GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);

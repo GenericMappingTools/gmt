@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.6 2011-04-12 13:06:43 remko Exp $
+ *	$Id: poly_misc_subs.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -11,7 +11,7 @@ void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N
 {
 	/* Reads the five crude continent outlines into X,Y */
 	int c, i, t;
-	char *dir, line[BUFSIZ], *cont[N_CONTINENTS] = {"eur", "afr", "nam", "sam", "ant", "aus"}, *type[2] = {"out", "in"};
+	char *dir, line[GMT_BUFSIZ], *cont[N_CONTINENTS] = {"eur", "afr", "nam", "sam", "ant", "aus"}, *type[2] = {"out", "in"};
 	double *x, *y;
 	FILE *fp;
 	
@@ -29,7 +29,7 @@ void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N
 			x = (double *) GMT_memory (NULL, 100, sizeof (double), "coast");
 			y = (double *) GMT_memory (NULL, 100, sizeof (double), "coast");
 			i = 0;
-			while (fgets (line, BUFSIZ, fp)) {
+			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#') continue;
 				sscanf (line, "%lf %lf", &x[i], &y[i]);
 				i++;

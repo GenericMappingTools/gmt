@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,7 +246,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;
 	
-	char buffer[BUFSIZ], *BE = "BE";
+	char buffer[GMT_BUFSIZ], *BE = "BE";
 	
 	struct LINK *seg = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
@@ -519,7 +519,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (Ctrl->L.active) {	/* Write out the link information */
 		struct GMT_TEXTSET *LNK = NULL;
-		char name[BUFSIZ], name0[BUFSIZ], name1[BUFSIZ], *pp = NULL;
+		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], *pp = NULL;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.d");	/* Use default output filename */
 		dim[0] = 0;	dim[1] = 1;	dim[2] = ns;
 		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&LNK))) {
@@ -601,7 +601,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		start_id = id;
 		
-		GMT_memset (GMT->current.io.segment_header, BUFSIZ, char);
+		GMT_memset (GMT->current.io.segment_header, GMT_BUFSIZ, char);
 		if (Ctrl->D.active) {	/* Prepare and set segment output file name */
 			mode = OPEN;
 			(save_type) ? sprintf (buffer, Ctrl->D.format, 'O', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);

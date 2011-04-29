@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.11 2011-04-26 21:39:38 guru Exp $
+ *	$Id: surface_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	char *iu;			/* Pointer to grid info array */
 	char mode_type[2];		/* D means include data points when iterating
 					 * I means just interpolate from larger grid */
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 	char *low_file, *high_file;	/* Pointers to grids with low and high limits, if selected */
 	GMT_LONG grid, old_grid;	/* Node spacings  */
 	GMT_LONG n_fact;		/* Number of factors in common (ny-1, nx-1) */

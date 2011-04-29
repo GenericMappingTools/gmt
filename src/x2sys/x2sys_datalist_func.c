@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.4 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -151,7 +151,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 {
 	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT}, n_alloc = GMT_CHUNK;
 	double *in = NULL;
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
 	

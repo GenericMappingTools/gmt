@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.9 2011-04-25 16:47:58 remko Exp $
+ *	$Id: grd2xyz_func.c,v 1.10 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -179,7 +179,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, first = TRUE;
 	GMT_LONG row, col, ij, gmt_ij, ok, n_suppressed = 0, n_total = 0;
 
-	char header[BUFSIZ];
+	char header[GMT_BUFSIZ];
 
 	double wesn[4], d_value, out[4], *x = NULL, *y = NULL;
 
@@ -265,7 +265,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef GMT_COMPAT
 		else if (Ctrl->E.active) {	/* ESRI format */
 			double slop;
-			char *record = NULL, item[BUFSIZ];
+			char *record = NULL, item[GMT_BUFSIZ];
 			GMT_LONG n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!GMT_IS_ZERO (slop)) {

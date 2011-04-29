@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.108 2011-04-23 03:53:35 guru Exp $
+ *	$Id: gmt_io.h,v 1.109 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -374,9 +374,9 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char current_record[BUFSIZ];	/* Current ascii record */
-	char segment_header[BUFSIZ];	/* Current ascii segment header */
-	char current_filename[2][BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char current_record[GMT_BUFSIZ];	/* Current ascii record */
+	char segment_header[GMT_BUFSIZ];	/* Current ascii segment header */
+	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variables in netCDF file */
 	size_t ndim;			/* Length of the column dimension */

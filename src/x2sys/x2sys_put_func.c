@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -185,9 +185,9 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL, *new_info = NULL;
 	struct X2SYS_BIX_TRACK *this_track = NULL;
 
-	char track[GMT_TEXT_LEN64], line[BUFSIZ], *c_unused = NULL;
-	char track_file[BUFSIZ], index_file[BUFSIZ], old_track_file[BUFSIZ], old_index_file[BUFSIZ];
-	char track_path[BUFSIZ], index_path[BUFSIZ], old_track_path[BUFSIZ], old_index_path[BUFSIZ];
+	char track[GMT_TEXT_LEN64], line[GMT_BUFSIZ], *c_unused = NULL;
+	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
+	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
 	GMT_LONG error = FALSE, found_it, skip, last_id;
 
@@ -226,7 +226,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
-	c_unused = GMT_fgets (GMT, line, BUFSIZ, fp);	/* Got the first record from the track binindex file */
+	c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Got the first record from the track binindex file */
 	if (strncmp (&line[2], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
 		GMT_message (GMT, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[2]);
 		Return (EXIT_FAILURE);
@@ -254,7 +254,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
-	c_unused = GMT_fgets (GMT, line, BUFSIZ, fp);
+	c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 	while (line[0] == '>') {	/* Next segment */
 		sscanf (line, "> %s", track);
 		
@@ -287,8 +287,8 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			skip = FALSE;
 
 		if (skip) {	/* Just wind past this segment */
-			c_unused = GMT_fgets (GMT, line, BUFSIZ, fp);
-			while (line[0] != '>' && (GMT_fgets (GMT, line, BUFSIZ, fp) != NULL));
+			c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+			while (line[0] != '>' && (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));
 		}
 		else {	/* Read the tbf information for this track */
 
@@ -307,7 +307,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				this_info = this_info->next_info;
 
 			total_flag = 0;
-			while (GMT_fgets (GMT, line, BUFSIZ, fp) && line[0] != '>') {
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
 					GMT_message (GMT, "Error processing record for track %s [%s]\n", track, line);

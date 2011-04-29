@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.184 2011-04-28 22:48:31 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.185 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,7 +117,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	 */
 	
 	GMT_LONG i = 0, val, j;
-	char code[GMT_TEXT_LEN64], tmp[BUFSIZ];
+	char code[GMT_TEXT_LEN64], tmp[GMT_BUFSIZ];
 
 	GMT_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
@@ -727,7 +727,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 	This routine is usually called if -D<input> was given by user,
 	and after GMT_grd_init() has been called.
 */
-	char ptr[BUFSIZ], sep[] = "/";
+	char ptr[GMT_BUFSIZ], sep[] = "/";
 	GMT_LONG entry = 0, pos = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
@@ -1303,7 +1303,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 
 	GMT_LONG min, i, j, k, ij, first_i, n_skip, n_cols, status;
 	short int *i2 = NULL;
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 	struct GMT_STAT buf;
 	FILE *fp = NULL;
 	double wesn[4], wesn_all[4];

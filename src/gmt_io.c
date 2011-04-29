@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.260 2011-04-27 03:53:51 guru Exp $
+ *	$Id: gmt_io.c,v 1.261 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,7 +325,7 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
  * Also asigns C->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 {
-	char file[BUFSIZ], path[BUFSIZ];
+	char file[GMT_BUFSIZ], path[GMT_BUFSIZ];
 	int i, j, nvars;
 	size_t n;
 	GMT_LONG tmp_pointer;	/* To avoid 64-bit warnings */
@@ -409,7 +409,7 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 
 FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 {
-	char path[BUFSIZ];
+	char path[GMT_BUFSIZ];
 
 	if (mode[0] == 'r') {	/* Open file for reading (netCDF or otherwise) */
 		if (C->common.b.netcdf[GMT_IN] || strchr (filename, '?')) return (GMT_nc_fopen (C, filename, mode));
@@ -532,7 +532,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	}
 
 	if (C->session.DATADIR) {	/* Examine all directories given in that order */
-		char dir[BUFSIZ];
+		char dir[GMT_BUFSIZ];
 		GMT_LONG pos = 0, L, found = FALSE;
 		while (!found && (GMT_strtok (C->session.DATADIR, PATH_SEPARATOR, &pos, dir))) {
 			L = strlen (dir);
@@ -570,7 +570,7 @@ GMT_LONG GMT_traverse_dir (const char *file, char *path) {
 	struct dirent *F = NULL;
 	int len, d_namlen;
 	GMT_LONG ok = FALSE;
-        char savedpath[BUFSIZ];
+        char savedpath[GMT_BUFSIZ];
 
  	if ((D = opendir (path)) == NULL) return (0);	/* Unable to open directory listing */
 	len = strlen (file);
@@ -637,14 +637,14 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 
 int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 
 	if (!filename || !filename[0]) return (-1);	/* No file given */
 	sscanf (filename, "%[^=?]", file);		/* Exclude netcdf 3/-D grid extensions to make sure we get a valid file name */
 
 	if (mode == W_OK) return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
-		char path[BUFSIZ];
+		char path[GMT_BUFSIZ];
 		return (GMT_getdatapath (C, file, path) ? 0 : -1);
 	}
 	/* If we get here then mode is bad (X_OK)? */
@@ -679,9 +679,9 @@ GMT_LONG ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GM
 {	/* Parse aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attemtp to convert to double in dvalue. */
 	GMT_LONG pos = 0, col = 0, n_alloc;
-	char buffer[BUFSIZ], p[BUFSIZ];
+	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
-	n_alloc = (S->value) ? BUFSIZ : 0;	/* Prevent alloc a second time */
+	n_alloc = (S->value) ? GMT_BUFSIZ : 0;	/* Prevent alloc a second time */
 	strcpy (buffer, record);
 	while ((GMT_strtok1 (buffer, '|', &pos, p))) {
 		if (col == n_alloc) {
@@ -694,7 +694,7 @@ GMT_LONG ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GM
 		S->dvalue[col] = GMT_convert_aspatial_value (C, S->type[col], p);
 		col++;
 	}
-	if (n_alloc < BUFSIZ && col < n_alloc) {
+	if (n_alloc < GMT_BUFSIZ && col < n_alloc) {
 		S->value = GMT_memory (C, S->value, col, char *);
 		S->dvalue = GMT_memory (C, S->dvalue, col, double);
 	}
@@ -714,30 +714,30 @@ void copy_and_truncate (char *out, char *in)
 GMT_LONG ogr_decode_aspatial_types (struct GMT_CTRL *C, char *record, struct GMT_OGR *S)
 {	/* Parse aspatial types; this is done once per dataset */
 	GMT_LONG pos = 0, col = 0, n_alloc;
-	char buffer[BUFSIZ], p[BUFSIZ];
+	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
-	n_alloc = (S->type) ? BUFSIZ : 0;
+	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	copy_and_truncate (buffer, record);
 	while ((GMT_strtok (buffer, "|", &pos, p))) {
 		if (col == n_alloc) S->type = GMT_memory (C, S->type, n_alloc += GMT_TINY_CHUNK, GMT_LONG);
 		S->type[col++] = ogr_get_type (p);
 	}
-	if (n_alloc < BUFSIZ && col < n_alloc) S->type = GMT_memory (C, S->type, col, GMT_LONG);
+	if (n_alloc < GMT_BUFSIZ && col < n_alloc) S->type = GMT_memory (C, S->type, col, GMT_LONG);
 	return (col);
 }
 
 GMT_LONG ogr_decode_aspatial_names (struct GMT_CTRL *C, char *record, struct GMT_OGR *S)
 {	/* Decode aspatial names; this is done once per dataset */
 	GMT_LONG pos = 0, col = 0, n_alloc;
-	char buffer[BUFSIZ], p[BUFSIZ];
+	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
-	n_alloc = (S->type) ? BUFSIZ : 0;
+	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	copy_and_truncate (buffer, record);
 	while ((GMT_strtok (buffer, "|", &pos, p))) {
 		if (col == n_alloc) S->name = GMT_memory (C, S->name, n_alloc += GMT_TINY_CHUNK, char *);
 		S->name[col++] = strdup (p);
 	}
-	if (n_alloc < BUFSIZ && col < n_alloc) S->name = GMT_memory (C, S->name, col, char *);
+	if (n_alloc < GMT_BUFSIZ && col < n_alloc) S->name = GMT_memory (C, S->name, col, char *);
 	return (col);
 }
 
@@ -1001,7 +1001,7 @@ GMT_LONG gmt_trim_line (struct GMT_CTRL *C, char *line, GMT_LONG add_linefeed) {
 	/* Get rid of trailing \r \n \t and spaces */
 	GMT_LONG i, len = strlen (line);
 #ifndef _WIN32
-	if (len >= (BUFSIZ-1)) {
+	if (len >= (GMT_BUFSIZ-1)) {
 		GMT_report (C, GMT_MSG_FATAL, "This file appears to be in DOS format - reformat with dos2unix\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -1027,13 +1027,13 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 {
 	GMT_LONG i, pos, col_no, in_col, col_pos, n_convert, n_use;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag;
-	char line[BUFSIZ], *p = NULL, token[BUFSIZ];
+	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val, **ptr = (double **)data;
 
 	/* GMT_ascii_input will skip blank lines and shell comment lines which start
 	 * with #.  Fields may be separated by spaces, tabs, or commas.  The routine returns
 	 * the actual number of items read [or 0 for segment header and -1 for EOF]
-	 * If *n is passed as BUFSIZ it will be reset to the actual number of fields.
+	 * If *n is passed as GMT_BUFSIZ it will be reset to the actual number of fields.
 	 * If gap checking is in effect and one of the checks involves a column beyond
 	 * the ones otherwise needed by the program we extend the reading so we may
 	 * examin the column needed in the gap test.
@@ -1046,13 +1046,13 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_recs) {	/* Must treat first io_n_header_recs as headers */
-			p = GMT_fgets (C, line, BUFSIZ, fp);	/* Get the line */
+			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TABLE_HEADER;
 			return (0);
 		}
 		/* Here we are passed any header records implied by -h */
-		while ((p = GMT_fgets (C, line, BUFSIZ, fp)) && GMT_is_a_blank_line (C, line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;	/* Skip blank lines */
+		while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (C, line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;	/* Skip blank lines */
 		if (GMT_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up and get the next record */
 		if (line[0] == '#') {	/* Got a file header, take action and return */
 			strcpy (C->current.io.current_record, line);
@@ -1152,7 +1152,7 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
 	GMT_LONG i;
-	char line[BUFSIZ], *p, **ptr = (char **)data;
+	char line[GMT_BUFSIZ], *p, **ptr = (char **)data;
 
 	/* GMT_ascii_textinput will read one text line and return it, setting
 	 * header or segment flags in the process.
@@ -1162,7 +1162,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 
 	C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 	C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-	while ((p = GMT_fgets (C, line, BUFSIZ, fp)) && GMT_ogr_parser (C, line)) {	/* Exits loop when we successfully have read a data record */
+	while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_ogr_parser (C, line)) {	/* Exits loop when we successfully have read a data record */
 		C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 	}
@@ -1221,7 +1221,7 @@ GMT_LONG GMT_is_a_blank_line (struct GMT_CTRL *C, char *line) {
 GMT_LONG GMT_bin_colselect (struct GMT_CTRL *C)
 {	/* When -i<cols> is used we must pull out and reset the current record */
 	GMT_LONG col;
-	static double tmp[BUFSIZ];
+	static double tmp[GMT_BUFSIZ];
 	for (col = 0; col < C->common.i.n_cols; col++) {
 		tmp[C->current.io.col[GMT_IN][col].order] = C->current.io.curr_rec[C->current.io.col[GMT_IN][col].col];
 		gmt_convert_col (C->current.io.col[GMT_IN][col], tmp[C->current.io.col[GMT_IN][col].order]);
@@ -3606,7 +3606,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	GMT_LONG close_file = FALSE, header = TRUE, no_segments;
 	GMT_LONG n_fields, n_read = 0, seg = -1, row = 0, ncol = 0;
 	GMT_LONG n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, n_head_alloc = GMT_TINY_CHUNK;
-	char file[BUFSIZ], *in = NULL;
+	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXT_TABLE *T = NULL;
 	PFL psave = NULL;
@@ -3702,8 +3702,8 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 		}
 		if (GMT_REC_IS_EOF (C)) continue;	/* At EOF; get out of this loop */
 		if (!no_segments) {			/* Handle info stored in multi-seg header record */
-			char buffer[BUFSIZ];
-			GMT_memset (buffer, BUFSIZ, char);
+			char buffer[GMT_BUFSIZ];
+			GMT_memset (buffer, GMT_BUFSIZ, char);
 			if (GMT_parse_segment_item (C, in, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			if (strlen (in)) T->segment[seg]->header = strdup (in);
 		}
@@ -3827,7 +3827,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 	 */
 
 	GMT_LONG processed = 0, change = 0, k;
-	char line[BUFSIZ], *txt = NULL;
+	char line[GMT_BUFSIZ], *txt = NULL;
 	double z;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
@@ -4037,7 +4037,7 @@ void GMT_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 	GMT_LONG k, col;
 	char *kind = "PH";
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"}, *quote[7] = {"", "", "\"", "\"", "\"", "", ""};
-	char buffer[BUFSIZ];
+	char buffer[GMT_BUFSIZ];
 
 	if (C->common.a.geometry == GMT_IS_POLYGON || C->common.a.geometry == GMT_IS_MULTIPOLYGON) fprintf (fp, "# @%c\n", (int)kind[S->ogr->pol_mode]);
 	if (C->common.a.n_aspatial) {
@@ -4072,7 +4072,7 @@ void GMT_build_segheader_from_ogr (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE
 {	/* Write out segment-level OGR/GMT header metadata */
 	GMT_LONG k, col, n, space = FALSE;
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
-	char buffer[BUFSIZ];
+	char buffer[GMT_BUFSIZ];
 
 	if (C->common.a.output) return;		/* Input was not OGR (but output will be) */
 	n = (S->ogr && S->ogr->n_aspatial) ? S->ogr->n_aspatial : C->common.a.n_aspatial;
@@ -4144,7 +4144,7 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, s
 GMT_LONG GMT_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 
 	GMT_LONG object_ID, status, seg1, seg2, k, row, col, seg, stop, n_reg, item, error = 0;
-	char buffer[BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
+	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -4287,7 +4287,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 
 	GMT_LONG ascii, close_file = FALSE, append, save, row = 0, seg, col, k;
 	int *fd = NULL;
-	char open_mode[4], file[BUFSIZ], tmpfile[BUFSIZ], *out_file = tmpfile;
+	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	double *out = NULL;
 	FILE *fp = NULL;
 	PFL psave = NULL;
@@ -4395,7 +4395,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 {	/* Writes an entire data set to file or stream */
 	GMT_LONG tbl, error, append = 0, close_file = FALSE;
 	int *fd = NULL;
-	char file[BUFSIZ], tmpfile[BUFSIZ], open_mode[4], *out_file = tmpfile;
+	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], open_mode[4], *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') append = 1;	/* Want to append to existing file */
@@ -4481,7 +4481,7 @@ GMT_LONG GMT_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 
 	GMT_LONG close_file = FALSE, row = 0, append, seg, k;
 	int *fd = NULL;	/* Must be int, not GMT_LONG */
-	char file[BUFSIZ], tmpfile[BUFSIZ], *out_file = tmpfile;
+	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	if (table->mode == 2) return (0);	/* Skip this table */
@@ -4567,7 +4567,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, 
 {	/* Writes an entire text set to file or stream */
 	GMT_LONG tbl, error, append = 0, close_file = FALSE;
 	int *fd = NULL;	/* Must be int, not GMT_LONG */
-	char file[BUFSIZ], tmpfile[BUFSIZ], *out_file = tmpfile;
+	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	/* Convert any destination type to stream */
@@ -4859,7 +4859,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments;
 	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col;
 	GMT_LONG cdf = 0, n_head_alloc = GMT_TINY_CHUNK;
-	char open_mode[4], file[BUFSIZ], line[GMT_TEXT_LEN64];
+	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = NULL;
@@ -4987,8 +4987,8 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		}
 		if (GMT_REC_IS_EOF (C)) continue;	/* At EOF; get out of this loop */
 		if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header record */
-			char buffer[BUFSIZ];
-			GMT_memset (buffer, BUFSIZ, char);
+			char buffer[GMT_BUFSIZ];
+			GMT_memset (buffer, GMT_BUFSIZ, char);
 			if (GMT_parse_segment_item (C, C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			if (strlen (C->current.io.segment_header)) T->segment[seg]->header = strdup (C->current.io.segment_header);
 			if (C->current.io.ogr == 1) GMT_copy_ogr_seg (C, T->segment[seg], C->current.io.OGR);	/* Copy over any feature-specific values */
@@ -5392,7 +5392,7 @@ GMT_LONG GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, GMT_LONG ncols)
 	 * We stop if we run out of fields and ignore conversion errors.  */
 
 	GMT_LONG k = 0, pos = 0;
-	char p[BUFSIZ];
+	char p[GMT_BUFSIZ];
 
 	while (k < ncols && GMT_strtok (record, " \t,", &pos, p)) {	/* Get each field in turn and bail when done */
 		GMT_scanf (C, p, C->current.io.col_type[GMT_IN][k], &C->current.io.curr_rec[k]);	/* Be tolerant of errors */
@@ -5515,7 +5515,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, GMT_LONG col, struct GMT_LINE
 	return (C->session.d_NaN);
 }
 
-GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, GMT_LONG col, char out[BUFSIZ])
+GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, GMT_LONG col, char out[GMT_BUFSIZ])
 {
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 
@@ -5528,7 +5528,7 @@ GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, GMT_LO
 	id = get_ogr_id (G, C->common.a.name[id]);
 	if (id == GMTAPI_NOTSET) return (0);
 	len = strlen (G->value[id]);
-	GMT_memset (out, BUFSIZ, char);
+	GMT_memset (out, GMT_BUFSIZ, char);
 	if (G->value[id][0] == '\"' && G->value[id][len-1] == '\"')	/* Skip opening and closing quotes */
 		strncpy (out, &G->value[id][1], len-2);
 	else

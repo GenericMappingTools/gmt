@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.290 2011-04-27 22:11:57 guru Exp $
+ *	$Id: gmt_map.c,v 1.291 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1286,7 +1286,7 @@ GMT_LONG GMT_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout)
 {
 	GMT_LONG k, m, n_alloc = 0, side, j, np, cross = 0;
-	char label[BUFSIZ], *part = "EW";
+	char label[GMT_BUFSIZ], *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_LINE_SEGMENT **L = NULL;
 	PFL inside[2], outside[2];

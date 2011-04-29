@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.125 2011-04-23 00:56:09 guru Exp $
+ *	$Id: mgd77.h,v 1.126 2011-04-29 03:08:12 guru Exp $
  * 
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -396,7 +396,7 @@ struct MGD77_CONTROL {
 	int n_MGD77_paths;				/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
 	char NGDC_id[MGD77_COL_ABBREV_LEN];		/* Current NGDC file tag id */
-	char path[BUFSIZ];				/* Full path to current file */
+	char path[GMT_BUFSIZ];				/* Full path to current file */
 	FILE *fp;					/* File pointer to current open file (not used by MGD77+) */
 	int verbose_level;				/* 0 = none, 1 = warnings, 2 = errors (combined 3 for both) */
 	int verbose_dest;				/* 1 = to stdout, 2 = to stderr */

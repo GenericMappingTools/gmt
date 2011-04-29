@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.35 2011-04-28 23:37:29 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.36 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -557,7 +557,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Resize illumination grid to the image's size */
 
 			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
-			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[BUFSIZ];
+			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
 			/* Create option list, register G as input source via reference */
 			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Intens_orig, NULL, (void *)Intens_orig, &object_ID)) 
 				return (EXIT_FAILURE);

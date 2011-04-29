@@ -3,19 +3,19 @@
 int main (int argc, char **argv) {
 	FILE *fp1, *fp2;
 	int i, j, n1 = 0, n2 = 0, i0 = 0, j0 = 0;
-	char line[BUFSIZ];
+	char line[GMT_BUFSIZ];
 	double x1[10000], x2[10000], y1[10000], y2[10000], d, dmin = DBL_MAX;
 	
 	sprintf (line, "polygon.%s", argv[1]);
 	fp1 = fopen (line, "r");
-	while (fgets (line, BUFSIZ, fp1)) {
+	while (fgets (line, GMT_BUFSIZ, fp1)) {
 		sscanf (line, "%lf %lf", &x1[n1], &y1[n1]);
 		n1++;
 	}
 	fclose (fp1);
 	sprintf (line, "polygon.%s", argv[2]);
 	fp2 = fopen (line, "r");
-	while (fgets (line, BUFSIZ, fp2)) {
+	while (fgets (line, GMT_BUFSIZ, fp2)) {
 		sscanf (line, "%lf %lf", &x2[n2], &y2[n2]);
 		n2++;
 	}

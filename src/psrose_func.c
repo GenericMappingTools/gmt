@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psrose_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -299,7 +299,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, n_fields, form;
 	GMT_LONG i, bin, n = 0, n_alloc = GMT_CHUNK;
 
-	char text[BUFSIZ], format[BUFSIZ];
+	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
 
 	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c;
 	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;

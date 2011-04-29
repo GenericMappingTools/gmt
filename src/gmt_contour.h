@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.55 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_contour.h,v 1.56 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,9 +114,9 @@ struct GMT_CONTOUR {
 	GMT_LONG delay;			/* TRUE of we want to delay the actual annotation plotting until later */
 	GMT_LONG n_segments;		/* The number of segments */
 	GMT_LONG n_alloc;		/* How many allocated so far */
-	char file[BUFSIZ];		/* File with crossing lines, if specified */
-	char option[BUFSIZ];		/* Copy of the option string */
-	char label[BUFSIZ];		/* Fixed label */
+	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
+	char option[GMT_BUFSIZ];		/* Copy of the option string */
+	char label[GMT_BUFSIZ];		/* Fixed label */
 	char unit[GMT_TEXT_LEN64];	/* Unit for labels */
 	char prefix[GMT_TEXT_LEN64];	/* prefix for labels */
 	char line_name[16];		/* Name of line: contour or line */

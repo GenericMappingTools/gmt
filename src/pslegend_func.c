@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pslegend_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -229,10 +229,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
-	char symbol[GMT_TEXT_LEN256], text[BUFSIZ], image[BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
+	char symbol[GMT_TEXT_LEN256], text[GMT_BUFSIZ], image[GMT_BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
 	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], mapscale[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], lspace[GMT_TEXT_LEN256];
-	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256], buffer[BUFSIZ];
-	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[BUFSIZ], *opt = NULL;
+	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256], buffer[GMT_BUFSIZ];
+	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
 	char *line = NULL, string[GMTAPI_STRLEN];
 #ifdef GMT_COMPAT
 	char save_EOF;
@@ -469,7 +469,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-					char txt_cpy[BUFSIZ], p[GMT_TEXT_LEN256];
+					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
 					GMT_LONG pos = 0;
 					strcpy (txt_cpy, opt);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {

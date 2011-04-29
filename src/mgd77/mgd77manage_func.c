@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.13 2011-04-26 17:52:49 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.14 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -234,7 +234,7 @@ GMT_LONG decode_A_options (GMT_LONG mode, char *line, char *file, double paramet
 GMT_LONG decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
 {	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
 	GMT_LONG i = 0, k, error, pos = 0;
-	char p[BUFSIZ];
+	char p[GMT_BUFSIZ];
 	
 	while (i < 7 && GMT_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
 		switch (i) {
@@ -318,7 +318,7 @@ GMT_LONG got_default_answer (char *line, char *answer)
 	GMT_LONG i, k, len;
 	
 	len = strlen (line) - 1;
-	GMT_memset (answer, BUFSIZ, char);	/* No default answer */
+	GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
 	if (line[len] == ']') {	/* Got a default answer for this item */
 		for (k = i = len; i && line[i] != '['; i--);
 		strncpy (answer, &line[i+1], (size_t)(k - i - 1));
@@ -336,14 +336,14 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 
 	GMT_LONG n_errors = 0, k, n_cruises = 0, got_table, got_grid, strings;
 	nc_type c_nc_type;
-	char file[BUFSIZ];
+	char file[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
 	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
 #endif
 
-	GMT_memset (file, BUFSIZ, char);
+	GMT_memset (file, GMT_BUFSIZ, char);
 	
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -518,8 +518,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	nc_type c_nc_type;
 	
-	char line[BUFSIZ], p[BUFSIZ], history[BUFSIZ], **list = NULL;
-	char not_given[GMT_TEXT_LEN64], word[BUFSIZ], **tmp_string = NULL, *text = NULL;
+	char line[GMT_BUFSIZ], p[GMT_BUFSIZ], history[GMT_BUFSIZ], **list = NULL;
+	char not_given[GMT_TEXT_LEN64], word[GMT_BUFSIZ], **tmp_string = NULL, *text = NULL;
 	signed char LEN = 0, OLDLEN = 0;
 	
 	double i_dx = 0, i_dy = 0, x, y, match_value, single_val, dist_scale = 1.0;
@@ -653,7 +653,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		/* Skip any header records */
-		if (GMT->current.io.io_header[GMT_IN]) for (i = 0; i < GMT->current.io.io_n_header_recs; i++) not_used = GMT_fgets (GMT, line, BUFSIZ, fp);
+		if (GMT->current.io.io_header[GMT_IN]) for (i = 0; i < GMT->current.io.io_n_header_recs; i++) not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 
 		two_cols = (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);
 		n = (two_cols) ? -1 : 0;
@@ -667,7 +667,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (strings && !two_cols) {	/* Must read strings directly from file since GMT->current.io.input would barf */
 			ok_to_read = FALSE;
 			tmp_string = GMT_memory (GMT, NULL, n_alloc, char *);
-			while (GMT_fgets (GMT, word, BUFSIZ, fp)) {
+			while (GMT_fgets (GMT, word, GMT_BUFSIZ, fp)) {
 				if (word[0] == '#') continue;
 				width = strlen (word);
 				tmp_string[n] = GMT_memory (GMT, NULL, width + 1, char);
@@ -781,7 +781,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->D.active) {	/* Must create a new file with everything except the fields to be deleted */
 			GMT_LONG id, c;
-			char oldfile[BUFSIZ];
+			char oldfile[GMT_BUFSIZ];
 			
 			if (column != MGD77_NOT_SET) {	/* Get info about this existing column to see if it is compatible with new data */
 				n_dims = (D->H.info[In.order[column].set].col[In.order[column].item].constant) ? 0 : 1;
@@ -1114,7 +1114,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			 */
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
-			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[BUFSIZ], code[BUFSIZ], kind, YorN;
+			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
 			GMT_LONG n_recs, rec, number, type, it, id, key, n_E77_flags, from, to, day, month, year, item;
 			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0;
 			unsigned int *flags = NULL, pattern;
@@ -1144,7 +1144,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			 */
 			 
 			P = D->H.mgd77[MGD77_ORIG];	/* Because E77 is absolute and not incremental we start from original settings */
-			if (!GMT_fgets (GMT, line, BUFSIZ, fp_e)) {
+			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
 				GMT_message (GMT, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
@@ -1170,7 +1170,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				e_error++;
 			}
 			verified = FALSE;
-			while (GMT_fgets (GMT, line, BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14)) {	/* Read until we get to Header record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14)) {	/* Read until we get to Header record section */
 				if (line[0] == '#') continue;	/* Skip comments */
 				GMT_chop (line);		/* Rid the world of CR/LF */
 				if (!strncmp (line, "Y Errata table verification status", (size_t)34)) verified = TRUE;
@@ -1191,7 +1191,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Quickly scan through file to make sure there are no unprocessed recommendations or bad records before making changes */
 			
 			e_error = n_unprocessed = 0;
-			while (GMT_fgets (GMT, line, BUFSIZ, fp_e)) {
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Comments or blank lines are OK */
 				if (line[1] == '-') {		/* Header record */
 					if (!(line[0] == 'Y' || line[0] == 'N') && !Ctrl->A.ignore_verify) {		/* Unprocessed recommendation? */
@@ -1225,7 +1225,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* OK, here we believe the E77 file contains the correct information for this cruise. Rewind and start from top */
 			
 			GMT_rewind (fp_e);
-			while (GMT_fgets (GMT, line, BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14));	/* Read until we get to Header record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", (size_t)14));	/* Read until we get to Header record section */
 			
 			flags = GMT_memory (GMT, NULL, D->H.n_records, unsigned int);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
@@ -1233,7 +1233,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 			MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
 			old_flags = MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
-			while (GMT_fgets (GMT, line, BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", (size_t)14)) {	/* Read until we get to data record section */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", (size_t)14)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
 				GMT_chop (line);					/* Rid the world of CR/LF */
 				/* Example of expected line 
@@ -1358,7 +1358,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				tvar = (double *)D->values[it];
 				for (rec = 0, has_time = FALSE; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = TRUE;
 			}
-			while (GMT_fgets (GMT, line, BUFSIZ, fp_e)) {	/* Read until EOF */
+			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %ld %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_message (GMT, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
@@ -1472,7 +1472,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else {	/* We need to define the flags for the first time */
 					dims[0] = In.nc_recid;
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, "MGD77_flags", NC_INT, 1, dims, &cdf_var_id));	/* Define an array variable */
-					memset ((void *)answer, 0, (size_t)BUFSIZ);	/* No default answer */
+					memset ((void *)answer, 0, (size_t)GMT_BUFSIZ);	/* No default answer */
 					strcpy (answer, "MGD77 flags (ON = Bad, OFF = Good) derived from E77 errata");
 					MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, cdf_var_id, "comment", strlen (answer), answer));
 					D->flags[0] = flags;

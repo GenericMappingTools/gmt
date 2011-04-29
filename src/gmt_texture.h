@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_texture.h,v 1.3 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_texture.h,v 1.4 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,7 +43,7 @@ struct GMT_FILL {	/* Holds fill attributes */
 	GMT_LONG use_pattern;		/* TRUE if pattern rather than rgb is set */
 	GMT_LONG pattern_no;		/* Number of predefined pattern, if set */
 	GMT_LONG dpi;			/* Desired dpi of image building-block */
-	char pattern[BUFSIZ];		/* Full filename of user-define raster */
+	char pattern[GMT_BUFSIZ];		/* Full filename of user-define raster */
 };
 
 struct GMT_FONT {	/* Holds font attributes */

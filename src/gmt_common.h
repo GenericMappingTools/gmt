@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.28 2011-04-26 17:52:48 guru Exp $
+ *	$Id: gmt_common.h,v 1.29 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,7 +108,7 @@ struct GMT_COMMON {
 		GMT_LONG swab[2];		/* TRUE if current binary input/output must be byte-swapped */
 		GMT_LONG ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
-		char varnames[BUFSIZ];		/* List of variable names to be input/output in netCDF mode */
+		char varnames[GMT_BUFSIZ];		/* List of variable names to be input/output in netCDF mode */
 	} b;
 	struct c {	/* -c */
 		GMT_LONG active;

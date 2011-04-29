@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -292,7 +292,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG row, col, j, k, ij, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
 	GMT_LONG n_alloc = GMT_TINY_CHUNK, error = FALSE;
 
-	char CPT_file[BUFSIZ], format[BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
+	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 

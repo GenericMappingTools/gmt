@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.39 2011-04-23 02:14:13 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.40 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -155,7 +155,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		if (strchr (name, '%') != NULL)	/* Individual file names */
 			sprintf (this_file, name, n_segments);
 		else
-			strncpy (this_file, name, (size_t)BUFSIZ);
+			strncpy (this_file, name, (size_t)GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
 			GMT_message (GMT, "Could not create file %s\n", this_file);
 			return (NULL);
@@ -276,7 +276,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit;
 	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, i_unused = 0;
 	
-	char line[BUFSIZ], format[BUFSIZ], unit_name[80], this_file[BUFSIZ];
+	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};
 	char *corner[4] = {"lower left", "lower right", "upper right", "upper left"};
 	char *xname[2] = {"longitude", "x-coordinate"};
@@ -384,14 +384,14 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_message (GMT, "\n");
 			for (i = 0; i < 4; i++) {
 				GMT_message (GMT, "Please Enter %s of %s point: ", xname[type], control[i]);
-				not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
+				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_X], &LON[i]))) {
 					GMT_message (GMT, "Conversion error for %sx [%s]\n", xname[type], line);
 					exit (EXIT_FAILURE);
 				}
 				GMT_message (GMT, "Please Enter %s of %s point: ", yname[type], control[i]);
-				not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
+				not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_Y], &LAT[i]))) {
 					GMT_message (GMT, "Conversion error for %s [%s]\n", yname[type], line);
@@ -506,7 +506,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_message (GMT, "(Do not start with # - it will be prepended automatically.\n\n");
 		do {
 			GMT_message (GMT, "==> Please enter comment records, end with blank line: ");
-			not_used = GMT_fgets (GMT, line, BUFSIZ, stdin);
+			not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, stdin);
 			GMT_chop (line);
 			if (line[0] != '\0' && !GMT->common.b.active[GMT_OUT]) fprintf (fp, "# %s\n", line);
 		} while (line[0] != '\0');
@@ -539,7 +539,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				if (Ctrl->Z.active[V_ID]) {
 					GMT_message (GMT, "Enter z-value for next segment: ");
-					not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
+					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
 					GMT_chop (line);
 					z_val = atof (line);
 				}
@@ -548,7 +548,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
-					not_used = GMT_fgets (GMT, line, BUFSIZ, GMT->session.std[GMT_IN]);
+					not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN]);
 					GMT_chop (line);
 					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}

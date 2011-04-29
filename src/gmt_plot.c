@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.320 2011-04-27 20:28:40 remko Exp $
+ *	$Id: gmt_plot.c,v 1.321 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2270,16 +2270,16 @@ void GMT_echo_command (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_OPTION
 	 * etc was used to produce this plot
 	 */
 	GMT_LONG length = 0;
-	char outstring[BUFSIZ];
+	char outstring[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 
-	GMT_memset (outstring, BUFSIZ, char);
+	GMT_memset (outstring, GMT_BUFSIZ, char);
 	PSL_command (P, "\n%% PostScript produced by:\n%%%%GMT:  %s", C->init.progname);
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= 120) {
 			PSL_command (P, "%s \\\n%%%%GMT:+", outstring);
 			length = 0;
-			GMT_memset (outstring, BUFSIZ, char);
+			GMT_memset (outstring, GMT_BUFSIZ, char);
 		}
 		strcat (outstring, " ");	length++;
 		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE)) {
@@ -3509,7 +3509,7 @@ struct EPS *GMT_epsinfo (struct GMT_CTRL *C)
 	GMT_LONG fno[PSL_MAX_EPS_FONTS], id, i, n_fonts, last, move_up = FALSE, not_used = 0;
 	double old_x0, old_y0, old_x1, old_y1, u_dx, u_dy, dy, x0, y0;
 	double tick_space, frame_space, orig_x0 = 0.0, orig_y0 = 0.0;
-	char info[BUFSIZ];
+	char info[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	struct passwd *pw = NULL;
 	struct EPS *new = NULL;

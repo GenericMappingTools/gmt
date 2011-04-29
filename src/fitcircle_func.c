@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.8 2011-04-24 20:47:41 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.9 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -319,7 +319,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, greenwich = FALSE, allocate, n, np;
 	GMT_LONG imin, imax, nrots, n_fields, i, j, k, n_alloc, n_data;
 
-	char format[BUFSIZ], record[BUFSIZ], item[BUFSIZ];
+	char format[GMT_BUFSIZ], record[GMT_BUFSIZ], item[GMT_BUFSIZ];
 
 	double lonsum, latsum, rad, *work = NULL, *in = NULL;
 	double meanv[3], cross[3], cross_sum[3], gcpole[3], scpole[3];		/* Extra vectors  */

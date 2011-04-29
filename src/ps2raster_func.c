@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.10 2011-04-23 02:14:13 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -74,7 +74,7 @@ struct PS2RASTER_CTRL {
 	} A;
 	struct C {	/* -C<option> */
 		GMT_LONG active;
-		char arg[BUFSIZ];
+		char arg[GMT_BUFSIZ];
 	} C;
 	struct D {	/* -D<dir> */
 		GMT_LONG active;
@@ -134,7 +134,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 	
 	GMT_LONG error = FALSE;
 	GMT_LONG pos = 0;
-	char txt[BUFSIZ], p[BUFSIZ];
+	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
 	C->W.active = TRUE;
 	strcpy (txt, arg);
@@ -355,7 +355,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	 */
 
 	GMT_LONG j, k, n_errors = 0, mode, grayscale;
-	char text[BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
+	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -546,9 +546,9 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	size_t n_alloc = GMT_SMALL_CHUNK;
 
-	char ps_file[BUFSIZ];
-	char **ps_names = NULL, *no_U_file = NULL, *clean_PS_file = NULL, *tmp_file = NULL, out_file[BUFSIZ], *BB_file = NULL;
-	char line[BUFSIZ], c[BUFSIZ], *p = NULL, c1[20], c2[20], c3[20], c4[20], cmd[BUFSIZ], proj4_name[20], *quiet = NULL;
+	char ps_file[GMT_BUFSIZ];
+	char **ps_names = NULL, *no_U_file = NULL, *clean_PS_file = NULL, *tmp_file = NULL, out_file[GMT_BUFSIZ], *BB_file = NULL;
+	char line[GMT_BUFSIZ], c[GMT_BUFSIZ], *p = NULL, c1[20], c2[20], c3[20], c4[20], cmd[GMT_BUFSIZ], proj4_name[20], *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
@@ -622,7 +622,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
-		while (fgets2 (line, BUFSIZ, fpl) != NULL) {
+		while (fgets2 (line, GMT_BUFSIZ, fpl) != NULL) {
 			if (line[0] == '#' || line[0] == '\n') continue;
 			GMT_chop (line);
 			ps_names[Ctrl->In.n_files++] = strdup (line);
@@ -657,7 +657,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			add_to_list (all_names_in, ps_names[k]);
 			free ((void *)ps_names[k]);
 		}
-		cmd2 = GMT_memory (GMT, NULL, n_alloc + BUFSIZ, char);
+		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%ld -sOutputFile=%s.pdf %s", 
 			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
@@ -674,7 +674,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Loop over all input files */
 
 	for (k = 0; k < Ctrl->In.n_files; k++) {
-		GMT_memset (out_file, BUFSIZ, char);
+		GMT_memset (out_file, GMT_BUFSIZ, char);
 		strcpy (ps_file, ps_names[k]);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot to open file %s\n", ps_file);
@@ -686,13 +686,13 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff */
 			GMT_LONG dump = TRUE;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Strip GMT time-stamp...");
-			no_U_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+			no_U_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 			sprintf (no_U_file, "%s%cps2raster_%db.eps", Ctrl->D.dir, DIR_DELIM, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
 			}
-			while (fgets2 (line, BUFSIZ, fp) != NULL) {
+			while (fgets2 (line, GMT_BUFSIZ, fp) != NULL) {
 				if (!strncmp (line, "% Begin GMT time-stamp", (size_t)22)) dump = FALSE;
 				if (dump) fprintf (fp2, "%s", line);
 				if (!strncmp (line, "% End GMT time-stamp", (size_t)20)) dump = TRUE;
@@ -720,7 +720,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Find HiResBoundingBox ");
-			BB_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+			BB_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 			sprintf (BB_file, "%s%cps2raster_%ldc.bb", Ctrl->D.dir, DIR_DELIM, (GMT_LONG)getpid());
 			psfile_to_use = (Ctrl->A.strip) ? no_U_file : ((clean_PS_file) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
@@ -729,7 +729,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
 			}
-			while (fgets2 (line, BUFSIZ, fpb) != NULL && !got_BB) {	/* We only use the High resolution BB */
+			while (fgets2 (line, GMT_BUFSIZ, fpb) != NULL && !got_BB) {	/* We only use the High resolution BB */
 				if ((p = strstr (line,"%%HiResBoundingBox:"))) {
 					sscanf (&p[19], "%s %s %s %s", c1, c2, c3, c4);
 					x0 = atof (c1);		y0 = atof (c2);
@@ -740,7 +740,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_report (GMT, GMT_MSG_FATAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
 						remove (BB_file);	/* Remove the file */
-						tmp_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+						tmp_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 						sprintf (tmp_file, "%s%c", Ctrl->D.dir, DIR_DELIM);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
@@ -765,7 +765,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Open temporary file to be processed by ghostscript. When -Te is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps) GMT_report (GMT, GMT_MSG_VERBOSE, " Format EPS file...");
-		tmp_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+		tmp_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 		if (Ctrl->T.eps) {
 			if (Ctrl->D.active) sprintf (tmp_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
 			if (!Ctrl->F.active)
@@ -790,7 +790,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		 * Since we prefer the HiResBB over BB we must continue to read until both are found or 20 lines have past */
 
 		i = 0;
-		while ((fgets2 (line, BUFSIZ, fp) != NULL) && i < 20 && !(got_BB && got_HRBB && got_end)) {
+		while ((fgets2 (line, GMT_BUFSIZ, fp) != NULL) && i < 20 && !(got_BB && got_HRBB && got_end)) {
 			i++;
 			if (!line[0] || line[0] != '%')
 				{ /* Skip empty and non-comment lines */ }
@@ -846,7 +846,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Rewind the input file and start copying and replacing */
 
 		rewind (fp);
-		while (fgets2 (line, BUFSIZ, fp) != NULL) {
+		while (fgets2 (line, GMT_BUFSIZ, fp) != NULL) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
 				if (setup && strstr(line,"/PageSize") != NULL) continue;
 				fprintf (fpo, "%s", line);
@@ -926,7 +926,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 #ifdef USE_GDAL
 			else if (!strncmp (c, "%%PageTrailer", (size_t)13) && found_proj) {
-				fgets2 (line, BUFSIZ, fp);
+				fgets2 (line, GMT_BUFSIZ, fp);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s", line);
 
@@ -1041,7 +1041,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			west  += x_inc / 2.0;
 			north -= y_inc / 2.0;
 
-			world_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+			world_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 			if (Ctrl->D.active) sprintf (world_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
 				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
@@ -1109,7 +1109,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		else if ( Ctrl->W.kml ) {	/* Write a basic kml file */
 			char *kml_file = NULL;
-			kml_file = GMT_memory (GMT, NULL, BUFSIZ, char);
+			kml_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 			if (Ctrl->D.active) sprintf (kml_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the kml one */
 				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {

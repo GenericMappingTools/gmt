@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77convert_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -179,7 +179,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, argno, n_cruises = 0, n_paths, error = FALSE;
 	
-	char file[BUFSIZ], **list = NULL, *fcode = "act";
+	char file[GMT_BUFSIZ], **list = NULL, *fcode = "act";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table"};
 
 	struct MGD77_CONTROL M;

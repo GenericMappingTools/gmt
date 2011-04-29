@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_parse.c,v 1.12 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtapi_parse.c,v 1.13 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		GMT_LONG pos = 0, new_n_args = 0, n_alloc = GMT_SMALL_CHUNK;
-		char p[BUFSIZ], *txt_in = (char *)in;	/* Passed a single text string */
+		char p[GMT_BUFSIZ], *txt_in = (char *)in;	/* Passed a single text string */
 		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
 
 		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words */
@@ -183,7 +183,7 @@ GMT_LONG GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, char **args[]
 	 * correspond to the linked options provided.  It is the inverse of GMT_Create_Options.
 	 */
 
-	char **txt = NULL, buffer[BUFSIZ];
+	char **txt = NULL, buffer[GMT_BUFSIZ];
 	GMT_LONG arg = 0, n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
@@ -255,8 +255,8 @@ GMT_LONG GMT_Create_Cmd (struct GMTAPI_CTRL *API, char **cmd, struct GMT_OPTION 
 	 * correspond to the linked options provided.
 	 */
 
-	char *txt = NULL, buffer[BUFSIZ];
-	GMT_LONG n_alloc = BUFSIZ, length = 0, inc, first = TRUE;
+	char *txt = NULL, buffer[GMT_BUFSIZ];
+	GMT_LONG n_alloc = GMT_BUFSIZ, length = 0, inc, first = TRUE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 
@@ -311,7 +311,7 @@ GMT_LONG GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, struc
 	if ((new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
 
 	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
-		char file[BUFSIZ];
+		char file[GMT_BUFSIZ];
 		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */
 		if (GMT_access (API->GMT, file, F_OK) && !GMT_not_numeric (API->GMT, arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
 			option = GMTAPI_OPT_NUMBER;	/* Reassign as a "number option -#" (Note: There is no -# since # means comment in most shells; we just use -# internally) */

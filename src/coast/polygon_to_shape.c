@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.17 2011-04-12 13:06:42 remko Exp $
+ *	$Id: polygon_to_shape.c,v 1.18 2011-04-29 03:08:12 guru Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -21,7 +21,7 @@ int main (int argc, char **argv)
 	FILE *fp_in, *fp;
 	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first;
 	GMT_LONG np, nx;
-	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
+	char file[GMT_BUFSIZ], cmd[GMT_BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
 	double*lon = NULL, *lat = NULL, *xx, *yy;
 	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
         

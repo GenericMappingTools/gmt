@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.4 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77magref_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -164,7 +164,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 	GMT_LONG n_errors = 0, j, pos, t_col = 3, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	GMT_LONG n_out, lfval = 0;
-	char p[BUFSIZ];
+	char p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

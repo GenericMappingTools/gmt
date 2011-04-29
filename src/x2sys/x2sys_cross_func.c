@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -243,8 +243,8 @@ GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, int n_pairs)
 GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	char **trk_name = NULL;			/* Name of tracks */
-	char line[BUFSIZ];			/* buffer */
-	char item[BUFSIZ];			/* buffer */
+	char line[GMT_BUFSIZ];			/* buffer */
+	char item[GMT_BUFSIZ];			/* buffer */
 	char t_or_i;				/* t = time, i = dummy node time */
 	char name1[80], name2[80];		/* Name of two files to be examined */
 	char *x2sys_header = "> %s %ld %s %ld %s\n";
@@ -374,7 +374,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		n_alloc = add_chunk = GMT_CHUNK;
 		pair = GMT_memory (GMT, NULL, n_alloc, struct PAIR);
 
-		while (fgets (line, BUFSIZ, fp)) {
+		while (fgets (line, GMT_BUFSIZ, fp)) {
 
 			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blanks */
 			GMT_chop (line);	/* Get rid of CR, LF stuff */
@@ -746,8 +746,8 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 
 					if (first_crossover) {
-						char info[BUFSIZ], start[2][GMT_TEXT_LEN64], stop[2][GMT_TEXT_LEN64];
-						GMT_memset (info, BUFSIZ, char);
+						char info[GMT_BUFSIZ], start[2][GMT_TEXT_LEN64], stop[2][GMT_TEXT_LEN64];
+						GMT_memset (info, GMT_BUFSIZ, char);
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && GMT_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */

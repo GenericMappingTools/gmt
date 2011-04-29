@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: originator_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -344,7 +344,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
 
-	char record[BUFSIZ], buffer[BUFSIZ];
+	char record[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
 
 	struct EULER *p = NULL;
 	struct HOTSPOT *orig_hotspot = NULL;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.14 2011-04-23 02:14:12 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.15 2011-04-29 03:08:12 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -861,7 +861,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->M.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		GMT_LONG handedness = 0, c, p, mode, poly;
-		char line[BUFSIZ];
+		char line[GMT_BUFSIZ];
 		
 		GMT_init_distaz (GMT, Ctrl->M.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
@@ -927,7 +927,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_LONG k1, k2, j1, j2, nx, same;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
-		char T1[BUFSIZ], T2[BUFSIZ];
+		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ];
 		struct GMT_DATASET *C = NULL;
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
 		
@@ -1094,7 +1094,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
 		GMT_LONG tbl, seg, tbl2, seg2, k, n_dup, same = FALSE, poly_D, poly_S2;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
-		char record[BUFSIZ], src[BUFSIZ], dup[BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
+		char record[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
@@ -1199,7 +1199,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		GMT_LONG tbl, seg, seg2, ID, row, first, last, n, p, np, n_inside, *count = NULL;
-		char seg_label[GMT_TEXT_LEN64], record[BUFSIZ], *kind[2] = {"Middle point", "All points"};
+		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
@@ -1263,7 +1263,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %ld-%ld already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
-							char buffer[BUFSIZ], txt[GMT_TEXT_LEN64];
+							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
 							if (S->header) { strcpy (buffer, S->header); free ((void *)S->header); }
 							sprintf (txt, " -Z%ld", ID);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.16 2011-04-28 01:02:47 jluis Exp $
+ *	$Id: psxy_func.c,v 1.17 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -501,7 +501,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
 	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 
-	char buffer[BUFSIZ], *text_rec = NULL;
+	char buffer[GMT_BUFSIZ], *text_rec = NULL;
 
 	double dim[7], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;

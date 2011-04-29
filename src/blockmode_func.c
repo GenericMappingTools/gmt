@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmode_func.c,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *    $Id: blockmode_func.c,v 1.7 2011-04-29 03:08:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -191,7 +191,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;
 
-	char format[BUFSIZ];
+	char format[GMT_BUFSIZ];
 
 	struct GMT_GRID *Grid = NULL;
 	struct BLK_DATA *data = NULL;

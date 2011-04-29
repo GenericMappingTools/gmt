@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -270,7 +270,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double idy, x0, yval;
 
-	char line[BUFSIZ], *head = NULL;
+	char line[GMT_BUFSIZ], *head = NULL;
 
 	FILE *fpi = NULL;
 

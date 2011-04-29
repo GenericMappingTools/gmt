@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_restore.c,v 1.7 2011-04-12 13:06:43 remko Exp $
+ *	$Id: polygon_restore.c,v 1.8 2011-04-29 03:08:12 guru Exp $
  */
 /* 
  *
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 	int	n_alloc, n_pt_out = 0, sign;
 	double x, y;
 	double *flon = NULL, *flat = NULL;
-	char file[80], line[BUFSIZ];
+	char file[80], line[GMT_BUFSIZ];
         
 	if (argc == 1) {
 		fprintf(stderr,"usage: polygon_restore new.lis final_polygons.b level\n");
@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 		k = 0;
 		h.west = h.south = 1.0e100;
 		h.east = h.north = -1.0e100;
-		while (fgets (line, BUFSIZ, fp)) {
+		while (fgets (line, GMT_BUFSIZ, fp)) {
 			sscanf (line, "%lf %lf", &x, &y);
 			p[k].x = (int) rint (x * 1.0e6);
 			p[k].y = (int) rint (y * 1.0e6);

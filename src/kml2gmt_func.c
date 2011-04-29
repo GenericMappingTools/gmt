@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, start, fmode = POINT, scan = TRUE, first = TRUE, error = FALSE;
 	
-	char line[BUFSIZ], buffer[BUFSIZ], header[BUFSIZ], name[BUFSIZ], description[BUFSIZ];
+	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 
 	double out[3];
 	
@@ -149,9 +149,9 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
-	GMT_memset (header, BUFSIZ, char);
-	GMT_memset (name, BUFSIZ, char);
-	GMT_memset (description, BUFSIZ, char);
+	GMT_memset (header, GMT_BUFSIZ, char);
+	GMT_memset (name, GMT_BUFSIZ, char);
+	GMT_memset (description, GMT_BUFSIZ, char);
 	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active))) Return (error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
@@ -176,7 +176,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
 
-        while (fgets (line, BUFSIZ, fp)) {
+        while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) scan = TRUE;
 		if (strstr (line, "</Placemark")) scan = FALSE;
 		if (!scan) continue;
