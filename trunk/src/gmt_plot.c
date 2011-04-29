@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.321 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_plot.c,v 1.322 2011-04-29 23:36:47 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,6 +50,7 @@
  * INTERNAL Functions include:
  *
  *	GMT_conic_map_boundary :	Plot basemap for conic projections
+ *	GMT_epsinfo				Fill out info needed for PostScript header
  *	GMT_linear_map_boundary :	Plot basemap for Linear projections
  *	GMT_linearx_grid :		Draw linear x grid lines
  *	GMT_lineary_grid :		Draw linear y grid lines
@@ -2145,7 +2146,6 @@ void GMT_map_clip_on (struct GMT_CTRL *C, struct PSL_CTRL *P, double rgb[], GMT_
 
 	GMT_free (C, work_x);
 	GMT_free (C, work_y);
-	C->current.ps.clip = +1;	/* Tell GMT that polygon clipping was increased by one level */
 }
 
 void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
@@ -2154,7 +2154,6 @@ void GMT_map_clip_off (struct GMT_CTRL *C, struct PSL_CTRL *P)
 
 	PSL_comment (P, "Deactivate Map clip path\n");
 	PSL_endclipping (P, 1);		/* Reduce polygon clipping by one level */
-	C->current.ps.clip = -1;	/* Communicate this to GMT */
 }
 
 void GMT_setfill (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_FILL *fill, GMT_LONG outline)
@@ -3262,13 +3261,26 @@ void GMT_textpath_init (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_PEN *
 
 void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
-	(void) GMT_setfont (C, P, &G->font_label);
-	
+	GMT_LONG i, no_labels;
+
+	if (!G->n_segments) return;	/* Northing to do here */
+
 	if (G->debug) GMT_contlabel_debug (C, P, G);		/* Debugging lines and points */
+
+	/* See if there are labels at all */
+	for (i = 0, no_labels = TRUE; i < G->n_segments; i++) if (G->segment[i]->n_labels) no_labels = FALSE;
+
+	if (no_labels) {	/* No labels, just draw lines */
+		GMT_contlabel_drawlines (C, P, G, 0);
+		return;
+	}
+
+	GMT_setfont (C, P, &G->font_label);
+	
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (C, P, G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (C, P, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
-		if (G->delay) return;				/* Leave clipping on and do not plot text yet - delayed until psclip -Cc|s */
+		if (G->delay) return;						/* Leave clipping on and do not plot text yet - delayed until psclip -Cc|s */
 		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */
 		GMT_contlabel_plotlabels (C, P, G, 0);		/* Now plot labels where they go directly */
 	}
@@ -3398,108 +3410,6 @@ char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
 	return (pStrOut);
 }
 
-GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_OPTION *options)
-{
-	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
-	 * and places a time stamp, if selected */
-
-	GMT_LONG k, id;
-	struct EPS *eps = NULL;
-	char *mode[2] = {"w","a"};
-	FILE *fp = NULL;	/* Default which means stdout in PSL */
-	struct GMT_OPTION *Out = NULL;
-	struct GMT_CTRL *C = API->GMT;	/* General GMT interal parameters */
-
-	if (!GMT_Find_Option (API, '>', options, &Out)) {	/* Want to use a specific output file */
-		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
-		if (C->common.O.active && k == 0) {
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
-		}
-		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
-			GMT_report (API->GMT, GMT_MSG_FATAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT_RUNTIME_ERROR);
-		}
-	}
-
-	/* Initialize the plot header and settings */
-
-	if (C->current.setting.ps_epsformat) C->current.setting.ps_page_size[1] = -fabs(C->current.setting.ps_page_size[1]);
-	if (C->common.P.active) C->current.setting.ps_orientation = TRUE;
-
-	/* Default for overlay plots is no shifting */
-
-	if (!C->current.proj.x_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_X] = 0.0;
-	if (!C->current.proj.y_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_Y] = 0.0;
-
-	k = C->current.setting.ps_orientation;	/* k and !k gives 0,1 or 1,0 depending on -P */
-	if (C->current.proj.x_off_supplied == 2) C->current.setting.map_origin[GMT_X] = 0.5 * (fabs(C->current.setting.ps_page_size[!k]/PSL_POINTS_PER_INCH) - C->current.map.width);	/* Want to x center plot on current page size */
-	if (C->current.proj.y_off_supplied == 2) C->current.setting.map_origin[GMT_Y] = 0.5 * (fabs(C->current.setting.ps_page_size[k]/PSL_POINTS_PER_INCH)  - C->current.map.height);	/* Want to y center plot on current page size */
-
-	eps = GMT_epsinfo (C);
-	strcpy (P->init.encoding, C->current.setting.ps_encoding.name);
-	
-	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.absolute,
-		C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
-
-	/* Issue the comments that allow us to trace down what command created this layer */
-
-	GMT_echo_command (C, P, options);
-
-	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
-
-	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == C->current.proj.projection) id = k;
-	if (id >= 0) {			/* Valid projection for creating world file info */
-		double Cartesian_m[4];	/* WESN equivalents in projected meters */
-		char *pstr = NULL, proj4name[16];
-		Cartesian_m[0] = (C->current.proj.rect[YLO] - C->current.proj.origin[GMT_Y]) * C->current.proj.i_scale[GMT_Y];
-		Cartesian_m[1] = (C->current.proj.rect[XHI] - C->current.proj.origin[GMT_X]) * C->current.proj.i_scale[GMT_X];
-		Cartesian_m[2] = (C->current.proj.rect[YHI] - C->current.proj.origin[GMT_Y]) * C->current.proj.i_scale[GMT_Y];
-		Cartesian_m[3] = (C->current.proj.rect[XLO] - C->current.proj.origin[GMT_X]) * C->current.proj.i_scale[GMT_X];
-		/* It woul be simpler if we had a cleaner way of telling when data is lon-lat */
-		if (C->current.proj.projection == GMT_LINEAR && GMT_is_geographic (C, GMT_IN))
-			strcpy(proj4name, "latlong");
-		else
-			strcpy(proj4name, GMT_proj4[id].proj4name);
-
-		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
-			C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI],
-			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4 (C, pstr));
-		free((void *)pstr);
-	}
-
-	/* Set layer transparency, if requested. Note that /SetTransparency actually sets the opacity, which is (1 - transparency) */
-	if (C->common.t.active) {
-		PSL_command (P,  "[ /ca %g /CA %g /BM /%s /SetTransparency pdfmark\n", 1.0 - 0.01 * C->common.t.value, 1.0 - 0.01 * C->common.t.value, C->current.setting.ps_transpmode);
-	}
-
-	/* If requested, place the timestamp */
-
-	if (C->current.ps.map_logo_label[0] == 'c' && C->current.ps.map_logo_label[1] == 0) {
-		char txt[4] = {' ', '-', 'X', 0};
-		struct GMT_OPTION *opt;
-		/* -Uc was given as shorthand for "plot current command line" */
-		strcpy (C->current.ps.map_logo_label, C->init.module_name);
-		for (opt = options; opt; opt = opt->next) {
-			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
-			txt[2] = opt->option;
-			strcat (C->current.ps.map_logo_label, txt);
-			strcat (C->current.ps.map_logo_label, opt->arg);
-		}
-	}
-	if (C->current.setting.map_logo) GMT_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
-	if (eps->name) free ((void *)eps->name);
-	if (eps->title) free ((void *)eps->title);
-	if (eps) GMT_free (C, eps);
-	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
-	return (0);
-}
-
-GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P) {
-	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
-	PSL_endplot (P, !C->common.K.active);
-	return (0);
-}
-
 #define PADDING 72.0	/* Amount of padding room for annotations in points (1 inch) */
 
 struct EPS *GMT_epsinfo (struct GMT_CTRL *C)
@@ -3548,7 +3458,7 @@ struct EPS *GMT_epsinfo (struct GMT_CTRL *C)
 	}
 
 	/* Lower or increase clip level based on C->current.ps.clip (-1, 0 or +1) */
-	if (GMT_abs (C->current.ps.clip) == PSL_ALL_CLIP_POL)	/* Special case where we reset all polygon clip levels */
+	if (GMT_abs (C->current.ps.clip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
 		new->clip_level = 0;
 	else
 		new->clip_level += (int)C->current.ps.clip;
@@ -3650,6 +3560,110 @@ struct EPS *GMT_epsinfo (struct GMT_CTRL *C)
 	new->title = strdup (info);
 
 	return (new);
+}
+
+GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_OPTION *options)
+{
+	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
+	 * and places a time stamp, if selected */
+
+	GMT_LONG k, id;
+	struct EPS *eps = NULL;
+	char *mode[2] = {"w","a"};
+	FILE *fp = NULL;	/* Default which means stdout in PSL */
+	struct GMT_OPTION *Out = NULL;
+	struct GMT_CTRL *C = API->GMT;	/* General GMT interal parameters */
+
+	if (!GMT_Find_Option (API, '>', options, &Out)) {	/* Want to use a specific output file */
+		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
+		if (C->common.O.active && k == 0) {
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+		}
+		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+			GMT_report (API->GMT, GMT_MSG_FATAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
+			GMT_exit (GMT_RUNTIME_ERROR);
+		}
+	}
+
+	/* Initialize the plot header and settings */
+
+	if (C->current.setting.ps_epsformat) C->current.setting.ps_page_size[1] = -fabs(C->current.setting.ps_page_size[1]);
+	if (C->common.P.active) C->current.setting.ps_orientation = TRUE;
+
+	/* Default for overlay plots is no shifting */
+
+	if (!C->current.proj.x_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_X] = 0.0;
+	if (!C->current.proj.y_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_Y] = 0.0;
+
+	k = C->current.setting.ps_orientation;	/* k and !k gives 0,1 or 1,0 depending on -P */
+	if (C->current.proj.x_off_supplied == 2) C->current.setting.map_origin[GMT_X] = 0.5 * (fabs(C->current.setting.ps_page_size[!k]/PSL_POINTS_PER_INCH) - C->current.map.width);	/* Want to x center plot on current page size */
+	if (C->current.proj.y_off_supplied == 2) C->current.setting.map_origin[GMT_Y] = 0.5 * (fabs(C->current.setting.ps_page_size[k]/PSL_POINTS_PER_INCH)  - C->current.map.height);	/* Want to y center plot on current page size */
+
+	eps = GMT_epsinfo (C);
+	strcpy (P->init.encoding, C->current.setting.ps_encoding.name);
+	
+	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.absolute,
+		C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
+
+	/* Issue the comments that allow us to trace down what command created this layer */
+
+	GMT_echo_command (C, P, options);
+
+	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
+
+	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == C->current.proj.projection) id = k;
+	if (id >= 0) {			/* Valid projection for creating world file info */
+		double Cartesian_m[4];	/* WESN equivalents in projected meters */
+		char *pstr = NULL, proj4name[16];
+		Cartesian_m[0] = (C->current.proj.rect[YLO] - C->current.proj.origin[GMT_Y]) * C->current.proj.i_scale[GMT_Y];
+		Cartesian_m[1] = (C->current.proj.rect[XHI] - C->current.proj.origin[GMT_X]) * C->current.proj.i_scale[GMT_X];
+		Cartesian_m[2] = (C->current.proj.rect[YHI] - C->current.proj.origin[GMT_Y]) * C->current.proj.i_scale[GMT_Y];
+		Cartesian_m[3] = (C->current.proj.rect[XLO] - C->current.proj.origin[GMT_X]) * C->current.proj.i_scale[GMT_X];
+		/* It woul be simpler if we had a cleaner way of telling when data is lon-lat */
+		if (C->current.proj.projection == GMT_LINEAR && GMT_is_geographic (C, GMT_IN))
+			strcpy(proj4name, "latlong");
+		else
+			strcpy(proj4name, GMT_proj4[id].proj4name);
+
+		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
+			C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI],
+			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4 (C, pstr));
+		free((void *)pstr);
+	}
+
+	/* Set layer transparency, if requested. Note that /SetTransparency actually sets the opacity, which is (1 - transparency) */
+	if (C->common.t.active) {
+		PSL_command (P,  "[ /ca %g /CA %g /BM /%s /SetTransparency pdfmark\n", 1.0 - 0.01 * C->common.t.value, 1.0 - 0.01 * C->common.t.value, C->current.setting.ps_transpmode);
+	}
+
+	/* If requested, place the timestamp */
+
+	if (C->current.ps.map_logo_label[0] == 'c' && C->current.ps.map_logo_label[1] == 0) {
+		char txt[4] = {' ', '-', 'X', 0};
+		struct GMT_OPTION *opt;
+		/* -Uc was given as shorthand for "plot current command line" */
+		strcpy (C->current.ps.map_logo_label, C->init.module_name);
+		for (opt = options; opt; opt = opt->next) {
+			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
+			txt[2] = opt->option;
+			strcat (C->current.ps.map_logo_label, txt);
+			strcat (C->current.ps.map_logo_label, opt->arg);
+		}
+	}
+	if (C->current.setting.map_logo) GMT_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
+	if (eps->name) free ((void *)eps->name);
+	if (eps->title) free ((void *)eps->title);
+	if (eps) GMT_free (C, eps);
+	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
+	return (0);
+}
+
+GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P) {
+	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
+	if (C->current.ps.clip != P->current.nclip)
+		GMT_report (C, GMT_MSG_FATAL, "Command was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.clip, P->current.nclip);
+	PSL_endplot (P, !C->common.K.active);
+	return (0);
 }
 
 void GMT_geo_line (struct GMT_CTRL *C, struct PSL_CTRL *P, double *lon, double *lat, GMT_LONG n)
