@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.69 2011-04-29 03:08:12 guru Exp $
+ *	$Id: pslib.h,v 1.70 2011-04-29 23:37:29 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -180,8 +180,7 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 /* Clipping types */
 
-#define PSL_ALL_CLIP_TXT	0	/* Terminates all textpath-based clipping */
-#define PSL_ALL_CLIP_POL	INT_MAX	/* Terminates all textpath-based clipping */
+#define PSL_ALL_CLIP	INT_MAX	/* Terminates all clipping */
 
 /* PSL error codes */
 
@@ -258,6 +257,7 @@ struct PSL_CTRL {
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
 		double fontsize;		/* Current font size				*/
+		PSL_LONG nclip;			/* Clip depth 					*/
 		PSL_LONG font_no;		/* Current font number				*/
 		PSL_LONG outline;		/* Current outline				*/
 	} current;
