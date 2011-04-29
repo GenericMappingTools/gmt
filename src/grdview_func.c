@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.21 2011-04-26 17:52:49 guru Exp $
+ *	$Id: grdview_func.c,v 1.22 2011-04-29 21:17:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -873,6 +873,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Tiling without interpolation\n");
 
 		if (Ctrl->T.outline) GMT_setpen (GMT, PSL, &Ctrl->T.pen);
+		GMT_memset (&S, 1, struct GMT_LINE_SEGMENT);
 		S.coord = GMT_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (Z, row, col, k) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[k]) && Ctrl->T.skip) continue;
