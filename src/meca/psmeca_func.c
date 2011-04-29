@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *    $Id: psmeca_func.c,v 1.7 2011-04-29 20:13:32 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -834,13 +834,11 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
 					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset + (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + size * 0.5 + Ctrl->S.offset);
 					PSL_plottext (PSL, plot_x, plot_y + size * 0.5 + Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
-					PSL_plotpoint (PSL, plot_x, plot_y + size * 0.5 + Ctrl->S.offset, PSL_DRAW + PSL_STROKE);
 					break;
 				case 10 :
 					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
 					if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset - (Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y - size * 0.5 - Ctrl->S.offset);
 					PSL_plottext (PSL, plot_x, plot_y - size * 0.5 - Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
-					PSL_plotpoint (PSL, plot_x, plot_y - size * 0.5 - Ctrl->S.offset, PSL_DRAW + PSL_STROKE);
 					break;
 			}
 

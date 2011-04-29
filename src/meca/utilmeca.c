@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.30 2011-04-12 13:06:44 remko Exp $
+/*	$Id: utilmeca.c,v 1.31 2011-04-29 20:13:32 remko Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -376,7 +376,7 @@ double ps_meca (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 		str += increment;
 	}
 	npoints = i + 1;
-	PSL_plotline (PSL, x, y, npoints, PSL_MOVE);
+	PSL_plotline (PSL, x, y, npoints, PSL_MOVE + PSL_STROKE);
 
 	i = -1;
 	increment = 1.;
@@ -390,7 +390,7 @@ double ps_meca (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0
 		str += increment;
 	}
 	npoints = i + 1;
-	PSL_plotline (PSL, x, y, npoints, PSL_MOVE);
+	PSL_plotline (PSL, x, y, npoints, PSL_MOVE + PSL_STROKE);
 	return (radius_size*2.);
 }
 
@@ -425,7 +425,7 @@ double ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,double y0,
  				str += increment;
 			}
 			npoints = i + 1;
-			PSL_plotline (PSL, x, y, npoints, PSL_MOVE);
+			PSL_plotline (PSL, x, y, npoints, PSL_MOVE + PSL_STROKE);
 			break;
 
 		case 2:
@@ -441,7 +441,7 @@ double ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,double y0,
 				str += increment;
 			}
 			npoints = i + 1;
-			PSL_plotline (PSL, x, y, npoints, PSL_MOVE);
+			PSL_plotline (PSL, x, y, npoints, PSL_MOVE + PSL_STROKE);
 			break;
 	}
 	return (radius_size*2.);
