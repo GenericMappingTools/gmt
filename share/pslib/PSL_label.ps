@@ -1,4 +1,4 @@
-%-	$Id: PSL_label.ps,v 1.17 2011-03-26 20:52:07 guru Exp $
+%-	$Id: PSL_label.ps,v 1.18 2011-04-29 23:38:52 remko Exp $
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
 %-
@@ -251,7 +251,7 @@ end
 
   PSL_lastcall			% After last call we execute the clip path
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N	% Clean up and return
+    {PSL_clip} if N	% Clean up and return
   } if
 } def
 
@@ -469,23 +469,24 @@ end
 } def
 
 /PSL_ST_clippath	% Create and lay down clip path
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N						% Start fresh
+  PSL_usebox not {clipsave clippath} if		% Set clipsave and start clip path
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def	% Set the new clip path
+  {PSL_clip		% Set the new clip path
   } ifelse
   N			% Clean up and return
 } def
 
-/PSL_ST_clippath_rect	% Create and lay down clip path
-{N						% Start fresh
+/PSL_ST_clippath_rect	% Create and lay down rectangular clip path
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
   /DelY BoxH BoxH 0 3 array astore def		% Offsets in y from LL
-  PSL_usebox not {clipsave clippath} if		% Set clipsave and start clip path
   0 1 PSL_m1					% Loop over all labels
   { /k exch def					% Current label index
     /xp PSL_txt_x k get def
@@ -509,12 +510,11 @@ end
 } def
 
 /PSL_ST_clippath_round	% Create and lay down rounded rectangular clip path
-{N						% Start fresh
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance
   /BoxH PSL_height PSL_gap_y 2 mul add def	% Height of current label space including clearance
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if		% Set clipsave and start clip path
   0 1 PSL_m1					% Loop over all labels
   { /k exch def					% Current label index
     /xp PSL_txt_x k get def
@@ -528,6 +528,7 @@ end
   } for
 } def
 
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def	% The depth of polygon clipping in effect
-/PSL_nclip_txt 0 def	% The depth of textpath clipping in effect
+/PSL_nclip 0 def							% The depth of clipping in effect
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def			% Clip and update PSL_nclip
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def			% Even-odd clip and update PSL_nclip
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def	% Cliprestore and update PSL_nclip
