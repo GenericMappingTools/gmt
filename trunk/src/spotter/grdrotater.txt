@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GRDROTATER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GRDROTATER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
 grdrotater \- Rotate a grid using a total reconstruction rotation
 .SH SYNOPSIS

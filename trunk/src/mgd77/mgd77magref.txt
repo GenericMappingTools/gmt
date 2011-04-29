@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH MGD77MAGREF 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH MGD77MAGREF 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
 mgd77magref \- Evaluate the IGRF or CM4 magnetic field models
 .SH SYNOPSIS

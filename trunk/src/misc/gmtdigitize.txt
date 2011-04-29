@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GMTDIGITIZE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GMTDIGITIZE 1 MANDATE GMT_STRING "Generic Mapping Tools [misc supplement]"
 #define	DIG_PORT	/dev/ttyS0
 #define	DIG_LPI		2540
 #define	LEN1	0.5

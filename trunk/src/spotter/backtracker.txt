@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH BACKTRACKER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH BACKTRACKER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
 backtracker \- Reconstruct points, flowlines and hotspot tracks 
 .SH SYNOPSIS

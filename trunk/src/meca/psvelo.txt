@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH PSVELO 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH PSVELO 1 MANDATE GMT_STRING "Generic Mapping Tools [meca supplement]"
 .SH NAME
 psvelo \- Plot velocity vectors, crosses, and wedges on maps
 .SH SYNOPSIS

@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH ROTCONVERTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH ROTCONVERTER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
 rotconverter \- Manipulate total reconstruction and stage rotations 
 .SH SYNOPSIS

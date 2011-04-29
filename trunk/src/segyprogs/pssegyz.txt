@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH PSSEGYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH PSSEGYZ 1 MANDATE GMT_STRING "Generic Mapping Tools [segyprogs supplement]"
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS

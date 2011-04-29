@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GRDPMODELER 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GRDPMODELER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
 grdpmodeler \- Evaluate plate motion parameters on a grid
 .SH SYNOPSIS

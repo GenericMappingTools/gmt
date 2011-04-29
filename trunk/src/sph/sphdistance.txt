@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH SPHDISTANCE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH SPHDISTANCE 1 MANDATE GMT_STRING "Generic Mapping Tools [sph supplement]"
 #define LEN 15
 #define SCALE OPT(JM)15BD(c)
 .SH NAME

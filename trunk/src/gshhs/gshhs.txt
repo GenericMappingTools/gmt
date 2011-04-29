@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GSHHS 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GSHHS 1 MANDATE GMT_STRING "Generic Mapping Tools [gshhs supplement]"
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
 .SH SYNOPSIS

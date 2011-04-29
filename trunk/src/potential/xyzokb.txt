@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GRDCUT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GRDCUT 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
 .SH NAME
 grdcut \- Extract a subregion out of a grid file
 .SH SYNOPSIS

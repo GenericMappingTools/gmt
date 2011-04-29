@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH IMG2GOOGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH IMG2GOOGLE 1 MANDATE GMT_STRING "Generic Mapping Tools [imgsrc supplement]"
 .SH NAME
 img2google \- Create Google Earth KML overlay tiles from bathymetry Mercator img grid 
 .SH SYNOPSIS

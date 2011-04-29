@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH X2SYS_CROSS 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH X2SYS_CROSS 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
 BD(x2sys_cross) \- Find and compute crossover errors
 .SH SYNOPSIS
