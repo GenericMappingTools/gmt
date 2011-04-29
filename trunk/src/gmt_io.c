@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.261 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_io.c,v 1.262 2011-04-29 19:35:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3645,7 +3645,6 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_texttable\n", source_type);
 		return (EXIT_FAILURE);
 	}
-	GMT_report (C, GMT_MSG_NORMAL, "Reading text table from %s\n", file);
 
 	n_fields = GMT_ascii_textinput (C, fp, &ncol, (void **)&in);	/* Get first record */
 	n_read++;
@@ -4925,7 +4924,6 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
 		return (EXIT_FAILURE);
 	}
-	GMT_report (C, GMT_MSG_NORMAL, "Reading data table from %s\n", file);
 
 	n_fields = C->current.io.input (C, fp, &n_expected_fields, &in);	/* Get first record */
 	n_read++;
