@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.37 2011-04-30 00:13:09 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.38 2011-04-30 01:46:51 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -512,10 +512,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		ny = GMT_get_n (wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
+#ifdef USE_GDAL
 	if (Ctrl->D.active) {	/* Trust more on info from gdal to make it more stable against pixel vs grid registration troubles */
 		nx = I->header->nx;
 		ny = I->header->ny;
 	}
+#endif
 
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
 		GMT_plotinit (API, PSL, options);
