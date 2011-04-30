@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.36 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdimage_func.c,v 1.37 2011-04-30 00:13:09 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,17 +40,15 @@ struct GRDIMAGE_CTRL {
 		GMT_LONG active;
 		char *file;
 	} C;
-#ifdef USE_GDAL
 	struct D {	/* -D to read GDAL file */
 		GMT_LONG active;
 		GMT_LONG mode;	/* Use info of -R option to reference image */
 	} D;
-	struct A {	/* -D to write a GDAL file */
+	struct A {	/* -A to write a GDAL file */
 		GMT_LONG active;
 		char *file;
 		char *driver;
 	} A;
-#endif
 	struct E {	/* -Ei|<dpi> */
 		GMT_LONG active;
 		GMT_LONG device_dpi;
@@ -461,16 +459,12 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read data file\n");
 
-#ifdef USE_GDAL
 	if (!Ctrl->D.active) {
-#endif
 		for (k = 0; k < n_grids; k++) {
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[k]), 
 				(void **)&Grid_orig[k])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		}
-#ifdef USE_GDAL
 	}
-#endif
 
 	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set further above. Do it now */
 
@@ -518,18 +512,16 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		ny = GMT_get_n (wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
-#ifdef USE_GDAL
 	if (Ctrl->D.active) {	/* Trust more on info from gdal to make it more stable against pixel vs grid registration troubles */
 		nx = I->header->nx;
 		ny = I->header->ny;
 	}
-#endif
 
-	GMT_plotinit (API, PSL, options);
-
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL,GMT->session.no_rgb, 3);
+	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
+		GMT_plotinit (API, PSL, options);
+		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL,GMT->session.no_rgb, 3);
+	}
 
 	/* Read data */
 
@@ -683,9 +675,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (row = 0, byte = colormask_offset; row < ny; row++) {
 			actual_row = (normal_y) ? row : ny - row - 1;
 			kk = GMT_IJPGI (header_work, actual_row, 0);
-#ifdef USE_GDAL
-			if (row == 0) node_RGBA = kk;		/* First time per row equals 'node', after grows alone */
-#endif
+			if (Ctrl->D.active && row == 0) node_RGBA = kk;		/* First time per row equals 'node', after grows alone */
 			for (col = 0; col < nx; col++) {	/* Compute rgb for each pixel */
 				node = kk + (normal_x ? col : nx - col - 1);
 #ifdef USE_GDAL
@@ -796,15 +786,17 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (!need_to_project) {
 			to_GDALW->ULx = GMT->common.R.wesn[XHI];
 			to_GDALW->ULy = GMT->common.R.wesn[YHI];
+			to_GDALW->x_inc = dx;
+			to_GDALW->y_inc = dy;
 		}
 		else {
 			to_GDALW->ULx = GMT->current.proj.rect_m[XLO];
 			to_GDALW->ULy = GMT->current.proj.rect_m[YHI];
+			to_GDALW->x_inc = (GMT->current.proj.rect_m[XHI] - GMT->current.proj.rect_m[XLO]) / nx;
+			to_GDALW->y_inc = (GMT->current.proj.rect_m[YHI] - GMT->current.proj.rect_m[YLO]) / ny;
 			//to_GDALW->ULx = Img_proj->header->wesn[XHI];	/* OK, this is still wrong because coordinates are not projected ones */
 			//to_GDALW->ULy = Img_proj->header->wesn[YHI];
 		}
-		to_GDALW->x_inc = dx;
-		to_GDALW->y_inc = dy;
 	}
 #endif
 
@@ -819,7 +811,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	x_side = dx * header_work->nx;
 	y_side = dy * header_work->ny;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Creating PostScript image ");
+	GMT_report (GMT, GMT_MSG_NORMAL, "Creating image ");
 
 	if (P && P->is_gray) 
 		for (kk = 0, P->is_bw = TRUE; P->is_bw && kk < nm; kk++) 
@@ -884,11 +876,13 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, bitimage_24);
 	}
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+	if (!Ctrl->A.active) {
+		if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
 
-	GMT_map_basemap (GMT, PSL);
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
-	GMT_plotend (GMT, PSL);
+		GMT_map_basemap (GMT, PSL);
+		GMT_plane_perspective (GMT, PSL, -1, 0.0);
+		GMT_plotend (GMT, PSL);
+	}
 
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 	if (need_to_project && n_grids)
