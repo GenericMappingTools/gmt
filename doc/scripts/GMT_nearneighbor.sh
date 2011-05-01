@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_nearneighbor.sh,v 1.6 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_nearneighbor.sh,v 1.7 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 psxy -R0/2/0/2 -Jx1i -B0g0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
 0.04	1.8

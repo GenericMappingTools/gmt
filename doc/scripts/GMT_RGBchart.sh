@@ -1,12 +1,12 @@
 #!/bin/bash
-#	$Id: GMT_RGBchart.sh,v 1.9 2011-04-26 00:19:57 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.10 2011-05-01 18:06:37 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
 # where <size> is the page size. Use either: ledger, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
 
-. functions.sh
+. ./functions.sh
 . gmt_shell_functions.sh
 
 gmt_init_tmpdir

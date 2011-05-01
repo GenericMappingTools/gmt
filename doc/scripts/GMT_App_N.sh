@@ -1,11 +1,11 @@
 #!/bin/bash
-#	$Id: GMT_App_N.sh,v 1.15 2011-04-24 13:56:46 remko Exp $
+#	$Id: GMT_App_N.sh,v 1.16 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #
-. functions.sh
+. ./functions.sh
 
 grep -v '^#' ../../share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
 n=`cat $$.lis | wc -l`

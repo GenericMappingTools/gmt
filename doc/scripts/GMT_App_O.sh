@@ -1,10 +1,10 @@
 #!/bin/bash
-#	$Id: GMT_App_O.sh,v 1.14 2011-03-25 00:40:32 remko Exp $
+#	$Id: GMT_App_O.sh,v 1.15 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts
 #
-. functions.sh
+. ./functions.sh
 
 gmtset MAP_FRAME_WIDTH 0.04i FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p
 grdcut ../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc

@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-P.sh,v 1.7 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-P.sh,v 1.8 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 psxy -R0/2.5/0/1.7 -Jx1i -P -K -Glightyellow -Wthinner << EOF >| GMT_-P.ps
 >

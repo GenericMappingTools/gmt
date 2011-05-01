@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_registration.sh,v 1.2 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_registration.sh,v 1.3 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 # Gridline registration
 psxy -R0/3/0/3 -JX2.5i/1.25i -B1g1wesn -P -K -Wthinner -L -Glightred << EOF > GMT_registration.ps

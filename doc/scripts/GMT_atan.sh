@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_atan.sh,v 1.13 2011-04-18 20:05:39 remko Exp $
+#	$Id: GMT_atan.sh,v 1.14 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 grdgradient -A45 ../tutorial/us.nc -N -fg -G$$.t.nc
 grd2xyz -Z $$.t.nc > $$.d

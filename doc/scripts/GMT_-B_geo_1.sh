@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-B_geo_1.sh,v 1.5 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-B_geo_1.sh,v 1.6 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 gmtset FORMAT_GEO_MAP ddd:mm:ssF
 psbasemap -R-1/2/0/0.4 -JM3i -Ba1f15mg5mS -K -P > GMT_-B_geo_1.ps
 psxy -R -J -O -K -Sv0.005/0.02/0.015 -Gblack -Y-0.35i -N -V << EOF >> GMT_-B_geo_1.ps

@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_App_M_2.sh,v 1.3 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_M_2.sh,v 1.4 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 ps=GMT_App_M_2.ps
 
 gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm

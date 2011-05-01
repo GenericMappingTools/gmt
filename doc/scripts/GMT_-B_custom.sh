@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-B_custom.sh,v 1.2 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-B_custom.sh,v 1.3 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 cat << EOF >| xannots.txt
 416.0	ig	Devonian
