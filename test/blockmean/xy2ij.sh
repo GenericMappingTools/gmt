@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: xy2ij.sh,v 1.13 2011-03-15 04:25:05 remko Exp $
+#	$Id: xy2ij.sh,v 1.14 2011-05-01 01:11:29 jluis Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -44,10 +44,10 @@ EOF
 blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
 blockmean -R0/5/0/5 -I1 grid.d > grid_xy.d
 
-diff pixel_xy.d orig/pixel_xy.d  > fail
-diff pixel_ij.d orig/pixel_ij.d >> fail
-diff grid_xy.d  orig/grid_xy.d  >> fail
-diff grid_ij.d  orig/grid_ij.d  >> fail
+diff pixel_xy.d orig/pixel_xy.d --strip-trailing-cr  > fail
+diff pixel_ij.d orig/pixel_ij.d --strip-trailing-cr >> fail
+diff grid_xy.d  orig/grid_xy.d --strip-trailing-cr  >> fail
+diff grid_ij.d  orig/grid_ij.d --strip-trailing-cr  >> fail
 
 passfail xy2ij_numerical
 
