@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: convert.sh,v 1.6 2011-03-15 02:06:45 guru Exp $
+#	$Id: convert.sh,v 1.7 2011-05-01 01:25:05 jluis Exp $
 #
 # Tests mgd77convert
 
@@ -20,17 +20,17 @@ mgd77convert 12345678 -Fa -Tt
 echo "Test if dat files are the same if coming from mgd77 or nc:" > $log
 mv 12345678.dat $$.dat
 mgd77convert 12345678 -Fc -Tt
-diff 12345678.dat $$.dat | tee fail >> $log
+diff 12345678.dat $$.dat --strip-trailing-cr | tee fail >> $log
 echo "Test if mgd77 files are the same if coming from nc or dat:" >> $log
 rm -f 12345678.mgd77
 mgd77convert 12345678 -Ft -Ta
 mv 12345678.mgd77 $$.mgd77
 mgd77convert 12345678 -Fc -Ta
-diff 12345678.mgd77 $$.mgd77 | tee -a fail >> $log
+diff 12345678.mgd77 $$.mgd77 --strip-trailing-cr | tee -a fail >> $log
 echo "Test if mgd77 from nc matches original:" >> $log
-diff 12345678.mgd77 dummy.mgd77 | tee -a fail >> $log
+diff 12345678.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 echo "Test if mgd77 from dat matches original:" >> $log
-diff $$.mgd77 dummy.mgd77 | tee -a fail >> $log
+diff $$.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 
 rm -f $$.* 12345678.*
 
