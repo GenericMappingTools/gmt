@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.14 2011-04-29 23:31:26 remko Exp $
+ *	$Id: psclip_func.c,v 1.15 2011-05-01 18:47:38 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -120,6 +120,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 					case 's': Ctrl->C.n = CLIP_STEXT; break;
 					case 'c': Ctrl->C.n = CLIP_CTEXT; break;
 					case 'a': Ctrl->C.n = PSL_ALL_CLIP; break;
+					case '\0': Ctrl->C.n = 1; break;	/* Default anyway */
 					default:
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
