@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: time_testing_2.sh,v 1.7 2011-03-28 21:15:47 guru Exp $
+#	$Id: time_testing_2.sh,v 1.8 2011-05-01 01:01:44 jluis Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -32,7 +32,7 @@ sample1d -I0.5 << EOF > $$.d
 4	1
 EOF
 gmtconvert $$.d -fi0t -fo0T --TIME_SYSTEM=j2000 > $$.result
-diff $$.result $$.answer > fail
+diff $$.result $$.answer --strip-trailing-cr > fail
 
 rm -f $$.*
 
