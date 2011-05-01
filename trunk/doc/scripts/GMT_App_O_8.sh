@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_App_O_8.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_O_8.sh,v 1.11 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes Fig 8 for Appendix O (labeled lines)
 #
-. functions.sh
+. ./functions.sh
 
 awk '{if (NR > 1 && ($3 % 1500) == 0) print $1, $2, int($5)}' transect.d > fix2.d
 pscoast -R50/160/-15/15 -JM5.3i -Glightgray -A500 -K -P > GMT_App_O_8.ps

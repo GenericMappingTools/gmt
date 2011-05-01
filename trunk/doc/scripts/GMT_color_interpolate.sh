@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_color_interpolate.sh,v 1.4 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_color_interpolate.sh,v 1.5 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 ps=GMT_color_interpolate.ps
 psbasemap -Jx1i -R0/6.8/0/2.0 -B0 -K > $ps
 

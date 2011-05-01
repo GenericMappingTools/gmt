@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-B_time5.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-B_time5.sh,v 1.11 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character FORMAT_TIME_SECONDARY_MAP full \
 	FONT_ANNOT_PRIMARY +9p
 psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1US -P -K > GMT_-B_time5.ps

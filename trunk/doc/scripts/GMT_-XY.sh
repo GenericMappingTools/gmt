@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-XY.sh,v 1.6 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-XY.sh,v 1.7 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 psbasemap -R0/1.5/0/1.7 -Jx1i -P -B0 -K -Glightyellow >| GMT_-XY.ps
 psxy -R -J -O -K -Sv0.005/0.035/0.025 -Gblack << EOF >> GMT_-XY.ps

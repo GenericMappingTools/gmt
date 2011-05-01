@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-OK.sh,v 1.11 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-OK.sh,v 1.12 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 psxy -R0/2.7/0/2.5 -Jx1i -K -L -N -P << EOF > GMT_-OK.ps
 > -Glightyellow

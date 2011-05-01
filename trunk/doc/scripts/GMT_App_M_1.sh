@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_App_M_1.sh,v 1.5 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_M_1.sh,v 1.6 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
-. functions.sh
+. ./functions.sh
 
 grep -v '#' ../../share/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > $$.lis
 

@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_App_G.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_G.sh,v 1.11 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
-. functions.sh
+. ./functions.sh
 
 # dy is line spacing and y0 is total box height
 

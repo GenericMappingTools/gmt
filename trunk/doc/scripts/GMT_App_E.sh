@@ -1,11 +1,11 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.10 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_E.sh,v 1.11 2011-05-01 18:06:37 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
 #	Paul Wessel, v 1.1
 #
-. functions.sh
+. ./functions.sh
 ps=GMT_App_E.ps
 
 xwidth=0.45	# Width of each box (all units are in inches)

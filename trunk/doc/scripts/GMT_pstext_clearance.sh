@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_pstext_clearance.sh,v 1.7 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_pstext_clearance.sh,v 1.8 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 gmtset PS_SCALE_X 0.8 PS_SCALE_Y 0.8
 pstext -R0/3/-0.1/1.5 -Jx1i -P -K -C0.2 -TO -Wthick -F+f36p,Helvetica-Bold << EOF > GMT_pstext_clearance.ps

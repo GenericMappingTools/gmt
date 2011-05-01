@@ -1,8 +1,8 @@
 #!/bin/bash
-#	$Id: GMT_App_F.sh,v 1.17 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_F.sh,v 1.18 2011-05-01 18:06:37 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
-. functions.sh
+. ./functions.sh
 
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column

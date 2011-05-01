@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_J.sh,v 1.12 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_App_J.sh,v 1.13 2011-05-01 18:06:37 remko Exp $
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.
@@ -74,7 +74,7 @@
 # graphs of h(x) can be interpreted as also = the graphs of h(r).
 #
 #---------------------------------------------------
-. functions.sh
+. ./functions.sh
 # Here is the $$.r_tr_fns file:
 
 cat << EOF > $$.r_tr_fns

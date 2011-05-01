@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_-R.sh,v 1.12 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_-R.sh,v 1.13 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 
 gmtset MAP_FRAME_TYPE PLAIN FONT_ANNOT_PRIMARY 8p,Helvetica MAP_TICK_LENGTH 0.05i \
 	PS_CHAR_ENCODING ISOLatin1+

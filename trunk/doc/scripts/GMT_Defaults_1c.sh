@@ -1,7 +1,7 @@
 #!/bin/bash
-#	$Id: GMT_Defaults_1c.sh,v 1.14 2011-03-15 02:06:29 guru Exp $
+#	$Id: GMT_Defaults_1c.sh,v 1.15 2011-05-01 18:06:37 remko Exp $
 #
-. functions.sh
+. ./functions.sh
 gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25T/2.25l -Bpa6Hf1hg6h:"x-axis label":/a1g3p:"y-axis label":WSne \
 	-X2i -Bsa1D -P -K -U/-0.75i/-0.85i/"Dazed and Confused" --TIME_LANGUAGE=pt \
