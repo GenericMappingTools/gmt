@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.15 2011-05-01 18:47:38 remko Exp $
+ *	$Id: psclip_func.c,v 1.16 2011-05-01 18:48:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -65,7 +65,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psclip synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psclip %s [API] - To set up polygonal clip paths\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psclip -C[s|c|t[<n>|a]|p[<n>|a]] [-K] [-O]  OR\n");
+	GMT_message (GMT, "usage: psclip -C[s|c|a|<n>] [-K] [-O]  OR\n");
 	GMT_message (GMT, "\tpsclip <xy-files> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT);
