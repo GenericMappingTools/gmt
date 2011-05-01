@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.23 2011-04-25 16:40:21 remko Exp $
+ *	$Id: gmt_synopsis.h,v 1.24 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,10 +47,10 @@
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
-#define GMT_b_OPT	"-b[i|o][s|S|d|D[<ncol>]|c[<var1>/...]]"
+#define GMT_b_OPT	"-b[i|o][<ncol>][t][w]|c[<var1>/...]][+L|B]"
 #define GMT_c_OPT	"-c<ncopies>"
-#define GMT_bi_OPT	"-bi[s|S|d|D[<ncol>]|c[<var1>/...]]"
-#define GMT_bo_OPT	"-bo[s|S|d|D[<ncol>]|c[<var1>/...]]"
+#define GMT_bi_OPT	"-bi[i|o][<ncol>][t][w]|c[<var1>/...]][+L|B]"
+#define GMT_bo_OPT	"-bo[i|o][<ncol>][t][w][+L|B]"
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"

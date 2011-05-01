@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.109 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_io.h,v 1.110 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,21 +325,26 @@ struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 };
 
 struct GMT_COL_INFO {	/* Used by -i and input parsing */
-	GMT_LONG col;	/* The column number in the order requested via -i */
-	GMT_LONG order;	/* The initial order (0,1,...) but this will be sorted on col */
-	GMT_LONG convert;	/* 1 if we must linear transform, 2 for log10, 0 to leave as is */
-	double scale;			/* Multiplier for raw in value */
-	double offset;			/* Offset applied after multiplier */ 
+	GMT_LONG col;		/* The column number in the order requested via -i */
+	GMT_LONG order;		/* The initial order (0,1,...) but this will be sorted on col */
+	GMT_LONG convert;	/* TRUE if we must convert the data by log10, scale, offset */
+	double scale;		/* Multiplier for raw in value */
+	double offset;		/* Offset applied after multiplier */ 
+};
+
+struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
+	GMT_LONG type;		/* Data type e.g., GMT_FLOAT_TYPE */
+	GMT_LONG skip;		/* Rather than read/write an item, jump skip bytes */
+	PFL io;			/* Pointer to the correct read or write function given type/swab */
 };
 
 struct GMT_IO {				/* Used to process input data records */
 	
 	PFL input;			/* Pointer to function reading ascii or binary tables */
 	PFL output;			/* Pointer to function writing ascii or binary tables */
-	PFL read_binary;		/* Set to handle reading with double|float w/wo swab [Used by GMT_bin_input] */
-	PFL write_binary;		/* Set to handle writing with double|float w/wo swab [Used by GMT_bin_output] */
+	PFL read_item;			/* Pointer to function reading 1-col z tables in grd2xyz */
+	PFL write_item;			/* Pointer to function writing 1-col z tables in xyz2grd */
 	PFL ogr_parser;			/* Set to handle either header or data OGR records */
-	GMT_LONG do_swab;		/* Used to indicate swab'ing during binary read */
 
 	GMT_LONG pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	GMT_LONG inc_code[2];
@@ -391,6 +396,7 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG col_skip[GMT_MAX_COLUMNS];	/* TRUE of input column is to be ignored [Default reads all columns, but see -i] */
 	GMT_LONG io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir TRUE */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
+	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs */
@@ -416,8 +422,6 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	GMT_LONG n_expected;	/* Number of data element expected to be read */
 	GMT_LONG gmt_i;		/* Current column number in the GMT registered grid */
 	GMT_LONG gmt_j;		/* Current row number in the GMT registered grid */
-	PFL read_item;		/* Pointer to function that will read 1 data point from file */
-	PFL write_item;		/* Pointer to function that will write 1 data point from file */
 	PFL get_gmt_ij;		/* Pointer to function that converts running number to GMT ij */
 };
 
@@ -426,8 +430,8 @@ struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
 	GMT_LONG swab;
 	GMT_LONG repeat[2];
 	GMT_LONG skip;
-	char format[2];
 	char type;
+	char format[2];
 };
 
 struct GMT_PLOT_CALCLOCK {

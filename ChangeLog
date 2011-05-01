@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.994 2011-05-01 19:00:29 remko Exp $
+	$Id: ChangeLog,v 1.995 2011-05-01 21:17:59 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-01	pwessel
+	* job03.sh:		Replaced complicated awk scripting with gmtmath to ensure
+				we get the common sampling range which changed by a tad
+				due to the bug in project.
+	* gmt_init.c:		New -b syntax to allow for mixed-type records on i/o.
+	* gmt_io.c:		New binary i/o processing to allow separate types for each column.
 
 2011-05-01	remko
 	* test/grdview/icelandbox.sh:	New test case based on query by Peter Schmidt.

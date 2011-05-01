@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.10 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -658,6 +658,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (one_table) {
 		Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
 		Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, Din->n_columns))) Return (error);
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {

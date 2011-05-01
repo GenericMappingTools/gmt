@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.10 2011-04-29 03:08:12 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.11 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -137,7 +137,10 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     H  unsigned short 2-byte integer.\n");
 	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
 	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
-	GMT_message (GMT, "\t     l  signed long (4- or 8-byte) integer.\n");
+	if (sizeof (GMT_LONG) == 8) {
+		GMT_message (GMT, "\t     l  signed long (8-byte) integer.\n");
+		GMT_message (GMT, "\t     L  unsigned long (8-byte) integer.\n");
+	}
 	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
@@ -309,10 +312,11 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->S.active) {	/* Just swap data and bail */
 		GMT_LONG in_ID;
+		double bucket;
 		
 		save = GMT->current.io.input;			/* Save previous input parameters */
 		previous = GMT->common.b.active[GMT_IN];
-		GMT->current.io.input = io.read_item;		/* Override input reader */
+		GMT->current.io.input = GMT_z_input;		/* Override input reader */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
@@ -327,8 +331,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
 		save = GMT->current.io.output;			/* Save previous output parameters */
 		previous = GMT->common.b.active[GMT_OUT];
-		GMT->current.io.output = io.write_item;		/* Override output writer */
+		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
+		in = &bucket;
 		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in))) GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)in);
 
 		GMT->current.io.output = save;			/* Reset output pointer */
@@ -462,7 +467,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->common.b.single_precision[GMT_IN]) {
+	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT_TYPE) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
@@ -482,8 +487,10 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		zcol = GMT_X;
 		save = GMT->current.io.input;
 		previous = GMT->common.b.active[GMT_IN];
-		GMT->current.io.input = io.read_item;		/* Override and use chosen input mode */
+		GMT->current.io.input = GMT_z_input;		/* Override and use chosen input mode */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set binary as well */
+		in = GMT->current.io.curr_rec;
+		GMT->current.io.fmt[GMT_IN][zcol].type = GMT_get_io_type (GMT, Ctrl->Z.type);
 	}
 	else {
 		zcol = GMT_Z;

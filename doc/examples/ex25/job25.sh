@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 25
-#		$Id: job25.sh,v 1.11 2011-04-25 00:21:06 guru Exp $
+#		$Id: job25.sh,v 1.12 2011-05-01 21:17:59 guru Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
@@ -17,13 +17,13 @@ grdmath -fg wetdry.nc DUP 180 ROTX FLIPUD ADD 2 DIV = key.nc
 grdmath -Rg -I${D}m -r Y COSD 60 $D DIV 360 MUL DUP MUL PI DIV DIV 100 MUL = scale.nc
 grdmath -fg key.nc -1 EQ 0 NAN scale.nc MUL = tmp.nc
 grd2xyz tmp.nc -s -ZTLf > key.b
-ocean=`gmtmath -bi1s -Ca -S key.b SUM UPPER RINT =`
+ocean=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
 grdmath -fg key.nc 1 EQ 0 NAN scale.nc MUL = tmp.nc
 grd2xyz tmp.nc -s -ZTLf > key.b
-land=`gmtmath -bi1s -Ca -S key.b SUM UPPER RINT =`
+land=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
 grdmath -fg key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
 grd2xyz tmp.nc -s -ZTLf > key.b
-mixed=`gmtmath -bi1s -Ca -S key.b SUM UPPER RINT =`
+mixed=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
 # Generate corresponding color table
 cat << END > key.cpt
 -1.5	blue	-0.5	blue

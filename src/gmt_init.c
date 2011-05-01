@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.490 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_init.c,v 1.491 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1292,70 +1292,130 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	return (GMT_NOERROR);
 }
 
+#ifndef MY_ENDIAN
+#if WORDS_BIGENDIAN == 0
+#define MY_ENDIAN 'L'	/* This machine is Little endian */
+#else
+#define MY_ENDIAN 'B'	/* This machine is Big endian */
+#endif
+#endif
+
 GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 {
-	/* Syntax:	-b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
+	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
 
-	GMT_LONG i, id = GMT_IN, i_or_o = FALSE, done = FALSE, error = FALSE;	/* -b requites an argument */
+	GMT_LONG i, col = 0, k, ncol = 0, id = GMT_IN, i_or_o = FALSE, set = FALSE;
+	GMT_LONG endian_swab = FALSE, swab = FALSE, done = FALSE, error = FALSE;
+	char *p = NULL, c;
 
-	if (!text || !text[0]) return (GMT_PARSE_ERROR);
+	if (!text || !text[0]) return (GMT_PARSE_ERROR);	/* -b requires at least one arg, e.g, -bo */
 
-	for (i = 0; !done && text[i]; i++) {
-
-		switch (text[i]) {
-
-			case 'i':	/* Settings apply to input */
-				id = GMT_IN;
-				i_or_o = TRUE;
-				break;
-			case 'o':	/* Settings apply to output */
-				id = GMT_OUT;
-				i_or_o = TRUE;
-				break;
-			case 'c':	/* I/O is netCDF */
-				C->common.b.netcdf[id] = TRUE;
-				strcpy (C->common.b.varnames, &text[i+1]);
-				done = TRUE;
-				break;
-			case 'S':	/* Single Precision but needs byte swap */
-				C->common.b.swab[id] = C->common.b.single_precision[id] = TRUE;
-			case 's':	/* Single Precision */
-				C->common.b.swab[id] = FALSE;
-				C->common.b.single_precision[id] = TRUE;
-				break;
-			case 'D':	/* Double Precision but needs byte swap */
-				C->common.b.swab[id] = TRUE;
-				C->common.b.single_precision[id] = FALSE;
-			case 'd':	/* Double Precision */
-				C->common.b.swab[id] = C->common.b.single_precision[id] = FALSE;
-				break;
-			case '0':	/* Number of columns */
-			case '1': case '2': case '3':
-			case '4': case '5': case '6':
-			case '7': case '8': case '9':
-				C->common.b.ncol[id] = atoi (&text[i]);
-				while (text[i] && isdigit ((int)text[i])) i++;
-				i--;
-				break;
-
-			default:	/* Stop scanning */
-				error = TRUE;
-				GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -b argument [%s]\n", text);
-				GMT_syntax (C, 'b');
+	/* First determine if there is an endian modifer supplied */
+	if ((p = strchr (text, '+'))) {	/* Yes */
+		*p = '\0';	/* Temporarily chop off the modifier */
+		switch (p[1]) {
+			case 'L': swab = (MY_ENDIAN == 'B');	break;	/* Must swap */
+			case 'B': swab = (MY_ENDIAN == 'L');	break;	/* Must swap */
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
+				return (EXIT_FAILURE);
 				break;
 		}
+		if (strchr (text, 'w')) {	/* Cannot do individual swap when endian has been indicated */
+			GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot use both w and endian modifiers\n");
+			return (EXIT_FAILURE);
+		}
+		endian_swab = TRUE;
 	}
-
+	
+	/* Now deal with [i|o] modifier */
+	if (text[0] == 'i') { id = GMT_IN; i_or_o = TRUE; }
+	if (text[0] == 'o') { id = GMT_OUT; i_or_o = TRUE; }
+	C->common.b.active[id] = TRUE;
+	C->common.b.type[id] = 'd';	/* Set defaul to double */
+	
+	/* Because c means either netCDF or signed char we deal with netCDF up front */
+	
+	k = i_or_o;
+	if (text[k] == 'c' && (text[k+1] == 0 || strchr (text, '/'))) {	/* netCDF */
+		C->common.b.netcdf[id] = done = TRUE;
+		strcpy (C->common.b.varnames, &text[i+1]);
+	}
+	else if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (text[k+1] == 0 || (text[k+1] == 'w' && text[k+2] == 0 ))) {	/* Just sets the type for the entire record */
+		C->common.b.type[id] = text[k];			/* Default column type */
+		C->common.b.swab[id] = (text[k+1] == 'w');	/* Default swab */
+	}
+	else {
+		for (i = k; !done && text[i]; i++) {
+			c = text[i];
+			switch (c) {
+				case 'l': case 'L':	/* 8-byte long integers */
+					if (sizeof (GMT_LONG) == 4) {
+						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot specify %c in 32-bit mode\n", (int)c);
+						return (EXIT_FAILURE);
+					}
+				case 'c': case 'u': case 'h': case 'H': case 'i': case 'I': case 'f': case 'd':
+#ifdef GMT_COMPAT
+				case 's': case 'S': case 'D':	/* GMT 4 syntax with single and double precision w/wo swapping */
+					if (c == 'S' || c == 'D') swab = TRUE;
+					if (c == 'S' || c == 's') c = 'f';
+					if (c == 'D') c = 'd';
+#endif
+					if (text[i+1] == 'w') swab = TRUE;
+					if (ncol == 0) ncol = 1;
+					set = TRUE;
+					for (k = 0; k < ncol; k++, col++) {
+						C->current.io.fmt[id][col].io = GMT_get_io_ptr (C, id, swab, c);
+						C->current.io.fmt[id][col].type = GMT_get_io_type (C, c);
+					}
+					break;
+				case 'x':	/* Binary skip before/after column */
+					if (col == 0)	/* Must skip BEFORE reading first data column (flag as negative skip) */
+						C->current.io.fmt[id][col].skip = -ncol;	/* Number of bytes to skip */
+					else	/* Skip after reading previous column (hence col-1) */
+						C->current.io.fmt[id][col-1].skip = ncol;	/* Number of bytes to skip */
+					break;
+				case '0':	/* Number of columns */
+				case '1': case '2': case '3':
+				case '4': case '5': case '6':
+				case '7': case '8': case '9':
+					ncol = atoi (&text[i]);
+					if (ncol < 1) {
+						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be > 0\n");
+						return (EXIT_FAILURE);
+					}
+					while (text[i] && isdigit ((int)text[i])) i++;
+					i--;
+					break;
+				case ',': break;	/* Comma between sequences are optional */
+				case 'w':		/* Turn off the swap unless set via +L|B */
+					if (!endian_swab) swab = FALSE;	break;
+				default:
+					error = TRUE;
+					GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -b argument [%s]\n", text);
+					GMT_syntax (C, 'b');
+					break;
+			}
+		}
+	}
+	if (col == 0) col = ncol;	/* Maybe we got a column count */
+	C->common.b.ncol[id] = col;
+	if (col && !set) for (col = 0; col < C->common.b.ncol[id]; col++) {	/* Default to doubles */
+		C->current.io.fmt[id][col].io   = GMT_get_io_ptr (C, id, swab, 'd');
+		C->current.io.fmt[id][col].type = GMT_get_io_type (C, 'd');
+	}
+	
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
 		C->common.b.active[GMT_OUT] = C->common.b.active[GMT_IN];
-		C->common.b.single_precision[GMT_OUT] = C->common.b.single_precision[GMT_IN];
-		C->common.b.swab[GMT_OUT] = C->common.b.swab[GMT_IN];
 		C->common.b.ncol[GMT_OUT] = C->common.b.ncol[GMT_IN];
 		C->common.b.netcdf[GMT_OUT] = C->common.b.netcdf[GMT_IN];
+		C->common.b.type[GMT_OUT] = C->common.b.type[GMT_IN];
+		GMT_memcpy (C->current.io.fmt[GMT_OUT], C->current.io.fmt[GMT_OUT], C->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
 	}
 
 	GMT_set_bin_input (C);	/* Make sure we point to binary i/o functions after processing -b option */
 
+	if (p) *p = '+';	/* Restore the + sign */
 	return (error);
 }
 
@@ -1616,8 +1676,7 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, GMT_LONG n_req) {
 		n_errors++;
 	}
 
-	GMT_report (C, GMT_MSG_NORMAL, "Provides %ld, expects %ld-column %s-precision binary data\n",
-		C->common.b.ncol[GMT_IN], n_req, C->common.b.single_precision[GMT_IN] ? "single" : "double");
+	GMT_report (C, GMT_MSG_NORMAL, "Provides %ld, expects %ld-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
 
 	return (n_errors);
 }

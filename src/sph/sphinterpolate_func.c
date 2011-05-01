@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.7 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -236,10 +236,6 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	Grid = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Grid->header, options, FALSE);
 
-	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.verbose) {
-		char *type[2] = {"double", "single"};
-		GMT_report (GMT, GMT_MSG_NORMAL, "Expects %ld-column %s-precision binary data\n", GMT->common.b.ncol[GMT_IN], type[GMT->common.b.single_precision[GMT_IN]]);
-	}
 	if (!GMT->common.R.active) {	/* Default is global region */
 		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
 	}

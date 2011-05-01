@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.500 2011-04-29 23:20:33 remko Exp $
+ *	$Id: gmt_support.c,v 1.501 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -617,10 +617,22 @@ int GMT_comp_short_asc (const void *p_1, const void *p_2)
 	return (0);
 }
 
+int GMT_comp_char_asc (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	char *point_1 = (char *)p_1, *point_2 = (char *)p_2;
+
+	if ((*point_1) < (*point_2)) return (-1);
+	if ((*point_1) > (*point_2)) return (+1);
+	return (0);
+}
+
 void GMT_sort_array (void *base, GMT_LONG n, GMT_LONG type)
-{	/* Front function to call qsort on short int, int, GMT_LONG, float or double array into ascending order */
-	size_t width[5] = {sizeof(short int), sizeof(int), sizeof(GMT_LONG), sizeof(float), sizeof(double)};
-	PFI compare[5] = {GMT_comp_short_asc, GMT_comp_int_asc, GMT_comp_long_asc, GMT_comp_float_asc, GMT_comp_double_asc};
+{	/* Front function to call qsort on char, short int, int, GMT_LONG, float or double array into ascending order */
+	size_t width[GMT_N_TYPES] = {sizeof(char), sizeof(short int), sizeof(int), sizeof(GMT_LONG), sizeof(float), sizeof(double)};
+	PFI compare[GMT_N_TYPES] = {GMT_comp_char_asc, GMT_comp_short_asc, GMT_comp_int_asc, GMT_comp_long_asc, GMT_comp_float_asc, GMT_comp_double_asc};
 	qsort (base, (size_t)n, width[type], compare[type]);
 }
 

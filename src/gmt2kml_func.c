@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.10 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.11 2011-05-01 21:17:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -609,10 +609,6 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.verbose) {
-		char *type[2] = {"double", "single"};
-		GMT_message (GMT, "Expects %ld-column %s-precision binary data\n", GMT->common.b.ncol[GMT_IN], type[GMT->common.b.single_precision[GMT_IN]]);
-	}
 	/* Now we are ready to take on some input values */
 
 	out[GMT_Z] = Ctrl->A.altitude;
