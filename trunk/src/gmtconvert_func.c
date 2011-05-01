@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.7 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -296,6 +296,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 	}
 	if (warn) GMT_report (GMT, GMT_MSG_NORMAL, "Some requested columns are outside the range of some tables and will be skipped.\n");
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out))) Return (error);
 	
 	if (Ctrl->S.active && GMT->current.io.ogr == 1 && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
 		EXTERN_MSC GMT_LONG get_ogr_id (struct GMT_OGR *G, char *name);

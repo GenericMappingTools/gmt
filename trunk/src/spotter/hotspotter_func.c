@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.7 2011-05-01 21:18:00 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -402,11 +402,6 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->T.active) GMT_report (GMT, GMT_MSG_NORMAL, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
 
 	/* Start to read input data */
-
-	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.verbose) {
-		char *type[2] = {"double", "single"};
-		GMT_message (GMT, "Expects %ld-column %s-precision binary data\n", GMT->common.b.ncol[GMT_IN], type[GMT->common.b.single_precision[GMT_IN]]);
-	}
 
 	n_smts = 0;
 

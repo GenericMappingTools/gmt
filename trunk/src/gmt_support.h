@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.58 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_support.h,v 1.59 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -19,11 +19,14 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
-#define GMT_SHORT_TYPE	0
-#define GMT_INT_TYPE	1
-#define GMT_LONG_TYPE	2
-#define GMT_FLOAT_TYPE	3
-#define GMT_DOUBLE_TYPE	4
+/* The 6 basic 1, 2, 4, 4|8, 4, 8-byte types */
+#define GMT_N_TYPES	6
+#define GMT_CHAR_TYPE	0
+#define GMT_SHORT_TYPE	1
+#define GMT_INT_TYPE	2
+#define GMT_LONG_TYPE	3
+#define GMT_FLOAT_TYPE	4
+#define GMT_DOUBLE_TYPE	5
 
 /* Return codes from GMT_inonout */
 #define GMT_OUTSIDE	0

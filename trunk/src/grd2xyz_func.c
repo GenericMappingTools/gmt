@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.10 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.11 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,6 +97,10 @@ GMT_LONG GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t     i  signed 4-byte integer.\n");
 	GMT_message (GMT, "\t     I  unsigned 4-byte integer.\n");
 	GMT_message (GMT, "\t     l  long (4- or 8-byte) integer.\n");
+	if (sizeof (GMT_LONG) == 8) {
+		GMT_message (GMT, "\t     l  signed long (8-byte) integer.\n");
+		GMT_message (GMT, "\t     L  unsigned long (8-byte) integer.\n");
+	}
 	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
@@ -247,7 +251,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			PFL save = GMT->current.io.output;
 			GMT_LONG previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
-			GMT->current.io.output = io.write_item;		/* Override and use chosen output mode */
+			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) {rst = TRUE; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {

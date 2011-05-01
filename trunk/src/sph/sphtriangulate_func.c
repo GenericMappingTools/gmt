@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.8 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -484,10 +484,6 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 	
 	steradians = (Ctrl->L.unit == 'D');	/* Flag so we can do steradians */
-	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.verbose) {
-		char *type[2] = {"double", "single"};
-		GMT_report (GMT, GMT_MSG_NORMAL, "Expects %ld-column %s-precision binary data\n", GMT->common.b.ncol[GMT_IN], type[GMT->common.b.single_precision[GMT_IN]]);
-	}
 
 	/* Now we are ready to take on some input values */
 

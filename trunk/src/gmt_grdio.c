@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.185 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.186 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8,7 +8,7 @@
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; version 2 or any later version.
  *
- *	This program is distributed in the hope that it will be u237seful,
+ *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
@@ -19,29 +19,33 @@
  *
  *	G M T _ G R D I O . C   R O U T I N E S
  *
- * Generic routines that take care of all gridfile input/output.
- * These are the only PUBLIC grd io functions to be used by developers
+ * Generic routines that take care of all low-level gridfile input/output.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5
  * 64-bit Compliant: Yes
  *
- * Functions include:
+ * GMT functions include:
  *
+ *	For i/o on regular GMT grids:
  *	GMT_grd_get_format :	Get format id, scale, offset and missing value for grdfile
- *
  *	GMT_read_grd_info :	Read header from file
  *	GMT_read_grd :		Read data set from file (must be preceded by GMT_read_grd_info)
  *	GMT_update_grd_info :	Update header in existing file (must be preceded by GMT_read_grd_info)
  *	GMT_write_grd_info :	Write header to new file
  *	GMT_write_grd :		Write header and data set to new file
  *
- *	For programs that must access on row at the time, you must use:
+ *	For programs that must access on row at the time:
  *	GMT_open_grd :		Opens the grdfile for reading or writing
  *	GMT_read_grd_row :	Reads a single row of data from grdfile
  *	GMT_write_grd_row :	Writes a single row of data from grdfile
  *	GMT_close_grd :		Close the grdfile
+ *
+ *	For special img and (via GDAL) reading:
+ *	GMT_read_img		Read [subset from] a Sandwell/Smith *.img file
+ *	GMT_read_image		GDAL: Read [subset of] an image via GDAL
+ *	GMT_read_image_info	GDAL: Get information for an image via GDAL
  *
  * Additional supporting grid routines:
  *
@@ -49,7 +53,11 @@
  *	GMT_grd_shift 		Rotates grdfiles in x-direction
  *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
  *	GMT_grd_is_global	Determine whether grid is "global", i.e. longitudes are periodic
+ *	GMT_adjust_loose_wesn	Ensures region, increments, and nx/ny are compatible
+ *	GMT_decode_grd_h_info	Decodes a -Dstring into header text components
+ *	GMT_grd_RI_verify	Test to see if region and incs are compatible
  *
+ * All functions that begin with lower case gmt_* are private to this file only.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
@@ -78,7 +86,7 @@ EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *hea
 
 /* Routines to see if a particular grd file format is specified as part of filename. */
 
-void GMT_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
+void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 {
 	GMT_LONG i, length, f_length, found, start;
 
@@ -119,7 +127,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	GMT_LONG i = 0, val, j;
 	char code[GMT_TEXT_LEN64], tmp[GMT_BUFSIZ];
 
-	GMT_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
+	gmt_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
 	/* Set default values */
 	header->z_scale_factor = C->session.d_NaN, header->z_add_offset = 0.0, header->nan_value = C->session.d_NaN;
@@ -197,7 +205,7 @@ GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	return (GMT_NOERROR);
 }
 
-void GMT_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
+void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	/* Set unit strings for grid coordinates x, y and z based on
 	   output data types for columns 0, 1, and 2.
@@ -258,7 +266,7 @@ void GMT_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 }
 
-void GMT_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
+void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	/* Set input data types for columns 0, 1 and 2 based on unit strings for
 	   grid coordinates x, y and z.
@@ -352,7 +360,7 @@ GMT_LONG GMT_grd_pad_status (struct GRD_HEADER *header, GMT_LONG *pad)
 	}
 }
 
-GMT_LONG GMT_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, struct GRD_PAD *P)
+GMT_LONG gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, GMT_LONG *pad, struct GRD_PAD *P)
 {	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
@@ -420,7 +428,7 @@ GMT_LONG GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *h
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
 	GMT_err_trap ((*C->session.readinfo[header->type]) (C, header));
-	GMT_grd_get_units (C, header);
+	gmt_grd_get_units (C, header);
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
@@ -450,7 +458,7 @@ GMT_LONG GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *
 	}
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	GMT_grd_set_units (C, header);
+	gmt_grd_set_units (C, header);
 	return ((*C->session.writeinfo[header->type]) (C, header));
 }
 
@@ -461,7 +469,7 @@ GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER 
 
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	GMT_grd_set_units (C, header);
+	gmt_grd_set_units (C, header);
 	return ((*C->session.updateinfo[header->type]) (C, header));
 }
 
@@ -479,7 +487,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	GMT_LONG expand, err, k;
 	struct GRD_PAD P;
 
-	expand = GMT_padspace (C, header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
+	expand = gmt_padspace (C, header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
 
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 	
@@ -521,7 +529,7 @@ GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		header->z_scale_factor = 1.0;
 		GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
-	GMT_grd_set_units (C, header);
+	gmt_grd_set_units (C, header);
 	
 	GMT_grd_do_scaling (grid, header->size, 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
 	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
@@ -1722,7 +1730,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 
-	expand = GMT_padspace (C, I->header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
+	expand = gmt_padspace (C, I->header, wesn, pad, &P);	/* TRUE if we can extend the region by the pad-size to obtain real data for BC */
 
 	/*GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, image, P.wesn, P.pad, complex_mode));*/
 

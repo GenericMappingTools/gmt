@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.263 2011-04-29 19:45:09 guru Exp $
+ *	$Id: gmt_io.c,v 1.264 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -442,7 +442,17 @@ GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG expected
 		return (GMT_N_COLS_NOT_SET);
 	}
 	/* Here we may set the number of data columns */
-	C->common.b.ncol[direction] = (direction == GMT_IN && !GMT_native_binary (C, GMT_IN)) ? GMT_MAX_COLUMNS : expected;
+	if (GMT_native_binary (C, direction)) {	/* Must set uninitialized input/output pointers */
+		GMT_LONG col;
+		char type = (C->common.b.type[direction]) ? C->common.b.type[direction] : 'd';
+		for (col = 0; col < expected; col++) {
+			C->current.io.fmt[direction][col].io = GMT_get_io_ptr (C, direction, C->common.b.swab[direction], type);
+			C->current.io.fmt[direction][col].type = GMT_get_io_type (C, type);
+		}
+		C->common.b.ncol[direction] = expected;
+	}
+	else
+		C->common.b.ncol[direction] = (direction == GMT_IN) ? GMT_MAX_COLUMNS : expected;
 	return (GMT_OK);
 }
 
@@ -1230,6 +1240,41 @@ GMT_LONG GMT_bin_colselect (struct GMT_CTRL *C)
 	return (C->common.i.n_cols);
 	
 }
+
+/* Test functions for GMT_bin_input */
+
+GMT_LONG GMT_x_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
+{	/* Used to skip (*n) bytes; no reading takes place */
+	if (GMT_fseek (fp, (long)n, SEEK_CUR)) {
+		C->current.io.status = GMT_IO_EOF;
+		return (-1);
+	}
+	return (1);
+}
+
+GMT_LONG GMT_get_binary_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
+	/* Reads the n binary doubles from input */
+	GMT_LONG i, one = 1;
+	
+	if (n > GMT_MAX_COLUMNS) {
+		GMT_report (C, GMT_MSG_FATAL, "Number of data columns (%ld) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
+		return (TRUE);	/* Done with this file */
+	}
+	for (i = 0; i < n; i++) {
+		if (C->current.io.fmt[GMT_IN][i].skip < 0) GMT_x_read (C, fp, -C->current.io.fmt[GMT_IN][i].skip);	/* Pre-skip */
+		if (C->current.io.fmt[GMT_IN][i].io (C, fp, &one, &C->current.io.curr_rec[i]) != 1) {	/* EOF or came up short */
+			C->current.io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+			if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset */
+				GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
+				C->current.io.n_bad_records = C->current.io.rec_no = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
+			}
+			return (TRUE);	/* Done with this file */
+		}
+		if (C->current.io.fmt[GMT_IN][i].skip > 0) GMT_x_read (C, fp, C->current.io.fmt[GMT_IN][i].skip);	/* Post-skip */
+	}
+	return (FALSE);	/* OK so far */
+}
+
 GMT_LONG GMT_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
 {	/* General binary read function which calls function pointed to by C->current.io.read_binary to handle actual reading (and possbily swabbing) */
 	GMT_LONG status, n_use;
@@ -1237,7 +1282,7 @@ GMT_LONG GMT_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
 	C->current.io.status = 0;
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
 		n_use = GMT_n_cols_needed_for_gaps (C, *n);
-		if ((*C->current.io.read_binary) (C, fp, n_use)) return (-1);	/* EOF */
+		if (GMT_get_binary_input (C, fp, n_use)) return (-1);	/* EOF */
 		C->current.io.rec_no++;
 		status = GMT_process_binary_input (C, n_use);
 		if (status == 1) return (0);		/* A segment header */
@@ -1249,87 +1294,6 @@ GMT_LONG GMT_bin_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **ptr)
 	C->current.io.pt_no++;
 
 	return (*n);
-}
-
-/* Sub functions for GMT_bin_input */
-
-GMT_LONG GMT_get_binary_d_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
-	/* Reads the n binary doubles from input */
-	GMT_LONG n_read;
-	
-	if (n > GMT_MAX_COLUMNS) {
-		GMT_report (C, GMT_MSG_FATAL, "Number of data columns (%ld) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
-		return (TRUE);	/* Done with this file */
-	}
-	if ((n_read = GMT_fread ((void *) C->current.io.curr_rec, sizeof (double), (size_t)n, fp)) != n) {	/* EOF or came up short */
-		C->current.io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
-		if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset */
-			GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
-			C->current.io.n_bad_records = C->current.io.rec_no = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
-		}
-		return (TRUE);	/* Done with this file */
-	}
-	return (FALSE);	/* OK so far */
-}
-
-GMT_LONG GMT_get_binary_d_input_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
-	/* Reads and swabs the n binary doubles from input */
-	GMT_LONG i;
-	unsigned int *ii = NULL, jj;
-	
-	if (GMT_get_binary_d_input (C, fp, n)) return (TRUE);	/* Return immediately if EOF */
-	/* Swab the bytes for each double */
-	for (i = 0; i < n; i++) {
-		ii = (unsigned int *)&C->current.io.curr_rec[i];	/* These 4 lines do the swab */
-		jj = GMT_swab4 (ii[0]);
-		ii[0] = GMT_swab4 (ii[1]);
-		ii[1] = jj;
-	}
-	return (FALSE);
-}
-
-GMT_LONG GMT_read_binary_f_input (struct GMT_CTRL *C, FILE *fp, float *GMT_f, GMT_LONG n) {
-	/* Reads the n floats */
-	GMT_LONG n_read;
-	
-	if (n > GMT_MAX_COLUMNS) {
-		GMT_report (C, GMT_MSG_FATAL, "Number of data columns (%ld) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
-		return (TRUE);	/* Done with this file */
-	}
-	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)n, fp)) != n) {	/* EOF or came up short */
-		C->current.io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
-		if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset */
-			GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
-			C->current.io.n_bad_records = C->current.io.rec_no = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
-		}
-		return (TRUE);	/* Done with this file since we got EOF */
-	}
-	return (FALSE);	/* OK so far */
-}
-
-GMT_LONG GMT_get_binary_f_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
-	/* Reads the n binary floats, then converts them to doubles */
-	GMT_LONG i;
-	static float GMT_f[GMT_MAX_COLUMNS];
-	
-	if (GMT_read_binary_f_input (C, fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
-	for (i = 0; i < n; i++) C->current.io.curr_rec[i] = (double)GMT_f[i];
-	return (FALSE);	/* OK so far */
-}
-
-GMT_LONG GMT_get_binary_f_input_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n) {
-	/* Reads the n binary floats, byte-swabs them, then converts the result to doubles */
-	GMT_LONG i;
-	unsigned int *ii = NULL;
-	static float GMT_f[GMT_MAX_COLUMNS];
-
-	if (GMT_read_binary_f_input (C, fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
-	for (i = 0; i < n; i++) {	/* Do the float swab, then assign to the double */
-		ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
-		*ii = GMT_swab4 (*ii);
-		C->current.io.curr_rec[i] = (double)GMT_f[i];
-	}
-	return (FALSE);	/* OK so far */
 }
 
 GMT_LONG GMT_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols)
@@ -1349,17 +1313,20 @@ GMT_LONG GMT_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols)
 		if (C->current.io.io_nan_col[c] >= n_cols) continue;			/* Input record does not have this column */
 		if (GMT_is_dnan (cols[C->current.io.io_nan_col[c]])) n_nan++;		/* Count the nan columns found */
 	}
-	if (n_nan < C->current.io.io_nan_ncols  && C->current.setting.io_nan_mode == 2) return (TRUE);		/* Skip records if -sr and not enough NaNs found */
+	if (n_nan < C->current.io.io_nan_ncols  && C->current.setting.io_nan_mode == 2) return (TRUE);	/* Skip records if -sr and not enough NaNs found */
 	if (n_nan == C->current.io.io_nan_ncols && C->current.setting.io_nan_mode == 1) return (TRUE);	/* Skip records if -s and NaNs in specified columns */
 	return (FALSE);	/* No match, output record */
 }
 
-GMT_LONG GMT_bin_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
-{	/* Passes control to the selected mechanism (float|double, w/wo swab) */
-	return (C->current.io.write_binary (C, fp, n, ptr));
+GMT_LONG GMT_x_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
+{	/* Used to write n bytes for filler on binary output */
+	char c = 0;
+	GMT_LONG i;
+	for (i = 0; i < n; i++) if (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_bin_double_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
+GMT_LONG GMT_bin_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
 {
 	GMT_LONG i, k, n_out, col_pos;
 	
@@ -1369,90 +1336,21 @@ GMT_LONG GMT_bin_double_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double
 	for (i = k = 0; i < n_out; i++) {
 		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
 		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C,  C->current.io.geo.range, &ptr[col_pos]);
-		k += GMT_fwrite ((void *) &ptr[col_pos], sizeof (double), (size_t)1, fp);
+		if (C->current.io.fmt[GMT_OUT][i].skip < 0) GMT_x_write (C, fp, -C->current.io.fmt[GMT_OUT][i].skip);	/* Pre-fill */
+		k += C->current.io.fmt[GMT_OUT][i].io (C, fp, 1, &ptr[col_pos]);
+		if (C->current.io.fmt[GMT_OUT][i].skip > 0) GMT_x_write (C, fp, C->current.io.fmt[GMT_OUT][i].skip);	/* Post-fill */
 	}
 	return (k);
 }
 
-GMT_LONG GMT_bin_double_output_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
-{	/* Binary output after swabing the data.  Use temp variable d so we dont modify the original data */
-	GMT_LONG i, k, n_out, col_pos;
-	unsigned int *ii = NULL, jj;
-	double d;
-	void *vptr = NULL;
-
-	if (GMT_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
-	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
-	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
-	for (i = k = 0; i < n_out; i++) {
-		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C,  C->current.io.geo.range, &ptr[col_pos]);
-		/* Do the 8-byte swabbing */
-		d = ptr[col_pos];
-		vptr = (void *)&d;
-		ii = (unsigned int *)vptr;
-		jj = GMT_swab4 (ii[0]);
-		ii[0] = GMT_swab4 (ii[1]);
-		ii[1] = jj;
-		k += GMT_fwrite ((void *) &d, sizeof (double), (size_t)1, fp);
-	}
-
-	return (k);
-}
-
-GMT_LONG GMT_bin_float_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
-{
-	GMT_LONG i, n_out, col_pos;
-	static float GMT_f[GMT_MAX_COLUMNS];
-
-	if (GMT_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
-	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
-	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
-	for (i = 0; i < n_out; i++) {
-		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C,  C->current.io.geo.range, &ptr[col_pos]);
-		GMT_f[i] = (float) ptr[col_pos];
-	}
-	return (GMT_fwrite ((void *) GMT_f, sizeof (float), (size_t)n_out, fp));
-}
-
-GMT_LONG GMT_bin_float_output_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
-{	/* Binary output after swabing the data. */
-	GMT_LONG i, k, n_out, col_pos;
-	unsigned int *ii = NULL;
-	static float GMT_f[GMT_MAX_COLUMNS];
-
-	if (GMT_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
-	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
-	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
-	for (i = k = 0; i < n_out; i++) {
-		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C,  C->current.io.geo.range, &ptr[col_pos]);
-		GMT_f[i] = (float) ptr[col_pos];
-		ii = (unsigned int *)&GMT_f[i];
-		*ii = GMT_swab4 (*ii);
-		k += GMT_fwrite ((void *) &GMT_f[i], sizeof (float), (size_t)1, fp);
-	}
-	return (k);
-}
-
-void GMT_set_bin_input (struct GMT_CTRL *C)
+void GMT_set_bin_input (struct GMT_CTRL *C) 
 {	/* Make sure we point to binary input functions after processing -b option */
 	if (GMT_native_binary (C, GMT_IN)) {
 		C->current.io.input = GMT_bin_input;
-		if (C->common.b.swab[GMT_IN])
-			C->current.io.read_binary = (C->common.b.single_precision[GMT_IN]) ? GMT_get_binary_f_input_swab : GMT_get_binary_d_input_swab;
-		else
-			C->current.io.read_binary = (C->common.b.single_precision[GMT_IN]) ? GMT_get_binary_f_input : GMT_get_binary_d_input;
 		strcpy (C->current.io.r_mode, "rb");
 	}
-
 	if (GMT_native_binary (C, GMT_OUT)) {
 		C->current.io.output = GMT_bin_output;
-		if (C->common.b.swab[GMT_OUT])
-			C->current.io.write_binary = (C->common.b.single_precision[GMT_OUT]) ? GMT_bin_float_output_swab : GMT_bin_double_output_swab;
-		else
-			C->current.io.write_binary = (C->common.b.single_precision[GMT_OUT]) ? GMT_bin_float_output : GMT_bin_double_output;
 		strcpy (C->current.io.w_mode, "wb");
 		strcpy (C->current.io.a_mode, "ab+");
 	}
@@ -1840,15 +1738,14 @@ void GMT_write_textrecord (struct GMT_CTRL *C, FILE *fp, char *txt)
  * and the x,y are implicit from the -R -I arguments.
  */
 
-GMT_LONG GMT_A_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_A_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {	/* Can read one or more items from input records. Limitation is that they must be floating point values (no dates or ddd:mm:ss) */
 	GMT_LONG i, k;
-	for (i = 0; i < *n; i++) if ((k = fscanf (fp, "%lg", &C->current.io.curr_rec[i])) <= 0) return (-1);	/* Read was unsuccessful */
-	*d = C->current.io.curr_rec;
+	for (i = 0; i < *n; i++) if ((k = fscanf (fp, "%lg", &d[i])) <= 0) return (-1);	/* Read was unsuccessful */
 	return (1);
 }
 
-GMT_LONG GMT_a_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_a_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {	/* Only reads one item regardless of *n */
 	GMT_LONG i;
 	char line[GMT_TEXT_LEN64];
@@ -1859,13 +1756,12 @@ GMT_LONG GMT_a_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 	}
 	for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
 	line[++i] = '\0';
-	GMT_scanf (C, line, C->current.io.col_type[GMT_IN][GMT_Z], &C->current.io.curr_rec[0]);	/* Convert whatever it is to double */
+	GMT_scanf (C, line, C->current.io.col_type[GMT_IN][GMT_Z], d);	/* Convert whatever it is to double */
 	*n = 1;
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_c_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_c_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	char c;
@@ -1874,13 +1770,12 @@ GMT_LONG GMT_c_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		C->current.io.curr_rec[i] = (double) c;
+		d[i] = (double) c;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_u_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_u_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	unsigned char u;
@@ -1889,13 +1784,12 @@ GMT_LONG GMT_u_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		C->current.io.curr_rec[i] = (double) u;
+		d[i] = (double) u;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_h_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_h_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	short int h;
@@ -1904,14 +1798,26 @@ GMT_LONG GMT_h_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) h = GMT_swab2 (h);
-		C->current.io.curr_rec[i] = (double) h;
+		d[i] = (double) h;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_H_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_h_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	short int h;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&h, sizeof (short int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		d[i] = (double) GMT_swab2 (h);
+	}
+	return (1);
+}
+
+GMT_LONG GMT_H_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	unsigned short int h;
@@ -1920,14 +1826,26 @@ GMT_LONG GMT_H_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) h = GMT_swab2 (h);
-		C->current.io.curr_rec[i] = (double) h;
+		d[i] = (double) h;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_i_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_H_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	unsigned short int h;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&h, sizeof (unsigned short int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		d[i] = (double) GMT_swab2 (h);
+	}
+	return (1);
+}
+
+GMT_LONG GMT_i_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	int i4;
@@ -1936,14 +1854,26 @@ GMT_LONG GMT_i_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) i4 = GMT_swab4 (i4);
-		C->current.io.curr_rec[i] = (double) i4;
+		d[i] = (double) i4;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_I_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_i_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	int i4;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&i4, sizeof (int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		d[i] = (double) GMT_swab4 (i4);
+	}
+	return (1);
+}
+
+GMT_LONG GMT_I_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	unsigned int i4;
@@ -1952,14 +1882,26 @@ GMT_LONG GMT_I_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) i4 = GMT_swab4 (i4);
-		C->current.io.curr_rec[i] = (double) i4;
+		d[i] = (double) i4;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_l_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_I_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	unsigned int i4;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&i4, sizeof (unsigned int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		d[i] = (double) GMT_swab4 (i4);
+	}
+	return (1);
+}
+
+GMT_LONG GMT_l_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	long int l;
@@ -1969,20 +1911,65 @@ GMT_LONG GMT_l_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) {
-			unsigned int *i4, k;
-			void *vptr;
-			vptr = (void *)&l;
-			i4 = (unsigned int *)vptr;
-			for (k = 0; k < sizeof (long int)/sizeof (int); k++) i4[k] = GMT_swab4 (i4[k]);
-		}
-		C->current.io.curr_rec[i] = (double) l;
+		d[i] = (double) l;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_f_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_l_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	long int l;
+	unsigned int *i4, k;
+	void *vptr = (void *)&l;
+
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&l, sizeof (long int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		i4 = (unsigned int *)vptr;
+		for (k = 0; k < 2; k++) i4[k] = GMT_swab4 (i4[k]);
+		d[i] = (double) l;
+	}
+	return (1);
+}
+
+GMT_LONG GMT_L_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	unsigned long int l;
+
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&l, sizeof (unsigned long int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		d[i] = (double) l;
+	}
+	return (1);
+}
+
+GMT_LONG GMT_L_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	unsigned long int l;
+	unsigned int *i4, k;
+	void *vptr = (void *)&l;
+
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&l, sizeof (unsigned long int), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		i4 = (unsigned int *)vptr;
+		for (k = 0; k < 2; k++) i4[k] = GMT_swab4 (i4[k]);
+		d[i] = (double) l;
+	}
+	return (1);
+}
+
+GMT_LONG GMT_f_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
 	float f;
@@ -1991,35 +1978,55 @@ GMT_LONG GMT_f_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) {
-			unsigned int *i4;
-			void *vptr;
-			vptr = (void *)&f;
-			i4 = (unsigned int *)vptr;
-			*i4 = GMT_swab4 (*i4);
-		}
-		C->current.io.curr_rec[i] = (double) f;
+		d[i] = (double) f;
 	}
-	*d = C->current.io.curr_rec;
 	return (1);
 }
 
-GMT_LONG GMT_d_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double **d)
+GMT_LONG GMT_f_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
 {
 	GMT_LONG i;
+	float f;
+	unsigned int *i4;
+	void *vptr = (void *)&f;
 	for (i = 0; i < *n; i++) {
-		if (!GMT_fread ((void *)&C->current.io.curr_rec[i], sizeof (double), (size_t)1, fp)) {
+		if (!GMT_fread ((void *)&f, sizeof (float), (size_t)1, fp)) {
 			C->current.io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		if (C->current.io.do_swab) {
-			unsigned int j4, *i4 = (unsigned int *)&C->current.io.curr_rec[i];
-			j4 = GMT_swab4 (i4[0]);
-			i4[0] = GMT_swab4 (i4[1]);
-			i4[1] = j4;
+		i4 = (unsigned int *)vptr;
+		*i4 = GMT_swab4 (*i4);
+		d[i] = (double) f;
+	}
+	return (1);
+}
+
+GMT_LONG GMT_d_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&d[i], sizeof (double), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
 		}
 	}
-	*d = C->current.io.curr_rec;
+	return (1);
+}
+
+GMT_LONG GMT_d_read_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, double *d)
+{
+	GMT_LONG i;
+	unsigned int j4, *i4;
+	for (i = 0; i < *n; i++) {
+		if (!GMT_fread ((void *)&d[i], sizeof (double), (size_t)1, fp)) {
+			C->current.io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		i4 = (unsigned int *)&d[i];
+		j4 = GMT_swab4 (i4[0]);
+		i4[0] = GMT_swab4 (i4[1]);
+		i4[1] = j4;
+	}
 	return (1);
 }
 
@@ -2071,6 +2078,18 @@ GMT_LONG GMT_h_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	return (n);
 }
 
+GMT_LONG GMT_h_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{
+	GMT_LONG i;
+	short int h;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		h = GMT_swab2 ((short int) d[i]);
+		if (GMT_fwrite ((void *)&h, sizeof (short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
 GMT_LONG GMT_H_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	GMT_LONG i;
@@ -2078,6 +2097,18 @@ GMT_LONG GMT_H_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		h = (unsigned short int) d[i];
+		if (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
+GMT_LONG GMT_H_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	unsigned short int h;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		h = GMT_swab2 ((unsigned short int) d[i]);
 		if (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
@@ -2095,6 +2126,18 @@ GMT_LONG GMT_i_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	return (n);
 }
 
+GMT_LONG GMT_i_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	int i4;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		i4 = GMT_swab4 ((int) d[i]);
+		if (GMT_fwrite ((void *)&i4, sizeof (int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
 GMT_LONG GMT_I_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	GMT_LONG i;
@@ -2102,6 +2145,18 @@ GMT_LONG GMT_I_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; i++) {
 		i4 = (unsigned int) d[i];
+		if (GMT_fwrite ((void *)&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
+GMT_LONG GMT_I_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	unsigned int i4;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		i4 = GMT_swab4 ((unsigned int) d[i]);
 		if (GMT_fwrite ((void *)&i4, sizeof (unsigned int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	}
 	return (n);
@@ -2119,6 +2174,42 @@ GMT_LONG GMT_l_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	return (n);
 }
 
+GMT_LONG GMT_l_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	long int l;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		l = GMT_swab4 ((long int) d[i]);
+		if (GMT_fwrite ((void *)&l, sizeof (long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
+GMT_LONG GMT_L_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	unsigned long int l;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		l = (unsigned long int) d[i];
+		if (GMT_fwrite ((void *)&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
+GMT_LONG GMT_L_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	unsigned long int l;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		l = GMT_swab4 ((unsigned long int) d[i]);
+		if (GMT_fwrite ((void *)&l, sizeof (unsigned long int), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
 GMT_LONG GMT_f_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	GMT_LONG i;
@@ -2131,10 +2222,40 @@ GMT_LONG GMT_f_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 	return (n);
 }
 
+GMT_LONG GMT_f_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	float f;
+	void *vptr = (void *)&f;
+	unsigned int *i4 = (unsigned int *)vptr;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		f = (float) d[i];
+		f = (float) GMT_swab4 (*i4);
+		if (GMT_fwrite ((void *)&f, sizeof (float), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
+	}
+	return (n);
+}
+
 GMT_LONG GMT_d_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
 {	/* Input n is ignored since it is always 1 */
 	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
 	return (GMT_fwrite ((void *)d, sizeof (double), (size_t)n, fp));
+}
+
+GMT_LONG GMT_d_write_swab (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *d)
+{	/* Input n is ignored since it is always 1 */
+	GMT_LONG i;
+	unsigned int j4, *i4;
+	if (GMT_skip_output (C, d, n)) return (0);	/* Record was skipped via -s[r] */
+	for (i = 0; i < n; i++) {
+		i4 = (unsigned int *)&d[i];
+		j4 = GMT_swab4 (i4[0]);
+		i4[0] = GMT_swab4 (i4[1]);
+		i4[1] = j4;
+		if (!GMT_fwrite ((void *)&d[i], sizeof (double), (size_t)1, fp))  return (GMT_DATA_WRITE_ERROR);
+	}
+	return (GMT_NOERROR);
 }
 
 GMT_LONG GMT_col_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, GMT_LONG ij)
@@ -2162,8 +2283,9 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 	GMT_LONG i, k = 0;
 
 	if (!txt) return (EXIT_FAILURE);	/* Must give a non-NULL argument */
+	if (!txt[0]) return (0);		/* Default -ZTLa */
 
-	for (i = 0; txt[i]; i++) {	/* Loop over flags */
+	for (i = 0; txt[i] && i < 2; i++) {	/* Loop over the first 2 flags */
 
 		switch (txt[i]) {
 
@@ -2179,6 +2301,16 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 				}
 				z->format[k++] = txt[i];
 				break;
+			default:
+				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: Must begin with [TBLR][TBLR]!\n");
+				return (EXIT_FAILURE);
+				break;
+		}
+	}
+	
+	for (i = 2; txt[i]; i++) {	/* Loop over flags */
+
+		switch (txt[i]) {
 
 			/* Set this if file is periodic, is grid registered, but repeating column or row is missing from input */
 
@@ -2207,6 +2339,12 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 
 			/* Set read pointer depending on data format */
 
+			case 'l':	/* Binary 8-byte integer, 64-bit mode only */
+			case 'L':	/* Binary 8-byte integer, 64-bit mode only */
+				if (sizeof (GMT_LONG) == 4) {
+					GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: Cannot specify %c in 32-bit mode\n", (int)txt[i]);
+					return (EXIT_FAILURE);
+				}
 			case 'A':	/* ASCII (next regular float (%lg) from the stream) */
 			case 'a':	/* ASCII (1 per record) */
 			case 'c':	/* Binary signed char */
@@ -2215,7 +2353,6 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 			case 'H':	/* Binary unsigned short 2-byte integer */
 			case 'i':	/* Binary 4-byte integer */
 			case 'I':	/* Binary 4-byte unsigned integer */
-			case 'l':	/* Binary 4(or8)-byte integer, machine dependent! */
 			case 'f':	/* Binary 4-byte float */
 			case 'd':	/* Binary 8-byte double */
 				z->type = txt[i];
@@ -2231,6 +2368,98 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 	return (0);
 }
 
+GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type)
+{
+	GMT_LONG t = -1;
+	switch (type) {	/* Set read pointer depending on data format */
+		case 'a': case 'A': t = -1; break;	/* ASCII */
+		case 'c': case 'u': t = GMT_CHAR_TYPE; break;	/* Binary char */
+		case 'h': case 'H': t = GMT_SHORT_TYPE; break;	/* Binary unsigned short 2-byte integer */
+		case 'i': case 'I': t = GMT_INT_TYPE; break;	/* Binary 4-byte unsigned integer */
+		case 'l': case 'L': t = GMT_LONG_TYPE; break;	/* Binary 8-byte unsigned integer, 64-bit mode only */
+		case 'f': t = GMT_FLOAT_TYPE; break;		/* Binary 4-byte float */
+		case 'd': t = GMT_DOUBLE_TYPE; break;		/* Binary 8-byte double */
+		default:
+			GMT_report (C, GMT_MSG_FATAL, "%c not a valid data type!\n", type);
+			GMT_exit (EXIT_FAILURE);
+			break;
+	}
+
+	return (t);
+}
+
+PFL GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG swap, char type)
+{
+	PFL p = NULL;
+	
+	switch (type) {	/* Set read pointer depending on data format */
+		case 'A':	/* ASCII with more than one per record */
+			p = (direction == GMT_IN) ? (PFL)GMT_A_read : (PFL)GMT_a_write;	break;
+		case 'a':	/* ASCII */
+			p = (direction == GMT_IN) ? (PFL)GMT_a_read : (PFL)GMT_a_write;	break;
+		case 'c':	/* Binary signed char */
+			p = (direction == GMT_IN) ? (PFL)GMT_c_read : (PFL)GMT_c_write;	break;
+		case 'u':	/* Binary unsigned char */
+			p = (direction == GMT_IN) ? (PFL)GMT_u_read : (PFL)GMT_u_write;	break;
+		case 'h':	/* Binary short 2-byte integer */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_h_read_swab : (PFL)GMT_h_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_h_read : (PFL)GMT_h_write;
+			break;
+		case 'H':	/* Binary unsigned short 2-byte integer */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_H_read_swab : (PFL)GMT_H_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_H_read : (PFL)GMT_H_write;
+			break;
+		case 'i':	/* Binary 4-byte integer */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_i_read_swab : (PFL)GMT_i_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_i_read : (PFL)GMT_i_write;
+			break;
+		case 'I':	/* Binary 4-byte unsigned integer */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_I_read_swab : (PFL)GMT_I_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_I_read : (PFL)GMT_I_write;
+			break;
+		case 'l':	/* Binary 8-byte integer, 64-bit mode only */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_l_read_swab : (PFL)GMT_l_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_l_read : (PFL)GMT_l_write;
+			break;
+		case 'L':	/* Binary 8-byte unsigned integer, 64-bit mode only */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_L_read_swab : (PFL)GMT_L_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_L_read : (PFL)GMT_L_write;
+			break;
+		case 'f':	/* Binary 4-byte float */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_f_read_swab : (PFL)GMT_f_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_f_read : (PFL)GMT_f_write;
+			break;
+		case 'd':	/* Binary 8-byte double */
+			if (swap)
+				p = (direction == GMT_IN) ? (PFL)GMT_d_read_swab : (PFL)GMT_d_write_swab;
+			else
+				p = (direction == GMT_IN) ? (PFL)GMT_d_read : (PFL)GMT_d_write;
+			break;
+		case 'x': break;	/* Binary skip */
+
+		default:
+			GMT_report (C, GMT_MSG_FATAL, "%c not a valid data type!\n", type);
+			GMT_exit (EXIT_FAILURE);
+			break;
+	}
+
+	return (p);
+}
+
 GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GMT_LONG swab, GMT_LONG skip, char type, struct GMT_Z_IO *r)
 {
 	GMT_LONG first = TRUE, k;
@@ -2238,110 +2467,39 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 	GMT_memset (r, 1, struct GMT_Z_IO);
 
 	for (k = 0; k < 2; k++) {	/* Loop over the two format flags */
-
 		switch (format[k]) {
-
 			/* These 4 cases will set the format orientation for input */
-
 			case 'T':
 				if (first) r->format = GMT_ROW_FORMAT;
-				r->y_step = 1;
-				first = FALSE;
-				break;
-
+				r->y_step = 1;	first = FALSE;	break;
 			case 'B':
 				if (first) r->format = GMT_ROW_FORMAT;
-				r->y_step = -1;
-				first = FALSE;
-				break;
-
+				r->y_step = -1;	first = FALSE;	break;
 			case 'L':
 				if (first)r->format = GMT_COLUMN_FORMAT;
-				r->x_step = 1;
-				first = FALSE;
-				break;
-
+				r->x_step = 1;	first = FALSE;	break;
 			case 'R':
 				if (first)r->format = GMT_COLUMN_FORMAT;
-				r->x_step = -1;
-				first = FALSE;
-				break;
+				r->x_step = -1;	first = FALSE;	break;
 			default:
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid format specifier!\n", format[k]);
 				GMT_exit (EXIT_FAILURE);
 				break;
-
 		}
 	}
 
-	r->x_missing = repeat[GMT_X];
-	r->y_missing = repeat[GMT_Y];
-	r->skip = skip;
-	r->swab = swab;
-
-	switch (type) {	/* Set read pointer depending on data format */
-		case 'A':	/* ASCII with more than one per record */
-			r->read_item = GMT_A_read;	r->write_item = GMT_a_write;
-			r->binary = FALSE;
-			break;
-
-		case 'a':	/* ASCII */
-			r->read_item = GMT_a_read;	r->write_item = GMT_a_write;
-			r->binary = FALSE;
-			break;
-
-		case 'c':	/* Binary signed char */
-			r->read_item = GMT_c_read; 	r->write_item = GMT_c_write;
-			r->binary = TRUE;
-			break;
-
-		case 'u':	/* Binary unsigned char */
-			r->read_item = GMT_u_read; 	r->write_item = GMT_u_write;
-			r->binary = TRUE;
-			break;
-
-		case 'h':	/* Binary short 2-byte integer */
-			r->read_item = GMT_h_read; 	r->write_item = GMT_h_write;
-			r->binary = TRUE;
-			break;
-
-		case 'H':	/* Binary unsigned short 2-byte integer */
-			r->read_item = GMT_H_read;	r->write_item = GMT_H_write;
-			r->binary = TRUE;
-			break;
-
-		case 'i':	/* Binary 4-byte integer */
-			r->read_item = GMT_i_read;	r->write_item = GMT_i_write;
-			r->binary = TRUE;
-			break;
-
-		case 'I':	/* Binary 4-byte unsigned integer */
-			r->read_item = GMT_I_read;	r->write_item = GMT_I_write;
-			r->binary = TRUE;
-			break;
-
-		case 'l':	/* Binary 4(or8)-byte integer, machine dependent! */
-			r->read_item = GMT_l_read;	r->write_item = GMT_l_write;
-			r->binary = TRUE;
-			break;
-
-		case 'f':	/* Binary 4-byte float */
-			r->read_item = GMT_f_read;	r->write_item = GMT_f_write;
-			r->binary = TRUE;
-			break;
-
-		case 'd':	/* Binary 8-byte double */
-			r->read_item = GMT_d_read;	r->write_item = GMT_d_write;
-			r->binary = TRUE;
-			break;
-
-
-		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid data type!\n", type);
-			GMT_exit (EXIT_FAILURE);
-			break;
+	if (!strchr ("AacuhHiIlLfd", type)) {
+		GMT_report (C, GMT_MSG_FATAL, "Syntax error -Z: %c not a valid data type!\n", type);
+		GMT_exit (EXIT_FAILURE);
+		
 	}
 
+	r->x_missing = repeat[GMT_X];	r->y_missing = repeat[GMT_Y];
+	r->skip = skip;			r->swab = swab;
+	r->binary = (strchr ("Aa", type)) ? FALSE : TRUE;
+	C->current.io.read_item  = GMT_get_io_ptr (C, GMT_IN,  swab, type);	/* Set read pointer depending on data format */
+	C->current.io.write_item = GMT_get_io_ptr (C, GMT_OUT, swab, type);	/* Set write pointer depending on data format */
+	
 	if (r->binary) {	/* Use the binary modes (which only matters under Windoze)  */
 		strcpy (C->current.io.r_mode, "rb");
 		strcpy (C->current.io.w_mode, "wb");
@@ -2351,6 +2509,18 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 	return (GMT_NOERROR);
 }
 
+GMT_LONG GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
+{
+	double **ptr = (double **)data;
+	return (C->current.io.read_item (C, fp, n, *ptr));
+}
+	
+GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data)
+{
+	double *ptr = (double *)data;
+	return (C->current.io.write_item (C, fp, n, ptr));
+}
+	
 GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
@@ -2361,7 +2531,6 @@ GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *
 	r->x_period = G->header->nx - r->x_missing;
 	r->y_period = G->header->ny - r->y_missing;
 	r->n_expected = r->x_period * r->y_period;
-	C->current.io.do_swab = r->swab;
 	return (GMT_NOERROR);
 }
 
@@ -4878,13 +5047,9 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		C->common.b.netcdf[GMT_IN] = 0;			/* Wipe netcdf setting since GMT_fopen checks for it */
 	}
 
-	if (!ascii) {
-		char *type[2] = {"double", "single"};
-		GMT_report (C, GMT_MSG_NORMAL, "Expects %ld-column %s-precision binary data\n", C->common.b.ncol[GMT_IN], type[C->common.b.single_precision[GMT_IN]]);
 #ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_IN);
+	if (!ascii) GMT_setmode (C, GMT_IN);
 #endif
-	}
 
 	/* Determine input source */
 

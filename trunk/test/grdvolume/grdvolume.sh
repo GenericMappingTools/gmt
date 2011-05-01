@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-#	$Id: grdvolume.sh,v 1.11 2011-05-01 01:22:42 jluis Exp $
+#	$Id: grdvolume.sh,v 1.12 2011-05-01 21:18:00 guru Exp $
 
 . ../functions.sh
 header "Test grdvolume for various grid registrations"
 
 makegrd () {
-xyz2grd -I1 -Gt.nc -Za $1 <<%
+xyz2grd -I1 -Gt.nc -Z $1 <<%
 1
 1
 1

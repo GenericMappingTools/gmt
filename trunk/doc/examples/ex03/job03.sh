@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 03
-#		$Id: job03.sh,v 1.21 2011-03-15 02:06:31 guru Exp $
+#		$Id: job03.sh,v 1.22 2011-05-01 21:17:59 guru Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, minmax, project, sample1d
@@ -72,21 +72,17 @@ $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 
 # data, we use a median filter to clean up the ship values.  We will want to use "paste"
 # to put the two sampled data sets together, so they must start and end at the same
 # point, without NaNs.  So we want to get a starting and ending point which works for
-# both of them.  Thus we need to start at max( min(ship.p), min(sat.p) ) and end
-# conversely.  "minmax" can't do this easily since it will return min( min(), min() ),
-# so we do a little head, paste $AWK to get what we want.
+# both of them.  This is a job for gmtmath UPPER/LOWER.
 #
-head -1 ship.pg > ship.pg.extr
-head -1 sat.pg > sat.pg.extr
-paste ship.pg.extr sat.pg.extr | $AWK '{ if ($1 > $3) print int($1); else print int($3); }' > sampr1
-tail -1 ship.pg > ship.pg.extr
-tail -1 sat.pg > sat.pg.extr 
-paste ship.pg.extr sat.pg.extr | $AWK '{ if ($1 < $3) print int($1); else print int($3); }' > sampr2
-sampr1=`cat sampr1`
-sampr2=`cat sampr2`
+head -1 ship.pg > tmp
+head -1 sat.pg >> tmp
+sampr1=`gmtmath tmp -Ca -Sf -o0 UPPER CEIL =`
+tail -1 ship.pg > tmp
+tail -1 sat.pg >> tmp 
+sampr2=`gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =`
 #
-# Now we can use sampr in $AWK to make a sampling points file for sample1d:
-$AWK 'BEGIN { for (i='$sampr1'; i <= '$sampr2'; i++) print i }' /dev/null > samp.x
+# Now we can use sampr1|2 in gmtmath to make a sampling points file for sample1d:
+gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
 #
 # Now we can resample the projected satellite data:
 #
@@ -206,4 +202,4 @@ echo "0.5 0.7 Ship" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> ../examp
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> ../example_03f.ps
 echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> ../example_03f.ps
 #
-rm -f box.d report samp* *.pg *.extr spectrum.*
+rm -f box.d report tmp samp* *.pg *.extr spectrum.*

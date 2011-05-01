@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.47 2011-04-26 17:52:49 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.48 2011-05-01 21:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,6 +81,29 @@ static const char *GMT_direction[2] = {"Input", "Output"};
 
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
+
+void GMT_io_banner (struct GMT_CTRL *C, GMT_LONG direction)
+{	/* Write verbose message about binary record i/o format */
+	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
+	char *letter = "chilfd", s[2] = {0, 0};
+	GMT_LONG col;
+	
+	if (!C->common.b.active[direction]) return;
+	GMT_memset (message, GMT_TEXT_LEN256, char);
+	for (col = 0; col < C->common.b.ncol[direction]; col++) {
+		if (C->current.io.fmt[direction][col].skip < 0) {
+			sprintf (skip, "%ldx", -C->current.io.fmt[direction][col].skip);
+			strcat (message, skip);
+		}
+		s[0] = letter[C->current.io.fmt[direction][col].type];
+		strcat (message, s);
+		if (C->current.io.fmt[direction][col].skip > 0) {
+			sprintf (skip, "%ldx", C->current.io.fmt[direction][col].skip);
+			strcat (message, skip);
+		}
+	}
+	GMT_report (C, GMT_MSG_NORMAL, "%s %ld columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
+}
 
 void GMTAPI_put_val (void *ptr, double val, GMT_LONG i, GMT_LONG type)
 {	/* Places a double value in the <type> array[i] pointed to by the void pointer.
@@ -2335,6 +2358,7 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return (GMT_Report_Error (API, GMT_NOT_A_VALID_DIRECTION));
 	if (mode < 1 || mode > 5) return (GMT_Report_Error (API, GMT_NOT_A_VALID_MODE));
 
+	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
 		return (GMTAPI_Init_Import (API, family, geometry, mode, head, &object_ID));
 	else

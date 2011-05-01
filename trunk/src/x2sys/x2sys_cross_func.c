@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.8 2011-05-01 21:18:00 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -256,7 +256,6 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG *col_number = NULL;		/* Array with the column numbers of the data fields */
 	GMT_LONG n_output;			/* Number of columns on output */
 	GMT_LONG n_pairs = 0;			/* Number of acceptable combinations */
-	GMT_LONG n_bin_header;
 	GMT_LONG A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
 	GMT_LONG end, first, n_ok, n_alloc = 1;
 	GMT_LONG n_data_col, left[2], t_left;
@@ -411,7 +410,6 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!got_time) Ctrl->S.active[VLO] = FALSE;	/* Cannot check speed if there is no time */
 
 	n_output = 10 + 2 * n_data_col;
-	n_bin_header = (n_output - 1) * ((GMT->common.b.single_precision[1]) ? sizeof (float) : sizeof (double));
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (!strcmp (s->info[s->x_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT->current.io.col_type[GMT_OUT][3] = (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT;
