@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: grdvolume.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
+#	$Id: grdvolume.sh,v 1.11 2011-05-01 01:22:42 jluis Exp $
 
 . ../functions.sh
 header "Test grdvolume for various grid registrations"
@@ -36,7 +36,7 @@ makegrd -R0/2/0/2 "-C0/0.8/0.4"
 
 testcase > grdvolume.log
 
-diff grdvolume.log grdvolume.out > log
+diff grdvolume.log grdvolume.out --strip-trailing-cr > log
 
 if [ $? != 0 ]; then
 	touch fail
