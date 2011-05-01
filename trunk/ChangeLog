@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.993 2011-04-29 23:44:20 remko Exp $
+	$Id: ChangeLog,v 1.994 2011-05-01 19:00:29 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-01	remko
+	* test/grdview/icelandbox.sh:	New test case based on query by Peter Schmidt.
+	* scripts/*.sh:		Replaced ". functions.sh" by ". ./functions.sh" to avoid problems
+				with people who do not have . in their PATH. E.g., Ubuntu.
 
 2011-04-29	remko
 	* job04*.sh:		Made ex 4 and 4c more similar and rotated color bar.
