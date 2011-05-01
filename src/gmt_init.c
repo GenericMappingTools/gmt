@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.491 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmt_init.c,v 1.492 2011-05-01 22:04:34 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1337,9 +1337,9 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	/* Because c means either netCDF or signed char we deal with netCDF up front */
 	
 	k = i_or_o;
-	if (text[k] == 'c' && (text[k+1] == 0 || strchr (text, '/'))) {	/* netCDF */
+	if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
 		C->common.b.netcdf[id] = done = TRUE;
-		strcpy (C->common.b.varnames, &text[i+1]);
+		strcpy (C->common.b.varnames, &text[k+1]);
 	}
 	else if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (text[k+1] == 0 || (text[k+1] == 'w' && text[k+2] == 0 ))) {	/* Just sets the type for the entire record */
 		C->common.b.type[id] = text[k];			/* Default column type */
