@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.265 2011-05-02 02:30:37 remko Exp $
+ *	$Id: gmt_io.c,v 1.266 2011-05-02 02:58:46 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -416,7 +416,7 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 
 	if (mode[0] != 'r')	/* Open file for writing (no netCDF) */
 		return (fopen (filename, mode));
-	else if (C->common.b.active)	/* Definitely not netCDF */
+	else if (C->common.b.active[GMT_IN])	/* Definitely not netCDF */
 		return (fopen (GMT_getdatapath(C, filename, path), mode));
 #if GMT_COMPAT
 	else if (C->common.b.varnames[0])	/* Definitely netCDF */
