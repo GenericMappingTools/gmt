@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: originator_func.c,v 1.7 2011-05-02 02:18:12 remko Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -319,9 +319,9 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 	}
 
 	n_input = (Ctrl->Q.active) ? 3 : 5;
-        if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
+        if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_input);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_input);
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -H\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");

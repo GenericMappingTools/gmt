@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.8 2011-05-01 21:18:00 guru Exp $
+ *	$Id: backtracker_func.c,v 1.9 2011-05-02 02:18:12 remko Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -322,8 +322,8 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 	n_errors += GMT_check_condition (GMT, !Ctrl->e.active && !Ctrl->E.active, "Syntax error: Must give -E or -e\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->L.active, "Syntax error: -W cannot be set if -Lf or -Lb are set\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -H\n");
-        if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3 + ((Ctrl->A.mode == 2) ? 2 : 0);
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
+        if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3 + ((Ctrl->A.mode == 2) ? 2 : 0);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && !Ctrl->L.active, "Syntax error: -A requires -L.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

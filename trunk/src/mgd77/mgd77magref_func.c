@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.6 2011-05-02 02:18:12 remko Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -381,8 +381,8 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	}
 
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
-	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_out);
+	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_out);
 	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, "Syntax error: You cannot select both -F and -L options\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -512,7 +512,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return ((int)error);	/* Disables further data input */
 
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
-	if (GMT_native_binary (GMT, GMT_OUT) && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
+	if (GMT->common.b.active[GMT_OUT]) && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
 		GMT_message (GMT, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}

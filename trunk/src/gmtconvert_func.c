@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.7 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.8 2011-05-02 02:19:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,7 +207,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active), "Syntax error: -L or -S requires ASCII input data\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"), "Syntax error: Output template must contain %%d\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active, "Syntax error: Only one of -Q and -S can be used simultaneously\n");

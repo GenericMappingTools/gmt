@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.14 2011-04-29 03:08:12 guru Exp $
+*	$Id: mapproject_func.c,v 1.15 2011-05-02 02:19:51 remko Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -399,7 +399,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active || Ctrl->N.active), "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -D and -F\n");
-	n_errors += GMT_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) && GMT_native_binary (GMT, GMT_IN) && GMT_get_cols (GMT, GMT_IN) < 3, "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
+	n_errors += GMT_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) && GMT->common.b.active[GMT_IN] && GMT_get_cols (GMT, GMT_IN) < 3, "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
 
 	if (!(n_errors || GMT->common.R.active)) {
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.8 2011-05-01 21:18:00 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.9 2011-05-02 02:18:12 remko Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -439,8 +439,8 @@ GMT_LONG GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_
 	}
 	
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -h\n");
-	if (GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
+	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && Ctrl->A.active && !Ctrl->N.active, "Syntax error: Binary output does not support storing areas unless -N is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->T.active, "Syntax error -N: Cannot be used with -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N: Must specify output file\n");

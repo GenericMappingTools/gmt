@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: colmath_func.c,v 1.4 2011-04-23 02:14:12 guru Exp $
+ *	$Id: colmath_func.c,v 1.5 2011-05-02 02:19:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -150,7 +150,7 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, GMT_native_binary (GMT, GMT_IN) && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->S.active, "Syntax error: -S requires ASCII input data\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active, "Syntax error: Only one of -Q and -S can be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
