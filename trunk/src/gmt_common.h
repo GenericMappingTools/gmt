@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.30 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmt_common.h,v 1.31 2011-05-02 02:29:50 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,12 +103,13 @@ struct GMT_COMMON {
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 		GMT_LONG active[2];		/* TRUE if current input/output is in native binary format */
-		GMT_LONG netcdf[2];		/* TRUE if current input/output is in netCDF format */
 		GMT_LONG swab[2];		/* TRUE if current binary input/output must be byte-swapped */
 		GMT_LONG ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
+#ifdef GMT_COMPAT
 		char varnames[GMT_BUFSIZ];	/* List of variable names to be input/output in netCDF mode */
+#endif
 	} b;
 	struct c {	/* -c */
 		GMT_LONG active;
