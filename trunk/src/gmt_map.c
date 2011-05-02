@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.291 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_map.c,v 1.292 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6009,7 +6009,6 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 			}
 		}
 	}
-
 	/* Time to clean up our mess */
 
 	GMT_free (C, x_in);

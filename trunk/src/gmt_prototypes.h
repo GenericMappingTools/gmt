@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.31 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.32 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -135,6 +135,7 @@ EXTERN_MSC void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt);
 EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n);		/* Write segment header back out */
 EXTERN_MSC void GMT_write_textrecord (struct GMT_CTRL *C, FILE *fp, char *txt);
 EXTERN_MSC void GMT_ascii_format_one (struct GMT_CTRL *C, char *text, double x, GMT_LONG type);
+EXTERN_MSC void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, GMT_LONG col);
 EXTERN_MSC void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
 EXTERN_MSC GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */

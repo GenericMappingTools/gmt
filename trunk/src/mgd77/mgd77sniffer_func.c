@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.14 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.15 2011-05-02 08:00:56 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -949,7 +949,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							E[curr].utc_offset = utc_offset;
 							E[curr].flags[E77_NAV] |= NAV_TZ_ERROR;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_one (GMT, timeStr, D[curr].time, GMT->current.io.col_type[GMT_OUT][MGD77_TIME]);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 								sprintf (placeStr,"%s %s %ld - Time zone adjustment error (Westbound)",list[argno],timeStr,curr+1);
 								if (D[curr].time-D[j].time < ((D[curr].time-3600.0*D[curr].number[MGD77_TZ])-(D[j].time-3600.0*D[j].number[MGD77_TZ])))
 									sprintf (placeStr,"%s %s %ld - Time zone adjustment error (Eastbound)",list[argno],timeStr,curr+1);
@@ -997,7 +997,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							nav_error = TRUE;
 							n_bad++;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_one (GMT, timeStr, D[curr].time, GMT->current.io.col_type[GMT_OUT][MGD77_TIME]);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 								sprintf (placeStr,"%s %s %ld",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, D[curr].time-D[j].time);
 								sprintf (buffer, "%s - Time not monotonically increasing (%s sec.)\n",placeStr, text);
@@ -1031,7 +1031,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (fabs(speed)>max_speed) {
 							nav_error = TRUE;
 							if (warn[SPEED_WARN]) {
-								GMT_ascii_format_one (GMT, timeStr, D[curr].time, GMT->current.io.col_type[GMT_OUT][MGD77_TIME]);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 								sprintf (placeStr,"%s %s %ld",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, speed);
 								sprintf (buffer, "%s - Excessive speed %s %s\n",placeStr, text, speed_units);
@@ -1882,9 +1882,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Create the current time string formatted according to gmtdefaults */
 			if (gotTime)
-				GMT_ascii_format_one (GMT, timeStr, D[curr].time, GMT->current.io.col_type[GMT_OUT][MGD77_TIME]);
+				GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 			else
-				GMT_ascii_format_one (GMT, timeStr, distance[curr], GMT->current.io.col_type[GMT_OUT][GMT_IS_FLOAT]);
+				GMT_ascii_format_one (GMT, timeStr, distance[curr], GMT_IS_FLOAT);
 
 			/* Create the location portion of the verbose data warning string (not for E77) */
 			sprintf (placeStr,"%s %s %ld",list[argno],timeStr,curr+1);
@@ -2514,9 +2514,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (!strcmp(errorStr,"0-0-0")) continue;
 				if (gotTime)
-					GMT_ascii_format_one (GMT, timeStr, D[rec].time, GMT->current.io.col_type[GMT_OUT][MGD77_TIME]);
+					GMT_ascii_format_col (GMT, timeStr, D[rec].time, MGD77_TIME);
 				else
-					GMT_ascii_format_one (GMT, timeStr, distance[rec], GMT->current.io.col_type[GMT_OUT][GMT_IS_FLOAT]);
+					GMT_ascii_format_one (GMT, timeStr, distance[rec], GMT_IS_FLOAT);
 				/* Version 1 data corrections apply crucial nav errors and not value and gradient errors */
 				sprintf (placeStr, "%s%s%s%s%ld%s",list[argno],GMT->current.setting.io_col_separator,timeStr,GMT->current.setting.io_col_separator,rec+1,\
 				GMT->current.setting.io_col_separator);

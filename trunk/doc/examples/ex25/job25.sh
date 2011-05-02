@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 25
-#		$Id: job25.sh,v 1.12 2011-05-01 21:17:59 guru Exp $
+#		$Id: job25.sh,v 1.13 2011-05-02 08:00:56 guru Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
@@ -42,4 +42,4 @@ S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
 S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
 S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]
 END
-rm -f *.nc key.*
+#rm -f *.nc key.*

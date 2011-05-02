@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.266 2011-05-02 02:58:46 remko Exp $
+ *	$Id: gmt_io.c,v 1.267 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1372,7 +1372,7 @@ GMT_LONG GMT_ascii_output_one (struct GMT_CTRL *C, FILE *fp, double x, GMT_LONG 
 {
 	char text[GMT_TEXT_LEN256];
 
-	GMT_ascii_format_one (C, text, x, C->current.io.col_type[GMT_OUT][col]);
+	GMT_ascii_format_col (C, text, x, col);
 	return (fprintf (fp, "%s", text));
 }
 
@@ -1407,11 +1407,12 @@ GMT_LONG GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr
 void GMT_format_geo_output (struct GMT_CTRL *C, GMT_LONG is_lat, double geo, char *text)
 {
 	GMT_LONG k, n_items, d, m, s, m_sec, minus, h_pos = 0;
-	char hemi[3];
+	char hemi[3], *f;
 
 	if (!is_lat) GMT_lon_range_adjust (C,  C->current.io.geo.range, &geo);
 	if (C->current.io.geo.decimal) {	/* Easy */
-		sprintf (text, C->current.setting.format_float_out, geo);
+		f = (C->current.io.o_format[is_lat]) ? C->current.io.o_format[is_lat] : C->current.setting.format_float_out;
+		sprintf (text, f, geo);
 		return;
 	}
 
@@ -1471,6 +1472,31 @@ void GMT_ascii_format_one (struct GMT_CTRL *C, char *text, double x, GMT_LONG ty
 			break;
 		default:
 			sprintf (text, C->current.setting.format_float_out, x);
+			break;
+	}
+}
+
+void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, GMT_LONG col)
+{
+	if (GMT_is_dnan (x)) {	/* NaN, just write it as string */
+		sprintf (text, "NaN");
+		return;
+	}
+	switch (C->current.io.col_type[GMT_OUT][col]) {
+		case GMT_IS_LON:
+			GMT_format_geo_output (C, FALSE, x, text);
+			break;
+		case GMT_IS_LAT:
+			GMT_format_geo_output (C, TRUE, x, text);
+			break;
+		case GMT_IS_ABSTIME:
+			GMT_format_abstime_output (C, x, text);
+			break;
+		default:
+			if (C->current.io.o_format[col])
+				sprintf (text, C->current.io.o_format[col], x);
+			else
+				sprintf (text, C->current.setting.format_float_out, x);
 			break;
 	}
 }
@@ -4190,7 +4216,10 @@ void GMT_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, GMT_LONG col, 
 			break;
 		case GMTAPI_DOUBLE:
 		case GMTAPI_FLOAT:
-			GMT_ascii_format_one (C, text, G->dvalue[col], GMT_IS_FLOAT);
+			if (C->current.io.o_format[col])
+				sprintf (text, C->current.io.o_format[col], G->dvalue[col]);
+			else
+				GMT_ascii_format_one (C, text, G->dvalue[col], GMT_IS_FLOAT);
 			fprintf (fp, "%s", text);
 			break;
 		case GMTAPI_BYTE:
@@ -4205,7 +4234,10 @@ void GMT_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, GMT_LONG col, 
 			break;
 		default:
 			GMT_report (C, GMT_MSG_FATAL, "Bad type passed to GMT_write_formatted_ogr_value - assumed to be double\n");
-			GMT_ascii_format_one (C, text, G->dvalue[col], GMT_IS_FLOAT);
+			if (C->current.io.o_format[col])
+				sprintf (text, C->current.io.o_format[col], G->dvalue[col]);
+			else
+				GMT_ascii_format_one (C, text, G->dvalue[col], GMT_IS_FLOAT);
 			fprintf (fp, "%s", text);
 			break;
 	}
