@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.323 2011-04-29 23:44:20 remko Exp $
+ *	$Id: gmt_plot.c,v 1.324 2011-05-02 12:46:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3114,7 +3114,7 @@ void GMT_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 		if (G->curved_text)
 			PSL_plottextpath (P, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, form);
 		else
-			PSL_plottextclip (P, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, (form | 1));
+			PSL_plottextclip (P, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, form | 1);
 		return;
 	}
 
@@ -3186,9 +3186,8 @@ void GMT_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 			GMT_free (C, yt);
 			GMT_free (C, txt);
 		}
-		else {	/* 2nd time called, just pass form */
-			form |= 8;
-			PSL_plottextclip (P, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, form);	/* Now place the text using PSL variables already declared */
+		else {	/* 2nd time called, just pass form with the 3rd bit set */
+			PSL_plottextclip (P, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, form | 8);	/* Now place the text using PSL variables already declared */
 		}
 	}
 }
@@ -3268,7 +3267,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 	if (G->debug) GMT_contlabel_debug (C, P, G);		/* Debugging lines and points */
 
 	/* See if there are labels at all */
-	for (i = 0, no_labels = TRUE; i < G->n_segments; i++) if (G->segment[i]->n_labels) no_labels = FALSE;
+	for (i = 0, no_labels = TRUE; i < G->n_segments && no_labels; i++) if (G->segment[i]->n_labels) no_labels = FALSE;
 
 	if (no_labels) {	/* No labels, just draw lines */
 		GMT_contlabel_drawlines (C, P, G, 0);
@@ -3281,7 +3280,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 		GMT_contlabel_clippath (C, P, G, 1);		/* Lays down clippath based on ALL labels */
 		GMT_contlabel_drawlines (C, P, G, 0);		/* Safe to draw continuous lines everywhere - they will be clipped at labels */
 		if (G->delay) return;						/* Leave clipping on and do not plot text yet - delayed until psclip -Cc|s */
-		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping so no need for GMT_map_clip_off */
+		GMT_contlabel_clippath (C, P, G, 0);		/* Turn off label clipping */
 		GMT_contlabel_plotlabels (C, P, G, 0);		/* Now plot labels where they go directly */
 	}
 	else {	/* Opaque text boxes */

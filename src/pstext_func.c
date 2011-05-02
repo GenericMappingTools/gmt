@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.17 2011-04-29 23:23:21 remko Exp $
+ *	$Id: pstext_func.c,v 1.18 2011-05-02 12:46:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	if (Ctrl->G.mode) GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that wil outlive this process */
+	if (Ctrl->G.mode) GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 	
 	GMT_plotinit (API, PSL, options);
 

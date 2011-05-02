@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.998 2011-05-02 08:49:49 guru Exp $
+	$Id: ChangeLog,v 1.999 2011-05-02 12:46:33 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-02	pwessel
@@ -7,8 +7,11 @@
 				formats using comma-separated <cols>:<format> specifications.
 				The last format without leading <cols>: overrides the default
 				format for all unspecified columns.
+
 2011-05-02	remko
 	* gmt_init.c:		Fixed problems with custom page size.
+	* pslib.c:		Removed incorrect increase count of clipping when placing
+				curved labels.
 
 2011-05-01	pwessel
 	* job03.sh:		Replaced complicated awk scripting with gmtmath to ensure

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
+ *	$Id: pscoast_func.c,v 1.13 2011-05-02 12:46:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -623,7 +623,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->Q.active)
 			GMT->current.ps.clip = -1;	/* Signal that this program terminates polygon clipping that initiated prior to this process */
 		else if (clipping)
-			GMT->current.ps.clip = +1;	/* Signal that this program initiates new clipping that wil outlive this process */
+			GMT->current.ps.clip = +1;	/* Signal that this program initiates new clipping that will outlive this process */
 
 		GMT_plotinit (API, PSL, options);
 
