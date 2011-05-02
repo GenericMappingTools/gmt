@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.497 2011-05-02 08:49:49 guru Exp $
+ *	$Id: gmt_init.c,v 1.498 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -470,12 +470,12 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'C':	/* -b binary option with input only */
 
-			GMT_message (C, "\t-bi For binary input; append s for single precision [Default is double].\n");
+			GMT_message (C, "\t-bi For binary input; <type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
 
-			GMT_message (C, "\t    Append <n> for the number of columns in binary file(s).\n");
+			GMT_message (C, "\t    Prepend <n> for the number of columns for each <type>.\n");
 			break;
 
 		case '1':	/* -bi/-bo addendum when input format is unknown */
@@ -486,12 +486,12 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case '6':
 		case '7':
 
-			GMT_message (C, "\t    Append <n> for the number of columns in binary file(s) [%c].\n", options[k]);
+			GMT_message (C, "\t    Prepend <n> for the number of columns for each <type> in binary file(s) [%c].\n", options[k]);
 			break;
 
 		case 'D':	/* -b binary option with output only */
 
-			GMT_message (C, "\t-bo For binary output; append s for single precision [Default is double].\n");
+			GMT_message (C, "\t-bo For binary output; append <type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
 			break;
 
 		case 'c':	/* -c option to set number of plot copies option */
@@ -524,8 +524,9 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][n_rec] Means input/output file has %ld Header record(s) [%s]\n", C->current.setting.io_n_header_recs, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t-h[i][<n>] Means input/output file has [%ld] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
+			GMT_message (C, "\t   For binary files, <n> is considered to mean bytes.\n");
 			break;
 
 		case 'i':	/* -i option for input column order */
@@ -1109,14 +1110,14 @@ GMT_LONG gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		if (i < 0)
 			error++;
 		else
-			C->current.io.io_n_header_recs = i;
+			C->current.io.io_n_header_items = i;
 	}
 	if (j == 0)	/* Both in and out may have header records */
-		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_recs > 0);
+		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_items > 0);
 	else if (item[k] == 'i')		/* Only input should have header records */
-		C->current.io.io_header[GMT_IN] = (C->current.io.io_n_header_recs > 0);
+		C->current.io.io_header[GMT_IN] = (C->current.io.io_n_header_items > 0);
 	else		/* Only output should have header records */
-		C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_recs > 0);
+		C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_items > 0);
 	return (error);
 }
 
@@ -1672,11 +1673,6 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, GMT_LONG n_req) {
 	if (!C->common.b.active[GMT_IN]) return (GMT_NOERROR);	/* Let machinery figure out input cols for ascii */
 
 	/* These are specific tests for binary input */
-
-	if (C->current.io.io_header[GMT_IN]) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: Binary input data (-bi) cannot have header -h\n");
-		n_errors++;
-	}
 
 	if (C->common.b.ncol[GMT_IN] == 0) C->common.b.ncol[GMT_IN] = n_req;
 	if (C->common.b.ncol[GMT_IN] == 0) {
@@ -3288,14 +3284,14 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			C->current.setting.io_header[GMT_OUT] = C->current.setting.io_header[GMT_IN];
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_N_HEADER_RECS: GMT_COMPAT_CHANGE ("IO_N_HEADER_RECS");
+		case GMTCASE_N_HEADER_RECS: GMT_COMPAT_CHANGE ("IO_N_HEADER_ITEMS");
 #endif
 		case GMTCASE_IO_N_HEADER_RECS:
 			ival = atoi (value);
 			if (ival < 0)
 				error = TRUE;
 			else
-				C->current.setting.io_n_header_recs = ival;
+				C->current.setting.io_n_header_items = ival;
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_NAN_RECORDS: GMT_COMPAT_CHANGE ("IO_NAN_RECORDS");
@@ -4087,7 +4083,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_N_HEADER_RECS: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_IO_N_HEADER_RECS:
-			sprintf (value, "%ld", C->current.setting.io_n_header_recs);
+			sprintf (value, "%ld", C->current.setting.io_n_header_items);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_NAN_RECORDS: GMT_COMPAT_WARN;

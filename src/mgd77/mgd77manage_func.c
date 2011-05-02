@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.14 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.15 2011-05-02 19:34:31 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -653,7 +653,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		/* Skip any header records */
-		if (GMT->current.io.io_header[GMT_IN]) for (i = 0; i < GMT->current.io.io_n_header_recs; i++) not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		if (GMT->current.io.io_header[GMT_IN]) for (i = 0; i < GMT->current.io.io_n_header_items; i++) not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 
 		two_cols = (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);
 		n = (two_cols) ? -1 : 0;
