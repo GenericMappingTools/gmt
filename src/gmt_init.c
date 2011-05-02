@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.493 2011-05-02 02:30:37 remko Exp $
+ *	$Id: gmt_init.c,v 1.494 2011-05-02 02:48:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1305,7 +1305,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
 
 	GMT_LONG i, col = 0, k, ncol = 0, id = GMT_IN, i_or_o = FALSE, set = FALSE;
-	GMT_LONG endian_swab = FALSE, swab = FALSE, done = FALSE, error = FALSE;
+	GMT_LONG endian_swab = FALSE, swab = FALSE, error = FALSE;
 	char *p = NULL, c;
 
 	if (!text || !text[0]) return (GMT_PARSE_ERROR);	/* -b requires at least one arg, e.g, -bo */
@@ -1341,12 +1341,10 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	if (text[k] == 'c' && !text[k+1]) {	/* Ambiguous case "-bic" which MAY mean netCDF */
 		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: -b[i]c now applies to character tables, not to netCDF\n");
 		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: If input is netCDF, just leave out -b[i]c\n");
-		done = TRUE;
 		C->common.b.type[id] = 'c';
 	}
 	else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
 		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: -b[i]c<varlist> is deprecated. Use <file>?<varlist> instead.\n");
-		done = TRUE;
 		C->common.b.active[id] = FALSE;
 		strcpy (C->common.b.varnames, &text[k+1]);
 	}
@@ -1357,7 +1355,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 		C->common.b.swab[id] = (text[k+1] == 'w');	/* Default swab */
 	}
 	else {
-		for (i = k; !done && text[i]; i++) {
+		for (i = k; text[i]; i++) {
 			c = text[i];
 			switch (c) {
 				case 'l': case 'L':	/* 8-byte long integers */
