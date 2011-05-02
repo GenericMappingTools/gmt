@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.256 2011-04-29 23:43:53 remko Exp $
+ *	$Id: pslib.c,v 1.257 2011-05-02 12:43:09 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -2273,7 +2273,7 @@ PSL_LONG PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 
 	PSL_LONG i = 0, j, k;
 
-	if (mode & 64) PSL->current.nclip++;
+	if ((mode & 65) == 65) PSL->current.nclip++;
 	if (mode & 8) {		/* If 8 bit is set we already have placed the info */
 		PSL_command (PSL, "%ld PSL_curved_text_labels\n", mode);
 		return (PSL_NO_ERROR);
