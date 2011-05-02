@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.38 2011-04-30 01:46:51 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.39 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -566,6 +566,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			G2->header->n_bands = 1;		/* FCK POINT - Should not be needed */
 			GMT_free_grid (GMT, &Intens_orig, TRUE);
 			Intens_orig = G2;
+			GMT_BC_init (GMT, Intens_orig->header);	/* Initialize grid interpolation and boundary condition parameters */
 		}
 #endif
 
@@ -769,7 +770,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_proj);
 	}
-		
+	
 	/* Get actual size of each pixel */
 	dx = GMT_get_inc (header_work->wesn[XLO], header_work->wesn[XHI], header_work->nx, header_work->registration);
 	dy = GMT_get_inc (header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);

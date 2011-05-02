@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.10 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.11 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -323,10 +323,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
 			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], G->header->z_max, 2);
 			GMT_fprintf (GMT->session.std[GMT_OUT], "\t");
-			GMT_ascii_format_one (GMT, text, G->header->inc[GMT_X], GMT->current.io.col_type[GMT_OUT][GMT_X]);
+			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_X);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			GMT_fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
-			GMT_ascii_format_one (GMT, text, G->header->inc[GMT_Y], GMT->current.io.col_type[GMT_OUT][GMT_Y]);
+			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_Y);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			GMT_fprintf (GMT->session.std[GMT_OUT], "%s\t", text);
 			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], (double)G->header->nx, 2);
@@ -394,7 +394,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 			else {
-				GMT_ascii_format_one (GMT, text, G->header->inc[GMT_X], GMT->current.io.col_type[GMT_OUT][GMT_X]);
+				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%s: x_min: ", G->header->name);
 				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], G->header->wesn[XLO], 0);
@@ -406,7 +406,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YLO], 1);
 				GMT_fprintf (GMT->session.std[GMT_OUT], " y_max: ");
 				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], G->header->wesn[YHI], 1);
-				GMT_ascii_format_one (GMT, text, G->header->inc[GMT_Y], GMT->current.io.col_type[GMT_OUT][GMT_Y]);
+				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				GMT_fprintf (GMT->session.std[GMT_OUT], " y_inc: %s", text);
 				GMT_fprintf (GMT->session.std[GMT_OUT], " name: %s ny: %d\n", G->header->y_units, G->header->ny);
@@ -442,7 +442,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_fprintf (GMT->session.std[GMT_OUT], " name: %s\n", G->header->z_units);
 			}
 
-			GMT_ascii_format_one (GMT, text, G->header->z_add_offset, GMT->current.io.col_type[GMT_OUT][2]);
+			GMT_ascii_format_col (GMT, text, G->header->z_add_offset, GMT_Z);
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			sprintf (format, "%s: scale_factor: %s add_offset: %%s\n", G->header->name, GMT->current.setting.format_float_out);
 			GMT_fprintf (GMT->session.std[GMT_OUT], format, G->header->z_scale_factor, text);

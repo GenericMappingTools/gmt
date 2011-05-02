@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.48 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.49 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1464,6 +1464,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 					G->data[ij] = G_orig->data[ij_orig];
 				}
 			}
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			break;
 			
 	 	case GMT_IS_REF:	/* GMT grid and header in a GMT_GRID container object by reference */
@@ -1510,6 +1512,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				G->data[ij] = (float)GMTAPI_get_val (M->data, ij_orig, M->type);
 			}
 			if (M->alloc_mode == 1) GMT_free (API->GMT, *S->ptr);
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			break;
 			
 	 	case GMT_IS_REF + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */

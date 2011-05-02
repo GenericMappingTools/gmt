@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.111 2011-05-02 02:26:27 remko Exp $
+ *	$Id: gmt_io.h,v 1.112 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -380,6 +380,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char current_record[GMT_BUFSIZ];	/* Current ascii record */
 	char segment_header[GMT_BUFSIZ];	/* Current ascii segment header */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variables in netCDF file */
 	size_t ndim;			/* Length of the column dimension */
@@ -394,7 +395,7 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG col_skip[GMT_MAX_COLUMNS];	/* TRUE of input column is to be ignored [Default reads all columns, but see -i] */
 	GMT_LONG io_nan_col[GMT_MAX_COLUMNS];	/* Array of columns to consider for -s option ir TRUE */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
-	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information */
+	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs */

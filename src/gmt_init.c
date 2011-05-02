@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.495 2011-05-02 04:35:16 remko Exp $
+ *	$Id: gmt_init.c,v 1.496 2011-05-02 08:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1358,25 +1358,30 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 		for (i = k; text[i]; i++) {
 			c = text[i];
 			switch (c) {
+#ifdef GMT_COMPAT
+				case 's': case 'S': case 'D':	/* GMT 4 syntax with single and double precision w/wo swapping */
+					if (c == 'S' || c == 'D') swab = TRUE;
+					if (c == 'S' || c == 's') c = 'f';
+					if (c == 'D') c = 'd';
+					if (ncol == 0) ncol = 1;	/* Since -bs should work */
+#endif
 				case 'l': case 'L':	/* 8-byte long integers */
 					if (sizeof (GMT_LONG) == 4) {
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot specify %c in 32-bit mode\n", (int)c);
 						return (EXIT_FAILURE);
 					}
 				case 'c': case 'u': case 'h': case 'H': case 'i': case 'I': case 'f': case 'd':
-#ifdef GMT_COMPAT
-				case 's': case 'S': case 'D':	/* GMT 4 syntax with single and double precision w/wo swapping */
-					if (c == 'S' || c == 'D') swab = TRUE;
-					if (c == 'S' || c == 's') c = 'f';
-					if (c == 'D') c = 'd';
-#endif
 					if (text[i+1] == 'w') swab = TRUE;
-					if (ncol == 0) ncol = 1;
 					set = TRUE;
+					if (ncol == 0) {
+						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be specified\n");
+						return (EXIT_FAILURE);
+					}
 					for (k = 0; k < ncol; k++, col++) {
 						C->current.io.fmt[id][col].io = GMT_get_io_ptr (C, id, swab, c);
 						C->current.io.fmt[id][col].type = GMT_get_io_type (C, c);
 					}
+					ncol = 0;	/* Must parse a number for each item */
 					break;
 				case 'x':	/* Binary skip before/after column */
 					if (col == 0)	/* Must skip BEFORE reading first data column (flag as negative skip) */
@@ -2499,6 +2504,34 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 	return (i+1);	/* Return remaining string length */
 }
 
+void parse_format_float_out (struct GMT_CTRL *C, char *value)
+{
+	GMT_LONG pos = 0, col = 0, start, stop, k, error = 0;
+	char fmt[GMT_TEXT_LEN64], *p = NULL;
+	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
+	while ((GMT_strtok (value, ",", &pos, fmt))) {
+		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
+			if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
+				sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+			else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
+				start = stop = atoi (p);
+			else				/* Something bad */
+				error++;
+			p++;	/* Move to format */
+		}
+		else {	/* No columns, assue we are doing one after the other */
+			start = stop = col;
+			p = fmt;
+			/* Last format without cols also becomes the default for unspecified columns */
+			strcpy (C->current.setting.format_float_out, p);
+		}
+		for (k = start; k <= stop; k++, col++) {
+			if (C->current.io.o_format[k]) free ((void *)C->current.io.o_format[k]);
+			C->current.io.o_format[k] = strdup (p);
+		}
+	}
+}
+
 GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	GMT_LONG i, ival, case_val, pos, manual, error = FALSE;
@@ -2585,7 +2618,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_D_FORMAT: GMT_COMPAT_CHANGE ("FORMAT_FLOAT_OUT");
 #endif
 		case GMTCASE_FORMAT_FLOAT_OUT:
-			strcpy (C->current.setting.format_float_out, value);
+			parse_format_float_out (C, value);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
 			strcpy (C->current.setting.format_float_map, value);
