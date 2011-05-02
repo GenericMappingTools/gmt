@@ -13,5 +13,5 @@ Here, IT(n) is the number of each item in your binary input file; the
 total number may exceeds the columns actually needed by the program.  If no
 IT(n) is specified we assume that IT(type) applies to all columns and
 that IT(n) is implied by the expectation of the program.
-Alternatively, append BD(c) if the input file is netCDF. Optionally,
-append IT(var1)BD(/)IT(var2)BD(/)IT(...) to specify the variables to be read.
+If the input file is netCDF, no OPT(b) is needed; simply
+append IT(var1)BD(/)IT(var2)BD(/)IT(...) to the filename to specify the variables to be read.

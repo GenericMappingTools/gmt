@@ -13,3 +13,4 @@ Here, IT(n) is the number of each items in your binary input file; the
 total may exceeds the columns actually needed by the program.  If no
 IT(n) is specified we assume that IT(type) applies to all columns and
 that IT(n) is implied by the default output of the program.
+NetCDF file output is not supported.
