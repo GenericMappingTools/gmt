@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.13 2011-05-02 08:49:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -520,8 +520,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->A.active) {	/* Report some statistics */
 
-		if (Ctrl->N.active) {
-			if (Ctrl->N.mode == 1) {
+		if (Ctrl->N.active) {	/* Chose normalization */
+			if (Ctrl->N.mode == 1) {	/* atan transformation */
 				if (sigma_set)
 					denom = 1.0 / Ctrl->N.sigma;
 				else {
@@ -539,7 +539,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom);
 				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom);
 			}
-			else if (Ctrl->N.mode == 2) {
+			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
 				if (!sigma_set) {
 					Ctrl->N.sigma = 0.0;
 					GMT_grd_loop (Out, row, col, ij) {
@@ -560,7 +560,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom));
 				Out->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom));
 			}
-                	else {
+                	else {	/* Linear transformation */
 				if ((max_gradient - ave_gradient) > (ave_gradient - min_gradient))
 					denom = Ctrl->N.norm / (max_gradient - ave_gradient);
 				else

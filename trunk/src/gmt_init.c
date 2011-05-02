@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.496 2011-05-02 08:00:56 guru Exp $
+ *	$Id: gmt_init.c,v 1.497 2011-05-02 08:49:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2512,22 +2512,20 @@ void parse_format_float_out (struct GMT_CTRL *C, char *value)
 	while ((GMT_strtok (value, ",", &pos, fmt))) {
 		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
 			if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
-				sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+				sscanf (fmt, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 			else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
-				start = stop = atoi (p);
+				start = stop = atoi (fmt);
 			else				/* Something bad */
 				error++;
 			p++;	/* Move to format */
+			for (k = start; k <= stop; k++, col++) {
+				if (C->current.io.o_format[k]) free ((void *)C->current.io.o_format[k]);
+				C->current.io.o_format[k] = strdup (p);
+			}
 		}
-		else {	/* No columns, assue we are doing one after the other */
-			start = stop = col;
-			p = fmt;
+		else {	/* No columns, set the default format */
 			/* Last format without cols also becomes the default for unspecified columns */
-			strcpy (C->current.setting.format_float_out, p);
-		}
-		for (k = start; k <= stop; k++, col++) {
-			if (C->current.io.o_format[k]) free ((void *)C->current.io.o_format[k]);
-			C->current.io.o_format[k] = strdup (p);
+			strcpy (C->current.setting.format_float_out, fmt);
 		}
 	}
 }
