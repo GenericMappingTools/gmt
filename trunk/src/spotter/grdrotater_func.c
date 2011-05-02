@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.17 2011-05-02 02:18:12 remko Exp $
+ *	$Id: grdrotater_func.c,v 1.18 2011-05-02 19:34:31 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -202,7 +202,6 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -H\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");

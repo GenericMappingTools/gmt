@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.267 2011-05-02 08:00:56 guru Exp $
+ *	$Id: gmt_io.c,v 1.268 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1067,7 +1067,7 @@ GMT_LONG GMT_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 
 		C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-		if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_recs) {	/* Must treat first io_n_header_recs as headers */
+		if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TABLE_HEADER;
@@ -1189,7 +1189,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 	}
 	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
-	if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_recs) {	/* Must treat first io_n_header_recs as headers */
+	if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 		strcpy (C->current.io.current_record, line);
 		C->current.io.status = GMT_IO_TABLE_HEADER;
 		return (0);
@@ -1541,7 +1541,7 @@ void GMT_io_init (struct GMT_CTRL *C)
 	for (i = 0; i < 2; i++) C->current.io.skip_if_NaN[i] = TRUE;								/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
-	C->current.io.io_n_header_recs = C->current.setting.io_n_header_recs;
+	C->current.io.io_n_header_items = C->current.setting.io_n_header_items;
 	GMT_memcpy (C->current.io.io_header, C->current.setting.io_header, 2, GMT_LONG);
 }
 
@@ -1742,14 +1742,27 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 		fprintf (fp, "%c %s\n", C->current.setting.io_seg_marker[GMT_OUT], C->current.io.segment_header);
 }
 
+void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)
+{
+	GMT_LONG k;
+	char c = ' ';
+	if (dir == GMT_IN) {	/* Use fread since we dont know if stream or file */
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread ((void *)&c, sizeof (char), (size_t)1, fp);
+	}
+	else {
+		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp);
+	}
+}
+
 void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt)
 {
 	/* Output ASCII segment header; skip if mode is binary.
 	 * We append a newline (\n) if not is present */
 
 	if (!C->current.io.io_header[GMT_OUT]) return;	/* No output headers requested */
-	if (C->common.b.active[GMT_OUT]) return;	/* Cannot write a binary header */
-	if (!txt || !txt[0])				/* Blank header */
+	if (GMT_binary_header (C, GMT_OUT))		/* Must write a binary header */
+		GMT_io_binary_header (C, fp, GMT_OUT);
+	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");
 	else {
 		fprintf (fp, "%s", txt);
@@ -3867,7 +3880,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 	T->header  = GMT_memory (C, NULL, n_head_alloc, char *);
 
 	while (n_fields >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
-		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_recs) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
+		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
 			T->header[T->n_headers] = strdup (in);
 			T->n_headers++;
 			if (T->n_headers == n_head_alloc) {
@@ -5145,7 +5158,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	T->header = GMT_memory (C, NULL, n_head_alloc, char *);
 
 	while (n_fields >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
-		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_recs) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
+		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
 			T->header[T->n_headers] = strdup (C->current.io.current_record);
 			T->n_headers++;
 			if (T->n_headers == n_head_alloc) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.8 2011-05-02 02:18:12 remko Exp $
+ *	$Id: hotspotter_func.c,v 1.9 2011-05-02 19:34:31 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -273,7 +273,6 @@ GMT_LONG GMT_hotspotter_parse (struct GMTAPI_CTRL *C, struct HOTSPOTTER_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error option: Binary input data cannot have header -H\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 5, "Syntax error option: Binary input data (-bi) must have at least 5 columns\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
+ *	$Id: psxyz_func.c,v 1.12 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -294,7 +294,6 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && GMT_parse_symbol_option (GMT, Ctrl->S.arg, S, 1, TRUE), "Syntax error -S option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->current.io.io_header[GMT_IN], "Syntax error: Binary input data cannot have header -h\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option\n");
 

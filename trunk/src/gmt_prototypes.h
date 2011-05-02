@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.32 2011-05-02 08:00:56 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.33 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,6 +117,7 @@ EXTERN_MSC GMT_LONG GMT_PSL_Destroy_Session (struct GMT_CTRL *C, struct PSL_CTRL
 
 /* gmt_io.c: */
 
+EXTERN_MSC void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir);
 EXTERN_MSC GMT_LONG GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data);
 EXTERN_MSC GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data);
 EXTERN_MSC GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type);

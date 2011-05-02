@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.112 2011-05-02 08:00:56 guru Exp $
+ *	$Id: gmt_io.h,v 1.113 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -203,6 +203,9 @@ enum GMT_io {GMT_IN, GMT_OUT, GMT_ERR};
 
 #define GMT_get_cols(C,direction) (C->common.b.ncol[direction])
 
+/* Determine if current binary table has header */
+#define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.io.io_header[dir] && GMT->current.io.io_n_header_items)
+
 /* Types of possible column entries in a file: */
 
 #define GMT_IS_NAN		0	/* Returned by GMT_scanf routines when read fails */
@@ -358,7 +361,7 @@ struct GMT_IO {				/* Used to process input data records */
 	GMT_LONG io_nan_ncols;		/* Number of columns to consider for -s option */
 
 	GMT_LONG file_no;		/* Number of current file */
-	GMT_LONG io_n_header_recs;		/* number of header records [0] */
+	GMT_LONG io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	GMT_LONG seg_no;		/* Number of current multi-segment in entire data set */
 	GMT_LONG rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	GMT_LONG tbl_no;		/* Number of current table in entire data set */

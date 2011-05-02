@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_defaults.h,v 1.39 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_defaults.h,v 1.40 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -89,7 +89,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
 	GMT_LONG io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
 	GMT_LONG io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
-	GMT_LONG io_n_header_recs;		/* number of header records [0] */
+	GMT_LONG io_n_header_items;		/* number of header records [0] */
 	GMT_LONG io_nan_records;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	GMT_LONG io_nan_mode;			/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	GMT_LONG io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */

@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.999 2011-05-02 12:46:33 remko Exp $
+	$Id: ChangeLog,v 1.1000 2011-05-02 19:34:31 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-02	pwessel
@@ -7,6 +7,8 @@
 				formats using comma-separated <cols>:<format> specifications.
 				The last format without leading <cols>: overrides the default
 				format for all unspecified columns.
+				The -h[i|o][<n>] option now works for binary files where <n>
+				is interpreted to be the number of bytes to skip/pad.
 
 2011-05-02	remko
 	* gmt_init.c:		Fixed problems with custom page size.

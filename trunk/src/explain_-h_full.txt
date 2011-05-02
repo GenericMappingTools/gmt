@@ -3,4 +3,5 @@ GMT_h_OPT
 Input file(s) has header record(s).  If used, the default number of header records is BD(IO_N_HEADER_RECS) [1].
 Use OPT(hi) if only input data should have header records [Default will write out header records if the
 input data have them]. Blank lines and lines starting with # are always skipped.  Use OPT(ho) to force
-programs to write a header record with column names.  Ignored if used with binary data.
+programs to write a header record with column names.  If used with native binary data we interpret IT(n) to
+instead mean the number of bytes to skip on input or pad on output.

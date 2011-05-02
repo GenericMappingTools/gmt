@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: common_options.txt,v 1.34 2011-05-02 02:48:37 remko Exp $
+ *	$Id: common_options.txt,v 1.35 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,16 +59,16 @@
 #define GMT_Y_OPT	OPT(Y)[BD(a)|BD(c)|BD(r)][IT(y-shift)[BD(u)]]
 /* Use b, f when applies to both i and o, else use only the bi, bo, fi, fo variants */
 #define GMT_a_OPT	OPT(a)IT(col)=IT(name)[IT(...)]
-#define GMT_b_OPT	OPT(b)[BD(i)|BD(o)][BD(c)|BD(h)|BD(H)|BD(i)|BD(I)|BD(l)|BD(L)|BD(f)|BD(d)][BD(+L)|BD(+B)]
-#define GMT_bi_OPT	OPT(bi)[IT(ncol)]BD(t)|BD(c)[IT(var1)BD(/)IT(...)]]
+#define GMT_b_OPT	OPT(b)[IT(ncol)][BD(t)][BD(+L)|BD(+B)]
+#define GMT_bi_OPT	OPT(bi)[IT(ncol)][BD(t)]
 #define GMT_bo_OPT	OPT(bo)[IT(ncol)][BD(t)]
 #define GMT_c_OPT	OPT(c)IT(copies)
 #define GMT_f_OPT	OPT(f)[BD(i)|BD(o)]IT(colinfo)
 #define GMT_fi_OPT	OPT(f)IT(colinfo)
 #define GMT_fo_OPT	OPT(f)IT(colinfo)
 #define GMT_g_OPT	OPT(g)[BD(a)]BD(x)|BD(y)|BD(d)|BD(X)|BD(Y)|BD(D)|[IT(col)]BD(z)[+|-]IT(gap)[BD(u)]
-#define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(nrec)]
-#define GMT_ho_OPT	OPT(ho)[IT(nrec)]
+#define GMT_h_OPT	OPT(h)[BD(i)|BD(o)][IT(n)]
+#define GMT_ho_OPT	OPT(ho)[IT(n)]
 #define GMT_i_OPT	OPT(i)IT(cols)[BD(l)][BD(s)IT(scale)][BD(o)IT(offset)],IT(...)]
 #define GMT_n_OPT	OPT(n)[BD(b)|BD(c)|BD(l)|BD(n)][BD(+a)][BD(+b)IT(BC)][BD(+t)IT(threshold)]
 #define GMT_o_OPT	OPT(o)IT(cols)[,IT(...)]

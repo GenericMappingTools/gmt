@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.50 2011-05-02 08:14:37 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.51 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -322,6 +322,11 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 			strcpy (API->GMT->current.io.current_filename[direction], (char *)(*S->ptr));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "%s %s %s file %s\n", 
 					operation[direction], GMT_family[S->family], dir[direction], (char *)(*S->ptr));
+			if (GMT_binary_header (API->GMT, direction)) {
+				GMT_io_binary_header (API->GMT, S->fp, direction);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary file %s\n",
+					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], (char *)(*S->ptr));
+			}
 			break;
 			
 		case GMT_IS_STREAM:	/* Given a stream; no need to open (or close) anything */
@@ -334,6 +339,11 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", stream[kind], GMT_direction[direction]);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "%s %s %s %s %s stream\n", 
 					operation[direction], GMT_family[S->family], dir[direction], stream[kind], GMT_direction[direction]);
+			if (GMT_binary_header (API->GMT, direction)) {
+				GMT_io_binary_header (API->GMT, S->fp, direction);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream\n",
+					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], stream[kind]);
+			}
 			break;
 			
 		case GMT_IS_FDESC:	/* Given a file handle; otherwise same as stream */
@@ -346,6 +356,11 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", stream[kind], GMT_direction[direction]);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "%s %s %s %s %s stream via supplied file descriptor\n", 
 					operation[direction], GMT_family[S->family], dir[direction], stream[kind], GMT_direction[direction]);
+			if (GMT_binary_header (API->GMT, direction)) {
+				GMT_io_binary_header (API->GMT, S->fp, direction);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream via supplied file descriptor\n",
+					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], stream[kind]);
+			}
 			break;
 			
 	 	case GMT_IS_COPY:	/* Copy, nothing to do [PW: not tested] */

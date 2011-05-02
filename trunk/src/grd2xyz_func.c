@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.11 2011-05-01 21:18:00 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.12 2011-05-02 19:34:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,7 +171,6 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
 #endif
-	n_errors += GMT_check_condition (GMT, (GMT->common.b.active[GMT_OUT] || io->binary) && GMT->current.io.io_header[GMT_OUT], "Syntax error: Binary output data cannot have header -h\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
