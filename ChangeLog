@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.997 2011-05-02 04:35:16 remko Exp $
+	$Id: ChangeLog,v 1.998 2011-05-02 08:49:49 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-05-02	pwessel
+	* gmt_init.c:		FORMAT_FLOAT_OUT can now be used to set column-specific
+				formats using comma-separated <cols>:<format> specifications.
+				The last format without leading <cols>: overrides the default
+				format for all unspecified columns.
 2011-05-02	remko
 	* gmt_init.c:		Fixed problems with custom page size.
 
