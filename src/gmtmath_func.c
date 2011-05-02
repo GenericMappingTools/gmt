@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.10 2011-05-02 20:50:57 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.11 2011-05-02 22:13:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1930,6 +1930,30 @@ void table_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		b = (constant[last]) ? factor[last] : T->segment[s]->coord[col][i];
 		T_prev->segment[s]->coord[col][i] = (double)(a != b);
 	}
+}
+
+void table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
+/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+{
+	GMT_LONG s, i, n;
+	double a, z, zmin = DBL_MAX, zmax = -DBL_MAX;
+	struct GMT_TABLE *T = S[last]->table[0];
+
+	if (constant[last]) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning, NORM of a constant gives NaN!\n");
+		a = GMT->session.d_NaN;
+	}
+	else {
+		for (s = n = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) {
+			z = T->segment[s]->coord[col][i];
+			if (GMT_is_dnan (z)) continue;
+			if (z < zmin) zmin = z;
+			if (z > zmax) zmax = z;
+			n++;
+		}
+		a = (n == 0 || zmax == zmin) ? GMT->session.d_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = (constant[last]) ? a : a * (T->segment[s]->coord[col][i]);
 }
 
 void table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
