@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.11 2011-05-02 22:13:58 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.12 2011-05-02 22:45:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3250,7 +3250,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			alloc_mode[0] = 1;
 		}
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T)
+			if (j == COL_T && !Ctrl->Q.active)
 				load_column (stack[0], j, info.T, COL_T);
 			else
 				load_const_column (stack[0], j, factor[0]);
