@@ -174,7 +174,10 @@ For geographic coordinates, see BD(FORMAT_GEO_MAP). [%.12g].
 .TP
 .B FORMAT_FLOAT_OUT
 Format (C language printf syntax) to be used when printing double precision floating point numbers to output files.
-For geographic coordinates, see BD(FORMAT_GEO_OUT). [%.12g].
+For geographic coordinates, see BD(FORMAT_GEO_OUT). [%.12g].  To give some columns a separate format, supply one or
+more comma-separated IT(cols):IT(format) specifications, where IT(cols) can be specific columns (e.g., 5 for 6th since 0 is the first)
+or a range of columns (e.g., 3-7).  The last specification without column information will override the format
+for all other columns.
 .TP
 .B FORMAT_TIME_LOGO
 Defines the format of the time information in the UNIX time stamp. This format is parsed by the C function BD(strftime),
