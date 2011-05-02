@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.494 2011-05-02 02:48:37 remko Exp $
+ *	$Id: gmt_init.c,v 1.495 2011-05-02 04:35:16 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2410,6 +2410,8 @@ GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified m
 	(void)GMT_malloc (C, C->session.user_media_name, 0, n, char *);
 	GMT_reset_meminc (C);
 
+	C->session.n_user_media = n;
+
 	return (n);
 }
 
@@ -3160,7 +3162,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.ps_page_size[0] = GMT_media[i].width;
 				C->current.setting.ps_page_size[1] = GMT_media[i].height;
 			}
-			else if ((C->session.n_user_media = gmt_load_user_media (C)) &&
+			else if (gmt_load_user_media (C) &&
 				(i = gmt_key_lookup (lower_value, C->session.user_media_name, C->session.n_user_media)) < C->session.n_user_media) {
 				/* Use a user-specified format */
 					C->current.setting.ps_media = i + USER_MEDIA_OFFSET;
@@ -3175,9 +3177,9 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				pos = 0;
 #endif
 				GMT_strtok (lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
-				C->current.setting.ps_page_size[0] = (isdigit(txt_a[strlen(txt_a)-1])) ? atof (txt_a) : GMT_convert_units (C, txt_a, C->current.setting.proj_length_unit, GMT_PT);
+				C->current.setting.ps_page_size[0] = GMT_convert_units (C, txt_a, GMT_PT, GMT_PT);
 				GMT_strtok (lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
-				C->current.setting.ps_page_size[1] = (isdigit(txt_b[strlen(txt_b)-1])) ? atof (txt_b) : GMT_convert_units (C, txt_b, C->current.setting.proj_length_unit, GMT_PT);
+				C->current.setting.ps_page_size[1] = GMT_convert_units (C, txt_b, GMT_PT, GMT_PT);
 				if (C->current.setting.ps_page_size[0] <= 0.0) error++;
 				if (C->current.setting.ps_page_size[1] <= 0.0) error++;
 				C->current.setting.ps_media = -USER_MEDIA_OFFSET;
@@ -3980,14 +3982,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 #endif
 		case GMTCASE_PS_MEDIA:
 			if (C->current.setting.ps_media == -USER_MEDIA_OFFSET)
-				sprintf (value, "%gx%g", fabs (C->PSL->init.page_size[0]), fabs (C->PSL->init.page_size[1]));
+				sprintf (value, "%gx%g", fabs (C->current.setting.ps_page_size[0]), fabs (C->current.setting.ps_page_size[1]));
 			else if (C->current.setting.ps_media >= USER_MEDIA_OFFSET)
 				sprintf (value, "%s", C->session.user_media_name[C->current.setting.ps_media-USER_MEDIA_OFFSET]);
 			else
 				sprintf (value, "%s", GMT_media_name[C->current.setting.ps_media]);
-			if (C->PSL->init.page_size[0] < 0.0)
+			if (C->current.setting.ps_page_size[0] < 0.0)
 				strcat (value, "-");
-			else if (C->PSL->init.page_size[1] < 0.0)
+			else if (C->current.setting.ps_page_size[1] < 0.0)
 				strcat (value, "+");
 			break;
 #ifdef GMT_COMPAT
@@ -4865,7 +4867,9 @@ void GMT_end (struct GMT_CTRL *C)
 
 	fflush (C->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
+#if 0	/* Already done in GMT_end_module */
 	gmt_free_user_media (C);	/* Free any user-specified media formats */
+#endif
 	GMT_free_ogr (C, &(C->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 
 #ifdef DEBUG
@@ -4901,6 +4905,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	/* GMT_INIT */
 	Csave->init.progname = strdup (C->init.progname);
 	if (C->session.n_user_media) {
+		Csave->session.n_user_media = C->session.n_user_media;
 		Csave->session.user_media = GMT_memory (C, NULL, C->session.n_user_media, struct GMT_MEDIA);
 		Csave->session.user_media_name = GMT_memory (C, NULL, C->session.n_user_media, char *);
 		for (i = 0; i < C->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (C->session.user_media_name[i]);

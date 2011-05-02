@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.996 2011-05-02 02:31:05 remko Exp $
+	$Id: ChangeLog,v 1.997 2011-05-02 04:35:16 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-02	remko
+	* gmt_init.c:		Fixed problems with custom page size.
 
 2011-05-01	pwessel
 	* job03.sh:		Replaced complicated awk scripting with gmtmath to ensure
