@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.264 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmt_io.c,v 1.265 2011-05-02 02:30:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -339,7 +339,9 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 
 	nvars = sscanf (filename, "%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]) - 1;
 	if (nc_open (GMT_getdatapath (C, file, path), NC_NOWRITE, &C->current.io.ncid)) return (NULL);
+#ifdef GMT_COMPAT
 	if (nvars <= 0) nvars = sscanf (C->common.b.varnames, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]);
+#endif
 	if (nvars <= 0)
 		nc_inq_nvars (C->current.io.ncid, &C->current.io.nvars);
 	else
@@ -410,13 +412,23 @@ FILE *GMT_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 {
 	char path[GMT_BUFSIZ];
+	FILE *fd;
 
-	if (mode[0] == 'r') {	/* Open file for reading (netCDF or otherwise) */
-		if (C->common.b.netcdf[GMT_IN] || strchr (filename, '?')) return (GMT_nc_fopen (C, filename, mode));
-		return (fopen (GMT_getdatapath(C, filename, path), mode));
-	}
-	else			/* Open file for writing (no netCDF) */
+	if (mode[0] != 'r')	/* Open file for writing (no netCDF) */
 		return (fopen (filename, mode));
+	else if (C->common.b.active)	/* Definitely not netCDF */
+		return (fopen (GMT_getdatapath(C, filename, path), mode));
+#if GMT_COMPAT
+	else if (C->common.b.varnames[0])	/* Definitely netCDF */
+		return (GMT_nc_fopen (C, filename, mode));
+#endif
+	else if (strchr (filename, '?'))	/* Definitely netCDF */
+		return (GMT_nc_fopen (C, filename, mode));
+	else {	/* Maybe netCDF */
+		fd = GMT_nc_fopen (C, filename, mode);
+		if (!fd) fd = fopen (GMT_getdatapath(C, filename, path), mode);
+		return (fd);
+	}
 }
 
 /* Table I/O routines for ascii and binary io */
@@ -437,12 +449,12 @@ GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG expected
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
 	if (C->common.b.ncol[direction]) return (GMT_OK);	/* Already set by -b */
 
-	if (expected == 0 && (direction == GMT_OUT || GMT_native_binary (C, direction))) {
+	if (expected == 0 && (direction == GMT_OUT || C->common.b.active[direction])) {
 		GMT_report (C, GMT_MSG_FATAL, "Number of %s columns has not been set\n", mode[direction]);
 		return (GMT_N_COLS_NOT_SET);
 	}
 	/* Here we may set the number of data columns */
-	if (GMT_native_binary (C, direction)) {	/* Must set uninitialized input/output pointers */
+	if (C->common.b.active[direction]) {	/* Must set uninitialized input/output pointers */
 		GMT_LONG col;
 		char type = (C->common.b.type[direction]) ? C->common.b.type[direction] : 'd';
 		for (col = 0; col < expected; col++) {
@@ -1345,11 +1357,11 @@ GMT_LONG GMT_bin_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
 
 void GMT_set_bin_input (struct GMT_CTRL *C) 
 {	/* Make sure we point to binary input functions after processing -b option */
-	if (GMT_native_binary (C, GMT_IN)) {
+	if (C->common.b.active[GMT_IN]) {
 		C->current.io.input = GMT_bin_input;
 		strcpy (C->current.io.r_mode, "rb");
 	}
-	if (GMT_native_binary (C, GMT_OUT)) {
+	if (C->common.b.active[GMT_OUT]) {
 		C->current.io.output = GMT_bin_output;
 		strcpy (C->current.io.w_mode, "wb");
 		strcpy (C->current.io.a_mode, "ab+");
@@ -1696,7 +1708,6 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 	GMT_LONG i;
 	
 	if (!C->current.io.multi_segments[GMT_OUT]) return;	/* No output segments requested */
-	if (C->common.b.netcdf[GMT_OUT]) return;		/* netCDF has no segment header concept */
 	if (C->common.b.active[GMT_OUT])			/* Binary native file uses all NaNs */
 		for (i = 0; i < n; i++) C->current.io.output (C, fp, 1, &C->session.d_NaN);
 	else if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
@@ -5025,7 +5036,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments;
 	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col;
-	GMT_LONG cdf = 0, n_head_alloc = GMT_TINY_CHUNK;
+	GMT_LONG n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
@@ -5033,7 +5044,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	PFL psave = NULL;
 
 	if (use_GMT_io) {	/* Use C->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
-		n_expected_fields = (GMT_native_binary (C,GMT_IN)) ? C->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
+		n_expected_fields = C->common.b.active[GMT_IN] ? C->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
 		strcpy (open_mode, C->current.io.r_mode);
 		ascii = !C->common.b.active[GMT_IN];
 	}
@@ -5043,8 +5054,6 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		ascii = TRUE;
 		psave = C->current.io.input;			/* Save the previous pointer since we need to change it back at the end */
 		C->current.io.input = C->session.input_ascii;	/* Override and use ascii mode */
-		cdf = C->common.b.netcdf[GMT_IN];		/* Save any netcdf setting */
-		C->common.b.netcdf[GMT_IN] = 0;			/* Wipe netcdf setting since GMT_fopen checks for it */
 	}
 
 #ifdef SET_IO_MODE
@@ -5057,7 +5066,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		strcpy (file, (char *)source);
 		if ((fp = GMT_fopen (C, file, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s\n", file);
-			if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (EXIT_FAILURE);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
@@ -5074,7 +5083,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		int *fd = (int *)source;
 		if (fd && (fp = fdopen (*fd, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Cannot convert file descriptor %d to stream in GMT_read_table\n", *fd);
-			if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (EXIT_FAILURE);
 		}
 		if (fd == NULL) fp = C->session.std[GMT_IN];	/* Default input */
@@ -5085,7 +5094,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	}
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_table\n", source_type);
-		if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 		return (EXIT_FAILURE);
 	}
 
@@ -5093,7 +5102,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	n_read++;
 	if (GMT_REC_IS_EOF(C)) {
 		GMT_report (C, GMT_MSG_NORMAL, "File %s is empty!\n", file);
-		if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 		return (GMT_IO_EOF);
 	}
 	/* Allocate the Table structure */
@@ -5158,7 +5167,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 
 		if (poly && T->segment[seg]->n_columns < 2) {
 			GMT_report (C, GMT_MSG_FATAL, "File %s does not have at least 2 columns required for polygons (found %ld)\n", file, T->segment[seg]->n_columns);
-			if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (EXIT_FAILURE);
 		}
 		GMT_alloc_segment (C, T->segment[seg], GMT_CHUNK, T->segment[seg]->n_columns, TRUE);
@@ -5166,7 +5175,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		while (! (C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {
 				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", n_fields, n_expected_fields, n_read);
-				if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 				return (EXIT_FAILURE);
 			}
 
@@ -5232,7 +5241,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		C->current.io.status -= (C->current.io.status & GMT_IO_GAP);
 	}
 	if (close_file) GMT_fclose (C, fp);
-	if (!use_GMT_io) {C->current.io.input = psave; C->common.b.netcdf[GMT_IN] = cdf;}	/* Restore previous setting */
+	if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 
 	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);

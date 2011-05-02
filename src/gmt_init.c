@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.492 2011-05-01 22:04:34 remko Exp $
+ *	$Id: gmt_init.c,v 1.493 2011-05-02 02:30:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1332,16 +1332,27 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	if (text[0] == 'i') { id = GMT_IN; i_or_o = TRUE; }
 	if (text[0] == 'o') { id = GMT_OUT; i_or_o = TRUE; }
 	C->common.b.active[id] = TRUE;
-	C->common.b.type[id] = 'd';	/* Set defaul to double */
+	C->common.b.type[id] = 'd';	/* Set default to double */
 	
 	/* Because c means either netCDF or signed char we deal with netCDF up front */
 	
 	k = i_or_o;
-	if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
-		C->common.b.netcdf[id] = done = TRUE;
+#ifdef GMT_COMPAT
+	if (text[k] == 'c' && !text[k+1]) {	/* Ambiguous case "-bic" which MAY mean netCDF */
+		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: -b[i]c now applies to character tables, not to netCDF\n");
+		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: If input is netCDF, just leave out -b[i]c\n");
+		done = TRUE;
+		C->common.b.type[id] = 'c';
+	}
+	else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
+		GMT_report (C, GMT_MSG_COMPAT, "Syntax warning: -b[i]c<varlist> is deprecated. Use <file>?<varlist> instead.\n");
+		done = TRUE;
+		C->common.b.active[id] = FALSE;
 		strcpy (C->common.b.varnames, &text[k+1]);
 	}
-	else if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (text[k+1] == 0 || (text[k+1] == 'w' && text[k+2] == 0 ))) {	/* Just sets the type for the entire record */
+	else
+#endif
+	if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just sets the type for the entire record */
 		C->common.b.type[id] = text[k];			/* Default column type */
 		C->common.b.swab[id] = (text[k+1] == 'w');	/* Default swab */
 	}
@@ -1408,7 +1419,6 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
 		C->common.b.active[GMT_OUT] = C->common.b.active[GMT_IN];
 		C->common.b.ncol[GMT_OUT] = C->common.b.ncol[GMT_IN];
-		C->common.b.netcdf[GMT_OUT] = C->common.b.netcdf[GMT_IN];
 		C->common.b.type[GMT_OUT] = C->common.b.type[GMT_IN];
 		GMT_memcpy (C->current.io.fmt[GMT_OUT], C->current.io.fmt[GMT_OUT], C->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
 	}
@@ -1657,7 +1667,6 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, GMT_LONG n_req) {
 	 */
 
 	if (!C->common.b.active[GMT_IN]) return (GMT_NOERROR);	/* Let machinery figure out input cols for ascii */
-	if (C->common.b.netcdf[GMT_IN]) return (GMT_NOERROR);	/* Done separately */
 
 	/* These are specific tests for binary input */
 
@@ -7654,7 +7663,7 @@ void GMT_setmode (struct GMT_CTRL *C, int i_or_o)
 
 	FILE *fp = NULL;
 
-	if (C->common.b.active[i_or_o] && !C->common.b.netcdf[i_or_o]) {	/* User wants native binary i/o */
+	if (C->common.b.active[i_or_o]) {	/* User wants native binary i/o */
 
 		fp = (i_or_o == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
