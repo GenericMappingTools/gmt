@@ -48,13 +48,13 @@ EOF
 header "Test sample1d and psxy with NaNs indicating line gaps (ASCII)"
 ps=gaps.ps
 tmp=$$.txt
-gmtconvert -bic $$.nc > $tmp
+gmtconvert $$.nc > $tmp
 makeps > $ps
 pscmp
 
 # Do the same with netCDF input
 header "Test sample1d and psxy with NaNs indicating line gaps (netCDF)"
-tmp="-bic $$.nc"
+tmp=$$.nc
 makeps > $ps
 pscmp
 rm -f $$.nc $$.txt
