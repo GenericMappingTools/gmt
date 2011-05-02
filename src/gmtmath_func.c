@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.9 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.10 2011-05-02 20:50:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2726,7 +2726,10 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 
 #include "gmtmath_func.h"
 
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define Free_Hash { for (i = 0; i < GMTMATH_N_OPERATORS; i++) { p = localhashnode[i].next; while ((current = p)) { p = p->next; GMT_free (GMT, current); } } }
+#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
+#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_free_dataset (GMT, &D_stdin); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); return (code); }
 
 GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	GMT_LONG expect, i, check = GMT_IS_NAN, possible_number = FALSE;
@@ -3274,21 +3277,6 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
 	/* Clean-up time */
-	
-	for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&stack[i]);
-	for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]);
-	if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T_in);
-	GMT_free_dataset (GMT, &Template);
-	GMT_free_dataset (GMT, &Time);
-	if (read_stdin) GMT_free_dataset (GMT, &D_stdin);
-
-	for (i = 0; i < GMTMATH_N_OPERATORS; i++) {
-		p = localhashnode[i].next;
-		while ((current = p)) {
-			p = p->next;
-			GMT_free (GMT, current);
-		}
-	}
 
 	if (nstack > 1) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld more operands left on the stack!\n", nstack-1);
 
