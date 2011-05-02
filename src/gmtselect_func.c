@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.10 2011-04-29 03:08:12 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.11 2011-05-02 02:25:23 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -499,7 +499,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		np[0] = np[1] = 0;
 	}
 
-	just_copy_record = !(GMT->common.b.active[GMT_IN] || GMT->common.b.netcdf[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active || GMT->common.b.netcdf[GMT_OUT] || shuffle);
+	just_copy_record = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->current.io.ndim > 0 || GMT->common.o.active || shuffle);
 
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */

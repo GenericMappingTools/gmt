@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.110 2011-05-01 21:18:00 guru Exp $
+ *	$Id: gmt_io.h,v 1.111 2011-05-02 02:26:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,8 +188,6 @@ enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS
 #define GMT_REC_IS_LINE_BREAK(C)	(C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF | GMT_IO_NAN | GMT_IO_GAP))
 #define GMT_REC_IS_FILE_BREAK(C)	(C->current.io.status & GMT_IO_NEXT_FILE)
 #define GMT_REC_IS_DATA(C)		(!C->current.io.status)
-
-#define GMT_native_binary(C,dir)	(C->common.b.active[dir] && !C->common.b.netcdf[dir])
 
 /* Array indices for input/output/stderr variables */
 
