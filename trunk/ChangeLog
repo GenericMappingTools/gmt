@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.995 2011-05-01 21:17:59 guru Exp $
+	$Id: ChangeLog,v 1.996 2011-05-02 02:31:05 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-01	pwessel
@@ -13,6 +13,11 @@
 	* test/grdview/icelandbox.sh:	New test case based on query by Peter Schmidt.
 	* scripts/*.sh:		Replaced ". functions.sh" by ". ./functions.sh" to avoid problems
 				with people who do not have . in their PATH. E.g., Ubuntu.
+	* gmt_io.h:		Removed define GMT_native_binary
+	* gmt_common.h:		Removed common.b.netcdf and put common.b.varnames under GMT_COMPAT
+	* gmt_io.c, gmt_init.c:	Option -bic no longer refers to netCDF files. -bic?varnames still
+				allowed for backwards compatibility; use file?varnames instead.
+				NetCDF table file automatically recognised.
 
 2011-04-29	remko
 	* job04*.sh:		Made ex 4 and 4c more similar and rotated color bar.
