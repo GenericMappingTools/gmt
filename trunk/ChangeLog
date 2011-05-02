@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1000 2011-05-02 19:34:31 guru Exp $
+	$Id: ChangeLog,v 1.1001 2011-05-02 22:13:58 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-02	pwessel
@@ -9,6 +9,8 @@
 				format for all unspecified columns.
 				The -h[i|o][<n>] option now works for binary files where <n>
 				is interpreted to be the number of bytes to skip/pad.
+	* gmtmath_func.c:	Added NORM which scales A so max-min == 1.
+	* grdmath_func.c:	Added NORM which scales A so max-min == 1.
 
 2011-05-02	remko
 	* gmt_init.c:		Fixed problems with custom page size.

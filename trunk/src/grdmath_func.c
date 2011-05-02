@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.15 2011-04-26 22:53:50 guru Exp $
+ *	$Id: grdmath_func.c,v 1.16 2011-05-02 22:13:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1863,6 +1863,29 @@ void grd_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 		b = (constant[last]) ? factor[last] : stack[last]->data[node];
 		stack[prev]->data[node] = (float)(a != b);
 	}
+}
+
+void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
+/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+{
+	GMT_LONG node, n, row, col;
+	float a, z, zmin = FLT_MAX, zmax = -FLT_MAX;
+
+	if (constant[last]) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning, NORM of a constant gives NaN!\n");
+		a = GMT->session.d_NaN;
+	}
+	else {
+		GMT_grd_loop (info->G, row, col, node) {
+			z = stack[last]->data[node];
+			if (GMT_is_fnan (z)) continue;
+			if (z < zmin) zmin = z;
+			if (z > zmax) zmax = z;
+			n++;
+		}
+		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
+	}
+	GMT_grd_loop (info->G, row, col, node) stack[last]->data[node] = (constant[last]) ? a : a * stack[last]->data[node];
 }
 
 void grd_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
