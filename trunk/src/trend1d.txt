@@ -3,7 +3,7 @@
 .SH NAME
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS
-BD(trend1d) [ IT(file) ] OPT(F)BD(xymrw) OPT(N)[BD(f)]IT(n_model)[BD(r)] [ IT(xy[w]file) ] 
+BD(trend1d) [ IT(file) ] OPT(F)BD(xymrw|p) OPT(N)[BD(f)]IT(n_model)[BD(r)] [ IT(xy[w]file) ] 
 [ OPT(C)IT(condition_number) ] [ OPT(I)[IT(confidence_level)] ] [ GMT_V_OPT ] 
 [ OPT(W) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -18,9 +18,10 @@ IT(file)
 ASCII [or binary, see OPT(b)] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
 will read from standard input.
 .TP
-OPT(F)BD(xymrw)
+OPT(F)BD(xymrw|p)
 Specify up to five letters from the set {BD(x y m r w)} in any order to create columns of 
 ASCII [or binary] output.  BD(x) = x, BD(y) = y, BD(m) = model f(x), BD(r) = residual y - BD(m), BD(w) = weight used in fitting.
+Alternatively choose OPT(F)BD(p) (i.e. no other of the 5 letters) to output only the model coefficients (Polynomial).
 .TP
 OPT(N)[BD(f)]IT(n_model)[BD(r)]
 Specify the number of terms in the model, IT(n_model), whether to fit 
