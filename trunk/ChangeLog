@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1001 2011-05-02 22:13:58 guru Exp $
+	$Id: ChangeLog,v 1.1002 2011-05-03 01:07:53 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-03	jluis
+	* trend1d_func.c:	Added -F...|p as an option to output only the model coefficients 
 
 2011-05-02	pwessel
 	* gmt_init.c:		FORMAT_FLOAT_OUT can now be used to set column-specific
