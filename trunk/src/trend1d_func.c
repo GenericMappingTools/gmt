@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id: trend1d_func.c,v 1.9 2011-05-03 01:04:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,6 +78,7 @@
 struct TREND1D_CTRL {
 	GMT_LONG n_outputs;
 	GMT_LONG weighted_output;
+	GMT_LONG model_parameters;
 	struct C {	/* -C<condition_#> */
 		GMT_LONG active;
 		double value;
@@ -470,15 +471,16 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to ascii xy[w]\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: trend1d -F<xymrw> -N[f]<n_model>[r] [<xy[w]file>] [-C<condition_#>]\n");
+	GMT_message (GMT, "usage: trend1d -F<xymrw|p> -N[f]<n_model>[r] [<xy[w]file>] [-C<condition_#>]\n");
 	GMT_message (GMT, "\t[-I[<confidence>]] [%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-F Choose at least 1, up to 5, any order, of xymrw for ascii output to stdout.\n");
 	GMT_message (GMT, "\t   x=x, y=y, m=model, r=residual=y-m, w=weight.  w determined iteratively if robust fit used.\n");
+	GMT_message (GMT, "\t   Alternatively choose -Fp to output only the model coefficients (Polynomial).\n");
 	GMT_message (GMT, "\t-N fit a Polynomial [Default] or Fourier (-Nf) model with <n_model> terms.\n");
-	GMT_message (GMT, "\t   Append r for robust model.  E.g., robust quadratic = -N3r.\n");
+	GMT_message (GMT, "\t   Append r for robust model. E.g., robust quadratic = -N3r.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t[<xy[w]file>] name of ascii file, first 2 cols = x y [3 cols = x y w].  [Default reads stdin].\n");
 	GMT_message (GMT, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#>.  [Default = 1.0e06].\n");
@@ -524,7 +526,7 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
 						n_errors++;
 					}
 				}
@@ -567,15 +569,19 @@ GMT_LONG GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0.0, "Syntax error -N option: A positive number of terms must be specified\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
-		if (!strchr ("xymrw", Ctrl->F.col[j])) {
+		if (!strchr ("xymrwp", Ctrl->F.col[j])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
 			Ctrl->weighted_output = TRUE;
+		else if (Ctrl->F.col[j] == 'p')
+			Ctrl->model_parameters = TRUE;
 		Ctrl->n_outputs++;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->model_parameters, 
+					"Syntax error -F option: When selecting model parameters, it must be the only ouput\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -757,7 +763,19 @@ GMT_LONG GMT_trend1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	untransform_x_1d (GMT, data, n_data, Ctrl->N.mode, xmin, xmax);
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
-	write_output_trend1d (GMT, data, n_data, Ctrl->F.col, Ctrl->n_outputs);
+
+	if (!Ctrl->model_parameters)	/* Write any or all of the 'xymrw' */
+		write_output_trend1d (GMT, data, n_data, Ctrl->F.col, Ctrl->n_outputs);
+	else {				/* Write only the model parameters */
+		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+		sprintf (format, "%s", GMT->current.setting.format_float_out);
+		for (i = 0; i < n_model - 1; i++) {
+			fprintf(stdout, GMT->current.setting.format_float_out, c_model[i]);	fprintf(stdout, "\t");
+		}
+		fprintf(stdout, GMT->current.setting.format_float_out, c_model[n_model-1]);
+		fprintf(stdout, "\n");
+	}
+
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	free_the_memory_1d (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
