@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.9 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.10 2011-05-03 22:32:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -640,6 +640,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (col_in == i_west) i_west_used = TRUE;
 				if (col_in == i_east) i_east_used = TRUE;
 				if (duplicate_check && ((col_in == i_east && i_west_used) || (col_in == i_west && i_east_used))) continue;	/* Do not use the node at 360 if the one at 0 was used, or vice versa */
+				i_orig = col_in;
 				
 				for (jj = -F.y_half_width, row_ok = TRUE; row_ok && jj <= F.y_half_width; jj++) {	/* Possible rows to consider for filter input */
 					row_in = j_origin + jj;	/* Current input row number */
@@ -681,7 +682,6 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (new_col) {	/* Changed the longitude; must guard against wrapping around the globe */
 							if (col_in < 0) col_in += nx_wrap;			/* "Left" of west means we might reappear in the east */
 							else if (col_in >= Gin->header->nx) col_in -= nx_wrap;	/* Likewise if we are "right" of east */
-							i_orig = col_in;
 						}
 						if (new_col && (col_in < 0 || col_in >= Gin->header->nx)) continue;	/* Got pushed outside crossing the pole */
 					}
