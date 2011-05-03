@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.268 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmt_io.c,v 1.269 2011-05-03 17:39:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -205,6 +205,7 @@ GMT_LONG GMT_gap_detected (struct GMT_CTRL *C)
 GMT_LONG GMT_set_gap (struct GMT_CTRL *C) {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	C->current.io.status = GMT_IO_GAP;
 	C->current.io.seg_no++;
+	GMT_report (C, GMT_MSG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %ld\n", C->current.io.rec_no);
 	sprintf (C->current.io.segment_header, "Data gap detected via -g; Segment header inserted");
 	return (0);
 }
@@ -233,6 +234,7 @@ GMT_LONG GMT_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	}
 	if (!C->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
 		if (n_NaN == n_read) {
+			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %ld\n", C->current.io.rec_no);
 			C->current.io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (C->current.io.segment_header, "Binary segment header");
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
@@ -1253,7 +1255,7 @@ GMT_LONG GMT_bin_colselect (struct GMT_CTRL *C)
 	
 }
 
-/* Test functions for GMT_bin_input */
+/* Sub functions for GMT_bin_input */
 
 GMT_LONG GMT_x_read (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 {	/* Used to skip (*n) bytes; no reading takes place */
@@ -1331,8 +1333,8 @@ GMT_LONG GMT_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols)
 }
 
 GMT_LONG GMT_x_write (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
-{	/* Used to write n bytes for filler on binary output */
-	char c = 0;
+{	/* Used to write n bytes of space for filler on binary output */
+	char c = ' ';
 	GMT_LONG i;
 	for (i = 0; i < n; i++) if (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp) != 1) return (GMT_DATA_WRITE_ERROR);
 	return (GMT_NOERROR);
@@ -1455,7 +1457,7 @@ void GMT_format_abstime_output (struct GMT_CTRL *C, double dt, char *text)
 }
 
 void GMT_ascii_format_one (struct GMT_CTRL *C, char *text, double x, GMT_LONG type)
-{
+{	/* Format based on type */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as string */
 		sprintf (text, "NaN");
 		return;
@@ -1477,7 +1479,7 @@ void GMT_ascii_format_one (struct GMT_CTRL *C, char *text, double x, GMT_LONG ty
 }
 
 void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, GMT_LONG col)
-{
+{	/* Format based on column position (which gives type) */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as string */
 		sprintf (text, "NaN");
 		return;
@@ -1568,7 +1570,7 @@ void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
 }
 
 void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items)
-{	/* Allocate an initialize the QUAD struct needed to find min/max of longitudes */
+{	/* Allocate and initialize the QUAD struct needed to find min/max of a set of longitudes */
 	GMT_LONG i;
 	
 	GMT_memset (Q, n_items, struct GMT_QUAD);	/* Set all to NULL/0 */
@@ -1659,25 +1661,6 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	}
 }
 
-#if 0
-/* Currently not used in GMT */
-GMT_LONG GMT_points_are_antipodal (struct GMT_CTRL *C, double lonA, double latA, double lonB, double latB)
-/* Returns TRUE if the points are antipodal, FALSE otherwise */
-{
-	GMT_LONG antipodal = FALSE;
-	double dellon;
-
-	if (latA == -latB) {
-		dellon = lonA - lonB;
-		GMT_lon_range_adjust (C,  2, &dellon);
-		if (dellon > +180.0) dellon -= 360.0;
-		if (dellon < -180.0) dellon += 360.0;
-		if (dellon == +180.0 || dellon == -180.0) antipodal = TRUE;
-	}
-	return (antipodal);
-}
-#endif
-
 GMT_LONG GMT_geo_to_dms (struct GMT_CTRL *C, double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix)
 {
 	/* Convert floating point degrees to dd:mm[:ss][.xxx].  Returns TRUE if d = 0 and val is negative */
@@ -1698,7 +1681,7 @@ GMT_LONG GMT_geo_to_dms (struct GMT_CTRL *C, double val, GMT_LONG n_items, doubl
 		*s = isec;					/* Integer seconds */
 		*ix = (GMT_LONG)floor (fsec * fact);		/* Fractional seconds scaled to integer */
 	}
-	else if (n_items == 2) {		/* Want dd:mm[.xx] format */
+	else if (n_items == 2) {		/* Want dd:mm[.xxx] format */
 		min = GMT_DEG2MIN_F * fabs (val) + step;	/* Convert to minutes */
 		imin = (GMT_LONG)floor (min);			/* Integer minutes */
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
@@ -1708,7 +1691,7 @@ GMT_LONG GMT_geo_to_dms (struct GMT_CTRL *C, double val, GMT_LONG n_items, doubl
 		*s = 0;						/* No seconds */
 		*ix = (GMT_LONG)floor (fmin * fact);		/* Fractional minutes scaled to integer */
 	}
-	else {		/* Want dd[.xx] format */
+	else {		/* Want dd[.xxx] format */
 		min = fabs (val) + step;			/* Convert to degrees */
 		imin = (GMT_LONG)floor (min);			/* Integer degrees */
 		fmin = min - (double)imin;  			/* Leftover fractional degree */
@@ -2365,18 +2348,15 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 			/* Set this if file is periodic, is grid registered, but repeating column or row is missing from input */
 
 			case 'x':
-				z->repeat[GMT_X] = 1;
-				break;
-
+				z->repeat[GMT_X] = 1;	break;
 			case 'y':
-				z->repeat[GMT_Y] = 1;
-				break;
+				z->repeat[GMT_Y] = 1;	break;
 
 			/* Optionally skip the given number of bytes before reading data */
 
 			case 's':
 				i++;
-				if (txt[i]) {
+				if (txt[i]) {	/* Read the byte count for skipping */
 					z->skip = atoi (&txt[i]);
 					while (txt[i] && isdigit ((int)txt[i])) i++;
 					i--;
@@ -2384,8 +2364,7 @@ GMT_LONG GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z
 				break;
 
 			case 'w':
-				z->swab = TRUE;
-				break;
+				z->swab = TRUE; 	break;
 
 			/* Set read pointer depending on data format */
 
@@ -2422,7 +2401,7 @@ GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type)
 {
 	GMT_LONG t = -1;
 	switch (type) {	/* Set read pointer depending on data format */
-		case 'a': case 'A': t = -1; break;	/* ASCII */
+		case 'a': case 'A': t = -1; break;		/* ASCII */
 		case 'c': case 'u': t = GMT_CHAR_TYPE; break;	/* Binary char */
 		case 'h': case 'H': t = GMT_SHORT_TYPE; break;	/* Binary unsigned short 2-byte integer */
 		case 'i': case 'I': t = GMT_INT_TYPE; break;	/* Binary 4-byte unsigned integer */
@@ -2439,7 +2418,7 @@ GMT_LONG GMT_get_io_type (struct GMT_CTRL *C, char type)
 }
 
 PFL GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG swap, char type)
-{
+{	/* Return pointer to read or write function for this data type */
 	PFL p = NULL;
 	
 	switch (type) {	/* Set read pointer depending on data format */
@@ -2559,6 +2538,7 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_LONG repeat[], GM
 	return (GMT_NOERROR);
 }
 
+/* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
 GMT_LONG GMT_z_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
 	double **ptr = (double **)data;

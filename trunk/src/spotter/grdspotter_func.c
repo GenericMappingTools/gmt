@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.9 2011-05-03 17:39:48 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -606,7 +606,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Store IDs in a GMT_LONG array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
 		for (i = 0; i < L->header->size; i++) ID[i] = (GMT_LONG) rint ((double)L->data[i]);
-		GMT_free (GMT, L->data);
+		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, rint (L->header->z_max) + 1, struct ID);
 		if (Ctrl->Q.mode == 1) {	/* Only doing one CVA with no extra restrictions */
