@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.16 2011-05-02 22:13:58 guru Exp $
+ *	$Id: grdmath_func.c,v 1.17 2011-05-03 00:43:04 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1868,7 +1868,7 @@ void grd_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
 {
-	GMT_LONG node, n, row, col;
+	GMT_LONG node, n = 0, row, col;
 	float a, z, zmin = FLT_MAX, zmax = -FLT_MAX;
 
 	if (constant[last]) {
