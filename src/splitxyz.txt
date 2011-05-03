@@ -5,7 +5,7 @@ splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track 
 .SH SYNOPSIS
 BD(splitxyz) [ IT(xyz[dh]file) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
 [ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] [ OPT(G)IT(gap_distance) ] 
-[ OPT(M) ] [ OPT(N)IT(namestem) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
+[ OPT(N)IT(namestem) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
 [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(splitxyz) reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see OPT(S) 
@@ -70,9 +70,14 @@ the letters.  Use lower case.  The output will be ASCII (or binary, see OPT(bo))
 to IT(xyzdh) [Default is OPT(Q)IT(xyzdh) (OPT(Q)IT(xydh) if OPT(Z) is set)].
 .TP
 OPT(S)
-d and h is supplied.  In this case, input contains x,y,z,d,h.
+Both d and h are supplied.  In this case, input contains x,y,z,d,h.
 [Default expects (x,y,z) input, and d,h are computed from delta x, 
-delta y, according to OPT(M) option]
+delta y.  Use OPT(fg) to indicate map data; then x,y are assumed to
+be in degrees of longitude, latitude, distances are considered to be
+in kilometers, and angles are actually azimuths.  Otherwise,
+distances are Cartesian in same units as x,y and angles are
+counter-clockwise from horizontal].
+
 #include "explain_-V.txt"
 .TP
 OPT(Z)
@@ -97,7 +102,7 @@ filter to detrend the magnetic anomalies.  Try this:
 .br
 .sp
 BD(gmtlist) cag71 OPT(R)300/315/12/20 OPT(F)xyzdh | 
-BD(splitxyz) OPT(A)90/15 OPT(F)100/-500 OPT(M) OPT(D)100 OPT(S) OPT(V) | 
+BD(splitxyz) OPT(A)90/15 OPT(F)100/-500 OPT(D)100 OPT(S) OPT(V) OPT(fg) | 
 BD(pswiggle) OPT(R)300/315/12/20 OPT(Jm)0.6 OPT(Ba)5BD(f)1:.cag71: OPT(T)1 OPT(W)0.75p OPT(G)gray OPT(Z)200 > cag71_wiggles.ps
 .br
 .sp
@@ -108,7 +113,7 @@ have BD(splitxyz) compute them separately.
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named IT(survey).profile\fI#\fP (when gap exceeds 100 km).  Try this:
 .sp
-BD(splitxyz) survey.bin OPT(N)survey OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(M) OPT(bi))3
+BD(splitxyz) survey.bin OPT(N)survey OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(fg) OPT(bi))3
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mgd77list (1),

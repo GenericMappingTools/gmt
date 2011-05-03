@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.6 2011-05-03 21:29:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -54,9 +54,6 @@ struct SPLITXYZ_CTRL {
 		GMT_LONG active;
 		double value;
 	} G;
-	struct M {	/* -M */
-		GMT_LONG active;
-	} M;
 	struct N {	/* -N<namestem> */
 		GMT_LONG active;
 		char *name;
@@ -148,7 +145,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "splitxyz %s [API] - Split xyz[dh] files into segments\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: splitxyz [<xyz[dh]file>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
-	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-G<gap>] [-M]\n");
+	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-G<gap>]\n");
 	GMT_message (GMT, "\t[-N<namestem>] [-Q<flags>] [-S] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -164,7 +161,6 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Defaults are both widths = 0, giving no filtering.\n");
 	GMT_message (GMT, "\t   Use negative width to highpass.\n");
 	GMT_message (GMT, "\t-G Do not let profiles have gaps exceeding <gap>. [Default = 10 dist units].\n");
-	GMT_message (GMT, "\t-M Map units TRUE; x,y in degrees, dist units in km.  [Default dist unit = x,y unit].\n");
 	GMT_message (GMT, "\t-N Write output to separate files named <namestem>.profile#.\n");
 	GMT_message (GMT, "\t   [Default all to stdout, separated by >].\n");
 	GMT_message (GMT, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
@@ -226,9 +222,12 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 				Ctrl->G.active = TRUE;
 				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->G.value)) != 1, "Syntax error -G option: Can't decipher value\n");
 				break;
+#ifdef GMT_COMPAT
 			case 'M':
-				Ctrl->M.active = TRUE;
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
+#endif
 			case 'N':
 				Ctrl->N.active = TRUE;
 				if (opt->arg[0])
@@ -338,7 +337,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		n_outputs++;
 	}
-	if (Ctrl->M.active) {
+	if (GMT_is_geographic (GMT, GMT_IN)) {
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	}
@@ -358,11 +357,13 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (col = n_formats = 0; Ctrl->N.name[col]; col++) if (Ctrl->N.name[col] == '%') n_formats++;
 		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
 	}
+	else
+		GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3))) Return (error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_FILE_BREAK, NULL, (void **)&D))) Return (error);
+	if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, (void **)&D))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
 	if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
@@ -397,7 +398,8 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 					dx = (S->coord[GMT_X][row] - S->coord[GMT_X][row-1]);
 					dy = (S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1]);
-					if (Ctrl->M.active) {
+					if (GMT_is_geographic (GMT, GMT_IN)) {
+						if (fabs (dx) > 180.0) dx = copysign (360.0 - fabs (dx), -dx);
 						dy *= GMT->current.proj.DIST_KM_PR_DEG;
 						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->coord[GMT_Y][row] + S->coord[GMT_Y][row-1])));
 					}

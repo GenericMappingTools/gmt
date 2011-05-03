@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1003 2011-05-03 17:39:48 guru Exp $
+	$Id: ChangeLog,v 1.1004 2011-05-03 21:29:12 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-03	pwessel
@@ -8,6 +8,7 @@
 	* grdfft_func.c:	Now treats input grids as read-only.
 	* grdvolume_func.c:	Now treats input grids as read-only.
 	* grdvector_func.c:	Now treats input grids as read-only.
+	* pstext_func.c:	The -A can reset the text angle but also needs to reset justification
 	
 2011-05-03	jluis
 	* trend1d_func.c:	Added -F...|p as an option to output only the model coefficients 

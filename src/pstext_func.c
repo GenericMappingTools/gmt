@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.18 2011-05-02 12:46:32 remko Exp $
+ *	$Id: pstext_func.c,v 1.19 2011-05-03 21:29:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -516,7 +516,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
-	double offset[2], *c_x = NULL, *c_y = NULL, *c_angle = NULL;
+	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
 	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
@@ -665,8 +665,9 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (Ctrl->A.active) {
 					save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-					GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &T.paragraph_angle);
-					T.paragraph_angle = fmod (T.paragraph_angle + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
+					GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &tmp);
+					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
+					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
 				master_record = TRUE;
 			}
@@ -778,8 +779,9 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			if (Ctrl->A.active) {
 				save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-				GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &T.paragraph_angle);
-				T.paragraph_angle = fmod (T.paragraph_angle + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
+				GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle, &tmp);
+				T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
+				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
 			}
 			if (add) {
 				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
