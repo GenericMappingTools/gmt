@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
+ *	$Id: greenspline_func.c,v 1.12 2011-05-03 17:39:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1066,7 +1066,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, p, ii, n, m, nm, n_fields, error, dimension = 0;
 	GMT_LONG n_expected_fields, normalize = 1, unit = 0, out_ID;
-	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way;
+	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1091,7 +1091,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	PFD G = NULL, dGdr = NULL;
 
-	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
@@ -1317,6 +1317,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->T.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get data */
+		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; otherwise Out is just a pointer to Grid */
 		nxy = n_ok = Grid->header->size;
 		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 	}
@@ -1348,6 +1349,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Grid->header->nx = GMT_grd_get_nx (Grid->header);
 		nxy = n_ok = Grid->header->size * Z.nz;
 		if (dimension == 2) Grid->data = GMT_memory (GMT, NULL, nxy, float);
+		Out = Grid;	/* Just point since we created Grid */
 	}
 
 	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
@@ -1613,7 +1615,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ascii table to named file or stdout */
 			if (Ctrl->G.active)
-				GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->G.file, NULL, (void *)Grid, &out_ID);
+				GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, (void **)&Ctrl->G.file, NULL, NULL, &out_ID);
 			else
 				if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes std output */
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
@@ -1641,20 +1643,21 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 					V[dimension] = (float)undo_normalization (V, wp, normalize, norm);
 					if (dimension == 2)	/* Special 2-D grid output */
-						Grid->data[ij] = (float)V[dimension];
+						Out->data[ij] = (float)V[dimension];
 					else	/* Crude dump for now for both 1-D and 3-D */
 						GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)V);
 				}
 			}
 		}
 		if (dimension == 2) {
-			GMT_grd_init (GMT, Grid->header, options, TRUE);
-			sprintf (Grid->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
+			GMT_grd_init (GMT, Out->header, options, TRUE);
+			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
+			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Out)) Return (GMT_DATA_WRITE_ERROR);
 		}
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
+		if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 			
 		GMT_free (GMT, xp);
 		if (dimension > 1) GMT_free (GMT, yp);

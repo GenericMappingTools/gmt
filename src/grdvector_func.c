@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.11 2011-04-26 21:39:38 guru Exp $
+ *	$Id: grdvector_func.c,v 1.12 2011-05-03 17:39:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -275,7 +275,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG shrink_properties = FALSE, error = FALSE;
 
 	double v_shrink = 1.0, tmp, x, y, plot_x, plot_y, x_off, y_off;
-	double x2, y2, wesn[4], value, c, s, dim[7];
+	double x2, y2, wesn[4], vec_length, vec_azim, c, s, dim[7];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
@@ -379,7 +379,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
         if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
 
-	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {
+	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
 		struct GRD_HEADER tmp_h;
 		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GRD_HEADER);
 		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
@@ -402,41 +402,39 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			ij = GMT_IJP (Grid[0]->header, row, col);
 			if (GMT_is_fnan (Grid[0]->data[ij]) || GMT_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
 
-			value = Grid[0]->data[ij];
-
-			if (!Ctrl->A.active) {	/* Compute length and direction */
-				value = hypot (Grid[1]->data[ij], Grid[0]->data[ij]);
-				if (value == 0.0) continue;
-				Grid[1]->data[ij] = (float)(atan2d (Grid[1]->data[ij], Grid[0]->data[ij]));
-				Grid[0]->data[ij] = (float)value;
+			if (Ctrl->A.active) {	/* Got polar grids */
+				vec_length = Grid[0]->data[ij];
+				vec_azim = Grid[1]->data[ij];
+				if (vec_length < 0.0) {	/* Flip negative lengths as 180-degrees off */
+					vec_length = -vec_length;
+					vec_azim += 180.0;
+				}
+				else if (vec_length == 0.0) continue;	/* No length = no plotting */
 			}
-			else if (Grid[0]->data[ij] < 0.0) {	/* Flip negative lengths as 180-degrees off */
-				Grid[0]->data[ij] = -Grid[0]->data[ij];
-				Grid[1]->data[ij] += 180.0;
+			else {	/* Cartesian grids: Compute length and direction */
+				vec_length = hypot (Grid[1]->data[ij], Grid[0]->data[ij]);
+				if (vec_length == 0.0) continue;
+				vec_azim = atan2d (Grid[1]->data[ij], Grid[0]->data[ij]);
 			}
-			else if (Grid[0]->data[ij] == 0.0) continue;
 
-			if (Ctrl->C.active) GMT_get_rgb_from_z (GMT, P, value, Ctrl->G.fill.rgb);
+			if (Ctrl->C.active) GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
 
 			x = GMT_grd_col_to_x (col, Grid[0]->header);
 			GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 
 			if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
-				if (!Ctrl->Z.active) Grid[1]->data[ij] = (float)90.0 - Grid[1]->data[ij];
-				GMT_azim_to_angle (GMT, x, y, 0.1, (double)Grid[1]->data[ij], &tmp);
-				Grid[1]->data[ij] = (float)(tmp * D2R);
+				if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;
+				GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim, &tmp);
+				vec_azim = tmp * D2R;
 			}
 			else
-				Grid[1]->data[ij] *= (float)D2R;
-			/* Grid[1]->data are now in radians */
-			if (Ctrl->S.constant)
-				Grid[0]->data[ij] = (float)Ctrl->S.factor;
-			else
-				Grid[0]->data[ij] *= (float)Ctrl->S.factor;
-
-			sincos (Grid[1]->data[ij], &s, &c);
-			x2 = plot_x + Grid[0]->data[ij] * c;
-			y2 = plot_y + Grid[0]->data[ij] * s;
+				vec_azim *= D2R;
+			/* vec_azim is now in radians */
+			vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+			/* vec_length is now in inches */
+			sincos (vec_azim, &s, &c);
+			x2 = plot_x + vec_length * c;
+			y2 = plot_y + vec_length * s;
 
 			if (Ctrl->E.active) {	/* Center the arrows */
 				x_off = 0.5 * (x2 - plot_x);
@@ -456,8 +454,8 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			dim[0] = x2; dim[1] = y2;
 			dim[2] = Ctrl->Q.v_width;	dim[3] = Ctrl->Q.h_length;
 			dim[4] = Ctrl->Q.h_width;	dim[5] = GMT->current.setting.map_vector_shape;
-			if (shrink_properties && Grid[0]->data[ij] < Ctrl->Q.norm) {	/* Scale arrow attributes down with length */
-				for (k = 2; k <= 4; k++) dim[k] *= Grid[0]->data[ij] * v_shrink;
+			if (shrink_properties && vec_length < Ctrl->Q.norm) {	/* Scale arrow attributes down with length */
+				for (k = 2; k <= 4; k++) dim[k] *= vec_length * v_shrink;
 				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 			}
 			else	/* Leave as specified */

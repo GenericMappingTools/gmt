@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.6 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.7 2011-05-03 17:39:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -396,13 +396,13 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, bad, cut[4], ij, ij_inc[5];
-	GMT_LONG row, col, c, k, pos, neg, nc, n_contours;
+	GMT_LONG row, col, c, k, pos, neg, nc, n_contours, new_grid = FALSE;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];
 
 	struct GRDVOLUME_CTRL *Ctrl = NULL;
-	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID *Grid = NULL, *Work = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -423,22 +423,23 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	GMT_grd_init (GMT, Grid->header, options, TRUE);
-
+	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Selected base value exceeds the minimum grid z value - aborting\n");
+		Return (EXIT_FAILURE);
+	}
+	
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Selected base value exceeds the minimum grid z value - aborting\n");
-		Return (EXIT_FAILURE);
-	}
-	
+	new_grid = GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */
+	GMT_grd_init (GMT, Work->header, options, TRUE);
+
 	/* Set node increments relative to the lower-left node of a 4-point box */
-	ij_inc[0] = ij_inc[4] = 0;	ij_inc[1] = 1;	ij_inc[2] = 1 - Grid->header->mx;	ij_inc[3] = -Grid->header->mx;
-	cellsize = Grid->header->inc[GMT_X] * Grid->header->inc[GMT_Y];
+	ij_inc[0] = ij_inc[4] = 0;	ij_inc[1] = 1;	ij_inc[2] = 1 - Work->header->mx;	ij_inc[3] = -Work->header->mx;
+	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (Ctrl->S.active) {
 		GMT_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
 		dist_pr_deg = GMT->current.proj.DIST_M_PR_DEG;
@@ -454,10 +455,10 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
-		GMT_grd_do_scaling (Grid->data, Grid->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
-		Grid->header->z_min = (Grid->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
-		Grid->header->z_max = (Grid->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
-		if (Ctrl->Z.scale < 0.0) d_swap (Grid->header->z_min, Grid->header->z_max);
+		GMT_grd_do_scaling (Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
+		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
+		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
+		if (Ctrl->Z.scale < 0.0) d_swap (Work->header->z_min, Work->header->z_max);
 	}
 
 	this_base = (Ctrl->L.active) ? Ctrl->L.value : 0.0;
@@ -470,9 +471,9 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Compute volume, area, and average height for contour = %g\n", cval);
 		
-		for (ij = 0; ij < Grid->header->size; ij++) {
-			Grid->data[ij] -= (float)take_out;		/* Take out the zero value */
-			if (Grid->data[ij] == 0.0) Grid->data[ij] = (float)small;	/* But we dont want exactly zero, just + or - */
+		for (ij = 0; ij < Work->header->size; ij++) {
+			Work->data[ij] -= (float)take_out;		/* Take out the zero value */
+			if (Work->data[ij] == 0.0) Work->data[ij] = (float)small;	/* But we dont want exactly zero, just + or - */
 		}
 		if (Ctrl->L.active) this_base -= take_out;
 
@@ -481,23 +482,23 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			continue;
 		}
 
-		for (row = 1; row < Grid->header->ny; row++) {
+		for (row = 1; row < Work->header->ny; row++) {
 
 			dv = da = 0.0;	/* Reset these for each row */
 
-			for (col = 0, ij = GMT_IJP (Grid->header, row, 0); col < (Grid->header->nx-1); col++, ij++) {
+			for (col = 0, ij = GMT_IJP (Work->header, row, 0); col < (Work->header->nx-1); col++, ij++) {
 
 				/* Find if a contour goes through this bin */
 
 				for (k = neg = pos = 0, bad = FALSE; !bad && k < 4; k++) {
-					(Grid->data[ij+ij_inc[k]] <= (float)small) ? neg++ : pos++;
-					if (GMT_is_fnan (Grid->data[ij+ij_inc[k]])) bad = TRUE;
+					(Work->data[ij+ij_inc[k]] <= (float)small) ? neg++ : pos++;
+					if (GMT_is_fnan (Work->data[ij+ij_inc[k]])) bad = TRUE;
 				}
 
                                 if (bad || neg == 4) continue;	/* Contour not crossing, go to next bin */
 
 				if (pos == 4) {	/* Need entire prism */
-					for (k = 0, sum = 0.0; k < 4; k++) sum += Grid->data[ij+ij_inc[k]];
+					for (k = 0, sum = 0.0; k < 4; k++) sum += Work->data[ij+ij_inc[k]];
 					dv += 0.25 * sum;
 					da += 1.0;
 				}
@@ -505,44 +506,44 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 					for (k = nc = 0; k < 4; k++) {	/* Check the 4 sides for crossings */
 						cut[k] = FALSE;
-						if ((Grid->data[ij+ij_inc[k]] * Grid->data[ij+ij_inc[k+1]]) < 0.0) nc++, cut[k] = TRUE;	/* Crossing this border */
+						if ((Work->data[ij+ij_inc[k]] * Work->data[ij+ij_inc[k+1]]) < 0.0) nc++, cut[k] = TRUE;	/* Crossing this border */
 					}
 					if (nc < 2) continue;	/* Can happen if some nodes were 0 and then reset to small, thus passing the test */
 
 					if (nc == 4) {	/* Saddle scenario */
-						if (Grid->data[ij] > 0.0) {	/* Need both SW and NE triangles */
-							SW_triangle (Grid, ij, TRUE, &dv, &da);
-							NE_triangle (Grid, ij, TRUE, &dv, &da);
+						if (Work->data[ij] > 0.0) {	/* Need both SW and NE triangles */
+							SW_triangle (Work, ij, TRUE, &dv, &da);
+							NE_triangle (Work, ij, TRUE, &dv, &da);
 						}
 						else {			/* Need both SE and NW corners */
-							SE_triangle (Grid, ij, TRUE, &dv, &da);
-							NW_triangle (Grid, ij, TRUE, &dv, &da);
+							SE_triangle (Work, ij, TRUE, &dv, &da);
+							NW_triangle (Work, ij, TRUE, &dv, &da);
 						}
 
 					}
 					else if (cut[0]) {	/* Contour enters at S border ... */
 						if (cut[1])	/* and exits at E border */
-							SE_triangle (Grid, ij, (Grid->data[ij+ij_inc[1]] > 0.0), &dv, &da);
+							SE_triangle (Work, ij, (Work->data[ij+ij_inc[1]] > 0.0), &dv, &da);
 						else if (cut[2])	/* or exits at N border */
-							NS_trapezoid (Grid, ij, Grid->data[ij] < 0.0, &dv, &da);
+							NS_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
 						else			/* or exits at W border */
-							SW_triangle (Grid, ij, (Grid->data[ij] > 0.0), &dv, &da);
+							SW_triangle (Work, ij, (Work->data[ij] > 0.0), &dv, &da);
 					}
 					else if (cut[1]) {	/* Contour enters at E border */
 						if (cut[2])	/* exits at N border */
-							NE_triangle (Grid, ij, (Grid->data[ij+ij_inc[2]] > 0.0), &dv, &da);
+							NE_triangle (Work, ij, (Work->data[ij+ij_inc[2]] > 0.0), &dv, &da);
 						else			/* or exits at W border */
-							EW_trapezoid (Grid, ij, Grid->data[ij] < 0.0, &dv, &da);
+							EW_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
 					}
 					else			/* Contours enters at N border and exits at W */
-						NW_triangle (Grid, ij, (Grid->data[ij+ij_inc[3]] > 0.0), &dv, &da);
+						NW_triangle (Work, ij, (Work->data[ij+ij_inc[3]] > 0.0), &dv, &da);
 				}
 			}
 			ij++;
 
 			fact = cellsize;
 			/* Allow for shrinking of longitudes with latitude */
-			if (Ctrl->S.active) fact *= cosd (Grid->header->wesn[YHI] - (row+0.5) * Grid->header->inc[GMT_Y]);
+			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - (row+0.5) * Work->header->inc[GMT_Y]);
 
 			vol[c]  += dv * fact;
 			area[c] += da * fact;
@@ -552,27 +553,27 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->L.active) vol[c] -= area[c] * this_base;
 	}
 	if (!Ctrl->C.active) {	/* Since no contours we can use columns with bilinear tops to get the volume */
-		for (row = 0; row < Grid->header->ny; row++) {
+		for (row = 0; row < Work->header->ny; row++) {
 			dv = da = 0.0;
-			for (col = 0, ij = GMT_IJP (Grid->header, row, 0); col < Grid->header->nx; col++, ij++) {
-				if (GMT_is_fnan (Grid->data[ij])) continue;
+			for (col = 0, ij = GMT_IJP (Work->header, row, 0); col < Work->header->nx; col++, ij++) {
+				if (GMT_is_fnan (Work->data[ij])) continue;
 
 				/* Half the leftmost and rightmost cell */
-				if (Grid->header->registration == GMT_GRIDLINE_REG && (col == 0 || col == Grid->header->nx-1)) {
-					dv += 0.5 * Grid->data[ij];
+				if (Work->header->registration == GMT_GRIDLINE_REG && (col == 0 || col == Work->header->nx-1)) {
+					dv += 0.5 * Work->data[ij];
 					da += 0.5;
 				}
 				else {
-					dv += Grid->data[ij];
+					dv += Work->data[ij];
 					da += 1.0;
 				}
 			}
 
 			fact = cellsize;
 			/* Allow for shrinking of longitudes with latitude */
-			if (Ctrl->S.active) fact *= cosd (Grid->header->wesn[YHI] - row * Grid->header->inc[GMT_Y]);
+			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - row * Work->header->inc[GMT_Y]);
 			/* Half the top and bottom row */
-			if (Grid->header->registration == GMT_GRIDLINE_REG && (row == 0 || row == Grid->header->ny-1)) fact *= 0.5;
+			if (Work->header->registration == GMT_GRIDLINE_REG && (row == 0 || row == Work->header->ny-1)) fact *= 0.5;
 
 			vol[0]  += dv * fact;
 			area[0] += da * fact;
@@ -608,6 +609,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
+	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Work);
 	
 	GMT_free (GMT, area);
 	GMT_free (GMT, vol);

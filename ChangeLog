@@ -1,7 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1002 2011-05-03 01:07:53 jluis Exp $
+	$Id: ChangeLog,v 1.1003 2011-05-03 17:39:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-05-03	pwessel
+	* grdhisteq_func.c:	Now treats input grids as read-only.
+	* greenspline_func.c:	Now treats input grids as read-only.
+	* grdfft_func.c:	Now treats input grids as read-only.
+	* grdvolume_func.c:	Now treats input grids as read-only.
+	* grdvector_func.c:	Now treats input grids as read-only.
+	
 2011-05-03	jluis
 	* trend1d_func.c:	Added -F...|p as an option to output only the model coefficients 
 

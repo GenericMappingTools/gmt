@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.11 2011-04-23 02:14:12 guru Exp $
+ *	$Id: grdfft_func.c,v 1.12 2011-05-03 17:39:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1117,11 +1117,11 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0;
-	GMT_LONG narray[2], i, j, i_data_start, j_data_start;
+	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
 
 	float *workc = NULL;
 
-	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct F_INFO f_info;
 	struct K_XY K;
 	struct GRDFFT_CTRL *Ctrl = NULL;
@@ -1166,16 +1166,18 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_FAILURE);
 	}
 
-	if (!(Ctrl->L.active)) remove_plane (GMT, Grid);
-	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Grid);
+	new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to Grid */
+
+	if (!(Ctrl->L.active)) remove_plane (GMT, Out);
+	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out);
 
 	/* Load K_XY structure with wavenumbers and dimensions */
-	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Grid->header->inc[GMT_X]);
-	K.delta_ky = 2 * M_PI / (Ctrl->N.ny2 * Grid->header->inc[GMT_Y]);
+	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
+	K.delta_ky = 2 * M_PI / (Ctrl->N.ny2 * Out->header->inc[GMT_Y]);
 	K.nx2 = Ctrl->N.nx2;	K.ny2 = Ctrl->N.ny2;
 	
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters  */
-		K.delta_kx /= (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (Grid->header->wesn[YLO] + Grid->header->wesn[YHI])) );
+		K.delta_kx /= (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (Out->header->wesn[YLO] + Out->header->wesn[YHI])) );
 		K.delta_ky /= GMT->current.proj.DIST_M_PR_DEG;
 	}
 
@@ -1192,46 +1194,46 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "forward FFT...");
 	
 	narray[0] = Ctrl->N.nx2;	narray[1] = Ctrl->N.ny2;
-	/* GMT_fourt (GMT, Grid->data, narray, 2, -1, 1, workc); */
-	GMT_fft_2d (GMT, Grid->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+	/* GMT_fourt (GMT, Out->data, narray, 2, -1, 1, workc); */
+	GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case UP_DOWN_CONTINUE:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
-				par_count += do_continuation (Grid, &Ctrl->par[par_count], &K);
+				par_count += do_continuation (Out, &Ctrl->par[par_count], &K);
 				break;
 			case AZIMUTHAL_DERIVATIVE:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "azimuthal derivative...");
-				par_count += do_azimuthal_derivative (Grid, &Ctrl->par[par_count], &K);
+				par_count += do_azimuthal_derivative (Out, &Ctrl->par[par_count], &K);
 				break;
 			case DIFFERENTIATE:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "differentiate...");
-				par_count += do_differentiate (Grid, &Ctrl->par[par_count], &K);
+				par_count += do_differentiate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case INTEGRATE:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "integrate...");
-				par_count += do_integrate (Grid, &Ctrl->par[par_count], &K);
+				par_count += do_integrate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case ISOSTASY:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "isostasy...");
-				par_count += do_isostasy (Grid, Ctrl, &Ctrl->par[par_count], &K);
+				par_count += do_isostasy (Out, Ctrl, &Ctrl->par[par_count], &K);
 				break;
 			case FILTER_COS:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "cosine filter...");
-				do_filter (Grid, &f_info, &K);
+				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_EXP:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Gaussian filter...");
-				do_filter (Grid, &f_info, &K);
+				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_BW:
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Butterworth filter...");
-				do_filter (Grid, &f_info, &K);
+				do_filter (Out, &f_info, &K);
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "spectrum...");
-				par_count += do_spectrum (GMT, Grid, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
+				par_count += do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
 				break;
 		}
 	}
@@ -1240,18 +1242,19 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "inverse FFT...");
 
-		/* GMT_fourt (GMT, Grid->data, narray, 2, 1, 1, workc); */
-		GMT_fft_2d (GMT, Grid->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
+		/* GMT_fourt (GMT, Out->data, narray, 2, 1, 1, workc); */
+		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
-		Ctrl->S.scale *= (2.0 / Grid->header->nm);
-		for (i = 0; i < Grid->header->size; i++) Grid->data[i] *= (float)Ctrl->S.scale;
+		Ctrl->S.scale *= (2.0 / Out->header->nm);
+		for (i = 0; i < Out->header->size; i++) Out->data[i] *= (float)Ctrl->S.scale;
 
 		/* The data are in the middle of the padded array */
 
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Grid);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
 	}
 	
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
+	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 	GMT_free (GMT, workc);
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Done\n");
