@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.142 2011-05-02 03:26:19 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.143 2011-05-03 00:21:15 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -853,7 +853,7 @@ When using native binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[\emph{n}]\textbf{t} option,
-where \emph{n} is the actual number of data columns (\textbf{t}
+where \emph{n} is the actual number of data columns  and \textbf{t}
 must be one of \textbf{c} (signed 1-byte character), \textbf{u}
 (unsigned 1-byte character), \textbf{h} (signed 2-byte int), \textbf{H}
 (unsigned 2-byte int), \textbf{i} (signed 4-byte int), \textbf{I}
@@ -953,6 +953,10 @@ automatically skipped.  Normally, programs that both read and write tables will
 output the header records that are found on input.  Use \Opt{hi} to suppress the
 writing of header records.  Use \Opt{ho} to tell programs to output a header record
 identifying each data column.
+
+When \Opt{b} is used to indicate binary data the \Opt{h} takes on a slightly different meaning.
+Now, the \emph{n\_recs} argument is taken to mean how many \emph{bytes} should be
+skipped (on input) or padded with the space character (on output).
 
 \subsection{Input columns selection: The \Opt{i} option}
 \index{\Opt{i} (Input columns selection)}
