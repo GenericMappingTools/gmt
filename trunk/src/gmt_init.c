@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.498 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmt_init.c,v 1.499 2011-05-03 00:21:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -470,7 +470,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'C':	/* -b binary option with input only */
 
-			GMT_message (C, "\t-bi For binary input; <type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
+			GMT_message (C, "\t-bi For binary input; [<n>]<type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
@@ -526,7 +526,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 			GMT_message (C, "\t-h[i][<n>] Means input/output file has [%ld] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
-			GMT_message (C, "\t   For binary files, <n> is considered to mean bytes.\n");
+			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
 
 		case 'i':	/* -i option for input column order */
@@ -986,10 +986,10 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 #endif
 
 		case 'b':	/* Binary i/o option  */
-			GMT_message (C, "\t-b[i|o][s[<n>]|d[<n>]|c[<var1>/<var2>/...]], i for input, o for output [Default is both].\n");
-			GMT_message (C, "\t   Use s or d for single or double precision [Default is double precision]\n");
-			GMT_message (C, "\t   and append the number of data columns (for input only).\n");
-			GMT_message (C, "\t   Use c for netCDF file and optionally append variable names.\n");
+			GMT_message (C, "\t-b[i|o][<n>][<t>][w][+L|B], i for input, o for output [Default is both].\n");
+			GMT_message (C, "\t   Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)].\n");
+			GMT_message (C, "\t   Prepend the number of data columns (for input only).\n");
+			GMT_message (C, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
 			break;
 
 		case 'c':	/* Set number of plot copies option */
@@ -1010,7 +1010,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 			break;
 
 		case 'h':	/* Header */
-			GMT_message (C, "\t-h[n-header-records]\n");
+			GMT_message (C, "\t-h[n_items]\n");
 			break;
 
 		case 'p':
@@ -1020,7 +1020,8 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 			break;
 
 		case 's':	/* SKip records with NaN as z */
-			GMT_message (C, "\t-s[<col>][r] to skip records whose <col> [2] output is NaN; r reverses action.\n");
+			GMT_message (C, "\t-s[<col>][a][r] to skip records whose <col> [2] output is NaN.\n");
+			GMT_message (C, "\t   a skips if ANY columns is NaN, while r reverses the action.\n");
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
@@ -1335,7 +1336,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	C->common.b.active[id] = TRUE;
 	C->common.b.type[id] = 'd';	/* Set default to double */
 	
-	/* Because c means either netCDF or signed char we deal with netCDF up front */
+	/* Because under GMT_COMPAT c means either netCDF or signed char we deal with netCDF up front */
 	
 	k = i_or_o;
 #ifdef GMT_COMPAT
@@ -1351,7 +1352,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	}
 	else
 #endif
-	if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just sets the type for the entire record */
+	if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
 		C->common.b.type[id] = text[k];			/* Default column type */
 		C->common.b.swab[id] = (text[k+1] == 'w');	/* Default swab */
 	}
@@ -1364,11 +1365,11 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 					if (c == 'S' || c == 'D') swab = TRUE;
 					if (c == 'S' || c == 's') c = 'f';
 					if (c == 'D') c = 'd';
-					if (ncol == 0) ncol = 1;	/* Since -bs should work */
+					if (ncol == 0) ncol = 1;	/* in order to make -bs work as before */
 #endif
 				case 'l': case 'L':	/* 8-byte long integers */
 					if (sizeof (GMT_LONG) == 4) {
-						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot specify %c in 32-bit mode\n", (int)c);
+						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot specify type %c in 32-bit mode\n", (int)c);
 						return (EXIT_FAILURE);
 					}
 				case 'c': case 'u': case 'h': case 'H': case 'i': case 'I': case 'f': case 'd':
@@ -1378,14 +1379,14 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be specified\n");
 						return (EXIT_FAILURE);
 					}
-					for (k = 0; k < ncol; k++, col++) {
+					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
 						C->current.io.fmt[id][col].io = GMT_get_io_ptr (C, id, swab, c);
 						C->current.io.fmt[id][col].type = GMT_get_io_type (C, c);
 					}
-					ncol = 0;	/* Must parse a number for each item */
+					ncol = 0;	/* Must parse a new number for each item */
 					break;
 				case 'x':	/* Binary skip before/after column */
-					if (col == 0)	/* Must skip BEFORE reading first data column (flag as negative skip) */
+					if (col == 0)	/* Must skip BEFORE reading first data column (flag this as a negative skip) */
 						C->current.io.fmt[id][col].skip = -ncol;	/* Number of bytes to skip */
 					else	/* Skip after reading previous column (hence col-1) */
 						C->current.io.fmt[id][col-1].skip = ncol;	/* Number of bytes to skip */
@@ -1399,11 +1400,10 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be > 0\n");
 						return (EXIT_FAILURE);
 					}
-					while (text[i] && isdigit ((int)text[i])) i++;
-					i--;
+					while (text[i] && isdigit ((int)text[i])) i++;	i--;	/* Wind past the digits */
 					break;
-				case ',': break;	/* Comma between sequences are optional */
-				case 'w':		/* Turn off the swap unless set via +L|B */
+				case ',': break;	/* Comma between sequences are optional and just ignored */
+				case 'w':		/* Turn off the swap unless it set via +L|B */
 					if (!endian_swab) swab = FALSE;	break;
 				default:
 					error = TRUE;
@@ -1415,7 +1415,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	}
 	if (col == 0) col = ncol;	/* Maybe we got a column count */
 	C->common.b.ncol[id] = col;
-	if (col && !set) for (col = 0; col < C->common.b.ncol[id]; col++) {	/* Default to doubles */
+	if (col && !set) for (col = 0; col < C->common.b.ncol[id]; col++) {	/* Default binary type is double */
 		C->current.io.fmt[id][col].io   = GMT_get_io_ptr (C, id, swab, 'd');
 		C->current.io.fmt[id][col].type = GMT_get_io_type (C, 'd');
 	}
