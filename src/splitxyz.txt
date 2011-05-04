@@ -5,7 +5,7 @@ splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track 
 .SH SYNOPSIS
 BD(splitxyz) [ IT(xyz[dh]file) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
 [ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] [ OPT(G)IT(gap_distance) ] 
-[ OPT(N)IT(namestem) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
+[ OPT(N)IT(template) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
 [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(splitxyz) reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see OPT(S) 
@@ -59,10 +59,14 @@ Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
 in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
 units as x,y and angles are counter-clockwise from horizontal].
 .TP
-OPT(N)IT(namestem)
-Create Named output files, writing each segment to a separate file in the working directory 
-named IT(namestem).profile\fI#\fP, where IT(#) increases consecutively from 1.  [Default 
-writes entire output to stdout, separating segments by sub-headings that start with > marks].
+OPT(N)IT(template)
+Write each segment to a separate output file [Default writes a multiple segment
+file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
+C format specifier that can format an long integer argument (the running segment number across all tables);
+this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is splitxyz_segment_%ld.{txt|bin},
+depending on OPT(b)].
+Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
+number within the table to build the file name.
 .TP
 OPT(Q)IT(flags)
 Specify your desired output using any combination of IT(xyzdh), in any order.  Do not space between
@@ -111,9 +115,9 @@ have BD(splitxyz) compute them separately.
 .br
 .sp
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
-and you want to split it into profiles named IT(survey).profile\fI#\fP (when gap exceeds 100 km).  Try this:
+and you want to split it into profiles named IT(survey)_\fI###.txt\fP (when gap exceeds 100 km).  Try this:
 .sp
-BD(splitxyz) survey.bin OPT(N)survey OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(fg) OPT(bi))3
+BD(splitxyz) survey.bin OPT(N)survey_%3.3d.txt OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(fg) OPT(bi))3
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mgd77list (1),
