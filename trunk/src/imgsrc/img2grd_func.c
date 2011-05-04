@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.11 2011-05-04 19:33:17 guru Exp $
+/* $Id: img2grd_func.c,v 1.12 2011-05-04 22:11:33 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -346,8 +346,13 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "img file %s determined to have an increment of %ld min and a latitude bound at +/- %g\n", infile, min, lat);
 	}
 	
-	strcpy (z_units, "meters, mGal, Eotvos, or micro-radians, depending on img file and -S.");
+	strcpy (z_units, "meters, mGal, Eotvos, micro-radians or Myr, depending on img file and -S.");
 	if (Ctrl->S.mode) {	/* Guess the scaling */
+		if (strstr (infile, "age")) {
+			Ctrl->S.value = 0.01;
+			strcpy (z_units, "Myr");
+			GMT_report (GMT, GMT_MSG_NORMAL, "img file %s determined to be crustal ages with scale 0.01.\n", infile);
+		}
 		if (strstr (infile, "topo")) {
 			Ctrl->S.value = 1.0;
 			strcpy (z_units, "meter");

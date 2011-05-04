@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.269 2011-05-03 17:39:48 guru Exp $
+ *	$Id: gmt_io.c,v 1.270 2011-05-04 22:11:32 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5049,8 +5049,8 @@ struct GMT_DATASET *GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, G
 	D->n_columns = n_columns;
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
-	if (n_segments > 0) D->n_segments = n_segments;
-	if (n_segments > 0) D->n_records = n_tables * n_segments * n_rows;
+	if (n_segments > 0) D->n_segments = D->n_tables * n_segments;
+	if (n_segments > 0) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) GMT_create_table (C, &D->table[tbl], n_segments, n_columns, n_rows);
 	return (D);
 }
