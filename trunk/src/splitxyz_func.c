@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.7 2011-05-04 22:11:33 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.8 2011-05-04 22:57:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -506,10 +506,10 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				begin = end;
 			}
 			if (!Ctrl->S.active) {	/* Must remove the 2 cols we added  */
+				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) GMT_free (GMT, S->coord[col]);
 				S->coord = GMT_memory (GMT, S->coord, S->n_columns, double *);
 				S->min = GMT_memory (GMT, S->min, S->n_columns, double);
 				S->max = GMT_memory (GMT, S->max, S->n_columns, double);
-				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) GMT_free (GMT, S->coord[col]);
 			}
 		}
 	}
