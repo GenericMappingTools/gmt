@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1005 2011-05-03 22:32:31 guru Exp $
+	$Id: ChangeLog,v 1.1006 2011-05-04 19:33:17 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-04	pwessel
+	* gmtapi_util.c:	Set BCs for all grids regardless of read-source, even if
+				read-only (REF) since we don't change grid, just the pad
+				which is not considered part of the data.
+	* imgsrc/img2grd_func.c:	Made clear that -D, -I, -T are optional and added
+				-n to change how interpolations are done.  Also allow -S
+				with no scale which will infer scale from filename.
 
 2011-05-03	pwessel
 	* grdhisteq_func.c:	Now treats input grids as read-only.

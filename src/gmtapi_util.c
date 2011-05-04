@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.51 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.52 2011-05-04 19:33:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1491,6 +1491,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Change alloc mode\n");
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Check pad\n");
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			if (!GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G->data to allow for padding, then rearrange rows */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Add pad\n");
@@ -1502,6 +1504,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			if (S->region) return (GMT_Report_Error (API, GMT_SUBSET_NOT_ALLOWED));
 			G = (struct GMT_GRID *)(*S->ptr);
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			if (GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from read-only GMT_GRID memory location\n");
 			G->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
@@ -1547,6 +1551,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G->data = (float *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			if (!GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G->data to allow for padding, then rearrange rows */
 			GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);
@@ -1568,6 +1574,8 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G->data = (float *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			G->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			break;
 			
 		default:

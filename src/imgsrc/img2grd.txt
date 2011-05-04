@@ -5,8 +5,7 @@ img2grd \- Extract subset of img file in Mercator or Geographic format
 .SH SYNOPSIS
 BD(img2grd) IT(imgfile) OPT(G)IT(grdfile) GMT_Rgeo_OPT 
 OPT(T)IT(type)  [ OPT(C) ] [ OPT(D)[IT(minlat/maxlat)] ] [ OPT(E) ] [ OPT(I)IT(minutes) ] 
-[ OPT(L) ] [ OPT(M) ] [ OPT(N)IT(navg) ] [ OPT(S)IT(scale) ] 
-[ GMT_V_OPT ] [ OPT(W)IT(maxlon) ]
+[ OPT(M) ] [ OPT(N)IT(navg) ] [ OPT(S)[IT(scale)] ] [ GMT_V_OPT ] [ OPT(W)IT(maxlon) ] [ GMT_n_OPT ]
 .SH DESCRIPTION
 BD(img2grd) reads an img format file, extracts a subset, and writes it to a grid file.
 The OPT(M) option dictates whether or not the Spherical Mercator 
@@ -24,15 +23,6 @@ will try to open IT(imgfile) directly.
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the output grid file.
 #include "explain_-Rgeo.txt"
-.TP
-OPT(T)IT(type)
-IT(type) handles the encoding of constraint information.  IT(type) = 0 indicates that no 
-such information is encoded in the img file (used for pre-1995 versions of the gravity data) 
-and gets all data.  IT(type) > 0 indicates that constraint information is encoded (1995 and 
-later (current) versions of the img files) so that one may produce a grid file as follows: 
-OPT(T)IT(1) gets data values at all points, OPT(T)IT(2) gets data values at 
-constrained points and NaN at interpolated points; OPT(T)IT(3) gets 1 at constrained 
-points and 0 at interpolated points. 
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(C)
@@ -42,6 +32,7 @@ lower left corner of grid].  Requires OPT(M).
 OPT(D)[IT(minlat/maxlat)]
 Use the extended latitude range -80.738/+80.738.  Alternatively, append IT(minlat/maxlat)
 as the latitude extent of the input img file.  [Default is -72.006/72.006].
+Not usually required since we can determine the extent from inspection of the file size.
 .TP
 OPT(E)
 Can be used when OPT(M) is not set to force the final grid to have the exact same region
@@ -55,13 +46,8 @@ OPT(R)0/45/45/72).
 .TP
 OPT(I)
 Indicate IT(minutes) as the width of an input img pixel in minutes of longitude.  
-[Default is 2.0]. Not usually required since we can determine the pixel size from the
-file size (and OPT(D) is set for extended range images).
-.TP
-OPT(L)
-With no other arguments, list all *.img files found in the directory pointed to by
-BD($GMT_DATADIR), or the current directory if not defined.  Ignored if other options are
-present on the command line.
+[Default is 2.0]. Not usually required since we can determine the pixel size from
+inspection of the size.
 .TP
 OPT(M)
 Output a Spherical Mercator grid [Default is a geographic lon/lat grid].
@@ -72,7 +58,7 @@ lengths represent distance from the west and south edges of the image, measured 
 default units, with OPT(Jm)1 and the adjusted OPT(R).  By setting the default 
 \fBPROJ_ ELLIPSOID\fP = Sphere, the user can make overlays with the adjusted OPT(R) so that they match.  
 See \fBEXAMPLES\fP below.  The adjusted OPT(R) is also written in the grdheader remark, so it 
-can be found later.
+can be found later.  See OPT(C) to set coordinates relative to projection center.
 .TP
 OPT(N)IT(navg)
 Average the values in the input img pixels into IT(navg) by IT(navg) squares, and 
@@ -82,12 +68,22 @@ will be average data value or NaN according to whether average constraint is > 0
 IT(navg) must evenly divide into the dimensions of the imgfile in pixels.  
 [Default IT(1) does no averaging].
 .TP
-OPT(S)IT(scale)
+OPT(S)[IT(scale)]
 Multiply the img file values by \fIscale\fP before storing in grid file.  [Default is 1.0].  
 For recent img files: img topo files are stored in (corrected) meters [OPT(S)1];
 free-air gravity files in mGal*10 [OPT(S)0.1 to get mGal];
 vertical  deflection files in microradians*10 [OPT(S)0.1 to get microradians],
 vertical gravity gradient files in Eotvos*50 [OPT(S)0.02 to get Eotvos, or OPT(S)0.002 to get mGal/km]).
+If no IT(scale) is given we try to determine the scale by examining the file name for clues.
+.TP
+OPT(T)IT(type)
+IT(type) handles the encoding of constraint information.  IT(type) = 0 indicates that no 
+such information is encoded in the img file (used for pre-1995 versions of the gravity data) 
+and gets all data.  IT(type) > 0 indicates that constraint information is encoded (1995 and 
+later (current) versions of the img files) so that one may produce a grid file as follows: 
+OPT(T)IT(1) gets data values at all points, OPT(T)IT(2) gets data values at 
+constrained points and NaN at interpolated points; OPT(T)IT(3) gets 1 at constrained 
+points and 0 at interpolated points [Default is 1].
 #include "explain_-V.txt"
 Particularly recommended here, as it is helpful to see how the coordinates are adjusted.
 .TP
@@ -102,7 +98,7 @@ To extract data in the region OPT(R)-40/40/-70/-30 from IT(world_grav.img.7.2) a
 to yield geographic coordinates, you can try
 .br
 .sp
-BD(img2grd) world_grav.img.16.1 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(I)1 OPT(T)1 OPT(V)
+BD(img2grd) world_grav.img.16.1 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(V)
 .br
 .sp
 Because the latitude spacing in the img file is equidistant in Mercator units, the resulting
@@ -111,7 +107,7 @@ the longitude spacing.  If you need an exact match with your OPT(R) and the same
 in longitude and latitude, use the OPT(E) option:
 .br
 .sp
-BD(img2grd) world_grav.img.16.1 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(I)1 OPT(T)1 OPT(E) OPT(V)
+BD(img2grd) world_grav.img.16.1 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(E) OPT(V)
 .br
 .sp
 .SH MERCATOR EXAMPLES
@@ -123,7 +119,7 @@ with the same scale as the desired Mercator projection (see GMT Example 29).
 To extract data in the region OPT(R)-40/40/-70/-30 from \fIworld_grav.img.7.2\fP, run
 .br
 .sp
-\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(T)1 OPT(V)
+\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(V)
 .br
 .sp
 Note that the OPT(V) option tells us that the range was adjusted to 
@@ -136,8 +132,8 @@ can do this:
 .sp
 \fBgmtset\fP \fBPROJ_ ELLIPSOID\fP Sphere
 .br
-\fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1 ship.lonlatgrav | \fBgrdtrack\fP 
-OPT(G)merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1 
+\fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i ship.lonlatgrav | \fBgrdtrack\fP 
+OPT(G)merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i 
 OPT(I) > ship.lonlatgravsat
 .br
 .sp
@@ -150,20 +146,20 @@ tries to convert the grid file to lon,lat and then sample it, there are two inte
 To make a lon,lat grid from the above grid we can use
 .br
 .sp
-\fBgrdproject\fP merc_grav.nc OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1 OPT(I) OPT(D)2m OPT(G)grav.nc
+\fBgrdproject\fP merc_grav.nc OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i OPT(I) OPT(D)2m OPT(G)grav.nc
 .br
 .sp
 In some cases this will not be easy as the OPT(R) in the two coordinate systems may not align well.  
 When this happens, we can also use (in fact, it may be always better to use)
 .br
 .sp
-\fBgrd2xyz\fP merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.994581075 OPT(Jm)1 
+\fBgrd2xyz\fP merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.994581075 OPT(Jm)1i 
 OPT(I) | \fBsurface\fP OPT(R)-40/40/-70/70 OPT(I)2m OPT(G)grav.nc
 .br
 .sp
-To make a Mercator map of the above region, suppose our \.gmtdefaults \fBMEASURE_UNIT\fP is inch.  Then 
-since the above merc_grav.nc file is projected with OPT(Jm)1 it is 80 inches wide.  We can 
-make a map 8 inches wide by using OPT(Jx)0.1 on any map programs applied to this grid (e.g., 
+To make a Mercator map of the above region, suppose our \.gmtdefaults \fBPROJ_LENGTH_UNIT\fP is inch.  Then 
+since the above merc_grav.nc file is projected with OPT(Jm)1i it is 80 inches wide.  We can 
+make a map 8 inches wide by using OPT(Jx)0.1i on any map programs applied to this grid (e.g., 
 \fBgrdcontour\fP, \fBgrdimage\fP, \fBgrdview\fP), and then for overlays which work in lon,lat (e.g., \fBpsxy\fP, \fBpscoast\fP) 
 we can use the above adjusted OPT(R) and OPT(Jm)0.1 to get the two systems to match up.
 .br
@@ -177,7 +173,7 @@ we will probably choose to average the data much more (e.g. 6 by 6) to get smoot
 Since 2039 isn't divisible by 3 we will get a different adjusted OPT(R) this time:\"'
 .br
 .sp
-\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav_2.nc OPT(R)-40/40/-70/-30 OPT(T)1 OPT(N)3
+\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav_2.nc OPT(R)-40/40/-70/-30 OPT(N)3
 OPT(V)
 .br
 .sp
@@ -192,13 +188,13 @@ this using \fBgrdgradient\fP:
 and if we also have a cpt file called "grav.cpt" we can create a color shaded relief map like this:  
 .br
 .sp
-\fBgrdimage\fP merc_grav_2.nc OPT(I)illum.nc OPT(C)grav.cpt OPT(Jx)0.1 OPT(K) > map.ps
+\fBgrdimage\fP merc_grav_2.nc OPT(I)illum.nc OPT(C)grav.cpt OPT(Jx)0.1i OPT(K) > map.ps
 .br
-\fBpsbasemap\fP OPT(R)-40/40/-70.023256525/-29.9368261101 OPT(Jm)0.1 OPT(B)a10 OPT(O) >> map.ps
+\fBpsbasemap\fP OPT(R)-40/40/-70.023256525/-29.9368261101 OPT(Jm)0.1i OPT(B)a10 OPT(O) >> map.ps
 .br
 .sp
 Suppose you want to obtain only the constrained data values from an img file, in lat/lon coordinates.  
 Then run \fBimg2grd\fP with the OPT(T)2 option, use \fBgrd2xyz\fP to dump the values, pipe through grep -v 
 NaN to eliminate NaNs, and pipe through \fBmapproject\fP with the inverse projection as above.
 .SH "SEE ALSO"
-.IR GMT (1),
+.IR GMT (1)

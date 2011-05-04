@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.17 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdsample_func.c,v 1.18 2011-05-04 19:33:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -249,9 +249,8 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X] || Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval may lead to aliasing");
-	}
+	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval in x may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval in y may lead to aliasing.\n");
 
 	/* Precalculate longitudes */
 

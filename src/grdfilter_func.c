@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.10 2011-05-03 22:32:31 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.11 2011-05-04 19:33:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -392,7 +392,6 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-	GMT_grd_init (GMT, Gin->header, options, TRUE);	/* Update command history only */
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 1 : 0;
@@ -404,6 +403,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Check range of output area and set i,j offsets, etc.  */
 
 	Gout = GMT_create_grid (GMT);
+	GMT_grd_init (GMT, Gout->header, options, TRUE);	/* Update command history only */
 	/* Use the -R region for output if set; otherwise match grid domain */
 	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 	if (Ctrl->I.active)
