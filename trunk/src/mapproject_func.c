@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.16 2011-05-02 08:00:56 guru Exp $
+*	$Id: mapproject_func.c,v 1.17 2011-05-05 03:01:32 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,10 +126,10 @@ void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-void add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG col, GMT_LONG more)
+void add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG format, GMT_LONG more)
 {
 	char word[GMT_TEXT_LEN64];
-	GMT_ascii_format_col (C, word, val, col);
+	GMT_ascii_format_one (C, word, val, format);
 	strcat (record, word);
 	if (more) strcat (record, C->current.setting.io_col_separator);
 }
