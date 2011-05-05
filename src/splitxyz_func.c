@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.9 2011-05-05 01:31:20 jluis Exp $
+ *	$Id: splitxyz_func.c,v 1.10 2011-05-05 03:36:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -482,25 +482,26 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (mean_azim <= Ctrl->A.tolerance) {	/* List has acceptable strike.  */
 							if (Ctrl->F.active) filter_cols (GMT, S->coord, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
 							nprofiles++;
-						}
-						n_out = end - begin;
-						if ((n_total + n_out) >= n_alloc) {
-							n_alloc = (first) ? D[GMT_IN]->n_records : n_alloc * 2;
-							GMT_alloc_segment (GMT, S_out, n_alloc, n_outputs, first);
-							first = FALSE;
-						}
 
-						for (i = begin; i < end; i++, k++) {
-							for (j = 0; j < n_outputs; j++) {	/* Remember to convert CCW angles back to azimuths */
-								S_out->coord[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->coord[h_col][i] : S->coord[output_choice[j]][i];
+							n_out = end - begin;
+							if ((n_total + n_out) >= n_alloc) {
+								n_alloc = (first) ? D[GMT_IN]->n_records : n_alloc * 2;
+								GMT_alloc_segment (GMT, S_out, n_alloc, n_outputs, first);
+								first = FALSE;
 							}
+
+							for (i = begin; i < end; i++, k++) {
+								for (j = 0; j < n_outputs; j++) {	/* Remember to convert CCW angles back to azimuths */
+									S_out->coord[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->coord[h_col][i] : S->coord[output_choice[j]][i];
+								}
+							}
+							if (seg2 == n_alloc_seg) {
+								n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
+								rec = GMT_memory (GMT, (void *)rec, n_alloc_seg, GMT_LONG);
+							}
+							rec[seg2++] = k;
+							n_total += n_out;
 						}
-						if (seg2 == n_alloc_seg) {
-							n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
-							rec = GMT_memory (GMT, (void *)rec, n_alloc_seg, GMT_LONG);
-						}
-						rec[seg2++] = k;
-						n_total += n_out;
 					}
 				}
 				begin = end;
