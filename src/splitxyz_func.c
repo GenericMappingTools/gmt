@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.8 2011-05-04 22:57:27 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.9 2011-05-05 01:31:20 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -400,7 +400,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			T->min = GMT_memory (GMT, T->min, n_columns, double);
 			T->max = GMT_memory (GMT, T->max, n_columns, double);
 		}
-		GMT_report (GMT, GMT_MSG_FATAL, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
