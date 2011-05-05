@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.9 2011-05-04 22:11:32 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.10 2011-05-05 17:30:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -250,8 +250,6 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers on output */
-
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	
 	/* Read in the input tables */
@@ -259,6 +257,8 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D[GMT_IN])) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+
+	if (Ctrl->T.active) GMT->current.io.multi_segments[GMT_OUT] = FALSE;	/* Turn off segment headers on output */
 
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "The -a option requires a single table only.\n");

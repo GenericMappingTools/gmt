@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1007 2011-05-04 22:11:31 guru Exp $
+	$Id: ChangeLog,v 1.1008 2011-05-05 17:30:07 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-05	pwessel
+	* gmtconvert_func.c:	The -T was applied before reading, which reset -m.
+	* mapproject_func.c:	The -L would set output types as lon/lat even for Cartesian data.
 
 2011-05-04	pwessel
 	* gmtapi_util.c:	Set BCs for all grids regardless of read-source, even if
