@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.17 2011-05-05 03:01:32 guru Exp $
+*	$Id: mapproject_func.c,v 1.18 2011-05-05 17:30:07 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -643,11 +643,11 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Ctrl->C.northing *= u_scale;
 	}
 
-	if (Ctrl->L.mode == 3)
+	if (Ctrl->L.mode == 3)	/* Want fractional point locations */
 		fmt[0] = fmt[1] = GMT_IS_FLOAT;
-	else {
-		fmt[0] = GMT_IS_LON;
-		fmt[1] = GMT_IS_LAT;
+	else {			/* Want nearest point */
+		fmt[0] = GMT->current.io.col_type[GMT_OUT][GMT_X];
+		fmt[1] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
 	}
 	out = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	
