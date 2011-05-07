@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.19 2011-04-29 03:08:12 guru Exp $
+ *    $Id: grdblend_func.c,v 1.20 2011-05-07 19:21:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,6 +98,22 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 EXTERN_MSC GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
+EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
+
+#define N_NOT_SUPPORTED	8
+
+GMT_LONG found_unsupported_format (struct GMT_CTRL *GMT, struct GRD_HEADER *h, char *file)
+{	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
+	GMT_LONG i;
+	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
+	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
+		if (h->type == GMT_grd_format_decoder (GMT, not_supported[i])) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Grid format type %s for file %s is not supported\n", not_supported[i], file);
+			return (1);
+		}
+	}
+	return (GMT_NOERROR);
+}
 
 void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	GMT_LONG i, pos, error = 0;
@@ -161,6 +177,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		strcpy (B[n].file, L[n].file);
 		GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Read header structure */
+		if (found_unsupported_format (GMT, &B[n].G.header, B[n].file)) return (-1);
 		B[n].weight = L[n].weight;
 		if (!strcmp (L[n].region, "-"))
 			GMT_memcpy (B[n].wesn, B[n].G.header.wesn, 4, double);	/* Set inner = outer region */
@@ -340,9 +357,12 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Give filename - weight if inner region should equal the actual region.\n");
 	GMT_message (GMT, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
 	GMT_message (GMT, "\t   If only filename is given we interpret that as if filename - 1.0 was given.\n");
+	GMT_message (GMT, "\t   Each grid must be in netCDF or native binary format.\n");
 	GMT_message (GMT, "\tAlternatively, if all grids have the same weight (1) and inner region should equal the outer,\n");
 	GMT_message (GMT, "\tthen you can instead list all the grid files on the command line (e.g., patches_*.nc).\n");
+	GMT_message (GMT, "\tYou must have at least 2 input grids for this to work.\n");
 	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
+	GMT_message (GMT, "\t   Only netCDF and native binary grid formats are supported.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -450,7 +470,7 @@ GMT_LONG GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
@@ -485,6 +505,9 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
+	/* Only allow netcdf (both v3 and new) and native binary output */
+	if (found_unsupported_format (GMT, &S.header, Ctrl->G.file)) Return (EXIT_FAILURE);
+	
 	n_fill = n_tot = 0;
 
 	GMT_memcpy (S.header.inc, Ctrl->I.inc, 2, double);
@@ -495,19 +518,17 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
-	if (Ctrl->In.n == 1) {	/* Got a blend file */
+	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
 	}
 
 	n_blend = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
 
-	if (Ctrl->In.n > 1) {	/* Free some memory */
-		for (k = 0; k < Ctrl->In.n; k++) free ((void *)Ctrl->In.file[k]);
-		GMT_free (GMT, Ctrl->In.file);
-	}
-	else if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if (Ctrl->In.n <= 1 && (error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
+	if (n_blend < 0) Return (EXIT_FAILURE);	/* Something went wrong in init_blend_job */
+	
 	if (Ctrl->W.active && n_blend > 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Only applies when there is a single input grid file\n");
 		Return (EXIT_FAILURE);
