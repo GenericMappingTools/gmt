@@ -1,12 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1011 2011-05-07 19:21:41 guru Exp $
+	$Id: ChangeLog,v 1.1012 2011-05-07 19:59:03 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-07	pwessel
 	* gmt_grdio.c:		Failed to create proper old-style v3 netcdf file if selected
 				for the output in grdblend.
 	* gmt_agc_io.c:		Needed char floatvalue[PARAMSIZE+1], with the 1 to hold final \0
-	* grdblend_func.c:	Now mentions which formats are supported and polices the process.
+	* grdblend_func.c:	Now supports all grid formats either directly or via reformatting.
 
 2011-05-05	pwessel
 	* gmtconvert_func.c:	The -T was applied before reading, which reset -m.
