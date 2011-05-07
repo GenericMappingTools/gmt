@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1008 2011-05-05 17:30:07 guru Exp $
+	$Id: ChangeLog,v 1.1009 2011-05-07 17:53:44 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-07	pwessel
+	* gmt_grdio.c:		Failed to create proper old-style v3 netcdf file if selected
+				for the output.
 
 2011-05-05	pwessel
 	* gmtconvert_func.c:	The -T was applied before reading, which reset -m.
