@@ -29,11 +29,15 @@ Finally, if only a gridfile name is found we will use the grid domain as inner r
 If the ASCII file is not given BD(grdblend) will read standard input.
 Alternatively, if you have more than one grid file to blend and you wish (a) all input grids to have the same
 weight (1) and (b) all grids should use their region as the interior region, then you may simply list all
-the grids on the command line instead of providing a IT(blendfile).
+the grids on the command line instead of providing a IT(blendfile).  You must specify at least 2 input grids
+for this mechanism to work.  Any grid that is not coregistered with the desired output layout implied by
+OPT(R), OPT(I) (and OPT(r)) will first be resampled via BD(grdsample).  Also, grids that are not in
+netCDF or native binary format will first be reformatted via BD(grdreformat).
 .TP
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the binary output grid file.
-(See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are supported.
+(See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are can be written directly.
+Other output format choices will be handled by reformatting the output once blending is complete.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
