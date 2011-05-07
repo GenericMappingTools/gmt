@@ -14,6 +14,8 @@ data.  Such unconstrained nodes are set to a value specified by the user [Defaul
 Nodes with more than one value will be set to the weighted average value. Any input grid
 that does not share the final output grid's node registration and grid spacing will automatically\"'
 be resampled via calls to grdsample.
+Note: Due to the row-by-row i/o nature of operations in grdblend we only support the
+netCDF and native binary grid formats for both input and output.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(blendfile)
@@ -31,7 +33,7 @@ the grids on the command line instead of providing a IT(blendfile).
 .TP
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the binary output grid file.
-(See GRID FILE FORMATS below).
+(See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are supported.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS

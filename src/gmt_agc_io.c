@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.37 2011-04-27 02:07:15 remko Exp $
+/*      $Id: gmt_agc_io.c,v 1.38 2011-05-07 19:21:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
 
 void SaveAGCHeader (char *remark, float *agchead)
 {	/* Place AGC header data in remark string */
-	char floatvalue[PARAMSIZE];
+	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
 	GMT_LONG i, j;
 
 	strcpy (remark, AGCHEADINDICATOR);
