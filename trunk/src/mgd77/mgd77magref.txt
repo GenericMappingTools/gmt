@@ -22,8 +22,8 @@ those coefficient files up to 2006, which means that one can compute external co
 the Secular Variation will be biased (non reliable). New indices files may be retrieved 
 from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the IT(Dst) coefficients) and 
 ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The IT(F10.7) index file is a MONTHPLT.ABS). 
-NOTE: since the IT(Dst) files in the .../DST/ directory are still only up to 2006, for GMT4.5.1 we extended the IT(Dst)
-till August 2009 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
+NOTE: since the IT(Dst) files in the .../DST/ directory are still only up to 2006, for GMT4.5.3 we extended the IT(Dst)
+until August 2009 by reformatting the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
 ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
@@ -88,7 +88,7 @@ BD(9) means Core field from IGRF and other contributions from CM4. DO NOT USE BO
 .br
 Appending several numbers (1-7) will add up the different contributions. For example
 OPT(Ft)/BD(12) computes the total field due to Core and Lithospheric sources.
-Two special cases are allowed, wich mix which Core field from IGRF and other sources from CM4.
+Two special cases are allowed, which mix which Core field from IGRF and other sources from CM4.
 OPT(Ft)/BD(934) computes Core field due to IGRF plus terms 3 and 4 from CM4 (but you can add others).
 OPT(Ft)/BD(934) the same as above but output the field components.
 The data is written out in the order they appear in IT(flags) [Default is OPT(Frthxyzdi)/BD(1)].

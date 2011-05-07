@@ -62,7 +62,7 @@ data are read by BD(mgd77list).  Ephemeral corrections such as those determined 
 not kept in the data files but reside in correction tables (see BD(mgd77list) for details).  By default, the
 first character of each header line in the e77 file (which is ?, Y or N) will be consulted to see if the corresponding
 adjustment should be applied.  If any undecided settings are found (i.i, ?) we will abort and make no changes.
-Only records marked Y will be porcessed.  You can override this behavior by appending one or more modifiers to the OPT(Ae) command:
+Only records marked Y will be processed.  You can override this behavior by appending one or more modifiers to the OPT(Ae) command:
 BD(h) will ignore all header corrections, BD(f) will ignore all fixed systematic trend corrections, 
 BD(n), BD(v), and BD(s) will ignore bitflags pertaining to navigation, data values, and data slopes,
 respectively.  Use OPT(A+e) to replace any existing E77 corrections in the file with the new values.

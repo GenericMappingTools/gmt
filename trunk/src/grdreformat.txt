@@ -54,7 +54,7 @@ integer data. To read other types of grid files, append the =IT(id) suffix to th
 .br
 #include "grdreformat_man.i"
 .SH GMT STANDARD NETCDF FILES
-The standard format used for gdrfiles is based on netCDF and conforms to the COARDS conventions. Files written
+The standard format used for grdfiles is based on netCDF and conforms to the COARDS conventions. Files written
 in this format can be read by numerous third-party programs and are platform-independent. Some disk-space
 can be saved by storing the data as bytes or shorts in stead of integers. Use the IT(scale) and IT(offset)
 parameters to make this work without loss of data range or significance. For more details, see Appendix B.

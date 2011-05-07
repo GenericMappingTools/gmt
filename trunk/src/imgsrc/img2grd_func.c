@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.12 2011-05-04 22:11:33 guru Exp $
+/* $Id: img2grd_func.c,v 1.13 2011-05-07 01:50:46 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -137,7 +137,7 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Refer Mercator coordinates to img source origin and requires -M\n");
 	GMT_message (GMT, "\t   [Default sets lower left to 0,0].\n");
-	GMT_message (GMT, "\t-D[<minlon>/<maxlon>] input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
+	GMT_message (GMT, "\t-D[<minlat>/<maxlat>] input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	GMT_message (GMT, "\t   If no latitudes are given it is taken to mean %.3f/%.3f.\n", GMT_IMG_MINLAT_80, GMT_IMG_MAXLAT_80);
 	GMT_message (GMT, "\t   Without -D we automatically determine the extent from the file size.\n");
 	GMT_message (GMT, "\t-E Resample geographic grid to the specified -R.  Cannot be used with -M .\n");
