@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.7 2011-05-02 08:00:56 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.8 2011-05-07 01:50:47 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t	 9 means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.\n");
 	GMT_message (GMT, "\t   Append several numbers to add up the different contributions. For example,\n");
 	GMT_message (GMT, "\t     -Ft/12 computes the total field due to CM4 Core and Lithospheric sources.\n");
-	GMT_message (GMT, "\t     Two special cases are allowed wich mix which Core field from IGRF and other sources from CM4.\n");
+	GMT_message (GMT, "\t     Two special cases are allowed which mix which Core field from IGRF and other sources from CM4.\n");
 	GMT_message (GMT, "\t     -Ft/934 computes Core field due to IGRF plus terms 3 and 4 from CM4.\n");
 	GMT_message (GMT, "\t     -Fxyz/934 the same as above but output the field components.\n");
 	GMT_message (GMT, "\t	 The data is written out in the order specified in <dataflags>\n");

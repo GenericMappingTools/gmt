@@ -83,7 +83,7 @@ optional IT(scale) and IT(origin) can be used to translate the argument (before 
 function).  The argument IT(abbrev) is one of the abbreviations for columns known to this TAG.
 However, it can also be one of the three auxiliary terms BD(dist) (for along-track distances), BD(azim) for
 along-track azimuths, and BD(vel) (for along-track speed); these are all sensitive to the OPT(C) and OPT(N)
-settings used when defining the TAB; futhermore, BD(vel) requires BD(time) to be present in the data.  If IT(origin) is
+settings used when defining the TAB; furthermore, BD(vel) requires BD(time) to be present in the data.  If IT(origin) is
 given as BD(T) it means that we should replace it with the value of IT(abbrev) for the very
 first record in the file (this is usually only done for IT(time)).  If the first data record entry is
 NaN we revert IT(origin) to zero.  Optionally, raise the entire expression to the given IT(power),
