@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.7 2011-05-08 03:45:27 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -519,7 +519,7 @@ GMT_LONG bad_coordinates (double lon, double lat) {
 	return (GMT_is_dnan (lon) || GMT_is_dnan (lat));
 }
 
-extern void gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
+extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 
 #define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_exit (code);}
 
@@ -725,7 +725,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else
 					angle -= 90.0;
 				if (annot_tick[ANNOT] & 1) {	/* Time mark */
-					gcal_from_dt (GMT, annot_time[ANNOT], &calendar);			/* Convert t to a complete calendar structure */
+					GMT_gcal_from_dt (GMT, annot_time[ANNOT], &calendar);			/* Convert t to a complete calendar structure */
 					GMT_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, FALSE, 1, annot_time[ANNOT]);
 					this_julian = calendar.day_y;
 					if (this_julian != last_julian) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.257 2011-05-02 12:43:09 remko Exp $
+ *	$Id: pslib.c,v 1.258 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -308,7 +308,7 @@ void psl_rgb_to_hsv (double rgb[], double hsv[]);
 void psl_cmyk_to_rgb (double rgb[], double cmyk[]);
 char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
-void PSL_defunits_array (struct PSL_CTRL *PSL, char *param, double *array, PSL_LONG n);
+void psl_defunits_array (struct PSL_CTRL *PSL, char *param, double *array, PSL_LONG n);
 PSL_LONG psl_set_xyn_arrays (struct PSL_CTRL *PSL, char *xparam, char *yparam, char *nparam, double *x, double *y, PSL_LONG *node, PSL_LONG n, PSL_LONG m);
 void psl_set_txt_array (struct PSL_CTRL *PSL, char *param, char *array[], PSL_LONG n);
 void psl_set_real_array (struct PSL_CTRL *PSL, char *param, double *array, PSL_LONG n);
@@ -327,7 +327,6 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]);
 PSL_LONG psl_patch (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG np);
 PSL_LONG psl_pattern_cleanup (struct PSL_CTRL *PSL);
 PSL_LONG psl_read_rasheader  (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
-PSL_LONG psl_write_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
 PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char *paragraph);
 PSL_LONG psl_encodefont (struct PSL_CTRL *PSL, PSL_LONG font_no);
 PSL_LONG psl_putfont (struct PSL_CTRL *PSL, double fontsize);
@@ -2380,8 +2379,8 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	justify = PSL_abs (justify);
 
 	PSL_definteger (PSL, "PSL_m", m);
-	PSL_defunits_array (PSL, "PSL_txt_x", x, m);
-	PSL_defunits_array (PSL, "PSL_txt_y", y, m);
+	psl_defunits_array (PSL, "PSL_txt_x", x, m);
+	psl_defunits_array (PSL, "PSL_txt_y", y, m);
 	psl_set_real_array (PSL, "PSL_angle", angle, m);
 	psl_set_txt_array (PSL, "PSL_str", label, m);
 	PSL_definteger (PSL, "PSL_just", justify);
@@ -3201,65 +3200,12 @@ PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h
 	return (0);
 }
 
-PSL_LONG psl_write_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1)
-{
-	/* Writes the header of a Sun rasterfile.
-	   Since the byte order is defined as Big Endian, the bytes are read
-	   byte by byte to ensure portability onto Little Endian platforms.
-	 */
-
-	unsigned char byte[4];
-	PSL_LONG i, j, value, in[4];
-
-	for (i = i0; i <= i1; i++) {
-		switch (i) {
-			case 0:
-				value = h->magic;
-				break;
-			case 1:
-				value = h->width;
-				break;
-			case 2:
-				value = h->height;
-				break;
-			case 3:
-				value = h->depth;
-				break;
-			case 4:
-				value = h->length;
-				break;
-			case 5:
-				value = h->type;
-				break;
-			case 6:
-				value = h->maptype;
-				break;
-			default:
-				value = h->maplength;
-				break;
-		}
-
-		in[0] = (value >> 24);
-		in[1] = (value >> 16) & 255;
-		in[2] = (value >> 8) & 255;
-		in[3] = (value & 255);
-		for (j = 0; j < 4; j++) byte[j] = (unsigned char)in[j];
-
-		if (fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) {
-			PSL_message (PSL, PSL_MSG_FATAL, "Error writing rasterfile header\n");
-			return (-1);
-		}
-	}
-
-	return (0);
-}
-
 /* ----------------------------------------------------------------------
  * Support functions used in PSL_* functions.  No Fortran bindings needed.
  * ----------------------------------------------------------------------
  */
 
-void get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2)
+void psl_get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2)
 { /* finds origin so that distance is r to the two points given */
 	double a0, b0, c0, A, B, C, q, sx1, sx2, sy1, sy2, r1, r2;
 
@@ -3319,9 +3265,9 @@ PSL_LONG psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 			A = D2R * (angle[i] + sign[i] * da);	s = sin (A);	c = cos (A);
 			xr = (r + head_half_width) * c;	yr = (r + head_half_width) * s;
 			xl = (r - head_half_width) * c;	yl = (r - head_half_width) * s;
-			get_origin (xt, yt, xr, yr, r, &xo, &yo, &bo1, &bo2);
+			psl_get_origin (xt, yt, xr, yr, r, &xo, &yo, &bo1, &bo2);
 			PSL_plotarc (PSL, xo, yo, r, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
-			get_origin (xt, yt, xl, yl, r, &xi, &yi, &bi1, &bi2);
+			psl_get_origin (xt, yt, xl, yl, r, &xi, &yi, &bi1, &bi2);
 			PSL_plotarc (PSL, xi, yi, r, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
 			A = D2R * (angle[i]+sign[i]*da*(1.0-0.5*shape));	s = sin (A);	c = cos (A);
 			xv = r * c - xl;	yv = r * s - yl;
@@ -4323,7 +4269,7 @@ PSL_LONG psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb[]
 	return (polarity);
 }
 
-void PSL_defunits_array (struct PSL_CTRL *PSL, char *param, double *array, PSL_LONG n)
+void psl_defunits_array (struct PSL_CTRL *PSL, char *param, double *array, PSL_LONG n)
 {	/* These are used by PSL_plottextclip */
 	PSL_LONG i;
 	PSL_command (PSL, "/%s\n", param);

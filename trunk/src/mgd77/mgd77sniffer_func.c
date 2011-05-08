@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.15 2011-05-02 08:00:56 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.16 2011-05-08 03:45:27 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -43,8 +43,8 @@
 #define POS 1
 #define NEG 0
 
-EXTERN_MSC GMT_LONG gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month);
-EXTERN_MSC int GMT_comp_double_asc (const void *p_1, const void *p_2);
+EXTERN_MSC GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month);
+EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
 
 GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
@@ -1997,7 +1997,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
 									last_day = irint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
-									last_day = (int)gmonth_length (GMT, irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
+									last_day = (int)GMT_gmonth_length (GMT, irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
 								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);
@@ -2859,7 +2859,7 @@ double median (struct GMT_CTRL *GMT, double *x, GMT_LONG n)
 
 	sorted = GMT_memory (GMT, NULL, n, double);
 	GMT_memcpy (sorted, x, n, double);
-	qsort ((void *) sorted, n, sizeof(double), GMT_comp_double_asc);
+	qsort ((void *) sorted, n, sizeof(double), gmt_comp_double_asc);
 	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
 	GMT_free (GMT, sorted);
 	return med;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.71 2011-04-27 02:07:14 remko Exp $
+ *	$Id: gmt_cdf.c,v 1.72 2011-05-08 03:45:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,7 +42,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job)
+GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job)
 {
 	GMT_LONG err;
 	int i, nm[2];
@@ -179,7 +179,7 @@ GMT_LONG GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
-	GMT_err_trap (GMT_cdf_grd_info (C, ncid, header, 'r'));
+	GMT_err_trap (gmt_cdf_grd_info (C, ncid, header, 'r'));
 	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
@@ -191,7 +191,7 @@ GMT_LONG GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid));
 	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
-	GMT_err_trap (GMT_cdf_grd_info (C, ncid, header, 'u'));
+	GMT_err_trap (gmt_cdf_grd_info (C, ncid, header, 'u'));
 	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
@@ -203,7 +203,7 @@ GMT_LONG GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
-	GMT_err_trap (GMT_cdf_grd_info (C, ncid, header, 'w'));
+	GMT_err_trap (gmt_cdf_grd_info (C, ncid, header, 'w'));
 	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
@@ -337,7 +337,7 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
-	GMT_err_trap (GMT_cdf_grd_info (C, ncid, header, 'w'));
+	GMT_err_trap (gmt_cdf_grd_info (C, ncid, header, 'w'));
 
 	/* Set start position for writing grid */
 

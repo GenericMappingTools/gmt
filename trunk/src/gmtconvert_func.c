@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.10 2011-05-05 17:30:07 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.11 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -299,9 +299,9 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out))) Return (error);
 	
 	if (Ctrl->S.active && GMT->current.io.ogr == 1 && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
-		EXTERN_MSC GMT_LONG get_ogr_id (struct GMT_OGR *G, char *name);
+		EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 		*p = 0;	/* Skip the = sign */
-		if ((ogr_item = get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMTAPI_NOTSET) {
+		if ((ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMTAPI_NOTSET) {
 			ogr_match = TRUE;
 			p++;
 			strcpy (Ctrl->S.pattern, p);	/* Move the value over to the start */

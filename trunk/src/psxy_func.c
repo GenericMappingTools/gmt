@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.19 2011-05-02 12:46:32 remko Exp $
+ *	$Id: psxy_func.c,v 1.20 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -994,7 +994,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
 					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_draw_fence (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
+					GMT_draw_front (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
 			}
 		}

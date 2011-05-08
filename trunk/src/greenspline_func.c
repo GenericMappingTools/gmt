@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.12 2011-05-03 17:39:48 guru Exp $
+ *	$Id: greenspline_func.c,v 1.13 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -37,6 +37,10 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
+EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
+EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
 
 /* Control structure for greenspline */
 
@@ -132,33 +136,6 @@ struct ZGRID {
 #ifdef TEST
 void dump_green (PFD G, PFD D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
-
-/* Functions for complex math */
-
-static void Cdiv (double A[], double B[], double C[])
-{	/* Complex division */
-	double i_denom;
-	i_denom = 1.0 / (B[0]*B[0] + B[1]*B[1]);
-	C[0] = (A[0]*B[0] + A[1]*B[1]) * i_denom;
-	C[1] = (A[1]*B[0] - A[0]*B[1]) * i_denom;
-}
-
-static void Cmul (double A[], double B[], double C[])
-{	/* Complex multiplication */
-	C[0] = A[0]*B[0] - A[1]*B[1];
-	C[1] = A[0]*B[1] + A[1]*B[0];
-}
-
-static void Ccot (double Z[], double cotZ[])
-{	/* Complex cot(z) */
-	double sx, cx, e, A[2], B[2];
-	
-	sincos (2.0*Z[0], &sx, &cx);
-	e = exp (-2.0*Z[1]);
-	A[0] = -e * sx;		A[1] = B[0] = e * cx;
-	A[1] += 1.0;	B[0] -= 1.0;	B[1] = -A[0];
-	Cdiv (A, B, cotZ);
-}
 
 EXTERN_MSC double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
 EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
@@ -723,7 +700,7 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 	if (x == -1.0) return (0.0);
 
 	GMT_PvQv (GMT, -x, par, pq, &n);	/* Get P_nu(-x) */
-	Cdiv (pq, &par[4], z);		/* Get P_nu(-x) / sin (nu*M_PI) */
+	gmt_Cdiv (pq, &par[4], z);		/* Get P_nu(-x) / sin (nu*M_PI) */
 	pq[0] = M_PI * z[0] - log (1.0 - x);
 #ifdef TEST
 	pq[1] = M_PI * z[1];
@@ -740,13 +717,13 @@ double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[],
 	
 	if (x == +1.0 || x == -1.0) return (0.0);
 
-	GMT_PvQv (GMT, -x, par, pq, &n);			/* Get P_nu(-x) */
+	GMT_PvQv (GMT, -x, par, pq, &n);		/* Get P_nu(-x) */
 	z[0] = pq[0] * x;	z[1] = pq[1] * x;	/* Get x*P_nu(-x) */
 	v1[0] = par[0] + 1.0;	v1[1] = par[1];		/* Get nu+1 */
 	GMT_PvQv (GMT, -x, v1, pq, &n);			/* Get P_(nu+1)(-x) */
 	z[0] += pq[0];	z[1] += pq[1];			/* Get x*P_nu(-x) + P_(nu+1)(-x) */
-	Cdiv (z, &par[4], pq);				/* Get ---"--- / sin (nu*M_PI) */
-	Cmul (pq, v1, z);				/* Mul by nu + 1 */
+	gmt_Cdiv (z, &par[4], pq);			/* Get ---"--- / sin (nu*M_PI) */
+	gmt_Cmul (pq, v1, z);				/* Mul by nu + 1 */
 	s = M_PI / sqrt (1.0 - x*x);			/* Mul by pi/sin(theta) */
 	z[0] *= s;
 #ifdef TEST
@@ -1433,7 +1410,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				par[1] = sqrt (p_val * p_val - 0.25);
 				par[4] = -cosh (M_PI * par[1]);
 				z[0] = par[0] * M_PI;	z[1] = par[1] * M_PI;
-				Ccot (z, cot_piv);
+				gmt_Ccot (z, cot_piv);
 				cot_piv[0] *= M_PI;	cot_piv[1] *= M_PI;
 				z[0] = par[0] + 1.0;	z[1] = par[1];
 				(void) GMT_psi (GMT, z, psi);
