@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalwrite.c,v 1.1 2011-04-26 14:40:31 jluis Exp $
+ *	$Id: gmt_gdalwrite.c,v 1.2 2011-05-08 23:27:55 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -177,5 +177,6 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	GDALClose( hDstDS );
 
 	if (outByte) GMT_free(C, outByte);
+
 	return (GMT_NOERROR);
 }
