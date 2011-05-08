@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.13 2011-05-02 12:46:32 remko Exp $
+ *	$Id: pscoast_func.c,v 1.14 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -762,7 +762,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Get clipped polygons in x,y inches that can be plotted */
 
-			np_new = GMT_prep_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
+			np_new = GMT_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
 
 			if (clipping) {
 				for (k = level_to_be_painted; k < GMT_MAX_GSHHS_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
@@ -804,7 +804,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 
-			GMT_free_polygons (GMT, p, np_new);
+			GMT_free_shore_polygons (GMT, p, np_new);
 			GMT_free (GMT, p);
 		}
 
@@ -835,7 +835,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 
-			GMT_free_polygons (GMT, p, np);
+			GMT_free_shore_polygons (GMT, p, np);
 			GMT_free (GMT, p);
 		}
 
@@ -895,7 +895,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Free up memory */
 
 			GMT_free_br (GMT, &r);
-			GMT_free_polygons (GMT, p, np);
+			GMT_free_shore_polygons (GMT, p, np);
 			GMT_free (GMT, p);
 		}
 		GMT_br_cleanup (GMT, &r);
@@ -957,7 +957,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Free up memory */
 
 			GMT_free_br (GMT, &b);
-			GMT_free_polygons (GMT, p, np);
+			GMT_free_shore_polygons (GMT, p, np);
 			GMT_free (GMT, p);
 		}
 		GMT_br_cleanup (GMT, &b);

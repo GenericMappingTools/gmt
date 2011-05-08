@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.12 2011-05-02 19:34:31 guru Exp $
+ *	$Id: psxyz_func.c,v 1.13 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -922,7 +922,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_plane_perspective (GMT, PSL, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_draw_fence (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
+					GMT_draw_front (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
 
 				GMT_free (GMT, xp);

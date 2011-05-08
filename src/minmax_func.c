@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.14 2011-05-02 08:00:56 guru Exp $
+ *    $Id: minmax_func.c,v 1.15 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -61,7 +61,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	} T;
 };
 
-EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
+EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 GMT_LONG strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, GMT_LONG col)
@@ -268,12 +268,12 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Must check that output format won't mess things up by printing west > east */
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
-			GMT_err_fail (GMT, GMT_geo_C_format (GMT), "");
+			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
-			GMT_err_fail (GMT, GMT_geo_C_format (GMT), "");
+			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 	}

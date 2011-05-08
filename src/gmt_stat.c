@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.82 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_stat.c,v 1.83 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,8 +24,8 @@
  *
  * PUBLIC functions:
  *
- *	GMT_f_test :	Routine to compute the probability that two variances are the same
- *	GMT_f_test_new:	As above, but allows choosing 1- or 2-sided, and which side
+ *	gmt_f_test :	Routine to compute the probability that two variances are the same
+ *	gmt_f_test_new:	As above, but allows choosing 1- or 2-sided, and which side
  *	GMT_f_q:	Returns the probability integral Q(F,nu1,nu2) of the F-distribution.
  *	GMT_student_t_a:	Returns the prob integral A(t,nu) of the student-t distrib.
  *	GMT_sig_f :	Returns TRUE if reduction in model misfit was significant
@@ -61,17 +61,14 @@
 #include "gmt_internals.h"
 
 #if HAVE_SINCOS == 0 && HAVE_ALPHASINCOS == 0
-
 /* Platform does not have sincos - make a dummy one with sin and cos */
-
 void sincos (double a, double *s, double *c)
 {
 	*s = sin (a);	*c = cos (a);
 }
-
 #endif
 
-GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
+GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
 {
 	/* Given chisq1 and chisq2, random variables distributed as chi-square
 		with nu1 and nu2 degrees of freedom, respectively, except that
@@ -82,10 +79,10 @@ GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double
 			iside=+1 means H1 is that var1 > var2
 			iside=-1 means H1 is that var1 < var2
 			iside=0  means H1 is that var1 != var2.
-		This routine differs from the old GMT_f_test() by adding the
+		This routine differs from the old gmt_f_test() by adding the
 		argument iside and allowing one to choose the test.  The old
 		routine in effect always set iside=0.
-		This routine also differs from GMT_f_test() in that the former
+		This routine also differs from gmt_f_test() in that the former
 		used the incomplete beta function and this one uses GMT_f_q().
 
 		Returns 0 on success, -1 on failure.
@@ -99,7 +96,7 @@ GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double
 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = C->session.d_NaN;
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test_new: Error: Bad argument(s).\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test_new: Error: Bad argument(s).\n");
 		return (-1);
 	}
 
@@ -117,9 +114,9 @@ GMT_LONG GMT_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double
 	return (0);
 }
 
-double GMT_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
+double gmt_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
 {
-	/* Continued fraction method called by GMT_inc_beta.  */
+	/* Continued fraction method called by gmt_inc_beta.  */
 
 	static GMT_LONG	itmax = 100;
 	static double eps = 3.0e-7;
@@ -152,18 +149,18 @@ double GMT_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
 		bz = 1.0;
 	} while (((fabs (az-aold) ) >= (eps * fabs (az))) && (m < itmax));
 
-	if (m == itmax) GMT_report (C, GMT_MSG_FATAL, "GMT_cf_beta:  A or B too big, or ITMAX too small.\n");
+	if (m == itmax) GMT_report (C, GMT_MSG_FATAL, "gmt_cf_beta:  A or B too big, or ITMAX too small.\n");
 
 	return (az);
 }
 
-double GMT_ln_gamma (struct GMT_CTRL *C, double xx)
+double gmt_ln_gamma (struct GMT_CTRL *C, double xx)
 {
 	/* Routine to compute natural log of Gamma(x)
 		by Lanczos approximation.  Most accurate
 		for x > 1; fails for x <= 0.  No error
 		checking is done here; it is assumed
-		that this is called by GMT_ln_gamma_r()  */
+		that this is called by gmt_ln_gamma_r()  */
 
 	static double cof[6] = {
 		 76.18009173,
@@ -190,24 +187,24 @@ double GMT_ln_gamma (struct GMT_CTRL *C, double xx)
 	return (tmp + d_log (C,stp*ser) );
 }
 
-GMT_LONG GMT_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
+GMT_LONG gmt_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
 {
 	/* Get natural logrithm of Gamma(x), x > 0.
 		To maintain full accuracy, this
 		routine uses Gamma(1 + x) / x when
 		x < 1.  This routine in turn calls
-		GMT_ln_gamma(x), which computes the
-		actual function value.  GMT_ln_gamma
+		gmt_ln_gamma(x), which computes the
+		actual function value.  gmt_ln_gamma
 		assumes it is being called in a
 		smart way, and does not check the
 		range of x.  */
 
 	if (x > 1.0) {
-		*lngam = GMT_ln_gamma (C, x);
+		*lngam = gmt_ln_gamma (C, x);
 		return (0);
 	}
 	if (x > 0.0 && x < 1.0) {
-		*lngam = GMT_ln_gamma (C, 1.0 + x) - d_log (C,x);
+		*lngam = gmt_ln_gamma (C, 1.0 + x) - d_log (C,x);
 		return (0);
 	}
 	if (x == 1.0) {
@@ -218,22 +215,22 @@ GMT_LONG GMT_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
 	return (-1);
 }
 
-GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibeta)
+GMT_LONG gmt_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibeta)
 {
 	double bt, gama, gamb, gamab;
 
 	if (a <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad a (a <= 0).\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad a (a <= 0).\n");
 		return(-1);
 	}
 	if (b <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad b (b <= 0).\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad b (b <= 0).\n");
 		return(-1);
 	}
 	if (x > 0.0 && x < 1.0) {
-		GMT_ln_gamma_r(C, a, &gama);
-		GMT_ln_gamma_r(C, b, &gamb);
-		GMT_ln_gamma_r(C, (a+b), &gamab);
+		gmt_ln_gamma_r(C, a, &gama);
+		gmt_ln_gamma_r(C, b, &gamb);
+		gmt_ln_gamma_r(C, (a+b), &gamab);
 		bt = exp(gamab - gama - gamb
 			+ a * d_log (C, x) + b * d_log (C, 1.0 - x) );
 
@@ -247,9 +244,9 @@ GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double 
 			in text as well as code.  What to do ? */
 
 		if (x < ( (a + 1) / (a + b + 2) ) )
-			*ibeta = bt * GMT_cf_beta (C, a, b, x) / a;
+			*ibeta = bt * gmt_cf_beta (C, a, b, x) / a;
 		else
-			*ibeta = 1.0 - bt * GMT_cf_beta (C, b, a, (1.0 - x) ) / b;
+			*ibeta = 1.0 - bt * gmt_cf_beta (C, b, a, (1.0 - x) ) / b;
 		return(0);
 	}
 	else if (x == 0.0) {
@@ -261,18 +258,18 @@ GMT_LONG GMT_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double 
 		return (0);
 	}
 	else if (x < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x < 0).\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad x (x < 0).\n");
 		*ibeta = 0.0;
 	}
 	else if (x > 1.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_inc_beta:  Bad x (x > 1).\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad x (x > 1).\n");
 		*ibeta = 1.0;
 	}
 	return (-1);
 }
 
 
-GMT_LONG GMT_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
 {
 	/* Routine to compute the probability that
 		two variances are the same.
@@ -295,11 +292,11 @@ GMT_LONG GMT_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chi
 	double f, df1, df2, p1, p2;
 
 	if (chisq1 <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test:  Chi-Square One <= 0.0\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Chi-Square One <= 0.0\n");
 		return(-1);
 	}
 	if (chisq2 <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test:  Chi-Square Two <= 0.0\n");
+		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Chi-Square Two <= 0.0\n");
 		return(-1);
 	}
 	if (chisq1 > chisq2) {
@@ -312,12 +309,12 @@ GMT_LONG GMT_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chi
 		df1 = (double)nu2;
 		df2 = (double)nu1;
 	}
-	if (GMT_inc_beta(C, 0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test:  Trouble on 1st GMT_inc_beta call.\n");
+	if (gmt_inc_beta(C, 0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
+		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Trouble on 1st gmt_inc_beta call.\n");
 		return(-1);
 	}
-	if (GMT_inc_beta(C, 0.5*df1, 0.5*df2, df1/(df1+df2/f), &p2) ) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_test:  Trouble on 2nd GMT_inc_beta call.\n");
+	if (gmt_inc_beta(C, 0.5*df1, 0.5*df2, df1/(df1+df2/f), &p2) ) {
+		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Trouble on 2nd gmt_inc_beta call.\n");
 		return(-1);
 	}
 	*prob = p1 + (1.0 - p2);
@@ -328,14 +325,14 @@ GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, G
 {
 	/* Returns TRUE if chi1/n1 significantly less than chi2/n2
 		at the level level.  Returns FALSE if:
-			error occurs in GMT_f_test_new();
+			error occurs in gmt_f_test_new();
 			chi1/n1 not significantly < chi2/n2 at level.
 
-			Changed 12 August 1999 to use GMT_f_test_new()  */
+			Changed 12 August 1999 to use gmt_f_test_new()  */
 
 	GMT_LONG trouble;
 
-	trouble = GMT_f_test_new (C, chi1, n1, chi2, n2, prob, -1);
+	trouble = gmt_f_test_new (C, chi1, n1, chi2, n2, prob, -1);
 	if (trouble) return (0);
 	return ((*prob) >= level);
 }
@@ -344,17 +341,17 @@ GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, G
 
 #define ITMAX 100
 
-void GMT_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, double *gln) {
+void gmt_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, double *gln) {
 	/* Returns the incomplete gamma function P(a,x) by series rep.
 	 * Press et al, gser() */
 
 	GMT_LONG n;
 	double sum, del, ap;
 
-	GMT_ln_gamma_r (C, a, gln);
+	gmt_ln_gamma_r (C, a, gln);
 
 	if (x < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  x < 0 in GMT_gamma_ser(x)\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  x < 0 in gmt_gamma_ser(x)\n");
 		*gamser = C->session.d_NaN;
 		return;
 	}
@@ -373,17 +370,17 @@ void GMT_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, doub
 	 		return;
 	 	}
 	}
-	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in GMT_gamma_ser(x)\n");
+	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_ser(x)\n");
 }
 
-void GMT_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, double *gln) {
+void gmt_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, double *gln) {
 	/* Returns the incomplete gamma function P(a,x) by continued fraction.
 	 * Press et al, gcf() */
 	GMT_LONG n;
 	double gold = 0.0, g, fac = 1.0, b1 = 1.0;
 	double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
 
-	GMT_ln_gamma_r (C, a, gln);
+	gmt_ln_gamma_r (C, a, gln);
 
 	a1 = x;
 	for (n = 1; n <= ITMAX; n++) {
@@ -404,10 +401,10 @@ void GMT_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, doubl
 			gold = g;
 		}
 	}
-	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in GMT_gamma_cf(x)\n");
+	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_cf(x)\n");
 }
 
-double GMT_gammq (struct GMT_CTRL *C, double a, double x) {
+double gmt_gammq (struct GMT_CTRL *C, double a, double x) {
 	/* Returns Q(a,x) = 1 - P(a,x) Inc. Gamma function */
 
 	double G, gln;
@@ -418,10 +415,10 @@ double GMT_gammq (struct GMT_CTRL *C, double a, double x) {
 	}
 
 	if (x < (a + 1.0)) {
-		GMT_gamma_ser (C, &G, a, x, &gln);
+		gmt_gamma_ser (C, &G, a, x, &gln);
 		return (1.0 - G);
 	}
-	GMT_gamma_cf (C, &G, a, x, &gln);
+	gmt_gamma_cf (C, &G, a, x, &gln);
 	return (G);
 }
 
@@ -1255,7 +1252,7 @@ GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2
 
 		REVISED by W H F Smith, October 27, 2000 after GMT 3.3.6 release.
 		I found that the A&S methods overflowed for large nu1 and nu2, so
-		I decided to go back to the GMT_inc_beta way of doing things.
+		I decided to go back to the gmt_inc_beta way of doing things.
 
 	*/
 
@@ -1280,8 +1277,8 @@ GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2
 	/* REVISION of Oct 27, 2000:  This inc beta call here returns
 		the value.  All subsequent code is not used.  */
 
-	if (GMT_inc_beta (C, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_q_p:  Trouble in GMT_inc_beta call.\n");
+	if (gmt_inc_beta (C, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_q_p:  Trouble in gmt_inc_beta call.\n");
 		return (-1);
 	}
 	return (0);
@@ -1542,24 +1539,29 @@ double GMT_chi2crit (struct GMT_CTRL *C, double alpha, double nu)
 	return (chi2_mid);
 }
 
+void gmt_F_to_ch1_ch2 (struct GMT_CTRL *C, double F, double nu1, double nu2, double *chisq1, double *chisq2)
+{	/* Silly routine to break F up into parts needed for GMT_f_q */
+	*chisq2 = 1.0;
+	*chisq1 = F * nu1 / nu2;
+}
+
 double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 {
 	/* Critical values for F-distribution */
 
 	GMT_LONG NU1, NU2, done;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
-	void F_to_ch1_ch2 (struct GMT_CTRL *C, double F, double nu1, double nu2, double *chisq1, double *chisq2);
 
 	F_high = 5.0;
 	p = 1.0 - alpha;
 	F_low = 0.0;
-	F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
+	gmt_F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
 	NU1 = (GMT_LONG)irint (nu1);
 	NU2 = (GMT_LONG)irint (nu2);
 	GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_high);
 	while (p_high > p) {	/* Must pick higher starting point */
 		F_high *= 2.0;
-		F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
+		gmt_F_to_ch1_ch2 (C, F_high, nu1, nu2, &chisq1, &chisq2);
 		GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_high);
 	}
 
@@ -1568,7 +1570,7 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	done = FALSE;
 	while (!done) {
 		F_mid = 0.5 * (F_low + F_high);
-		F_to_ch1_ch2 (C, F_mid, nu1, nu2, &chisq1, &chisq2);
+		gmt_F_to_ch1_ch2 (C, F_mid, nu1, nu2, &chisq1, &chisq2);
 		GMT_f_q (C, chisq1, NU1, chisq2, NU2, &p_mid);
 		if (GMT_IS_ZERO (p_mid - p)) {
 			done = TRUE;
@@ -1581,12 +1583,6 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 		}
 	}
 	return (F_mid);
-}
-
-void F_to_ch1_ch2 (struct GMT_CTRL *C, double F, double nu1, double nu2, double *chisq1, double *chisq2)
-{	/* Silly routine to break F up into parts needed for GMT_f_q */
-	*chisq2 = 1.0;
-	*chisq1 = F * nu1 / nu2;
 }
 
 #if HAVE_J0 == 0
@@ -1889,13 +1885,13 @@ void GMT_chi2 (struct GMT_CTRL *C, double chi2, double nu, double *prob) {
 	/* Evaluate probability that chi2 will exceed the
 	 * theoretical chi2 by chance. */
 
- 	*prob = GMT_gammq (C, 0.5 * nu, 0.5 * chi2);
+ 	*prob = gmt_gammq (C, 0.5 * nu, 0.5 * chi2);
 }
 
 void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
 
-	*prob = (k == 0.0) ? exp (-mu) : GMT_gammq (C, k, mu);
+	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
 
 #if HAVE_HYPOT == 0
@@ -2244,6 +2240,7 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, do
 	*scale = 1.4826 * med;
 }
 
+#if 0
 void GMT_getmad_BROKEN (double *x, GMT_LONG n, double location, double *scale)
 {
 	/* Compute MAD (Median Absolute Deviation) for a double data set */
@@ -2369,6 +2366,7 @@ void GMT_getmad_f_BROKEN (float *x, GMT_LONG n, double location, double *scale)
 
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
+#endif
 
 double GMT_extreme (struct GMT_CTRL *C, double x[], GMT_LONG n, double x_default, GMT_LONG kind, GMT_LONG way)
 {
@@ -2547,26 +2545,34 @@ double GMT_quantile_f (struct GMT_CTRL *C, float *x, double q, GMT_LONG n)
 	return (p);
 }
 
-#define RE 0
-#define IM 1
-
-static void Cmul (double A[], double B[], double C[])
+void gmt_Cmul (double A[], double B[], double C[])
 {	/* Complex multiplication */
-	C[RE] = A[RE]*B[RE] - A[IM]*B[IM];
-	C[IM] = A[RE]*B[IM] + A[IM]*B[RE];
+	C[GMT_RE] = A[GMT_RE]*B[GMT_RE] - A[GMT_IM]*B[GMT_IM];
+	C[GMT_IM] = A[GMT_RE]*B[GMT_IM] + A[GMT_IM]*B[GMT_RE];
 }
 
-static void Cdiv (double A[], double B[], double C[])
+void gmt_Cdiv (double A[], double B[], double C[])
 {	/* Complex division */
 	double denom;
-	denom = B[RE]*B[RE] + B[IM]*B[IM];
-	C[RE] = (A[RE]*B[RE] + A[IM]*B[IM])/denom;
-	C[IM] = (A[IM]*B[RE] - A[RE]*B[IM])/denom;
+	denom = B[GMT_RE]*B[GMT_RE] + B[GMT_IM]*B[GMT_IM];
+	C[GMT_RE] = (A[GMT_RE]*B[GMT_RE] + A[GMT_IM]*B[GMT_IM])/denom;
+	C[GMT_IM] = (A[GMT_IM]*B[GMT_RE] - A[GMT_RE]*B[GMT_IM])/denom;
 }
 
-static double Cabs (double A[])
+void gmt_Ccot (double Z[], double cotZ[])
+{	/* Complex cot(z) */
+	double sx, cx, e, A[2], B[2];
+	
+	sincos (2.0*Z[0], &sx, &cx);
+	e = exp (-2.0*Z[1]);
+	A[0] = -e * sx;		A[1] = B[0] = e * cx;
+	A[1] += 1.0;	B[0] -= 1.0;	B[1] = -A[0];
+	gmt_Cdiv (A, B, cotZ);
+}
+
+double gmt_Cabs (double A[])
 {
-	return (hypot (A[RE], A[IM]));
+	return (hypot (A[GMT_RE], A[GMT_IM]));
 }
 
 double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
@@ -2577,7 +2583,7 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 *        Psi(z) = --log(Gamma(z))
 *                 dz
 *
-* zz[RE] is real and zz[IM] is imaginary component; same for p on output (only if p != NULL).
+* zz[GMT_RE] is real and zz[GMT_IM] is imaginary component; same for p on output (only if p != NULL).
 * We also return the real component as function result.
 */
 	static double c[15] = { 0.99999999999999709182, 57.156235665862923517, -59.597960355475491248,
@@ -2588,49 +2594,49 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 	double z[2], g[2], dx[2], dd[2], d[2], n[2], gg[2], f[2], x0, A[2], B[2], C[2], sx, cx, e;
 	GMT_LONG k;
 
-	if (zz[IM] == 0.0 && rint(zz[RE]) == zz[RE] && zz[RE] <= 0.0) {
-		if (p) { p[RE] = P->session.d_NaN; p[IM] = 0.0;}
+	if (zz[GMT_IM] == 0.0 && rint(zz[GMT_RE]) == zz[GMT_RE] && zz[GMT_RE] <= 0.0) {
+		if (p) { p[GMT_RE] = P->session.d_NaN; p[GMT_IM] = 0.0;}
 		return (P->session.d_NaN);	/* Singular points */
 	}
 
-	z[RE] = zz[RE];	z[IM] = zz[IM];
-	if ((x0 = z[RE]) < 0.5) {	/* reflection point */
-		z[RE] = 1.0 - z[RE];
-		z[IM] = -z[IM];
+	z[GMT_RE] = zz[GMT_RE];	z[GMT_IM] = zz[GMT_IM];
+	if ((x0 = z[GMT_RE]) < 0.5) {	/* reflection point */
+		z[GMT_RE] = 1.0 - z[GMT_RE];
+		z[GMT_IM] = -z[GMT_IM];
 	}
 
 	/* Lanczos approximation */
 
-	g[RE] = 607.0/128.0;	g[IM] = 0.0; /* best results when 4<=g<=5 */
-	n[RE] = d[RE] = n[IM] = d[IM] = 0.0;
+	g[GMT_RE] = 607.0/128.0;	g[GMT_IM] = 0.0; /* best results when 4<=g<=5 */
+	n[GMT_RE] = d[GMT_RE] = n[GMT_IM] = d[GMT_IM] = 0.0;
 	for (k = 14; k > 0; k--) {
-		A[RE] = 1.0;	A[IM] = 0.0;
-		B[RE] = z[RE] + k - 1.0;	B[IM] = z[IM];
-		Cdiv (A, B, dx);
-		dd[RE] = c[k] * dx[RE];	dd[IM] = c[k] * dx[IM];
-		d[RE] += dd[RE];	d[IM] += dd[IM];
-		Cmul (dd, dx, B);
-		n[RE] -= B[RE];	n[IM] -= B[IM];
+		A[GMT_RE] = 1.0;	A[GMT_IM] = 0.0;
+		B[GMT_RE] = z[GMT_RE] + k - 1.0;	B[GMT_IM] = z[GMT_IM];
+		gmt_Cdiv (A, B, dx);
+		dd[GMT_RE] = c[k] * dx[GMT_RE];	dd[GMT_IM] = c[k] * dx[GMT_IM];
+		d[GMT_RE] += dd[GMT_RE];	d[GMT_IM] += dd[GMT_IM];
+		gmt_Cmul (dd, dx, B);
+		n[GMT_RE] -= B[GMT_RE];	n[GMT_IM] -= B[GMT_IM];
 	}
-	d[RE] += c[RE];
-	gg[RE] = z[RE] + g[RE] - 0.5;	gg[IM] = z[IM];
-	Cdiv (n, d, A);
-	Cdiv (g, gg, B);
-	f[RE] = log (hypot(gg[RE], gg[IM])) + A[RE] - B[RE];
-	f[IM] = atan2 (gg[IM], gg[RE])  + A[IM] - B[IM];
+	d[GMT_RE] += c[GMT_RE];
+	gg[GMT_RE] = z[GMT_RE] + g[GMT_RE] - 0.5;	gg[GMT_IM] = z[GMT_IM];
+	gmt_Cdiv (n, d, A);
+	gmt_Cdiv (g, gg, B);
+	f[GMT_RE] = log (hypot(gg[GMT_RE], gg[GMT_IM])) + A[GMT_RE] - B[GMT_RE];
+	f[GMT_IM] = atan2 (gg[GMT_IM], gg[GMT_RE])  + A[GMT_IM] - B[GMT_IM];
 	if (x0 < 0.5) {
-		C[RE] = M_PI * zz[RE];	C[IM] = M_PI * zz[IM];
-		e = exp (-2*C[IM]);	sx = sin (2*C[RE]);	cx = cos (2*C[RE]);
-		A[RE] = -e * sx;	A[IM] = e * cx + 1.0;
-		B[RE] = e * cx - 1.0;	B[IM] = e * sx;
-		Cdiv (A, B, C);
-		f[RE] -= M_PI * C[RE];	f[IM] -= M_PI * C[IM];
+		C[GMT_RE] = M_PI * zz[GMT_RE];	C[GMT_IM] = M_PI * zz[GMT_IM];
+		e = exp (-2*C[GMT_IM]);	sx = sin (2*C[GMT_RE]);	cx = cos (2*C[GMT_RE]);
+		A[GMT_RE] = -e * sx;	A[GMT_IM] = e * cx + 1.0;
+		B[GMT_RE] = e * cx - 1.0;	B[GMT_IM] = e * sx;
+		gmt_Cdiv (A, B, C);
+		f[GMT_RE] -= M_PI * C[GMT_RE];	f[GMT_IM] -= M_PI * C[GMT_IM];
 	}
 	if (p) {
-		p[RE] = f[RE];
-		p[IM] = f[IM];
+		p[GMT_RE] = f[GMT_RE];
+		p[GMT_IM] = f[GMT_IM];
 	}
-	return (f[RE]);
+	return (f[GMT_RE]);
 }
 
 #ifndef M_SQRT_PI
@@ -2656,44 +2662,44 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 	*iter = 0;
     	pq[PV_RE] = pq[QV_RE] = pq[PV_IM] = pq[QV_IM] = 0.0;	/* Initialize all answers to zero first */
 	p_set = q_set = FALSE;
-	if (x == -1 && v_ri[IM] == 0.0) {	/* Check special values for real nu when x = -1 */
+	if (x == -1 && v_ri[GMT_IM] == 0.0) {	/* Check special values for real nu when x = -1 */
 			/* Special Pv(-1) values */
-		if ((v_ri[RE] > 0.0 && fmod (v_ri[RE], 2.0) == 1.0) || (v_ri[RE] < 0.0 && fmod (v_ri[RE], 2.0) == 0.0)) {	/* v = 1,3,5,.. or -2, -4, -6 */
+		if ((v_ri[GMT_RE] > 0.0 && fmod (v_ri[GMT_RE], 2.0) == 1.0) || (v_ri[GMT_RE] < 0.0 && fmod (v_ri[GMT_RE], 2.0) == 0.0)) {	/* v = 1,3,5,.. or -2, -4, -6 */
  			pq[PV_RE] = -1.0; p_set = TRUE;
 		}
-		else if ((v_ri[RE] >= 0.0 && fmod (v_ri[RE], 2.0) == 0.0) || (v_ri[RE] < 0.0 && fmod (v_ri[RE]+1.0, 2.0) == 0.0)) {	/* v = 0,2,4,6 or -1,-3,-5,-7 */
+		else if ((v_ri[GMT_RE] >= 0.0 && fmod (v_ri[GMT_RE], 2.0) == 0.0) || (v_ri[GMT_RE] < 0.0 && fmod (v_ri[GMT_RE]+1.0, 2.0) == 0.0)) {	/* v = 0,2,4,6 or -1,-3,-5,-7 */
  			pq[PV_RE] = 1.0; p_set = TRUE;
 		}
-		else if (v_ri[RE] > 0.0 && ((fact = v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) < 1.0 && fact > 0.0)) { /* 0 < v < 1, 2 < v < 3, 4 < v < 5, ... */
+		else if (v_ri[GMT_RE] > 0.0 && ((fact = v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) < 1.0 && fact > 0.0)) { /* 0 < v < 1, 2 < v < 3, 4 < v < 5, ... */
    			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
 		}
-		else if (v_ri[RE] < 1.0 && ((fact = v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) < 1.0 && fact > 0.0)) {	/* -2 < v < -1, -4 < v < -3, -6 < v < -5 */
+		else if (v_ri[GMT_RE] < 1.0 && ((fact = v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) < 1.0 && fact > 0.0)) {	/* -2 < v < -1, -4 < v < -3, -6 < v < -5 */
    			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
 		}
-		else if (v_ri[RE] > 1.0 && (v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) > 1.0) {	/* 1 < v < 2, 3 < v < 4, 5 < v < 6, .. */
+		else if (v_ri[GMT_RE] > 1.0 && (v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) > 1.0) {	/* 1 < v < 2, 3 < v < 4, 5 < v < 6, .. */
    			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
 		}
-		else if (v_ri[RE] < 2.0 && ( v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) > 1.0) {	/* -3 < v < -2, -5 < v < -4, -7 < v < -6, .. */
+		else if (v_ri[GMT_RE] < 2.0 && ( v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) > 1.0) {	/* -3 < v < -2, -5 < v < -4, -7 < v < -6, .. */
    			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
 		}
 		/* Special Qv(-1) values */
-		if (v_ri[RE] > 0.0 && fmod (2.0 * v_ri[RE] - 1.0, 4.0) == 0.0) {	/* v = 1/2, 5/2, 9/2, ... */
+		if (v_ri[GMT_RE] > 0.0 && fmod (2.0 * v_ri[GMT_RE] - 1.0, 4.0) == 0.0) {	/* v = 1/2, 5/2, 9/2, ... */
    			pq[QV_RE] = -M_PI_2; q_set = TRUE;
 		}
-		else if (v_ri[RE] > -1.0 && fmod (2.0 * v_ri[RE] + 1.0, 4.0) == 0.0) {	/* v = -1/2, 3/2, 7/2, ... */
+		else if (v_ri[GMT_RE] > -1.0 && fmod (2.0 * v_ri[GMT_RE] + 1.0, 4.0) == 0.0) {	/* v = -1/2, 3/2, 7/2, ... */
    			pq[QV_RE] = M_PI_2; q_set = TRUE;
 		}
-		else if (v_ri[RE] < -1.0 && fmod (2.0 * v_ri[RE] - 1.0, 4.0) == 0.0) {	/* v = -3/2, -7/2, -11/2, ... */
+		else if (v_ri[GMT_RE] < -1.0 && fmod (2.0 * v_ri[GMT_RE] - 1.0, 4.0) == 0.0) {	/* v = -3/2, -7/2, -11/2, ... */
    			pq[QV_RE] = -M_PI_2; q_set = TRUE;
 		}
-		else if (v_ri[RE] < -2.0 && fmod (2.0 * v_ri[RE] + 1.0, 4.0) == 0.0) {	/* v = -5/2, -9/2, -13/2, ... */
+		else if (v_ri[GMT_RE] < -2.0 && fmod (2.0 * v_ri[GMT_RE] + 1.0, 4.0) == 0.0) {	/* v = -5/2, -9/2, -13/2, ... */
    			pq[QV_RE] = M_PI_2; q_set = TRUE;
 		}
 		else {	/* Either -inf or +inf */
    			pq[QV_RE] = C->session.d_NaN; q_set = TRUE;
 		}
 	}
-	else if (x == +1 && v_ri[IM] == 0.0) {	/* Check special values for real nu when x = +1 */
+	else if (x == +1 && v_ri[GMT_IM] == 0.0) {	/* Check special values for real nu when x = +1 */
 		pq[PV_RE] = 1.0; p_set = TRUE;
 		pq[QV_RE] = C->session.d_NaN; q_set = TRUE;
 	}
@@ -2701,100 +2707,100 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 	
 	/* General case of |x| < 1 */
 
-	a[0] = a[1] = R[RE] = 1.0;	R[IM] = 0.0;
-	v[RE] = v_ri[RE];	v[IM] = v_ri[IM];
-	Cmul (v, v, z);
-	z[RE] = v[RE] - z[RE];	z[IM] = v[IM] - z[IM];
-	K = 4.0 * sqrt (Cabs(z));
-	vp1[RE] = v[RE] + 1.0;	vp1[IM] = v[IM];
-	if ((Cabs(vp1) + floor(vp1[RE])) == 0.0) {
+	a[0] = a[1] = R[GMT_RE] = 1.0;	R[GMT_IM] = 0.0;
+	v[GMT_RE] = v_ri[GMT_RE];	v[GMT_IM] = v_ri[GMT_IM];
+	gmt_Cmul (v, v, z);
+	z[GMT_RE] = v[GMT_RE] - z[GMT_RE];	z[GMT_IM] = v[GMT_IM] - z[GMT_IM];
+	K = 4.0 * sqrt (gmt_Cabs(z));
+	vp1[GMT_RE] = v[GMT_RE] + 1.0;	vp1[GMT_IM] = v[GMT_IM];
+	if ((gmt_Cabs(vp1) + floor(vp1[GMT_RE])) == 0.0) {
 		a[0] = C->session.d_NaN;
 		a[1] = 0.0;
-		v[RE] = -1 - v[RE];
-		v[IM] = -v[IM];
+		v[GMT_RE] = -1 - v[GMT_RE];
+		v[GMT_IM] = -v[GMT_IM];
 	}
-	z[RE] = 0.5 * M_PI * v[RE];	z[IM] = 0.5 * M_PI * v[IM];
-	ep = exp (z[IM]);	em = exp (-z[IM]);
-	sincos (z[RE], &sx, &cx);
-	s[RE] = 0.5 * sx * (em + ep); 
-	s[IM] = -0.5 * cx * (em - ep); 
-	c[RE] = 0.5 * cx * (em + ep); 
-	c[IM] = 0.5 * sx * (em - ep);
-	tmp[RE] = 0.5 + v[RE];	tmp[IM] = v[IM];
-	Cmul (tmp, tmp, w);
-	z[IM] = v[IM];
-	while (v[RE] <= 6.0) {
-		v[RE] = v[RE] + 2.0;
-		z[RE] = v[RE] - 1.0;
-		Cdiv (z, v, tmp);
-		Cmul (R,tmp,r);
-		R[RE] = r[RE];	R[IM] = r[IM];
+	z[GMT_RE] = 0.5 * M_PI * v[GMT_RE];	z[GMT_IM] = 0.5 * M_PI * v[GMT_IM];
+	ep = exp (z[GMT_IM]);	em = exp (-z[GMT_IM]);
+	sincos (z[GMT_RE], &sx, &cx);
+	s[GMT_RE] = 0.5 * sx * (em + ep); 
+	s[GMT_IM] = -0.5 * cx * (em - ep); 
+	c[GMT_RE] = 0.5 * cx * (em + ep); 
+	c[GMT_IM] = 0.5 * sx * (em - ep);
+	tmp[GMT_RE] = 0.5 + v[GMT_RE];	tmp[GMT_IM] = v[GMT_IM];
+	gmt_Cmul (tmp, tmp, w);
+	z[GMT_IM] = v[GMT_IM];
+	while (v[GMT_RE] <= 6.0) {
+		v[GMT_RE] = v[GMT_RE] + 2.0;
+		z[GMT_RE] = v[GMT_RE] - 1.0;
+		gmt_Cdiv (z, v, tmp);
+		gmt_Cmul (R,tmp,r);
+		R[GMT_RE] = r[GMT_RE];	R[GMT_IM] = r[GMT_IM];
 	}
-	z[RE] = v[RE] + 1.0;
-	tmp[RE] = 0.25;	tmp[IM] = 0.0;
-	Cdiv (tmp, z, X);
-	tmp[RE] = 0.35 + 6.1 * X[RE];	tmp[IM] = 6.1*X[IM];
-	Cmul (X, tmp, z);
-	z[RE] = 1.0 - 3.0*z[RE];	z[IM] = -3.0*z[IM];
-	Cmul (X, z, tmp);
-	G[RE] = 1.0 + 5.0 * tmp[RE];	G[IM] = 5.0 * tmp[IM];
-	z[RE] = 8.0 * X[RE];	z[IM] = 8.0 * X[IM];
-	M = sqrt(hypot(z[RE], z[IM]));
-	L = 0.5 * atan2 (z[IM], z[RE]);
-	tmp[RE] = M * cos(L);	tmp[IM] = M * sin(L);
-	Cmul (G, X, z);
-	z[RE] = 1.0 - 0.5*z[RE];	z[IM] = -0.5*z[IM];
-	Cmul (X, z, r);
-	r[RE] = 1.0 - r[RE];	r[IM] = -r[IM];
-	Cmul (R, r, z);
-	Cdiv (z, tmp, R);
-	u[RE] = g[RE] = 2.0 * x;	u[IM] = g[IM] = f[IM] = t[IM] = 0.0;
-	f[RE] = t[RE] = 1.0;
+	z[GMT_RE] = v[GMT_RE] + 1.0;
+	tmp[GMT_RE] = 0.25;	tmp[GMT_IM] = 0.0;
+	gmt_Cdiv (tmp, z, X);
+	tmp[GMT_RE] = 0.35 + 6.1 * X[GMT_RE];	tmp[GMT_IM] = 6.1*X[GMT_IM];
+	gmt_Cmul (X, tmp, z);
+	z[GMT_RE] = 1.0 - 3.0*z[GMT_RE];	z[GMT_IM] = -3.0*z[GMT_IM];
+	gmt_Cmul (X, z, tmp);
+	G[GMT_RE] = 1.0 + 5.0 * tmp[GMT_RE];	G[GMT_IM] = 5.0 * tmp[GMT_IM];
+	z[GMT_RE] = 8.0 * X[GMT_RE];	z[GMT_IM] = 8.0 * X[GMT_IM];
+	M = sqrt(hypot(z[GMT_RE], z[GMT_IM]));
+	L = 0.5 * atan2 (z[GMT_IM], z[GMT_RE]);
+	tmp[GMT_RE] = M * cos(L);	tmp[GMT_IM] = M * sin(L);
+	gmt_Cmul (G, X, z);
+	z[GMT_RE] = 1.0 - 0.5*z[GMT_RE];	z[GMT_IM] = -0.5*z[GMT_IM];
+	gmt_Cmul (X, z, r);
+	r[GMT_RE] = 1.0 - r[GMT_RE];	r[GMT_IM] = -r[GMT_IM];
+	gmt_Cmul (R, r, z);
+	gmt_Cdiv (z, tmp, R);
+	u[GMT_RE] = g[GMT_RE] = 2.0 * x;	u[GMT_IM] = g[GMT_IM] = f[GMT_IM] = t[GMT_IM] = 0.0;
+	f[GMT_RE] = t[GMT_RE] = 1.0;
 	k = 0.5;
 	x2 = x * x;
 	Xn = 1.0 + (1e8/(1 - x2));
 	k1 = k + 1.0;
 	fact = x2 / (k1*k1 - 0.25);
-	t[RE] = (k*k - w[RE]) * fact;	t[IM] = -w[IM] * fact;
+	t[GMT_RE] = (k*k - w[GMT_RE]) * fact;	t[GMT_IM] = -w[GMT_IM] * fact;
 	k += 1.0;
-	f[RE] += t[RE];	f[IM] += t[IM];
+	f[GMT_RE] += t[GMT_RE];	f[GMT_IM] += t[GMT_IM];
 	k1 = k + 1.0;
-	fact = u[RE] * x2 / (k1*k1 - 0.25);
-	u[RE] = (k*k - w[RE]) * fact;	u[IM] = -w[IM] * fact;
+	fact = u[GMT_RE] * x2 / (k1*k1 - 0.25);
+	u[GMT_RE] = (k*k - w[GMT_RE]) * fact;	u[GMT_IM] = -w[GMT_IM] * fact;
 	k += 1;
-	g[RE] += u[RE];	g[IM] += u[IM];
-	tmp[RE] = Xn * t[RE];	tmp[IM] = Xn * t[IM];
-	while (k < K || Cabs (tmp) > Cabs(f)) {
+	g[GMT_RE] += u[GMT_RE];	g[GMT_IM] += u[GMT_IM];
+	tmp[GMT_RE] = Xn * t[GMT_RE];	tmp[GMT_IM] = Xn * t[GMT_IM];
+	while (k < K || gmt_Cabs (tmp) > gmt_Cabs(f)) {
 		(*iter)++;
 		k1 = k + 1.0;
-		tmp[RE] = k*k - w[RE];	tmp[IM] = -w[IM];	fact = x2 / (k1*k1 - 0.25);
-		Cmul (t, tmp, A);
-		t[RE] = A[RE] * fact;	t[IM] = A[IM] * fact;
+		tmp[GMT_RE] = k*k - w[GMT_RE];	tmp[GMT_IM] = -w[GMT_IM];	fact = x2 / (k1*k1 - 0.25);
+		gmt_Cmul (t, tmp, A);
+		t[GMT_RE] = A[GMT_RE] * fact;	t[GMT_IM] = A[GMT_IM] * fact;
 		k += 1.0;
 		k1 = k + 1.0;
-		f[RE] += t[RE];	f[IM] += t[IM];
-		tmp[RE] = k*k - w[RE];	tmp[IM] = -w[IM];	fact = x2 / (k1*k1 - 0.25);
-		Cmul (u, tmp, B);
-		u[RE] = B[RE] * fact;	u[IM] = B[IM] * fact;
+		f[GMT_RE] += t[GMT_RE];	f[GMT_IM] += t[GMT_IM];
+		tmp[GMT_RE] = k*k - w[GMT_RE];	tmp[GMT_IM] = -w[GMT_IM];	fact = x2 / (k1*k1 - 0.25);
+		gmt_Cmul (u, tmp, B);
+		u[GMT_RE] = B[GMT_RE] * fact;	u[GMT_IM] = B[GMT_IM] * fact;
 		k += 1.0;
-		g[RE] += u[RE];	g[IM] += u[IM];
-		tmp[RE] = Xn * t[RE];	tmp[IM] = Xn * t[IM];
+		g[GMT_RE] += u[GMT_RE];	g[GMT_IM] += u[GMT_IM];
+		tmp[GMT_RE] = Xn * t[GMT_RE];	tmp[GMT_IM] = Xn * t[GMT_IM];
 	}
 	fact = x2 / (1.0 - x2);
-	f[RE] += t[RE] * fact;	f[IM] += t[IM] * fact;
-	g[RE] += u[RE] * fact;	g[IM] += u[IM] * fact;
+	f[GMT_RE] += t[GMT_RE] * fact;	f[GMT_IM] += t[GMT_IM] * fact;
+	g[GMT_RE] += u[GMT_RE] * fact;	g[GMT_IM] += u[GMT_IM] * fact;
 	if (!p_set) {
-		Cmul(s,R,z);
-		Cdiv(c,R,tmp);
-		Cmul (g, z, A);	Cmul (f, tmp, B);
-		pq[PV_RE] = (A[RE] + B[RE])/M_SQRT_PI;
-		pq[PV_IM] = (A[IM] + B[IM])/M_SQRT_PI;
+		gmt_Cmul(s,R,z);
+		gmt_Cdiv(c,R,tmp);
+		gmt_Cmul (g, z, A);	gmt_Cmul (f, tmp, B);
+		pq[PV_RE] = (A[GMT_RE] + B[GMT_RE])/M_SQRT_PI;
+		pq[PV_IM] = (A[GMT_IM] + B[GMT_IM])/M_SQRT_PI;
 	}
 	if (!q_set) {
-		Cmul(c,R,z);
-		Cdiv(s,R,tmp);
-		Cmul (g, z, A);	Cmul (f, tmp, B);
-		pq[QV_RE] = a[0]*M_SQRT_PI*(A[RE] - B[RE])/2.0;
-		pq[QV_IM] = a[1]*M_SQRT_PI*(A[IM] - B[IM])/2.0;
+		gmt_Cmul(c,R,z);
+		gmt_Cdiv(s,R,tmp);
+		gmt_Cmul (g, z, A);	gmt_Cmul (f, tmp, B);
+		pq[QV_RE] = a[0]*M_SQRT_PI*(A[GMT_RE] - B[GMT_RE])/2.0;
+		pq[QV_IM] = a[1]*M_SQRT_PI*(A[GMT_IM] - B[GMT_IM])/2.0;
 	}
 }

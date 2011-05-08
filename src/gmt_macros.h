@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_macros.h,v 1.3 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_macros.h,v 1.4 2011-05-08 03:45:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,6 +48,10 @@
 #else
 #define GMT_abs(n) abs(n)
 #endif
+
+/* Checking of h,m,s */
+
+#define GMT_hms_is_bad(h,m,s) ((h) < 0 || (h) > 23 || (m) < 0 || (m) > 59 || (s) < 0.0 || (s) >= 61.0)
 
 /* Safe math macros that check arguments */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.11 2011-05-02 02:25:23 remko Exp $
+ *	$Id: gmtselect_func.c,v 1.12 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -708,10 +708,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				/* Must use polygons.  Go in both directions to cover both land and sea */
 				for (id = 0; id < 2; id++) {
-					GMT_free_polygons (GMT, p[id], np[id]);
+					GMT_free_shore_polygons (GMT, p[id], np[id]);
 					if (np[id]) GMT_free (GMT, p[id]);
 					np[id] = GMT_assemble_shore (GMT, &c, wd[id], TRUE, greenwich, west_border, east_border, &p[id]);
-					np[id] = GMT_prep_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
+					np[id] = GMT_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
 				}
 			}
 
@@ -781,7 +781,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free_shore (GMT, &c);
 		GMT_shore_cleanup (GMT, &c);
 		for (id = 0; id < 2; id++) {
-			GMT_free_polygons (GMT, p[id], np[id]);
+			GMT_free_shore_polygons (GMT, p[id], np[id]);
 			if (np[id]) GMT_free (GMT, p[id]);
 		}
 	}

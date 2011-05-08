@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.45 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_vector.c,v 1.46 2011-05-08 03:45:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -715,14 +715,14 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 	return (GMT_NOERROR);
 }
 
-void mat_trans (double a[], GMT_LONG mrow, GMT_LONG ncol, double at[])
+void gmt_mat_trans (double a[], GMT_LONG mrow, GMT_LONG ncol, double at[])
 {
 	/* Return the transpose of a */
 	GMT_LONG i, j;
 	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
 }
 
-void mat_mult (double a[], GMT_LONG mrow, GMT_LONG ncol, double b[], GMT_LONG kcol, double c[])
+void gmt_mat_mult (double a[], GMT_LONG mrow, GMT_LONG ncol, double b[], GMT_LONG kcol, double c[])
 {
 	/* Matrix multiplication a * b = c */
 	
@@ -782,15 +782,15 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 			
 	/* get transpose of U */
 		
-	mat_trans (u, m, n, ut);
+	gmt_mat_trans (u, m, n, ut);
 	
 	/* multiply v(1/w)ut  -> this overwrites the matrix U */
 		
-	mat_mult (v, n, n, ut, m, u);
+	gmt_mat_mult (v, n, n, ut, m, u);
 	
 	/* multiply this result by b to get x */
 		
-	mat_mult (u, n, m, b, k, x);
+	gmt_mat_mult (u, n, m, b, k, x);
 
 	/* free work space */
 

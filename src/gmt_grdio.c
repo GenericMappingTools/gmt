@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.187 2011-05-07 17:53:44 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.188 2011-05-08 03:45:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,8 @@ struct GRD_PAD {
 };
 
 /* These functions live in other files and are extern'ed in here */
-EXTERN_MSC GMT_LONG GMT_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
+EXTERN_MSC GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job);
+EXTERN_MSC GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 EXTERN_MSC GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
@@ -807,7 +808,6 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	GMT_LONG r_w, err, header = TRUE, magic = TRUE;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
-	EXTERN_MSC GMT_LONG GMT_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job);
 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
@@ -828,13 +828,13 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	}
 	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
 		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		if (header) GMT_cdf_grd_info (C, G->fid, &G->header, mode);
+		if (header) gmt_cdf_grd_info (C, G->fid, &G->header, mode);
 		G->edge[0] = G->header.nx;
 		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
 	else if (C->session.grdformat[G->header.type][0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
 		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		if (header) GMT_nc_grd_info (C, &G->header, mode);
+		if (header) gmt_nc_grd_info (C, &G->header, mode);
 		G->edge[0] = 1;
 		G->edge[1] = G->header.nx;
 		G->start[0] = G->header.ny-1;

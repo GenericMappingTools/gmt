@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.117 2011-04-27 15:35:24 remko Exp $
+ *	$Id: gmt_customio.c,v 1.118 2011-05-08 03:45:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1852,11 +1852,11 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	id++;
 	C->session.grdcode[id]    = 12;
 	C->session.grdformat[id]  = "rf = GEODAS grid format GRD98 (NGDC)";
-	C->session.readinfo[id]   = (PFL) mgg2_read_grd_info;
-	C->session.updateinfo[id] = (PFL) mgg2_write_grd_info;
-	C->session.writeinfo[id]  = (PFL) mgg2_write_grd_info;
-	C->session.readgrd[id]    = (PFL) mgg2_read_grd;
-	C->session.writegrd[id]   = (PFL) mgg2_write_grd;
+	C->session.readinfo[id]   = (PFL) GMT_mgg2_read_grd_info;
+	C->session.updateinfo[id] = (PFL) GMT_mgg2_write_grd_info;
+	C->session.writeinfo[id]  = (PFL) GMT_mgg2_write_grd_info;
+	C->session.readgrd[id]    = (PFL) GMT_mgg2_read_grd;
+	C->session.writegrd[id]   = (PFL) GMT_mgg2_write_grd;
 
 	/* FORMAT: GMT native binary (float) grdio (Surfer format) */
 

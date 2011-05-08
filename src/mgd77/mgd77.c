@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.271 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77.c,v 1.272 2011-05-08 03:45:27 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5293,7 +5293,7 @@ void	MGD77_dt2rdc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, GMT_LO
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
-	i = splitinteger (C, t_sec, 86400, s) + F->utime.rata_die;
+	i = GMT_splitinteger (C, t_sec, 86400, s) + F->utime.rata_die;
 	*rd = (GMT_LONG)(i);
 }
 
@@ -5313,7 +5313,7 @@ void	MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, 
 	MGD77_dt2rdc (C, F, t, &rd, &x);
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
-	i = splitinteger (C, x, 60, &cal->sec);
+	i = GMT_splitinteger (C, x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;

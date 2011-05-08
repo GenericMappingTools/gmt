@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1012 2011-05-07 19:59:03 guru Exp $
+	$Id: ChangeLog,v 1.1013 2011-05-08 03:45:26 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-07	pwessel
@@ -7,6 +7,7 @@
 				for the output in grdblend.
 	* gmt_agc_io.c:		Needed char floatvalue[PARAMSIZE+1], with the 1 to hold final \0
 	* grdblend_func.c:	Now supports all grid formats either directly or via reformatting.
+	* gmt_*.c:		All non-public functions start with gmt_ rather than GMT_.
 
 2011-05-05	pwessel
 	* gmtconvert_func.c:	The -T was applied before reading, which reset -m.

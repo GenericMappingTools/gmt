@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.499 2011-05-03 00:21:15 guru Exp $
+ *	$Id: gmt_init.c,v 1.500 2011-05-08 03:45:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,6 +55,7 @@
 #include "pslib.h"
 #include "gmt.h"
 #include "gmt_internals.h"
+EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
 
 #ifdef DEBUG
 /* This is used to help is find memory leaks */
@@ -1246,7 +1247,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	char p[GMT_BUFSIZ], name[GMT_BUFSIZ], A[64], *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
-		C->common.a.geometry = ogr_get_geometry ((char *)(s+2));
+		C->common.a.geometry = gmt_ogr_get_geometry ((char *)(s+2));
 		if (s[1] == 'G') C->common.a.clip = TRUE;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = TRUE;	/* We are producing, not reading an OGR/GMT file */
@@ -1261,7 +1262,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	}
 	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
-			C->common.a.type[C->common.a.n_aspatial] = ogr_get_type ((char *)(c+1));
+			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type ((char *)(c+1));
 			c[0] = '\0';	/* Truncate off the type */
 		}
 		else
@@ -1521,7 +1522,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 	return (GMT_NOERROR);
 }
 
-int compare_cols (const void *point_1, const void *point_2)
+int gmt_compare_cols (const void *point_1, const void *point_2)
 {
 	/* Sorts cols into ascending order  */
 	if (((struct GMT_COL_INFO *)point_1)->col < ((struct GMT_COL_INFO *)point_2)->col) return (-1);
@@ -1591,7 +1592,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 			C->current.io.col[GMT_IN][k].offset = offset;
 		}
 	}
-	qsort ((void *)C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), compare_cols);
+	qsort ((void *)C->current.io.col[GMT_IN], (size_t)k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
 	C->common.i.n_cols = k;
 	return (GMT_NOERROR);
 }
@@ -2500,7 +2501,7 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 	return (i+1);	/* Return remaining string length */
 }
 
-void parse_format_float_out (struct GMT_CTRL *C, char *value)
+void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 {
 	GMT_LONG pos = 0, col = 0, start, stop, k, error = 0;
 	char fmt[GMT_TEXT_LEN64], *p = NULL;
@@ -2573,7 +2574,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #endif
 		case GMTCASE_FORMAT_GEO_OUT:
 			strncpy (C->current.setting.format_geo_out, value, (size_t)GMT_TEXT_LEN64);
-			GMT_geo_C_format (C);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
+			gmt_geo_C_format (C);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_PLOT_CLOCK_FORMAT: GMT_COMPAT_CHANGE ("FORMAT_CLOCK_MAP");
@@ -2594,7 +2595,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #endif
 		case GMTCASE_FORMAT_GEO_MAP:
 			strncpy (C->current.setting.format_geo_map, value, (size_t)GMT_TEXT_LEN64);
-			GMT_plot_C_format (C);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
+			gmt_plot_C_format (C);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_TIME_FORMAT_PRIMARY: GMT_COMPAT_CHANGE ("FORMAT_TIME_PRIMARY_MAP");
@@ -2612,7 +2613,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_D_FORMAT: GMT_COMPAT_CHANGE ("FORMAT_FLOAT_OUT");
 #endif
 		case GMTCASE_FORMAT_FLOAT_OUT:
-			parse_format_float_out (C, value);
+			gmt_parse_format_float_out (C, value);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
 			strcpy (C->current.setting.format_float_map, value);
@@ -7345,7 +7346,7 @@ GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, doubl
 		if (GMT_g_ymd_is_bad (C, yy, mo, dd) ) return (-1);
 		rd = GMT_rd_from_gymd (C, yy, mo, dd);
 	}
-	if (GMT_hms_is_bad (C, hh, mm, ss)) return (-1);
+	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */
@@ -7639,8 +7640,8 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
 	 * the format_float_out string has not yet been processed.  We clear that up by processing again here. */
 
-	GMT_geo_C_format (C);
-	GMT_plot_C_format (C);
+	gmt_geo_C_format (C);
+	gmt_plot_C_format (C);
 	
 	/* Set default for -n parameters */
 	C->common.n.antialias = TRUE; C->common.n.interpolant = BCR_BICUBIC; C->common.n.threshold = 0.5;
