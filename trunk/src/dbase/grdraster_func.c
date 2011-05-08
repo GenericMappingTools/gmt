@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.16 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdraster_func.c,v 1.17 2011-05-08 22:55:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -509,6 +509,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 #ifdef GMT_COMPAT
 				case 'H':
 				case 'h':	/* Give header size for skipping */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
 					rasinfo[nfound].skip = atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 					break;
 #endif
@@ -536,6 +537,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 #ifdef GMT_COMPAT
 				case 'H':
 				case 'h':	/* Give header size for skipping */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
 					rasinfo[nfound].skip = atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 					break;
 #endif

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.10 2011-05-02 19:34:31 guru Exp $
+ *	$Id: backtracker_func.c,v 1.11 2011-05-08 22:55:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -223,6 +223,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':	/* Specify in which direction we should project */

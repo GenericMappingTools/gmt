@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77convert_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -157,6 +157,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 				break;
 #ifdef GMT_COMPAT
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
 #endif
 			case 'D':
 				Ctrl->D.active = TRUE;

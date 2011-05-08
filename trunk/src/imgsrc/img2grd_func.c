@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.13 2011-05-07 01:50:46 guru Exp $
+/* $Id: img2grd_func.c,v 1.14 2011-05-08 22:55:55 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,6 +207,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
 #endif
 			case 'I':
 				Ctrl->I.active = TRUE;

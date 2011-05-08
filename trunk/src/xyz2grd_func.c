@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.11 2011-05-01 21:18:00 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.12 2011-05-08 22:55:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -174,6 +174,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 			case 'A':
 #ifdef GMT_COMPAT
 				if (!opt->arg[0]) {	/* In GMT4, just -A implied -Az */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = TRUE;
 					Ctrl->A.mode = 'z';
 				}

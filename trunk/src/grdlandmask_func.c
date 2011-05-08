@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.12 2011-05-08 03:45:27 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.13 2011-05-08 22:55:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -170,6 +170,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 				strcpy (line, opt->arg);
 #ifdef GMT_COMPAT
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = TRUE;
 					Ctrl->E.inside = P_IS_INSIDE;
 					line[strlen(line)-1] = 0;

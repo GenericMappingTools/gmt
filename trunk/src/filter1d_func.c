@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *	$Id: filter1d_func.c,v 1.7 2011-05-08 22:55:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -286,9 +286,12 @@ GMT_LONG GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, 
 			case 'N':	/* Select column with independent coordinate [0] */
 				Ctrl->N.active = TRUE;
 #ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/') && sscanf (opt->arg, "%*s/%" GMT_LL "d", &Ctrl->N.col) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
-					n_errors++;
+				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
+					if (sscanf (opt->arg, "%*s/%" GMT_LL "d", &Ctrl->N.col) != 1) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
+						n_errors++;
+					}
 				}
 				else if (!strchr (opt->arg, '/'))
 					Ctrl->N.col = atoi (opt->arg);
