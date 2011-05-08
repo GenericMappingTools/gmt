@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1013 2011-05-08 03:45:26 guru Exp $
+	$Id: ChangeLog,v 1.1014 2011-05-08 22:55:55 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-08	pwessel
+	* *.c:			All deprecated options under #ifdef GMT_COMPAT now will give
+				information about the new option.
 
 2011-05-07	pwessel
 	* gmt_grdio.c:		Failed to create proper old-style v3 netcdf file if selected

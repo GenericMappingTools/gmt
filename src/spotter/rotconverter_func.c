@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: rotconverter_func.c,v 1.7 2011-05-08 22:55:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -183,6 +183,7 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 				switch (opt->arg[0]) {	/* Output format */
 #ifdef GMT_COMPAT
 					case 'f':
+						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
 #endif
 					case 't':
 						Ctrl->F.mode = TRUE;

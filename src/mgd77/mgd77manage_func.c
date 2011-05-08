@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.15 2011-05-02 19:34:31 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.16 2011-05-08 22:55:55 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -464,7 +464,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				Ctrl->N.code[0] = opt->arg[0];
 #ifdef GMT_COMPAT
 				if (Ctrl->N.code[0] == 'm') {
-					GMT_message (GMT, "Warning -N: Unit m for miles is deprecated; use M instead\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
 				}
 #endif

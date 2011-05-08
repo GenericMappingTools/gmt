@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77path_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -90,6 +90,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 
 #ifdef GMT_COMPAT
 			case 'P':
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -P is deprecated; use -A instead.\n");
 #endif
 			case 'A':	/* Show list of paths to MGD77 files */
 				Ctrl->A.active = TRUE;

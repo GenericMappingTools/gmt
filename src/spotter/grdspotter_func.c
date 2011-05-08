@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.9 2011-05-03 17:39:48 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.10 2011-05-08 22:55:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -274,6 +274,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				break;
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'E':

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -292,10 +292,11 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get km. dt is in sec so 3600 gives km/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(km/hr)");
 			break;
-		case 'M':
 #ifdef GMT_COMPAT
 		case 'm':
+			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 #endif
+		case 'M':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(mi/hr)");
 			break;
@@ -317,10 +318,11 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 		case 'k':
 			strcpy (auxlist[MGD77_AUX_SP].header, "d(km)");
 			break;
-		case 'M':
 #ifdef GMT_COMPAT
 		case 'm':
+			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 #endif
+		case 'M':
 			strcpy (auxlist[MGD77_AUX_SP].header, "d(miles)");
 			break;
 		case 'n':

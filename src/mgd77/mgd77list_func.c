@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -491,7 +491,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 			case 'N':	/* Nautical units (knots, nautical miles) */
 #ifdef GMT_COMPAT
 				if (opt->arg[1] == 'm') {
-					GMT_message (GMT, "Warning -N: Unit m for miles is deprecated; use M instead\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
 #endif

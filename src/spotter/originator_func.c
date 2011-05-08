@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.8 2011-05-02 19:34:31 guru Exp $
+ *	$Id: originator_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -253,6 +253,7 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 			/* Supplemental parameters */
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':

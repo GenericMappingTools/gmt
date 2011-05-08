@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.8 2011-04-29 03:08:11 guru Exp $
+ *	$Id: blockmean_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,6 +108,7 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 				switch (opt->arg[0]) {
 #ifdef GMT_COMPAT
 					case '\0': case 'z':	/* Report data sums */
+						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -S and -Sz options are deprecated; use -Ss instead.\n");
 						Ctrl->S.mode = 1; break;
 #endif
 					case 's':	/* Report data sums */

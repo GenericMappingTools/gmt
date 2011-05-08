@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.18 2011-05-02 19:34:31 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.19 2011-05-08 22:55:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -146,6 +146,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 			
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':
@@ -161,6 +162,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 #ifdef GMT_COMPAT
 				if (n == 3) {	/* Gave -Tlon/lat/angle */
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -e<lon>/<lat>/<angle> instead.\n");
 					Ctrl->e.active  = TRUE;
 					Ctrl->e.w = atof (txt_c);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
