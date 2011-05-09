@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
+ *	$Id: blockmean_func.c,v 1.10 2011-05-09 02:19:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "blockmean %s [API] - Block averaging by L2 norm\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: blockmean [infile(s)] %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-C] [-E] [-S[m|n|s|w]]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -63,8 +63,8 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Wo reads 3 cols (x,y,z) but writes sum (x,y,z[,s,l,h],w) output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output.\n");
 	GMT_message (GMT, "\t   [Default is no weights used].\n");
-	GMT_explain_options (GMT, "Cn");
-	GMT_message (GMT, "\t   Default is 3 columns (or 4 if -W is set).\n");
+	GMT_explain_options (GMT, "C0");
+	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
 	GMT_explain_options (GMT, "D0fhioF:.");
 
 	return (EXIT_FAILURE);

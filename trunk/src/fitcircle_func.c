@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.9 2011-04-29 03:08:11 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.10 2011-05-09 02:19:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -112,9 +112,9 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "fitcircle %s [API] - Find best-fitting great- or small-circle to points on sphere\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: fitcircle [<input_file>] -L[<n>] [-S[<lat>]] [%s]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: fitcircle [<input_file>] -L[<n>] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -122,7 +122,7 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-L specify norm as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-S will attempt to fit a small circle rather than a great circle.\n");
-	fprintf(stderr,"\t   Optionally append the latitude of the small circle you want to fit.\n");
+	GMT_message (GMT, "\t   Optionally append the latitude of the small circle you want to fit.\n");
 	GMT_explain_options (GMT, "VC0fghio:.");
 	
 	return (EXIT_FAILURE);

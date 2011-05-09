@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.500 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_init.c,v 1.501 2011-05-09 02:19:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -568,7 +568,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 's':	/* Output control for records where z are NaN */
 
-			GMT_message (C, "\t-s Suppress output for records whose z-value (col = 2) equals NaN [Default prints all records].\n");
+			GMT_message (C, "\t-s Suppress output for records whose z-value (col = 2) equals NaN\n");
+			GMT_message (C, "\t   [Default prints all records].\n");
 			GMT_message (C, "\t   Append <cols> to examine other column(s) instead [2].\n");
 			GMT_message (C, "\t   Append a to suppress records where any column equals NaN.\n");
 			GMT_message (C, "\t   Append r to reverse the suppression (only output z = NaN records).\n");
