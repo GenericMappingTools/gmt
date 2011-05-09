@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.14 2011-05-08 22:55:55 guru Exp $
+/* $Id: img2grd_func.c,v 1.15 2011-05-09 18:02:00 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -269,10 +269,12 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 
 GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG navgsq, error = FALSE, tempint;
+	GMT_LONG navgsq, error = FALSE;
 	GMT_LONG navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	GMT_LONG iout, jout, iinstart, iinstop, jinstart, jinstop, k, kk, ion, jin, jj, iin, ii, kstart;
 	GMT_LONG ij, in_ID, out_ID, status, *ix = NULL;
+	
+	int tempint;
 	
 	double west, east, south, north, wesn[4], toplat, botlat, dx;
 	double south2, north2, rnavgsq, csum, dsum, left, bottom, inc[2];
@@ -315,7 +317,10 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		imgrange.maxlat = Ctrl->D.max;
 	}
 	
-	GMT_getdatapath (GMT, Ctrl->In.file, infile);
+	if (!GMT_getdatapath (GMT, Ctrl->In.file, infile)) {
+		GMT_report (GMT, GMT_MSG_FATAL, "img file %s not found\n", Ctrl->In.file);
+		Return (GMT_GRDIO_FILE_NOT_FOUND);
+	}
 	
 	if (! (Ctrl->I.active || Ctrl->D.active)) {
 		GMT_LONG min;
@@ -543,12 +548,10 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (navg) {
 				csum = dsum = 0.0;
 				for (k = 0, kk = kstart; k < navgsq; k++, kk++) {
-					tempint = (GMT_LONG)row[ix[kk]];
-					if (Ctrl->T.value) {
-						if ( ( (abs((int)tempint))%2) != 0) {
-							csum += 1.0;
-							tempint--;
-						}
+					tempint = (int)row[ix[kk]];
+					if (Ctrl->T.value && abs (tempint) % 2 != 0) {
+						csum += 1.0;
+						tempint--;
 					}
 					dsum += (double) tempint;
 				}
@@ -556,8 +559,8 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				dsum *= rnavgsq;
 			}
 			else {
-				tempint = (GMT_LONG)row[ix[iout]];
-				if (Ctrl->T.value && abs((int)tempint)%2 != 0) {
+				tempint = (int)row[ix[iout]];
+				if (Ctrl->T.value && abs (tempint) %2 != 0) {
 					csum = 1.0;
 					tempint--;
 				}
