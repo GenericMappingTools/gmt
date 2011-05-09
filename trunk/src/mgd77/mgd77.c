@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.272 2011-05-08 03:45:27 guru Exp $
+ *	$Id: mgd77.c,v 1.273 2011-05-09 19:03:08 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1996,7 +1996,7 @@ int MGD77_Write_Data_Record_tbl (struct GMT_CTRL *C, struct MGD77_CONTROL *F, st
 			fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
 		}
 		else
-			GMT_ascii_output_one (C, F->fp, MGD77Record->number[k++], 2);
+			GMT_ascii_output_col (C, F->fp, MGD77Record->number[k++], GMT_Z);
 		if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", C->current.setting.io_col_separator);
 	}
 	fprintf (F->fp, "\n");

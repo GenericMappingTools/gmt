@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.16 2011-05-08 03:45:27 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.17 2011-05-09 19:03:08 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -675,13 +675,13 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if ((1 << i) & (MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS)) {
 				sprintf (buffer, "%s%s",mgd77defs[i].abbrev,GMT->current.setting.io_col_separator);
 				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].minValue, 0);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].minValue, GMT_X);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxValue, 1);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxValue, GMT_Y);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], maxSlope[i], 2);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], maxSlope[i], GMT_Z);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxArea, 3);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxArea, 3);
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
@@ -1884,7 +1884,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (gotTime)
 				GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 			else
-				GMT_ascii_format_one (GMT, timeStr, distance[curr], GMT_IS_FLOAT);
+				GMT_ascii_format_col (GMT, timeStr, distance[curr], GMT_Z);
 
 			/* Create the location portion of the verbose data warning string (not for E77) */
 			sprintf (placeStr,"%s %s %ld",list[argno],timeStr,curr+1);
@@ -2331,13 +2331,13 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!strcmp(display,"MGD77"))
 					MGD77_Write_Data_Record_m77 (GMT, &Out, &D[curr]);
 				else {
-					if (curr > 0 || !strcmp(display,"VALS")) {
+					if (curr > 0 || !strcmp (display,"VALS")) {
 						if (GMT->common.b.active[GMT_OUT])
 							/* Use GMT output machinery which can handle binary output */
 							GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out[curr]);
 						else {
-							for (i = 0; i < (n_out_columns); i++) {
-								GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], out[curr][i], (int)i);
+							for (i = 0; i < n_out_columns; i++) {
+								GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[curr][i], i);
 								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
 							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
@@ -2385,7 +2385,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							GMT->current.io.output (GMT->session.std[GMT_OUT], n_out_columns, out);
 						else {
 							for (i = 0; i < (n_out_columns); i++) {
-								GMT_ascii_output_one (GMT->session.std[GMT_OUT], out[rec][i], i);
+								GMT_ascii_output_col (GMT->session.std[GMT_OUT], out[rec][i], i);
 								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
 							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
@@ -2516,7 +2516,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (gotTime)
 					GMT_ascii_format_col (GMT, timeStr, D[rec].time, MGD77_TIME);
 				else
-					GMT_ascii_format_one (GMT, timeStr, distance[rec], GMT_IS_FLOAT);
+					GMT_ascii_format_col (GMT, timeStr, distance[rec], GMT_Z);
 				/* Version 1 data corrections apply crucial nav errors and not value and gradient errors */
 				sprintf (placeStr, "%s%s%s%s%ld%s",list[argno],GMT->current.setting.io_col_separator,timeStr,GMT->current.setting.io_col_separator,rec+1,\
 				GMT->current.setting.io_col_separator);

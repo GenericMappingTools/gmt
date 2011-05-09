@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.4 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.5 2011-05-09 19:03:08 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -244,7 +244,7 @@ void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG 
 	GMT_LONG i;
 	for (i = 0; i < n; i++) {
 		if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-		GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], val[i], col);
+		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], val[i], col);
 		first = FALSE;
 	}
 }

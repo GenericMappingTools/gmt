@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1014 2011-05-08 22:55:55 guru Exp $
+	$Id: ChangeLog,v 1.1015 2011-05-09 19:03:07 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-09	pwessel
+	* minmax_func.c:	Now honors the column-specific formatting.
+	* grdinfo_func.c:	---"---
+	* grdfft_func.c:	Now -D scale is 1 by default.
 
 2011-05-08	pwessel
 	* *.c:			All deprecated options under #ifdef GMT_COMPAT now will give

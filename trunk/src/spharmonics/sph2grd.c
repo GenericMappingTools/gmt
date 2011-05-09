@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.21 2011-04-23 02:14:13 guru Exp $
+ *    $Id: sph2grd.c,v 1.22 2011-05-09 19:03:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ int main (int argc, char **argv)
 		lat = GMT_row_to_y (j, header.y_min, header.y_max, header.y_inc, header.xy_off, header.ny);
 		if (GMT->current.setting.verbose) {
 			fprintf (stderr, "Working on latitude: ");
-			GMT_ascii_output_one (stderr, lat, 1);
+			GMT_ascii_output_col (stderr, lat, GMT_Y);
 			fprintf (stderr, "\r");
 		}
 		

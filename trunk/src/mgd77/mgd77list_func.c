@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.10 2011-05-09 19:03:08 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1235,7 +1235,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (aux[kx].text)
 							fprintf (GMT->session.std[GMT_OUT], "%s", aux_tvalue[aux[kx].type]);
 						else
-							GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], aux_dvalue[aux[kx].type], pos);
+							GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], aux_dvalue[aux[kx].type], pos);
 						if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 						kx++, pos++;
 					}
@@ -1255,11 +1255,11 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							date = MGD77_utime2time (GMT, &M, dvalue[t_col][rec]);
 						else
 							date = dvalue[t_col][rec];
-						GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], date, pos);
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], date, pos);
 					}
 					else {
 						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][i].term, dvalue, aux_dvalue, rec) : 0.0;
-						GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], dvalue[i][rec] - correction, pos);
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[i][rec] - correction, pos);
 					}
 					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				}

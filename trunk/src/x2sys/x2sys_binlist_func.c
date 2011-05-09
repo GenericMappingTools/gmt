@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.5 2011-04-23 02:14:13 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.6 2011-05-09 19:03:08 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -402,13 +402,13 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (B.binflag[ij] == 0) continue;
 			x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
 			y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], x, 0);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], y, 1);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
 			fprintf (GMT->session.std[GMT_OUT], "%s%ld%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
 			if (Ctrl->D.active) {
 				fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], dist_bin[ij], 2);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[ij], GMT_Z);
 			}
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}

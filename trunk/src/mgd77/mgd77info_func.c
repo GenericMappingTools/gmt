@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: mgd77info_func.c,v 1.6 2011-05-09 19:03:08 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -512,13 +512,13 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}			
 		if (Ctrl->E.active) {
 			fprintf (GMT->session.std[GMT_OUT],"%8s%s%8s%s", M.NGDC_id, GMT->current.setting.io_col_separator, D->H.mgd77[use]->Survey_Identifier, GMT->current.setting.io_col_separator);
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], xmin, 0);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], xmax, 0);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], ymin, 1);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], ymax, 1);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmin, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmax, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymin, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymax, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			if (!GMT_is_dnan(tmin) && !GMT_is_dnan(tmax)) {
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], tmin, 2);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], tmax, 2);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmin, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
 			} else {
 				fprintf (GMT->session.std[GMT_OUT], "%4s-%2s-%2s%s%4s-%2s-%2s%s",
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,

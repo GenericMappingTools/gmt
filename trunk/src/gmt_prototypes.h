@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.34 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.35 2011-05-09 19:03:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -134,12 +134,11 @@ EXTERN_MSC char * GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, cons
 EXTERN_MSC void GMT_write_tableheader (struct GMT_CTRL *C, FILE *fp, char *txt);
 EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n);		/* Write segment header back out */
 EXTERN_MSC void GMT_write_textrecord (struct GMT_CTRL *C, FILE *fp, char *txt);
-EXTERN_MSC void GMT_ascii_format_one (struct GMT_CTRL *C, char *text, double x, GMT_LONG type);
 EXTERN_MSC void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, GMT_LONG col);
 EXTERN_MSC void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
 EXTERN_MSC GMT_LONG GMT_scanf_arg (struct GMT_CTRL *C, char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
-EXTERN_MSC GMT_LONG GMT_ascii_output_one (struct GMT_CTRL *C, FILE *fp, double x, GMT_LONG col);
+EXTERN_MSC GMT_LONG GMT_ascii_output_col (struct GMT_CTRL *C, FILE *fp, double x, GMT_LONG col);
 EXTERN_MSC GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC GMT_LONG GMT_is_a_blank_line (struct GMT_CTRL *C, char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string);
