@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.8 2011-05-01 21:18:00 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.9 2011-05-09 19:03:08 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -749,9 +749,9 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && GMT_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */
-								GMT_ascii_format_one (GMT, start[k], time[k][j], GMT_IS_ABSTIME);
+								GMT_ascii_format_col (GMT, start[k], time[k][j], 2);
 								for (j = n_rec[k]-1; j > 0 && GMT_is_dnan (time[k][j]); j--);	/* Find last non-NaN time */
-								GMT_ascii_format_one (GMT, stop[k], time[k][j], GMT_IS_ABSTIME);
+								GMT_ascii_format_col (GMT, stop[k], time[k][j], 3);
 							}
 							else {
 								(void)strcpy (start[k], "NaN");

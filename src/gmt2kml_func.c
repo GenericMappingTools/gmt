@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.14 2011-05-09 02:19:06 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.15 2011-05-09 19:03:07 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -496,7 +496,7 @@ void print_altmode (struct GMT_CTRL *GMT, GMT_LONG extrude, GMT_LONG fmode, GMT_
 }
 
 GMT_LONG ascii_output_one (struct GMT_CTRL *GMT, double x, GMT_LONG col)
-{	/* Used instead of GMT_ascii_output_one since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
+{	/* Used instead of GMT_ascii_output_col since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
 	char text[GMT_TEXT_LEN256];
 
 	GMT_ascii_format_col (GMT, text, x, col);

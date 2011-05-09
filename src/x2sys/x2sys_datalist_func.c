@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.7 2011-05-09 19:03:08 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -402,7 +402,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 			if (special_formatting)  {	/* use the specified formats */
 				for (k = 0; k < s->n_out_columns; k++) {
 					if (s->info[s->out_order[k]].format[0] == '-')
-						GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], out[k], k);
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[k], k);
 					else {
 						if (!GMT_is_dnan (out[k]))
 							fprintf (GMT->session.std[GMT_OUT], s->info[s->out_order[k]].format, out[k]);

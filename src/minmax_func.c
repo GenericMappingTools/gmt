@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.15 2011-05-08 03:45:27 guru Exp $
+ *    $Id: minmax_func.c,v 1.16 2011-05-09 19:03:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -65,7 +65,7 @@ EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 GMT_LONG strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, GMT_LONG col)
-{	/* Alternative to GMT_ascii_output_one that strips off leading blanks first */
+{	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
 	GMT_LONG k;
 
@@ -286,8 +286,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 
 	if (Ctrl->C.active) {	/* Must set output column types since each input col will take up two output cols. */
-		char col_type[GMT_MAX_COLUMNS];
-		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, char);	/* Duplicate input col types */
+		GMT_LONG col_type[GMT_MAX_COLUMNS];
+		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, GMT_LONG);	/* Duplicate input col types */
 		for (i = 0; i < GMT_MAX_COLUMNS/2; i++) GMT->current.io.col_type[GMT_OUT][2*i] = GMT->current.io.col_type[GMT_OUT][2*i+1] = col_type[i];
 	}
 		

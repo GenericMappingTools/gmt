@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_get_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_get_func.c,v 1.7 2011-05-09 19:03:08 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -305,9 +305,9 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (y_ok && !n_ok && Ctrl->C.active && first) {
 						x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
 						y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
-						GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], x, 0);
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 						fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-						GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], y, 1);
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
 						fprintf (GMT->session.std[GMT_OUT], "\n");
 						first = FALSE;
 					}

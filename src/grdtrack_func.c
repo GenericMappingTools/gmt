@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.16 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.17 2011-05-09 19:03:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -445,12 +445,12 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 				/* First get rid of any commas that may cause grief */
 				for (k = 0; GMT->current.io.current_record[k]; k++) if (GMT->current.io.current_record[k] == ',') GMT->current.io.current_record[k] = ' ';
 				sscanf (GMT->current.io.current_record, "%*s %*s %[^\n]", line);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], in[ix], ix);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], in[iy], iy);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], in[ix], ix);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], in[iy], iy);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				GMT_fprintf (GMT->session.std[GMT_OUT], "%s", line);
 				for (g = 0; g < Ctrl->G.n_grids; g++) {
 					GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-					GMT_ascii_output_one (GMT, GMT->session.std[GMT_OUT], value[g], 2);
+					GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], value[g], GMT_Z+g);
 				}
 				GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
