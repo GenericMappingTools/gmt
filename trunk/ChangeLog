@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1017 2011-05-10 02:50:10 guru Exp $
+	$Id: ChangeLog,v 1.1018 2011-05-10 03:28:55 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-09	pwessel
@@ -9,7 +9,7 @@
 	* grdimage_func.c:	When image is grayscale and -Q is used then image must be
 				converted to 24-bit and we set NaN color to a non-gray value.
 	* psbasemap_func.c:	The -L now works for plain scales also.
-	* gmt_support.c:	Only apply grid BCs on sides not set with extended data.
+	* gmt_support.c:	Only apply grid and image BCs on sides not set with extended data.
 
 2011-05-08	pwessel
 	* *.c:			All deprecated options under #ifdef GMT_COMPAT now will give
