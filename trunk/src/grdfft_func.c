@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.13 2011-05-09 19:03:07 guru Exp $
+ *	$Id: grdfft_func.c,v 1.14 2011-05-10 00:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -268,7 +268,6 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	}
 
 	/* Now, cos taper the x edges */
-
 	scale = M_PI / (i_data_start + 1);
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;
@@ -281,6 +280,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 			datac[ij_data(ir2,j,Grid->header->mx,i_data_start,j_data_start)] *= (float)cos_wt;
 		}
 	}
+
 }
 
 double kx (GMT_LONG k, struct K_XY *K)
@@ -325,7 +325,7 @@ GMT_LONG do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 	
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0;	/* Derivative of the mean is zero */
-	for (k = 2; k < Grid->header->nm; k += 2) {
+	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = scale * modk (k, K);
 		datac[k]   *= (float)fact;
 		datac[k+1] *= (float)fact;
@@ -342,7 +342,7 @@ GMT_LONG do_integrate (struct GMT_GRID *Grid, double *par, struct K_XY *K)
 
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0;
-	for (k = 2; k < Grid->header->nm; k += 2) {
+	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = 1.0 / (scale * modk (k, K));
 		datac[k]   *= (float)fact;
 		datac[k+1] *= (float)fact;
@@ -357,7 +357,7 @@ GMT_LONG do_continuation (struct GMT_GRID *Grid, double *zlevel, struct K_XY *K)
 
 	/* If z is positive, the field will be upward continued using exp[- k z].  */
 
-	for (k = 2; k < Grid->header->nm; k += 2) {
+	for (k = 2; k < Grid->header->size; k += 2) {
 		tmp = (float)exp (-(*zlevel) * modk (k, K));
 		datac[k]   *= tmp;
 		datac[k+1] *= tmp;
@@ -374,7 +374,7 @@ GMT_LONG do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct K_
 	sincosd (*azim, &sin_azim, &cos_azim);
 
 	datac[0] = datac[1] = 0.0;
-	for (k = 2; k < Grid->header->nm; k+= 2) {
+	for (k = 2; k < Grid->header->size; k+= 2) {
 		fact = (float)(sin_azim * kx (k, K) + cos_azim * ky (k, K));
 		tempr = -(datac[k+1] * fact);
 		tempi = (datac[k] * fact);
@@ -414,7 +414,7 @@ GMT_LONG do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *p
 	rigidity_d = (YOUNGS_MODULUS * pow (te, 3.0)) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
 	d_over_restoring_force = rigidity_d / ((rm - ri) * NORMAL_GRAVITY);
 
-	for (k = 0; k < Grid->header->nm; k += 2) {
+	for (k = 0; k < Grid->header->size; k += 2) {
 		mk = modk (k, K);
 		k2 = mk * mk;
 		k4 = k2 * k2;
@@ -475,7 +475,7 @@ void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct K_XY *K)
 	GMT_LONG k;
 	float weight, *datac = Grid->data;
 
-	for (k = 0; k < Grid->header->nm; k += 2) {
+	for (k = 0; k < Grid->header->size; k += 2) {
 		weight = (float) get_filter_weight (k, f_info, K);
 		datac[k]   *= weight;
 		datac[k+1] *= weight;
@@ -636,7 +636,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 
 	r_delta_k = 1.0 / delta_k;
 	
-	for (nused = 0, k = 2; k < Grid->header->nm; k += 2) {
+	for (nused = 0, k = 2; k < Grid->header->size; k += 2) {
 		freq = (*get_k)(k, K);
 		ifreq = irint (fabs (freq) * r_delta_k) - 1;
 		if (ifreq < 0) ifreq = 0;	/* Might happen when doing r spectrum  */
@@ -649,7 +649,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	eps_pow = 1.0 / sqrt ((double)nused/(double)nk);
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
 	sprintf (format, "%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	powfactor = 4.0 / pow ((double)Grid->header->nm, 2.0);
+	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
 	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
@@ -664,7 +664,9 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 		S->coord[GMT_Y][k] = power[k];
 		S->coord[GMT_Y][k] = eps_pow * power[k];
 	}
+	if ((error = GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) return (error);	/* Enables data output and sets access mode */
 	if ((error = GMT_Put_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, 0, (void **)&file, (void *)D))) return (error);
+	if ((error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);			/* Disables further data output */
 	GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&D);
 	GMT_free (GMT, power);
 	return (2);	/* Number of parameters used */
@@ -840,7 +842,7 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
 		GMT_report (GMT, GMT_MSG_FATAL, " Most accurate\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %lds\n",
+		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -870,7 +872,7 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 
 void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct GMT_GRID *Gin, float **work_array)
 {
-	GMT_LONG worksize, factors[32];
+	GMT_LONG k, worksize, factors[32];
 	float *workc = NULL;
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
@@ -886,6 +888,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 		if (Ctrl->N.force_narray) {
 			Ctrl->N.nx2 = Gin->header->nx;
 			Ctrl->N.ny2 = Gin->header->ny;
+			for (k = 0; k < 4; k++) Gin->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
 		}
 		else {
 			suggest_fft (GMT, (GMT_LONG)Gin->header->nx, (GMT_LONG)Gin->header->ny, fft_sug, (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->N.suggest_narray));
@@ -1094,9 +1097,13 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
 				n_errors += GMT_check_condition (GMT, n != 5 || k > 0, "Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
-				add_operation (GMT, Ctrl, ISOSTASY, 5, par);
+				add_operation (GMT, Ctrl, -1, 0, par);
 				break;
-
+#ifdef DEBUG
+			case 'Q':	/* Do nothing */
+				add_operation (GMT, Ctrl, -1, 1, par);
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -1116,10 +1123,12 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0;
+	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
 
 	float *workc = NULL;
+	char *beforefile = "pretapered.nc";
+	char *afterfile = "tapered.nc";
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct F_INFO f_info;
@@ -1143,17 +1152,23 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 	set_grid_radix_size (GMT, Ctrl, Grid, &workc);		/* This also sets the new pads and allocates work array workc */
+	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
+	for (j = 0; j < 4; j++) Grid->header->BC[j] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
+	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&beforefile, (void *)Grid);
+	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	/* Check that no NaNs are present */
+	for (j = stop = 0; !stop && j < Grid->header->size; j++) if (Grid->data[j] == 15.0) stop = j;
 	
 	i_data_start = GMT->current.io.pad[XLO];
 	j_data_start = GMT->current.io.pad[YHI];
@@ -1170,6 +1185,9 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!(Ctrl->L.active)) remove_plane (GMT, Out);
 	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out);
+	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&afterfile, (void *)Out);
+	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	/* Load K_XY structure with wavenumbers and dimensions */
 	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
@@ -1233,7 +1251,9 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
 				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "spectrum...");
-				par_count += do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
+				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
+				if (status < 0) Return (status);
+				par_count += status;
 				break;
 		}
 	}
@@ -1245,12 +1265,14 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* GMT_fourt (GMT, Out->data, narray, 2, 1, 1, workc); */
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
-		Ctrl->S.scale *= (2.0 / Out->header->nm);
+		Ctrl->S.scale *= (2.0 / Out->header->size);
 		for (i = 0; i < Out->header->size; i++) Out->data[i] *= (float)Ctrl->S.scale;
 
 		/* The data are in the middle of the padded array */
 
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA & GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
+		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
+		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
 	}
 	
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);

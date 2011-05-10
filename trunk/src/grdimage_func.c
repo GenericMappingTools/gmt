@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.40 2011-05-02 08:14:37 guru Exp $
+ *	$Id: grdimage_func.c,v 1.41 2011-05-10 00:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, n = 0;
+	GMT_LONG n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -266,6 +266,8 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 					"Syntax error -E option: dpi must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
 					"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
+					"Syntax error -Q option:  Cannot use -M when doing colormasking\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -332,12 +334,13 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE;
 	GMT_LONG k, byte, nx, ny, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
-	GMT_LONG colormask_offset = 0, nm, node, kk, try;
+	GMT_LONG colormask_offset = 0, nm, node, kk, try, gray_only = FALSE;
 	GMT_LONG node_RGBA = 0;		/* Counter for the RGB(A) image array. */
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
-	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0}, *NaN_rgb = NULL, wesn[4];
+	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, wesn[4];
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
@@ -433,13 +436,14 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->C.active) {		/* Read palette file */
 			if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) 
 				Return (GMT_DATA_READ_ERROR);
+			gray_only = (P && P->is_gray);
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
 			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
 				r_table = GMT_memory (GMT, NULL, 256, double);
 				for (k = 0; k < 256; k++) r_table[k] = GMT_is255 (k);
-				P->is_gray = TRUE;
+				gray_only = TRUE;
 			}
 			else if (I->ColorMap != NULL) {
 				r_table = GMT_memory (GMT, NULL, 256, double);
@@ -451,7 +455,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					b_table[k] = GMT_is255 (I->ColorMap[k*4 + 2]);
 				}
 				do_indexed = TRUE;		/* Now it will be RGB */
-				P->is_gray = FALSE;
+				gray_only = FALSE;
 			}
 		}
 #endif
@@ -659,8 +663,17 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (P && P->has_pattern) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Patterns in cpt file only apply to -T\n");
 	GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate pixel colors\n");
 
-	if (Ctrl->Q.active) rgb_used = GMT_memory (GMT, NULL, 256*256*256, unsigned char);
-	if (Ctrl->M.active || (P && P->is_gray))
+	NaN_rgb = (P) ? P->patch[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
+	if (Ctrl->Q.active) {
+		if (gray_only) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Your image is grayscale only but -Q requires 24-bit; image will be converted to 24-bit.\n");
+			gray_only = FALSE;
+			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since image is gray only */
+			GMT_memcpy (P->patch[GMT_NAN].rgb, red, 4, double);
+		}
+		rgb_used = GMT_memory (GMT, NULL, 256*256*256, unsigned char);
+	}
+	if (Ctrl->M.active || gray_only)
 		bitimage_8 = GMT_memory (GMT, NULL, nm, unsigned char);
 	else {
 		if (Ctrl->Q.active) colormask_offset = 3;
@@ -672,7 +685,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	normal_x = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
 	normal_y = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
-	NaN_rgb = (P) ? P->patch[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
 	for (try = 0, done = FALSE; !done && try < 2; try++) {	/* Evaluate colors at least once, or twice if -Q and we need to select another NaN color */
 		for (row = 0, byte = colormask_offset; row < ny; row++) {
 			actual_row = (normal_y) ? row : ny - row - 1;
@@ -720,7 +732,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_illuminate (GMT, Intens_proj->data[node], rgb);
 				}
 				
-				if (P && P->is_gray)		/* Color table only has grays, pick r */
+				if (P && gray_only)		/* Color table only has grays, pick r */
 					bitimage_8[byte++] = GMT_u255 (rgb[0]);
 				else if (Ctrl->M.active)	/* Convert rgb to gray using the GMT_YIQ transformation */
 					bitimage_8[byte++] = GMT_u255 (GMT_YIQ (rgb));
@@ -815,7 +827,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Creating image ");
 
-	if (P && P->is_gray) 
+	if (P && gray_only) 
 		for (kk = 0, P->is_bw = TRUE; P->is_bw && kk < nm; kk++) 
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = FALSE;
 
@@ -859,7 +871,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		PSL_plotbitimage (PSL, x0, y0, x_side, y_side, PSL_BL, bit, nx_pixels, ny, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
 		GMT_free (GMT, bit);
 	}
-	else if ((P && P->is_gray) || Ctrl->M.active) {
+	else if ((P && gray_only) || Ctrl->M.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "[8-bit grayshade image]\n");
 		PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, nx, ny, (Ctrl->E.device_dpi ? -8 : 8));
 		GMT_free (GMT, bitimage_8);
