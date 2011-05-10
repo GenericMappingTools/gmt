@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.325 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_plot.c,v 1.326 2011-05-10 02:50:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2361,7 +2361,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 	GMT_LONG i, j, jj, unit, form;
 	GMT_LONG n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 	GMT_LONG n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
-	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
+	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_TEXT_LEN256], *this_label = NULL;
 	char *label[5] = {"km", "miles", "nautical miles", "m", "feet"}, *units[5] = {"km", "mi", "nm", "m", "ft"};
@@ -2420,7 +2420,8 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 	half = 0.5 * width;
 	a_len = fabs (C->current.setting.map_scale_height);
 	off = a_len + 0.75 * C->current.setting.map_annot_offset[0];
-	x_left = ms->x0 - half;
+	x_left  = ms->x0 - half;
+	x_right = ms->x0 + half;
 
 	if (ms->fancy) {	/* Fancy scale */
 		j = irint (floor (d_log10 (C, ms->length / 0.95)));
@@ -2437,7 +2438,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 			GMT_setfill (C, P, &ms->fill, ms->boxdraw);
 			PSL_plotbox (P, x_left - 2.0 * C->current.setting.map_annot_offset[0] - dx,
 				ms->y0 - 1.5 * a_len - C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - ((ms->justify == 'b') ?  fabs(C->current.setting.map_label_offset) + 0.85 * C->current.setting.font_label.size / PSL_POINTS_PER_INCH: 0.0),
-				x_left + width + 2.0 * C->current.setting.map_annot_offset[0] + dx,
+				x_right + 2.0 * C->current.setting.map_annot_offset[0] + dx,
 				ms->y0 + 1.5 * a_len + ((ms->justify == 't') ? fabs(C->current.setting.map_label_offset) + C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH : 0.0));
 		}
 		GMT_setpen (C, P, &C->current.setting.map_tick_pen);
@@ -2465,7 +2466,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 				jj = PSL_BR;	/* XXX ARE THESE RIGHT ? XXX */
 				break;
 			case 'r':	/* right */
-				x_label = x_left + width + f_len;
+				x_label = x_right + f_len;
 				y_label = ms->y0 - a_len;
 				jj = PSL_BL;
 				break;
@@ -2493,11 +2494,13 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_
 			GMT_setfill (C, P, &ms->fill, ms->boxdraw);
 			PSL_plotbox (P, x_left - 2.0 * C->current.setting.map_annot_offset[0] - dx,
 				ms->y0 - 1.5 * a_len - C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH,
-				x_left + width + 2.0 * C->current.setting.map_annot_offset[0] + dx, ms->y0 + 1.5 * a_len);
+				x_right + 2.0 * C->current.setting.map_annot_offset[0] + dx, ms->y0 + 1.5 * a_len);
 		}
 		GMT_setpen (C, P, &C->current.setting.map_tick_pen);
+		PSL_plotsegment (P, x_left, ms->y0 - C->current.setting.map_scale_height, x_left, ms->y0);
+		PSL_plotsegment (P, x_left, ms->y0, x_right, ms->y0);
+		PSL_plotsegment (P, x_right, ms->y0, x_right, ms->y0 - C->current.setting.map_scale_height);
 		sprintf (txt, "%g %s", ms->length, label[unit]);
-		PSL_plotbox (P, ms->x0 - half, ms->y0 - C->current.setting.map_scale_height, ms->x0 + half, ms->y0);
 		form = GMT_setfont (C, P, &C->current.setting.font_annot[0]);
 		PSL_plottext (P, ms->x0, ms->y0 - off, C->current.setting.font_annot[0].size, txt, 0.0, 10, form);
 	}
