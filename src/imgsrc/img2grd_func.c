@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.15 2011-05-09 18:02:00 guru Exp $
+/* $Id: img2grd_func.c,v 1.16 2011-05-10 00:34:20 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -281,7 +281,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	short int *row = NULL;
 	
-	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMTAPI_STRLEN], s_out_ID[GMTAPI_STRLEN];
+	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMTAPI_STRLEN], s_out_ID[GMT_TEXT_LEN256];
 	char z_units[GRD_UNIT_LEN80];
 	
 	FILE *fp = NULL;
