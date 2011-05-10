@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.272 2011-05-09 19:03:07 guru Exp $
+ *	$Id: gmt_io.c,v 1.273 2011-05-10 01:16:11 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5459,6 +5459,7 @@ void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_LONG free_ima
 	if (!(*I)) return;	/* Nothing to deallocate */
 	if ((*I)->data && free_image) GMT_free (C, (*I)->data);
 	if ((*I)->header) GMT_free (C, (*I)->header);
+	if ((*I)->ColorMap) GMT_free (C, (*I)->ColorMap);
 	GMT_free (C, *I);
 	*I = NULL;
 }
