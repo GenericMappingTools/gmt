@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.15 2011-05-10 00:34:20 guru Exp $
+ *	$Id: grdfft_func.c,v 1.16 2011-05-10 01:02:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -280,7 +280,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 			datac[ij_data(ir2,j,Grid->header->mx,i_data_start,j_data_start)] *= (float)cos_wt;
 		}
 	}
-
+	GMT_report (GMT, GMT_MSG_NORMAL, "Data reflected and tapered\n");
 }
 
 double kx (GMT_LONG k, struct K_XY *K)
