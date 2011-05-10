@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.15 2011-04-26 02:57:08 remko Exp $
+#	$Id: functions.sh,v 1.16 2011-05-10 03:06:48 guru Exp $
 #
 # Functions to be used with test scripts
 
@@ -44,6 +44,9 @@ LANG=C
 srcdir=`cd ../../src;pwd`
 export PATH=$srcdir:$srcdir/meca:$srcdir/mgd77:$PATH
 export LD_LIBRARY_PATH=$srcdir:$srcdir/meca:$srcdir/mgd77:${LD_LIBRARY_PATH:-/usr/lib}
+
+# Set GDAL to 1 if we compiled it in
+GDAL=`grep -c '\-DUSE_GDAL' $srcdir/config.mk`
 
 # Make sure to cleanup at end
 trap "\rm -f .gmt* gmt.conf" EXIT
