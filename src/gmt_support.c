@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.503 2011-05-10 02:50:11 guru Exp $
+ *	$Id: gmt_support.c,v 1.504 2011-05-10 03:28:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6092,7 +6092,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		/* DONE with all X not periodic cases  */
 	}
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
-		G->header->BC[XLO] = G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
+		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
+		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
 
 		for (jmx = jn; jmx <= js; jmx += mx) {
 			if (set[XLO]) {
@@ -6246,8 +6247,12 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	GMT_LONG jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	GMT_LONG j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG b, nb = G->n_bands;
+	GMT_LONG n_skip, set[4] = {TRUE, TRUE, TRUE, TRUE};
 
-	if (G->header->BC[XLO] == GMT_BC_IS_DATA && G->header->BC[XHI] == GMT_BC_IS_DATA && G->header->BC[YLO] == GMT_BC_IS_DATA && G->header->BC[YHI] == GMT_BC_IS_DATA) return (GMT_NOERROR);	/* No need to set since there is data in the pad area */
+	for (i = n_skip = 0; i < 4; i++) {
+		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = FALSE; n_skip++;}	/* No need to set since there is data in the pad area */
+	}
+	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
 
 	/* Check minimum size:  */
 	if (G->header->nx < 2 || G->header->ny < 2) {
@@ -6327,10 +6332,14 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 
 			for (i = iw; i <= ie; i++) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jno1 + i)+b] = G->data[nb*(jno1k + i)+b];
-					G->data[nb*(jno2 + i)+b] = G->data[nb*(jno2k + i)+b];
-					G->data[nb*(jso1 + i)+b] = G->data[nb*(jso1k + i)+b];
-					G->data[nb*(jso2 + i)+b] = G->data[nb*(jso2k + i)+b];
+					if (set[YHI]) {
+						G->data[nb*(jno1 + i)+b] = G->data[nb*(jno1k + i)+b];
+						G->data[nb*(jno2 + i)+b] = G->data[nb*(jno2k + i)+b];
+					}
+					if (set[YLO]) {
+						G->data[nb*(jso1 + i)+b] = G->data[nb*(jso1k + i)+b];
+						G->data[nb*(jso2 + i)+b] = G->data[nb*(jso2k + i)+b];
+					}
 				}
 			}
 
@@ -6341,40 +6350,50 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jmx + iwo1)+b] = (unsigned char)irint (4.0 * G->data[nb*(jmx + iw)+b]) - (G->data[nb*(jmx + iw + mx)+b] + G->data[nb*(jmx + iw - mx)+b] + G->data[nb*(jmx + iwi1)+b]);
-					G->data[nb*(jmx + ieo1)+b] = (unsigned char)irint (4.0 * G->data[nb*(jmx + ie)+b]) - (G->data[nb*(jmx + ie + mx)+b] + G->data[nb*(jmx + ie - mx)+b] + G->data[nb*(jmx + iei1)+b]);
+					if (set[XLO]) G->data[nb*(jmx + iwo1)+b] = (unsigned char)irint (4.0 * G->data[nb*(jmx + iw)+b]) - (G->data[nb*(jmx + iw + mx)+b] + G->data[nb*(jmx + iw - mx)+b] + G->data[nb*(jmx + iwi1)+b]);
+					if (set[XHI]) G->data[nb*(jmx + ieo1)+b] = (unsigned char)irint (4.0 * G->data[nb*(jmx + ie)+b]) - (G->data[nb*(jmx + ie + mx)+b] + G->data[nb*(jmx + ie - mx)+b] + G->data[nb*(jmx + iei1)+b]);
 				}
 			}
 
 			/* Copy that result to 2nd outside row using periodicity.  */
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno2 + iwo1)+b] = G->data[nb*(jno2k + iwo1)+b];
-				G->data[nb*(jso2 + iwo1)+b] = G->data[nb*(jso2k + iwo1)+b];
-				G->data[nb*(jno2 + ieo1)+b] = G->data[nb*(jno2k + ieo1)+b];
-				G->data[nb*(jso2 + ieo1)+b] = G->data[nb*(jso2k + ieo1)+b];
+				if (set[XLO]) {
+					G->data[nb*(jno2 + iwo1)+b] = G->data[nb*(jno2k + iwo1)+b];
+					G->data[nb*(jso2 + iwo1)+b] = G->data[nb*(jso2k + iwo1)+b];
+				}
+				if (set[XHI]) {
+					G->data[nb*(jno2 + ieo1)+b] = G->data[nb*(jno2k + ieo1)+b];
+					G->data[nb*(jso2 + ieo1)+b] = G->data[nb*(jso2k + ieo1)+b];
+				}
 			}
 
 			/* Now set d[laplacian]/dx = 0 on 2nd outside column.  Include 1st outside rows in loop.  */
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jmx + iwo2)+b] = (unsigned char)irint ((G->data[nb*(jmx + iw - mx)+b] + G->data[nb*(jmx + iw + mx)+b] + G->data[nb*(jmx + iwi1)+b])
+					if (set[XLO]) G->data[nb*(jmx + iwo2)+b] = (unsigned char)irint ((G->data[nb*(jmx + iw - mx)+b] + G->data[nb*(jmx + iw + mx)+b] + G->data[nb*(jmx + iwi1)+b])
 						- (G->data[nb*(jmx + iwo1 - mx)+b] + G->data[nb*(jmx + iwo1 + mx)+b]) + (5.0 * (G->data[nb*(jmx + iwo1)+b] - G->data[nb*(jmx + iw)+b])));
-					G->data[nb*(jmx + ieo2)+b] = (unsigned char)irint ((G->data[nb*(jmx + ie - mx)+b] + G->data[nb*(jmx + ie + mx)+b] + G->data[nb*(jmx + iei1)+b])
+					if (set[XHI]) G->data[nb*(jmx + ieo2)+b] = (unsigned char)irint ((G->data[nb*(jmx + ie - mx)+b] + G->data[nb*(jmx + ie + mx)+b] + G->data[nb*(jmx + iei1)+b])
 						- (G->data[nb*(jmx + ieo1 - mx)+b] + G->data[nb*(jmx + ieo1 + mx)+b]) + (5.0 * (G->data[nb*(jmx + ieo1)+b] - G->data[nb*(jmx + ie)+b])));
 				}
 			}
 
 			/* Now copy that result also, for complete periodicity's sake  */
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2k + iwo2)+b];
-				G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2k + iwo2)+b];
-				G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2k + ieo2)+b];
-				G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2k + ieo2)+b];
+				if (set[XLO]) {
+					G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2k + iwo2)+b];
+					G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2k + iwo2)+b];
+					G->header->BC[XLO] = GMT_BC_IS_NATURAL;
+				}
+				if (set[XHI]) {
+					G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2k + ieo2)+b];
+					G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2k + ieo2)+b];
+					G->header->BC[XHI] = GMT_BC_IS_NATURAL;
+				}
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			G->header->BC[XLO] = G->header->BC[XHI] = GMT_BC_IS_NATURAL;
-			G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 
 			return (GMT_NOERROR);
 		}
@@ -6385,34 +6404,34 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				Also set d2f/dxdy = 0.  Then can set remaining points.  */
 
 			for (b = 0; b < nb; b++) {
-			/* d2/dx2 */	G->data[nb*(jn + iwo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jn + iwi1)+b]);
-			/* d2/dy2 */	G->data[nb*(jno1 + iw)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jni1 + iw)+b]);
-			/* d2/dxdy */	G->data[nb*(jno1 + iwo1)+b] = (unsigned char)irint (-(G->data[nb*(jno1 + iwi1)+b] - G->data[nb*(jni1 + iwi1)+b] + G->data[nb*(jni1 + iwo1)+b]));
+			/* d2/dx2 */	if (set[XLO]) G->data[nb*(jn + iwo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jn + iwi1)+b]);
+			/* d2/dy2 */	if (set[YHI]) G->data[nb*(jno1 + iw)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jni1 + iw)+b]);
+			/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo1)+b] = (unsigned char)irint (-(G->data[nb*(jno1 + iwi1)+b] - G->data[nb*(jni1 + iwi1)+b] + G->data[nb*(jni1 + iwo1)+b]));
 
-			/* d2/dx2 */	G->data[nb*(jn + ieo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jn + iei1)+b]);
-			/* d2/dy2 */	G->data[nb*(jno1 + ie)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jni1 + ie)+b]);
-			/* d2/dxdy */	G->data[nb*(jno1 + ieo1)+b] = (unsigned char)irint (-(G->data[nb*(jno1 + iei1)+b] - G->data[nb*(jni1 + iei1)+b] + G->data[nb*(jni1 + ieo1)+b]));
+			/* d2/dx2 */	if (set[XHI]) G->data[nb*(jn + ieo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jn + iei1)+b]);
+			/* d2/dy2 */	if (set[YHI]) G->data[nb*(jno1 + ie)+b]   = (unsigned char)irint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jni1 + ie)+b]);
+			/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo1)+b] = (unsigned char)irint (-(G->data[nb*(jno1 + iei1)+b] - G->data[nb*(jni1 + iei1)+b] + G->data[nb*(jni1 + ieo1)+b]));
 
-			/* d2/dx2 */	G->data[nb*(js + iwo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(js + iwi1)+b]);
-			/* d2/dy2 */	G->data[nb*(jso1 + iw)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(jsi1 + iw)+b]);
-			/* d2/dxdy */	G->data[nb*(jso1 + iwo1)+b] = (unsigned char)irint (-(G->data[nb*(jso1 + iwi1)+b] - G->data[nb*(jsi1 + iwi1)+b] + G->data[nb*(jsi1 + iwo1)+b]));
+			/* d2/dx2 */	if (set[XLO]) G->data[nb*(js + iwo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(js + iwi1)+b]);
+			/* d2/dy2 */	if (set[YLO]) G->data[nb*(jso1 + iw)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(jsi1 + iw)+b]);
+			/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo1)+b] = (unsigned char)irint (-(G->data[nb*(jso1 + iwi1)+b] - G->data[nb*(jsi1 + iwi1)+b] + G->data[nb*(jsi1 + iwo1)+b]));
 
-			/* d2/dx2 */	G->data[nb*(js + ieo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(js + iei1)+b]);
-			/* d2/dy2 */	G->data[nb*(jso1 + ie)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(jsi1 + ie)+b]);
-			/* d2/dxdy */	G->data[nb*(jso1 + ieo1)+b] = (unsigned char)irint (-(G->data[nb*(jso1 + iei1)+b] - G->data[nb*(jsi1 + iei1)+b] + G->data[nb*(jsi1 + ieo1)+b]));
+			/* d2/dx2 */	if (set[XHI]) G->data[nb*(js + ieo1)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(js + iei1)+b]);
+			/* d2/dy2 */	if (set[YLO]) G->data[nb*(jso1 + ie)+b]   = (unsigned char)irint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(jsi1 + ie)+b]);
+			/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[nb*(jso1 + ieo1)+b] = (unsigned char)irint (-(G->data[nb*(jso1 + iei1)+b] - G->data[nb*(jsi1 + iei1)+b] + G->data[nb*(jsi1 + ieo1)+b]));
 			}
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
 			for (i = iwi1; i <= iei1; i++) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jno1 + i)+b] = (unsigned char)irint (4.0 * G->data[nb*(jn + i)+b]) - (G->data[nb*(jn + i - 1)+b] + G->data[nb*(jn + i + 1)+b] + G->data[nb*(jni1 + i)+b]);
-					G->data[nb*(jso1 + i)+b] = (unsigned char)irint (4.0 * G->data[nb*(js + i)+b]) - (G->data[nb*(js + i - 1)+b] + G->data[nb*(js + i + 1)+b] + G->data[nb*(jsi1 + i)+b]);
+					if (set[YHI]) G->data[nb*(jno1 + i)+b] = (unsigned char)irint (4.0 * G->data[nb*(jn + i)+b]) - (G->data[nb*(jn + i - 1)+b] + G->data[nb*(jn + i + 1)+b] + G->data[nb*(jni1 + i)+b]);
+					if (set[YLO]) G->data[nb*(jso1 + i)+b] = (unsigned char)irint (4.0 * G->data[nb*(js + i)+b]) - (G->data[nb*(js + i - 1)+b] + G->data[nb*(js + i + 1)+b] + G->data[nb*(jsi1 + i)+b]);
 				}
 			}
 			for (jmx = jni1; jmx <= jsi1; jmx += mx) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(iwo1 + jmx)+b] = (unsigned char)irint (4.0 * G->data[nb*(iw + jmx)+b]) - (G->data[nb*(iw + jmx + mx)+b] + G->data[nb*(iw + jmx - mx)+b] + G->data[nb*(iwi1 + jmx)+b]);
-					G->data[nb*(ieo1 + jmx)+b] = (unsigned char)irint (4.0 * G->data[nb*(ie + jmx)+b]) - (G->data[nb*(ie + jmx + mx)+b] + G->data[nb*(ie + jmx - mx)+b] + G->data[nb*(iei1 + jmx)+b]);
+					if (set[XLO]) G->data[nb*(iwo1 + jmx)+b] = (unsigned char)irint (4.0 * G->data[nb*(iw + jmx)+b]) - (G->data[nb*(iw + jmx + mx)+b] + G->data[nb*(iw + jmx - mx)+b] + G->data[nb*(iwi1 + jmx)+b]);
+					if (set[XHI]) G->data[nb*(ieo1 + jmx)+b] = (unsigned char)irint (4.0 * G->data[nb*(ie + jmx)+b]) - (G->data[nb*(ie + jmx + mx)+b] + G->data[nb*(ie + jmx - mx)+b] + G->data[nb*(iei1 + jmx)+b]);
 				}
 			}
 
@@ -6420,51 +6439,61 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				corners, since the points needed in this are now set.  */
 			for (i = iw; i <= ie; i++) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jno2 + i)+b] = (unsigned char)irint (G->data[nb*(jni1 + i)+b] + (5.0 * (G->data[nb*(jno1 + i)+b] - G->data[nb*(jn + i)+b]))
+					if (set[YHI]) G->data[nb*(jno2 + i)+b] = (unsigned char)irint (G->data[nb*(jni1 + i)+b] + (5.0 * (G->data[nb*(jno1 + i)+b] - G->data[nb*(jn + i)+b]))
 						+ (G->data[nb*(jn + i - 1)+b] - G->data[nb*(jno1 + i - 1)+b]) + (G->data[nb*(jn + i + 1)+b] - G->data[nb*(jno1 + i + 1)+b]));
-					G->data[nb*(jso2 + i)+b] = (unsigned char)irint (G->data[nb*(jsi1 + i)+b] + (5.0 * (G->data[nb*(jso1 + i)+b] - G->data[nb*(js + i)+b]))
+					if (set[YLO]) G->data[nb*(jso2 + i)+b] = (unsigned char)irint (G->data[nb*(jsi1 + i)+b] + (5.0 * (G->data[nb*(jso1 + i)+b] - G->data[nb*(js + i)+b]))
 						+ (G->data[nb*(js + i - 1)+b] - G->data[nb*(jso1 + i - 1)+b]) + (G->data[nb*(js + i + 1)+b] - G->data[nb*(jso1 + i + 1)+b]));
 				}
 			}
 			for (jmx = jn; jmx <= js; jmx += mx) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(iwo2 + jmx)+b] = (unsigned char)irint (G->data[nb*(iwi1 + jmx)+b] + (5.0 * (G->data[nb*(iwo1 + jmx)+b] - G->data[nb*(iw + jmx)+b]))
+					if (set[XLO]) G->data[nb*(iwo2 + jmx)+b] = (unsigned char)irint (G->data[nb*(iwi1 + jmx)+b] + (5.0 * (G->data[nb*(iwo1 + jmx)+b] - G->data[nb*(iw + jmx)+b]))
 						+ (G->data[nb*(iw + jmx - mx)+b] - G->data[nb*(iwo1 + jmx - mx)+b]) + (G->data[nb*(iw + jmx + mx)+b] - G->data[nb*(iwo1 + jmx + mx)+b]));
-					G->data[nb*(ieo2 + jmx)+b] = (unsigned char)irint (G->data[nb*(iei1 + jmx)+b] + (5.0 * (G->data[nb*(ieo1 + jmx)+b] - G->data[nb*(ie + jmx)+b]))
+					if (set[XHI]) G->data[nb*(ieo2 + jmx)+b] = (unsigned char)irint (G->data[nb*(iei1 + jmx)+b] + (5.0 * (G->data[nb*(ieo1 + jmx)+b] - G->data[nb*(ie + jmx)+b]))
 						+ (G->data[nb*(ie + jmx - mx)+b] - G->data[nb*(ieo1 + jmx - mx)+b]) + (G->data[nb*(ie + jmx + mx)+b] - G->data[nb*(ieo1 + jmx + mx)+b]));
 				}
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			G->header->BC[XLO] = G->header->BC[XHI] = G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			for (i = 0; i < 4; i++) if (set[i]) G->header->BC[i] = GMT_BC_IS_NATURAL;
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
 	}
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
-		G->header->BC[XLO] = G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
+		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
+		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
 
 		for (jmx = jn; jmx <= js; jmx += mx) {
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(iwo1 + jmx)+b] = G->data[nb*(iwo1k + jmx)+b];
-				G->data[nb*(iwo2 + jmx)+b] = G->data[nb*(iwo2k + jmx)+b];
-				G->data[nb*(ieo1 + jmx)+b] = G->data[nb*(ieo1k + jmx)+b];
-				G->data[nb*(ieo2 + jmx)+b] = G->data[nb*(ieo2k + jmx)+b];
+				if (set[XLO]) {
+					G->data[nb*(iwo1 + jmx)+b] = G->data[nb*(iwo1k + jmx)+b];
+					G->data[nb*(iwo2 + jmx)+b] = G->data[nb*(iwo2k + jmx)+b];
+				}
+				if (set[XHI]) {
+					G->data[nb*(ieo1 + jmx)+b] = G->data[nb*(ieo1k + jmx)+b];
+					G->data[nb*(ieo2 + jmx)+b] = G->data[nb*(ieo2k + jmx)+b];
+				}
 			}
 		}
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2; i <= ieo2; i++) {
 				for (b = 0; b < nb; b++) {
-					G->data[nb*(jno1 + i)+b] = G->data[nb*(jno1k + i)+b];
-					G->data[nb*(jno2 + i)+b] = G->data[nb*(jno2k + i)+b];
-					G->data[nb*(jso1 + i)+b] = G->data[nb*(jso1k + i)+b];
-					G->data[nb*(jso2 + i)+b] = G->data[nb*(jso2k + i)+b];
+					if (set[YHI]) {
+						G->data[nb*(jno1 + i)+b] = G->data[nb*(jno1k + i)+b];
+						G->data[nb*(jno2 + i)+b] = G->data[nb*(jno2k + i)+b];
+					}
+					if (set[YLO]) {
+						G->data[nb*(jso1 + i)+b] = G->data[nb*(jso1k + i)+b];
+						G->data[nb*(jso2 + i)+b] = G->data[nb*(jso2k + i)+b];
+					}
 				}
 			}
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 			return (GMT_NOERROR);
 		}
 
@@ -6479,46 +6508,46 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				j1p = jni1;		/* constraint for jno1  */
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
-			for (i = iwo2; i <= ieo2; i++) {
+			for (i = iwo2; set[YHI] && i <= ieo2; i++) {
 				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jno2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
-			G->header->BC[YHI] = GMT_BC_IS_POLE;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_POLE;
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno1 + i)+b] = (unsigned char)irint ((4.0 * G->data[nb*(jn + i)+b]) - (G->data[nb*(jn + i - 1)+b] + G->data[nb*(jn + i + 1)+b] + G->data[nb*(jni1 + i)+b]));
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + G->header->nxp)+b];
-				G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + G->header->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno2 + i)+b] = (unsigned char)irint (G->data[nb*(jni1 + i)+b] + (5.0 * (G->data[nb*(jno1 + i)+b] - G->data[nb*(jn + i)+b]))
 						+ (G->data[nb*(jn + i - 1)+b] - G->data[nb*(jno1 + i - 1)+b]) + (G->data[nb*(jn + i + 1)+b] - G->data[nb*(jno1 + i + 1)+b]));
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + G->header->nxp)+b];
-				G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YHI]) G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + G->header->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* End of X is periodic, north (top) is Natural.  */
-			G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_NATURAL;
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
@@ -6532,47 +6561,47 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				j1p = jsi1;		/* constraint for jso1  */
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
-			for (i = iwo2; i <= ieo2; i++) {
+			for (i = iwo2; set[YLO] && i <= ieo2; i++) {
 				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jso1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jso2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
-			G->header->BC[YLO] = GMT_BC_IS_POLE;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_POLE;
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jso1 + i)+b] = (unsigned char)irint ((4.0 * G->data[nb*(js + i)+b]) - (G->data[nb*(js + i - 1)+b] + G->data[nb*(js + i + 1)+b] + G->data[nb*(jsi1 + i)+b]));
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + G->header->nxp)+b];
-				G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + G->header->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - G->header->nxp)+b];
 			}
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jso2 + i)+b] = (unsigned char)irint (G->data[nb*(jsi1 + i)+b] + (5.0 * (G->data[nb*(jso1 + i)+b] - G->data[nb*(js + i)+b]))
 						+ (G->data[nb*(js + i - 1)+b] - G->data[nb*(jso1 + i - 1)+b]) + (G->data[nb*(js + i + 1)+b] - G->data[nb*(jso1 + i + 1)+b]));
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + G->header->nxp)+b];
-				G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YLO]) G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + G->header->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - G->header->nxp)+b];
 			}
 
 			/* End of X is periodic, south (bottom) is Natural.  */
-			G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_NATURAL;
 		}
 
 		/* Done with X is periodic cases.  */
