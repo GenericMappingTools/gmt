@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.18 2011-05-10 01:15:55 guru Exp $
+ *	$Id: grdfft_func.c,v 1.19 2011-05-10 02:50:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,11 +107,6 @@ struct GRDFFT_CTRL {
 #define	NORMAL_GRAVITY	9.80619203	/* m/s**2  */
 #define	POISSONS_RATIO	0.25
 
-/* Macro definition ij_data(i,j) finds the array index to an element
-	containing the real data(i,j) in the padded complex array */
-
-#define	ij_data(i,j,mx,i_data_start,j_data_start) (2*((mx)*((j)+j_data_start)+(i)+i_data_start))
-
 struct F_INFO {
 	double lc[3];		/* Low-cut frequency for r, x, and y	*/
 	double lp[3];		/* Low-pass frequency for r, x, and y	*/
@@ -193,7 +188,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		y = one_on_yhl * (j - y_half_length);
 		for (i = 0; i < Grid->header->nx; i++) {
 			x = one_on_xhl * (i - x_half_length);
-			z = datac[ij_data(i,j,Grid->header->mx,i_data_start,j_data_start)];
+			z = datac[GMT_IJPR(Grid->header,j,i)];
 			a[0] += z;
 			a[1] += z*x;
 			a[2] += z*y;
@@ -207,7 +202,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	for (j = 0; j < Grid->header->ny; j++) {
 		y = one_on_yhl * (j - y_half_length);
 		for (i = 0; i < Grid->header->nx; i++) {
-			ij = ij_data (i, j, Grid->header->mx, i_data_start, j_data_start);
+			ij = GMT_IJPR (Grid->header, j, i);
 			x = one_on_xhl * (i - x_half_length);
 			datac[ij] -= (float)(a[0] + a[1]*x + a[2]*y);
 			data_var += (datac[ij] * datac[ij]);
@@ -226,6 +221,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	GMT_LONG i, j, i_data_start, j_data_start;
 	float *datac = Grid->data;
 	double scale, cos_wt;
+	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
 
 	/* Note that if nx2 = nx+1 and ny2 = ny + 1, then this routine
 	 * will do nothing; thus a single row/column of zeros may be
@@ -241,11 +237,11 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;	/* Outside xmin; left of edge 1  */
 		ir1 = im;	/* Inside xmin; right of edge 1  */
-		il2 = il1 + Grid->header->nx - 1;	/* Inside xmax; left of edge 2  */
-		ir2 = ir1 + Grid->header->nx - 1;	/* Outside xmax; right of edge 2  */
-		for (j = 0; j < Grid->header->ny; j++) {
-			datac[ij_data(il1,j,Grid->header->mx,i_data_start,j_data_start)] = (float)2.0*datac[ij_data(0,j,Grid->header->mx,i_data_start,j_data_start)] - datac[ij_data(ir1,j,Grid->header->mx,i_data_start,j_data_start)];
-			datac[ij_data(ir2,j,Grid->header->mx,i_data_start,j_data_start)] = (float)2.0*datac[ij_data((Grid->header->nx-1),j,Grid->header->mx,i_data_start,j_data_start)] - datac[ij_data(il2,j,Grid->header->mx,i_data_start,j_data_start)];
+		il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
+		ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
+		for (j = 0; j < h->ny; j++) {
+			datac[GMT_IJPR(h,j,il1)] = (float)2.0*datac[GMT_IJPR(h,j,0)] - datac[GMT_IJPR(h,j,ir1)];
+			datac[GMT_IJPR(h,j,ir2)] = (float)2.0*datac[GMT_IJPR(h,j,h->nx-1)] - datac[GMT_IJPR(h,j,il2)];
 		}
 	}
 
@@ -258,12 +254,12 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	for (jm = 1; jm <= j_data_start; jm++) {
 		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
 		jt1 = jm;	/* Inside ymin; top side of edge 1  */
-		jb2 = jb1 + Grid->header->ny - 1;	/* Inside ymax; bottom side of edge 2  */
-		jt2 = jt1 + Grid->header->ny - 1;	/* Outside ymax; bottom side of edge 2  */
+		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
+		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
 		cos_wt = 0.5 * (1.0 + cos(jm * scale) );
-		for (i = -i_data_start; i < Grid->header->mx - i_data_start; i++) {
-			datac[ij_data(i,jb1,Grid->header->mx,i_data_start,j_data_start)] = (float)(cos_wt * (2.0*datac[ij_data(i,0,Grid->header->mx,i_data_start,j_data_start)] - datac[ij_data(i,jt1,Grid->header->mx,i_data_start,j_data_start)]));
-			datac[ij_data(i,jt2,Grid->header->mx,i_data_start,j_data_start)] = (float)(cos_wt * (2.0*datac[ij_data(i,(Grid->header->ny-1),Grid->header->mx,i_data_start,j_data_start)] - datac[ij_data(i,jb2,Grid->header->mx,i_data_start,j_data_start)]));
+		for (i = -i_data_start; i < h->mx - i_data_start; i++) {
+			datac[GMT_IJPR(h,jb1,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,0,i)] - datac[GMT_IJPR(h,jt1,i)]));
+			datac[GMT_IJPR(h,jt2,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]));
 		}
 	}
 
@@ -272,12 +268,12 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;
 		ir1 = im;
-		il2 = il1 + Grid->header->nx - 1;
-		ir2 = ir1 + Grid->header->nx - 1;
+		il2 = il1 + h->nx - 1;
+		ir2 = ir1 + h->nx - 1;
 		cos_wt = 0.5 * (1.0 + cos (im * scale));
-		for (j = -j_data_start; j < Grid->header->my - j_data_start; j++) {
-			datac[ij_data(il1,j,Grid->header->mx,i_data_start,j_data_start)] *= (float)cos_wt;
-			datac[ij_data(ir2,j,Grid->header->mx,i_data_start,j_data_start)] *= (float)cos_wt;
+		for (j = -j_data_start; j < h->my - j_data_start; j++) {
+			datac[GMT_IJPR(h,j,il1)] *= (float)cos_wt;
+			datac[GMT_IJPR(h,j,ir2)] *= (float)cos_wt;
 		}
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Data reflected and tapered\n");
@@ -1162,7 +1158,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	i_data_start = GMT->current.io.pad[XLO];
 	j_data_start = GMT->current.io.pad[YHI];
 	stop = FALSE;
-	for (j = 0; !stop && j < Grid->header->ny; j++) for (i = 0; !stop && i < Grid->header->nx; i++) stop = GMT_is_fnan (Grid->data[ij_data(i,j,Grid->header->mx,i_data_start,j_data_start)]);
+	for (j = 0; !stop && j < Grid->header->ny; j++) for (i = 0; !stop && i < Grid->header->nx; i++) stop = GMT_is_fnan (Grid->data[GMT_IJPR(Grid->header,j,i)]);
 	if (stop) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Input grid cannot have NaNs!\n");
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);

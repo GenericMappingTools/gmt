@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.502 2011-05-08 03:45:27 guru Exp $
+ *	$Id: gmt_support.c,v 1.503 2011-05-10 02:50:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5887,8 +5887,12 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	GMT_LONG jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	GMT_LONG jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	GMT_LONG j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
+	GMT_LONG n_skip, set[4] = {TRUE, TRUE, TRUE, TRUE};
 
-	if (G->header->BC[XLO] == GMT_BC_IS_DATA && G->header->BC[XHI] == GMT_BC_IS_DATA && G->header->BC[YLO] == GMT_BC_IS_DATA && G->header->BC[YHI] == GMT_BC_IS_DATA) return (GMT_NOERROR);	/* No need to set since there is data in the pad area */
+	for (i = n_skip = 0; i < 4; i++) {
+		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = FALSE; n_skip++;}	/* No need to set since there is data in the pad area */
+	}
+	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
 
 	/* Check minimum size:  */
 	if (G->header->nx < 2 || G->header->ny < 2) {
@@ -5978,10 +5982,14 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (G->header->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw; i <= ie; i++) {
-				G->data[jno1 + i] = G->data[jno1k + i];
-				G->data[jno2 + i] = G->data[jno2k + i];
-				G->data[jso1 + i] = G->data[jso1k + i];
-				G->data[jso2 + i] = G->data[jso2k + i];
+				if (set[YHI]) {
+					G->data[jno1 + i] = G->data[jno1k + i];
+					G->data[jno2 + i] = G->data[jno2k + i];
+				}
+				if (set[YLO]) {
+					G->data[jso1 + i] = G->data[jso1k + i];
+					G->data[jso2 + i] = G->data[jso2k + i];
+				}
 			}
 
 			/* periodic Y rows copied.  Now do X naturals.
@@ -5990,33 +5998,43 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				in loop, since y's already loaded to 2nd outside.  */
 
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
-				G->data[jmx + iwo1] = (float)(4.0 * G->data[jmx + iw]) - (G->data[jmx + iw + mx] + G->data[jmx + iw - mx] + G->data[jmx + iwi1]);
-				G->data[jmx + ieo1] = (float)(4.0 * G->data[jmx + ie]) - (G->data[jmx + ie + mx] + G->data[jmx + ie - mx] + G->data[jmx + iei1]);
+				if (set[XLO]) G->data[jmx + iwo1] = (float)(4.0 * G->data[jmx + iw]) - (G->data[jmx + iw + mx] + G->data[jmx + iw - mx] + G->data[jmx + iwi1]);
+				if (set[XHI]) G->data[jmx + ieo1] = (float)(4.0 * G->data[jmx + ie]) - (G->data[jmx + ie + mx] + G->data[jmx + ie - mx] + G->data[jmx + iei1]);
 			}
 
 			/* Copy that result to 2nd outside row using periodicity.  */
-			G->data[jno2 + iwo1] = G->data[jno2k + iwo1];
-			G->data[jso2 + iwo1] = G->data[jso2k + iwo1];
-			G->data[jno2 + ieo1] = G->data[jno2k + ieo1];
-			G->data[jso2 + ieo1] = G->data[jso2k + ieo1];
+			if (set[XLO]) {
+				G->data[jno2 + iwo1] = G->data[jno2k + iwo1];
+				G->data[jso2 + iwo1] = G->data[jso2k + iwo1];
+			}
+			if (set[XHI]) {
+				G->data[jno2 + ieo1] = G->data[jno2k + ieo1];
+				G->data[jso2 + ieo1] = G->data[jso2k + ieo1];
+			}
 
 			/* Now set d[laplacian]/dx = 0 on 2nd outside column.  Include 1st outside rows in loop.  */
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
-				G->data[jmx + iwo2] = (G->data[jmx + iw - mx] + G->data[jmx + iw + mx] + G->data[jmx + iwi1])
+				if (set[XLO]) G->data[jmx + iwo2] = (G->data[jmx + iw - mx] + G->data[jmx + iw + mx] + G->data[jmx + iwi1])
 					- (G->data[jmx + iwo1 - mx] + G->data[jmx + iwo1 + mx]) + (float)(5.0 * (G->data[jmx + iwo1] - G->data[jmx + iw]));
-				G->data[jmx + ieo2] = (G->data[jmx + ie - mx] + G->data[jmx + ie + mx] + G->data[jmx + iei1])
+				if (set[XHI]) G->data[jmx + ieo2] = (G->data[jmx + ie - mx] + G->data[jmx + ie + mx] + G->data[jmx + iei1])
 					- (G->data[jmx + ieo1 - mx] + G->data[jmx + ieo1 + mx]) + (float)(5.0 * (G->data[jmx + ieo1] - G->data[jmx + ie]));
 			}
 
 			/* Now copy that result also, for complete periodicity's sake  */
-			G->data[jno2 + iwo2] = G->data[jno2k + iwo2];
-			G->data[jso2 + iwo2] = G->data[jso2k + iwo2];
-			G->data[jno2 + ieo2] = G->data[jno2k + ieo2];
-			G->data[jso2 + ieo2] = G->data[jso2k + ieo2];
+			if (set[XLO]) {
+				G->data[jno2 + iwo2] = G->data[jno2k + iwo2];
+				G->data[jso2 + iwo2] = G->data[jso2k + iwo2];
+				G->header->BC[XLO] = GMT_BC_IS_NATURAL;
+			}
+			if (set[XHI]) {
+				G->data[jno2 + ieo2] = G->data[jno2k + ieo2];
+				G->data[jso2 + ieo2] = G->data[jso2k + ieo2];
+				G->header->BC[XHI] = GMT_BC_IS_NATURAL;
+			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			G->header->BC[XLO] = G->header->BC[XHI] = GMT_BC_IS_NATURAL;
-			G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 
 			return (GMT_NOERROR);
 		}
@@ -6026,49 +6044,49 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				but explicitly that d2f/dx2 = 0 and d2f/dy2 = 0.
 				Also set d2f/dxdy = 0.  Then can set remaining points.  */
 
-	/* d2/dx2 */	G->data[jn + iwo1]   = (float)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
-	/* d2/dy2 */	G->data[jno1 + iw]   = (float)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
-	/* d2/dxdy */	G->data[jno1 + iwo1] = -(G->data[jno1 + iwi1] - G->data[jni1 + iwi1] + G->data[jni1 + iwo1]);
+	/* d2/dx2 */	if (set[XLO]) G->data[jn + iwo1]   = (float)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
+	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + iw]   = (float)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
+	/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[jno1 + iwo1] = -(G->data[jno1 + iwi1] - G->data[jni1 + iwi1] + G->data[jni1 + iwo1]);
 
-	/* d2/dx2 */	G->data[jn + ieo1]   = (float)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
-	/* d2/dy2 */	G->data[jno1 + ie]   = (float)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
-	/* d2/dxdy */	G->data[jno1 + ieo1] = -(G->data[jno1 + iei1] - G->data[jni1 + iei1] + G->data[jni1 + ieo1]);
+	/* d2/dx2 */	if (set[XHI]) G->data[jn + ieo1]   = (float)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
+	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + ie]   = (float)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
+	/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[jno1 + ieo1] = -(G->data[jno1 + iei1] - G->data[jni1 + iei1] + G->data[jni1 + ieo1]);
 
-	/* d2/dx2 */	G->data[js + iwo1]   = (float)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
-	/* d2/dy2 */	G->data[jso1 + iw]   = (float)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
-	/* d2/dxdy */	G->data[jso1 + iwo1] = -(G->data[jso1 + iwi1] - G->data[jsi1 + iwi1] + G->data[jsi1 + iwo1]);
+	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (float)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
+	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (float)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
+	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = -(G->data[jso1 + iwi1] - G->data[jsi1 + iwi1] + G->data[jsi1 + iwo1]);
 
-	/* d2/dx2 */	G->data[js + ieo1]   = (float)(2.0 * G->data[js + ie] - G->data[js + iei1]);
-	/* d2/dy2 */	G->data[jso1 + ie]   = (float)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
-	/* d2/dxdy */	G->data[jso1 + ieo1] = -(G->data[jso1 + iei1] - G->data[jsi1 + iei1] + G->data[jsi1 + ieo1]);
+	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (float)(2.0 * G->data[js + ie] - G->data[js + iei1]);
+	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (float)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
+	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = -(G->data[jso1 + iei1] - G->data[jsi1 + iei1] + G->data[jsi1 + ieo1]);
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
 			for (i = iwi1; i <= iei1; i++) {
-				G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
-				G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
+				if (set[YHI]) G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
+				if (set[YLO]) G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
 			for (jmx = jni1; jmx <= jsi1; jmx += mx) {
-				G->data[iwo1 + jmx] = (float)(4.0 * G->data[iw + jmx]) - (G->data[iw + jmx + mx] + G->data[iw + jmx - mx] + G->data[iwi1 + jmx]);
-				G->data[ieo1 + jmx] = (float)(4.0 * G->data[ie + jmx]) - (G->data[ie + jmx + mx] + G->data[ie + jmx - mx] + G->data[iei1 + jmx]);
+				if (set[XLO]) G->data[iwo1 + jmx] = (float)(4.0 * G->data[iw + jmx]) - (G->data[iw + jmx + mx] + G->data[iw + jmx - mx] + G->data[iwi1 + jmx]);
+				if (set[XHI]) G->data[ieo1 + jmx] = (float)(4.0 * G->data[ie + jmx]) - (G->data[ie + jmx + mx] + G->data[ie + jmx - mx] + G->data[iei1 + jmx]);
 			}
 
 			/* Now set d[Laplacian]/dn = 0 on all edge pts, including
 				corners, since the points needed in this are now set.  */
 			for (i = iw; i <= ie; i++) {
-				G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
+				if (set[YHI]) G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
-				G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
+				if (set[YLO]) G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
 			for (jmx = jn; jmx <= js; jmx += mx) {
-				G->data[iwo2 + jmx] = G->data[iwi1 + jmx] + (float)(5.0 * (G->data[iwo1 + jmx] - G->data[iw + jmx]))
+				if (set[XLO]) G->data[iwo2 + jmx] = G->data[iwi1 + jmx] + (float)(5.0 * (G->data[iwo1 + jmx] - G->data[iw + jmx]))
 					+ (G->data[iw + jmx - mx] - G->data[iwo1 + jmx - mx]) + (G->data[iw + jmx + mx] - G->data[iwo1 + jmx + mx]);
-				G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (float)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
+				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (float)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
 					+ (G->data[ie + jmx - mx] - G->data[ieo1 + jmx - mx]) + (G->data[ie + jmx + mx] - G->data[ieo1 + jmx + mx]);
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			G->header->BC[XLO] = G->header->BC[XHI] = G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			for (i = 0; i < 4; i++) if (set[i]) G->header->BC[i] = GMT_BC_IS_NATURAL;
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
@@ -6077,22 +6095,31 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		G->header->BC[XLO] = G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
 
 		for (jmx = jn; jmx <= js; jmx += mx) {
-			G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
-			G->data[iwo2 + jmx] = G->data[iwo2k + jmx];
-			G->data[ieo1 + jmx] = G->data[ieo1k + jmx];
-			G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
+			if (set[XLO]) {
+				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
+				G->data[iwo2 + jmx] = G->data[iwo2k + jmx];
+			}
+			if (set[XHI]) {
+				G->data[ieo1 + jmx] = G->data[ieo1k + jmx];
+				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
+			}
 		}
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2; i <= ieo2; i++) {
-				G->data[jno1 + i] = G->data[jno1k + i];
-				G->data[jno2 + i] = G->data[jno2k + i];
-				G->data[jso1 + i] = G->data[jso1k + i];
-				G->data[jso2 + i] = G->data[jso2k + i];
+				if (set[YHI]) {
+					G->data[jno1 + i] = G->data[jno1k + i];
+					G->data[jno2 + i] = G->data[jno2k + i];
+				}
+				if (set[YLO]) {
+					G->data[jso1 + i] = G->data[jso1k + i];
+					G->data[jso2 + i] = G->data[jso2k + i];
+				}
 			}
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 			return (GMT_NOERROR);
 		}
 
@@ -6107,37 +6134,37 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				j1p = jni1;		/* constraint for jno1  */
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
-			for (i = iwo2; i <= ieo2; i++) {
+			for (i = iwo2; set[YHI] && i <= ieo2; i++) {
 				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				G->data[jno1 + i] = G->data[j1p + i180];
 				G->data[jno2 + i] = G->data[j2p + i180];
 			}
-			G->header->BC[YHI] = GMT_BC_IS_POLE;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_POLE;
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
 				G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
 			}
-			G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + G->header->nxp];
-			G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YHI]) G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + G->header->nxp];
+			if (set[XHI] && set[YHI]) G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - G->header->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
 				G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
 			}
-			G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + G->header->nxp];
-			G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YHI]) G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + G->header->nxp];
+			if (set[XHI] && set[YHI]) G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, north (top) is Natural.  */
-			G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_NATURAL;
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
@@ -6151,37 +6178,37 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				j1p = jsi1;		/* constraint for jso1  */
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
-			for (i = iwo2; i <= ieo2; i++) {
+			for (i = iwo2; set[YLO] && i <= ieo2; i++) {
 				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
 				G->data[jso1 + i] = G->data[j1p + i180];
 				G->data[jso2 + i] = G->data[j2p + i180];
 			}
-			G->header->BC[YLO] = GMT_BC_IS_POLE;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_POLE;
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
 				G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
-			G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + G->header->nxp];
-			G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YLO]) G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + G->header->nxp];
+			if (set[XHI] && set[YHI]) G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - G->header->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; i <= ieo1; i++) {
+			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
 				G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
-			G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + G->header->nxp];
-			G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YLO]) G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + G->header->nxp];
+			if (set[XHI] && set[YHI]) G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, south (bottom) is Natural.  */
-			G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_NATURAL;
 		}
 
 		/* Done with X is periodic cases.  */
