@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdcut_func.c,v 1.9 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,7 +72,7 @@ GMT_LONG GMT_grdcut_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdcut %s [API] - Extract subsets from grid files\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdcut <input_grd> -G<output_grd> %s [%s] [-Z[n][min/max]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdcut <input_grd> -G<output_grd> %s [%s]\n\t[-Z[n][min/max]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

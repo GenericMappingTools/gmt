@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.10 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -225,8 +225,8 @@ GMT_LONG GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grd2rgb %s [API] - Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grd2rgb <rasterfile|rgbfile||grdfile> [-C<cptfile>] [-G<nametemplate>] [%s]\n", GMT_Id_OPT);
-	GMT_message (GMT, "\t[-L<layer>] [%s] [%s] [-W<width/height>[/<n_bytes>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);
+	GMT_message (GMT, "usage: grd2rgb <rasterfile|rgbfile|grdfile> [-C<cptfile>] [-G<template>] [%s]\n", GMT_Id_OPT);
+	GMT_message (GMT, "\t[-L<layer>] [%s] [%s] [-W<width/height>[/<n_bytes>]]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.10 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -121,8 +121,8 @@ GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grd2cpt %s [API] - Make a linear or histogram-equalized color palette table from a grdfile\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grd2cpt <grdfiles> [-A[+]<transparency>] [-C<table>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels> [-I] [-L<min_limit>/<max_limit>]\n");
-	GMT_message (GMT, "\t[-M] [-N] [-Q[i|o]] [%s] [-S<z_start>/<z_stop>/<z_inc>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grd2cpt <grdfiles> [-A[+]<transparency>] [-C<table>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels>\n");
+	GMT_message (GMT, "\t[-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

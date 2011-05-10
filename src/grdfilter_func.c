@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.11 2011-05-04 19:33:17 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.12 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -201,8 +201,8 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdfilter %s [API%s] - Filter a 2-D grid file in the space (or time) domain\n\n", GMT_VERSION, GMT_MP);
-	GMT_message (GMT, "usage: grdfilter input_file -D<distance_flag> -F<type>[-]<filter_width>[<mode>]\n");
-	GMT_message (GMT, "\t-G<output_file> [%s] [-Ni|p|r] [%s] [-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdfilter input_file -D<distance_flag> -F<type>[-]<filter_width>[<mode>] -G<output_file>\n");
+	GMT_message (GMT, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

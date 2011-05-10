@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.12 2011-05-02 22:45:17 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.13 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -312,7 +312,7 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "gmtmath %s [API] - Reverse Polish Notation (RPN) calculator for table data\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtmath [-A<t_f(t).d>] [-C<cols>] [-F<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
-	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin/tmax/t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
+	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin/tmax/t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

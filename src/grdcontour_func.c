@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.18 2011-05-02 12:46:33 remko Exp $
+ *	$Id: grdcontour_func.c,v 1.19 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,12 +142,13 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
 	GMT_message (GMT, "grdcontour %s [API] - Contour plots of gridded data sets\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdcontour <grdfile> -C<cont_int> %s [-A[-|<annot_int>][<labelinfo>]\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[%s] [-D<template>] [-F[l|r]] [%s]\n", GMT_B_OPT, GMT_CONTG);
-	GMT_message (GMT, "\t[%s] [-K] [-L<Low/high>] [-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Jz_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [-W[+]<type><pen>]\n", GMT_CONTT, GMT_U_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [-Z[<fact>[/shift>]][p]] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_ho_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "usage: grdcontour <grdfile> -C<cont_int> %s [-A[-|<annot_int>][<labelinfo>] [%s]\n", GMT_B_OPT, GMT_J_OPT);
+	GMT_message (GMT, "\t[-D<template>] [-F[l|r]] [%s] [%s] [-K] [-L<Low/high>]\n", GMT_Jz_OPT, GMT_CONTG);
+	GMT_message (GMT, "\t[-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Rgeoz_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n", GMT_CONTT, GMT_U_OPT);
+	GMT_message (GMT, "\t[%s] [-W[+]<type><pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_message (GMT, "\t[-Z[<fact>[/shift>]][p]] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_ho_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
