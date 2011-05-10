@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.501 2011-05-09 02:19:06 guru Exp $
+ *	$Id: gmt_init.c,v 1.502 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -582,7 +582,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 't':	/* -t layer transparency option  */
 
-			GMT_message (C, "\t-t Sets the overlay PDF transparency 0-100 [Default is 0; opaque].\n");
+			GMT_message (C, "\t-t Sets the overlay PDF transparency from 0-100 [Default is 0; opaque].\n");
 			break;
 
 		case ':':	/* lon/lat or lat/lon */

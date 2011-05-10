@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.11 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.12 2011-05-10 03:57:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -110,7 +110,7 @@ GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "gmtstitch %s [API] - Join individual lines whose end points match within tolerance\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtstitch [<infiles>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<list>]\n");
-	GMT_message (GMT, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
