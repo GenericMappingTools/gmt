@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.16 2011-05-10 01:02:13 guru Exp $
+ *	$Id: grdfft_func.c,v 1.17 2011-05-10 01:15:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -870,10 +870,9 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 	return;
 }
 
-void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct GMT_GRID *Gin, float **work_array)
+void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct GMT_GRID *Gin)
 {
 	GMT_LONG k, worksize, factors[32];
-	float *workc = NULL;
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
 		
@@ -916,10 +915,9 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
                 if (worksize < Ctrl->N.nx2) worksize = Ctrl->N.nx2;
                 if (worksize < Ctrl->N.ny2) worksize = Ctrl->N.ny2;
 		worksize *= 2;
-        	workc = GMT_memory (GMT, NULL, worksize, float);
 	}
 	else
-		workc = GMT_memory (GMT, NULL, 4, float);
+		worksize = 4;
 
 
 	/* Put the data in the middle of the padded array */
@@ -928,8 +926,6 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	GMT->current.io.pad[YHI] = (Ctrl->N.ny2 - Gin->header->ny)/2;
 	GMT->current.io.pad[XHI] = Ctrl->N.nx2 - Gin->header->nx - GMT->current.io.pad[XLO];
 	GMT->current.io.pad[YLO] = Ctrl->N.ny2 - Gin->header->ny - GMT->current.io.pad[YHI];
-
-	*work_array = workc;	/* Pass the work array back out */
 }
 
 GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
@@ -1126,8 +1122,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, stop, op_count = 0, par_count = 0, status;
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
 
-	float *workc = NULL;
-
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct F_INFO f_info;
 	struct K_XY K;
@@ -1154,7 +1148,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
-	set_grid_radix_size (GMT, Ctrl, Grid, &workc);		/* This also sets the new pads and allocates work array workc */
+	set_grid_radix_size (GMT, Ctrl, Grid);		/* This also sets the new pads */
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
 	for (j = 0; j < 4; j++) Grid->header->BC[j] = GMT_BC_IS_DATA;
 
@@ -1204,7 +1198,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "forward FFT...");
 	
 	narray[0] = Ctrl->N.nx2;	narray[1] = Ctrl->N.ny2;
-	/* GMT_fourt (GMT, Out->data, narray, 2, -1, 1, workc); */
 	GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
@@ -1254,7 +1247,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "inverse FFT...");
 
-		/* GMT_fourt (GMT, Out->data, narray, 2, 1, 1, workc); */
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
 		Ctrl->S.scale *= (2.0 / Out->header->size);
@@ -1269,7 +1261,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
-	GMT_free (GMT, workc);
 
 	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Done\n");
 
