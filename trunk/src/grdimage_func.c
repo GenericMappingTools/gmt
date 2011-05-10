@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.44 2011-05-10 01:02:13 guru Exp $
+ *	$Id: grdimage_func.c,v 1.45 2011-05-10 02:36:39 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -359,7 +359,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
 	struct GDALWRITE_CTRL *to_GDALW = NULL;
-	EXTERN_MSC struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors);
+	//EXTERN_MSC struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors);
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -444,8 +444,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
-			//P = GMT_memory (API->GMT, NULL, 1, struct GMT_PALETTE);
-			P = GMT_create_palette (GMT, 256);
+			/* We won't use much of the next 'P' but we still need to use some of its fields */
+			P = GMT_memory (API->GMT, NULL, 1, struct GMT_PALETTE);
 			P->model = GMT_RGB;
 			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
 				r_table = GMT_memory (GMT, NULL, 256, double);
@@ -460,9 +460,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					r_table[k] = GMT_is255 (I->ColorMap[k*4]);	/* 4 because color table is RGBA */
 					g_table[k] = GMT_is255 (I->ColorMap[k*4 + 1]);
 					b_table[k] = GMT_is255 (I->ColorMap[k*4 + 2]);
-					P->range[k].rgb_low[0] = P->range[k].rgb_high[0] = GMT_is255 (I->ColorMap[k*4]);
-					P->range[k].rgb_low[1] = P->range[k].rgb_high[1] = GMT_is255 (I->ColorMap[k*4 + 1]);
-					P->range[k].rgb_low[2] = P->range[k].rgb_high[2] = GMT_is255 (I->ColorMap[k*4 + 2]);
 				}
 				do_indexed = TRUE;		/* Now it will be RGB */
 				gray_only = FALSE;
@@ -705,13 +702,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef USE_GDAL
 				if (Ctrl->D.active) {
 					if (!Ctrl->In.do_rgb) {
-						//rgb[0] = r_table[(int)Img_proj->data[node]];
-						rgb[0] = P->range[(int)Img_proj->data[node]].rgb_low[0];
+						rgb[0] = r_table[(int)Img_proj->data[node]];
 						if (do_indexed) {
-							//rgb[1] = g_table[(int)Img_proj->data[node]];
-							//rgb[2] = b_table[(int)Img_proj->data[node]];
-							rgb[1] = P->range[(int)Img_proj->data[node]].rgb_low[1];
-							rgb[2] = P->range[(int)Img_proj->data[node]].rgb_low[2];
+							rgb[1] = g_table[(int)Img_proj->data[node]];
+							rgb[2] = b_table[(int)Img_proj->data[node]];
 						}
 					}
 					else {
@@ -918,7 +912,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_proj[0]);
 
 #ifdef USE_GDAL
-	if (P) GMT_free_palette (GMT, &P);
+	if (P) GMT_free (GMT, &P);
 	if (Ctrl->D.active) {
 		if (r_table) GMT_free (GMT, r_table);
 		if (g_table) {
