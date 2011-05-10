@@ -79,6 +79,7 @@ Gives the name of a grid file with intensities in the (-1,+1) range. [Default is
 .TP
 OPT(M)
 Force conversion to monochrome image using the (television) YIQ transformation.
+Cannot be used with OPT(Q).
 .TP
 OPT(N)
 Do not clip the image at the map boundary (only relevant for non-rectangular maps).

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.52 2011-05-04 19:33:17 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.53 2011-05-10 00:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1194,7 +1194,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 		return (GMT_Report_Error (API, GMT_READ_ONCE));	
 	S->alloc_mode = TRUE;
 	mode -= reset;			/* Remove GMT_IO_RESET bit, if set */
-	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
+	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	
 	switch (S->method) {
@@ -1399,7 +1399,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	if (S->status && !reset) return (GMT_Report_Error (API, GMT_READ_ONCE));	/* Already read this resources before, so fail unless overridden by mode */
 	S->alloc_mode = TRUE;
 	mode -= reset;			/* Remove GMT_IO_RESET bit, if set */
-	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
+	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	
 	switch (S->method) {
@@ -1605,7 +1605,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	S = API->object[item];	/* The current object whose data we will export */
 	if (S->status && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
 	mode &= (GMT_IO_RESET - 1);	/* Remove GMT_IO_RESET bit, if set */
-	complex_mode = mode >> 3;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
+	complex_mode = mode >> 2;	/* Yields 0 for normal data, 1 if real complex, and 2 if imag complex */
 	mode &= 3;			/* Knock off any complex mode codes */
 	switch (S->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */

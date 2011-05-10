@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1015 2011-05-09 19:03:07 guru Exp $
+	$Id: ChangeLog,v 1.1016 2011-05-10 00:08:16 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-09	pwessel
 	* minmax_func.c:	Now honors the column-specific formatting.
 	* grdinfo_func.c:	---"---
-	* grdfft_func.c:	Now -D scale is 1 by default.
+	* grdfft_func.c:	Now -D scale is 1 by default.  Fixed porting bugs.
+	* grdimage_func.c:	When image is grayscale and -Q is used then image must be
+				converted to 24-bit and we set NaN color to a non-gray value.
 
 2011-05-08	pwessel
 	* *.c:			All deprecated options under #ifdef GMT_COMPAT now will give

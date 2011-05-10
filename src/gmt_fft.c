@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.8 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_fft.c,v 1.9 2011-05-10 00:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -949,7 +949,10 @@ GMT_LONG brenner_worksize (GMT_LONG nx, GMT_LONG ny)
 	ntotal = GMT_get_nm (nx,ny);
         n_factors = GMT_get_prime_factors (ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
-	return (2 * ((storage == 2) ? 0 : storage));
+	if (storage != 2) storage *= 2;
+        if (storage < nx) storage = nx;
+        if (storage < ny) storage = ny;
+	return (2 * storage);
 } 
 
 #if GMT_FFT == GMT_FFTPACK
