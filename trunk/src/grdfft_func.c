@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.14 2011-05-10 00:08:16 guru Exp $
+ *	$Id: grdfft_func.c,v 1.15 2011-05-10 00:34:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1127,8 +1127,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG narray[2], i, j, i_data_start, j_data_start, new_grid;
 
 	float *workc = NULL;
-	char *beforefile = "pretapered.nc";
-	char *afterfile = "tapered.nc";
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct F_INFO f_info;
@@ -1164,9 +1162,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&beforefile, (void *)Grid);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	/* Check that no NaNs are present */
 	for (j = stop = 0; !stop && j < Grid->header->size; j++) if (Grid->data[j] == 15.0) stop = j;
 	
@@ -1185,9 +1180,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!(Ctrl->L.active)) remove_plane (GMT, Out);
 	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out);
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&afterfile, (void *)Out);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	/* Load K_XY structure with wavenumbers and dimensions */
 	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
