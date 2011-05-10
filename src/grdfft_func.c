@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.17 2011-05-10 01:15:30 guru Exp $
+ *	$Id: grdfft_func.c,v 1.18 2011-05-10 01:15:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1166,7 +1166,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (stop) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Input grid cannot have NaNs!\n");
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-		GMT_free (GMT, workc);
 		Return (EXIT_FAILURE);
 	}
 
