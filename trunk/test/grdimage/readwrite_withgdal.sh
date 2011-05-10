@@ -1,8 +1,10 @@
 #!/bin/bash
 #
-#	$Id: readwrite_withgdal.sh,v 1.1 2011-05-10 02:30:02 jluis Exp $
+#	$Id: readwrite_withgdal.sh,v 1.2 2011-05-10 03:06:48 guru Exp $
 
 . ../functions.sh
+if [ $GDAL -eq 0 ]; then exit; fi
+	
 header "Test grdimage for reading and writting images with GDAL"
 
 ps=readwrite_withgdal.ps
