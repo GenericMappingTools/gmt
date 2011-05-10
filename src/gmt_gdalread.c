@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.38 2011-04-27 18:20:51 remko Exp $
+ *	$Id: gmt_gdalread.c,v 1.39 2011-05-10 22:06:21 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -281,7 +281,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 				else if (nBands == 3)
 					nRGBA = 3;
 				else {
-					GMT_message (C, "gdalread: BIP request ignored since number of bands is not 3 or 4\n");
+					/* BIP request ignored since number of bands is not 3 or 4 */
 					do_BIP = FALSE;
 				}
 			}
