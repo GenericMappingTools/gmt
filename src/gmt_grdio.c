@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.188 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.189 2011-05-10 23:50:41 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1711,6 +1711,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )
 		free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
+	GMT_free (C, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 	GMT_free (C, from_gdalread);
 
 	return (GMT_NOERROR);
