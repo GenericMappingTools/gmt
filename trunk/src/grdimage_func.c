@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.42 2011-05-10 00:28:46 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.43 2011-05-10 00:39:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -356,6 +356,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
 	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	EXTERN_MSC struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors);
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
