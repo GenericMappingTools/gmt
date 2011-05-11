@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.20 2011-05-10 02:51:30 guru Exp $
+ *	$Id: grdfft_func.c,v 1.21 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -886,7 +886,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 			for (k = 0; k < 4; k++) Gin->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
 		}
 		else {
-			suggest_fft (GMT, (GMT_LONG)Gin->header->nx, (GMT_LONG)Gin->header->ny, fft_sug, (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->N.suggest_narray));
+			suggest_fft (GMT, (GMT_LONG)Gin->header->nx, (GMT_LONG)Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->N.suggest_narray));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
 				 * as the fastest solution; use the most accurate's dimensions */
@@ -1199,39 +1199,39 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case UP_DOWN_CONTINUE:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
 				par_count += do_continuation (Out, &Ctrl->par[par_count], &K);
 				break;
 			case AZIMUTHAL_DERIVATIVE:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "azimuthal derivative...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "azimuthal derivative...");
 				par_count += do_azimuthal_derivative (Out, &Ctrl->par[par_count], &K);
 				break;
 			case DIFFERENTIATE:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "differentiate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "differentiate...");
 				par_count += do_differentiate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case INTEGRATE:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "integrate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "integrate...");
 				par_count += do_integrate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case ISOSTASY:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "isostasy...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "isostasy...");
 				par_count += do_isostasy (Out, Ctrl, &Ctrl->par[par_count], &K);
 				break;
 			case FILTER_COS:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "cosine filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "cosine filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_EXP:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Gaussian filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Gaussian filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_BW:
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Butterworth filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Butterworth filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "spectrum...");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "spectrum...");
 				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
 				if (status < 0) Return (status);
 				par_count += status;
@@ -1241,7 +1241,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "inverse FFT...");
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "inverse FFT...");
 
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
@@ -1258,7 +1258,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Done\n");
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Done\n");
 
 	Return (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.13 2011-05-10 03:57:29 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -492,7 +492,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
-		if (GMT->current.setting.verbose == GMT_MSG_VERBOSE) GMT_message (GMT, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 		east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 		wd[0] = 1;	wd[1] = -1;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.10 2011-05-01 21:18:00 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 			x_varp *= (C->dt/C->n_spec);
 		}
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
 			GMT_message (GMT, "Window %ld from %ld to %ld\n", w, t_start, t_stop);
 			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",

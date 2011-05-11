@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.10 2011-05-08 22:55:55 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -513,7 +513,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_smts++;	/* Go to next seamount */
 
-		if (GMT->current.setting.verbose && !(n_smts%100)) GMT_message (GMT, "Processed %5ld seamounts\r", n_smts);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n_smts%100)) GMT_message (GMT, "Processed %5ld seamounts\r", n_smts);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 

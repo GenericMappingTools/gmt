@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.293 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_map.c,v 1.294 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1548,7 +1548,7 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 			GMT_LONG p, p_next;
 
 			if (n_cross%2 == 1) {	/* Should not happen with a polygon */
-				GMT_message (C, "Error in GMT_wesn_clip: odd number of crossings?");
+				GMT_report (C, GMT_MSG_FATAL, "Error in GMT_wesn_clip: odd number of crossings?");
 			}
 
 			/* First copy the current polygon */

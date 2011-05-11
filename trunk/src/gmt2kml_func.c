@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.15 2011-05-09 19:03:07 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.16 2011-05-11 04:01:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -722,13 +722,13 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Return (EXIT_FAILURE);
 			}
 			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
-				GMT_message (GMT, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 				Return (EXIT_FAILURE);
 			}
 			if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 			if (get_z) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
-					GMT_message (GMT, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
 					Return (EXIT_FAILURE);
 				}
 				if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
@@ -736,7 +736,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (Ctrl->F.mode == EVENT) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_message (GMT, "Error: Could not decode time event from %s\n", C[t1_col]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time event from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -744,13 +744,13 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!(strcmp (C[t1_col], "NaN")))
 					out[t1_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_message (GMT, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 				if (!(strcmp (C[t2_col], "NaN")))
 					out[t2_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
-					GMT_message (GMT, "Error: Could not decode time span end from %s\n", C[t2_col]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -855,9 +855,9 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						tabs (N++); printf ("<LinearRing>\n");
 						if (T->segment[seg]->min[GMT_X] < 180.0 && T->segment[seg]->max[GMT_X] > 180.0) {
 							/* GE cannot handle polygons crossing the dateline; warn for now */
-							GMT_message (GMT, "Warning: A polygon is straddling the Dateline.  Google Earth will wrap this the wrong way\n");
-							GMT_message (GMT, "Split the polygon into an East and West part and plot them as separate polygons.\n");
-							GMT_message (GMT, "gmtconvert can be used to help in this conversion.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Warning: A polygon is straddling the Dateline.  Google Earth will wrap this the wrong way\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Split the polygon into an East and West part and plot them as separate polygons.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "gmtconvert can be used to help in this conversion.\n");
 						}
 					}
 					tabs (N++); printf ("<coordinates>\n");

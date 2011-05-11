@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.9 2011-04-26 17:52:49 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -641,7 +641,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 
 	for (i = j = 0; i < n_triang; i++) {
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL && i > j*one_100) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && i > j*one_100) {
 			GMT_message (GMT, "computed %.2ld%s of %ld prisms\r", j, "%", n_triang);
 			j++;
 		}

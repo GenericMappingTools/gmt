@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.17 2011-05-03 00:43:04 remko Exp $
+ *	$Id: grdmath_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3007,7 +3007,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Return (EXIT_FAILURE);
 			}
 
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "= %s", opt->arg);
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "= %s", opt->arg);
 
 			if (n_items && new_stack < 0 && constant[nstack-1]) {	/* Only a constant provided, set grid accordingly */
 				if (!stack[nstack-1]) alloc_stack (GMT, &stack[nstack-1], info.G);
@@ -3036,14 +3036,14 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				constant[nstack] = TRUE;
 				factor[nstack] = value;
 				error = FALSE;
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%g ", factor[nstack]);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%g ", factor[nstack]);
 				nstack++;
 				continue;
 			}
 			else if (op <= GRDMATH_ARG_IS_PI && op >= GRDMATH_ARG_IS_NY) {
 				constant[nstack] = TRUE;
 				factor[nstack] = special_symbol[GRDMATH_ARG_IS_PI-op];
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%g ", factor[nstack]);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%g ", factor[nstack]);
 				nstack++;
 				continue;
 			}
@@ -3053,7 +3053,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			constant[nstack] = FALSE;
 
 			if (op == GRDMATH_ARG_IS_X_MATRIX) {		/* Need to set up matrix of x-values */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "X ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "X ");
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				GMT_row_padloop (info.G, row, node) {
@@ -3062,7 +3062,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 			else if (op == GRDMATH_ARG_IS_x_MATRIX) {		/* Need to set up matrix of normalized x-values */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Xn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Xn ");
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				GMT_row_padloop (info.G, row, node) {
@@ -3071,13 +3071,13 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 			else if (op == GRDMATH_ARG_IS_Y_MATRIX) {	/* Need to set up matrix of y-values */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Y ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Y ");
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				GMT_grd_padloop (info.G, row, col, node) stack[nstack]->data[node] = info.grd_y[row];
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Yn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Yn ");
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				GMT_grd_padloop (info.G, row, col, node) stack[nstack]->data[node] = info.grd_yn[row];
@@ -3087,10 +3087,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (!stack[nstack]) alloc_stack (GMT, &stack[nstack], info.G);
 				alloc_mode[nstack] = 1;
 				info.ASCII_file = strdup (opt->arg);
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "(%s) ", opt->arg);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "(%s) ", opt->arg);
 			}
 			else if (op == GRDMATH_ARG_IS_FILE) {		/* Filename given */
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%s ", opt->arg);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
 				if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_HEADER, (void **)&(opt->arg), (void **)&stack[nstack])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 				if (!subset && (stack[nstack]->header->nx != info.G->header->nx || stack[nstack]->header->ny != info.G->header->ny)) {
 					GMT_report (GMT, GMT_MSG_FATAL, "grid files not of same size!\n");
@@ -3121,7 +3121,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		n_items++;
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%s ", operator[op]);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", operator[op]);
 
 		for (k = produced_operands[op] - consumed_operands[op]; k > 0; k--) {
 			if (stack[nstack+k-1])	continue;
@@ -3148,7 +3148,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		nstack = new_stack;
 		for (k = 1; k <= produced_operands[op]; k++) constant[nstack-k] = FALSE;	/* Now filled with grid */
 	}
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "\n");
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data input */

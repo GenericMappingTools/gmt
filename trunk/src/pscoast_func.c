@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.14 2011-05-08 03:45:27 guru Exp $
+ *	$Id: pscoast_func.c,v 1.15 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -594,7 +594,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
 		Ctrl->N.active = FALSE;
 	}
-	if (need_coast_base && GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 	if (Ctrl->I.active && GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution river data base not installed\n", shore_resolution[base]);

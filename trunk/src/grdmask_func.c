@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.13 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdmask_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,7 +246,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	ID = Ctrl->N.mask[0];	/* Starting value if running IDs */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char line[GMT_BUFSIZ];
 		if (Ctrl->N.mode == 1) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to the polygon ID\n");

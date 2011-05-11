@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.19 2011-05-09 19:03:08 guru Exp $
+*	$Id: mapproject_func.c,v 1.20 2011-05-11 04:01:54 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -540,7 +540,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
 	}
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL && !(geodetic_calc || Ctrl->T.active)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 		xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
@@ -684,7 +684,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->I.active) {		/* Do inverse transformation */
 
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 				x_in = in[GMT_X];
 				y_in = in[GMT_Y];
 			}
@@ -725,7 +725,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 
 			if (Ctrl->S.active && GMT_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 				x_in_min = MIN (x_in_min, x_in);
 				x_in_max = MAX (x_in_max, x_in);
 				y_in_min = MIN (y_in_min, y_in);
@@ -810,7 +810,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					out[GMT_Y] += Ctrl->C.northing;
 				}
 			}
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 				x_in_min = MIN (x_in_min, in[GMT_X]);
 				x_in_max = MAX (x_in_max, in[GMT_X]);
 				y_in_min = MIN (y_in_min, in[GMT_Y]);
@@ -897,7 +897,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 			else {
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 					x_out_min = MIN (x_out_min, out[GMT_X]);
 					x_out_max = MAX (x_out_max, out[GMT_X]);
 					y_out_min = MIN (y_out_min, out[GMT_Y]);
@@ -941,7 +941,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data input */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL && n_read > 0) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, x_in_min, x_in_max, y_in_min, y_in_max);

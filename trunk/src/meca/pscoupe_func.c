@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.7 2011-04-29 20:13:32 remko Exp $
+ *    $Id: pscoupe_func.c,v 1.8 2011-05-11 04:01:54 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -424,7 +424,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "Syntax error -s option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -s option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;

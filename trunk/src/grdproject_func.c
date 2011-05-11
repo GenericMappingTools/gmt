@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.17 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdproject_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -289,7 +289,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			GMT_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active = FALSE;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 			if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
@@ -312,7 +312,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
 			GMT_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Second opt_R\t %s\n", opt_R);
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = FALSE;
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 		}
@@ -375,7 +375,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Geo->data = GMT_memory (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, TRUE);
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Transform ");
 			GMT_message (GMT, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_message (GMT, " <-- ");
@@ -441,7 +441,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			use_ny = Geo->header->ny;
 		}
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Transform ");
 			GMT_message (GMT, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_message (GMT, " --> ");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.10 2011-05-09 19:03:08 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -333,13 +333,13 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					case 'c':	/* Carter correction adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 11) {
-							GMT_message (GMT, "ERROR -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_message (GMT, "ERROR -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -348,13 +348,13 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					case 'd':	/* depth adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 7) {
-							GMT_message (GMT, "ERROR -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_message (GMT, "ERROR -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -363,13 +363,13 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					case 'f':	/* faa adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 3) {
-							GMT_message (GMT, "ERROR -Af<code>.  <code> must be 1-3.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Af<code>.  <code> must be 1-3.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.GF_version = atoi (&opt->arg[k+3]);
 							if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-								GMT_message (GMT, "ERROR -Af<code>,<field>.  Select <field> is 1-4 range.\n");
+								GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Af<code>,<field>.  Select <field> is 1-4 range.\n");
 								n_errors++;
 							}
 						}
@@ -378,7 +378,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					case 'm':	/* mag adjustment */
 						code = atoi (&opt->arg[k+1]);
 						if (code < 1 || code > 31) {
-							GMT_message (GMT, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
 							n_errors++;
 						}
 						Ctrl->A.code[ADJ_MG] |= code;
@@ -387,7 +387,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 						Ctrl->A.fake_times = TRUE;
 						break;
 					default:
-						GMT_message (GMT, "ERROR -A<flag>.  <flag> must be c, d, g, m, or t.\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR -A<flag>.  <flag> must be c, d, g, m, or t.\n");
 						n_errors++;
 						break;
 				}
@@ -399,7 +399,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_message (GMT, "ERROR -C: Flag must be f, g, or e\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -412,7 +412,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_message (GMT, "ERROR -Da: Start time (%s) in wrong format\n", t);
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -421,7 +421,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_message (GMT, "ERROR -Db : Stop time (%s) in wrong format\n", t);
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -473,12 +473,12 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_message (GMT, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_message (GMT, "Option -I: Can only be applied 0-2 times\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -500,7 +500,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 						Ctrl->N.active[N_D] = TRUE;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr ("ekMn", (int)Ctrl->N.unit[N_D][0])) {
-							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, M, or n\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Nd: Unit must be e, k, M, or n\n");
 							n_errors++;
 						}
 						break;
@@ -508,11 +508,11 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 						Ctrl->N.active[N_S] = TRUE;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr ("ekMn", (int)Ctrl->N.unit[N_S][0])) {
-							GMT_message (GMT, "ERROR -Nd: Unit must be e, k, M, or n\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Nd: Unit must be e, k, M, or n\n");
 							n_errors++;
 						}
 					default:
-						GMT_message (GMT, "ERROR -N: Syntax is -Nd|s<unit>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR -N: Syntax is -Nd|s<unit>\n");
 						n_errors++;
 						break;
 				}
@@ -522,7 +522,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				switch (opt->arg[0]) {
 					case 'a':	/* Azimuth min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_A], &Ctrl->Q.max[Q_A]) != 2) {
-							GMT_message (GMT, "ERROR -Qa: append min/max azimuth limits [0/360]\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Qa: append min/max azimuth limits [0/360]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_A] = TRUE;
@@ -532,13 +532,13 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 						if (code == 1)
 							Ctrl->Q.max[Q_V] = DBL_MAX;
 						else if (code <= 0) {
-							GMT_message (GMT, "ERROR -Qv: append min[/max] velocity limits [0]\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Qv: append min[/max] velocity limits [0]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_V] = TRUE;
 						break;
 					default:
-						GMT_message (GMT, "ERROR -Q: Syntax is -Qa|v<min>/<max>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR -Q: Syntax is -Qa|v<min>/<max>\n");
 						n_errors++;
 						break;
 				}
@@ -571,7 +571,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 						Ctrl->T.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_message (GMT, "ERROR -T: append m, e, or neither\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -735,7 +735,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "Error: No cruises given\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -746,7 +746,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
 			if (access (path, R_OK)) {
-				GMT_message (GMT, "No default MGD77 Correction table (%s) found!\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);
 			}
 			Ctrl->L.file = path;
@@ -868,7 +868,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
 			if (access (path, R_OK)) {
-				GMT_message (GMT, "No default MGD77 Correction table (%s) found!\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);
 			}
 			Ctrl->L.file = path;
@@ -887,9 +887,9 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		error = MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H);
 		if (error) {
 			if (error == MGD77_ERROR_NOSUCHCOLUMN)
-				GMT_message (GMT, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_FATAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
-				GMT_message (GMT, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
 			MGD77_Free (GMT, D);
 			continue;
 		}
@@ -903,7 +903,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (auxlist[MGD77_AUX_ID].requested) string_output = TRUE;
 			if (string_output && GMT->common.b.active[1]) {
-				GMT_message (GMT, "Error: Cannot specify binary output with text fields\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot specify binary output with text fields\n");
 				MGD77_Free (GMT, D);
 				Return (EXIT_FAILURE);
 			}
@@ -913,7 +913,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_message (GMT, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
 			MGD77_Free (GMT, D);
 			Return (EXIT_FAILURE);
 		}
@@ -924,7 +924,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		lon_column  = ((i = MGD77_Get_Column (GMT, "lon",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 2 * MGD77_NOT_SET;
 		lat_column  = ((i = MGD77_Get_Column (GMT, "lat",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 3 * MGD77_NOT_SET;
 		
-		if (time_column != MGD77_NOT_SET && GMT->common.b.active[GMT_OUT] && GMT->current.setting.verbose && first_warning) {	/* Warn that binary time output is in Unix secs */
+		if (time_column != MGD77_NOT_SET && GMT->common.b.active[GMT_OUT] && GMT_is_verbose (GMT, GMT_MSG_NORMAL) && first_warning) {	/* Warn that binary time output is in Unix secs */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
 			first_warning = FALSE;
 		}
@@ -989,7 +989,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > 1 )) && Ctrl->A.GF_version == MGD77_NOT_SET) {
 			Ctrl->A.GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 			if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-				GMT_message (GMT, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
+				GMT_report (GMT, GMT_MSG_FATAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
 				Ctrl->A.GF_version = MGD77_IGF_1980;
 			}
 		}
@@ -1157,7 +1157,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							d_twt = twt - prev_twt;
 							if (fabs (d_twt) > TWT_PDR_WRAP_TRIGGER) {
 								twt_pdrwrap_corr += copysign (TWT_PDR_WRAP, -d_twt);
-								if (!PDR_wrap) GMT_message (GMT, "PDR travel time wrap detected for cruise %s\n", list[argno]);
+								if (!PDR_wrap) GMT_report (GMT, GMT_MSG_NORMAL, "PDR travel time wrap detected for cruise %s\n", list[argno]);
 								PDR_wrap = TRUE;
 							}
 						}

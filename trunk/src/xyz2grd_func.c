@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.12 2011-05-08 22:55:55 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.13 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -634,7 +634,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		GMT_free (GMT, flag);
 		
-		if (GMT->current.setting.verbose) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			char line[GMT_BUFSIZ];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_report (GMT, GMT_MSG_NORMAL, " n_read: %ld  n_used: %ld  n_filled: %ld  n_empty: %ld set to ",

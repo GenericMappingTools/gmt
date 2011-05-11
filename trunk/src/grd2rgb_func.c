@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.10 2011-05-10 03:57:29 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 	   	failed by a little, so we'll look arround the approximate solution by adding 1 to nx and
 	   	subtracting 1 to ny. Then we revert (subtract 1 to nx and add 1 to ny). Next apply the
 	   	same test with an offset of 2, and so on until the offset is 10. */
-		GMT_message (GMT, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
 		while (k < 41) {
 			i = *raw_ny + (GMT_LONG)irint (copysign((double)l, (double)pm));
@@ -196,7 +196,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 			j = (*raw_nx) + (GMT_LONG)irint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
-				GMT_message (GMT, "... SUCCESS (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
+				GMT_report (GMT, GMT_MSG_NORMAL, "... SUCCESS (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
 				break;
 			}
 			even = (k%2 == 0) ? 1: 0;
@@ -209,7 +209,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, GMT_LONG byte_per_pixel,
 
 	/* If both attempts failed */
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
-		GMT_message (GMT, "FAILURE while guessing image dimensions (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
+		GMT_report (GMT, GMT_MSG_FATAL, "FAILURE while guessing image dimensions (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
 		return (EXIT_FAILURE);
 	}
 

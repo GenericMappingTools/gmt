@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.13 2011-05-10 03:57:29 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3116,14 +3116,14 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (op == GMTMATH_ARG_IS_NUMBER) {
 				constant[nstack] = TRUE;
 				factor[nstack] = value;
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%g ", factor[nstack]);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%g ", factor[nstack]);
 				nstack++;
 				continue;
 			}
 			else if (op <= GMTMATH_ARG_IS_PI && op >= GMTMATH_ARG_IS_N) {
 				constant[nstack] = TRUE;
 				factor[nstack] = special_symbol[GMTMATH_ARG_IS_PI-op];
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%g ", factor[nstack]);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%g ", factor[nstack]);
 				nstack++;
 				continue;
 			}
@@ -3141,7 +3141,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "T ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "T ");
 				for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, info.T, COL_T);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
@@ -3153,12 +3153,12 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
 					alloc_mode[nstack] = 1;
 				}
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Tn ");
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Tn ");
 				for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, info.T, COL_TN);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
-					if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "<stdin> ");
+					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "<stdin> ");
 					if (!stack[nstack]) {
 						GMT_alloc_dataset (GMT, Template, &(stack[nstack]), n_columns, 0, GMT_ALLOC_NORMAL);
 						alloc_mode[nstack] = 1;
@@ -3166,7 +3166,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, I, j);
 				}
 				else {
-					if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%s ", opt->arg);
+					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
 					if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&(opt->arg), (void **)&stack[nstack])) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s\n", opt->arg);
 						Return (EXIT_FAILURE);
@@ -3203,7 +3203,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "%s ", operator[op]);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", operator[op]);
 
 		for (i = produced_operands[op] - consumed_operands[op]; i > 0; i--) {
 			if (stack[nstack+i-1])	continue;
@@ -3240,7 +3240,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		(outfile) ? GMT_message (GMT, "= %s", outfile) : GMT_message (GMT,  "= <stdout>");
 	}
 
@@ -3257,7 +3257,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "\n");
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);				/* Enables data output and sets access mode */
 

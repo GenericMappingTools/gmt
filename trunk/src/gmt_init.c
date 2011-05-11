@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.502 2011-05-10 03:57:29 guru Exp $
+ *	$Id: gmt_init.c,v 1.503 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4285,7 +4285,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	if (fpo != C->session.std[GMT_OUT]) fclose (fpo);
 
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
-	if (error) GMT_message (C, "Error: %ld conversion errors while writing gmt.conf\n", error);
+	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: %ld conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }

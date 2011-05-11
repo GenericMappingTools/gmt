@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.10 2011-05-09 02:19:06 guru Exp $
+ *	$Id: blockmean_func.c,v 1.11 2011-05-11 04:01:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -209,12 +209,12 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 	
-	if (GMT->current.setting.verbose >= GMT_MSG_VERBOSE) {	/* Memory reporting */
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Memory reporting */
 		GMT_LONG kind = 0;
 		double mem = (double)sizeof (struct BLK_PAIR);
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */

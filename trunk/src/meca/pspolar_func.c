@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.6 2011-05-11 04:01:54 guru Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -289,7 +289,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				break;

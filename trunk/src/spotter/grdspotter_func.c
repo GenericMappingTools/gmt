@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.10 2011-05-08 22:55:55 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -567,9 +567,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* sampling_int_in_km = 0.5 * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO])); */
 	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
-	if (GMT->current.setting.verbose) GMT_message (GMT, "%s: Flowline sampling interval = %.3f km\n", GMT->init.progname, sampling_int_in_km);
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Flowline sampling interval = %.3f km\n", GMT->init.progname, sampling_int_in_km);
 
-	if (Ctrl->T.active[TRUNC] && GMT->current.setting.verbose) GMT_message (GMT, "%s: Ages truncated to %g\n", GMT->init.progname, Ctrl->N.t_upper);
+	if (Ctrl->T.active[TRUNC] && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Ages truncated to %g\n", GMT->init.progname, Ctrl->N.t_upper);
 
 	/* Start to read input data */
 	
@@ -655,7 +655,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (keep_flowlines) {
 		n_alloc = inc_alloc;
 		flowline = GMT_memory (GMT, NULL, n_alloc, struct FLOWLINE);
-		if (GMT->current.setting.verbose) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_message (GMT, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
 			GMT_message (GMT, "the program might crash.  If so consider using the -M option\n");
 		}
@@ -741,7 +741,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			flowline = GMT_memory (GMT, flowline, n_alloc, struct FLOWLINE);
 		}
 		
-		if (GMT->current.setting.verbose && !(n_nodes%100)) GMT_message (GMT, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n_nodes%100)) GMT_message (GMT, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
 	GMT_report (GMT, GMT_MSG_NORMAL, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
@@ -829,7 +829,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			sprintf (G->header->remark, "CVA for z-range %g - %g only", z0, z1);
 			sprintf (file, format, i);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
-			if (GMT->current.setting.verbose) GMT_message (GMT, "Save z-slice CVA to file %s\n", file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Save z-slice CVA to file %s\n", file);
 			if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&file, (void *)G)) Return (GMT_DATA_WRITE_ERROR);
 		}
 		G->data = old;	/* Reset the array pointer */
@@ -869,7 +869,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (float) (pa * PA_2_T);
 				if (blabber && !(m%10000)) GMT_message (GMT, "Processed %5ld flowlines\r", m);
 			}
-			if (blabber && GMT->current.setting.verbose) GMT_message (GMT, "Processed %5ld flowlines\n", n_nodes);
+			if (blabber && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Processed %5ld flowlines\n", n_nodes);
 		}
 		else {	/* Must recreate flowlines */
 			k_step = 3;	/* FLowlines have (x,y,t) here */
@@ -926,7 +926,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->W.active) {	/* Use bootstrapping to estimate confidence region for CVA maxima */
 
-		if (GMT->current.setting.verbose) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_message (GMT, "Preprocessed %5ld flowlines\n", n_nodes);
 			GMT_message (GMT, "%ld of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
 			GMT_message (GMT, "Flowlines consumed %ld Mb of memory\n", (GMT_LONG)irint (mem * B_TO_MB));

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.22 2011-05-10 03:57:29 guru Exp $
+ *    $Id: grdblend_func.c,v 1.23 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -681,7 +681,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_close_grd (GMT, &blend[k].G);	/* Close all input grd files still open */
 	}
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char empty[GMT_TEXT_LEN64];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, S.header.nx, S.header.ny);
 		if (n_fill == n_tot)

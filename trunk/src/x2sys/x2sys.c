@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.156 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys.c,v 1.157 2011-05-11 04:01:54 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -1322,7 +1322,7 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 	n_x2sys_paths = 0;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		if (C->current.setting.verbose) {
+		if (GMT_is_verbose (C, GMT_MSG_NORMAL)) {
 			GMT_message (C, "%s: Warning: path file %s for %s files not found\n", X2SYS_program, file, S->TAG);
 			GMT_message (C, "%s: (Will only look in current directory for such files)\n", X2SYS_program);
 			GMT_message (C, "%s: (mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n", X2SYS_program);
