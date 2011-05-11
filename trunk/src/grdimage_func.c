@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.48 2011-05-11 20:49:42 guru Exp $
+ *	$Id: grdimage_func.c,v 1.49 2011-05-11 21:19:04 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -798,9 +798,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef USE_GDAL
 	if (Ctrl->A.active) {
+		int	id, k;
 		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
 		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");
+		to_GDALW->P.ProjectionRefPROJ4 = NULL;
 		to_GDALW->flipud = 0;
 		to_GDALW->geog = 0;
 		to_GDALW->nx = (int)nx;
@@ -818,8 +820,17 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			to_GDALW->ULy = GMT->current.proj.rect_m[YHI];
 			to_GDALW->x_inc = (GMT->current.proj.rect_m[XHI] - GMT->current.proj.rect_m[XLO]) / nx;
 			to_GDALW->y_inc = (GMT->current.proj.rect_m[YHI] - GMT->current.proj.rect_m[YLO]) / ny;
-			//to_GDALW->ULx = Img_proj->header->wesn[XHI];	/* OK, this is still wrong because coordinates are not projected ones */
-			//to_GDALW->ULy = Img_proj->header->wesn[YHI];
+		}
+
+		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
+			if (GMT->current.proj.proj4[k].id == GMT->current.proj.projection) id = k;
+		if (id >= 0) {			/* Valid projection for creating world file info */
+			char *pstr = NULL, proj4name[16];
+			if (GMT->current.proj.projection == GMT_LINEAR && GMT_is_geographic (GMT, GMT_IN))
+				strcpy(proj4name, "latlong");
+			else
+				strcpy(proj4name, GMT->current.proj.proj4[id].name);
+			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT, pstr);
 		}
 	}
 #endif
@@ -929,6 +940,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Img_proj);
 	}
 	if (Ctrl->A.active) {
+		if (to_GDALW->P.ProjectionRefPROJ4) free (to_GDALW->P.ProjectionRefPROJ4);
 		GMT_free (GMT, to_GDALW);
 		free((void *)Ctrl->A.driver);
 		free((void *)Ctrl->A.file);
