@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.505 2011-05-11 04:01:54 guru Exp $
+ *	$Id: gmt_support.c,v 1.506 2011-05-11 21:04:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5846,10 +5846,10 @@ GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		if (h->nxp != 0) h->nxp = (h->registration == GMT_PIXEL_REG) ? h->nx : h->nx - 1;
 		if (h->nyp != 0) h->nyp = (h->registration == GMT_PIXEL_REG) ? h->ny : h->ny - 1;
 	}
-	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for left   edge: %s\n", kind[h->BC[0]]);
-	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for right  edge: %s\n", kind[h->BC[1]]);
-	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for bottom edge: %s\n", kind[h->BC[2]]);
-	GMT_report (C, GMT_MSG_VERBOSE, "Boundary condition for top    edge: %s\n", kind[h->BC[3]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[h->BC[0]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[h->BC[1]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[h->BC[2]]);
+	GMT_report (C, GMT_MSG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[h->BC[3]]);
 
 	/* Set this grid's interpolation parameters */
 
@@ -5888,11 +5888,16 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	GMT_LONG jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	GMT_LONG j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG n_skip, set[4] = {TRUE, TRUE, TRUE, TRUE};
+	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
+	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
 
 	for (i = n_skip = 0; i < 4; i++) {
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = FALSE; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
-	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
+	if (n_skip == 4) {	/* No need to set anything since there is data in the pad area on all sides */
+		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grid_set: All boundaries set via extended data.\n");
+		return (GMT_NOERROR);
+	}
 
 	/* Check minimum size:  */
 	if (G->header->nx < 2 || G->header->ny < 2) {
@@ -6033,8 +6038,14 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 
 			return (GMT_NOERROR);
 		}
@@ -6086,7 +6097,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			for (i = 0; i < 4; i++) if (set[i]) G->header->BC[i] = GMT_BC_IS_NATURAL;
+			for (i = 0; i < 4; i++) if (set[i]) {
+				G->header->BC[i] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+			}
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
@@ -6119,8 +6133,14 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			}
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 			return (GMT_NOERROR);
 		}
 
@@ -6140,7 +6160,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[jno1 + i] = G->data[j1p + i180];
 				G->data[jno2 + i] = G->data[j2p + i180];
 			}
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_POLE;
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_POLE;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
@@ -6165,7 +6188,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			if (set[XHI] && set[YHI]) G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, north (top) is Natural.  */
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
@@ -6184,7 +6210,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[jso1 + i] = G->data[j1p + i180];
 				G->data[jso2 + i] = G->data[j2p + i180];
 			}
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_POLE;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_POLE;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
@@ -6209,7 +6238,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			if (set[XHI] && set[YHI]) G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - G->header->nxp];
 
 			/* End of X is periodic, south (bottom) is Natural.  */
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
 		}
 
 		/* Done with X is periodic cases.  */
@@ -6248,6 +6280,8 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	GMT_LONG j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
 	GMT_LONG b, nb = G->n_bands;
 	GMT_LONG n_skip, set[4] = {TRUE, TRUE, TRUE, TRUE};
+	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
+	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
 
 	for (i = n_skip = 0; i < 4; i++) {
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = FALSE; n_skip++;}	/* No need to set since there is data in the pad area */
@@ -6392,8 +6426,14 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 
 			return (GMT_NOERROR);
 		}
@@ -6455,7 +6495,10 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			for (i = 0; i < 4; i++) if (set[i]) G->header->BC[i] = GMT_BC_IS_NATURAL;
+			for (i = 0; i < 4; i++) if (set[i]) {
+				G->header->BC[i] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+			}
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
@@ -6492,8 +6535,14 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 			return (GMT_NOERROR);
 		}
 
@@ -6515,7 +6564,10 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 					G->data[nb*(jno2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_POLE;
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_POLE;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
@@ -6547,7 +6599,10 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 
 			/* End of X is periodic, north (top) is Natural.  */
-			if (set[YHI]) G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+			if (set[YHI]) {
+				G->header->BC[YHI] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+			}
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
@@ -6568,7 +6623,10 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 					G->data[nb*(jso2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_POLE;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_POLE;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
 		}
 		else {
 			/* Y needs natural conditions.  x bndry cols periodic.
@@ -6601,7 +6659,10 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 
 			/* End of X is periodic, south (bottom) is Natural.  */
-			if (set[YLO]) G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (set[YLO]) {
+				G->header->BC[YLO] = GMT_BC_IS_NATURAL;
+				GMT_report (C, GMT_MSG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+			}
 		}
 
 		/* Done with X is periodic cases.  */
