@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.13 2011-05-11 17:30:33 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1085,7 +1085,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
 
-				if (!GMT->current.setting.verbose < GMT_MSG_NORMAL)	/* Shut up the gdal_translate (low level) verbosity */
+				if (GMT->current.setting.verbose < GMT_MSG_NORMAL)	/* Shut up the gdal_translate (low level) verbosity */
 					quiet = " -quiet";
 				else
 					quiet = "";
