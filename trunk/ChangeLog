@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1018 2011-05-10 03:28:55 guru Exp $
+	$Id: ChangeLog,v 1.1019 2011-05-11 00:53:17 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-11	jluis
+	* grdimage_func.c:	Now reads also indexed and gray scale images.
 
 2011-05-09	pwessel
 	* minmax_func.c:	Now honors the column-specific formatting.
