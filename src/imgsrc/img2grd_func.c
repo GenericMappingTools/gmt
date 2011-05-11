@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.16 2011-05-10 00:34:20 guru Exp $
+/* $Id: img2grd_func.c,v 1.17 2011-05-11 04:01:54 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -191,7 +191,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				Ctrl->D.active = TRUE;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
-					GMT_message (GMT, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
 				}
 				else {
 					Ctrl->D.min = GMT_IMG_MINLAT_80;
@@ -213,7 +213,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				Ctrl->I.active = TRUE;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
-					GMT_message (GMT, "Syntax error -I requires a positive value.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -I requires a positive value.\n");
 				}
 				break;
 			case 'M':
@@ -223,7 +223,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				Ctrl->N.active = TRUE;
 				if ((sscanf (opt->arg, "%d", &Ctrl->N.value)) != 1 || Ctrl->N.value < 1) {
 					n_errors++;
-					GMT_message (GMT, "Syntax error -N requires an integer > 1.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -N requires an integer > 1.\n");
 				}
 				break;
 			case 'S':
@@ -234,14 +234,14 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				Ctrl->T.active = TRUE;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
-					GMT_message (GMT, "Syntax error -T requires an output type 0-3.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = TRUE;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
-					GMT_message (GMT, "Syntax error -W requires a longitude >= 360.0.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -W requires a longitude >= 360.0.\n");
 				}
 				break;
 			default:	/* Report bad options */
@@ -382,16 +382,16 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 	
 	if (GMT_img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_message (GMT, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.value && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_message (GMT, "Syntax error: Bad choice of navg in -N.  Must divide %ld and %ld\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Bad choice of navg in -N.  Must divide %ld and %ld\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((fp = fopen (infile, "rb")) == NULL) {
-		GMT_message (GMT, "Syntax error: Cannot open %s for binary read.\n", infile);
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -425,11 +425,11 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Expects %s to be %ld by %ld pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < Merc->header->wesn[YHI]) {
-		GMT_message (GMT, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
 		wesn[YHI] = toplat - GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	if (botlat > Merc->header->wesn[YLO]) {
-		GMT_message (GMT, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YLO], botlat);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YLO], botlat);
 		wesn[YLO] = botlat + GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	
@@ -536,7 +536,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			continue;
 		}
 		if ((fread ((void *)row, sizeof (short int), (size_t)(navg * imgcoord.nxcol), fp) ) != (size_t)(navg * imgcoord.nxcol)) {
-			GMT_message (GMT, "Error: Read failure at jin = %ld.\n", jin);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %ld.\n", jin);
 			exit (EXIT_FAILURE);
 		}
 

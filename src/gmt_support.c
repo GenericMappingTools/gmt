@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.504 2011-05-10 03:28:55 guru Exp $
+ *	$Id: gmt_support.c,v 1.505 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1774,7 +1774,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	   On output the grid boundaries are always gridline or pixel oriented, depending on registration.
 	   The routine is not run when nx and ny are already set.
 	*/
-	int one_or_zero;
+	GMT_LONG one_or_zero;
 	double s;
 
 	one_or_zero = !h->registration;
@@ -1786,7 +1786,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 
 	if (C->current.io.inc_code[GMT_X] & GMT_INC_IS_NNODES) {	/* Got nx */
 		h->inc[GMT_X] = GMT_get_inc (h->wesn[XLO], h->wesn[XHI], irint(h->inc[GMT_X]), h->registration);
-		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Given nx implies x_inc = %g\n", h->inc[GMT_X]);
+		GMT_report (C, GMT_MSG_VERBOSE, "Given nx implies x_inc = %g\n", h->inc[GMT_X]);
 	}
 	else if (C->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (C->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {
@@ -1808,7 +1808,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 				break;
 		}
 		h->inc[GMT_X] *= s / (C->current.proj.DIST_M_PR_DEG * cosd (0.5 * (h->wesn[YLO] + h->wesn[YHI])));	/* Latitude scaling of E-W distances */
-		if (C->current.setting.verbose) GMT_report (C, GMT_MSG_FATAL, "Distance to degree conversion implies x_inc = %g\n", h->inc[GMT_X]);
+		GMT_report (C, GMT_MSG_VERBOSE, "Distance to degree conversion implies x_inc = %g\n", h->inc[GMT_X]);
 	}
 	if (!(C->current.io.inc_code[GMT_X] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust x_inc to exactly fit west/east */
 		s = h->wesn[XHI] - h->wesn[XLO];
@@ -1817,7 +1817,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		h->nx += one_or_zero;
 		if (fabs (s - h->inc[GMT_X]) > 0.0) {
 			h->inc[GMT_X] = s;
-			GMT_report (C, GMT_MSG_NORMAL, "Given domain implies x_inc = %g\n", h->inc[GMT_X]);
+			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies x_inc = %g\n", h->inc[GMT_X]);
 		}
 	}
 
@@ -1829,7 +1829,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = (h->wesn[XHI] - h->wesn[XLO]) - h->inc[GMT_X] * (h->nx - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->wesn[XHI] -= s;
-			GMT_report (C, GMT_MSG_NORMAL, "x_max adjusted to %g\n", h->wesn[XHI]);
+			GMT_report (C, GMT_MSG_VERBOSE, "x_max adjusted to %g\n", h->wesn[XHI]);
 		}
 	}
 
@@ -1839,7 +1839,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 
 	if (C->current.io.inc_code[GMT_Y] & GMT_INC_IS_NNODES) {	/* Got ny */
 		h->inc[GMT_Y] = GMT_get_inc (h->wesn[YLO], h->wesn[YHI], irint(h->inc[GMT_Y]), h->registration);
-		GMT_report (C, GMT_MSG_NORMAL, "Given ny implies y_inc = %g\n", h->inc[GMT_Y]);
+		GMT_report (C, GMT_MSG_VERBOSE, "Given ny implies y_inc = %g\n", h->inc[GMT_Y]);
 	}
 	else if (C->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (C->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {
@@ -1861,7 +1861,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 				break;
 		}
 		h->inc[GMT_Y] = (h->inc[GMT_Y] == 0.0) ? h->inc[GMT_X] : h->inc[GMT_Y] * s / C->current.proj.DIST_M_PR_DEG;
-		GMT_report (C, GMT_MSG_NORMAL, "Distance to degree conversion implies y_inc = %g\n", h->inc[GMT_Y]);
+		GMT_report (C, GMT_MSG_VERBOSE, "Distance to degree conversion implies y_inc = %g\n", h->inc[GMT_Y]);
 	}
 	if (!(C->current.io.inc_code[GMT_Y] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust y_inc to exactly fit south/north */
 		s = h->wesn[YHI] - h->wesn[YLO];
@@ -1870,7 +1870,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		h->ny += one_or_zero;
 		if (fabs (s - h->inc[GMT_Y]) > 0.0) {
 			h->inc[GMT_Y] = s;
-			GMT_report (C, GMT_MSG_NORMAL, "Given domain implies y_inc = %g\n", h->inc[GMT_Y]);
+			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies y_inc = %g\n", h->inc[GMT_Y]);
 		}
 	}
 
@@ -1882,7 +1882,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = (h->wesn[YHI] - h->wesn[YLO]) - h->inc[GMT_Y] * (h->ny - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->wesn[YHI] -= s;
-			GMT_report (C, GMT_MSG_NORMAL, "y_max adjusted to %g\n", h->wesn[YHI]);
+			GMT_report (C, GMT_MSG_VERBOSE, "y_max adjusted to %g\n", h->wesn[YHI]);
 		}
 	}
 	
@@ -9716,7 +9716,7 @@ GMT_LONG gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	struct GMT_LINE_SEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_message (GMT, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
 		return (1);
 	}
 
@@ -9842,7 +9842,7 @@ GMT_LONG gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Di
 	struct GMT_LINE_SEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
-		GMT_message (GMT, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
 		return (1);
 	}
 

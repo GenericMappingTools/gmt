@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.10 2011-05-02 19:34:31 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		if (GMT->current.setting.verbose) GMT_message (GMT, "%s: Output %d unique triangle polygons\n", GMT->init.progname, D->n);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Output %d unique triangle polygons\n", GMT->init.progname, D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];
 			/* Write segment header with triangle # and the three node numbers */

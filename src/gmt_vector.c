@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.46 2011-05-08 03:45:27 guru Exp $
+ *	$Id: gmt_vector.c,v 1.47 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -420,7 +420,7 @@ GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, GMT_LONG n, GMT_LONG 
 						}
 					}
 					else if (ipiv[k] > 1) {
-						GMT_message (GMT, "GMT_gaussjordan: Singular matrix!\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "GMT_gaussjordan: Singular matrix!\n");
 						GMT_free (GMT, ipiv);
 						GMT_free (GMT, indxc);
 						GMT_free (GMT, indxr);
@@ -447,7 +447,7 @@ GMT_LONG GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, GMT_LONG n, GMT_LONG 
 		indxr[i] = irow;
 		indxc[i] = icol;
 		if (a[icol*ndim+icol] == 0.0) {
-			GMT_message (GMT, "GMT_gaussjordan: Singular matrix!\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "GMT_gaussjordan: Singular matrix!\n");
 			GMT_free (GMT, ipiv);
 			GMT_free (GMT, indxc);
 			GMT_free (GMT, indxr);
@@ -505,7 +505,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 	double *rv1 = NULL;
 	
 	if (m < n) {
-		GMT_message (GMT, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
 		return (EXIT_FAILURE);
 	}
 	
@@ -513,7 +513,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 		
 	rv1=(double *)calloc(n,sizeof(double));
 	if (rv1 == NULL) {
-		GMT_message (GMT, "Error in GMT_svdcmp: Can't allocate work space\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: Can't allocate work space\n");
 		return (EXIT_FAILURE);
 	}
 	
@@ -655,7 +655,7 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, GMT_LONG m, GMT_LONG n, do
 				break;
 			}
 			if (its == 30) {
-				GMT_message (GMT, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
 				return (EXIT_FAILURE);
 			}
 			x=w[l];		/* shift from bottom 2-by-2 minor */
@@ -756,7 +756,7 @@ GMT_LONG GMT_solve_svd (struct GMT_CTRL *GMT, double *u, GMT_LONG m, GMT_LONG n,
 		
 	ut = (double *)calloc(n*m,sizeof(double));	/* space for the transpose */
 	if (ut == NULL) {
-		GMT_message (GMT, "Error in GMT_solve_svd: Can't allocate work space\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_solve_svd: Can't allocate work space\n");
 		return (-1);
 	}
 	

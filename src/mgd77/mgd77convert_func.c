@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
+ *	$Id: mgd77convert_func.c,v 1.7 2011-05-11 04:01:54 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 						Ctrl->F.format = MGD77_FORMAT_TBL;
 						break;
 					default:
-						GMT_message (GMT, "Option -F Bad format (%c)!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -F Bad format (%c)!\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -150,7 +150,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 						Ctrl->T.format = MGD77_FORMAT_TBL;
 						break;
 					default:
-						GMT_message (GMT, "Option -T Bad format (%c)!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -T Bad format (%c)!\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -216,7 +216,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "Error: No cruises given\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -241,25 +241,25 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		MGD77_Ignore_Format (GMT, M.format);		/* ...only allow the specified input format */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_message (GMT, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		sprintf (file, "%s.%s", M.NGDC_id, MGD77_suffix[Ctrl->T.format]);
 		if (Ctrl->F.format == Ctrl->T.format && !(M.path[0] == '/' || M.path[1] == ':')) {
-			GMT_message (GMT, "Input and Output file have same name! Output file will have extension \".new\" appended\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Input and Output file have same name! Output file will have extension \".new\" appended\n");
 			strcat (file, ".new");	/* To avoid overwriting original file */
 		}
 		if (!access (file, R_OK)) {	/* File exists */
 			if (Ctrl->T.mode) {	/* Must delete the file first */
 				if (remove (file)) {	/* Oops, removal failed */
-					GMT_message (GMT, "Unable to remove existing file %s - skipping the conversion\n", file);
+					GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove existing file %s - skipping the conversion\n", file);
 					MGD77_Close_File (GMT, &M);
 					MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File */
 					continue;
 				}
 			}
 			else {	/* Cowardly refuse to do this */
-				GMT_message (GMT, "\nOutput file already exists.  Use -T+%c to force overwriting\n", fcode[Ctrl->T.format]);
+				GMT_report (GMT, GMT_MSG_FATAL, "\nOutput file already exists.  Use -T+%c to force overwriting\n", fcode[Ctrl->T.format]);
 				MGD77_Close_File (GMT, &M);
 				MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File */
 				continue;
@@ -269,7 +269,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* OK, now we can read the data set */
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_message (GMT, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -279,7 +279,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		MGD77_Verify_Header (GMT, &M, &(D->H), NULL);	/* Verify the header */
 	
 		if (Ctrl->F.format == MGD77_FORMAT_CDF && Ctrl->T.format != MGD77_FORMAT_CDF && (D->H.info[MGD77_CDF_SET].n_col || D->flags[0] || D->flags[1])) {
-			GMT_message (GMT, "\nWarning: Input file contains enhanced material that the output file format cannot represent\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "\nWarning: Input file contains enhanced material that the output file format cannot represent\n");
 		}
 
 		/* OK, ready to write out converted file */
@@ -291,7 +291,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
 		if (D->H.history) GMT_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
 		if (MGD77_Write_File (GMT, file, &M, D)) {
-			GMT_message (GMT, "Error writing new file for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error writing new file for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Converted cruise %s to %s format", list[argno], format_name[Ctrl->T.format]);

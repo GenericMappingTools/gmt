@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
+ *	$Id: surface_func.c,v 1.13 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -632,7 +632,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 	}
 
 	C->z_mean /= k;
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (C->format, "%s %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Minimum value of your dataset x,y,z at: ");
 		GMT_report (GMT, GMT_MSG_NORMAL, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
@@ -1845,13 +1845,13 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* New stuff here for v4.3: Check out the grid dimensions */
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL || Ctrl->Q.active) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.grid == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid dimensions are mutually prime.\n");
-	if ((C.grid == 1 && GMT->current.setting.verbose >= GMT_MSG_NORMAL) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
+	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
@@ -1929,7 +1929,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		iterate (GMT, &C, 1);
 	}
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) check_errors (GMT, &C);
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) check_errors (GMT, &C);
 
 	replace_planar_trend (&C);
 

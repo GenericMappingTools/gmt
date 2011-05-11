@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.17 2011-05-09 19:03:08 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -1285,7 +1285,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 											D[n].number[this_grid[i].col] /= test_slope[j];
 											diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 										}
-										if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+										if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 											sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
 											GMT_message (GMT, "%s (%s) Warning: Scaled by %s for internal along-track analysis\n",\
 											list[argno],this_grid[i].abbrev, text);
@@ -1498,7 +1498,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
 				}
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 					if (m == 0) GMT_message (GMT, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
 					else GMT_message (GMT, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				}

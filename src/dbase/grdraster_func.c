@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.17 2011-05-08 22:55:55 guru Exp $
+ *	$Id: grdraster_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -180,7 +180,7 @@ GMT_LONG get_byte_size (struct GMT_CTRL *GMT, char type) {
 			ksize = 4;
 			break;
 		default:
-			GMT_message (GMT, "Error: Invalid data type [%c]\n", (int)type);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Invalid data type [%c]\n", (int)type);
 			return (EXIT_FAILURE);
 			break;
 	}
@@ -281,7 +281,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		}
 		i++;
 		if (i == j) {
-			GMT_message (GMT, "Skipping record in grdraster.info (Title string conversion error).\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (Title string conversion error).\n");
 			continue;
 		}
 		strncpy(rasinfo[nfound].h.title, &rasinfo[nfound].h.command[i], (size_t)j-i);
@@ -769,7 +769,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_Find_Option (GMT->parent, 'R', options, &r_opt);
 	GMT->common.R.active = FALSE;	/* Forget that -R was used before */
 	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
-		GMT_message (GMT, "Error reprocessing -R?.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error reprocessing -R?.\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -785,7 +785,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "Error: At least two rasters have the same file number in grdraster.info\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "At least two rasters have the same file number in grdraster.info\n");
 					error++;
 				}
 			}
@@ -797,7 +797,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (j == -1)
 					j = i;
 				else {
-					GMT_message (GMT, "Error: At least two rasters have the same text [%s] in grdraster.info\n", tselect);
+					GMT_report (GMT, GMT_MSG_FATAL, "At least two rasters have the same text [%s] in grdraster.info\n", tselect);
 					error++;
 				}
 			}
@@ -805,9 +805,9 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if (j == -1) {
 		if (iselect != -1)
-			GMT_message (GMT, "Error: No raster with file number %ld in grdraster.info\n", iselect);
+			GMT_report (GMT, GMT_MSG_FATAL, "No raster with file number %ld in grdraster.info\n", iselect);
 		else
-			GMT_message (GMT, "Error: No raster with text %s in grdraster.info\n", tselect);
+			GMT_report (GMT, GMT_MSG_FATAL, "No raster with text %s in grdraster.info\n", tselect);
 		error++;
 	}
 	else {
@@ -841,7 +841,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		jmult = irint (Grid->header->inc[GMT_Y] / myras.h.inc[GMT_Y]);
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
-			GMT_message (GMT, "Error: Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
+			GMT_report (GMT, GMT_MSG_FATAL, "Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -858,17 +858,17 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->wesn[YLO] = floor (GMT->common.R.wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 
-		if (GMT->current.setting.verbose && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 
 			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = (GMT_LONG) irint ((Grid->header->wesn[XLO] - w) * 60.0);
 			e = (GMT_LONG) floor (Grid->header->wesn[XHI]);	em = (GMT_LONG) irint ((Grid->header->wesn[XHI] - e) * 60.0);
 			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = (GMT_LONG) irint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = (GMT_LONG) irint ((Grid->header->wesn[YHI] - n) * 60.0);
-			GMT_message (GMT, "%s -> -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
 		}
-		else if (GMT->current.setting.verbose)
-			GMT_message (GMT, "%s -> -R%g/%g/%g/%g\n", r_opt->arg, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+		else
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%g/%g/%g/%g\n", r_opt->arg, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 	}
 
 	/* Now Enforce that wesn will fit inc[GMT_X], inc[GMT_Y].  Set nx, ny but reset later based on G or P  */
@@ -885,7 +885,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->wesn[YHI] =  ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->nx = irint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
 		Grid->header->ny = irint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
-		GMT_message (GMT, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (GMT_IS_ZERO (rint (Grid->header->inc[GMT_X] * 60.0) - Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			GMT_LONG w, e, s, n, wm, em, sm, nm;
 			w = (GMT_LONG) floor (Grid->header->wesn[XLO]);	wm = (GMT_LONG) irint ((Grid->header->wesn[XLO] - w) * 60.0);
@@ -893,15 +893,15 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			s = (GMT_LONG) floor (Grid->header->wesn[YLO]);	sm = (GMT_LONG) irint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = (GMT_LONG) floor (Grid->header->wesn[YHI]);	nm = (GMT_LONG) irint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
 			else
-				GMT_message (GMT, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
 		}
 		else {
 			if (!GMT->common.R.oblique)
-				GMT_message (GMT, "Warning: Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%g/%g/%g/%g.\n", Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 			else
-				GMT_message (GMT, "Warning: Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%g/%g/%g/%gr.\n", Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
 		}
 		error = 0;
 	}
@@ -963,11 +963,11 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Now open file and do it */
 
 	if ( (fp = GMT_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
-		GMT_message (GMT, "ERROR opening %s for read.\n", myras.h.remark);
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR opening %s for read.\n", myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
 	if (myras.skip && GMT_fseek (fp, (long) (myras.skip), SEEK_CUR) ) {
-		GMT_message (GMT, "ERROR skipping %ld bytes in %s.\n", myras.skip, myras.h.remark);
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR skipping %ld bytes in %s.\n", myras.skip, myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Reading from raster %s\n", myras.h.remark);
@@ -975,7 +975,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
 		if ( (GMT_fread ((void *)ubuffer, sizeof (unsigned char), (size_t)nmask, fp)) != (size_t)nmask) {
-			GMT_message (GMT, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
 			GMT_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
@@ -1039,13 +1039,13 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					jseek = 0;
 				/* This will be slow on SGI because seek is broken there */
 				if (jseek && GMT_fseek (fp, (long) (jseek * ksize * myras.h.nx), SEEK_CUR) ) {
-					GMT_message (GMT, "ERROR seeking in %s\n", myras.h.remark);
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR seeking in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
 				if ( (GMT_fread((void *)buffer, (size_t)ksize, (size_t)myras.h.nx, fp)) != (size_t)myras.h.nx) {
-					GMT_message (GMT, "ERROR reading in %s\n", myras.h.remark);
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR reading in %s\n", myras.h.remark);
 					GMT_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.23 2011-04-29 21:33:56 remko Exp $
+ *	$Id: grdview_func.c,v 1.24 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1115,12 +1115,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "[B/W image]\n");
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "[B/W image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			GMT_free (GMT, bitimage_8);
 		}
 		else {
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "[color image]\n");
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "[color image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			GMT_free (GMT, bitimage_24);
 		}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.9 2011-05-10 03:57:29 guru Exp $
+ *	$Id: grdcut_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -291,7 +291,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%ld\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.18 2011-05-10 03:57:29 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.19 2011-05-11 04:01:54 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -616,7 +616,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				while (GMT_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* Gave a new +a<dmax> value */
-							GMT_message (GMT, "+a not implemented yet\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "+a not implemented yet\n");
 							Ctrl->D.I.a_threshold = atof (&p[1]);
 							break;
 						case 'd':	/* Gave a new +d<dmax> value */

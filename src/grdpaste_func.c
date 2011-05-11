@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpaste_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdpaste_func.c,v 1.7 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Now we can do it  */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%ld\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, "File spec:\tW E S N dx dy nx ny:\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);

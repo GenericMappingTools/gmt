@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.40 2011-04-29 03:08:12 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.41 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -460,14 +460,14 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			ok = FALSE;
 		}
 	}
-	if (GMT->current.setting.verbose) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
 	
 	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale[GMT_X];
 	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale[GMT_Y];
 	
 	utm_correct = (GMT->current.proj.projection == GMT_UTM && !GMT->current.proj.north_pole) ? GMT_FALSE_NORTHING : 0.0;
 	
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		double rect[4];
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_memcpy (rect, GMT->current.proj.rect, 4, double);
@@ -553,7 +553,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
-				if (GMT->current.setting.verbose) GMT_message (GMT, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
 				last_xmap = -DBL_MAX;
 				last_ymap = -DBL_MAX;
 				n_segments++;
@@ -572,7 +572,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_xy_to_geo (GMT, &out[GMT_X], &out[GMT_Y], xmap, ymap);
 			n_read++;
 			if (Ctrl->S.active && GMT_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
-			if (GMT->current.setting.verbose) {
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 				x_in_min = MIN (x_in_min, xmap);
 				x_in_max = MAX (x_in_max, xmap);
 				y_in_min = MIN (y_in_min, ymap);
@@ -588,7 +588,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->Z.active[V_ID]) out[val_pos] = z_val;
 			if (Ctrl->Z.active[K_ID]) out[key_pos] = (double)button;
 			GMT->current.io.output (GMT, fp, n_expected_fields, out);
-			if (GMT->current.setting.verbose) {
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 				(Ctrl->Z.active[V_ID]) ? GMT_message (GMT, format, out[GMT_X], out[GMT_Y], z_val, button) : GMT_message (GMT, format, out[GMT_X], out[GMT_Y], button);
 			}
 			n++;
@@ -599,7 +599,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		i_unused = chown (this_file, uid, gid);
 	}
 	
-	if (GMT->current.setting.verbose && n_read > 0) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

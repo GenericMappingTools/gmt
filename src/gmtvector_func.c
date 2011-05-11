@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.13 2011-05-10 03:57:29 guru Exp $
+*    $Id: gmtvector_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -211,7 +211,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
-							GMT_message (GMT, "Bad arguments given to -Tr (%s)\n", opt->arg);
+							GMT_report (GMT, GMT_MSG_FATAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
 							n_errors++;
 						}
 						break;

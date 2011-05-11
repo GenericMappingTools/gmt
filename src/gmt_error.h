@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.17 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_error.h,v 1.18 2011-05-11 04:01:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,6 +93,8 @@
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 
 EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
+
+#define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
 /* Definition for printing a report. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal

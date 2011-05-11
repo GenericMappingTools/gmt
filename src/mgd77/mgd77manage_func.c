@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.16 2011-05-08 22:55:55 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.17 2011-05-11 04:01:54 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -1256,7 +1256,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->A.e77_skip_mode[type]) continue;
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
-					if (GMT->current.setting.verbose == 2 && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: Warning: %s\n", list[argno], line);
+					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: Warning: %s\n", list[argno], line);
 					continue;
 				}
 				if (!got_default_answer (line, answer)) continue;
@@ -1374,7 +1374,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				rec--;	/* E77 starts with rec = 1 for first data record */
 				if (has_time) {
 					if (!strcmp(timestamp,"NaN")) {
-						if (GMT->current.setting.verbose == 2) GMT_message (GMT, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
+						if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
 						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
@@ -1403,7 +1403,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 									n_E77_flags++;
 									break;
 								case 'B':
-									if (GMT->current.setting.verbose == 2) GMT_message (GMT, "%s: Decreasing time %s - Source Institution need to sort records\n", list[argno], timestamp);
+									if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Decreasing time %s - Source Institution need to sort records\n", list[argno], timestamp);
 									break;
 								case 'C':	/* Excessive speed - flag time, lon, lat */
 									flags[rec] |= set_bit(NCPOS_TIME);

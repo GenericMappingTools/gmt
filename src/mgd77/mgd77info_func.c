@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.6 2011-05-09 19:03:08 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.7 2011-05-11 04:01:54 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -160,7 +160,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 					Ctrl->M.mode = HIST_HEADER;
 				}
 				else {
-					GMT_message (GMT, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
+					GMT_report (GMT, GMT_MSG_FATAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -171,12 +171,12 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_message (GMT, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_message (GMT, "Option -I: Can only be applied 0-2 times\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -195,7 +195,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 						Ctrl->E.mode = 3;
 						break;
 					default:
-						GMT_message (GMT, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				Ctrl->E.active = TRUE;
@@ -213,7 +213,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 					case '\0':
 						break;
 					default:
-						GMT_message (GMT, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -316,11 +316,11 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		D = MGD77_Create_Dataset (GMT);
 		
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
-			GMT_message (GMT, "Error reading header & data for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error reading header & data for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_message (GMT, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.10 2011-05-10 03:57:29 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -421,7 +421,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	mean /= ngood;
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "Mean and S.D. of data are %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, mean, sd);
 	}
@@ -502,7 +502,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (j = 0; j < Ctrl->E.levels; j++) {
 		if (cdf_cpt[j].z <= G[0]->header->z_min)
 			cdf_cpt[j].f = 0.0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.8 2011-04-29 03:08:12 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.9 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -507,7 +507,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_message (GMT, " n_read: %ld  n_used: %ld  n_filled: %ld  n_empty: %ld set to ",
 				n_read, n_used, n_filled, n_empty);

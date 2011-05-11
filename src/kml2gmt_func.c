@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.10 2011-05-02 19:34:31 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -158,7 +158,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_message (GMT, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s\n", Ctrl->In.file);

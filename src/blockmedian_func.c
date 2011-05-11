@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmedian_func.c,v 1.8 2011-05-09 02:19:06 guru Exp $
+ *    $Id: blockmedian_func.c,v 1.9 2011-05-11 04:01:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -267,7 +267,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		quantile[0] = Ctrl->T.quantile;
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}

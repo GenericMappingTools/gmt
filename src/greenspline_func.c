@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.13 2011-05-08 03:45:27 guru Exp $
+ *	$Id: greenspline_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1428,11 +1428,11 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
 				nx = (GMT_LONG)irint (par[7]);
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Precalculate -SQ lookup table with %ld items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Precalculate -SQ lookup table with %ld items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				WB_z = GMT_memory (GMT, NULL, nx, double);
 				if (Ctrl->A.active) WB_g = GMT_memory (GMT, NULL, nx, double);
 				spline2d_Wessel_Becker_init (GMT, par, WB_z, WB_g, Ctrl->A.active);
-				if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "done\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "done\n");
 				G = spline2d_Wessel_Becker_lookup;
 				dGdr = gradspline2d_Wessel_Becker_lookup;
 			}
@@ -1512,7 +1512,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			char format[GMT_TEXT_LEN256];
 			double *eig = GMT_memory (GMT, NULL, nm, double);
 			GMT_memcpy (eig, s, nm, double);
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "Eigen-value rations s(i)/s(0) saved to %s\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Eigen-value rations s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			if ((fp = GMT_fopen (GMT, Ctrl->C.file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error creating file %s\n", Ctrl->C.file);
 				Return (EXIT_FAILURE);
@@ -1530,7 +1530,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_memcpy (b, obs, nm, double);
 		n_use = GMT_solve_svd (GMT, A, nm, nm, v, s, b, 1, obs, Ctrl->C.value);
 		if (n_use == -1) Return (EXIT_FAILURE);
-		if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_message (GMT, "[%ld of %ld eigen-values used]\n", n_use, nm);
+		GMT_report (GMT, GMT_MSG_NORMAL, "[%ld of %ld eigen-values used]\n", n_use, nm);
 			
 		GMT_free (GMT, s);
 		GMT_free (GMT, v);

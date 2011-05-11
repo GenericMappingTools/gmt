@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.9 2011-04-26 17:52:49 guru Exp $
+ *	$Id: redpol_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1353,7 +1353,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 					nu  = -sin(dip_m);
 				}
 			}
-			if (GMT->current.setting.verbose >= GMT_MSG_NORMAL)
+			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL))
 				GMT_report (GMT, GMT_MSG_NORMAL, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
@@ -1465,7 +1465,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		}
 	}
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) GMT_report (GMT, GMT_MSG_NORMAL, "\n"); 
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_report (GMT, GMT_MSG_NORMAL, "\n"); 
 
 	GMT_free(GMT, cosphi);		GMT_free(GMT, sinphi);
 	GMT_free(GMT, cospsi);		GMT_free(GMT, sinpsi);

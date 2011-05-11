@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdclip_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id: grdclip_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,16 +214,16 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 
-	if (GMT->current.setting.verbose >= GMT_MSG_NORMAL) {
+	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "%s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		if (Ctrl->S.mode & 2) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values < ", n_below);
-			GMT_message (GMT, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
+			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
 		}
 		if (Ctrl->S.mode & 1) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values > ", n_above);
-			GMT_message (GMT, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
+			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
 		}
 	}
 

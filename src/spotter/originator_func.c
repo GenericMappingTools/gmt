@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.9 2011-05-08 22:55:55 guru Exp $
+ *	$Id: originator_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -439,7 +439,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (GMT->current.setting.verbose && !(n % 10)) GMT_message (GMT, "Working on seamount # %5ld\r", n);
+		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n % 10)) GMT_message (GMT, "Working on seamount # %5ld\r", n);
 
 		nc = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c);
 
