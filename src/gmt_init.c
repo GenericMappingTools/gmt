@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.503 2011-05-11 04:01:54 guru Exp $
+ *	$Id: gmt_init.c,v 1.504 2011-05-11 09:58:05 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2469,7 +2469,10 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 
 	GMT_LONG i, k, go = TRUE;
 
-	for (k = 0, i = strlen (in) - 1; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
+	i = strlen (in);
+	if (i == 0) return (0);
+	
+	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
 		if (k == 0) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = FALSE;
