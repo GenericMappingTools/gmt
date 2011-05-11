@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.189 2011-05-10 23:50:41 jluis Exp $
+ *	$Id: gmt_grdio.c,v 1.190 2011-05-11 02:40:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -481,7 +481,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
@@ -517,7 +517,7 @@ GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 * complex_mode:	1|2 if complex array holds real (1) and imaginary (2) parts (0 = real array)
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
@@ -1722,7 +1722,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of image, respectively
-	 * complex_mode:	TRUE if array is to hold real and imaginary parts (read in real only)
+	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
