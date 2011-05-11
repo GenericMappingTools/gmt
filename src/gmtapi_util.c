@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.53 2011-05-10 00:08:16 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.54 2011-05-11 20:49:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2094,7 +2094,7 @@ GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
 {
 	/* GMT_Destroy_Session terminates the information for the specified session and frees all memory */
 	
-	GMT_LONG i, error;
+	GMT_LONG i, error, n_free = 0;
 	struct GMTAPI_CTRL *API = *C;
 	
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));	/* GMT_Create_Session has not been called */
@@ -2110,8 +2110,10 @@ GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
 		if ((error = GMT_Destroy_Data (API, GMT_ALLOCATED, API->object[i]->ptr))) GMT_Report_Error (API, error);
 		if (API->object[i]->filename) free (API->object[i]->filename);
 		GMT_free (API->GMT, API->object[i]);
+		n_free++;
 	}
- 	GMT_free (API->GMT, API->object);
+ 	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Session garbage collection freed %ld memory objects\n", n_free);
+	GMT_free (API->GMT, API->object);
 	PSL_endsession (API->PSL);	/* Terminate PSL machinery [if not NULL] */
 	error = GMT_Report_Error (API, GMT_OK);
 	GMT_end (API->GMT);		/* Terminate GMT machinery */
@@ -2926,6 +2928,7 @@ GMT_LONG GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));
 			break;		
 	}
+	GMT_report (API->GMT, GMT_MSG_VERBOSE, "Successfully created a new %s\n", GMT_family[family]);
 	return (GMT_OK);		
 }
 
@@ -2988,6 +2991,7 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));
 			break;		
 	}
+	GMT_report (API->GMT, GMT_MSG_VERBOSE, "Successfully reed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
 		direction = API->object[item]->direction;
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, direction))) return (GMT_Report_Error (API, error));	/* Did not find object */
