@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.46 2011-05-10 03:00:30 guru Exp $
+ *	$Id: grdimage_func.c,v 1.47 2011-05-11 00:49:43 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -359,7 +359,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
 	struct GDALWRITE_CTRL *to_GDALW = NULL;
-	//EXTERN_MSC struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors);
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -414,6 +413,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, 
 			(void **)&(Ctrl->In.file[0]), (void **)&I)) Return (GMT_DATA_READ_ERROR);
+
+		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active)	/* No -R or -I. Use image dimensions as -R */
+			GMT_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
 
 		if ( (Ctrl->D.mode && GMT->common.R.active) || (!Ctrl->D.mode && Ctrl->I.active) ) {
 			GMT_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
@@ -632,6 +634,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
+			if (Intens_orig) GMT_free_grid (GMT, &Intens_orig, TRUE);	/* The above line is not always capable of freeing array */
 		}
 		resampled = TRUE;
 	}
