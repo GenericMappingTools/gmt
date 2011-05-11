@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.76 2011-05-11 09:48:21 guru Exp $
+ *	$Id: libspotter.c,v 1.77 2011-05-11 09:49:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -1380,9 +1380,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 	else
 		kk = 2;
 
-	if (GMT_jacobi (G, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-		GMT_report (G, GMT_MSG_NORMAL, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
-	}
+	GMT_jacobi (G, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots);	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
 
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* z unit vector */
 	GMT_cross3v (G, z_unit_vector, y, x_in_plane);	/* Local x-axis in plane normal to mean pole */
@@ -1452,9 +1450,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 		GMT_memset (C, 9, double);
 		C[0] = C[4] = C[8] = fval;
 	}
-	if (GMT_jacobi (GMT, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
-	}
+	GMT_jacobi (GMT, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots);	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
 	spotter_matrix_1Dto2D (GMT, EigenVector, Vt);	/* Reformat back to 2-D format */
 	spotter_matrix_transpose (GMT, V, Vt);		/* Get the transpose of V */
 	GMT_geo_to_cart (GMT, p->lat_r, p->lon_r, r_center_unit, FALSE);	/* Rotation pseudo-vector */
