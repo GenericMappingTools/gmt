@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_merge_func.c,v 1.6 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,12 +143,12 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_message (GMT, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_message (GMT, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
 		Return (EXIT_FAILURE);
 	}
 

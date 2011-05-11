@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.19 2011-05-11 09:48:21 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -338,7 +338,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 			case 'A':	/* adjust slope and intercept */
 				if (!error && sscanf (opt->arg, "%[^,]", abbrev) != 1) {
-					GMT_message (GMT, "Syntax error -A option: Give field abbreviation, slope and intercept\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Give field abbreviation, slope and intercept\n");
 					error = TRUE;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -346,11 +346,11 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				while (strcmp (abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_message (GMT, "Syntax error -A option: invalid field abbreviation\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: invalid field abbreviation\n");
 					error = TRUE;
 				}
 				if (!error && sscanf (opt->arg, "%[^,],%lf,%lf", abbrev, &adjustScale[col], &adjustDC[col]) != 3) {
-					GMT_message (GMT, "Syntax error -A option: Give field abbreviation,slope,intercept\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Give field abbreviation,slope,intercept\n");
 					error = TRUE;
 				}
 				adjustData = TRUE;
@@ -404,7 +404,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					n_out_columns = 12;
 				}
 				else {
-					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n",\
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n",\
 					opt->option, opt->arg);
 					error = TRUE;
 				}
@@ -420,12 +420,12 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			case 'g':	/* Get grid filename and geophysical field name to compare with grid */
 				this_grid[n_grids].format = 1; 	/* Mercator grid */
 				if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
-					GMT_message (GMT, "Syntax error -g option: Give field abbreviation, grid file, scale, mode [, and optionally max lat]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -g option: Give field abbreviation, grid file, scale, mode [, and optionally max lat]\n");
 					error = TRUE;
 				}
 			case 'G':	/* Get grid filename and geophysical field name to compare with grid */
 				if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
-					GMT_message (GMT, "Syntax error -G option: Give field abbreviation and grid file\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give field abbreviation and grid file\n");
 					error = TRUE;
 				}
 				else {
@@ -440,7 +440,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					while (strcmp (this_grid[n_grids].abbrev, mgd77defs[this_grid[n_grids].col].abbrev) && this_grid[n_grids].col < MGD77_N_NUMBER_FIELDS)
 						this_grid[n_grids].col++;
 					if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
-						GMT_message (GMT, "Syntax error -G option: invalid field abbreviation\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: invalid field abbreviation\n");
 						error = TRUE;
 					}
 					if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
@@ -457,14 +457,14 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'b')
 					forced = FALSE;
 				else {
-					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
 					opt->arg);
 					error = TRUE;
 				}
 				break;
 			case 'I':	/* Pass ranges of data records to ignore for output to E77 */
 				if (!error && sscanf (opt->arg, "%[^,],%" GMT_LL "d,%" GMT_LL "d", BadSection[n_bad_sections].abbrev, &BadSection[n_bad_sections].start, &BadSection[n_bad_sections].stop) != 3) {
-					GMT_message (GMT, "Syntax error -I option: Give field abbreviation,rec1,recN\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Give field abbreviation,rec1,recN\n");
 					error = TRUE;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -472,14 +472,14 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				while (strcmp (BadSection[n_bad_sections].abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_message (GMT, "Syntax error -I option: invalid field abbreviation\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: invalid field abbreviation\n");
 					error = TRUE;
 				}
 				bad_sections = TRUE;
 				BadSection[n_bad_sections].col = col;
 				n_bad_sections++;
 				if (n_bad_sections == MAX_BAD_SECTIONS) {
-					GMT_message (GMT, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
 					error = TRUE;
 				}
 				break;
@@ -512,7 +512,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					for (j = 0; j<MGD77_N_NUMBER_FIELDS; j++) maxSlope[j] = mgd77snifferdefs[j].maxTimeGrad;
 				}
 				else {
-					GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
 					error = TRUE;
 				}
 				break;
@@ -520,7 +520,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				custom_maxGap = TRUE;
 				maxGap = atof (opt->arg);
 				if (maxGap < 0) {
-					GMT_message (GMT, "Syntax error -M option: max gap cannot be negative\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: max gap cannot be negative\n");
 					error = TRUE;
 				}
 				break;
@@ -544,7 +544,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						do_regression = TRUE;
 						warn[SUMMARY_WARN] = TRUE;
 					} else {
-						GMT_message (GMT, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
 						error = TRUE;
 					}
 				}
@@ -558,37 +558,37 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
-		GMT_message (GMT, "Error: omit cruise ids for -Dl option.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: omit cruise ids for -Dl option.\n");
 		return (EXIT_FAILURE);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
-		GMT_message (GMT, "Error: -b option requires -D.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -b option requires -D.\n");
 		return (EXIT_FAILURE);
 	}
 	else if (custom_warn && strcmp(display,"")) {
-		GMT_message (GMT, "Error: Incompatible options -D and -W.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Incompatible options -D and -W.\n");
 		return (EXIT_FAILURE);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
-		GMT_message (GMT, "Error: -Dd option requires -G|g.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -Dd option requires -G|g.\n");
 		return (EXIT_FAILURE);
 	}
 	if (east < west || south > north) {
-		GMT_message (GMT, "Error: Region set incorrectly\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Region set incorrectly\n");
 		return (EXIT_FAILURE);
 	}
 	if (adjustData && n_cruises > 1) {
-		GMT_message (GMT, "Error: -A adjustments valid for only one cruise.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -A adjustments valid for only one cruise.\n");
 		return (EXIT_FAILURE);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
-		GMT_message (GMT, "Error: -Dn option requires -Gnav or -gnav.\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -Dn option requires -Gnav or -gnav.\n");
 		return (EXIT_FAILURE);
 	}
 	if (simulate && n_grids > 0) {
 		for (i = 0; i < n_grids; i++) {
 			if (sscanf (this_grid[i].fname, "%lf/%lf", &sim_m[i], &sim_b[i]) != 2) {
-				GMT_message (GMT, "Syntax error -G option: Give m/b for simulated grid.\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give m/b for simulated grid.\n");
 				return (EXIT_FAILURE);
 			}
 		}
@@ -609,7 +609,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	mgd77snifferdefs[MGD77_YEAR].maxValue = (double) systemTime->tm_year + 1900;
 	if (custom_limit_file) {
 		if ((custom_fp = GMT_fopen (GMT, custom_limit_file, "r")) == NULL) {
-			GMT_message (GMT, "Could not open custom limit file %s\n", custom_limit_file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Could not open custom limit file %s\n", custom_limit_file);
 			return (EXIT_FAILURE);
 	 	}
 		else {
@@ -626,7 +626,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 				}
 				else {
-					GMT_message (GMT, "Error in custom limits file [%s]\n", custom_limit_line);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error in custom limits file [%s]\n", custom_limit_line);
 					return (EXIT_FAILURE);
 				}
 			}
@@ -790,14 +790,14 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (!strcmp(display,"E77")) {
 			sprintf (outfile,"%s.e77",M.NGDC_id);
 			if ((fpout = fopen (outfile, "w")) == NULL) {
-				GMT_message (GMT, "Could not open E77 output file %s\n", outfile);
+				GMT_report (GMT, GMT_MSG_FATAL, "Could not open E77 output file %s\n", outfile);
 				return (EXIT_FAILURE);
 			}
 	 	}
 
 		/* Read MGD77 header */
 		if (MGD77_Read_Header_Record_asc (GMT, list[argno], &M, &H))
-			GMT_message (GMT, "Cruise %s has no header.\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cruise %s has no header.\n", list[argno]);
 
 		/* Allocate memory for data records */
 		n_alloc = GMT_CHUNK;
@@ -826,9 +826,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					for (j=0; j<nvalues;j++)
 						D[j].number[i] = D[j].number[i] * adjustScale[i] + adjustDC[i];
 					sprintf (text, GMT->current.setting.format_float_out, adjustScale[i]);
-					GMT_message (GMT,"(%s) Scaled by %s and ", mgd77defs[i].abbrev,text);
+					GMT_report (GMT, GMT_MSG_FATAL, "(%s) Scaled by %s and ", mgd77defs[i].abbrev,text);
 					sprintf (text, GMT->current.setting.format_float_out, adjustDC[i]);
-					GMT_message (GMT,"%s added\n",text);
+					GMT_report (GMT, GMT_MSG_FATAL, "%s added\n",text);
 				}
 			}
 		}
@@ -840,7 +840,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					D[i].number[BadSection[j].col] = MGD77_NaN;	/* and set them to NaN */
 				}
 				if (i == nvalues) M.bit_pattern[0] -= (1 << BadSection[j].col); /* Turn off this field if all values have been flagged as bad */
-				GMT_message (GMT, "%s (%s) Warning: Resetting %d user-flagged records to NaN prior to analysis\n",list[argno],mgd77snifferdefs[BadSection[j].col].abbrev,(int)i);
+				GMT_report (GMT, GMT_MSG_FATAL, "%s (%s) Warning: Resetting %d user-flagged records to NaN prior to analysis\n",list[argno],mgd77snifferdefs[BadSection[j].col].abbrev,(int)i);
 			}
 		}
 
@@ -1082,7 +1082,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				this_grid[i].g_pts = 0;
 				/* Skip if cruise lacks data field */
 				if (!(M.bit_pattern[0] & (1 << this_grid[i].col)) && strcmp (this_grid[i].abbrev, "nav")) {
-					GMT_message (GMT, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
+					GMT_report (GMT, GMT_MSG_FATAL, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
 					continue;
 				}
 
@@ -1143,8 +1143,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				MaxDiff[i] = 0.0;
 
 				if (this_grid[i].g_pts < 2) {
-						GMT_message (GMT, "Insufficient grid samples for %s comparison\n", this_grid[i].abbrev);
-						continue;
+					GMT_report (GMT, GMT_MSG_FATAL, "Insufficient grid samples for %s comparison\n", this_grid[i].abbrev);
+					continue;
 				}
 			}
 		}
@@ -1195,7 +1195,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							max = mgd77snifferdefs[this_grid[i].col].maxValue;
 							npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, min, max, mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig,&extreme,this_grid[i].abbrev);
 							if ((1.0*extreme)/k > .05) { /* Many outliers - decimate again */
-								GMT_message (GMT,"%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno],this_grid[i].abbrev);
+								GMT_report (GMT, GMT_MSG_FATAL, "%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno],this_grid[i].abbrev);
 								npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, mgd77snifferdefs[this_grid[i].col].binmin, mgd77snifferdefs[this_grid[i].col].binmax,\
 								mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig, &extreme, this_grid[i].abbrev);
 							}
@@ -1287,7 +1287,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 										}
 										if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 											sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
-											GMT_message (GMT, "%s (%s) Warning: Scaled by %s for internal along-track analysis\n",\
+											GMT_report (GMT, GMT_MSG_FATAL, "%s (%s) Warning: Scaled by %s for internal along-track analysis\n",\
 											list[argno],this_grid[i].abbrev, text);
 										}
 		#endif
@@ -1468,7 +1468,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					else {
 						/* Turn off this empty field */
 						M.bit_pattern[0] -= (1 << this_grid[i].col);
-						GMT_message (GMT, "%s (%s) Warning: Insufficient bins for regression (%ld found)\n",\
+						GMT_report (GMT, GMT_MSG_FATAL, "%s (%s) Warning: Insufficient bins for regression (%ld found)\n",\
 						list[argno],this_grid[i].abbrev, k);
 					}
 					/* Free up regression array memory */
@@ -1498,10 +1498,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
 				}
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-					if (m == 0) GMT_message (GMT, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
-					else GMT_message (GMT, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
-				}
+				if (m == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
+				else GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stat, MGD77_FAA);
 					decimated = FALSE;
@@ -1512,7 +1510,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_message (GMT,"%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
+						GMT_report (GMT, GMT_MSG_FATAL, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1605,7 +1603,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_message (GMT,"%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
+						GMT_report (GMT, GMT_MSG_FATAL, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1725,7 +1723,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].minValue, mgd77snifferdefs[MGD77_MAG].maxValue,\
 					mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_message (GMT, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
+						GMT_report (GMT, GMT_MSG_FATAL, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",list[argno]);
 						npts = decimate (GMT,new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].binmin, mgd77snifferdefs[MGD77_MAG].binmax,\
 						mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					}
@@ -2086,7 +2084,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				tracking winning cruises when running histogram scripts */
 				if (!GMT_is_dnan(speed) && fabs(speed) > max_speed) {
 					E[curr].flags[E77_NAV] |= NAV_HISPD;
-					GMT_message (GMT, "%s - Excessive speed %f %s\n",placeStr, speed, speed_units);
+					GMT_report (GMT, GMT_MSG_FATAL, "%s - Excessive speed %f %s\n",placeStr, speed, speed_units);
 				}
 #endif
 
@@ -2165,7 +2163,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							   cruises when running histogram scripts */
 							if (fabs(gradient) > maxSlope[i]) {
 								E[curr].flags[E77_SLOPE] |= (1 << i);
-								GMT_message (GMT, "%s - excessive %s gradient %f\n", placeStr, mgd77defs[i].abbrev, gradient);
+								GMT_report (GMT, GMT_MSG_FATAL, "%s - excessive %s gradient %f\n", placeStr, mgd77defs[i].abbrev, gradient);
 							}
 #endif
 						}

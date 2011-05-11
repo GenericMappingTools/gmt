@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.7 2011-05-09 19:03:08 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.8 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	/*---------------------------- This is the x2sys_datalist main code ----------------------------*/
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_message (GMT, "No datafiles given!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
 	}
 
@@ -335,7 +335,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
-			GMT_message (GMT, "Selected correction table requires velocity which implies time (not selected)\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, (int)n_tracks);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			exit (EXIT_FAILURE);
@@ -392,7 +392,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][k].term, data, aux_dvalue, j) : 0.0;
 				if (Ctrl->A.active && adj_col[k]) {
 					if (GMT_intpol (GMT, A[k]->d, A[k]->c, A[k]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_message (GMT, "Error interpolating adjustment for %s near row %ld - no adjustment made!\n", s->info[s->out_order[k]].name, j);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error interpolating adjustment for %s near row %ld - no adjustment made!\n", s->info[s->out_order[k]].name, j);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;

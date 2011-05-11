@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
+ *	$Id: originator_func.c,v 1.11 2011-05-11 09:48:21 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -374,7 +374,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	nh = spotter_hotspot_init (GMT, Ctrl->F.file, TRUE, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n <= 0 || Ctrl->S.n > nh) {
-		GMT_message (GMT, "%s: Syntax error -S option: Give value between 1 and %ld\n", GMT->init.progname, nh);
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Give value between 1 and %ld\n", nh);
 		Return (EXIT_FAILURE);
 	}
 	n_max_spots = MIN (Ctrl->S.n, nh);
@@ -425,7 +425,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_message (GMT, "Seamounts near line %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Seamounts near line %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -439,7 +439,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n % 10)) GMT_message (GMT, "Working on seamount # %5ld\r", n);
+		if (!(n % 10)) GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5ld\r", n);
 
 		nc = spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c);
 

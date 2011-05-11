@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.11 2011-05-08 22:55:55 guru Exp $
+ *	$Id: backtracker_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -239,7 +239,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "ERROR Option -D: Append b or f\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -D: Append b or f\n");
 						break;
 				}
 				break;
@@ -277,7 +277,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "ERROR Option -L: Append f or b\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -L: Append f or b\n");
 						break;
 				}
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
@@ -295,7 +295,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 					Ctrl->S.active = TRUE;
 				}
 				else {
-					GMT_message (GMT, "ERROR Option -S: Append a file stem\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -S: Append a file stem\n");
 					n_errors++;
 				}
 				break;
@@ -461,7 +461,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			age = in[GMT_Z];
 
 		if (age > Ctrl->N.t_upper) {	/* Points older than oldest stage cannot be used */
-			GMT_message (GMT, "Point %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Point %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
 			n_skipped++;
 			continue;
 		}
@@ -531,7 +531,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
 				if (spotter_conf_ellipse (GMT, in[GMT_X], in[GMT_Y], age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
-					GMT_message (GMT, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
 					continue;
 				}
 			}

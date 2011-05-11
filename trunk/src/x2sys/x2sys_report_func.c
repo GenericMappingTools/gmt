@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_report_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_report_func.c,v 1.7 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -256,7 +256,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_message (GMT, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -388,7 +388,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			qsort((void *)adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s%c%s%c%s.%s.adj", X2SYS_HOME, DIR_DELIM, Ctrl->T.TAG, DIR_DELIM, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
-				GMT_message (GMT, "Unable to create file %s!\n", file);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);
 				Return (EXIT_FAILURE);
 			}
 			n1 = adj[k].n - 1;

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.9 2011-05-09 19:03:08 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 						Ctrl->S.active[HHI] = TRUE;
 						break;
 					default:
-						GMT_message (GMT, "Syntax error: -S<l|h|u><speed>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -S<l|h|u><speed>\n");
 						n_errors++;
 						break;
 				}
@@ -327,12 +327,12 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!s->geographic) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_UNKNOWN;
 
 	if (s->x_col == -1 || s->y_col == -1) {
-		GMT_message (GMT, "Error: lon,lat or x,y are not among data columns!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: lon,lat or x,y are not among data columns!\n");
 		Return (EXIT_FAILURE);
 	}
 	
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_message (GMT, "Error: Must give at least one data set!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Must give at least one data set!\n");
 		Return (EXIT_FAILURE);		
 	}
 	
@@ -354,7 +354,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (duplicate[B]) continue;
 			same = !strcmp (trk_name[A], trk_name[B]);
 			if (same) {
-				GMT_message (GMT, "File %s repeated on command line - skipped\n", trk_name[A]);
+				GMT_report (GMT, GMT_MSG_FATAL, "File %s repeated on command line - skipped\n", trk_name[A]);
 				duplicate[B] = TRUE;
 				n_duplicates++;
 			}
@@ -366,7 +366,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
-			GMT_message (GMT, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
 			Return (EXIT_FAILURE);
 		}
 
@@ -379,7 +379,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_message (GMT, "Error: Error decoding combinations file for pair %ld!\n", n_pairs);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %ld!\n", n_pairs);
 				Return (EXIT_FAILURE);
 			}
 			pair[n_pairs].id1 = strdup (name1);
@@ -394,7 +394,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		fclose (fp);
 
 		if (!n_pairs) {
-			GMT_message (GMT, "Error: No combinations found in file %s!\n", Ctrl->A.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
 			Return (EXIT_FAILURE);
 		}
 		pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
@@ -477,7 +477,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (duplicate[A]) continue;
 
 		if (s->x_col < 0 || s->x_col < 0) {
-			GMT_message (GMT, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -508,7 +508,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			same = !strcmp (trk_name[A], trk_name[B]);
 			if (same && !(A == B)) {
-				GMT_message (GMT, "File %s repeated on command line - skipped\n", trk_name[A]);
+				GMT_report (GMT, GMT_MSG_FATAL, "File %s repeated on command line - skipped\n", trk_name[A]);
 				continue;
 			}
 			if (!internal &&  same) continue;	/* Only do external errors */

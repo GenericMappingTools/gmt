@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -333,7 +333,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 					Ctrl->Q.mode = 1;
 				}
 				else {
-					GMT_message (GMT, "Error -Q: Must give valid file or ID value\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Error -Q: Must give valid file or ID value\n");
 					n_errors++;
 				}
 				break;
@@ -348,7 +348,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 					Ctrl->T.active[UPPER] = TRUE;
 				}
 				else {
-					GMT_message (GMT, "Error -T: Eituer use -Tt or -Tu<age>\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Error -T: Either use -Tt or -Tu<age>\n");
 					n_errors++;
 				}
 				break;
@@ -445,7 +445,7 @@ GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, float *age, GMT_LONG node
 			if (truncate)		/* Allowed to truncate to max age */
 				*t_smt = upper_age;
 			else {			/* Consider this an error or just skip */
-				GMT_message (GMT, "Node %ld has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Node %ld has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
 				return (FALSE);
 			}
 		}
@@ -465,7 +465,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG i, j, k, ij, m, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
 	GMT_LONG no_ages = TRUE;	/* TRUE when no age grid is given */
-	GMT_LONG blabber = FALSE;	/* TRUE if we want excessive verbosity */
 	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
@@ -567,9 +566,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* sampling_int_in_km = 0.5 * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO])); */
 	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Flowline sampling interval = %.3f km\n", GMT->init.progname, sampling_int_in_km);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%s: Flowline sampling interval = %.3f km\n", GMT->init.progname, sampling_int_in_km);
 
-	if (Ctrl->T.active[TRUNC] && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s: Ages truncated to %g\n", GMT->init.progname, Ctrl->N.t_upper);
+	if (Ctrl->T.active[TRUNC]) GMT_report (GMT, GMT_MSG_NORMAL, "%s: Ages truncated to %g\n", GMT->init.progname, Ctrl->N.t_upper);
 
 	/* Start to read input data */
 	
@@ -741,7 +740,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			flowline = GMT_memory (GMT, flowline, n_alloc, struct FLOWLINE);
 		}
 		
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n_nodes%100)) GMT_message (GMT, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
+		if (!(n_nodes%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Row %5ld Processed %5ld nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
 	GMT_report (GMT, GMT_MSG_NORMAL, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
@@ -805,9 +804,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						processed_node[node] = TRUE;		/* Now we have visited this node */
 					}
 				}
-				if (blabber && !(m%10000)) GMT_message (GMT, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			if (blabber) GMT_message (GMT, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
 			
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
@@ -867,9 +866,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (Ctrl->D.active) DI->data[flowline[m].ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
 				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (float) (pa * PA_2_T);
-				if (blabber && !(m%10000)) GMT_message (GMT, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			if (blabber && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
 		}
 		else {	/* Must recreate flowlines */
 			k_step = 3;	/* FLowlines have (x,y,t) here */
@@ -905,9 +904,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->D.active) DI->data[ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
 				if (Ctrl->PA.active) PA->data[ij] = (float) this_pa;
 				GMT_free (GMT, c);
-				if (blabber) GMT_message (GMT, "Row %5ld: Processed %5ld flowlines\r", row, n_nodes);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5ld flowlines\r", row, n_nodes);
 			}
-			if (blabber) GMT_message (GMT, "Row %5ld: Processed %5ld flowlines\n", row, n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld: Processed %5ld flowlines\n", row, n_nodes);
 		}
 		
 
@@ -957,9 +956,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						processed_node[node] = TRUE;		/* Now we have visited this node; flag it */
 					}
 				}
-				if (blabber && !(m%10000)) GMT_message (GMT, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			if (blabber) GMT_message (GMT, "Processed %5ld flowlines\n", n_nodes);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\n", n_nodes);
 		
 			/* Find max CVA location */
 		

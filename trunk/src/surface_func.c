@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.13 2011-05-11 04:01:54 guru Exp $
+ *	$Id: surface_func.c,v 1.14 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,7 +118,6 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	GMT_LONG grid, old_grid;	/* Node spacings  */
 	GMT_LONG n_fact;		/* Number of factors in common (ny-1, nx-1) */
 	GMT_LONG factors[32];		/* Array of common factors */
-	GMT_LONG long_verbose;
 	GMT_LONG set_low;		/* 0 unconstrained,1 = by min data value, 2 = by user value */
 	GMT_LONG set_high;		/* 0 unconstrained,1 = by max data value, 2 = by user value */
 	GMT_LONG n_alloc;
@@ -988,12 +987,12 @@ GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 		iteration_count++;
 		C->total_iterations++;
 		max_change *= C->z_scale;	/* Put max_change into z units  */
-		if (C->long_verbose) GMT_message (GMT, C->format,
+		GMT_report (GMT, GMT_MSG_VERBOSE, C->format,
 			C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
 	} while (max_change > current_limit && iteration_count < C->max_iterations);
 
-	if (!C->long_verbose) GMT_report (GMT, GMT_MSG_NORMAL, C->format,
+	GMT_report (GMT, GMT_MSG_NORMAL, C->format,
 		C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
 	return (iteration_count);
@@ -1137,9 +1136,9 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		}
 	}
 
-	 GMT_report (GMT, GMT_MSG_FATAL, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
+	 GMT_report (GMT, GMT_MSG_NORMAL, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
 	 sprintf (C->format,"\t%%8ld\t%%8ld\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	 GMT_message (GMT, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
+	 GMT_report (GMT, GMT_MSG_NORMAL, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
 void remove_planar_trend (struct SURFACE_INFO *C)

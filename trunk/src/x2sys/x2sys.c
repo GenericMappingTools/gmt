@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.157 2011-05-11 04:01:54 guru Exp $
+ *	$Id: x2sys.c,v 1.158 2011-05-11 09:48:21 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -393,7 +393,7 @@ GMT_LONG x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO 
 			s->use_column[j] = 1;
 		}
 		else {
-			GMT_message (C, "X2SYS: Error: Unknown column name %s\n", p);
+			GMT_report (C, GMT_MSG_FATAL, "X2SYS: Error: Unknown column name %s\n", p);
 			return (X2SYS_BAD_COL);
 		}
 		i++;
@@ -573,11 +573,11 @@ GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struc
 	char path[GMT_BUFSIZ];
 
 	if (x2sys_get_data_path (C, path, fname, s->suffix)) {
-		GMT_message (C, "x2sys_read_file : Cannot find track %s\n", fname);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_file : Cannot find track %s\n", fname);
   		return (-1);
 	}
 	if ((fp = fopen (path, G->r_mode)) == NULL) {
-		GMT_message (C, "x2sys_read_file : Cannot open file %s\n", path);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_file : Cannot open file %s\n", path);
   		return (-1);
 	}
 	strcpy (s->path, path);
@@ -654,12 +654,12 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	}
 	strcpy (s->path, path);
 	if ((fp = fopen (path, G->r_mode)) == NULL) {
-		GMT_message (C, "x2sys_read_file : Cannot open file %s\n", path);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_file : Cannot open file %s\n", path);
   		return (-1);
 	}
 
 	if (fread ((void *)&year, sizeof (int), (size_t)1, fp) != 1) {
-		GMT_message (C, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
 		return (-1);
 	}
 	p->year = (GMT_LONG)year;
@@ -668,14 +668,14 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 
 
 	if (fread ((void *)&n_records, sizeof (int), (size_t)1, fp) != 1) {
-		GMT_message (C, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	p->n_rows = (GMT_LONG)n_records;
 	GMT_memset (p->name, 32, char);
 
 	if (fread ((void *)p->name, (size_t)10, sizeof (char), fp) != 1) {
-		GMT_message (C, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -685,7 +685,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	for (j = 0; j < p->n_rows; j++) {
 
 		if (fread ((void *)&record, (size_t)18, (size_t)1, fp) != 1) {
-			GMT_message (C, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
@@ -731,7 +731,7 @@ GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, 
 	strcpy (s->path, M.path);
 
 	if (MGD77_Read_Header_Record (C, fname, &M, &H)) {
-		GMT_message (C, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
+		GMT_report (C, GMT_MSG_FATAL, "Error reading header sequence for cruise %s\n", fname);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -810,12 +810,12 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 	strcpy (s->path, M.path);
 
 	if (MGD77_Read_Header_Record (C, fname, &M, &S->H)) {	/* Returns info on all columns */
-		GMT_message (C, "x2sys_read_mgd77ncfile: Error reading header sequence for cruise %s\n", fname);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_mgd77ncfile: Error reading header sequence for cruise %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 
 	if (MGD77_Read_Data (C, fname, &M, S)) {	/* Only gets the specified columns and barfs otherwise */
-		GMT_message (C, "x2sys_read_mgd77ncfile: Error reading data set for cruise %s\n", fname);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_mgd77ncfile: Error reading data set for cruise %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 	MGD77_Close_File (C, &M);
@@ -858,7 +858,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	GMT_parse_common_options (C, "b", 'b', "c");	/* Tell GMT this is a netCDF file */
 
 	if ((fp = GMT_fopen (C, path, "r")) == NULL)  {	/* Error in opening file */
-		GMT_message (C, "x2sys_read_ncfile: Error opening file %s\n", fname);
+		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error opening file %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -867,7 +867,7 @@ GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 
 	for (j = 0; j < C->current.io.ndim; j++) {
 		if ((n_fields = C->current.io.input (C, fp, &n_expect, &in)) != s->n_out_columns) {
-			GMT_message (C, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
@@ -893,7 +893,7 @@ GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG
 
 	*list = NULL;	*nf = 0;
 	if ((fp = x2sys_fopen (C, file, "r")) == NULL) {
-  		GMT_message (C, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", file);
+  		GMT_report (C, GMT_MSG_FATAL, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
@@ -935,7 +935,7 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
-	 		GMT_message (C, "x2sys_read_weights : Error parsing file %s near line %ld\n", file, n);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_weights : Error parsing file %s near line %ld\n", file, n);
 			return (GMT_GRDIO_FILE_NOT_FOUND);
 
 		}
@@ -988,7 +988,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 
 	sprintf (tag_file, "%s%c%s.tag", TAG, DIR_DELIM, TAG);
 	if ((fp = x2sys_fopen (C, tag_file, "r")) == NULL) {	/* Not in current directory */
-		GMT_message (C,"%s: Could not find/open file %s either in current of X2SYS_HOME directories\n", X2SYS_program, tag_file);
+		GMT_report (C, GMT_MSG_FATAL, "Could not find/open file %s either in current of X2SYS_HOME directories\n", tag_file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
@@ -1001,7 +1001,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 				/* Common parameters */
 				case 'R':
 					if (GMT_parse_common_options (C, "R", 'R', &p[2])) {
-						GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						GMT_report (C, GMT_MSG_FATAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
 					GMT_memcpy (B->wesn, C->common.R.wesn, 4, double);
@@ -1021,7 +1021,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 					if (p[2] == 'g') dist_flag = 2;
 					if (p[2] == 'e') dist_flag = 3;
 					if (dist_flag < 0 || dist_flag > 3) {
-						GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						GMT_report (C, GMT_MSG_FATAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						return (X2SYS_BAD_ARG);
 					}
 					c_given = TRUE;
@@ -1039,7 +1039,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 					break;
 				case 'I':
 					if (GMT_getinc (C, &p[2], B->inc)) {
-						GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						GMT_report (C, GMT_MSG_FATAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
 					break;
@@ -1052,14 +1052,14 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 							k = X2SYS_SPEED_SELECTION;
 							break;
 						default:
-							GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+							GMT_report (C, GMT_MSG_FATAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 							return (X2SYS_BAD_ARG);
 							break;
 					}
 					if (k == X2SYS_DIST_SELECTION || k == X2SYS_SPEED_SELECTION) {
 						unit[k][0] = p[3];
 						if (!strchr ("cefkMn", (int)unit[k][0])) {
-							GMT_message (C, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+							GMT_report (C, GMT_MSG_FATAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 							return (X2SYS_BAD_ARG);
 						}
 						n_given[k] = TRUE;
@@ -1080,7 +1080,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 					}
 					break;
 				default:
-					GMT_message (C, "%s: Bad arg in x2sys_set_system! (%s)\n", X2SYS_program, p);
+					GMT_report (C, GMT_MSG_FATAL, "Bad arg in x2sys_set_system! (%s)\n", p);
 					return (X2SYS_BAD_ARG);
 					break;
 			}
@@ -1091,11 +1091,11 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	x2sys_err_pass (C, x2sys_initialize (C, TAG, sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
 	if (B->time_gap < 0.0) {
-		GMT_message (C, "%s: Error -Wt: maximum gap must be > 0!\n", C->init.progname);
+		GMT_report (C, GMT_MSG_FATAL, "Error -Wt: maximum gap must be > 0!\n");
 		exit (EXIT_FAILURE);
 	}
 	if (B->dist_gap < 0.0) {
-		GMT_message (C, "%s: Error -Wd: maximum gap must be > 0!\n", C->init.progname);
+		GMT_report (C, GMT_MSG_FATAL, "Error -Wd: maximum gap must be > 0!\n");
 		exit (EXIT_FAILURE);
 	}
 	if (geographic) {
@@ -1109,23 +1109,23 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 			c_given = TRUE;
 		}
 		if (geodetic == 0 && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
-			GMT_message (C, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_FATAL, "Your -R and -G settings are contradicting each other!\n");
 			return (X2SYS_CONFLICTING_ARGS);
 		}
 		else if  (geodetic == 2 && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
-			GMT_message (C, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_FATAL, "Your -R and -G settings are contradicting each other!\n");
 			return (X2SYS_CONFLICTING_ARGS);
 		}
 		if (c_given && dist_flag == 0) {
-			GMT_message (C, "%s: Your -C and -G settings are contradicting each other!\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_FATAL, "Your -C and -G settings are contradicting each other!\n");
 			return (X2SYS_CONFLICTING_ARGS);
 		}
 		if (n_given[X2SYS_DIST_SELECTION] && unit[X2SYS_DIST_SELECTION][0] == 'c') {
-			GMT_message (C, "%s: Your -Nd and -G settings are contradicting each other!\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_FATAL, "Your -Nd and -G settings are contradicting each other!\n");
 			return (X2SYS_CONFLICTING_ARGS);
 		}
 		if (n_given[X2SYS_SPEED_SELECTION] && unit[X2SYS_SPEED_SELECTION][0] == 'c') {
-			GMT_message (C, "%s: Your -Ns and -G settings are contradicting each other!\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_FATAL, "Your -Ns and -G settings are contradicting each other!\n");
 			return (X2SYS_CONFLICTING_ARGS);
 		}
 		s->geographic = TRUE;
@@ -1242,7 +1242,7 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 	x2sys_path (C, index_file, index_path);
 
 	if ((fbin = fopen (index_path, "rb")) == NULL) {
-		GMT_message (C, "%s: Could not open %s\n", X2SYS_program, index_path);
+		GMT_report (C, GMT_MSG_FATAL, "Could not open %s\n", index_path);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 #ifdef DEBUG
@@ -1283,7 +1283,7 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 
 	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : (GMT_LONG)floor ((y - B->wesn[YLO]) * B->i_bin_y);
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
-		GMT_message (C, "x2sys_binlist: j (%ld) outside range implied by -R -I! [0-%ld>\n", *j, B->ny_bin);
+		GMT_report (C, GMT_MSG_FATAL, "j (%ld) outside range implied by -R -I! [0-%ld>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_J);
 	}
 	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : (GMT_LONG)floor ((x - B->wesn[XLO])  * B->i_bin_x);
@@ -1292,12 +1292,12 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
-		GMT_message (C, "x2sys_binlist: i (%ld) outside range implied by -R -I! [0-%ld>\n", *i, B->nx_bin);
+		GMT_report (C, GMT_MSG_FATAL, "i (%ld) outside range implied by -R -I! [0-%ld>\n", *i, B->nx_bin);
 		return (X2SYS_BIX_BAD_I);
 	}
 	index = (*j) * B->nx_bin + (*i);
 	if (index < 0 || index >= B->nm_bin) {
-		GMT_message (C, "x2sys_binlist: Index (%ld) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
+		GMT_report (C, GMT_MSG_FATAL, "Index (%ld) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
 		return (X2SYS_BIX_BAD_IJ);
 	}
 
@@ -1323,9 +1323,10 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 
 	if ((fp = fopen (file, "r")) == NULL) {
 		if (GMT_is_verbose (C, GMT_MSG_NORMAL)) {
-			GMT_message (C, "%s: Warning: path file %s for %s files not found\n", X2SYS_program, file, S->TAG);
-			GMT_message (C, "%s: (Will only look in current directory for such files)\n", X2SYS_program);
-			GMT_message (C, "%s: (mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n", X2SYS_program);
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: path file %s for %s files not found\n", file, S->TAG);
+			GMT_report (C, GMT_MSG_NORMAL, "(Will only look in current directory for such files)\n");
+			GMT_report (C, GMT_MSG_NORMAL, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
+			GMT_report (C, GMT_MSG_FATAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		}
 		return;
 	}
@@ -1342,7 +1343,7 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 #endif
 		strcpy (x2sys_datadir[n_x2sys_paths], line);
 		n_x2sys_paths++;
-		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_message (C, "%s: Reached maximum directory (%d) count in %s!\n", X2SYS_program, MAX_DATA_PATHS, file);
+		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_report (C, GMT_MSG_FATAL, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
 	}
 	fclose (fp);
 }
@@ -1467,7 +1468,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
-		GMT_message (C, "%s: Error: Unable to open crossover file %s\n", C->init.progname, dbase);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Unable to open crossover file %s\n", dbase);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1483,7 +1484,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		 */
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
-				GMT_message (C, "%s: Error: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", C->init.progname, dbase, &line[7], S->TAG);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", dbase, &line[7], S->TAG);
 				exit (EXIT_FAILURE);
 			}
 			continue;	/* Goto next record */
@@ -1515,12 +1516,12 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 
 	our_item -= 10;		/* Account for the 10 common items */
 	if (our_item < 0) {
-		GMT_message (C, "%s: Error: Crossover file %s does not have the specified column %s - aborting\n", C->init.progname, dbase, fflag);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Crossover file %s does not have the specified column %s - aborting\n", dbase, fflag);
 		exit (EXIT_FAILURE);
 	}
 
 	if (ignorefile && (k = x2sys_read_list (C, ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
-		GMT_message (C, "%s: Error: Ignore file %s cannot be read - aborting\n", C->init.progname, ignorefile);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Ignore file %s cannot be read - aborting\n", ignorefile);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1572,7 +1573,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		/* Sanity check - make sure we dont already have this pair */
 		for (p = 0, skip = FALSE; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
-				GMT_message (C, "%s: Warning: Pair %s and %s appear more than once - skipped\n", C->init.progname, trk[0], trk[1]);
+				GMT_report (C, GMT_MSG_FATAL, "Warning: Pair %s and %s appear more than once - skipped\n", trk[0], trk[1]);
 				skip = TRUE;
 			}
 		}
@@ -1596,11 +1597,11 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				P[p].start[k] = P[p].stop[k] = C->session.d_NaN;
 			else {
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
-					GMT_message (C, "%s: Error: Header time specification tstart%ld (%s) in wrong format\n", C->init.progname, (k+1), start[k]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstart%ld (%s) in wrong format\n", (k+1), start[k]);
 					exit (EXIT_FAILURE);
 				}
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
-					GMT_message (C, "%s: Error: Header time specification tstop%ld (%s) in wrong format\n", C->init.progname, (k+1), stop[k]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstop%ld (%s) in wrong format\n", (k+1), stop[k]);
 					exit (EXIT_FAILURE);
 				}
 			}
@@ -1638,7 +1639,7 @@ GMT_LONG x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = C->session.d_NaN;
 				else if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
-					GMT_message (C, "%s: Error: Time specification t%ld (%s) in wrong format\n", C->init.progname, (i+1), t_txt[i]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Time specification t%ld (%s) in wrong format\n", (i+1), t_txt[i]);
 					exit (EXIT_FAILURE);
 				}
 			}
@@ -1725,7 +1726,7 @@ GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, c
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = FALSE;
 		if (x2sys_read_list (C, &list->arg[1], filelist, &A) != X2SYS_NOERROR) {
-			GMT_message (C, "%s: Error: Could not open list with filenames %s!\n", C->init.progname, &list->arg[1]);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not open list with filenames %s!\n", &list->arg[1]);
 			return (-1);
 		}
 		file = *filelist;
@@ -1784,7 +1785,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	if (!ctable) {	/* Try default correction table */
 		sprintf (path, "%s%c%s%c%s_corrections.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
 		if (access (path, R_OK)) {
-			GMT_message (C, "%s: No default X2SYS Correction table (%s) for %s found!\n", C->init.progname, path, S->TAG);
+			GMT_report (C, GMT_MSG_FATAL, "No default X2SYS Correction table (%s) for %s found!\n", path, S->TAG);
 			exit (EXIT_FAILURE);
 		}
 		ctable = path;
@@ -1813,7 +1814,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	for (i = missing = 0; i < n_items; i++) {
 		if (MGD77_Match_List (C, item_names[i], (int)n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
 			if (n_aux && (k = MGD77_Match_List (C, item_names[i], (int)n_aux, aux_name)) == MGD77_NOT_SET) {
-				GMT_message (C, "%s: X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", C->init.progname, ctable, item_names[i]);
+				GMT_report (C, GMT_MSG_FATAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", ctable, item_names[i]);
 				missing++;
 			}
 			else

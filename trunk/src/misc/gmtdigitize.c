@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.41 2011-05-11 04:01:54 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.42 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		else
 			strncpy (this_file, name, (size_t)GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
-			GMT_message (GMT, "Could not create file %s\n", this_file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Could not create file %s\n", this_file);
 			return (NULL);
 		}
 	}
@@ -553,13 +553,13 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+				GMT_report (GMT, GMT_MSG_NORMAL, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
 				last_xmap = -DBL_MAX;
 				last_ymap = -DBL_MAX;
 				n_segments++;
 			}
 			else if (m_button == 1)
-				GMT_message (GMT, "Segment header buttons only active if -M is set (ignored)\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Segment header buttons only active if -M is set (ignored)\n");
 			else
 				tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 				

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.9 2011-05-11 04:01:54 guru Exp $
+ *	$Id: trend2d_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -371,7 +371,7 @@ void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 		n = n_model;
 		m = mp;
 		if (GMT_jacobi (GMT, gtg, &n, &m, lambda, v, b, z, &nrots)) {
-			GMT_message (GMT, "Warning: Matrix Solver Convergence Failure.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
 		while (rank < n_model && lambda[rank] > 0.0 && lambda[rank] > c_test) rank++;
