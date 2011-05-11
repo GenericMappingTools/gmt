@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.47 2011-05-11 00:49:43 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.48 2011-05-11 20:49:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -888,6 +888,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {
 #ifdef USE_GDAL
+		GMT_report (GMT, GMT_MSG_NORMAL, "via GDAL\n");
 		if (Ctrl->A.active) {
 			to_GDALW->data = (void *)bitimage_24;
 			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
