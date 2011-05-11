@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.20 2011-05-08 03:45:27 guru Exp $
+ *	$Id: psxy_func.c,v 1.21 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -462,8 +462,8 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
 				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
-					GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
-					GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
 				}
 				break;

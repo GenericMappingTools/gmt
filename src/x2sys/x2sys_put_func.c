@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.7 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -221,14 +221,14 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
 	if (Ctrl->In.active && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-		GMT_message (GMT, "Error: Could not open file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
 	c_unused = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Got the first record from the track binindex file */
 	if (strncmp (&line[2], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
-		GMT_message (GMT, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[2]);
+		GMT_report (GMT, GMT_MSG_FATAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[2]);
 		Return (EXIT_FAILURE);
 	}
 
@@ -270,7 +270,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Removing existing information for track: %s\n", track);
 				free_id = x2sys_bix_remove_track (GMT, (int)this_info->next_info->track_id, &B);
-				GMT_message (GMT, "track %s removed\n", track);
+				GMT_report (GMT, GMT_MSG_NORMAL, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */
 			}
@@ -280,7 +280,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 		else if (Ctrl->D.active) {	/* Here we did not found the track: Give message and go back and read next track information */
-			GMT_message (GMT, "track %s was not found in the database!\n", track);
+			GMT_report (GMT, GMT_MSG_NORMAL, "track %s was not found in the database!\n", track);
 			skip = TRUE;
 		}
 		else	/* Get here when we wish to add a new track not in the database */
@@ -310,11 +310,11 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
-					GMT_message (GMT, "Error processing record for track %s [%s]\n", track, line);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error processing record for track %s [%s]\n", track, line);
 					exit (EXIT_FAILURE);
 				}
 				else if (flag > max_flag) {
-					GMT_message (GMT, "data flag (%d) exceed maximum (%d) for track %s!\n", flag, max_flag, track);
+					GMT_report (GMT, GMT_MSG_FATAL, "data flag (%d) exceed maximum (%d) for track %s!\n", flag, max_flag, track);
 					exit (EXIT_FAILURE);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
@@ -348,21 +348,21 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	remove (old_track_path);	/* First delete old files */
 	if (rename (track_path, old_track_path)) {
-		GMT_message (GMT, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
+		GMT_report (GMT, GMT_MSG_FATAL, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
 		Return (EXIT_FAILURE);
 	}
 	remove (old_index_path);	/* First delete old files */
 	if (rename (index_path, old_index_path)) {
-		GMT_message (GMT, "Rename failed for %s. Aborts!\n", index_path);
+		GMT_report (GMT, GMT_MSG_FATAL, "Rename failed for %s. Aborts!\n", index_path);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
-		GMT_message (GMT, "Failed to create %s. Aborts!\n", track_path);
+		GMT_report (GMT, GMT_MSG_FATAL, "Failed to create %s. Aborts!\n", track_path);
 		Return (EXIT_FAILURE);
 	}
 	if ((fbin = fopen (index_path, "wb")) == NULL) {
-		GMT_message (GMT, "Failed to create %s. Aborts!\n", index_path);
+		GMT_report (GMT, GMT_MSG_FATAL, "Failed to create %s. Aborts!\n", index_path);
 		Return (EXIT_FAILURE);
 	}
 	fprintf (ftrack,"# %s\n", Ctrl->T.TAG);

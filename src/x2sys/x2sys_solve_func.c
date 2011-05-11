@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_solve_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_solve_func.c,v 1.7 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -289,7 +289,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	FILE *fp;
 
 	if ((fp = x2sys_fopen (GMT, file, "r")) == NULL) {
-  		GMT_message (GMT, "%s : Cannot find track list file %s in either current or X2SYS_HOME directories\n", GMT->init.progname, line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	
@@ -363,7 +363,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 #ifdef SAVEFORLATER
 	if (Ctrl->I.file && x2sys_read_namedatelist (GMT, Ctrl->I.file, &trk_list, &start, &n_tracks) == X2SYS_NOERROR) {
-		GMT_message (GMT, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
 		Return (EXIT_FAILURE);	
 	}
 #endif
@@ -376,7 +376,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
-		GMT_message (GMT, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -436,7 +436,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	fp = GMT->session.std[GMT_IN];
 	if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
-		GMT_message (GMT, "Error: Cannot open file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);	
 	}
 	
@@ -492,7 +492,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			data[COL_WW][n_COE] = (Ctrl->W.active) ? in[n_active] : 1.0;	/* Weight */
 			if (GMT_is_dnan (data[COL_COE][n_COE])) {
-				GMT_message (GMT, "Warning: COE == NaN skipped during reading\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: COE == NaN skipped during reading\n");
 				continue;
 			}
 			n_COE++;
@@ -505,7 +505,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Check that IDs are all contained within 0 <= ID < n_tracks and that there are no gaps */
 		n_tracks2 = max_ID - min_ID + 1;
 		if (n_tracks && n_tracks2 != n_tracks) {
-			GMT_message (GMT, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
 			error = TRUE;	
 		}
 		else {	/* Either no tracks read before or the two numbers did match properly */
@@ -516,7 +516,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (k = 0; k < n_tracks && check[k]; k++);
 			GMT_free (GMT, check);
 			if (k < n_tracks) {
-				GMT_message (GMT, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
 				error = TRUE;
 			}
 		}
@@ -532,7 +532,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		not_used = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Read first line with TAG and column */
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
-			GMT_message (GMT, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);	
 		}
 		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
@@ -577,7 +577,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else
 				data[COL_WW][n_COE] = 1.0;
 			if (GMT_is_dnan (data[COL_COE][n_COE])) {
-				GMT_message (GMT, "Warning: COE == NaN skipped during reading\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: COE == NaN skipped during reading\n");
 				continue;
 			}
 			
@@ -594,7 +594,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 #ifdef SAVEFORLATER
 					else {
-						GMT_message (GMT, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
 						Return (EXIT_FAILURE);					
 					}
 #endif

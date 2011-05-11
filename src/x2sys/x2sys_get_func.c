@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_get_func.c,v 1.7 2011-05-09 19:03:08 guru Exp $
+ *	$Id: x2sys_get_func.c,v 1.8 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -248,7 +248,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		include = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_message (GMT, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -257,7 +257,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if ((p = strchr (line, '.'))) line[(int)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, (int)n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
-					GMT_message (GMT, "Warning: Leg %s not in the data base\n", line);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Leg %s not in the data base\n", line);
 					continue;
 				}
 				include[k] = TRUE;

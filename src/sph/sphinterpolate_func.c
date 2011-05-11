@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.9 2011-05-02 19:34:31 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ GMT_LONG get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
-		GMT_message (GMT, "GMT ERROR %s: %s\n", GMT->init.progname, msg);
+		GMT_report (GMT, GMT_MSG_FATAL, "GMT Error: %s\n", msg);
 		m = -1;
 	}
 	par[0] = atof (txt_a);
@@ -176,7 +176,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 						break;
 					default:
 						n_errors++;
-						GMT_message (GMT, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;

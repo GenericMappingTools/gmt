@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.5 2011-04-12 13:06:44 remko Exp $
+ *	$Id: pssegy_func.c,v 1.6 2011-05-11 09:48:21 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -481,7 +481,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->In.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
-			GMT_message (GMT, "Cannot find segy file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -491,12 +491,12 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if ((fpt = fopen (Ctrl->T.file, "r")) == NULL) {
-		GMT_message (GMT, "Cannot find trace list file %s\n", Ctrl->T.file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find trace list file %s\n", Ctrl->T.file);
 		Return (EXIT_FAILURE);
 	}
 
-	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
-	if (Ctrl->Q.value[Y_ID]) GMT_message (GMT, "Overriding sample interval dy = %f\n", Ctrl->Q.value[Y_ID]);
+	if (!GMT_IS_LINEAR (GMT)) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (Ctrl->Q.value[Y_ID]) GMT_report (GMT, GMT_MSG_NORMAL, "Overriding sample interval dy = %f\n", Ctrl->Q.value[Y_ID]);
 
 
 	if (Ctrl->T.active) { /* must read in file of desired trace locations */
@@ -552,30 +552,30 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_message (GMT, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_message (GMT, "warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_message (GMT, "Error, number of samples per trace unknown\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		Return (EXIT_FAILURE);
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Y_ID] /= 1000000.0;
-		GMT_message (GMT, "Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_message (GMT, "Warning dy input %f, dy in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning dy input %f, dy in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_message (GMT, "Error, no sample interval in reel header\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, no sample interval in reel header\n");
 		Return (EXIT_FAILURE);
 	}
 

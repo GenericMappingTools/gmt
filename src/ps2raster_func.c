@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.11 2011-04-29 03:08:12 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1183,9 +1183,9 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		else if (Ctrl->W.active && !found_proj) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
-			GMT_message (GMT, "This situation occurs when one of the two next cases is true:\n");
-			GMT_message (GMT, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
-			GMT_message (GMT, "2) the PS file was not created by GMT\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "This situation occurs when one of the two next cases is true:\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "2) the PS file was not created by GMT\n");
 		}
 	}
 

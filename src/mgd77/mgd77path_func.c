@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.6 2011-05-08 22:55:55 guru Exp $
+ *	$Id: mgd77path_func.c,v 1.7 2011-05-11 09:48:21 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -107,12 +107,12 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_message (GMT, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_FATAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_message (GMT, "Option -I: Can only be applied 0-2 times\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -169,13 +169,13 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_message (GMT, "No cruises found\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "No cruises found\n");
 		Return (EXIT_FAILURE);
 	}
 	
 	for (i = 0; i < n_paths; i++) {		/* Process each ID */
  		if (MGD77_Get_Path (GMT, path, list[i], &M))
-   			GMT_message (GMT, "Cannot find cruise %s\n", list[i]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find cruise %s\n", list[i]);
 		else if (Ctrl->A.mode) {
 			printf ("%s\n", list[i]);
 			n_cruises++;

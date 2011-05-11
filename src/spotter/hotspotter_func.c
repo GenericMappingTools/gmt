@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -427,7 +427,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_message (GMT, "Seamounts near line %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Seamounts near line %ld has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -513,7 +513,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_smts++;	/* Go to next seamount */
 
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(n_smts%100)) GMT_message (GMT, "Processed %5ld seamounts\r", n_smts);
+		if (!(n_smts%100)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %5ld seamounts\r", n_smts);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 

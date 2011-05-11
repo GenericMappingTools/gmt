@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.7 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.8 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,7 +169,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 			case 'C':	/* Distance calculation flag */
 				Ctrl->C.active = TRUE;
 				if (!strchr ("cefg", (int)opt->arg[0])) {
-					GMT_message (GMT, "ERROR -C: Flag must be c, f, g, or e\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "ERROR -C: Flag must be c, f, g, or e\n");
 					n_errors++;
 				}
 				if (!n_errors) Ctrl->C.string = strdup (opt->arg);
@@ -203,12 +203,12 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 						k = 1;
 					case 's':	/* Speed unit selection */
 						if (!strchr ("cefkMn", (int)opt->arg[1])) {
-							GMT_message (GMT, "ERROR -N%c: Unit must be c, e, f, k, M, or n\n", opt->arg[0]);
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR -N%c: Unit must be c, e, f, k, M, or n\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_message (GMT, "ERROR -N: Choose from -Nd and -Ns\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR -N: Choose from -Nd and -Ns\n");
 						n_errors++;
 						break;
 				}
@@ -224,7 +224,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 					case 't':	/* Get new timegap */
 						break;
 					default:
-						GMT_message (GMT, "Syntax error: -Wt|d<width>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -Wt|d<width>\n");
 						n_errors++;
 						break;
 				}
@@ -286,11 +286,11 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->D.active) Ctrl->D.file = strdup (Ctrl->In.TAG);	/* Default */
 	sprintf (def_file, "%s.def", Ctrl->D.file);
 	if (access (def_file, R_OK)) {	/* No such local *.def file */
-		GMT_message (GMT, "Unable to find local definition file : %s\n", def_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Unable to find local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	else if ((fp_def = fopen (def_file, "r")) == NULL) {
-		GMT_message (GMT, "Unable to open local definition file : %s\n", def_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != DIR_DELIM; d_start--);	/* Find pos of last slash */
@@ -302,12 +302,12 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
 		if (mkdir (path, (mode_t)0777)) {
-			GMT_message (GMT, "Unable to create TAG directory : %s\n", path);
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create TAG directory : %s\n", path);
 			Return (EXIT_FAILURE);
 		}
 	}
 	else if (!Ctrl->F.active) {	/* Directory exists but -F not on */
-		GMT_message (GMT, "TAG directory already exists: %s\n", path);
+		GMT_report (GMT, GMT_MSG_FATAL, "TAG directory already exists: %s\n", path);
 		Return (EXIT_FAILURE);
 	}
 	
@@ -320,13 +320,13 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	sprintf (bin_file, "%s%c%s_index.b", Ctrl->In.TAG, DIR_DELIM, Ctrl->In.TAG);
 
 	if (!x2sys_access (GMT, tag_file, R_OK)) {
-		GMT_message (GMT, "File exists: %s\n", tag_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "File exists: %s\n", tag_file);
 		x2sys_path (GMT, tag_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_message (GMT, "Unable to remove %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove %s\n", path);
 			else
-				GMT_message (GMT, "Removed file %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -336,9 +336,9 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		x2sys_path (GMT, def_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_message (GMT, "Unable to remove %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove %s\n", path);
 			else
-				GMT_message (GMT, "Removed file %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -348,9 +348,9 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		x2sys_path (GMT, track_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_message (GMT, "Unable to remove %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove %s\n", path);
 			else
-				GMT_message (GMT, "Removed file %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -360,34 +360,34 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		x2sys_path (GMT, path_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_message (GMT, "Unable to remove %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove %s\n", path);
 			else
-				GMT_message (GMT, "Removed file %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (!x2sys_access (GMT, bin_file, R_OK)) {
-		GMT_message (GMT, "File exists: %s\n", bin_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "File exists: %s\n", bin_file);
 		x2sys_path (GMT, bin_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_message (GMT, "Unable to remove %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Unable to remove %s\n", path);
 			else
-				GMT_message (GMT, "Removed file %s\n", path);
+				GMT_report (GMT, GMT_MSG_FATAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (n_found) {
-		GMT_message (GMT, "Remove/rename old files or use -F to overwrite\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Remove/rename old files or use -F to overwrite\n");
 		Return (EXIT_FAILURE);
 	}
 
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Initialize %s\n", tag_file);
 	if ((fp = x2sys_fopen (GMT, tag_file, "w")) == NULL) {
-		GMT_message (GMT, "Could not create file %s\n", tag_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not create file %s\n", tag_file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -418,7 +418,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Initialize %s\n", def_file);
 	if ((fp = x2sys_fopen (GMT, def_file, "w")) == NULL) {
-		GMT_message (GMT, "Could not create %s\n", def_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	while (fgets (line, GMT_BUFSIZ, fp_def)) fprintf (fp, "%s", line);
@@ -429,7 +429,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Initialize %s\n", track_file);
 	if ((fp = x2sys_fopen (GMT, track_file, "w")) == NULL) {
-		GMT_message (GMT, "Could not create %s\n", track_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s\n", track_file);
 		Return (EXIT_FAILURE);
 	}
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, track_file, fp), track_file);
@@ -438,7 +438,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Initialize %s\n", bin_file);
 	if ((fp = x2sys_fopen (GMT, bin_file, "wb")) == NULL) {
-		GMT_message (GMT, "Could not create %s\n", bin_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s\n", bin_file);
 		Return (EXIT_FAILURE);
 	}
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, bin_file, fp), bin_file);
@@ -447,7 +447,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Initialize %s\n", path_file);
 	if ((fp = x2sys_fopen (GMT, path_file, "wb")) == NULL) {
-		GMT_message (GMT, "Could not create %s\n", path_file);
+		GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s\n", path_file);
 		Return (EXIT_FAILURE);
 	}
 	fprintf (fp, "# Directories with data files for TAG %s\n", Ctrl->In.TAG);

@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.18 2011-04-12 13:06:44 remko Exp $
+ * $Id: dimfilter.c,v 1.19 2011-05-11 09:48:21 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -781,7 +781,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 					for (s = k = 0; s < Ctrl->N.n_sectors; s++) {
 						if (n_in_median[s]) {
-							if (n_in_median[s] >= wsize) GMT_message (GMT, "Exceed array size (%ld > %ld)!\n", n_in_median[s], wsize);
+							if (n_in_median[s] >= wsize) GMT_report (GMT, GMT_MSG_NORMAL, "Exceed array size (%ld > %ld)!\n", n_in_median[s], wsize);
 #ifdef OBSOLETE											
 							if (Ctrl->E.active) {
 								z_min = DBL_MAX;
@@ -893,7 +893,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE						
 		if (Ctrl->E.active && n_bad_planes) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to detrend data at %ld nodes\n", n_bad_planes);
 #endif	
-		if (GMT_n_multiples > 0) GMT_message (GMT, "Warning: %ld multiple modes found\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", GMT_n_multiples);
 				
 		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
@@ -947,7 +947,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	   
 		/* check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_message (GMT, "Error: Unable to open file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 

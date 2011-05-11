@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.8 2011-05-07 01:50:47 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.9 2011-05-11 09:48:21 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -362,14 +362,14 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_message (GMT, "Error: -Sc option usage is -Sc<low/high>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: -Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_message (GMT, "Error: -Sl option usage is -Sl<low/high>\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: -Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -449,7 +449,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else if ( !((nval == 3) &&
 				(Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && (Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
-				GMT_message (GMT, "GMT ERROR. In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
+				GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR. In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;
 			}
 
@@ -513,7 +513,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
-		GMT_message (GMT, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
+		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}
 

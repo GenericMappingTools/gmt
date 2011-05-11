@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.6 2011-05-09 19:03:08 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.7 2011-05-11 09:48:21 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,14 +204,14 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_message (GMT, "No datafiles given!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	if (Ctrl->E.active && !s->geographic) {
-		GMT_message (GMT, "-E requires geographic data; your TAG implies Cartesian\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "-E requires geographic data; your TAG implies Cartesian\n");
 		Return (EXIT_FAILURE);		
 	}
 
@@ -231,7 +231,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		char proj[80];
 		/* Do the equal area map projection so W = 360 and H = 180 */
 		if (!(GMT_IS_ZERO (B.wesn[XHI] - B.wesn[XLO] - 360.0) && GMT_IS_ZERO (B.wesn[YHI] - B.wesn[YLO] - 180.0))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
+			GMT_report (GMT, GMT_MSG_FATAL, "-E requires a global region (-Rg or -Rd)");
 			Return (EXIT_FAILURE);
 		}
 		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */

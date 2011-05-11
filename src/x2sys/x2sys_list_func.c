@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.5 2011-05-09 19:03:08 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.6 2011-05-11 09:48:22 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,7 +227,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	n_items = strlen (Ctrl->F.flags);
 	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_message (GMT, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text - cannot use binary output */
@@ -304,7 +304,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_message (GMT, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -408,7 +408,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (Ctrl->L.active && !check_for_NaN) {	/* Correction table would not be needed for output */
-		GMT_message (GMT, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
 		Ctrl->L.active = FALSE;
 	}
 
@@ -590,7 +590,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						if (weights) {	/* Weightfile was given; compute composite weight for this COE */
 							for (m = 0, w_k = 0.0; m < 2; m++) {
 								if ((id = x2sys_find_track (GMT, P[p].trk[m], weight_name, n_weights)) == -1) {
-									GMT_message (GMT, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
+									GMT_report (GMT, GMT_MSG_NORMAL, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
 									w = 1.0;
 								}
 								else

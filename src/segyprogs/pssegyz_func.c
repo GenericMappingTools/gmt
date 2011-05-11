@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
+ *	$Id: pssegyz_func.c,v 1.6 2011-05-11 09:48:21 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -259,7 +259,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 				break;
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_message (GMT, "Syntax error: Can't specify more than one trace location key\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Can't specify more than one trace location key\n");
 					n_errors++;
 					continue;
 				}
@@ -607,12 +607,12 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
-	if (!GMT_IS_LINEAR (GMT)) GMT_message (GMT, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (!GMT_IS_LINEAR (GMT)) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
 
 	if (Ctrl->In.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
-			GMT_message (GMT, "Cannot find segy file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -656,30 +656,30 @@ use a few of these*/
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_message (GMT, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_message (GMT, "warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_message (GMT, "Error, number of samples per trace unknown\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		exit (EXIT_FAILURE);
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples is %ld\n", n_samp);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Z_ID]) {
 		Ctrl->Q.value[Z_ID] = binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Z_ID] /= 1000000.0;
-		GMT_message (GMT, "Sample interval is %f s\n", Ctrl->Q.value[Z_ID]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Sample interval is %f s\n", Ctrl->Q.value[Z_ID]);
 	}
 	else if ((Ctrl->Q.value[Z_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_message (GMT, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Z_ID], (float)binhead.sr);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Z_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Z_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_message (GMT, "Error, no sample interval in reel header\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, no sample interval in reel header\n");
 		exit (EXIT_FAILURE);
 	}
 

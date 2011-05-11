@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.75 2011-04-29 03:08:12 guru Exp $
+ *	$Id: libspotter.c,v 1.76 2011-05-11 09:48:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -401,7 +401,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		sscanf (file, "%[^-]-%s", A, B);
 		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != CNULL) ? this : GPLATES_PLATES);
 		if ((fp = GMT_fopen (C, Plates, "r")) == NULL) {
-			GMT_message (C, "libspotter: Error: Cannot open GPlates plate id file %s\n", Plates);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (EXIT_FAILURE);
 		}
 		A_id = B_id = 0;
@@ -413,23 +413,23 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 		GMT_fclose (C, fp);
 		if (A_id == 0) {
-			GMT_message (C, "libspotter: Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (B_id == 0) {
-			GMT_message (C, "libspotter: Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
 			GMT_exit (EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
 		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != CNULL) ? this : GPLATES_ROTATIONS);
 		if ((fp = GMT_fopen (C, Rotations, "r")) == NULL) {
-			GMT_message (C, "libspotter: Error: Cannot open GPlates rotation file %s\n", Rotations);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GPlates = total_in = TRUE;
 	}
 	else if ((fp = GMT_fopen (C, file, "r")) == NULL) {
-		GMT_message (C, "libspotter: Error: Cannot open stage pole file: %s\n", file);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -458,12 +458,12 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7], &K[8]);
 			if (! (nf == 4 || nf == 5 || nf == 13 || nf == 14)) {
-				GMT_message (C, "libspotter: Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
+				GMT_report (C, GMT_MSG_FATAL, "Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
-					GMT_message (C, "libspotter: Error: Rotation file mixes total reconstruction and stage rotation format\n");
+					GMT_report (C, GMT_MSG_FATAL, "Error: Rotation file mixes total reconstruction and stage rotation format\n");
 					GMT_exit (EXIT_FAILURE);
 				}
 				total_in = TRUE;
@@ -480,7 +480,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 
 		if (e[i].t_stop >= e[i].t_start) {
-			GMT_message (C, "libspotter: Error: Stage rotation %ld has start time younger than stop time\n", i);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Stage rotation %ld has start time younger than stop time\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
@@ -503,7 +503,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	GMT_fclose (C, fp);
 
 	if (GPlates && i == 0) {
-		GMT_message (C, "libspotter: Error: Could not find rotations for the plate pair %s - %s\n", A, B);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find rotations for the plate pair %s - %s\n", A, B);
 		GMT_exit (EXIT_FAILURE);
 	}
 	
@@ -563,7 +563,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_LONG geocentr
 	double P[3];
 
 	if ((fp = GMT_fopen (C, file, "r")) == NULL) {
-		GMT_message (C, "%s: Cannot open file %s - aborts\n", "libspotter", file);
+		GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s - aborts\n", file);
 		exit (EXIT_FAILURE);
 	}
 
@@ -664,7 +664,7 @@ GMT_LONG spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double
 			j = 0;
 			while (j < ns && t <= p[j].t_stop) j++;	/* Find first applicable stage pole */
 			if (j == ns) {
-				GMT_message (C, "libspotter: (spotter_backtrack) Ran out of stage poles for t = %g\n", t);
+				GMT_report (C, GMT_MSG_FATAL, "(spotter_backtrack) Ran out of stage poles for t = %g\n", t);
 				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (p[j].duration, t - MAX(p[j].t_stop, t_zero));
@@ -843,7 +843,7 @@ GMT_LONG spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], doubl
 			while (j && (t + GMT_CONV_LIMIT) > p[j].t_start) j--;
 			/* while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++; */	/* Find first applicable stage pole */
 			if (j == ns) {
-				GMT_message (C, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
+				GMT_report (C, GMT_MSG_FATAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
 				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (tp[i], p[j].t_start) - t;	/* Time interval to rotate */
@@ -1381,7 +1381,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 		kk = 2;
 
 	if (GMT_jacobi (G, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-		GMT_message (G, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_report (G, GMT_MSG_NORMAL, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* z unit vector */
@@ -1453,7 +1453,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 		C[0] = C[4] = C[8] = fval;
 	}
 	if (GMT_jacobi (GMT, C, &matrix_dim, &matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	spotter_matrix_1Dto2D (GMT, EigenVector, Vt);	/* Reformat back to 2-D format */
 	spotter_matrix_transpose (GMT, V, Vt);		/* Get the transpose of V */
@@ -1482,7 +1482,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	axis[GMT_X] = (axis[GMT_Z] == 0) ? 1 : 0;	/* u will be either first or second original axis */
 	axis[GMT_Y] = axis[GMT_X] + 1;				/* Let v be the next (either second or third) */
 	if (axis[GMT_Y] == axis[GMT_Z]) axis[GMT_Y]++;	/* Occupied by w, go to next */
-	GMT_message (GMT, "Spinning in the %c-%c coordinate system\n", name[axis[GMT_X]], name[axis[GMT_Y]]);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Spinning in the %c-%c coordinate system\n", name[axis[GMT_X]], name[axis[GMT_Y]]);
 	
 	/* We will loop over 360 degrees and determine where the radial vector intersects the projected ellipse P'(u,v)
 	 * (1) If the origin (0,0) is inside P' then we will always get two real roots that differ in sign. in that case
@@ -1585,7 +1585,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 			}
 		}
 		else {
-			GMT_message (GMT, "No (u,v,w) solution for angle %g\n", phi[i]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "No (u,v,w) solution for angle %g\n", phi[i]);
 		}
 	}
 	if (dump) fclose (fp);
@@ -1763,7 +1763,7 @@ GMT_LONG on_the_ellipse (double xyz[3], double L[3], double c)
 void spotter_ellipsoid_normal (struct GMT_CTRL *GMT, double X[3], double L[3], double c, double N[3])
 {	/* Compute normal vector N at given point X ON the ellipse */
 	if (!on_the_ellipse (X, L, c)) {
-		GMT_message (GMT, "Point X is not on the ellipsoid in ellipsoid_normal!");
+		GMT_report (GMT, GMT_MSG_FATAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		return;
 	}
 	if (GMT_IS_ZERO (X[GMT_Z])) {	/* Normal vector lies entirely in (x-y) plane */

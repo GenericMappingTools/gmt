@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.9 2011-05-11 04:01:54 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -174,7 +174,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'z')
 					Ctrl->A.mode = AVERAGE;
 				else {
-					GMT_message (GMT, "Syntax error -A option: Select -An or -A[z]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Select -An or -A[z]\n");
 					n_errors++;
 				}
 				break;
@@ -195,7 +195,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 				break;
 			case 'N':
 				if (!opt->arg[0]) {
-					GMT_message (GMT, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				else {
@@ -227,7 +227,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 			/* variable spacing */
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_message (GMT, "Syntax error -S option: Can only be set once\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Can only be set once\n");
 					n_errors++;
 				}
 				Ctrl->S.active = TRUE;
@@ -327,7 +327,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->In.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
-			GMT_message (GMT, "Cannot find segy file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -356,38 +356,38 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!Ctrl->L.value) {	/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_message (GMT, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_message (GMT, "warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_message (GMT, "Error, number of samples per trace unknown\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		Return (EXIT_FAILURE);
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_message (GMT, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Y_ID] /= 1000000.0;
-		GMT_message (GMT,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
+		GMT_report (GMT, GMT_MSG_NORMAL,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_message (GMT, "Warning s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_message (GMT, "Error, no sample interval in reel header\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Error, no sample interval in reel header\n");
 		exit(EXIT_FAILURE);
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
-		GMT_message (GMT, "Warning, grid spacing != sample interval, setting sample interval to grid spacing\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning, grid spacing != sample interval, setting sample interval to grid spacing\n");
 		Ctrl->Q.value[Y_ID] = Grid->header->inc[GMT_Y];
 	}
 
-	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID]) GMT_message (GMT, "Warning, grid spacing < sample interval, expect gaps in output....\n");
+	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning, grid spacing < sample interval, expect gaps in output....\n");
 
 	/* starts reading actual data here....... */
 
@@ -395,7 +395,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		ix = 0;
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
 		if (Grid->header->nx < Ctrl->M.value) {
-			GMT_message (GMT,"Warning, number of traces in header > size of grid. Reading may be truncated\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->nx;
 		}
 		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {

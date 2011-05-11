@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.29 2011-04-23 02:14:13 guru Exp $
+ *	$Id: sph.c,v 1.30 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,12 +99,12 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	GMT_report (C, GMT_MSG_NORMAL, "OK\n");
 
 	if (ierror == -2) {
-		GMT_message (C, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
+		GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (ierror > 0) {
-		GMT_message (C, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
+		GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -124,7 +124,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	GMT_report (C, GMT_MSG_NORMAL, "OK\n");
 
 	if (ierror) {
-		GMT_message (C, "STRIPACK: Error in TRLIST.\n");
+		GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in TRLIST.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	
@@ -161,7 +161,7 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 		GMT_free (C, zc);
 
 		if (0 < ierror) {
-			GMT_message (C, "STRIPACK: Error in CRLIST.  IERROR = %d.\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in CRLIST.  IERROR = %d.\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		
@@ -248,7 +248,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 				intrc0_ (&n4, &plat[j], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
-					GMT_message (C, "Error in INTRC0: I = %d, J = %d, IER = %d\n", j, i, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %d, J = %d, IER = %d\n", j, i, ierror);
 					GMT_exit (EXIT_FAILURE);
 	            		}
 			}
@@ -263,7 +263,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 			k1 = k + 1;	/* Since gradl expects Fortran indexing */
 			gradl_ (&n4, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
-				GMT_message (C, "Error in GRADL: K = %d IER = %d\n", k1, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GRADL: K = %d IER = %d\n", k1, ierror);
 				GMT_exit (EXIT_FAILURE);
             		}
 			sum += (double)ierror;
@@ -273,7 +273,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	        if (vartens) {	/* compute tension factors sigma (getsig). */
 			getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 			if (ierror < 0) {
-				GMT_message (C, "Error in GETSIG: IER = %d\n", ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG: IER = %d\n", ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_NORMAL, "GETSIG: %d tension factors altered;  Max change = %g\n", ierror, dsm);
@@ -285,7 +285,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		if (vartens) iflgs = 1;
 		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_message (C, "Error in UNIF: IER = %d\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %d\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_report (C, GMT_MSG_NORMAL, "UNIF: Number of evaluation points = %d, number of extrapolation points = %d\n", nm, ierror);
@@ -307,7 +307,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 			dgmx = dgmax;
 			gradg_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
-				GMT_message (C, "Error in GRADG (iteration %d): IER = %d\n", iter, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GRADG (iteration %d): IER = %d\n", iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_NORMAL, "GRADG (iteration %d): tolerance = %g max change = %g  maxit = %d no. iterations = %d ier = %d\n",
@@ -317,7 +317,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 				iflgs = 1;
 				getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_message (C, "Error in GETSIG (iteration %d): ier = %d\n", iter, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %d): ier = %d\n", iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_report (C, GMT_MSG_NORMAL, "GETSIG (iteration %d): %d tension factors altered;  Max change = %g\n", iter, ierror, dsm);
@@ -327,7 +327,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 
 		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_message (C, "Error in UNIF: IER = %d\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %d\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_report (C, GMT_MSG_NORMAL, "UNIF: Number of evaluations = %d, number of extrapolations = %d\n", nm, ierror);
@@ -351,7 +351,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		for (iter = iflgs = 0; iter < itgs; iter++) {
 			smsurf_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
-				GMT_message (C, "Error in SMSURF (iteration %d): IER = %d\n", iter, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in SMSURF (iteration %d): IER = %d\n", iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (ierror == 1) GMT_report (C, GMT_MSG_NORMAL, "Error in SMSURF: inactive constraint in SMSURF (iteration %d).  f is a constant function\n", iter);
@@ -359,7 +359,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 				iflgs = 1;
 				getsig_ (&n4, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_message (C, "Error in GETSIG (iteration %d): IER = %d\n", iter, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %d): IER = %d\n", iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_report (C, GMT_MSG_NORMAL, "GETSIG (iteration %d): %d tension factors altered;  Max change = %g\n", iter, ierror, dsm);
@@ -369,7 +369,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		GMT_free (C, wt);
 		if (ierror < 0) {
-			GMT_message (C, "Error in UNIF: ier = %d\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: ier = %d\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_report (C, GMT_MSG_NORMAL, "UNIF: Number of evaluations = %d, number of extrapolations = %d\n", nm, ierror);

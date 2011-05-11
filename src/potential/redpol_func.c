@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
+ *	$Id: redpol_func.c,v 1.11 2011-05-11 09:48:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -845,7 +845,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 	
 	if (date < 1900.0 || date > 2015.0) {
-		GMT_message (C, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", C->init.progname, date);
+		GMT_report (C, GMT_MSG_FATAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", C->init.progname, date);
 		return (TRUE);
 	}
 	
@@ -1056,7 +1056,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 							Ctrl->E.dip_dec_grd = TRUE;
 							break;
 						default:
-							GMT_message (GMT, "ERROR using option -E\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "ERROR using option -E\n");
 							n_errors++;
 							break;
 					}
@@ -1069,11 +1069,11 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				j = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = TRUE;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_message (GMT, "Error: number of filter coefficients must be odd\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
-					GMT_message (GMT, "That was a ridiculous number of filter coefficients\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "That was a ridiculous number of filter coefficients\n");
 					n_errors++;
 				}
 				break;
@@ -1089,7 +1089,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = FALSE;
 					else {
-						GMT_message (GMT, "Warning: Error using option -M (option ignored)\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Warning: Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = TRUE;
 					}
 				}
@@ -1117,7 +1117,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
-		GMT_message (GMT, "Warning: -E option overrides -C\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -C\n");
 		Ctrl->C.const_f = FALSE;
 	}
 
