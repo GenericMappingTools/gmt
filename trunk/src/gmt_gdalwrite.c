@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalwrite.c,v 1.2 2011-05-08 23:27:55 jluis Exp $
+ *	$Id: gmt_gdalwrite.c,v 1.3 2011-05-11 21:14:19 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,6 +98,25 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	if (registration == 0) {
 		adfGeoTransform[0] -= adfGeoTransform[1]/2.;
 		adfGeoTransform[3] -= adfGeoTransform[5]/2.;
+	}
+
+	/* If we have a PROJ4 string, convert (try) it to WKT */
+	if (prhs->P.active) {
+		OGRSpatialReferenceH  hSRS_2;
+
+		hSRS_2 = OSRNewSpatialReference(NULL);
+
+		if( OSRImportFromProj4( hSRS_2, prhs->P.ProjectionRefPROJ4) == CE_None ) {
+			char	*pszPrettyWkt = NULL;
+			OSRExportToPrettyWkt( hSRS_2, &pszPrettyWkt, FALSE );
+			projWKT = pszPrettyWkt;
+		}
+		else {
+			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
+					prhs->P.ProjectionRefPROJ4);
+		}
+
+		OSRDestroySpatialReference( hSRS_2 );
 	}
 
 	bQuiet = TRUE;
