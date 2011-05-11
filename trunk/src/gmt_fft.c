@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.9 2011-05-10 00:08:16 guru Exp $
+ *	$Id: gmt_fft.c,v 1.10 2011-05-11 02:40:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2779,6 +2779,7 @@ GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (nx, ny))) work = GMT_memory (C, NULL, work_size, float);
+	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %ld\n", work_size);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
