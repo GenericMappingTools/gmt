@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.35 2011-05-09 19:03:07 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.36 2011-05-11 19:16:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -87,6 +87,7 @@ EXTERN_MSC GMT_LONG GMT_check_url_name (char *fname);
 #ifdef _PSLIB_H
 /* gmt_plot.c prototyopes only included if pslib has been included */
 
+EXTERN_MSC char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut);
 EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[]);
 EXTERN_MSC void GMT_draw_map_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC void GMT_draw_map_scale (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_SCALE *ms);

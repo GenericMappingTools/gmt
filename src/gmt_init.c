@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.504 2011-05-11 09:58:05 guru Exp $
+ *	$Id: gmt_init.c,v 1.505 2011-05-11 19:16:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4894,6 +4894,8 @@ void GMT_end (struct GMT_CTRL *C)
 	if (C->session.USERDIR) free ((void *)C->session.USERDIR);
 	if (C->session.DATADIR) free ((void *)C->session.DATADIR);
 	if (C->session.TMPDIR) free ((void *)C->session.TMPDIR);
+	for (i = 0; i < GMT_N_PROJ4; i++) free ((void *)C->current.proj.proj4[i].name);
+	GMT_free (C, C->current.proj.proj4);
 
 	if (C->current.setting.io_gridfile_shorthand) gmt_freeshorthand (C);
 
@@ -7497,6 +7499,39 @@ struct GMT_CTRL *New_GMT_Ctrl () {	/* Allocate and initialize a new common contr
 		{ 100.00,    100.0/2.54,  1.0,          72.0/0.0254 },
 		{ 2.54/72.0, 1.0/72.0,    0.0254/72.0,  1.0 }
 	};
+	struct GMT_PROJ4 GMT_proj4[GMT_N_PROJ4] = {
+		{ "aea"      , GMT_ALBERS },
+		{ "aeqd"     , GMT_AZ_EQDIST },
+		{ "cyl_stere", GMT_CYL_STEREO },
+		{ "cass"     , GMT_CASSINI },
+		{ "cea"      , GMT_CYL_EQ },
+		{ "eck4"     , GMT_ECKERT4 },
+		{ "eck6"     , GMT_ECKERT6 },
+		{ "eqc"      , GMT_CYL_EQDIST },
+		{ "eqdc"     , GMT_ECONIC },
+		{ "gnom"     , GMT_GNOMONIC },
+		{ "hammer"   , GMT_HAMMER },
+		{ "laea"     , GMT_LAMB_AZ_EQ },
+		{ "lcc"      , GMT_LAMBERT },
+		{ "merc"     , GMT_MERCATOR },
+		{ "mill"     , GMT_MILLER },
+		{ "moll"     , GMT_MOLLWEIDE },
+		{ "nsper"    , GMT_GENPER },
+		{ "omerc"    , GMT_OBLIQUE_MERC },
+		{ "omercp"   , GMT_OBLIQUE_MERC_POLE },
+		{ "ortho"    , GMT_ORTHO },
+		{ "polar"    , GMT_POLAR },
+		{ "poly"     , GMT_POLYCONIC },
+		{ "robin"    , GMT_ROBINSON },
+		{ "sinu"     , GMT_SINUSOIDAL },
+		{ "stere"    , GMT_STEREO },
+		{ "tmerc"    , GMT_TM },
+		{ "utm"      , GMT_UTM },
+		{ "vandg"    , GMT_VANGRINTEN },
+		{ "wintri"   , GMT_WINKEL },
+		{ "xy"       , GMT_LINEAR },
+		{ "z"        , GMT_ZAXIS }
+	};
 	struct GMT_CTRL *C = NULL;
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS] = {   /* This constant is created by GNUmakefile - do not edit */
 	#include "gmt_ellipsoids.h"	/* This include file is created by GNUmakefile - do not edit */
@@ -7564,7 +7599,11 @@ struct GMT_CTRL *New_GMT_Ctrl () {	/* Allocate and initialize a new common contr
 	GMT_grdio_init (C);
 	GMT_set_pad (C, 2);	/* Default is to load in grids with 2 rows/cols for boundary padding */
 	C->current.proj.f_horizon = 90.0;
-
+	C->current.proj.proj4 = GMT_memory (C, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
+	for (i = 0; i < GMT_N_PROJ4; i++) {	/* Load up proj4 structure once and for all */
+		C->current.proj.proj4[i].name = strdup (GMT_proj4[i].name);
+		C->current.proj.proj4[i].id = GMT_proj4[i].id;
+	}
 	/* TIME_SYSTEM settings */
 	strcpy (C->current.setting.time_system.epoch, "2000-01-01T12:00:00");
 	C->current.setting.time_system.unit = 'd';
