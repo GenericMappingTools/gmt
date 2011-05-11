@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.326 2011-05-10 02:50:11 guru Exp $
+ *	$Id: gmt_plot.c,v 1.327 2011-05-11 19:16:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,46 +259,6 @@ unsigned char GMT_glyph[2520] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f,
-};
-
-struct GMT_PROJ4 {
-	char *proj4name;
-	GMT_LONG id;
-};
-
-#define GMT_N_PROJ4 31
-struct GMT_PROJ4 GMT_proj4[GMT_N_PROJ4] = {
-	{ "aea"      , GMT_ALBERS },
-	{ "aeqd"     , GMT_AZ_EQDIST },
-	{ "cyl_stere", GMT_CYL_STEREO },
-	{ "cass"     , GMT_CASSINI },
-	{ "cea"      , GMT_CYL_EQ },
-	{ "eck4"     , GMT_ECKERT4 },
-	{ "eck6"     , GMT_ECKERT6 },
-	{ "eqc"      , GMT_CYL_EQDIST },
-	{ "eqdc"     , GMT_ECONIC },
-	{ "gnom"     , GMT_GNOMONIC },
-	{ "hammer"   , GMT_HAMMER },
-	{ "laea"     , GMT_LAMB_AZ_EQ },
-	{ "lcc"      , GMT_LAMBERT },
-	{ "merc"     , GMT_MERCATOR },
-	{ "mill"     , GMT_MILLER },
-	{ "moll"     , GMT_MOLLWEIDE },
-	{ "nsper"    , GMT_GENPER },
-	{ "omerc"    , GMT_OBLIQUE_MERC },
-	{ "omercp"   , GMT_OBLIQUE_MERC_POLE },
-	{ "ortho"    , GMT_ORTHO },
-	{ "polar"    , GMT_POLAR },
-	{ "poly"     , GMT_POLYCONIC },
-	{ "robin"    , GMT_ROBINSON },
-	{ "sinu"     , GMT_SINUSOIDAL },
-	{ "stere"    , GMT_STEREO },
-	{ "tmerc"    , GMT_TM },
-	{ "utm"      , GMT_UTM },
-	{ "vandg"    , GMT_VANGRINTEN },
-	{ "wintri"   , GMT_WINKEL },
-	{ "xy"       , GMT_LINEAR },
-	{ "z"        , GMT_ZAXIS }
 };
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
@@ -3292,7 +3252,7 @@ void GMT_contlabel_plot (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONT
 	}
 }
 
-char *gmt_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
+char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
 	char szProj4[512];
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
@@ -3613,7 +3573,7 @@ GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_O
 
 	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
 
-	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == C->current.proj.projection) id = k;
+	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (C->current.proj.proj4[k].id == C->current.proj.projection) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
 		char *pstr = NULL, proj4name[16];
@@ -3625,11 +3585,11 @@ GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_O
 		if (C->current.proj.projection == GMT_LINEAR && GMT_is_geographic (C, GMT_IN))
 			strcpy(proj4name, "latlong");
 		else
-			strcpy(proj4name, GMT_proj4[id].proj4name);
+			strcpy(proj4name, C->current.proj.proj4[id].name);
 
 		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
 			C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI],
-			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], gmt_export2proj4 (C, pstr));
+			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4 (C, pstr));
 		free((void *)pstr);
 	}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.83 2011-04-27 22:11:57 guru Exp $
+ *	$Id: gmt_project.h,v 1.84 2011-05-11 19:16:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -124,6 +124,10 @@
 #define GMT_FALSE_EASTING    500000.0
 #define GMT_FALSE_NORTHING 10000000.0
 
+/* Number of proj4 look-ups */
+
+#define GMT_N_PROJ4 31
+
 /* Number of nodes in Robinson interpolation */
 
 #define GMT_N_ROBINSON	19
@@ -174,10 +178,16 @@ struct GMT_DATUM_CONV {
 	struct GMT_DATUM from, to;	/* The old and new datums */
 };
 
+struct GMT_PROJ4 {	/* Used to assign proj4 projections from GMT projections */
+	char *name;
+	GMT_LONG id;
+};
+
 struct GMT_PROJ {
 
 	struct GMT_THREE_D z_project;
 	struct GMT_DATUM_CONV datum;	/* For datum conversions */
+	struct GMT_PROJ4 *proj4;	/* A read-only resource we allocate once and pass pointer around */
 	PFL fwd, inv;			/* Pointers to the selected mapping functions */
 	PFL fwd_x, inv_x;		/* Pointers to the selected linear functions */
 	PFL fwd_y, inv_y;		/* Pointers to the selected linear functions */
