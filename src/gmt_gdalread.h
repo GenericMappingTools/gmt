@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.21 2011-04-26 14:42:54 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.22 2011-05-11 21:12:59 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,11 +33,15 @@ struct GDALWRITE_CTRL {
 	int	flipud;
 	int	registration;
 	void	*data;
-	struct GD_C {	/* Color map */
+	struct GW_C {	/* Color map */
 		int active;
 		int n_colors;
 		float *cpt;
 	} C;
+	struct GW_P {	/* Proj4 string */
+		int	active;
+		char	*ProjectionRefPROJ4;
+	} P;
 };
 
 /* Structure to control which options are transmited to GMT_gdalread */
