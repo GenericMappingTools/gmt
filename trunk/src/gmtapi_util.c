@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.54 2011-05-11 20:49:42 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.55 2011-05-11 20:50:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2991,7 +2991,7 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 			return (GMT_Report_Error (API, GMT_WRONG_KIND));
 			break;		
 	}
-	GMT_report (API->GMT, GMT_MSG_VERBOSE, "Successfully reed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
+	GMT_report (API->GMT, GMT_MSG_VERBOSE, "Successfully freed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
 		direction = API->object[item]->direction;
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, direction))) return (GMT_Report_Error (API, error));	/* Did not find object */
