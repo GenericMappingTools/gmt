@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.506 2011-05-11 21:04:25 guru Exp $
+ *	$Id: gmt_support.c,v 1.507 2011-05-11 23:56:19 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1814,7 +1814,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = h->wesn[XHI] - h->wesn[XLO];
 		h->nx = irint (s / h->inc[GMT_X]);
 		s /= h->nx;
-		h->nx += one_or_zero;
+		h->nx += (int)one_or_zero;
 		if (fabs (s - h->inc[GMT_X]) > 0.0) {
 			h->inc[GMT_X] = s;
 			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies x_inc = %g\n", h->inc[GMT_X]);
@@ -1867,7 +1867,7 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		s = h->wesn[YHI] - h->wesn[YLO];
 		h->ny = irint (s / h->inc[GMT_Y]);
 		s /= h->ny;
-		h->ny += one_or_zero;
+		h->ny += (int)one_or_zero;
 		if (fabs (s - h->inc[GMT_Y]) > 0.0) {
 			h->inc[GMT_Y] = s;
 			GMT_report (C, GMT_MSG_VERBOSE, "Given domain implies y_inc = %g\n", h->inc[GMT_Y]);
