@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.10 2011-05-02 12:46:32 remko Exp $
+ *	$Id: psmask_func.c,v 1.11 2011-05-12 01:33:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,9 +560,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	if (Ctrl->C.active)
-		GMT->current.ps.clip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
+		GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
 	else if (!Ctrl->T.active)
-		GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+		GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 
 	if (make_plot) GMT_plotinit (API, PSL, options);
 

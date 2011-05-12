@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.21 2011-05-11 09:48:21 guru Exp $
+ *	$Id: psxy_func.c,v 1.22 2011-05-12 01:33:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -651,7 +651,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->current.setting.proj_length_unit = S.u;
 	}
 
-	if (S.G.delay) GMT->current.ps.clip = +1;	/* Signal that this program initiates clipping that will outlive this process */
+	if (S.G.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 	
 	GMT_plotinit (API, PSL, options);
 	if (Ctrl->T.active) {
