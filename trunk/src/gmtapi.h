@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.27 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtapi.h,v 1.28 2011-05-12 02:52:34 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,9 +57,9 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void **ptr;				/* Points to the source|destination */
-	void *data;				/* Points to the memory location of the data */
-	FILE *fp;				/* Pointer to source/destination stream */
+	void **ptr;				/* Points to the source|destination (typically filenames) */
+	void *data;				/* Points to the memory location of the data (i.e., a GMT_GRID, GMT_DATASET structs) */
+	FILE *fp;				/* Pointer to source/destination stream [NULL if memory location] */
 	char *filename;				/* Locally allocated copy of a filename (or NULL) */
 	PFL import;				/* Pointer to input function (for DATASET/TEXTSET only) */
 };
