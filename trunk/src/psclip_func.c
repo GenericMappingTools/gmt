@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.16 2011-05-01 18:48:32 remko Exp $
+ *	$Id: psclip_func.c,v 1.17 2011-05-12 01:33:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -218,9 +218,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!GMT->current.proj.y_off_supplied && GMT->common.O.active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
 	if (Ctrl->C.active)
-		GMT->current.ps.clip = MIN (-1, -Ctrl->C.n);	/* Program terminates n levels of prior clipping */
+		GMT->current.ps.nclip = MIN (-1, -Ctrl->C.n);	/* Program terminates n levels of prior clipping */
 	else
-		GMT->current.ps.clip = +1;		/* Program adds one new level of clipping */
+		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
 	GMT_plotinit (API, PSL, options);
 

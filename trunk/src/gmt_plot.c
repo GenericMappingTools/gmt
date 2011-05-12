@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.327 2011-05-11 19:16:27 guru Exp $
+ *	$Id: gmt_plot.c,v 1.328 2011-05-12 01:33:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3419,11 +3419,11 @@ struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
 		new->clip_level = 0;
 	}
 
-	/* Lower or increase clip level based on C->current.ps.clip (-1, 0 or +1) */
-	if (GMT_abs (C->current.ps.clip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
+	/* Lower or increase clip level based on C->current.ps.nclip (-1, 0 or +1) */
+	if (GMT_abs (C->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
 		new->clip_level = 0;
 	else
-		new->clip_level += (int)C->current.ps.clip;
+		new->clip_level += (int)C->current.ps.nclip;
 
 	/* Estimates the bounding box for this overlay */
 
@@ -3622,8 +3622,8 @@ GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_O
 
 GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P) {
 	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
-	if (C->current.ps.clip != P->current.nclip)
-		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.clip, P->current.nclip);
+	if (C->current.ps.nclip != P->current.nclip)
+		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.nclip, P->current.nclip);
 	PSL_endplot (P, !C->common.K.active);
 	return (0);
 }
