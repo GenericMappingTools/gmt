@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.55 2011-05-11 20:50:37 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.56 2011-05-12 18:58:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2950,6 +2950,7 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 #endif
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	if (!X) return (GMT_OK);	/* Nothing to do */
 	if (!(*X)) return (GMT_OK);	/* Nothing to do */
 	if ((error = GMTAPI_ptr2id (API, *X, &object_ID))) return (GMT_OK);	/* Nothing to do */
 	if ((error = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, GMTAPI_NOTSET, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
