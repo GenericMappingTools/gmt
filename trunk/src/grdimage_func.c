@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.50 2011-05-11 23:33:39 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.51 2011-05-12 01:23:38 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,12 +101,14 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdimage %s [API] - Plot grid files in 2-D\n\n", GMT_VERSION);
 #ifdef USE_GDAL
-	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-C<cpt_file>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
+	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt_file>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
+			GMT_J_OPT, GMT_B_OPT);
 #else
 	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-C<cpt_file>] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
 #endif
 	GMT_message (GMT, "\t[-I<intensity_file>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-T]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", 
+			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -118,6 +120,11 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #endif
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+#ifdef USE_GDAL
+	GMT_message (GMT, "\t-A Save image in a raster format instead of postscript. Append =<driver> to select.\n");
+	GMT_message (GMT, "\t   the image format. The 'driver' is the driver code name used by GDAL. For example\n");
+	GMT_message (GMT, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
+#endif
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.\n");
 #ifdef USE_GDAL
