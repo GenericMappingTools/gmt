@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.273 2011-05-10 01:16:11 jluis Exp $
+ *	$Id: gmt_io.c,v 1.274 2011-05-12 00:25:11 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -164,7 +164,8 @@ int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
 		GMT_free (C, C->current.io.add_offset);
 		GMT_free (C, C->current.io.scale_factor);
 		GMT_free (C, C->current.io.missing_value);
-		C->current.io.ncid = C->current.io.nvars = C->current.io.ndim = C->current.io.nrec = 0;
+		C->current.io.ncid = C->current.io.nvars = 0;	/* Split in two too shut up a compiler warning */
+		C->current.io.ndim = C->current.io.nrec = 0;
 		C->current.io.input = C->session.input_ascii;
 		return (0);
 	}
