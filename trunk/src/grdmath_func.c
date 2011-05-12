@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdmath_func.c,v 1.19 2011-05-12 00:04:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1873,7 +1873,7 @@ void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	if (constant[last]) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning, NORM of a constant gives NaN!\n");
-		a = GMT->session.d_NaN;
+		a = GMT->session.f_NaN;
 	}
 	else {
 		GMT_grd_loop (info->G, row, col, node) {
@@ -1883,7 +1883,7 @@ void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 			if (z > zmax) zmax = z;
 			n++;
 		}
-		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
+		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : 1.0F / (zmax - zmin);	/* Normalization scale */
 	}
 	GMT_grd_loop (info->G, row, col, node) stack[last]->data[node] = (constant[last]) ? a : a * stack[last]->data[node];
 }
