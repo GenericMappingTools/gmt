@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.506 2011-05-13 01:40:31 jluis Exp $
+ *	$Id: gmt_init.c,v 1.507 2011-05-13 21:57:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4802,6 +4802,10 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 		}
 		if (sscanf (line, "%s %[^\n]", option, value) != 2) continue;	/* Quietly skip malformed lines */
 		if (!value[0]) continue;	/* No argument found */
+		if (option[0] == 'C') {	/* Read clip level */
+			C->current.ps.clip_level = atoi(value);
+			continue;
+		}
 		if ((id = GMT_hash_lookup (C, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
 		C->init.history[id] = strdup (value);
 	}
@@ -4854,6 +4858,7 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 		if (!C->init.history[id]) continue;	/* Not specified */
 		fprintf (fp, "%s\t%s\n", GMT_unique_option[id], C->init.history[id]);
 	}
+	if (C->current.ps.clip_level) fprintf (fp, "C\t%ld\n", C->current.ps.clip_level); /* Write clip level */
 	fprintf (fp, "EOF\n");
 
 	/* Close the file */
@@ -4906,6 +4911,8 @@ void GMT_end (struct GMT_CTRL *C)
 #endif
 	GMT_free_ogr (C, &(C->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 
+	/* Terminate PSL machinery (if used) */
+	PSL_endsession (C->PSL);
 #ifdef DEBUG
 	GMT_memtrack_report (C, GMT_mem_keeper);
 #endif
@@ -4979,16 +4986,34 @@ void gmt_free_plot_array (struct GMT_CTRL *C) {
 void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 {
 	GMT_LONG i;
+#if 0	/* I do not think we need the interstitial hist_cpy; just copy the pointers */
 	char *hist_cpy[GMT_N_UNIQUE];
+#endif
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 
+	/* GMT_INIT */
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
+#if 0
 	GMT_memset (hist_cpy, GMT_N_UNIQUE, char *);
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (C->init.history[i]) {
 		hist_cpy[i] = strdup (C->init.history[i]);	/* Copy what we have so far */
 		free ((void *)C->init.history[i]);		/* Free pointers in local GMT structure */
 	}
+#else
+	for (i = 0; i < GMT_N_UNIQUE; i++) {
+		if (Ccopy->init.history[i] && Ccopy->init.history[i] != C->init.history[i]) free ((void *)Ccopy->init.history[i]);
+		Ccopy->init.history[i] = C->init.history[i];
+	}
+#endif
+	/* GMT_CURRENT */
+
+	Ccopy->current.ps.clip_level = C->current.ps.clip_level;
+
+	/* GMT_COMMON */
+
+	if (Ccopy->common.U.label && Ccopy->common.U.label != C->common.U.label) free ((void *)Ccopy->common.U.label);
+	Ccopy->common.U.label = C->common.U.label;
 
 	/* GMT_PLOT */
 
@@ -5005,8 +5030,8 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	
 	/* Now fix things that were allocated separately */
 
-	/*free ((void *)C->init.progname);	C->init.progname = strdup (Ccopy->init.progname); */
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
+#if 0
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (hist_cpy[i]) {	/* Update the cumulative history list */
 		C->init.history[i] = strdup (hist_cpy[i]);
 		free ((void *)hist_cpy[i]);
@@ -5018,6 +5043,7 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 		C->common.U.label = strdup (Ccopy->common.U.label);
 		free ((void *)Ccopy->common.U.label);
 	}
+#endif
 
 	free ((void *)Ccopy);	/* Good riddance */
 }

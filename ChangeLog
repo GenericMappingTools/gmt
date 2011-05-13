@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1021 2011-05-13 01:55:04 jluis Exp $
+	$Id: ChangeLog,v 1.1022 2011-05-13 21:57:33 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-13	remko
+	* gmt_init.c, gmt_plot.c:	Moved clip level information from .gmt_bb_info to
+				.gmtcommands. Also ensured proper transferral of this info between
+				modules.
+	* gmt_support.c (GMT_*_BC_set):	Built in cludge to allow grids with nx and/or ny = 1
+	* gmtapi_utils.c, gmtapi.h:	API struct incorrectly had PSL component, which was also
+				run through PSL_endsession. But PSL is actually part of GMT struct
+				and should be deallocated with PSL_endsession in GMT_end.
 
 2011-05-11	jluis
 	* grdimage_func.c:	Now reads also indexed and gray scale images.

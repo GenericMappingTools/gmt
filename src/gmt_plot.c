@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.328 2011-05-12 01:33:30 remko Exp $
+ *	$Id: gmt_plot.c,v 1.329 2011-05-13 21:57:33 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3419,12 +3419,6 @@ struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
 		new->clip_level = 0;
 	}
 
-	/* Lower or increase clip level based on C->current.ps.nclip (-1, 0 or +1) */
-	if (GMT_abs (C->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
-		new->clip_level = 0;
-	else
-		new->clip_level += (int)C->current.ps.nclip;
-
 	/* Estimates the bounding box for this overlay */
 
 	new->x0 = C->session.u2u[GMT_INCH][GMT_PT] * x0;
@@ -3481,8 +3475,6 @@ struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
 
 	if (!C->common.K.active) {	/* Clobber the .gmt_bb_info file and add label padding */
 		(void) remove (info);	/* Don't really care if it is successful or not */
-		if (new->clip_level > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d (?) external clip operations were not terminated!\n", new->clip_level);
-		if (new->clip_level < 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d extra terminations of external clip operations!\n", -new->clip_level);
 	}
 	else if ((fp = fopen (info, "w")) != NULL) {	/* Update the .gmt_bb_info file */
 		fprintf (fp, "%d %d %g %g %g %g %g %g\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
@@ -3622,8 +3614,23 @@ GMT_LONG GMT_plotinit (struct GMTAPI_CTRL *API, struct PSL_CTRL *P, struct GMT_O
 
 GMT_LONG GMT_plotend (struct GMT_CTRL *C, struct PSL_CTRL *P) {
 	if (C->common.t.active) PSL_command (P, "[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
+
+	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
+
 	if (C->current.ps.nclip != P->current.nclip)
 		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.nclip, P->current.nclip);
+
+	if (GMT_abs (C->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
+		C->current.ps.clip_level = 0;
+	else
+		C->current.ps.clip_level += C->current.ps.nclip;
+
+	if (!C->common.K.active) {
+		if (C->current.ps.clip_level > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld external clip operations were not terminated!\n", C->current.ps.clip_level);
+		if (C->current.ps.clip_level < 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld extra terminations of external clip operations!\n", -C->current.ps.clip_level);
+		C->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in .gmtcommands */
+	}
+
 	PSL_endplot (P, !C->common.K.active);
 	return (0);
 }
