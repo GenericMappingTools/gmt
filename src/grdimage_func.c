@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.52 2011-05-12 13:17:54 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.53 2011-05-13 01:53:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -597,8 +597,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "project grid files\n");
 
 		if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
-			/*nx_proj = Grid_orig[0]->header->nx;*/			/* WOULD THIS STILL BE TRUE WHEN -R ???? */
-			/*ny_proj = Grid_orig[0]->header->ny;*/
 			nx_proj = nx;
 			ny_proj = ny;
 		}
@@ -608,6 +606,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			grid_registration = GMT_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
+			if (Ctrl->A.active)
+				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			Img_proj->data = GMT_memory (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
@@ -831,11 +831,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
 			if (GMT->current.proj.proj4[k].id == GMT->current.proj.projection) id = k;
 		if (id >= 0) {			/* Valid projection for creating world file info */
-			char *pstr = NULL, proj4name[16];
-			if (GMT->current.proj.projection == GMT_LINEAR && GMT_is_geographic (GMT, GMT_IN))
-				strcpy(proj4name, "latlong");
-			else
-				strcpy(proj4name, GMT->current.proj.proj4[id].name);
+			char *pstr = NULL;
 			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT, pstr);
 		}
 	}
