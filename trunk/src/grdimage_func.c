@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.53 2011-05-13 01:53:49 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.54 2011-05-13 02:12:25 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -832,6 +832,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT->current.proj.proj4[k].id == GMT->current.proj.projection) id = k;
 		if (id >= 0) {			/* Valid projection for creating world file info */
 			char *pstr = NULL;
+			to_GDALW->P.active = TRUE;
 			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT, pstr);
 		}
 	}
