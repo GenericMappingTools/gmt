@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.294 2011-05-11 04:01:54 guru Exp $
+ *	$Id: gmt_map.c,v 1.295 2011-05-13 01:01:06 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6082,8 +6082,8 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 		}
 	}
 
-	GMT_grd_loop (O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
-		for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
+	//GMT_grd_loop (O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
+		//for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 
 	/* PART 1: Project input image points and do a blockmean operation */
 
@@ -6146,7 +6146,8 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			GMT_get_bcr_img (C, I, x_proj, y_proj, z_int);
+			if (GMT_get_bcr_img (C, I, x_proj, y_proj, z_int))		/* So that nodes outside will have the NaN color */
+				for (b = 0; b < 4; b++) z_int[b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 
 			if (!C->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = z_int[b];
