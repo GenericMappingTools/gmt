@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.507 2011-05-11 23:56:19 jluis Exp $
+ *	$Id: gmt_support.c,v 1.508 2011-05-13 21:58:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5900,8 +5900,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	}
 
 	/* Check minimum size:  */
-	if (G->header->nx < 2 || G->header->ny < 2) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_grid_set requires nx,ny at least 2.\n");
+	if (G->header->nx < 1 || G->header->ny < 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_grid_set requires nx,ny at least 1.\n");
 		return (-1);
 	}
 
@@ -5948,6 +5948,11 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	iwo2k = iwo2 + G->header->nxp;
 	ieo1k = ieo1 - G->header->nxp;
 	ieo2k = ieo2 - G->header->nxp;
+
+	/* Duplicate rows and columns if nx or ny equals 1 */
+
+	if (G->header->nx == 1) for (i = jn+iw; i <= js+iw; i += mx) G->data[i-1] = G->data[i+1] = G->data[i];
+	if (G->header->ny == 1) for (i = jn+iw; i <= jn+ie; i++) G->data[i-mx] = G->data[i+mx] = G->data[i];
 
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
@@ -6289,8 +6294,8 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
 
 	/* Check minimum size:  */
-	if (G->header->nx < 2 || G->header->ny < 2) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_image_set requires nx,ny at least 2.\n");
+	if (G->header->nx < 1 || G->header->ny < 1) {
+		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_image_set requires nx,ny at least 1.\n");
 		return (-1);
 	}
 
@@ -6337,6 +6342,11 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	iwo2k = iwo2 + G->header->nxp;
 	ieo1k = ieo1 - G->header->nxp;
 	ieo2k = ieo2 - G->header->nxp;
+
+	/* Duplicate rows and columns if nx or ny equals 1 */
+
+	if (G->header->nx == 1) for (i = jn+iw; i <= js+iw; i += mx) G->data[i-1] = G->data[i+1] = G->data[i];
+	if (G->header->ny == 1) for (i = jn+iw; i <= jn+ie; i++) G->data[i-mx] = G->data[i+mx] = G->data[i];
 
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
