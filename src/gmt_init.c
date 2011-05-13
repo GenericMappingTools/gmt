@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.505 2011-05-11 19:16:27 guru Exp $
+ *	$Id: gmt_init.c,v 1.506 2011-05-13 01:40:31 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5005,7 +5005,7 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	
 	/* Now fix things that were allocated separately */
 
-	free ((void *)C->init.progname);	C->init.progname = strdup (Ccopy->init.progname);
+	/*free ((void *)C->init.progname);	C->init.progname = strdup (Ccopy->init.progname); */
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (hist_cpy[i]) {	/* Update the cumulative history list */
 		C->init.history[i] = strdup (hist_cpy[i]);
