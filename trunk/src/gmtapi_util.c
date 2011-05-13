@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.56 2011-05-12 18:58:56 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.57 2011-05-13 01:26:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2052,7 +2052,6 @@ GMT_LONG GMT_Create_Session (struct GMTAPI_CTRL **API, char *session, GMT_LONG m
 	G->n_objects_alloc = GMT_SMALL_CHUNK;	/* Start small; this may grow as more resources are registered */
 	if ((G->object = GMT_memory (G->GMT, NULL, G->n_objects_alloc, struct GMTAPI_DATA_OBJECT *)) == NULL) {	/* Failed to get memory, give up */
 		GMT_end (G->GMT);		/* Terminate the GMT machinery we never even got to use... */
-		PSL_endsession (G->PSL);	/* Terminate PSL machinery [if not NULL] */
 		return (GMT_Report_Error (G, GMT_MEMORY_ERROR));
 	}
 	
@@ -2114,7 +2113,6 @@ GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
 	}
  	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Session garbage collection freed %ld memory objects\n", n_free);
 	GMT_free (API->GMT, API->object);
-	PSL_endsession (API->PSL);	/* Terminate PSL machinery [if not NULL] */
 	error = GMT_Report_Error (API, GMT_OK);
 	GMT_end (API->GMT);		/* Terminate GMT machinery */
 	if (API->session_tag) free ((void *)API->session_tag);

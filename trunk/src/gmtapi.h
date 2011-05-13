@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.28 2011-05-12 02:52:34 guru Exp $
+ *	$Id: gmtapi.h,v 1.29 2011-05-13 01:26:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,7 +81,6 @@ struct GMTAPI_CTRL {
 	GMT_LONG io_mode[2];			/* 1 if access as set, 0 if record-by-record */
 	GMT_LONG GMTAPI_size[GMTAPI_N_TYPES];	/* Size of byte, short, int, long, float, double */	
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
-	struct PSL_CTRL *PSL;			/* Key structure with low-level PSL internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	PFL GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */
