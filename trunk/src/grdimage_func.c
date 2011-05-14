@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.55 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdimage_func.c,v 1.56 2011-05-14 01:01:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -452,8 +452,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 #ifdef USE_GDAL
 		else if (Ctrl->D.active) {
+			GMT_LONG ID, dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
-			P = GMT_memory (API->GMT, NULL, 1, struct GMT_PALETTE);
+			if ((error = GMT_Create_Data (API, GMT_IS_CPT, dim, (void **)&P, GMT_IN, &ID))) Return (error);
 			P->model = GMT_RGB;
 			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
 				r_table = GMT_memory (GMT, NULL, 256, double);
@@ -582,7 +583,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			sprintf (cmd, "%s -G%s -I%ld+/%ld+", in_string, out_string, nx, ny);
 			status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd);	/* Do the resampling */
-			GMT_free_grid (GMT, &Intens_orig, TRUE);
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 			Intens_orig = G2;
 		}
 #endif
