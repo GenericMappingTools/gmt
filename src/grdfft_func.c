@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.21 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdfft_func.c,v 1.22 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -593,7 +593,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	GMT_LONG k, nk, nused, ifreq, error, dim[4] = {1, 1, 1, 0};
+	GMT_LONG k, nk, nused, ifreq, error, ID, dim[4] = {1, 1, 1, 0};
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	PFD get_k;
 	float *datac = Grid->data;
@@ -647,7 +647,7 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	sprintf (format, "%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D))) {
+	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
 		return (GMT_RUNTIME_ERROR);
 	}
@@ -1162,7 +1162,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (j = 0; !stop && j < Grid->header->ny; j++) for (i = 0; !stop && i < Grid->header->nx; i++) stop = GMT_is_fnan (Grid->data[GMT_IJPR(Grid->header,j,i)]);
 	if (stop) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Input grid cannot have NaNs!\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 		Return (EXIT_FAILURE);
 	}
 
@@ -1254,9 +1253,6 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
 	}
-	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Done\n");
 

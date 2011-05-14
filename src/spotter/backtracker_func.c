@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
+ *	$Id: backtracker_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -561,7 +561,6 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Clean up and exit */
 
 	if (!Ctrl->e.active) GMT_free (GMT, p);
-	if (Ctrl->F.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&F);
 	
 	Return (GMT_OK);
 }

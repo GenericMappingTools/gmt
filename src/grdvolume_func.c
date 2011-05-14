@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.7 2011-05-03 17:39:48 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -608,9 +608,6 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Work);
-	
 	GMT_free (GMT, area);
 	GMT_free (GMT, vol);
 	GMT_free (GMT, height);

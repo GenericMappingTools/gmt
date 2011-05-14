@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: annotations2.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: annotations2.sh,v 1.4 2011-05-14 00:04:07 guru Exp $
 
 ps=annotations2.ps
 
@@ -14,6 +14,6 @@ $psbasemap -R-1.05/1.05/-1.1/1.3 -B30mWSne -O -K --FORMAT_GEO_MAP=ddd:mm -Xa1i -
 $psbasemap -R-0:00:50/0:01:00/-0:01:00/0:01:00 -B0.5mwSnE -O -K  --FORMAT_GEO_MAP=ddd:mm.x -Xa4.5i -Ya4.25i >> $ps
 $psbasemap -R-0:00:30/0:00:30/-0:01:00/0:01:00 -B30sWSne -O -K --FORMAT_GEO_MAP=ddd:mm:ss -Xa1i -Ya7.5i >> $ps
 $psbasemap -R-0:00:04/0:00:05/-0:00:05/0:00:05 -B2.5swSnE -O -K --FORMAT_GEO_MAP=ddd:mm:ss.x -Xa4.5i -Ya7.5i >> $ps
-psxy -R -J -O /dev/null >> $ps
+psxy -R -J -O -T >> $ps
 
 pscmp

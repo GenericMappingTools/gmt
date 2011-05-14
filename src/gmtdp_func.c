@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.7 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmtdp_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -349,9 +349,6 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_OUT]);
 	
 	Return (GMT_OK);
 }

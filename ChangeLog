@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1022 2011-05-13 21:57:33 remko Exp $
+	$Id: ChangeLog,v 1.1023 2011-05-14 00:04:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-13	pwessel
+	* gmtapi_util.c:	Added a garbage collection function that is run once a module
+				is finished (to free any remaining memory used by the module)
+				as well as when the session finishes (remove remaining memory).
 
 2011-05-13	remko
 	* gmt_init.c, gmt_plot.c:	Moved clip level information from .gmt_bb_info to

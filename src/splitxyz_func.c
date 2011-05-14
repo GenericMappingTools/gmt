@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.10 2011-05-05 03:36:26 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.11 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -546,11 +546,9 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, io_mode, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
 	/* Must set coord pointers to NULL since they were not allocated */
 	for (seg = 0; seg < seg2; seg++) for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
 	GMT_free_segment (GMT, S_out);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_OUT]);
 	if (Ctrl->F.active) GMT_free (GMT, fwork);
 	GMT_free (GMT, rec);
 

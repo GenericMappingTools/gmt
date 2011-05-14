@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -547,8 +547,6 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Clean up memory */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_rad);
 	GMT_free (GMT, processed_node);
 	GMT_free (GMT, latfactor);
 	GMT_free (GMT, ilatfactor);

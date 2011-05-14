@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.7 2011-04-29 20:13:32 remko Exp $
+ *    $Id: psmeca_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -865,8 +865,6 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
-
- 	if (Ctrl->Z.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&CPT);
 
 	GMT_map_basemap (GMT, PSL);
 

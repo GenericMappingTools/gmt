@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.12 2011-05-10 03:57:29 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG nearest_end[2][2], ii, end, n_open, dim[4] = {1, 0, 0, 0}, n_seg_alloc[2] = {0, 0};
 	GMT_LONG i, j, k, np, ns, id, pos, start_id, done, end_order, n_columns, n_rows, out_p, n_pol_pts;
 	GMT_LONG n_new, n, chain = 0, n_islands = 0, n_trouble = 0, n_closed = 0, id2, L, G, error = 0, mode = 0;
-	GMT_LONG n_id_alloc = GMT_CHUNK, out_seg, match = 0, n_steps;	
+	GMT_LONG n_id_alloc = GMT_CHUNK, out_seg, match = 0, n_steps, ID;	
 	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, *skip = NULL;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
@@ -279,7 +279,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.d");
 			dim[0] = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
-			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&Q))) {
+			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&Q, -1, &ID))) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for segment lists\n");
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -305,7 +305,6 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (D[GMT_IN]->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -320,13 +319,13 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	n_columns = D[GMT_IN]->n_columns;	/* Set the required columns for output */
 	
 	n_seg_alloc[0] = dim[1] = GMT_CHUNK;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D[GMT_OUT]))) {
+	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D[GMT_OUT], -1, &ID))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for output segments\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
 		n_seg_alloc[1] = GMT_CHUNK;
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&C))) {
+		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&C, -1, &ID))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for closed segments\n");
 			return (GMT_RUNTIME_ERROR);
 		}
@@ -414,14 +413,10 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (wrap_up) {	/* Write out results and return */
 		if (wrap_up == 2) {	/* Write D[OUT] and C */
 			if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void *)C))) Return (error);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&C);
 			if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_OUT]);
 		if (Ctrl->Q.active) {
 			if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, (void *)Q))) Return (error);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Q);
 		}
 		Return (GMT_OK);
 	}
@@ -521,7 +516,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], *pp = NULL;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.d");	/* Use default output filename */
 		dim[0] = 0;	dim[1] = 1;	dim[2] = ns;
-		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&LNK))) {
+		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&LNK, -1, &ID))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
 			return (GMT_RUNTIME_ERROR);
 		}
@@ -690,15 +685,12 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, (void *)Q))) Return (error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Q);
 	}
 
 	/* Write out the new multisegment file with polygons and segments */
 	
 	if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_OUT]);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Segments in: %ld Segments out: %ld\n", ns + n_islands, chain + n_islands);
 	if (n_trouble) GMT_report (GMT, GMT_MSG_NORMAL, "%ld trouble spots\n", n_trouble);

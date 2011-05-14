@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.19 2011-05-12 00:04:53 jluis Exp $
+ *	$Id: grdmath_func.c,v 1.20 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2785,10 +2785,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], GMT_LONG allo
 	struct GMT_HASH *p = NULL, *current = NULL;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (alloc_mode[k] == 2)
-			GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&stack[k]);
-		else if (alloc_mode[k] == 1)
-			GMT_free_grid (GMT, &stack[k], TRUE);
+		if (alloc_mode[k] == 1) GMT_free_grid (GMT, &stack[k], TRUE);
 	}
 	GMT_free_grid (GMT, &info->G, TRUE);
 	GMT_free (GMT, info->grd_x);
@@ -2916,12 +2913,10 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active && Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -R, -I when grid files are specified\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 			Return (EXIT_FAILURE);
 		}
 		else if  (GMT->common.r.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Cannot use -r when grid files are specified\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 			Return (EXIT_FAILURE);
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
@@ -3016,6 +3011,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			this_stack = nstack - 1;
 			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&opt->arg, (void *)stack[this_stack]);
+			alloc_mode[this_stack] = 2;	/* Since it now is registered */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
 			continue;

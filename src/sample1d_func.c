@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.8 2011-04-23 02:14:13 guru Exp $
+ *	$Id: sample1d_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -394,8 +394,6 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, (void **)&Ctrl->Out.file, (void *)Dout))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
-	GMT_free_dataset (GMT, &Dout);
 	GMT_free (GMT, t_out);
 	if (nan_flag) GMT_free (GMT, nan_flag);
 	if (Ctrl->N.active) GMT_free (GMT, t_supplied_out);

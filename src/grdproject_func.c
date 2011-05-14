@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.18 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdproject_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -493,9 +493,6 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Rect);
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Geo);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Rect);
 
 	Return (GMT_OK);
 }

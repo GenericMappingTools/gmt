@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
+*    $Id: gmtvector_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -504,11 +504,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, (void **)&Ctrl->Out.file, (void **)Dout)) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	
-	if (single)
-		GMT_free_dataset (GMT, &Din);
-	else
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Dout);
+	if (single) GMT_free_dataset (GMT, &Din);
 	
 	Return (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.8 2011-05-11 04:01:54 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -956,8 +956,6 @@ Definition of scalar moment.
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
-
- 	if (Ctrl->Z.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&CPT);
 
 	GMT_map_basemap (GMT, PSL);
 

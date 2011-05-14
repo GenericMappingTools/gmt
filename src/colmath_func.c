@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: colmath_func.c,v 1.6 2011-05-09 02:19:06 guru Exp $
+ *	$Id: colmath_func.c,v 1.7 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,12 +214,10 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (error) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Parsing requires files with same number of records.\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Selection lead to no output columns.\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
@@ -278,8 +276,5 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_IN]);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D[GMT_OUT]);
-	
 	Return (GMT_OK);
 }

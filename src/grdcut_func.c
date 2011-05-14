@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.10 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdcut_func.c,v 1.11 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -191,7 +191,6 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		if (i0 == -1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "The sub-region implied by -Z is empty!\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 			Return (EXIT_FAILURE);
 		}
 		for (i = G->header->nx-1, i1 = -1; i1 == -1 && i > i0; i--) {	/* Scan from xmax towards xmin */
@@ -252,7 +251,6 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (error) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Subset exceeds data domain!\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -307,8 +305,6 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data output and sets access mode */
 	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)G);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 
 	Return (GMT_OK);
 }

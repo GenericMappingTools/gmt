@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.19 2011-05-11 09:48:21 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.20 2011-05-14 00:04:07 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2670,7 +2670,6 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (n_grids > 0) {
 		GMT_free (GMT, MaxDiff);
 		GMT_free (GMT, iMaxDiff);
-		for (i = 0; i < n_grids; i++) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&(this_grid[i].G));
 	}
 
 	MGD77_Path_Free (GMT, (int)n_paths, list);

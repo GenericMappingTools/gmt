@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.19 2011-05-11 09:48:21 guru Exp $
+ * $Id: dimfilter.c,v 1.20 2011-05-14 00:04:07 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -902,14 +902,11 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->S.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write scale grid\n");
 			GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->S.file, (void *)Sout);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Sout);
 		}
 #endif	
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 		
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Gin);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Gout);
 		GMT_free (GMT, F. weight);
 		GMT_free (GMT, i_origin);
 		for (j = 0; j < F.ny; j++) GMT_free (GMT, sector[j]);

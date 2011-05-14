@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: cartesian.sh,v 1.15 2011-03-15 02:06:45 guru Exp $
+#	$Id: cartesian.sh,v 1.16 2011-05-14 00:04:07 guru Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -72,7 +72,7 @@ for az in 30 135 200 290 ; do
 	ypos=`gmtmath -Q $ypos 2.25 ADD =`
 	By=sn
 done
-psxy -R -J -O /dev/null >> $ps
+psxy -R -J -O -T >> $ps
 
 rm -f $$.* *.$$
 

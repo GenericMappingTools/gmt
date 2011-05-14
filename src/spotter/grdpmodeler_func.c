@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.9 2011-04-25 00:15:26 remko Exp $
+ *	$Id: grdpmodeler_func.c,v 1.10 2011-05-14 00:04:07 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -388,15 +388,11 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G_mod)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_age);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_mod);
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
 	GMT_free (GMT, p);
 	
-	if (Ctrl->F.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
-
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 
 	Return (GMT_OK);

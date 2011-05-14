@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.29 2011-05-13 01:26:57 remko Exp $
+ *	$Id: gmtapi.h,v 1.30 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,6 +56,7 @@ struct GMTAPI_DATA_OBJECT {
 	GMT_LONG n_alloc;			/* 0 if output array is preallocated, else number of records allocated so far */
 	GMT_LONG geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
 	GMT_LONG region;			/* 1 if wesn was passed, 0 otherwise */
+	GMT_LONG level;				/* Nested module level when object was allocated */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void **ptr;				/* Points to the source|destination (typically filenames) */
 	void *data;				/* Points to the memory location of the data (i.e., a GMT_GRID, GMT_DATASET structs) */
@@ -107,7 +108,7 @@ EXTERN_MSC GMT_LONG GMT_Init_IO		(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LO
 EXTERN_MSC GMT_LONG GMT_Begin_IO	(struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_End_IO		(struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_Report_Error	(struct GMTAPI_CTRL *C, GMT_LONG error);
-EXTERN_MSC GMT_LONG GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], void **data);
+EXTERN_MSC GMT_LONG GMT_Create_Data	(struct GMTAPI_CTRL *C, GMT_LONG type, GMT_LONG par[], void **data, GMT_LONG direction, GMT_LONG *ID);
 EXTERN_MSC GMT_LONG GMT_Get_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void **input,  void **data);
 EXTERN_MSC GMT_LONG GMT_Put_Data	(struct GMTAPI_CTRL *C, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, void **output, void  *data);
 EXTERN_MSC GMT_LONG GMT_Destroy_Data	(struct GMTAPI_CTRL *C, GMT_LONG mode, void **X);
@@ -128,6 +129,10 @@ EXTERN_MSC GMT_LONG GMT_Append_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION 
 EXTERN_MSC GMT_LONG GMT_Update_Option	(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
 EXTERN_MSC GMT_LONG GMT_Delete_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
 EXTERN_MSC GMT_LONG GMT_Parse_Common	(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+
+/* Sub function needed by GMT_end to free memory used in modules and at end of session */
+
+EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *C, GMT_LONG level);
 
 /* Macro to test if filename is a special name indicating memory location */
 

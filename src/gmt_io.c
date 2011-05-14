@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.274 2011-05-12 00:25:11 jluis Exp $
+ *	$Id: gmt_io.c,v 1.275 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -427,6 +427,13 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 #endif
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (C, filename, mode));
+#if WIN32
+	else if (!strcmp (filename, "NUL")) {	/* Special case of /dev/null under Windows */
+#else
+	else if (!strcmp (filename, "/dev/null")) {	/* The Unix null device; catch here to avoid gmt_nc_fopen */
+#endif
+		return (fopen (GMT_getdatapath(C, filename, path), mode));
+	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (C, filename, mode);
 		if (!fd) fd = fopen (GMT_getdatapath(C, filename, path), mode);
@@ -5386,7 +5393,8 @@ void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *segment)
 void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 {
 	GMT_LONG k;
-	if (!table) return;	/* Do not try to free NULL pointer */
+	if (!table) return;		/* Do not try to free NULL pointer */
+	if (!table->segment) return;	/* Do not try to free NULL pointer of segments */
 	for (k = 0; k < table->n_segments; k++) GMT_free_segment (C, table->segment[k]);
 	for (k = 0; k < table->n_headers; k++) free ((void *)table->header[k]);
 	if (table->n_headers) GMT_free (C, table->header);
@@ -5402,6 +5410,7 @@ void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data)
 {	/* This takes pointer to data array and thus can return it as NULL */
 	GMT_LONG tbl, k;
 	if (!(*data)) return;	/* Do not try to free NULL pointer */
+	if (!(*data)->table) return;	/* Do not try to free NULL pointer of tables */
 	for (tbl = 0; tbl < (*data)->n_tables; tbl++) {
 		GMT_free_table (C, (*data)->table[tbl]);
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.9 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdreformat_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,8 +204,6 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, mode, (void **)&Ctrl->IO.file[1], (void *)Grid);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 
 	Return (GMT_OK);
 }

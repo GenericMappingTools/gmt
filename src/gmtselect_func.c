@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -525,12 +525,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, (void **)&Ctrl->C.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
 			Return (EXIT_FAILURE);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
@@ -578,7 +576,6 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, (void **)&Ctrl->L.file, (void **)&Lin)) Return ((error = GMT_DATA_READ_ERROR));
 		if (Lin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Lin);
 			Return (EXIT_FAILURE);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
@@ -599,7 +596,6 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Fin);
 			Return (EXIT_FAILURE);
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
@@ -774,9 +770,6 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\n", n_read, n_pass);
 
-	if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Cin);
-	if (Ctrl->L.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Lin);
-	if (Ctrl->F.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Fin);
 	if (Ctrl->N.active) {
 		GMT_free_shore (GMT, &c);
 		GMT_shore_cleanup (GMT, &c);

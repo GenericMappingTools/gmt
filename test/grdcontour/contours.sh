@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: contours.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: contours.sh,v 1.4 2011-05-14 00:04:07 guru Exp $
 #
 # Test that contours are oriented correctly
 # grdraster 5 -R204/206/19/21 -GBigIsland.nc
@@ -42,7 +42,7 @@ grdcontour BigIsland.nc -J -O -C1000 -T0.1i/0.02i:-+ -S8 -K --FONT_ANNOT_PRIMARY
 
 color_contour l
 
-psxy -R -J -O /dev/null >> $ps
+psxy -R -J -O -T >> $ps
 
 rm -f contour_*.txt contour.d contour.cpt
 

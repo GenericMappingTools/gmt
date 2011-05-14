@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: test-JXd.sh,v 1.11 2011-03-15 02:06:45 guru Exp $
+#	$Id: test-JXd.sh,v 1.12 2011-05-14 00:04:07 guru Exp $
 
 psbasemap="psbasemap --FORMAT_GEO_MAP=dddF --FONT_LABEL=16p --MAP_FRAME_AXES=WeSn"
 
@@ -23,11 +23,11 @@ annot () {
 header "Test various specifications of -Jx w/wo trailing d"
 
 ps=test-JXd.ps
-psxy /dev/null -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
+psxy -T -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
 plot1 8cd/8c -X12c >> $ps
 plot1 8c/8cd -Y-11c >> $ps
 plot1 8cd/8cd -X-12c >> $ps
-psxy /dev/null -R -J -O >> $ps
+psxy -T -R -J -O >> $ps
 
 pscmp

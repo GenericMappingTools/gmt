@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.54 2011-05-13 02:12:25 jluis Exp $
+ *	$Id: grdimage_func.c,v 1.55 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -410,7 +410,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
 			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Requested region exceeds illumination extents\n");
-				GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 				Return (EXIT_FAILURE);
 			}
 		}
@@ -640,7 +639,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, FALSE);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
-			if (Intens_orig) GMT_free_grid (GMT, &Intens_orig, TRUE);	/* The above line is not always capable of freeing array */
 		}
 		resampled = TRUE;
 	}
@@ -930,7 +928,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_plotend (GMT, PSL);
 	}
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 	if (need_to_project && n_grids)
 		GMT_free_grid (GMT, &Grid_proj[0], TRUE);
 	else if (n_grids)
