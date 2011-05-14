@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.59 2011-05-14 02:46:09 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.60 2011-05-14 04:19:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -522,7 +522,7 @@ GMT_LONG GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr, GMT_LONG *object_ID)
 	return (GMT_OK);		
 }
 
-GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG direction, void *data, GMT_LONG *object_ID)
+GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *data, GMT_LONG *object_ID)
 {	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
@@ -538,7 +538,10 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG direction, void
 	*object_ID = GMTAPI_NOTSET;	/* Not found yet */
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;	/* Empty object */
+		if (API->object[i]->status) continue;				/* Finished with this one unless it is reset */
 		if (API->object[i]->direction != direction) continue;		/* Wrong direction */
+		if (API->object[i]->family != family) continue;			/* Wrong family */
+		if (API->object[i]->geometry != geometry) continue;		/* Wrong geometry */
 		if (API->object[i]->data == data) item = API->object[i]->ID;	/* Already registered */
 	}
 	*object_ID = item;			/* The ID of the object or -1 */
@@ -2344,7 +2347,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if (GMTAPI_is_registered (API, direction, data, object_ID)) return (GMT_OK);	/* Already registered */
+	if (GMTAPI_is_registered (API, family, method, geometry, direction, data, object_ID)) return (GMT_OK);	/* Already registered */
 	
 	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
 	m = method - (via + 1) * GMT_VIA_VECTOR;
@@ -3071,9 +3074,12 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void **X)
 			break;		
 	}
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
+		GMT_LONG j;
+		void *address = API->object[item]->data;
 		GMT_report (API->GMT, GMT_MSG_VERBOSE, "Successfully freed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
-		direction = API->object[item]->direction;
+		direction = API->object[item]->direction;		
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, direction))) return (GMT_Report_Error (API, error));	/* Did not find object */
+		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 		error = 1;	/* Freed one item */
 		*X = NULL;
 	}
