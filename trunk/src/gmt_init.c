@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.507 2011-05-13 21:57:33 remko Exp $
+ *	$Id: gmt_init.c,v 1.508 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4989,6 +4989,8 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 #if 0	/* I do not think we need the interstitial hist_cpy; just copy the pointers */
 	char *hist_cpy[GMT_N_UNIQUE];
 #endif
+
+	GMT_Garbage_Collection (C->parent, C->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 

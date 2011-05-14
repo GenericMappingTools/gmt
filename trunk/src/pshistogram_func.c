@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.9 2011-05-11 04:01:54 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -569,13 +569,13 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			GMT_LONG ibox, dim[4] = {1, 1, 2, 0};
+			GMT_LONG ibox, ID, dim[4] = {1, 1, 2, 0};
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;
 			
 			dim[3] = F.n_boxes;
-			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D))) {
+			if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -665,7 +665,6 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, PSL, -1, 0.0);
 	GMT_plotend (GMT, PSL);
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 	GMT_free (GMT, data);
 	GMT_free (GMT, F.boxh);
 

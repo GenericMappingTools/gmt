@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.12 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -341,7 +341,6 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	file = CPT_file;
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
 	if ((error = GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, (void **)&file, (void **)&Pin))) Return (error);
-	if ((error = GMT_Init_IO (API, GMT_IS_CPT, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -356,7 +355,6 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Grids do not have the same domain!\n");
-			while (k >= 0) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G[k--]);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -542,14 +540,9 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
-	for (k = 0; k < ngrd; k++) {
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G[k]);	/* Destroy all grids */
-		free ((void *)grdfile[k]);
-	}
+	for (k = 0; k < ngrd; k++) free ((void *)grdfile[k]);
 	GMT_free (GMT, G);
 	GMT_free (GMT, grdfile);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Pin);
-	GMT_free_palette (GMT, &Pout);	/* Since we know we allocaed this one herein */
 
 	Return (EXIT_SUCCESS);
 }

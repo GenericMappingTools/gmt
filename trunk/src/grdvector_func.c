@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.12 2011-05-03 17:39:48 guru Exp $
+ *	$Id: grdvector_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -339,8 +339,6 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_plotinit (API, PSL, options);
 		GMT_map_basemap (GMT, PSL);
 		GMT_plotend (GMT, PSL);
-		for (k = 0; k < 2; k++) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid[k]);
-		if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 		Return (GMT_OK);
 	}
 
@@ -468,11 +466,6 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_map_basemap (GMT, PSL);
 
 	GMT_plotend (GMT, PSL);
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid[0]);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid[1]);
-
-	if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 
 	Return (EXIT_SUCCESS);
 }

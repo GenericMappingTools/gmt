@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.18 2011-05-04 19:33:17 guru Exp $
+ *	$Id: grdsample_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -283,9 +283,6 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, lon);
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Gin);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Gout);
 
 	Return (GMT_OK);
 }

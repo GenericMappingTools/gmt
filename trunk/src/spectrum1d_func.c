@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.12 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -683,12 +683,10 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
 	free_space_spectrum1d (GMT, &C);
 	
 	if (one_table) {
 		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, Dout->io_mode, (void **)&(Ctrl->N.name), (void *)Dout))) Return (error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Dout);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 	}
 

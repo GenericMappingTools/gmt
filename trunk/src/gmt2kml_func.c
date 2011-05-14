@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.16 2011-05-11 04:01:53 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.17 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -608,7 +608,6 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		if (P->is_continuous) {
 			GMT_message (GMT, "Cannot use continuous color palette\n");
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -956,15 +955,12 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (T->file[GMT_IN]) tabs (--N), printf ("</Folder>\n");
 		}
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
 	}
 	if (use_folder) tabs (--N), printf ("</%s>\n", Document[KML_FOLDER]);
 	if (!GMT->common.K.active) {
 		tabs (--N), printf ("</%s>\n", Document[KML_DOCUMENT]);
 		printf ("</kml>\n");
 	}
-
-	if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 
 	Return (GMT_OK);
 }

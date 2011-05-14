@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.10 2011-05-02 19:34:31 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.11 2011-05-14 00:04:07 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -510,9 +510,6 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, xx);
 		GMT_free (GMT, yy);
 	}
-	else {
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Qin);
-	}
 	GMT_free (GMT, grid_lon);
 	GMT_free (GMT, grid_lat);
 	if (!Ctrl->C.active) {
@@ -524,7 +521,6 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridding completed, %ld nodes visited (at least once)\n", n_set);
 	
 	Return (GMT_OK);

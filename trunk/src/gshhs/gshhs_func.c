@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.6 2011-04-29 03:08:12 guru Exp $
+/*	$Id: gshhs_func.c,v 1.7 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -136,7 +136,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000, error, n_read;
+	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000, error, ID, n_read;
 	GMT_LONG mode, level, version, greenwich, is_river, src, must_swab, dim[4] = {1, 0, 2, 0}, first = TRUE;
 
 	double w, e, s, n, area, f_area;
@@ -178,7 +178,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	dim[1] = n_alloc = (Ctrl->I.active) ? 1 : GMT_CHUNK;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D))) {
+	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
@@ -281,7 +281,6 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	mode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
 	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, mode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
 

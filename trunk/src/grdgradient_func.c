@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.13 2011-05-02 08:49:49 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.14 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -597,13 +597,9 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data output and sets access mode */
 	if (Ctrl->G.active) GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Out);
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Surf);
-	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
-
 	if (Ctrl->S.active) {
 		strcpy (Slope->header->title, "Magnitude of maximum slopes");
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->S.file, (void *)Slope);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Slope);
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 

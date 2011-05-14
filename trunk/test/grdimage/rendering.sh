@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: rendering.sh,v 1.5 2011-04-25 00:21:07 guru Exp $
+#	$Id: rendering.sh,v 1.6 2011-05-14 00:04:07 guru Exp $
 
 . ../functions.sh
 header "Test grdimage for rendering issues"
@@ -41,7 +41,7 @@ render -nn >> $ps
 render -nl -Y2i >> $ps
 render -nb -Y2i >> $ps
 render -nc -Y2i >> $ps
-psxy -R -J /dev/null -O >> $ps
+psxy -R -J -T -O >> $ps
 
 rm -f t.nc t.cpt
 

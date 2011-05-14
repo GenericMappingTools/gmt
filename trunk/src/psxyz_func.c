@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.14 2011-05-11 09:48:21 guru Exp $
+ *	$Id: psxyz_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -932,8 +932,6 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-
-	if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 

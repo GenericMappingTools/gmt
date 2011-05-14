@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.9 2011-05-11 09:48:21 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -613,7 +613,6 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
 	GMT_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) GMT_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) GMT_free (GMT, igrf_xyz);

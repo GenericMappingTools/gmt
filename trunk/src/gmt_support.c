@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.508 2011-05-13 21:58:36 remko Exp $
+ *	$Id: gmt_support.c,v 1.509 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1895,6 +1895,7 @@ struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
 	P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT);
+	P->n_colors = n_colors;
 	return (P);
 }
 
@@ -2387,9 +2388,7 @@ void GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin, double z[], GM
 		even = TRUE;
 	}
 
-	P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
-	P->n_colors = (int)(nz - 1);
-	P->range = GMT_memory (C, NULL, P->n_colors, struct GMT_LUT);
+	P = GMT_create_palette (C, nz - 1);
 	lut = GMT_memory (C, NULL, Pin->n_colors, struct GMT_LUT);
 
 	GMT_check_condition (C, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");

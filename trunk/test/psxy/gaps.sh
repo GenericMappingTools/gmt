@@ -25,7 +25,7 @@ sample1d $tmp -I0.1 -Fc | psxy -R -J -O -K -W0.5p,blue,-
 sample1d $tmp -I0.1 -Fa | psxy -R -J -O -K -W0.5p,blue
 pstext -R -J -F+f16p+jBL -O -K -N <<< "0 -4.5 Black triangles indicate NaN locations"
 
-psxy -R -J -O /dev/null
+psxy -R -J -O -T
 }
 
 ncgen -o $$.nc <<EOF

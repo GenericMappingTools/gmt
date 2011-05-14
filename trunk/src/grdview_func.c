@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.24 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdview_func.c,v 1.25 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -632,9 +632,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_map_basemap (GMT, PSL);
 		GMT_plane_perspective (GMT, PSL, -1, 0.0);
 		GMT_plotend (GMT, PSL);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Topo);
-		if (Ctrl->I.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens);
-		if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 		Return (GMT_OK);
 	}
 
@@ -1576,12 +1573,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Topo);
 	if (Ctrl->I.active) {
 		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens);
 	}
-	if (Ctrl->C.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
 	GMT_free (GMT, x);
@@ -1590,7 +1584,6 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, v);
 	if (Ctrl->G.active) for (i = 0; i < n_drape; i++) {
 		GMT_change_grdreg (GMT, Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Drape[i]);
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");

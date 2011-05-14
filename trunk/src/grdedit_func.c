@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.9 2011-05-10 03:57:29 guru Exp $
+ *	$Id: grdedit_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,13 +224,11 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if ((G->header->type == GMT_GRD_IS_SF || G->header->type == GMT_GRD_IS_SD) && Ctrl->T.active) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_report (GMT, GMT_MSG_FATAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 		Return (EXIT_FAILURE);
 	}
 	
 	if (Ctrl->S.active && !GMT_grd_is_global (GMT, G->header)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Shift only allowed for global grids\n");
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 		Return (EXIT_FAILURE);
 	}
 
@@ -259,7 +257,6 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		GMT_grd_shift (GMT, G, shift_amount);
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	}
 	else if (Ctrl->N.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
@@ -291,7 +288,6 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
@@ -328,7 +324,6 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		GMT_free (GMT, h_tr);
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->In.file, (void *)G);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	}
 	else {	/* Change the domain boundaries */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
@@ -353,7 +348,6 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		}
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&Ctrl->In.file, (void *)G);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	}
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 

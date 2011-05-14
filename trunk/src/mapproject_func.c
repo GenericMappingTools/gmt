@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.20 2011-05-11 04:01:54 guru Exp $
+*	$Id: mapproject_func.c,v 1.21 2011-05-14 00:04:06 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -973,7 +973,6 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	GMT_free (GMT, out);
-	if (Ctrl->L.active) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Lin);
 
 	Return (GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.7 2011-04-23 02:14:13 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -487,7 +487,6 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, PSL, -1, 0.0);
 	GMT_plotend (GMT, PSL);
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
 	GMT_free (GMT, zz);

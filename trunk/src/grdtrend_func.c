@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.8 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -462,6 +462,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* High-level function that implements the grdcontour task */
 
 	GMT_LONG trivial, weighted, error = 0, i, k, ierror = 0, iterations;
+	GMT_LONG set_ones = TRUE;
 	
 	char format[GMT_BUFSIZ];
 
@@ -530,7 +531,6 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	W = GMT_create_grid (GMT);	/* Pointer for grid with array containing data weights  */
 	if (weighted) {
-		GMT_LONG set_ones = TRUE;
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
@@ -614,22 +614,25 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		strcpy (T->header->title, "trend surface");
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->T.file, (void *)T);
 	}
+	else
+		GMT_free_grid (GMT, &T, TRUE);	/* Not written out */
 	if (Ctrl->D.file) {
 		strcpy (R->header->title, "trend residuals");
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->D.file, (void *)R);
 	}
+	else if (Ctrl->D.active || Ctrl->N.robust)
+		GMT_free_grid (GMT, &R, TRUE);
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		strcpy (W->header->title, "trend weights");
 		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->W.file, (void *)W);
 	}
+	else if (set_ones)
+		GMT_free_grid (GMT, &W, TRUE);
+		
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	/* That's all, folks!  */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-	GMT_free_grid (GMT, &T, TRUE);
-	GMT_free_grid (GMT, &W, TRUE);
-	if (Ctrl->D.active || Ctrl->N.robust) GMT_free_grid (GMT, &R, TRUE);
 
 	GMT_free (GMT, pstuff);
 	GMT_free (GMT, gtd);

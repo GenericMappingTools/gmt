@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.20 2011-05-12 01:33:30 remko Exp $
+ *	$Id: grdcontour_func.c,v 1.21 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -974,8 +974,6 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_plotend (GMT, PSL);
 	}
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-	if (Ctrl->C.cpt) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&P);
 	GMT_free_grid (GMT, &G_orig, TRUE);
 	GMT_free (GMT, edge);
 	GMT_free (GMT, contour);

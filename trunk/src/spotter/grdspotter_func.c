@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.12 2011-05-11 09:48:21 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -983,12 +983,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Clean up memory */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&A);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Z);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&L);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&PA);
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&DI);
 	GMT_free (GMT, processed_node);
 	for (i = 0; keep_flowlines && i < n_nodes; i++) {
 		GMT_free (GMT, flowline[i].node);

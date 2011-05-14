@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.11 2011-05-14 00:04:07 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -308,8 +308,6 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridding completed\n");
 
 	Return (GMT_OK);

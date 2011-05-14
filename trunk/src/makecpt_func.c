@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.9 2011-04-29 03:08:12 guru Exp $
+ *	$Id: makecpt_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -285,7 +285,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	file = CPT_file;
 
-	if ((error = GMT_Init_IO (API, GMT_IS_CPT, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes cpt output [stdout] */
+	/* if ((error = GMT_Init_IO (API, GMT_IS_CPT, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error); */	/* Establishes cpt output [stdout] */
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN,  GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 
@@ -298,12 +298,10 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->T.file, (void **)&T)) Return (GMT_DATA_READ_ERROR);
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (T->table[0]->segment[0]->n_rows == 0) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: No intervals in file %s\n", Ctrl->T.file);
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
@@ -355,10 +353,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active, &Pout);
 
-	if (Ctrl->T.file)
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T);
-	else
-		GMT_free (GMT, z);
+	if (!Ctrl->T.file) GMT_free (GMT, z);
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
@@ -370,9 +365,6 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_Put_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, (void **)&Ctrl->Out.file, (void *)Pout)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Pin);
-	GMT_free_palette (GMT, &Pout);	/* Since we know we allocaed this one herein */
 
 	Return (GMT_OK);
 }

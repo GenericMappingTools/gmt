@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.191 2011-05-11 04:01:53 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.192 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1542,7 +1542,6 @@ void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, GMT_LONG free_grid)
 	if ((*G)->data && free_grid) GMT_free (C, (*G)->data);
 	if ((*G)->header) GMT_free (C, (*G)->header);
 	GMT_free (C, *G);
-	*G = NULL;
 }
 
 GMT_LONG GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **Out)

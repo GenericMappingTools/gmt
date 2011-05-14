@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2828,7 +2828,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	PFV call_operator[GMTMATH_N_OPERATORS];
 
 	struct GMT_DATASET *stack[GMTMATH_STACK_SIZE], *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
-	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL;
+	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_TABLE *rhs = NULL, *D = NULL, *I = NULL;
 	struct GMT_HASH *p = NULL, *current = NULL, localhashnode[GMTMATH_N_OPERATORS];
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
@@ -3263,17 +3263,15 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_LINE_SEGMENT *S = stack[0]->table[0]->segment[0];
-		struct GMT_DATASET *Root = NULL;
-		GMT_LONG dim[4] = {1, 1, 1, 0};
+		GMT_LONG dim[4] = {1, 1, 1, 0}, ID;
 		
 		dim[3] = info.n_roots;
-		if ((error = GMT_Create_Data (API, GMT_IS_DATASET, dim, (void **)&Root))) Return (error)
-		for (i = 0; i < info.n_roots; i++) Root->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
-		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, (void **)&(Ctrl->Out.file), (void *)Root))) Return (error);
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Root);
+		if ((error = GMT_Create_Data (API, GMT_IS_DATASET, dim, (void **)&R, GMT_OUT, &ID))) Return (error)
+		for (i = 0; i < info.n_roots; i++) R->table[0]->segment[0]->coord[GMT_X][i] = S->coord[info.r_col][i];
+		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, NULL, stack[0]->io_mode, (void **)&(Ctrl->Out.file), (void *)R))) Return (error);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&R);
 	}
 	else {	/* Regular table result */
-		struct GMT_DATASET *R = NULL;
 		if (stack[0])	/* There is an output stack, select it */
 			R = stack[0];
 		else {		/* Can happen if only -T [-N] was specified with no operators */

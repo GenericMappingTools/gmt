@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.8 2011-05-09 02:19:06 guru Exp $
+ *	$Id: filter1d_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -765,6 +765,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_report (GMT, GMT_MSG_FATAL, __VA_ARGS__); return (code);}
+#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
@@ -925,13 +926,10 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error, "Error in End_IO\n");				/* Disables further data output */
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
-	if (F.filter_type == FILTER1D_CUSTOM) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&F.Fin);
 
-	free_space_filter1d (GMT, &F);
 	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", F.n_multiples);
 
-	Free_filter1d_Ctrl (GMT, Ctrl);
-	
-	return (GMT_OK);
+	free_space_filter1d (GMT, &F);
+
+	Return2 (GMT_OK);
 }

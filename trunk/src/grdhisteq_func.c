@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.8 2011-05-03 17:39:48 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -348,20 +348,13 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
-		if ((error = do_usual (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) {	/* Read error */
-			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-			if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
-			Return (EXIT_FAILURE);
-		}
+		if ((error = do_usual (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 	if (Ctrl->G.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->G.file), (void **)&Out)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-
-	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid);
-	if (new_grid) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Out);
 
 	Return (EXIT_SUCCESS);
 }
