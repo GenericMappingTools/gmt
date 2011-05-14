@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.509 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmt_support.c,v 1.510 2011-05-14 01:30:47 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1895,7 +1895,7 @@ struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG n_colors)
 	/* Makes an empty palette table */
 	struct GMT_PALETTE *P = GMT_memory (C, NULL, 1, struct GMT_PALETTE);
 	P->range = GMT_memory (C, NULL, n_colors, struct GMT_LUT);
-	P->n_colors = n_colors;
+	P->n_colors = (int)n_colors;
 	return (P);
 }
 
