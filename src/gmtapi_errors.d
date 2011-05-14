@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-#	$Id: gmtapi_errors.d,v 1.3 2011-04-26 17:52:49 guru Exp $
+#	$Id: gmtapi_errors.d,v 1.4 2011-05-14 02:46:09 guru Exp $
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,6 +47,7 @@ GMT_PROG_NOT_FOUND
 GMT_OPTION_NOT_FOUND
 GMT_WRONG_KIND
 GMT_MEMORY_ERROR
+GMT_MEMORY_MODE_ERROR
 GMT_NO_GRDHEADER
 GMT_OUTPUT_NOT_SET
 GMT_ONLY_ONE_ALLOWED
