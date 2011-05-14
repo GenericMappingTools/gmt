@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.56 2011-05-14 01:01:37 guru Exp $
+ *	$Id: grdimage_func.c,v 1.57 2011-05-14 01:10:15 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -935,7 +935,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Grid_proj[0]);
 
 #ifdef USE_GDAL
-	if (P) GMT_free (GMT, P);
 	if (Ctrl->D.active) {
 		if (r_table) GMT_free (GMT, r_table);
 		if (g_table) {
