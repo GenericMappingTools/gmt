@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.508 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmt_init.c,v 1.509 2011-05-15 20:59:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7759,17 +7759,19 @@ int getuid (void) { return (0); }
  * of other Win32 compilers as well.
  */
 
-void GMT_setmode (struct GMT_CTRL *C, int i_or_o)
+void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction)
 {
 	/* Changes the stream to deal with BINARY rather than TEXT data */
 
 	FILE *fp = NULL;
+	static const char *IO_direction[2] = {"Input", "Output"};
 
-	if (C->common.b.active[i_or_o]) {	/* User wants native binary i/o */
+	if (C->common.b.active[direction]) {	/* User wants native binary i/o */
 
-		fp = (i_or_o == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
+		fp = (direction == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
 #ifdef _WIN32
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
 		setmode (fileno (fp), _O_BINARY);
 #else
 		_fsetmode (fp, "b");
