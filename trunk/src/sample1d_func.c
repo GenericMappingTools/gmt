@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *	$Id: sample1d_func.c,v 1.10 2011-05-15 12:02:06 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -229,7 +229,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, spatial = FALSE, *nan_flag = NULL;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
-	double tt, low_t, high_t, last_t, inc_degrees;
+	double tt, low_t, high_t, last_t, inc_degrees = 0.;
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_TABLE *T = NULL, *Tout = NULL;

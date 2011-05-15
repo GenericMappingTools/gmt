@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.20 2011-05-12 01:33:30 remko Exp $
+ *	$Id: pstext_func.c,v 1.21 2011-05-15 11:58:29 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
-		GMT_LONG mode;
+		GMT_LONG mode = 0;
 		if (T->boxflag & 1) GMT_setpen (GMT, PSL, &(T->boxpen));			/* Change current pen */
 		if (T->boxflag & 2) GMT_setfill (GMT, PSL, &(T->boxfill), T->boxflag & 1);	/* Change curent fill */
 		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;	/* Set the correct box shape */
@@ -511,7 +511,7 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, mode, n_alloc, m = 0;
+	GMT_LONG i, nscan, length = 0, n_paragraphs = 0, n_add, n_fields, mode, n_alloc = 0, m = 0;
 	GMT_LONG n_read = 0, n_processed = 0, txt_alloc = 0, old_is_world, add, n_expected_cols;
 	GMT_LONG error = FALSE, master_record = FALSE, skip_text_records = FALSE, pos, text_col;
 
