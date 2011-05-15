@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.16 2011-05-15 23:41:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -222,6 +222,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 #endif
 	}
+	else if (io.binary) GMT->common.b.active[GMT_OUT] = TRUE;
 
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options))) Return (error);	/* Registers stdout, unless already set */
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);			/* Enables data input and sets access mode */
@@ -230,7 +231,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 0))) Return (error);
 	out[3] = Ctrl->W.weight;
-	
+		
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
 		if (opt->option != '<') continue;	/* We are only processing input files here */

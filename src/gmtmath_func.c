@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.16 2011-05-15 23:41:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2753,6 +2753,7 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 #define Free_Hash { for (i = 0; i < GMTMATH_N_OPERATORS; i++) { p = localhashnode[i].next; while ((current = p)) { p = p->next; GMT_free (GMT, current); } } }
 #define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_free_dataset (GMT, &D_stdin); }
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); return (code); }
 
 GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
@@ -2851,9 +2852,9 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtmath", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options))) Return1 (error);
 	Ctrl = (struct GMTMATH_CTRL *) New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
@@ -2897,7 +2898,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (i != 1) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: No output destination specified or implied\n");
-		Return (EXIT_FAILURE);
+		Return1 (EXIT_FAILURE);
 	}
 	
 	GMT_memset (&info, 1, struct GMTMATH_INFO);

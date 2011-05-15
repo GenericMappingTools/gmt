@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.64 2011-05-15 23:02:50 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.65 2011-05-15 23:41:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,7 +259,7 @@ void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, struct GMT_MATRIX *M)
 	h->inc[GMT_Y] = GMT_get_inc (h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
-GMT_LONG GMTAPI_need_grdpadding (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG *pad)
+GMT_LONG GMTAPI_need_grdpadding (struct GRD_HEADER *h, GMT_LONG *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return TRUE here, otherwise FALSE. */
 	GMT_LONG k;
@@ -494,7 +494,7 @@ GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	return (GMT_OK);		
 }
 
-GMT_LONG GMTAPI_Decode_ID (struct GMTAPI_CTRL *API, char *filename)
+GMT_LONG GMTAPI_Decode_ID (char *filename)
 {	/* Checking if ptr contains a filename with embedded GMTAPI Object ID.
 	 * If found we return the ID otherwise we return GMTAPI_NOTSET.
  	*/
@@ -522,7 +522,7 @@ GMT_LONG GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr, GMT_LONG *object_ID)
 	return (GMT_OK);		
 }
 
-GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *data, GMT_LONG *object_ID)
+GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, void *data, GMT_LONG *object_ID)
 {	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
@@ -687,7 +687,7 @@ GMT_LONG GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	 */
 	
 	GMT_LONG item, col, row, seg, n_cols = 0, ij, first_item = 0, last_item, geometry;
-	GMT_LONG allocate = FALSE, update = FALSE, error, n_alloc, all_D, use_GMT_io, poly;
+	GMT_LONG allocate = FALSE, update = FALSE, error = 0, n_alloc, all_D, use_GMT_io, poly;
 	struct GMT_DATASET *D = NULL, *Din = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
@@ -995,7 +995,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	 * Note: Memory is allocated for the Dataset except for GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, row, seg, first_item = 0, last_item, error, n_alloc, allocate = FALSE;
+	GMT_LONG item, row, seg, first_item = 0, last_item, error = 0, n_alloc, allocate = FALSE;
 	char *t = NULL;
 	struct GMT_TEXTSET *T = NULL, *Tin = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -1311,7 +1311,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Change alloc mode\n");
 			I->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Check pad\n");
-			if (!GMTAPI_need_grdpadding (API->GMT, I->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
+			if (!GMTAPI_need_grdpadding (I->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G->data to allow for padding, then rearrange rows */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Add pad\n");
 			/*GMT_grd_pad_on (API->GMT, I, API->GMT->current.io.pad);*/
@@ -1322,7 +1322,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			if (S->region) return (GMT_Report_Error (API, GMT_SUBSET_NOT_ALLOWED));
 			I = (struct GMT_IMAGE *)(*S->ptr);
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
-			if (GMTAPI_need_grdpadding (API->GMT, I->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
+			if (GMTAPI_need_grdpadding (I->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from read-only GMT_GRID memory location\n");
 			I->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			break;
@@ -1365,7 +1365,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			I->data = (unsigned char *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			I->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
-			if (!GMTAPI_need_grdpadding (API->GMT, I->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
+			if (!GMTAPI_need_grdpadding (I->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend I->data to allow for padding, then rearrange rows */
 			/*GMT_grd_pad_on (API->GMT, I, API->GMT->current.io.pad);*/
 			break;
@@ -1520,7 +1520,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Check pad\n");
 			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
-			if (!GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
+			if (!GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G->data to allow for padding, then rearrange rows */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Add pad\n");
 			GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);
@@ -1533,7 +1533,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
 			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
-			if (GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
+			if (GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from read-only GMT_GRID memory location\n");
 			G->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			break;
@@ -1580,7 +1580,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
-			if (!GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
+			if (!GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G->data to allow for padding, then rearrange rows */
 			GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);
 			break;
@@ -1652,7 +1652,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating grid data to GMT_GRID memory location\n");
 			if (!S->region) {	/* No subset, possibly same padding */
 				G_copy = GMT_duplicate_grid (API->GMT, G, TRUE);
-				if (GMTAPI_need_grdpadding (API->GMT, G_copy->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G_copy, API->GMT->current.io.pad);
+				if (GMTAPI_need_grdpadding (G_copy->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G_copy, API->GMT->current.io.pad);
 				GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
 				if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 				*S->ptr = (void *)G_copy;
@@ -1693,7 +1693,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			if (S->region) return (GMT_Report_Error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode == GMT_GRID_HEADER) return (GMT_Report_Error (API, GMT_NOT_A_VALID_MODE));
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data to GMT_GRID memory location\n");
-			if (GMTAPI_need_grdpadding (API->GMT, G->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);	/* Adjust pad */
+			if (GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);	/* Adjust pad */
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
 			GMT_grd_zminmax (API->GMT, G);	/* Must set zmin/zmax since we are not writing */
 			*S->ptr = (void *)G;
@@ -2352,7 +2352,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if (GMTAPI_is_registered (API, family, method, geometry, direction, data, object_ID)) return (GMT_OK);	/* Already registered */
+	if (GMTAPI_is_registered (API, family, geometry, direction, data, object_ID)) return (GMT_OK);	/* Already registered */
 	
 	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
 	m = method - (via + 1) * GMT_VIA_VECTOR;
@@ -2360,7 +2360,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	switch (method) {	/* Consider CPT, data, text, and grids, accessed via a variety of methods */
 		case GMT_IS_FILE:	/* Registration via a single file name */
 			/* Check if this filename is an embedded API Object ID passed via the filename.  If it is, just validate it and return either error or OK */
-			if ((*object_ID = GMTAPI_Decode_ID (API, (char *)(*resource))) != GMTAPI_NOTSET) return (GMT_Report_Error (API, GMTAPI_Validate_ID (API, family, *object_ID, direction, &item)));
+			if ((*object_ID = GMTAPI_Decode_ID ((char *)(*resource))) != GMTAPI_NOTSET) return (GMT_Report_Error (API, GMTAPI_Validate_ID (API, family, *object_ID, direction, &item)));
 			/* No, so presumably it is a regular file name */
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p, *file = strdup ((char *)(*resource));
