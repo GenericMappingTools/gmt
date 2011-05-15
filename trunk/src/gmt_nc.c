@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.106 2011-05-15 13:01:05 jluis Exp $
+ *	$Id: gmt_nc.c,v 1.107 2011-05-15 17:42:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -291,7 +291,6 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, (size_t)GRD_COMMAND_LEN320))
 		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, (size_t)GRD_COMMAND_LEN320);
 		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, (size_t)GRD_REMARK_LEN160);
-		nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &header->registration);
 
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = GMT_memory (C, NULL, MAX(header->nx,header->ny), double);
@@ -299,8 +298,10 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Get information about x variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[0]], header->x_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy))
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
+			header->registration = (!j && GMT_eq(dummy[0],xy[0]) && GMT_eq(dummy[1],xy[header->nx-1])) ? GMT_GRIDLINE_REG : GMT_PIXEL_REG;
+		}
 		else if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
 			header->registration = GMT_GRIDLINE_REG;
@@ -376,7 +377,6 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (header->command[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
-		if (header->registration == GMT_PIXEL_REG) GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->registration));
 
 		/* Define x variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
