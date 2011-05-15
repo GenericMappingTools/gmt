@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.63 2011-05-15 22:27:24 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.64 2011-05-15 23:02:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -330,7 +330,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 			S->fp = (FILE *)(*S->ptr);
 #ifdef SET_IO_MODE
 			if (S->family == GMT_IS_DATASET && S->fp == API->GMT->session.std[direction]) 
-				GMT_setmode (API->GMT, direction);	/* Windows may need to have its read mode changed from text to binary */
+				GMT_setmode (API->GMT, (int)direction);	/* Windows may need to have its read mode changed from text to binary */
 #endif
 			kind = (S->fp == API->GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
 			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", stream[kind], GMT_direction[direction]);
