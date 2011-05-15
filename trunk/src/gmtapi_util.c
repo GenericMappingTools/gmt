@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.62 2011-05-15 21:33:51 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.63 2011-05-15 22:27:24 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1686,6 +1686,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			*S->ptr = (void *)G_copy;
+			S->data = *S->ptr;
 			break;
 			
 	 	case GMT_IS_REF:	/* GMT grid and header in a GMT_GRID container object - just pass the reference */
@@ -1696,6 +1697,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
 			GMT_grd_zminmax (API->GMT, G);	/* Must set zmin/zmax since we are not writing */
 			*S->ptr = (void *)G;
+			S->data = *S->ptr;
 			break;
 			
 	 	case GMT_IS_COPY + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
@@ -1715,6 +1717,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				ij = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				GMTAPI_put_val (M->data, (double)G->data[ijp], ij, M->type);
 			}
+			S->data = *S->ptr;
 			break;
 
 	 	case GMT_IS_REF + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
@@ -1725,6 +1728,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			GMTAPI_grdheader_to_info (G->header, M);	/* Populate an array with GRD header information */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data to user memory location\n");
 			M->data = (void *)(G->data);
+			S->data = *S->ptr;
 			break;
 			
 		default:
@@ -2612,7 +2616,7 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 
 	/* Update the pointer in the object so we can destroy the data later */
 	if ((error = GMTAPI_Validate_ID (API, family, out_ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
-	if (!API->object[item]->data) API->object[item]->data = data;	/* Save address to memory we wrote from */
+	if (!API->object[item]->data) API->object[item]->data = data;	/* Save address to memory we wrote to */
 	
 	return (GMT_Report_Error (API, GMT_OK));	/* Return status */
 }

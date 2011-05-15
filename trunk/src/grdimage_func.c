@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.59 2011-05-15 21:33:51 guru Exp $
+ *	$Id: grdimage_func.c,v 1.60 2011-05-15 22:27:24 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -344,7 +344,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE;
 	GMT_LONG k, byte, nx, ny, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
-	GMT_LONG colormask_offset = 0, nm, node, kk, try, free_G2 = FALSE, gray_only = FALSE;
+	GMT_LONG colormask_offset = 0, nm, node, kk, try, gray_only = FALSE;
 	GMT_LONG node_RGBA = 0;		/* Counter for the RGB(A) image array. */
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
@@ -586,7 +586,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 			Intens_orig = G2;
-			free_G2 = TRUE;
+			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy at the end */
 		}
 #endif
 
@@ -641,10 +641,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			Intens_proj->data = GMT_memory (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, FALSE);
-			if (free_G2)
-				GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G2);
-			else
-				GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Intens_orig);
 		}
 		resampled = TRUE;
 	}
