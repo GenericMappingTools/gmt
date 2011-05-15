@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.42 2011-05-11 09:48:21 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.43 2011-05-15 20:59:02 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -329,7 +329,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 	
 #ifdef SET_IO_MODE
-	GMT_setmode (GMT, 1);
+	GMT_setmode (GMT, GMT_OUT);
 #endif
 
 	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
