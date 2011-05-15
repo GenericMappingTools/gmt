@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.61 2011-05-15 20:59:02 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.62 2011-05-15 21:33:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1656,6 +1656,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
 				if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 				*S->ptr = (void *)G_copy;
+				S->data = *S->ptr;
 				break;		/* Done with this grid */
 			}
 			/* Here we need to extract subset, and possibly change padding. */
@@ -2611,7 +2612,7 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method
 
 	/* Update the pointer in the object so we can destroy the data later */
 	if ((error = GMTAPI_Validate_ID (API, family, out_ID, GMT_OUT, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
-	API->object[item]->data = data;	/* Save address to memory we wrote from */
+	if (!API->object[item]->data) API->object[item]->data = data;	/* Save address to memory we wrote from */
 	
 	return (GMT_Report_Error (API, GMT_OK));	/* Return status */
 }

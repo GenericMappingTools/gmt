@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.212 2011-04-27 15:35:24 remko Exp $
+ *	$Id: gmt.h,v 1.213 2011-05-15 21:33:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,6 +92,7 @@ extern "C" {
 #endif
 #endif
 
+#include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_notunix.h"	/* Stuff for Windows */
 #ifndef WIN32
 #include <pwd.h>
@@ -100,7 +101,6 @@ extern "C" {
 
 #include "gmt_constants.h"	/* All basic constant definitions */
 #include "gmt_macros.h"		/* All basic macros definitions */
-#include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_dimensions.h"	/* Constant definitions created by configure */
 #include "gmt_time.h"		/* Declarations of structures for dealing with time */
 #include "gmt_texture.h"	/* Declarations of structures for dealing with pen, fill, etc. */

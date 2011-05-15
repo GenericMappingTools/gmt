@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.58 2011-05-14 04:19:29 guru Exp $
+ *	$Id: grdimage_func.c,v 1.59 2011-05-15 21:33:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -577,7 +577,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid G */
 
-			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_OUT, (void **)&G2, NULL, (void *)G2, &object_ID)) 
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&G2, NULL, (void *)G2, &object_ID)) 
 				return (EXIT_FAILURE);
 			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid G2 */
 
