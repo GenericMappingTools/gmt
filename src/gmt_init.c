@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.510 2011-05-15 22:56:53 jluis Exp $
+ *	$Id: gmt_init.c,v 1.511 2011-05-15 23:02:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7759,7 +7759,7 @@ int getuid (void) { return (0); }
  * of other Win32 compilers as well.
  */
 
-void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction)
+void GMT_setmode (struct GMT_CTRL *C, int direction)
 {
 	/* Changes the stream to deal with BINARY rather than TEXT data */
 

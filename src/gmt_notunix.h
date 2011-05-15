@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.42 2011-05-15 20:59:01 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.43 2011-05-15 23:02:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -205,7 +205,7 @@ EXTERN_MSC int getuid (void);
 #define setmode(fd,mode) _setmode(fd,mode)
 
 #pragma warning( disable : 4115 )	/* Shut up this warning: 'GMT_CTRL' :named type definition in parentheses */
-EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction);
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
 
 #endif		/* End of Windows setup */
 
@@ -224,7 +224,7 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction);
 
 #include <io.h>
 
-EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction);
+EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
 
 #endif		/* End of NON-UNIX */
 
