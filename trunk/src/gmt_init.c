@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.509 2011-05-15 20:59:01 guru Exp $
+ *	$Id: gmt_init.c,v 1.510 2011-05-15 22:56:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7771,7 +7771,7 @@ void GMT_setmode (struct GMT_CTRL *C, GMT_LONG direction)
 		fp = (direction == 0) ? C->session.std[GMT_IN] : C->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
 #ifdef _WIN32
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
+		GMT_report (C, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
 		setmode (fileno (fp), _O_BINARY);
 #else
 		_fsetmode (fp, "b");
