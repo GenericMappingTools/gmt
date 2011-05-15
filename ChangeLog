@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1023 2011-05-14 00:04:06 guru Exp $
+	$Id: ChangeLog,v 1.1024 2011-05-15 17:42:27 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-15	remko
+	* gmt_nc.c:		Perpetually removed node_offset attribute. Registration is now
+				based on match between actual_range attributes and coordinate arrays.
 
 2011-05-13	pwessel
 	* gmtapi_util.c:	Added a garbage collection function that is run once a module

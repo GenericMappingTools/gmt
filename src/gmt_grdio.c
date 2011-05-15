@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.192 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.193 2011-05-15 17:42:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -667,6 +667,7 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 
 	GMT_LONG one_or_zero, i, geo = FALSE, *k = NULL;
 	double small = 0.1, half_or_zero, x;
+	fprintf (stderr, "region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
 
 	half_or_zero = (header->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
 
@@ -722,6 +723,8 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 	}
 
 	*index = k;
+	fprintf (stderr, "-> region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	fprintf (stderr, "row: %ld %ld, col: %ld %ld\n", *first_row, *last_row, *first_col, *last_col);
 	
 	return (GMT_NOERROR);
 }
@@ -1250,10 +1253,17 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	if (!global) {
 		if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {
 			/* If longitudes are all west of range or all east of range, try moving them by 360 degrees east or west */
+#if 0
 			if (header->wesn[XHI] < wesn[XLO])
 				header->wesn[XLO] += 360.0, header->wesn[XHI] += 360.0;
 			else if (header->wesn[XLO] > wesn[XHI])
 				header->wesn[XLO] -= 360.0, header->wesn[XHI] -= 360.0;
+#else
+			if (wesn[XHI] < header->wesn[XLO])
+				wesn[XLO] += 360.0, wesn[XHI] += 360.0;
+			else if (wesn[XLO] > header->wesn[XHI])
+				wesn[XLO] -= 360.0, wesn[XHI] -= 360.0;
+#endif
 		}
 		if (header->wesn[XLO] - wesn[XLO] > GMT_SMALL) wesn[XLO] = header->wesn[XLO], error = TRUE;
 		if (wesn[XHI] - header->wesn[XHI] > GMT_SMALL) wesn[XHI] = header->wesn[XHI], error = TRUE;
