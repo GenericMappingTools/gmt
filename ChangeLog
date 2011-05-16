@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1024 2011-05-15 17:42:27 remko Exp $
+	$Id: ChangeLog,v 1.1025 2011-05-16 02:04:05 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-15	remko
-	* gmt_nc.c:		Perpetually removed node_offset attribute. Registration is now
+	* gmt_nc.c:		Ignore reading of node_offset attribute. Registration is now
 				based on match between actual_range attributes and coordinate arrays.
 
 2011-05-13	pwessel
