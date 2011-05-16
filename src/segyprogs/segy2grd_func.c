@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.11 2011-05-14 00:04:07 guru Exp $
+ *	$Id: segy2grd_func.c,v 1.12 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -318,7 +318,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	flag = GMT_memory (GMT, NULL, Grid->header->size, GMT_LONG);
 
-	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
+	GMT_grd_pad_off (Grid);	/* Undo pad since algorithm does not expect on */
 
 	idy = 1.0 / Grid->header->inc[GMT_Y];
 	ij = -1;	/* Will be incremented to 0 or set first time around */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.25 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdview_func.c,v 1.26 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -640,7 +640,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processing shape file\n");
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+	t_reg = GMT_change_grdreg (Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (i = 0; i < n_drape; i++) {
@@ -648,7 +648,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->G.file[i]), (void **)&Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
-			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+			d_reg[i] = GMT_change_grdreg (Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
 	}
@@ -748,7 +748,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			Z = Topo;
 		}
-		GMT_change_grdreg (GMT, Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
+		GMT_change_grdreg (Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
 	}
 
 	if (Ctrl->I.active) {	/* Illumination wanted */
@@ -760,7 +760,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
-		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+		i_reg = GMT_change_grdreg (Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
@@ -1572,9 +1572,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, binij);
 	}
 
-	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
+	GMT_change_grdreg (Topo->header, t_reg);	/* Reset registration, if required */
 	if (Ctrl->I.active) {
-		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
+		GMT_change_grdreg (Intens->header, i_reg);	/* Reset registration, if required */
 	}
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
@@ -1583,7 +1583,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, z);
 	GMT_free (GMT, v);
 	if (Ctrl->G.active) for (i = 0; i < n_drape; i++) {
-		GMT_change_grdreg (GMT, Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
+		GMT_change_grdreg (Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");

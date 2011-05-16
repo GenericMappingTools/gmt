@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.21 2011-05-14 00:04:06 guru Exp $
+*	$Id: mapproject_func.c,v 1.22 2011-05-16 08:47:59 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -422,7 +422,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
-	double xnear, ynear, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
+	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
 
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[GMT_TEXT_LEN64], scale_unit_name[GMT_TEXT_LEN64];
 	char p[GMT_BUFSIZ], record[GMT_BUFSIZ];

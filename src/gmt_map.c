@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.296 2011-05-13 01:21:05 jluis Exp $
+ *	$Id: gmt_map.c,v 1.297 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1300,7 +1300,7 @@ GMT_LONG GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
 	L = GMT_memory (C, NULL, 2, struct GMT_LINE_SEGMENT *);	/* The two polygons */
 
-	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (C, GMT_IS_0_TO_P360, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (GMT_IS_0_TO_P360, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		L[side] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
@@ -2398,7 +2398,7 @@ void gmt_ilinearxy (struct GMT_CTRL *C, double *x, double *y, double x_i, double
 
 GMT_LONG gmt_map_init_linear (struct GMT_CTRL *C) {
 	GMT_LONG positive;
-	double xmin, xmax, ymin = 0.0, ymax = 0.0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	C->current.map.left_edge  = (PFD) gmt_left_rect;
 	C->current.map.right_edge = (PFD) gmt_right_rect;
@@ -3617,7 +3617,7 @@ GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
 
 GMT_LONG gmt_map_init_genper (struct GMT_CTRL *C) {
 	GMT_LONG search;
-	double xmin, xmax, ymin, ymax, dummy, radius;
+	double xmin, xmax, ymin, ymax, dummy, radius = 0.0;
 
 	double alt, azimuth, tilt, width, height;
 	double twist, scale, units;
@@ -5843,7 +5843,7 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
 	GMT_grd_setpad (header, C->current.io.pad);			/* Assign default pad */
-	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
+	GMT_set_grddim (header);	/* Set all dimensions before returning */
 
 	GMT_report (C, GMT_MSG_NORMAL, "Grid projection from size %ldx%ld to %dx%d\n", nx, ny, header->nx, header->ny);
 	return (GMT_NOERROR);
@@ -5873,7 +5873,7 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 	GMT_LONG col_in, row_in, ij_in, col_out, row_out, ij_out;
 	short int *nz = NULL;
-	double x_proj, y_proj, z_int, inv_nz;
+	double x_proj = 0.0, y_proj = 0.0, z_int, inv_nz;
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
 

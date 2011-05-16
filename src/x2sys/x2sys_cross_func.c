@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.10 2011-05-11 09:48:21 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -562,7 +562,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				for (i = 0; i < nx; i++) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
-					if (s->geographic) GMT_lon_range_adjust (GMT, s->geodetic, &out[0]);
+					if (s->geographic) GMT_lon_range_adjust (s->geodetic, &out[0]);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
 				}
 				GMT_x_free (GMT, &XC);
@@ -764,7 +764,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						first_crossover = FALSE;
 					}
 
-					if (s->geographic) GMT_lon_range_adjust (GMT, s->geodetic, &out[0]);
+					if (s->geographic) GMT_lon_range_adjust (s->geodetic, &out[0]);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */
 				}
 

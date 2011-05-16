@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.329 2011-05-13 21:57:33 remko Exp $
+ *	$Id: gmt_plot.c,v 1.330 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,7 +343,7 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 	C->current.map.frame.plotted_header = TRUE;
 }
 
-GMT_LONG gmt_skip_second_annot (struct GMT_CTRL *C, GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary)
+GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary)
 {
 	GMT_LONG i, found;
 	double small;
@@ -473,7 +473,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 			PSL_command (P, "/PSL_AH%ld 0\n", annot_pos);
 			for (i = 0; i < nx - is_interval; i++) {
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (gmt_skip_second_annot (C, k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (string, label_c[i]);
 				else
@@ -513,7 +513,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double y0, 
 
 		for (i = 0; k < 4 && i < nx - is_interval; i++) {
 			if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-			if (gmt_skip_second_annot (C, k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+			if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 			x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
 			if (axis == GMT_X)
 				PSL_command (P, "%ld PSL_A%ld_y M\n", psl_iz (P, x), annot_pos);			/* Move to new anchor point */
@@ -1689,7 +1689,7 @@ GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
 	return (FALSE);
 }
 
-void gmt_label_trim (struct GMT_CTRL *C, char *label, GMT_LONG stage)
+void gmt_label_trim (char *label, GMT_LONG stage)
 {
 	GMT_LONG i;
 	if (stage) {	/* Must remove leading stuff for 2ndary annotations */
@@ -1797,7 +1797,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dx[1]))
 						annot = FALSE;
 					else
-						gmt_label_trim (C, label, remove[0]);
+						gmt_label_trim (label, remove[0]);
 				}
 				gmt_map_symbol_ns (C, P, val[i], label, s, n, annot, k, form);
 			}
@@ -1835,7 +1835,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dy[1]))
 						annot = FALSE;
 					else
-						gmt_label_trim (C, label, remove[1]);
+						gmt_label_trim (label, remove[1]);
 				}
 				gmt_map_symbol_ew (C, P, val[i], label, w, e, annot, k, form);
 			}
@@ -2251,7 +2251,7 @@ void gmt_echo_command (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_OPTION
 	PSL_command (P, "%s\n", outstring);
 }
 
-void gmt_NaN_pen_up (struct GMT_CTRL *C, double x[], double y[], int pen[], GMT_LONG n)
+void gmt_NaN_pen_up (double x[], double y[], int pen[], GMT_LONG n)
 {
 	/* Ensure that if there are NaNs we set pen = PSL_MOVE */
 
@@ -2272,7 +2272,7 @@ void GMT_plot_line (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y
 
 	if (n < 2) return;
 
-	gmt_NaN_pen_up (C, x, y, pen, n);	/* Ensure we dont have NaNs in the coordinates */
+	gmt_NaN_pen_up (x, y, pen, n);	/* Ensure we dont have NaNs in the coordinates */
 
 	i = 0;
 	while (i < (n-1) && pen[i+1] == PSL_MOVE) i++;	/* Skip repeating pen == PSL_MOVE in beginning */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.10 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -201,7 +201,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	/* Sort the data and find the division points */
 
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
-	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (Grid);	/* Undo pad if one existed so we can sort */
 	GMT_sort_array ((void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
 	
 	nxy = Grid->header->nm;
@@ -236,7 +236,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&Grid);
 		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&infile, (void **)&Grid)) return (GMT_DATA_READ_ERROR);
-		GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed (again) */
+		GMT_grd_pad_off (Grid);	/* Undo pad if one existed (again) */
 
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Grid->data[i])) ? GMT->session.f_NaN : get_cell (Grid->data[i], cell, n_cells_m1, last_cell);
 	}
@@ -260,7 +260,7 @@ int compare_indices (const void *point_1, const void *point_2)
 	return (0);
 }
 
-GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, char *outfile, double norm)
+GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {
 	GMT_LONG i = 0, j = 0, ij, row, col, nxy;
 	double dnxy;
@@ -344,7 +344,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, Out->header, options, TRUE);
 
 	if (Ctrl->N.active)
-		error = do_gaussian (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->N.norm);
+		error = do_gaussian (GMT, Out, Ctrl->N.norm);
 	else {
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */

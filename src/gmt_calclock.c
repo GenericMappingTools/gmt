@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.83 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.84 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
    GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y);
    GMT_LONG gmt_gyear_from_rd (GMT_LONG date);
    void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	Break internal time into calendar and clock struct info.
-   GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year,  GMT_LONG month);	Get the number of days in a month by Gregorian leap rule
+   GMT_LONG GMT_gmonth_length (GMT_LONG year,  GMT_LONG month);	Get the number of days in a month by Gregorian leap rule
    void gmt_small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, GMT_LONG init);  Aux to GMT_moment_interval
 */
 
@@ -60,7 +60,7 @@ double GMT_rdc2dt (struct GMT_CTRL *C, GMT_LONG rd, double secs) {
 	return ((f_days * GMT_DAY2SEC_F  + secs) * C->current.setting.time_system.i_scale);
 }
 
-GMT_LONG GMT_splitinteger (struct GMT_CTRL *C, double value, GMT_LONG epsilon, double *doublepart) {
+GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart) {
 	/* Split value into integer and and floating part for date usage.
 	   While the integer can be negative, doublepart is always >= 0
 	   When doublepart is close to 0 or close to epsilon, doublepart is set
@@ -83,7 +83,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, GMT_LONG *rd, double *s) {
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * C->current.setting.time_system.scale + C->current.setting.time_system.epoch_t0 * GMT_DAY2SEC_F);
-	*rd = GMT_splitinteger (C, t_sec, (GMT_LONG)GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
+	*rd = GMT_splitinteger (t_sec, (GMT_LONG)GMT_DAY2SEC_F, s) + C->current.setting.time_system.rata_die;
 }
 
 /* Modulo functions.  The C operation "x%y" and the POSIX 
@@ -140,7 +140,7 @@ GMT_LONG gmt_nth_kday (GMT_LONG n, GMT_LONG kday, GMT_LONG date) {
 		return ((GMT_LONG) (7*n + gmt_kday_after (date, kday)));
 }
 
-GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month) {
+GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month) {
 	/* Return the number of days in a month,
 	   using the gregorian leap year rule.
 	   Months are numbered from 1 to 12.  */
@@ -154,13 +154,13 @@ GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month) {
 		return ((month < 8) ? 30 + k : 31 - k);
 	}
 	
-	k = (GMT_is_gleap (C, year)) ? 29 : 28;
+	k = (GMT_is_gleap (year)) ? 29 : 28;
 	return (k);
 }
 
 /* Proleptic Gregorian Calendar operations  */
 
-GMT_LONG GMT_is_gleap (struct GMT_CTRL *C, GMT_LONG gyear) {
+GMT_LONG GMT_is_gleap (GMT_LONG gyear) {
 	/* Given integer proleptic gregorian calendar year,
 	   return TRUE if it is a Gregorian leap year; 
 	   else return FALSE.  */
@@ -186,7 +186,7 @@ GMT_LONG GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LON
 	if (gm <= 2)
 		day_offset = 0;
 	else
-		day_offset = GMT_is_gleap (C, gy) ? -1 : -2;
+		day_offset = GMT_is_gleap (gy) ? -1 : -2;
 	
 	yearm1 = gy - 1;
 	rd = day_offset + gd + 365 * yearm1;
@@ -252,7 +252,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, GMT_LONG date, struct GMT_gcal *gcal)
 	if (date < tempdate)
 		corexn = 0;
 	else
-		corexn = GMT_is_gleap (C, gcal->year) ? 1 : 2;
+		corexn = GMT_is_gleap (gcal->year) ? 1 : 2;
 	
 	gcal->month = (GMT_LONG) floor ((12*(prior_days + corexn) + 373)/367.0);
 	
@@ -301,7 +301,7 @@ GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, GMT_LONG y2) {
 	return (y2 + ((y2 >= C->current.time.Y2K_fix.y2_cutoff) ? C->current.time.Y2K_fix.y100 : C->current.time.Y2K_fix.y200));
 }
 
-GMT_LONG GMT_g_ymd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG m, GMT_LONG d) {
+GMT_LONG GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 
 	/* Check year, month, day values to see if they
 	   are an appropriate date in the proleptic
@@ -314,14 +314,14 @@ GMT_LONG GMT_g_ymd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG m, GMT_LONG 
 	
 	if (m < 1 || m > 12 || d < 1) return (TRUE);
 	
-	k = GMT_gmonth_length (C, y, m);	/* Number of day in the specified month */
+	k = GMT_gmonth_length (y, m);	/* Number of day in the specified month */
 	
 	if (d > k) return (TRUE);	/* More days than we've got in this month */
 	
 	return (FALSE);
 }
 
-GMT_LONG GMT_iso_ywd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG w, GMT_LONG d) {
+GMT_LONG GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
 
 	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
 	   values to see if they form a probably
@@ -354,7 +354,7 @@ void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 	GMT_dt2rdc (C, t, &rd, &x);
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
-	i = GMT_splitinteger (C, x, 60, &cal->sec);
+	i = GMT_splitinteger (x, 60, &cal->sec);
 	cal->hour = i / GMT_MIN2SEC_I;
 	cal->min  = i % GMT_MIN2SEC_I;
 	return;
@@ -604,7 +604,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 					p->sd[0] = 0.0;
 					p->dt[0] = GMT_rdc2dt (C, p->rd[0], p->sd[0]);
 				}
-				kyd = (GMT_is_gleap (C, p->cc[0].year)) ? 366 : 365;
+				kyd = (GMT_is_gleap (p->cc[0].year)) ? 366 : 365;
 				k = p->cc[0].day_y + p->step;
 				if (k > kyd) {
 					/* Go to 1st day of next year:  */
@@ -631,7 +631,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 					p->dt[0] = GMT_rdc2dt (C, p->rd[0], p->sd[0]);
 				}
 				
-				kml = GMT_gmonth_length (C, p->cc[0].year, p->cc[0].month);
+				kml = GMT_gmonth_length (p->cc[0].year, p->cc[0].month);
 				if (p->cc[0].day_m + p->step > kml) {
 					/* Truncate to 1st of next month  */
 					if (p->cc[0].month == 12) {
@@ -721,7 +721,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 				GMT_gcal_from_rd (C, p->rd[0], &(p->cc[0]) );
 				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (C, p->rd[0], p->sd[0]);
-				if (GMT_iso_ywd_is_bad (C, p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
+				if (GMT_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
 					GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
@@ -755,7 +755,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 				p->cc[0].day_m = 1;
 				k = (p->cc[0].month-1)/p->step;
 				p->cc[0].month = k * p->step + 1;
-				if (GMT_g_ymd_is_bad (C, p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
+				if (GMT_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
 					GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}

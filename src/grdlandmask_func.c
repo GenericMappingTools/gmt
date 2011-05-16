@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -330,7 +330,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Assemble one or more segments into polygons */
 
-			np = GMT_assemble_shore (GMT, &c, direction, TRUE, greenwich, west_border, east_border, &p);
+			np = GMT_assemble_shore (GMT, &c, direction, TRUE, west_border, east_border, &p);
 
 			/* Get clipped polygons in x,y inches that can be processed */
 

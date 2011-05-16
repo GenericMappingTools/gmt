@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.158 2011-05-11 09:48:21 guru Exp $
+ *	$Id: x2sys.c,v 1.159 2011-05-16 08:47:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -554,7 +554,7 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 		else if (s->info[i].do_scale)
 			data[i] = data[i] * s->info[i].scale + s->info[i].offset;
 		if (GMT_is_dnan (data[i])) s->info[i].has_nans = TRUE;
-		if (i == s->x_col && s->geographic) GMT_lon_range_adjust (C, s->geodetic, &data[i]);
+		if (i == s->x_col && s->geographic) GMT_lon_range_adjust (s->geodetic, &data[i]);
 	}
 
 	return ((error || n_read != s->n_fields) ? -1 : 0);
@@ -745,7 +745,7 @@ GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, 
 	p->year = 0;
 	j = 0;
 	while (!MGD77_Read_Data_Record (C, &M, &H, dvals, tvals)) {		/* While able to read a data record */
-		GMT_lon_range_adjust (C, s->geodetic, &dvals[MGD77_LONGITUDE]);
+		GMT_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
 		if (p->year == 0 && !GMT_is_fnan (dvals[0])) p->year = get_first_year (C, dvals[0]);
 		j++;

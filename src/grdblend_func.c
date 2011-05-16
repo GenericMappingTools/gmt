@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.24 2011-05-14 00:04:06 guru Exp $
+ *    $Id: grdblend_func.c,v 1.25 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -657,7 +657,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_memcpy (&(Grid->data[ij]), z, S.header.nx, float);
 		}
 		else
-			GMT_err_fail (GMT, GMT_write_grd_row (GMT, &S, 0, z), Ctrl->G.file);
+			GMT_err_fail (GMT, GMT_write_grd_row (GMT, &S, z), Ctrl->G.file);
 
 		if (row%10 == 0)  GMT_report (GMT, GMT_MSG_NORMAL, "Processed row %7ld of %d\r", row, S.header.ny);
 

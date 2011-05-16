@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.21 2011-05-15 11:58:29 jluis Exp $
+ *	$Id: pstext_func.c,v 1.22 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -173,7 +173,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 }
 
-void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
+void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 {
 	GMT_memset (T, 1, struct PSTEXT_INFO);
 	T->x_space = C->C.dx;
@@ -218,18 +218,18 @@ GMT_LONG check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
 		n = sscanf (buffer, "%s %s %s %s %[^\n]", size, angle, font, just, txt);
 		if (n < 5) return (FALSE);	/* Clearly not the old format since missing items */
 	}
-	if (GMT_not_numeric (C, angle)) return (FALSE);	/* Since angle is not a number */
+	if (GMT_not_numeric (angle)) return (FALSE);	/* Since angle is not a number */
 	k = strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
-	if (GMT_not_numeric (C, size)) return (FALSE);	/* Since size is not a number */
+	if (GMT_not_numeric (size)) return (FALSE);	/* Since size is not a number */
 	if (GMT_just_decode (C, just, 12) == -99) return (FALSE);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
 		k = strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, spacing)) return (FALSE);	/* Since spacing is not a number */
+		if (GMT_not_numeric (spacing)) return (FALSE);	/* Since spacing is not a number */
 		k = strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, width)) return (FALSE);		/* Since width is not a number */
+		if (GMT_not_numeric (width)) return (FALSE);		/* Since width is not a number */
 		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (C, pjust, 0) == -99) return (FALSE);
 	}
 
@@ -547,7 +547,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
-	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
+	load_parameters_pstext (&T, Ctrl);	/* Pass info from Ctrl to T */
 
 #if 0
 	if (!Ctrl->F.active) Ctrl->F.nread = 4;	/* Need to be backwards compatible */
@@ -706,7 +706,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		else {	/* Plain style pstext input */
 			if (GMT_REC_IS_SEG_HEADER (GMT)) continue;	/* Skip segment headers */
-			if (GMT_is_a_blank_line (GMT, line)) continue;	/* Skip blank lines or # comments */
+			if (GMT_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
 			if ((nscan = validate_coord_and_text (GMT, Ctrl->Z.active, n_read, line, buffer)) == -1) continue;	/* Failure */
 			pos = 0;

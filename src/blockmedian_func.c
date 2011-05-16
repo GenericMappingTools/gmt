@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmedian_func.c,v 1.9 2011-05-11 04:01:53 guru Exp $
+ *    $Id: blockmedian_func.c,v 1.10 2011-05-16 08:47:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *C, struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
+void median_output (struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
 	GMT_LONG go_quickly, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
@@ -369,7 +369,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Now we have weight sum [and copy of z in case of -E]; now calculate the quantile(s): */
 
-		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, quantile, n_quantiles, data);
+		median_output (Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, quantile, n_quantiles, data);
 
 		if (box_and_whisker) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
 			out[3] = z_tmp[0];	/* 0% quantile (min value) */

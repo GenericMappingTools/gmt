@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.14 2011-05-11 04:01:54 guru Exp $
+ *	$Id: greenspline_func.c,v 1.15 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1315,7 +1315,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 			GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 			GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
-			GMT_set_grddim (GMT, Grid->header);
+			GMT_set_grddim (Grid->header);
 			if (dimension == 3) {	/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];

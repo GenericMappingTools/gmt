@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.10 2011-05-14 00:04:07 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -320,7 +320,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 			case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
 				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat, FALSE) - 90.0;
-				GMT_lon_range_adjust (GMT, GMT->current.io.geo.range, &value);
+				GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
 				break;
 			case PM_OMEGA:	/* Compute plate rotation rate omega */
 				value = p[k].omega;	/* degree/Myr  */

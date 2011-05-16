@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.511 2011-05-15 23:02:50 guru Exp $
+ *	$Id: gmt_init.c,v 1.512 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2102,7 +2102,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 }
 
 GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
-	GMT_LONG error = 0, i, n, start, stop, pos = 0, tmp[GMT_MAX_COLUMNS];
+	GMT_LONG error = 0, i, n, start = 0, stop = 0, pos = 0, tmp[GMT_MAX_COLUMNS];
 	char p[GMT_BUFSIZ], *c = NULL;
 	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
 
@@ -2507,7 +2507,7 @@ GMT_LONG gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, GMT_LONG side[], 
 
 void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 {
-	GMT_LONG pos = 0, col = 0, start, stop, k, error = 0;
+	GMT_LONG pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
 	char fmt[GMT_TEXT_LEN64], *p = NULL;
 	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
 	while ((GMT_strtok (value, ",", &pos, fmt))) {
@@ -5472,7 +5472,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 			for (k = 0; k < 4; k++) {
 				if (n_int[k] == 0) continue;
 				unit = list[k];
-				if (!C->current.map.frame.primary) unit = toupper ((int)unit);
+				if (!C->current.map.frame.primary) unit = (char)toupper ((int)unit);
 				gmt_set_titem (C, A, 0.0, 0.0, unit, 0);	/* Store the findings for this segment */
 			}
 			if (n_int[1]) A->item[GMT_INTV_UPPER+!C->current.map.frame.primary].special = TRUE;
@@ -5690,7 +5690,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	return (error);
 }
 
-GMT_LONG gmt_project_type (struct GMT_CTRL *C, char *args, GMT_LONG *pos, GMT_LONG *width_given)
+GMT_LONG gmt_project_type (char *args, GMT_LONG *pos, GMT_LONG *width_given)
 {
 	/* Parse the start of the -J option to determine the projection type.
 	 * If the first character of args is uppercase, width_given is set to 1.
@@ -5753,7 +5753,7 @@ GMT_LONG gmt_project_type (struct GMT_CTRL *C, char *args, GMT_LONG *pos, GMT_LO
 	/* Finally, check only the first letter (used until GMT 4.2.1) */
 
 	*pos = 1;
-	t = tolower(args[0]);
+	t = (char)tolower(args[0]);
 	if (t == 'a') return (GMT_LAMB_AZ_EQ);
 	if (t == 'b') return (GMT_ALBERS);
 	if (t == 'c') return (GMT_CASSINI);
@@ -5823,7 +5823,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	GMT_memset (l_pos, 3, GMT_LONG);	GMT_memset (p_pos, 3, GMT_LONG);
 	GMT_memset (t_pos, 3, GMT_LONG);	GMT_memset (d_pos, 3, GMT_LONG);
 
-	project = gmt_project_type (C, args, &i, &width_given);
+	project = gmt_project_type (args, &i, &width_given);
 	if (project == GMT_NO_PROJ) return (TRUE);	/* No valid projection specified */
 	args += i;
 
@@ -6372,7 +6372,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 					C->current.proj.utm_hemisphere = 0;
 					break;
 			}
-			mod = toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
+			mod = (char)toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
 			error = 0;
 			if (mod >= 'A' && mod <= 'Z') {	/* Got fully qualified UTM zone, e.g., 33N */
 				C->current.proj.utm_zoney = (GMT_LONG)mod;
@@ -6399,7 +6399,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	return (error);
 }
 
-GMT_LONG gmt_get_unit (struct GMT_CTRL *C, char c)
+GMT_LONG gmt_get_unit (char c)
 {
 	/* Converts c, i, and p into 0,1,3 */
 
@@ -6509,7 +6509,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		else if (strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((p->u = gmt_get_unit (C, text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
+			if ((p->u = gmt_get_unit (text[k])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 			col_off++;
 		}
 		else
@@ -6519,7 +6519,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
-		if (text[1] && (p->u = gmt_get_unit (C, text[1])) < 0) decode_error = TRUE; else p->u_set = TRUE;
+		if (text[1] && (p->u = gmt_get_unit (text[1])) < 0) decode_error = TRUE; else p->u_set = TRUE;
 		col_off++;
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {	/* Symbol, but no size given (size assumed given on command line) */
@@ -6886,7 +6886,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 			for (j = one; text[j] && text[j] != 'n'; j++);
 			len = strlen(text) - 1;
 			if (text[j] == 'n') {	/* Normalize option used */
-				k = gmt_get_unit (C, text[len]);
+				k = gmt_get_unit (text[len]);
 				if (k >= 0) { p->u = k; p->u_set = TRUE; }
 				p->v_norm = atof (&text[j+1]);
 				if (p->v_norm > 0.0)
@@ -6907,7 +6907,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 				 */
 
 				if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-					p->u = gmt_get_unit (C, text[len]);
+					p->u = gmt_get_unit (text[len]);
 					if (p->u >= 0) p->u_set = TRUE;
 					text[len] = 0;
 				}
@@ -7060,7 +7060,7 @@ GMT_LONG GMT_set_measure_unit (struct GMT_CTRL *C, char unit) {
 	/* Option to override the GMT measure unit default */
 	GMT_LONG k;
 
-	if ((k = gmt_get_unit (C, unit)) < 0) return (GMT_MAP_BAD_MEASURE_UNIT);
+	if ((k = gmt_get_unit (unit)) < 0) return (GMT_MAP_BAD_MEASURE_UNIT);
 	C->current.setting.proj_length_unit = k;
 	return (GMT_NOERROR);
 }
@@ -7372,12 +7372,12 @@ GMT_LONG gmt_scanf_epoch (struct GMT_CTRL *C, char *s, GMT_LONG *rata_die, doubl
 	if (!(s[i])) return (-1);
 	if (strchr (&s[i], 'W') ) {	/* ISO calendar string, date with or without clock */
 		if (sscanf (&s[i], "%5" GMT_LL "d-W%2" GMT_LL "d-%1" GMT_LL "d%[^0-9:-]%2" GMT_LL "d:%2" GMT_LL "d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_iso_ywd_is_bad (C, yy, mo, dd) ) return (-1);
+		if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
 		rd = GMT_rd_from_iywd (C, yy, mo, dd);
 	}
 	else {				/* Gregorian calendar string, date with or without clock */
 		if (sscanf (&s[i], "%5" GMT_LL "d-%2" GMT_LL "d-%2" GMT_LL "d%[^0-9:-]%2" GMT_LL "d:%2" GMT_LL "d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_g_ymd_is_bad (C, yy, mo, dd) ) return (-1);
+		if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
 		rd = GMT_rd_from_gymd (C, yy, mo, dd);
 	}
 	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);

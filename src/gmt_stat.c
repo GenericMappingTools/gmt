@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.83 2011-05-08 03:45:27 guru Exp $
+ *	$Id: gmt_stat.c,v 1.84 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1466,7 +1466,7 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 	/* Critical values for Student t-distribution */
 
 	GMT_LONG NU, done;
-	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
+	double t_low, t_high, t_mid = 0.0, p_high, p_mid, p, sign;
 
 	if (alpha > 0.5) {	/* right tail */
 		p = 1 - (1 - alpha) * 2.0;
@@ -1509,7 +1509,7 @@ double GMT_chi2crit (struct GMT_CTRL *C, double alpha, double nu)
 	/* Critical values for Chi^2-distribution */
 
 	GMT_LONG done;
-	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
+	double chi2_low, chi2_high, chi2_mid = 0.0, p_high, p_mid, p;
 
 	p = 1.0 - alpha;
 	chi2_low = 0.0;
@@ -1550,7 +1550,7 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	/* Critical values for F-distribution */
 
 	GMT_LONG NU1, NU2, done;
-	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
+	double F_low, F_high, F_mid = 0.0, p_high, p_mid, p, chisq1, chisq2;
 
 	F_high = 5.0;
 	p = 1.0 - alpha;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_parse.c,v 1.13 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmtapi_parse.c,v 1.14 2011-05-16 08:47:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -134,7 +134,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 		}
 		else {		/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			/* Yet, negative numbers pose a problem as their leading - is seen as an option.  Next we address this */
-			if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) {
+			if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (args[arg])) {
 				first_char = 0, option = GMTAPI_OPT_INFILE;		/* A negative number, most likely; convert to "file" for now */
 			}
 			else {	/* Seems like a regular option setting */
@@ -313,7 +313,7 @@ GMT_LONG GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, struc
 	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
 		char file[GMT_BUFSIZ];
 		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */
-		if (GMT_access (API->GMT, file, F_OK) && !GMT_not_numeric (API->GMT, arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
+		if (GMT_access (API->GMT, file, F_OK) && !GMT_not_numeric (arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
 			option = GMTAPI_OPT_NUMBER;	/* Reassign as a "number option -#" (Note: There is no -# since # means comment in most shells; we just use -# internally) */
 		}
 		/* Note: Programs (like g**math) that may expect both numbers and files should check if an argument can be both and give appropriate warnings */

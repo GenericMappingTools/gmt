@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.12 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psmask_func.c,v 1.13 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -604,7 +604,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
 		GMT_setnval (GMT->current.io.pad, 4, 0);		/* Change default pad to 0 only */
 		GMT_grd_setpad (Grid->header, GMT->current.io.pad);	/* Change pad to 0 */
-		GMT_set_grddim (GMT, Grid->header);
+		GMT_set_grddim (Grid->header);
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
 
 		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> irint(0.5) actually rounds to 1 */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdedit_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -328,7 +328,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	else {	/* Change the domain boundaries */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		if (Ctrl->T.active) {	/* Grid-line <---> Pixel toggling of the header */
-			GMT_change_grdreg (GMT, G->header, 1 - G->header->registration);
+			GMT_change_grdreg (G->header, 1 - G->header->registration);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Toggled registration mode in file %s from %s to %s\n", 
 				Ctrl->In.file, registration[1-G->header->registration], registration[G->header->registration]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Reset region in file %s to %g/%g/%g/%g\n", 

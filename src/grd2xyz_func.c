@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.16 2011-05-15 23:41:09 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.17 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,7 +246,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_total += G->header->nm;
 
-		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
+		GMT_err_fail (GMT, GMT_set_z_io (&io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			PFL save = GMT->current.io.output;

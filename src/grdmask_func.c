@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdmask_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -347,7 +347,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for polygon IDs in the data headers */
 					if (S->ogr)	/* OGR data */
 						ID = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
-					else if (GMT_parse_segment_item (GMT, S->header, "-L", seg_label))	/* Look for segment header ID */
+					else if (GMT_parse_segment_item (S->header, "-L", seg_label))	/* Look for segment header ID */
 						ID = atof (seg_label);
 					else
 						GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.20 2011-05-14 00:04:07 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -43,7 +43,7 @@
 #define POS 1
 #define NEG 0
 
-EXTERN_MSC GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month);
+EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
 EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
 
 GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
@@ -1701,7 +1701,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					old_anom = GMT_memory (GMT, old_anom, n_alloc, double);
 				}
 				MGD77_gcal_from_dt (GMT, &M, D[i].time, &cal);	/* No adjust for TZ; this is GMT UTC time */
-				n_days = (GMT_is_gleap (GMT, cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
+				n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 				/* Get date as decimal year */
 				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
 				MGD77_igrf10syn (GMT, 0, date, 1, 0.0, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], IGRF);
@@ -1995,7 +1995,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
 									last_day = irint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
-									last_day = (int)GMT_gmonth_length (GMT, irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
+									last_day = (int)GMT_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
 								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);
@@ -2904,7 +2904,7 @@ int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD7
 			y = D[rec].number[MGD77_LATITUDE];
 			/* Adjust cruise longitude if necessary; We know cruise is between +/-180 */
 			if (info->G->header->wesn[XLO] >= 0.0 && D[rec].number[MGD77_LONGITUDE] < 0.0)
-				GMT_lon_range_adjust (GMT, GMT_IS_0_TO_P360, &x);	/* Adjust to 0-360 range */
+				GMT_lon_range_adjust (GMT_IS_0_TO_P360, &x);	/* Adjust to 0-360 range */
 		}
 		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
 		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */

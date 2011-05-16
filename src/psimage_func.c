@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.18 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psimage_func.c,v 1.19 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -323,6 +323,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
+	GMT_memset (&header, 1, struct imageinfo);
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {

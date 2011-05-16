@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psscale_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -336,7 +336,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double x, double *width, GMT_LONG n)
+double get_z (struct GMT_PALETTE *P, double x, double *width, GMT_LONG n)
 {
 	GMT_LONG i = 0;
 	double tmp;
@@ -347,7 +347,7 @@ double get_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double x, double *wid
 	return (P->range[i].z_low + (x - tmp + width[i]) * (P->range[i].z_high - P->range[i].z_low) / width[i]);
 }
 
-void fix_format (struct GMT_CTRL *GMT, char *unit, char *format)
+void fix_format (char *unit, char *format)
 {
 	GMT_LONG i, j;
 	char text[GMT_TEXT_LEN64], new_format[GMT_BUFSIZ];
@@ -429,7 +429,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
 		strcpy (format, GMT->current.setting.format_float_map);
-		fix_format (GMT, GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
+		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
 	len = GMT->current.setting.map_tick_length;	/* +ve means draw on the outside of bar */
@@ -464,7 +464,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		/* Load bar image */
 
 		for (i = 0; i < nx; i++) {
-			z = (P->is_continuous) ? get_z (GMT, P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
+			z = (P->is_continuous) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
 			GMT_get_rgb_from_z (GMT, P, z, rrggbb);
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
