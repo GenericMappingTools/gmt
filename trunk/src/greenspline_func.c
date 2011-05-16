@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.15 2011-05-16 08:47:59 guru Exp $
+ *	$Id: greenspline_func.c,v 1.16 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1315,15 +1315,15 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 			GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 			GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
-			GMT_set_grddim (Grid->header);
+			GMT_set_grddim (GMT, Grid->header);
 			if (dimension == 3) {	/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
-				Z.nz = GMT_get_n (Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
+				Z.nz = GMT_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
 			}
 		}
 		else
-			Grid->header->nx = GMT_grd_get_nx (Grid->header);
+			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
 		nxy = n_ok = Grid->header->size * Z.nz;
 		if (dimension == 2) Grid->data = GMT_memory (GMT, NULL, nxy, float);
 		Out = Grid;	/* Just point since we created Grid */
@@ -1519,7 +1519,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			sprintf (format, "%%d\t%s\n", GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array ((void *)eig, nm, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)eig, nm, GMT_DOUBLE_TYPE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);
@@ -1583,10 +1583,10 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
 		xp = GMT_memory (GMT, NULL, Grid->header->nx, double);
-		for (col = 0; col < Grid->header->nx; col++) xp[col] = GMT_grd_col_to_x (col, Grid->header);
+		for (col = 0; col < Grid->header->nx; col++) xp[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
 		if (dimension > 1) {
 			yp = GMT_memory (GMT, NULL, Grid->header->ny, double);
-			for (row = 0; row < Grid->header->ny; row++) yp[row] = GMT_grd_row_to_y (row, Grid->header);
+			for (row = 0; row < Grid->header->ny; row++) yp[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
@@ -1598,7 +1598,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 		}
 		for (k = nz_off = 0; k < Z.nz; k++, nz_off += nxy) {
-			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (k, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, k, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 			for (row = 0; row < Grid->header->ny; row++) {
 				if (dimension > 1) V[GMT_Y] = yp[row];
 				for (col = 0; col < Grid->header->nx; col++) {

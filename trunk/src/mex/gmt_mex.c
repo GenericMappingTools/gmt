@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.c,v 1.6 2011-05-16 08:47:59 guru Exp $
+ *	$Id: gmt_mex.c,v 1.7 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,12 +75,12 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 		G->header->wesn[YLO] = (G->header->registration == GMT_PIXEL_REG) ? y[0] - 0.5 * G->header->inc[GMT_Y] : y[0];
 		G->header->wesn[YHI] = (G->header->registration == GMT_PIXEL_REG) ? y[G->header->ny-1] + 0.5 * G->header->inc[GMT_Y] : y[G->header->ny-1];
 	}
-	GMT_grd_setpad (G->header, API->GMT->current.io.pad);	/* Assign default pad */
-	GMT_set_grddim (G->header);
+	GMT_grd_setpad (API->GMT, G->header, API->GMT->current.io.pad);	/* Assign default pad */
+	GMT_set_grddim (API->GMT, G->header);
 	return (z);
 }
 
-void GMTMEX_grdxy (mxArray *plhs[], struct GMT_GRID *G, int px, int py)
+void GMTMEX_grdxy (struct GMTAPI_CTRL *API, mxArray *plhs[], struct GMT_GRID *G, int px, int py)
 {	/* Return x,y arrays also */
 	GMT_LONG row, col;
 	double *xg = NULL, *yg = NULL;
@@ -88,8 +88,8 @@ void GMTMEX_grdxy (mxArray *plhs[], struct GMT_GRID *G, int px, int py)
 	plhs[py] = mxCreateDoubleMatrix (1, G->header->ny, mxREAL);
 	xg = mxGetPr (plhs[px]);	yg = mxGetPr (plhs[py]);
 	/* Fill in the x and y arrays; note Matlab y array is flipped relative to the GMT y array */
-	GMT_col_loop2 (G, col) xg[col] = GMT_grd_col_to_x (col, G->header);
-	GMT_row_loop  (G, row) yg[G->header->ny-row-1] = GMT_grd_row_to_y (row, G->header);
+	GMT_col_loop2 (API->GMT, G, col) xg[col] = GMT_grd_col_to_x (API->GMT, col, G->header);
+	GMT_row_loop  (API->GMT, G, row) yg[G->header->ny-row-1] = GMT_grd_row_to_y (API->GMT, row, G->header);
 }
 
 char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n_cols, int n_start, struct GMT_VECTOR **V)
@@ -148,7 +148,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		/*  Allocate memory for the grid */
 		(*G)->data = GMT_memory (API->GMT, NULL, (*G)->header->size, float);
 		/* Transpose from Matlab orientation to grd orientation */
-		GMT_grd_loop ((*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
+		GMT_grd_loop (API->GMT, (*G), row, col, gmt_ij) (*G)->data[gmt_ij] = (float)z[MEX_IJ((*G),row,col)];
 		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)G, NULL, (void *)*G, &in_ID)) 
 			mexErrMsgTxt ("Failure to register GMT source grid\n");
 		GMT_Encode_ID (API, i_string, in_ID);	/* Make filename with embedded object ID */
@@ -217,12 +217,12 @@ void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 	/* B. Load the real grd array into a double matlab array by
               transposing from padded GMT grd format to unpadded matlab format */
 
-	GMT_grd_loop (G, row, col, gmt_ij) z[MEX_IJ(G,row,col)] = G->data[gmt_ij];
+	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) z[MEX_IJ(G,row,col)] = G->data[gmt_ij];
     
 	/* C. Create header and x,y arrays, if requested  */
 
 	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
-	if (px >= 0) GMTMEX_grdxy (plhs, G, px, py);	/* Return x,y arrays also */
+	if (px >= 0) GMTMEX_grdxy (API, plhs, G, px, py);	/* Return x,y arrays also */
 }
 
 void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_VECTOR *V)

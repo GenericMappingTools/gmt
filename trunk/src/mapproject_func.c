@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.22 2011-05-16 08:47:59 guru Exp $
+*	$Id: mapproject_func.c,v 1.23 2011-05-16 21:23:10 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -745,14 +745,14 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				 * 0 to indicate start of next token we count our way to the start of the text. */
 
 				strcpy (line, GMT->current.io.current_record);
-				GMT_chop (line);	/* Chop of line feed */
+				GMT_chop (GMT, line);	/* Chop of line feed */
 				pos = record[0] = 0;	/* Start with blank record */
-				GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
-				GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
+				GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
+				GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
 				add_to_record (GMT, record, out[x], GMT_X, TRUE);	/* Format our output x value */
 				add_to_record (GMT, record, out[y], GMT_Y, TRUE);	/* Format our output y value */
 				if (Ctrl->E.active) {
-					GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignore) and update pos */
+					GMT_strtok (GMT, line, " \t,", &pos, p);		/* Returns zstring (ignore) and update pos */
 					add_to_record (GMT, record, out[GMT_Z], GMT_Z, TRUE);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
@@ -865,10 +865,10 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
 					strcpy (line, GMT->current.io.current_record);
-					GMT_chop (line);
+					GMT_chop (GMT, line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
+					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
+					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
 					add_to_record (GMT, record, in[x], GMT_X, TRUE);	/* Format our output x value */
 					add_to_record (GMT, record, in[y], GMT_Y, TRUE);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
@@ -912,14 +912,14 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
 					strcpy (line, GMT->current.io.current_record);
-					GMT_chop (line);
+					GMT_chop (GMT, line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring and update pos */
-					GMT_strtok (line, " \t,", &pos, p);	/* Returns ystring and update pos */
+					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring and update pos */
+					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring and update pos */
 					add_to_record (GMT, record, out[x], GMT_Z, TRUE);	/* Format our output x value */
 					add_to_record (GMT, record, out[y], GMT_Z, TRUE);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
-						GMT_strtok (line, " \t,", &pos, p);		/* Returns zstring (ignored) and update pos */
+						GMT_strtok (GMT, line, " \t,", &pos, p);		/* Returns zstring (ignored) and update pos */
 						add_to_record (GMT, record, out[GMT_Z], GMT_Z, TRUE);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);

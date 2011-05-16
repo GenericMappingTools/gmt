@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.30 2011-05-11 09:48:21 guru Exp $
+ *	$Id: sph.c,v 1.31 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -230,8 +230,8 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	
 	plon = GMT_memory (C, NULL, h->nx, double);
 	plat = GMT_memory (C, NULL, h->ny, double);
-	for (i = 0; i < h->nx; i++) plon[i] = D2R * GMT_grd_col_to_x (i, h);
-	for (j = 0; j < h->ny; j++) plat[j] = D2R * GMT_grd_row_to_y (j, h);
+	for (i = 0; i < h->nx; i++) plon[i] = D2R * GMT_grd_col_to_x (C, i, h);
+	for (j = 0; j < h->ny; j++) plat[j] = D2R * GMT_grd_row_to_y (C, j, h);
 	nm = h->nx * h->ny;
 	
 	/* Time to work on the interpolation */

@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.39 2011-05-16 08:47:56 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.40 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -128,9 +128,9 @@ GMT_LONG GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
 	if (x_min >= x_max) return (GMT_GRDIO_BAD_VAL);
 	y_inc = recdata[4];	x_inc = recdata[5];
 	if (x_inc <= 0.0 || y_inc <= 0.0) return (GMT_GRDIO_BAD_VAL);
-	nx = GMT_get_n (x_min, x_max, x_inc, 0);
+	nx = GMT_get_n (C, x_min, x_max, x_inc, 0);
 	if (nx <= 0) return (GMT_GRDIO_BAD_VAL);
-	ny = GMT_get_n (y_min, y_max, y_inc, 0);
+	ny = GMT_get_n (C, y_min, y_max, y_inc, 0);
 	if (ny <= 0) return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
 	predicted_size = irint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
@@ -162,8 +162,8 @@ GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	header->wesn[YHI] = (double)recdata[1];
 	header->inc[GMT_Y] = (double)recdata[4];
 	header->inc[GMT_X] = (double)recdata[5];
-	header->nx = GMT_grd_get_nx (header);
-	header->ny = GMT_grd_get_ny (header);
+	header->nx = GMT_grd_get_nx (C, header);
+	header->ny = GMT_grd_get_ny (C, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -347,7 +347,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_PIXEL_REG) {
-		GMT_change_grdreg (header, GMT_GRIDLINE_REG);
+		GMT_change_grdreg (C, header, GMT_GRIDLINE_REG);
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}

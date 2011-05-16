@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.39 2011-05-10 22:06:21 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.40 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,7 +30,7 @@ int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adf
 int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
-int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
+int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
 
 GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	GDALDatasetH hDataset;
@@ -91,7 +91,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		else
 			nn = atoi(prhs->B.bands);
 		whichBands = GMT_memory (C, NULL, nn, GMT_LONG);
-		nReqBands = gdal_decode_columns (prhs->B.bands, whichBands, nn);
+		nReqBands = gdal_decode_columns (C, prhs->B.bands, whichBands, nn);
 		free(prhs->B.bands);	/* This is actualy the contents of header->pocket allocated by strdup */
 		prhs->B.bands = NULL;
 	}
@@ -1023,11 +1023,11 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, char *tmp, GDALRasterBandH hBand, d
 }
 
 /* -------------------------------------------------------------------- */
-int gdal_decode_columns (char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
+int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
 	GMT_LONG n = 0, i, start, stop, pos = 0;
 	char p[1024];
 
-	while ((GMT_strtok (txt, ",", &pos, p))) {
+	while ((GMT_strtok (GMT, txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.84 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_stat.c,v 1.85 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2109,7 +2109,7 @@ GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LO
 		return (0);
 	}
 
-	if (sort) GMT_sort_array ((void *)x, n, GMT_DOUBLE_TYPE);
+	if (sort) GMT_sort_array (C, (void *)x, n, GMT_DOUBLE_TYPE);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -2162,7 +2162,7 @@ GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_L
 		*mode_est = x[0];
 		return (0);
 	}
-	if (sort) GMT_sort_array ((void *)x, n, GMT_FLOAT_TYPE);
+	if (sort) GMT_sort_array (C, (void *)x, n, GMT_FLOAT_TYPE);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -2213,7 +2213,7 @@ void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, dou
 	double med, *dev = GMT_memory (C, NULL, n, double);
 
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
-	GMT_sort_array ((void *)dev, n, GMT_DOUBLE_TYPE);
+	GMT_sort_array (C, (void *)dev, n, GMT_DOUBLE_TYPE);
 	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
@@ -2230,7 +2230,7 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, do
 	double med;
 
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
-	GMT_sort_array ((void *)dev, n, GMT_FLOAT_TYPE);
+	GMT_sort_array (C, (void *)dev, n, GMT_FLOAT_TYPE);
 	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);

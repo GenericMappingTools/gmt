@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.10 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.11 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -201,8 +201,8 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	/* Sort the data and find the division points */
 
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
-	GMT_grd_pad_off (Grid);	/* Undo pad if one existed so we can sort */
-	GMT_sort_array ((void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
+	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort */
+	GMT_sort_array (GMT, (void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
 	
 	nxy = Grid->header->nm;
 	while (nxy > 0 && GMT_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
@@ -236,7 +236,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&Grid);
 		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&infile, (void **)&Grid)) return (GMT_DATA_READ_ERROR);
-		GMT_grd_pad_off (Grid);	/* Undo pad if one existed (again) */
+		GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed (again) */
 
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Grid->data[i])) ? GMT->session.f_NaN : get_cell (Grid->data[i], cell, n_cells_m1, last_cell);
 	}
@@ -269,7 +269,7 @@ GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 	indexed_data = GMT_memory (GMT, NULL, Grid->header->nm, struct INDEXED_DATA);
 
 	nxy = Grid->header->nm;
-	GMT_grd_loop (Grid, row, col, ij) {
+	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		if (GMT_is_fnan (Grid->data[ij])) {	/* Put NaNs in the back */
 			nxy--;
 			indexed_data[nxy].i = ij;
@@ -300,7 +300,7 @@ GMT_LONG do_gaussian (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 	qsort ((void *)indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
 
 	i = 0;
-	GMT_grd_loop (Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
+	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
 
 	GMT_free (GMT, indexed_data);
 	return (0);
@@ -337,7 +337,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);
-	if (GMT_is_subset (Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.14 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -208,7 +208,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
 						n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "Syntax error -E option: Must give at least azimuth and elevation\n");
 						entry = pos = 0;
-						while (entry < 6 && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
+						while (entry < 6 && (GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
 							switch (entry) {
 								case 2:
 									if (ptr[0] != '=') Ctrl->E.ambient = atof (ptr);
@@ -362,7 +362,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);
-	if (GMT_is_subset (Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	GMT_grd_init (GMT, Surf->header, options, TRUE);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Surf)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
@@ -412,7 +412,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	for (row = ij0 = 0; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Evaluate latitude-dependent factors */
-			lat = GMT_grd_row_to_y (row, Surf->header);
+			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = -1.0 / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.active) {
@@ -507,7 +507,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->E.active) {	/* data must be scaled to the [-1,1] interval, but we'll do it into [-.95, .95] to not get too bright */
 		scale = 1.0 / (r_max - r_min);
-		GMT_grd_loop (Out, row, col, ij) {
+		GMT_grd_loop (GMT, Out, row, col, ij) {
 			if (GMT_is_fnan (Out->data[ij])) continue;
 			Out->data[ij] = (float)((-1.0 + 2.0 * ((Out->data[ij] - r_min) * scale)) * 0.95);
 		}
@@ -526,14 +526,14 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					denom = 1.0 / Ctrl->N.sigma;
 				else {
 					denom = 0.0;
-					GMT_grd_loop (Out, row, col, ij) {
+					GMT_grd_loop (GMT, Out, row, col, ij) {
 						if (!GMT_is_fnan (Out->data[ij])) denom += pow (Out->data[ij] - ave_gradient, 2.0);
 					}
 					denom = sqrt ((n_used - 1) / denom);
 					Ctrl->N.sigma = 1.0 / denom;
 				}
 				rpi = 2.0 * Ctrl->N.norm / M_PI;
-				GMT_grd_loop (Out, row, col, ij) {
+				GMT_grd_loop (GMT, Out, row, col, ij) {
 					if (!GMT_is_fnan (Out->data[ij])) Out->data[ij] = (float)(rpi * atan ((Out->data[ij] - ave_gradient) * denom));
 				}
 				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom);
@@ -542,13 +542,13 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
 				if (!sigma_set) {
 					Ctrl->N.sigma = 0.0;
-					GMT_grd_loop (Out, row, col, ij) {
+					GMT_grd_loop (GMT, Out, row, col, ij) {
 						if (!GMT_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabs((double)Out->data[ij]);
 					}
 					Ctrl->N.sigma = M_SQRT2 * Ctrl->N.sigma / n_used;
 				}
 				denom = M_SQRT2 / Ctrl->N.sigma;
-				GMT_grd_loop (Out, row, col, ij) {
+				GMT_grd_loop (GMT, Out, row, col, ij) {
 					if (GMT_is_fnan (Out->data[ij])) continue;
 					if (Out->data[ij] < ave_gradient) {
 						Out->data[ij] = (float)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)));
@@ -565,7 +565,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					denom = Ctrl->N.norm / (max_gradient - ave_gradient);
 				else
 					denom = Ctrl->N.norm / (ave_gradient - min_gradient);
-				GMT_grd_loop (Out, row, col, ij) {
+				GMT_grd_loop (GMT, Out, row, col, ij) {
 					if (!GMT_is_fnan (Out->data[ij])) Out->data[ij] = (float)((Out->data[ij] - ave_gradient) * denom);
 				}
 				Out->header->z_max = (max_gradient - ave_gradient) * denom;

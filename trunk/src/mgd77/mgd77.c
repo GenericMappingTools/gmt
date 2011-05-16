@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.274 2011-05-16 08:47:59 guru Exp $
+ *	$Id: mgd77.c,v 1.275 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -40,6 +40,9 @@ struct MGD77_MAG_RF {
 struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
+
+EXTERN_MSC GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
+EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
 
@@ -734,6 +737,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	struct tm *T;
 	FILE *fp_err;
 	struct MGD77_HEADER_PARAMS *P;
+	EXTERN_MSC void GMT_str_toupper (char *string);
 
 	if (!F->verbose_level) return;	/* No verbosity desired */
 
@@ -1130,7 +1134,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	pos = n_block = 0;
 	strcpy (copy, P->Ten_Degree_Identifier);
-	while (GMT_strtok (copy,",", &pos, p)) {
+	while (GMT_strtok (C, copy,",", &pos, p)) {
 		if (!strcmp (p, "9999")) {
 			if ((n && n_block != n) OR_TRUE) {
 				if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-02: Invalid Number of Ten Degree Identifiers: (%ld) [%ld]\n", F->NGDC_id, n_block, n);
@@ -1881,7 +1885,7 @@ int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
-	GMT_chop (line);	/* Get rid of CR or LF */
+	GMT_chop (C, line);	/* Get rid of CR or LF */
 
 	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH) {
 		GMT_report (C, GMT_MSG_FATAL, "Warning: Incorrect record length (%d), skipped\n%s\n",len,line);
@@ -1953,11 +1957,11 @@ int MGD77_Read_Data_Record_tbl (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 	double tz, secs;
 
 	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
-	GMT_chop (line);	/* Get rid of CR or LF */
+	GMT_chop (C, line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
 	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
-		if (!GMT_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
+		if (!GMT_strtok (C, line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
 			strcpy (MGD77Record->word[nwords++], p);		/* Just copy text without changing it at all */
 			for (j = n9 = 0; p[j]; j++) if (p[j] == '9') n9++;
@@ -2090,7 +2094,7 @@ int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *record, int 
 		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
-	GMT_chop (record);
+	GMT_chop (C, record);
 
 	got = atoi (&record[78]);
 	if (got != seq) {
@@ -2380,7 +2384,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	all_exact = (option & MGD77_SET_ALLEXACT);
 
 	i = pos = 0;		/* Start at the first ouput column */
-	while ((GMT_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
+	while ((GMT_strtok (C, cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
 			if (p[k] == '>') {
@@ -2458,7 +2462,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	F->n_out_columns = (int)i;
 
 	i = pos = 0;		/* Start at the first ouput column */
-	while ((GMT_strtok (bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
+	while ((GMT_strtok (C, bstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		if (p[0] == '+')
 			F->Bit_test[i].match = 1;
 		else if (p[0] == '-')
@@ -2543,7 +2547,7 @@ void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
-		GMT_chop (line);
+		GMT_chop (C, line);
 		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (C, NULL, strlen (line) + 1, char);
 #if _WIN32
 		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
@@ -2625,7 +2629,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			return (-1);
 		}
 		while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
-			GMT_chop (line);	/* Get rid of CR/LF issues */
+			GMT_chop (C, line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
 			if (n == (int)n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
 			L[n] = GMT_memory (C, NULL, length + 1, char);
@@ -2670,7 +2674,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			system (line);
 			fp = fopen (".tmpdir", "r");
 			while (fgets (line, GMT_BUFSIZ, fp)) {
-				GMT_chop (line);	/* Get rid of CR/LF issues */
+				GMT_chop (C, line);	/* Get rid of CR/LF issues */
 				d_name = line;
 #else
 			/* The directory search is only supported on Unix-like systems for now */
@@ -4934,12 +4938,12 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
-		GMT_chop (line);	/* Deal with CR/LF issues */
+		GMT_chop (C, line);	/* Deal with CR/LF issues */
 		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
 		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
-		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+		while (GMT_strtok (C, arguments, " ,\t", &pos, word)) {
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) != NULL) {	/* No basis function, just a constant, the intercept term */
 				sscanf (word, "%[^*]*%s", factor, basis);
@@ -5048,13 +5052,13 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	while (GMT_fgets (C, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
-		GMT_chop (line);	/* Deal with CR/LF issues */
+		GMT_chop (C, line);	/* Deal with CR/LF issues */
 		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
 		if ((cruise_id = MGD77_Find_Cruise_ID (C, cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Match_List (C, name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
-		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+		while (GMT_strtok (C, arguments, " ,\t", &pos, word)) {
 			c = GMT_memory (C, NULL, 1, struct MGD77_CORRECTION);
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */

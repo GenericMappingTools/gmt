@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_fft.c,v 1.10 2011-05-11 02:40:53 guru Exp $
+ *	$Id: gmt_fft.c,v 1.11 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -917,7 +917,7 @@ GMT_LONG gmt_get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
 	return (retval);
 }
 
-GMT_LONG brenner_worksize (GMT_LONG nx, GMT_LONG ny)
+GMT_LONG brenner_worksize (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny)
 {
 	/* Find the size of the workspace that will be needed by the transform.
 	 * To use this routine for a 1-D transform, set ny = 1.
@@ -936,18 +936,17 @@ GMT_LONG brenner_worksize (GMT_LONG nx, GMT_LONG ny)
 	 *  */
 
 	GMT_LONG f[32], n_factors, nonsymx, nonsymy, nonsym, storage, ntotal;
-	EXTERN_MSC GMT_LONG GMT_get_prime_factors (GMT_LONG n, GMT_LONG *f);
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-	n_factors = GMT_get_prime_factors (nx, f);
+	n_factors = GMT_get_prime_factors (C, nx, f);
 	nonsymx = gmt_get_non_symmetric_f (f, n_factors);
-	n_factors = GMT_get_prime_factors (ny, f);
+	n_factors = GMT_get_prime_factors (C, ny, f);
 	nonsymy = gmt_get_non_symmetric_f (f, n_factors);
 	nonsym = MAX (nonsymx, nonsymy);
 
 	/* Now get factors of ntotal  */
-	ntotal = GMT_get_nm (nx,ny);
-        n_factors = GMT_get_prime_factors (ntotal, f);
+	ntotal = GMT_get_nm (C, nx, ny);
+        n_factors = GMT_get_prime_factors (C, ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
 	if (storage != 2) storage *= 2;
         if (storage < nx) storage = nx;
@@ -2757,7 +2756,7 @@ GMT_LONG GMT_fft_1d_general (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 	GMT_LONG ksign, ndim = 1, work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-	if ((work_size = brenner_worksize (n, 1))) work = GMT_memory (C, NULL, work_size, float);
+	if ((work_size = brenner_worksize (C, n, 1))) work = GMT_memory (C, NULL, work_size, float);
 	(void) BRENNER_fourt_ (data, &n, &ndim, &ksign, &mode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
@@ -2778,7 +2777,7 @@ GMT_LONG GMT_fft_2d_general (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny}, work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-	if ((work_size = brenner_worksize (nx, ny))) work = GMT_memory (C, NULL, work_size, float);
+	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
 	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %ld\n", work_size);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
 	if (work_size) GMT_free (C, work);

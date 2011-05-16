@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testio.c,v 1.4 2011-04-29 03:08:12 guru Exp $
+ *	$Id: testio.c,v 1.5 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-$year by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
 	GMT_free_vector (API->GMT, &Vo, TRUE);
 	
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
-	GMT_grd_loop (G, row, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
+	GMT_grd_loop (API->GMT, G, row, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
 	GMT_free_grid (API->GMT, &G, TRUE);
 

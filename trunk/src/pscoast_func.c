@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.18 2011-05-16 08:47:59 guru Exp $
+ *	$Id: pscoast_func.c,v 1.19 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -503,7 +503,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 			p[k].n = 0;	/* Mark as used */
 
 			if (k0 == -1 && fill) {	/* At start level: done nesting, time to paint the assembled swiss cheese polygon */
-				GMT_setfill (GMT, PSL, &fill[p[k].fid], FALSE);
+				GMT_setfill (GMT, &fill[p[k].fid], FALSE);
 				PSL_command (PSL, "FO\n");
 			}
 		}
@@ -625,23 +625,23 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else if (clipping)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates new clipping that will outlive this process */
 
-		GMT_plotinit (API, PSL, options);
+		GMT_plotinit (GMT, options);
 
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);
 
-			GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-			GMT_map_basemap (GMT, PSL); /* Basemap needed */
-			GMT_plane_perspective (GMT, PSL, -1, 0.0);
+			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			GMT_map_basemap (GMT); /* Basemap needed */
+			GMT_plane_perspective (GMT, -1, 0.0);
 	
-			GMT_plotend (GMT, PSL);
+			GMT_plotend (GMT);
 
 			GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 
 			Return (GMT_OK);
 		}
 
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = TRUE;
@@ -652,7 +652,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		recursive = FALSE;
 	}
 
-	if (clipping) GMT_map_basemap (GMT, PSL);
+	if (clipping) GMT_map_basemap (GMT);
 
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0) {
 		possibly_donut_hell = TRUE;
@@ -673,7 +673,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
 		n = GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-		GMT_setfill (GMT, PSL, &Ctrl->S.fill, FALSE);
+		GMT_setfill (GMT, &Ctrl->S.fill, FALSE);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
 			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
@@ -717,7 +717,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 	east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 
-	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, PSL, &Ctrl->W.pen[0]);
+	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, &Ctrl->W.pen[0]);
 
 	last_pen_level = -1;
 
@@ -781,7 +781,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
 					if (p[k].level % 2 == level_to_be_painted || p[k].level > 2) {
-						GMT_setfill (GMT, PSL, &fill[p[k].fid], FALSE);
+						GMT_setfill (GMT, &fill[p[k].fid], FALSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -791,14 +791,14 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (p[k].n == 0 || p[k].level < level_to_be_painted) continue;
 					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-						GMT_setfill (GMT, PSL, &fill[p[k].fid], FALSE);
+						GMT_setfill (GMT, &fill[p[k].fid], FALSE);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 						GMT_free (GMT, xtmp);
 						GMT_free (GMT, ytmp);
 					}
 					else {
-						GMT_setfill (GMT, PSL, &fill[p[k].fid], FALSE);
+						GMT_setfill (GMT, &fill[p[k].fid], FALSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -828,10 +828,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 					k = p[i].level - 1;
 					if (k != last_pen_level) {
-						GMT_setpen (GMT, PSL, &Ctrl->W.pen[k]);
+						GMT_setpen (GMT, &Ctrl->W.pen[k]);
 						last_pen_level = k;
 					}
-					GMT_plot_line (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 
@@ -885,10 +885,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 					k = p[i].level;
 					if (k != last_k) {
-						GMT_setpen (GMT, PSL, &Ctrl->I.pen[k]);
+						GMT_setpen (GMT, &Ctrl->I.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 
@@ -947,10 +947,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 					k = p[i].level - 1;
 					if (k != last_k) {
-						GMT_setpen (GMT, PSL, &Ctrl->N.pen[k]);
+						GMT_setpen (GMT, &Ctrl->N.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 
@@ -966,14 +966,14 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->M.active) {
 		if (GMT->current.map.frame.plot) {
 			GMT->current.map.is_world = world_map_save;
-			GMT_map_basemap (GMT, PSL);
+			GMT_map_basemap (GMT);
 		}
 
-		if (Ctrl->L.active) GMT_draw_map_scale (GMT, PSL, &Ctrl->L.item);
-		if (Ctrl->T.active) GMT_draw_map_rose (GMT, PSL, &Ctrl->T.item);
+		if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
+		if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);
 
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
-		GMT_plotend (GMT, PSL);
+		GMT_plane_perspective (GMT, -1, 0.0);
+		GMT_plotend (GMT);
 	}
 	else {
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */

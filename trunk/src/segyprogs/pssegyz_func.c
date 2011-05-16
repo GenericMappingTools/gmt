@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.6 2011-05-11 09:48:21 guru Exp $
+ *	$Id: pssegyz_func.c,v 1.7 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -623,7 +623,7 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* set up map projection and PS plotting */
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -781,7 +781,7 @@ use a few of these*/
 	if (fpi != stdin) fclose (fpi);
 
 	/*ps_rotatetrans (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, 0.0);*/
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	GMT_free (GMT, bitmap);
 

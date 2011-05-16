@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.17 2011-05-12 01:33:30 remko Exp $
+ *	$Id: psclip_func.c,v 1.18 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -222,11 +222,11 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	if (Ctrl->C.active && !GMT->current.map.frame.plot) {	/* No basemap needed so no -R -J parsing */
-		GMT_plotend (GMT, PSL);
+		GMT_plotend (GMT);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 
 		Return (EXIT_SUCCESS);
@@ -236,9 +236,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		GMT_LONG tbl, seg, i, first = !Ctrl->N.active;
@@ -246,7 +246,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		struct GMT_DATASET *D = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;
 
-		if (Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 1);	/* Must clip map */
+		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		if (!Ctrl->T.active) {
 			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
@@ -282,8 +282,8 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		PSL_beginclipping (PSL, NULL, NULL, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
 	}
 
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
-	GMT_plotend (GMT, PSL);
+	GMT_plane_perspective (GMT, -1, 0.0);
+	GMT_plotend (GMT);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 

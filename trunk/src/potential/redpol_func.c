@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.13 2011-05-16 08:47:59 guru Exp $
+ *	$Id: redpol_func.c,v 1.14 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1044,7 +1044,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				break;
 			case 'E':
 				j = 0;
-				while (GMT_strtok (opt->arg, "/", &pos, p)) {
+				while (GMT_strtok (GMT, opt->arg, "/", &pos, p)) {
 					switch (j) {
 						case 0:
 							Ctrl->E.dipfile = strdup (p);
@@ -1208,7 +1208,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	Gout->header->registration = Gin->header->registration;
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
 	Gout->header->pad[XLO] = Gout->header->pad[XHI] = Gout->header->pad[YLO] = Gout->header->pad[YHI] = 2;
-	GMT_set_grddim (Gout->header);	/* SHOULDN'T IT USE GMT->current.io.pad INSTEAD ???? */
+	GMT_set_grddim (GMT, Gout->header);	/* SHOULDN'T IT USE GMT->current.io.pad INSTEAD ???? */
 
 	if (GMT->common.R.active) {
 		if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] || Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) {
@@ -1280,8 +1280,8 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 
 	/* Generate vectors of lon & lats */
-	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (col, Gin->header);
-	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (row, Gin->header);
+	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (GMT, col, Gin->header);
+	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (GMT, row, Gin->header);
 
 	n_jlon = (int)((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
 	n_jlat = (int)((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
@@ -1395,9 +1395,9 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			}
 
 			/* Convolve filter with input data that is inside current window (plus what filter width imposes) */
-			GMT_row_loop(Gout,row) {
+			GMT_row_loop (GMT, Gout,row) {
 				if (ftlat[row] < slati || ftlat[row] > slatf) continue;		/* Current point outside WOI */
-				GMT_col_loop(Gout,row,col,ij) {
+				GMT_col_loop (GMT, Gout,row,col,ij) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
 					/* Compute dec and dip at corrent point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */

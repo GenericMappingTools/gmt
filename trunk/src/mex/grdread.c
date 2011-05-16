@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.19 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdread.c,v 1.20 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,12 +67,12 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	/*  Load the real grd array into a double matlab array
 	    by transposing from padded GMT grd format to unpadded matlab format */
     
-	GMT_grd_loop (G, row, col, gmt_node) z[MEX_IJ(G,row,col)] = G->data[gmt_node];
+	GMT_grd_loop (API->GMT, G, row, col, gmt_node) z[MEX_IJ(G,row,col)] = G->data[gmt_node];
 	    
 	/* Create scalars for return arguments */
 
 	if (pi >= 0) GMTMEX_grdheader2info (plhs, G, pi);	/* Also return info array */
-	if (px >= 0) GMTMEX_grdxy (plhs, G, px, py);	/* Return x,y arrays also */
+	if (px >= 0) GMTMEX_grdxy (API, plhs, G, px, py);	/* Return x,y arrays also */
 	
 	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	

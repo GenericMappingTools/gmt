@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.66 2011-05-16 08:47:58 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.67 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,7 +247,7 @@ void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M)
 	GMT_memcpy (M->limit, h->wesn, 4, double);
 }
 
-void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, struct GMT_MATRIX *M)
+void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_MATRIX *M)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
 	h->nx = (int)M->n_columns;	/* Cast as int due to definition of GRD_HEADER */
 	h->ny = (int)M->n_rows;
@@ -255,8 +255,8 @@ void GMTAPI_info_to_grdheader (struct GRD_HEADER *h, struct GMT_MATRIX *M)
 	GMT_memcpy (h->wesn, M->limit, 4, double);
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRIDLINE_REG) ? 0.0 : 0.5;
-	h->inc[GMT_X] = GMT_get_inc (h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
-	h->inc[GMT_Y] = GMT_get_inc (h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
+	h->inc[GMT_X] = GMT_get_inc (C, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
+	h->inc[GMT_Y] = GMT_get_inc (C, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
 GMT_LONG GMTAPI_need_grdpadding (struct GRD_HEADER *h, GMT_LONG *pad)
@@ -281,8 +281,8 @@ GMT_LONG GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, dou
 	GMT_memcpy (h_tmp, h, 1, struct GRD_HEADER);
 	
 	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
-	GMT_grd_setpad (h_tmp, C->current.io.pad);	/* Use the system pad setting by default */
-	GMT_set_grddim (h_tmp);				/* Computes all integer parameters */
+	GMT_grd_setpad (C, h_tmp, C->current.io.pad);	/* Use the system pad setting by default */
+	GMT_set_grddim (C, h_tmp);			/* Computes all integer parameters */
 	size = h_tmp->size;				/* This is the size needed to hold grid + padding */
 	GMT_free (C, h_tmp);
 	return (size);
@@ -1283,16 +1283,16 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 				I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
 			}
 			I->alloc_mode = GMT_ALLOCATED;
-			if (!S->region && !GMT_grd_pad_status (I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
+			if (!S->region && !GMT_grd_pad_status (API->GMT, I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				GMT_memcpy (I->data, I_orig->data, I_orig->header->size, char);
 				break;		/* Done with this image */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
-			j1 = GMT_grd_y_to_row (I->header->wesn[YLO], I_orig->header);
-			j0 = GMT_grd_y_to_row (I->header->wesn[YHI], I_orig->header);
-			i0 = GMT_grd_x_to_col (I->header->wesn[XLO], I_orig->header);
-			i1 = GMT_grd_x_to_col (I->header->wesn[XHI], I_orig->header);
+			j1 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YLO], I_orig->header);
+			j0 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YHI], I_orig->header);
+			i0 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XLO], I_orig->header);
+			i1 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XHI], I_orig->header);
 			GMT_memcpy (I->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -1334,15 +1334,15 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, I->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (I->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, I->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			I->alloc_mode = GMT_ALLOCATED;
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
-			GMT_set_grddim (I->header);	/* Set all dimensions */
+			GMT_set_grddim (API->GMT, I->header);	/* Set all dimensions */
 			I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
-			GMT_grd_loop (I, row, col, ij) {
+			GMT_grd_loop (API->GMT, I, row, col, ij) {
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				I->data[ij] = (char)GMTAPI_get_val (M->data, ij_orig, M->type);
 			}
@@ -1356,7 +1356,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, I->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (I->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, I->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
@@ -1377,7 +1377,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, I->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (I->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, I->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
@@ -1488,16 +1488,16 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 			}
 			G->alloc_mode = GMT_ALLOCATED;
-			if (!S->region && !GMT_grd_pad_status (G->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
+			if (!S->region && !GMT_grd_pad_status (API->GMT, G->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				GMT_memcpy (G->data, G_orig->data, G_orig->header->size, float);
 				break;		/* Done with this grid */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
-			j1 = GMT_grd_y_to_row (G->header->wesn[YLO], G_orig->header);
-			j0 = GMT_grd_y_to_row (G->header->wesn[YHI], G_orig->header);
-			i0 = GMT_grd_x_to_col (G->header->wesn[XLO], G_orig->header);
-			i1 = GMT_grd_x_to_col (G->header->wesn[XHI], G_orig->header);
+			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO], G_orig->header);
+			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI], G_orig->header);
+			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO], G_orig->header);
+			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI], G_orig->header);
 			GMT_memcpy (G->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -1545,15 +1545,15 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, G->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (G->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, G->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			G->alloc_mode = GMT_ALLOCATED;
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
-			GMT_set_grddim (G->header);	/* Set all dimensions */
+			GMT_set_grddim (API->GMT, G->header);	/* Set all dimensions */
 			G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
-			GMT_grd_loop (G, row, col, ij) {
+			GMT_grd_loop (API->GMT, G, row, col, ij) {
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				G->data[ij] = (float)GMTAPI_get_val (M->data, ij_orig, M->type);
 			}
@@ -1569,7 +1569,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, G->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (G->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, G->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
@@ -1592,7 +1592,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			M = (struct GMT_MATRIX *)S->ptr;
 			if (mode != GMT_GRID_DATA) {
 				GMT_grd_init (API->GMT, G->header, NULL, FALSE);
-				GMTAPI_info_to_grdheader (G->header, M);	/* Populate a GRD header structure */
+				GMTAPI_info_to_grdheader (API->GMT, G->header, M);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
@@ -1664,10 +1664,10 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G_copy = GMT_create_grid (API->GMT);
 			GMT_memcpy (G_copy->header, G->header, 1, struct GRD_HEADER);
 			GMT_memcpy (G_copy->header->wesn, S->wesn, 4, double);
-			j1 = GMT_grd_y_to_row (G->header->wesn[YLO], G->header);
-			j0 = GMT_grd_y_to_row (G->header->wesn[YHI], G->header);
-			i0 = GMT_grd_x_to_col (G->header->wesn[XLO], G->header);
-			i1 = GMT_grd_x_to_col (G->header->wesn[XHI], G->header);
+			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO], G->header);
+			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI], G->header);
+			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO], G->header);
+			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI], G->header);
 			GMT_memcpy (G->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);		/* Set desired padding */
 			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G->header, S->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = GMT_memory (API->GMT, NULL, G_copy->header->size, float);
@@ -1708,12 +1708,12 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			if (M->alloc_mode == 1) {	/* Must allocate output space */
 				GMT_LONG size;
 				void **v = NULL;
-				size = GMT_get_nm (G->header->nx, G->header->ny) * (API->GMTAPI_size[M->type]);
+				size = GMT_get_nm (API->GMT, G->header->nx, G->header->ny) * (API->GMTAPI_size[M->type]);
 				v = GMT_memory (API->GMT, NULL, 1, void *);
 				*v = GMT_memory (API->GMT, NULL, size, char);
 				*(S->ptr) = *v;
 			}
-			GMT_grd_loop (G, row, col, ijp) {
+			GMT_grd_loop (API->GMT, G, row, col, ijp) {
 				ij = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
 				GMTAPI_put_val (M->data, (double)G->data[ijp], ij, M->type);
 			}
@@ -2352,8 +2352,15 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if (GMTAPI_is_registered (API, family, geometry, direction, data, object_ID)) return (GMT_OK);	/* Already registered */
-	
+	if (GMTAPI_is_registered (API, family, geometry, direction, data, object_ID)) {
+		if ((error = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, *object_ID, direction, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
+		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn) {	/* Copy the subset region if it was given (for grids/images) */
+			S = API->object[item];	/* Use S as shorthand */
+			GMT_memcpy (S->wesn, wesn, 4, double);
+			S->region = 1;
+		}
+		return (GMT_OK);	/* Already registered */
+	}
 	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
 	m = method - (via + 1) * GMT_VIA_VECTOR;
 	

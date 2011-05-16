@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
+ *    $Id: psmeca_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -585,12 +585,12 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
@@ -760,9 +760,9 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			xynew[ix] = atof (col[last-1+Ctrl->O2.mode]);
 			xynew[iy] = atof (col[last+Ctrl->O2.mode]);
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
-				GMT_setpen (GMT, PSL, &Ctrl->C.pen);
+				GMT_setpen (GMT, &Ctrl->C.pen);
 				GMT_geo_to_xy (GMT, xynew[0], xynew[1], &plot_xnew, &plot_ynew);
-				GMT_setfill (GMT, PSL, &Ctrl->G.fill, 1);
+				GMT_setfill (GMT, &Ctrl->G.fill, 1);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, GMT_SYMBOL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
@@ -788,7 +788,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			N.str = zero_360(N.str + delaz);
 			P.str = zero_360(P.str + delaz);
 
-			GMT_setpen (GMT, PSL, &Ctrl->L.pen);
+			GMT_setpen (GMT, &Ctrl->L.pen);
 			if (fabs (N.val) < EPSIL && fabs (T.val + P.val) < EPSIL) {
 				axe2dc (T, P, &meca.NP1, &meca.NP2);
 				ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
@@ -798,14 +798,14 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		if (Ctrl->Z2.active) {
-			GMT_setpen (GMT, PSL, &Ctrl->Z2.pen);
+			GMT_setpen (GMT, &Ctrl->Z2.pen);
 			ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, TRUE, TRUE);
 		}
 
 		if (Ctrl->T.active) {
 			meca.NP1.str = zero_360(meca.NP1.str + delaz);
 			meca.NP2.str = zero_360(meca.NP2.str + delaz);
-			GMT_setpen (GMT, PSL, &Ctrl->T.pen);
+			GMT_setpen (GMT, &Ctrl->T.pen);
 			switch (Ctrl->T.n_plane) {
 				case 0:
 					ps_meca (GMT, PSL, plot_x, plot_y, meca, size);
@@ -823,12 +823,12 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else if (Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.plotmode == PLOT_DC) {
 			meca.NP1.str = zero_360(meca.NP1.str + delaz);
 			meca.NP2.str = zero_360(meca.NP2.str + delaz);
-			GMT_setpen (GMT, PSL, &Ctrl->L.pen);
+			GMT_setpen (GMT, &Ctrl->L.pen);
 			ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 		}
 
 		if (!Ctrl->S.no_label) {
-			GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+			GMT_setpen (GMT, &Ctrl->W.pen);
 			switch (Ctrl->S.justify) {
 				case 2 :
 					PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
@@ -847,11 +847,11 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					axis2xy(plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 				else
 					ps_pt_axis(plot_x, plot_y, meca, size, &P.str, &P.dip, &T.str, &T.dip, &P_x, &P_y, &T_x, &T_y);
-				GMT_setpen (GMT, PSL, &Ctrl->P2.pen);
-				GMT_setfill (GMT, PSL, &Ctrl->G2.fill, Ctrl->P2.active);
+				GMT_setpen (GMT, &Ctrl->P2.pen);
+				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->a2.size, Ctrl->a2.P_symbol);
-				GMT_setpen (GMT, PSL, &Ctrl->T2.pen);
-				GMT_setfill (GMT, PSL, &Ctrl->E2.fill, Ctrl->T2.active);
+				GMT_setpen (GMT, &Ctrl->T2.pen);
+				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
 				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->a2.size, Ctrl->a2.P_symbol);
 			}
 		}
@@ -860,15 +860,15 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of records read: %li\n", n_rec);
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

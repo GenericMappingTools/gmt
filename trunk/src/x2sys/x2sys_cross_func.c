@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -376,7 +376,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
 			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blanks */
-			GMT_chop (line);	/* Get rid of CR, LF stuff */
+			GMT_chop (GMT, line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %ld!\n", n_pairs);

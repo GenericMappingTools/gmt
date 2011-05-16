@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.26 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdview_func.c,v 1.27 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -282,7 +282,7 @@ void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PA
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))	/* Pattern */
-		GMT_setfill (GMT, PSL, f, outline);
+		GMT_setfill (GMT, f, outline);
 	else {	/* Solid color/gray */
 		if (intens) GMT_illuminate (GMT, intensity, rgb);
 		if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb); /* GMT_YIQ transformation */
@@ -626,12 +626,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and bail */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
-		GMT_map_basemap (GMT, PSL);
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
-		GMT_plotend (GMT, PSL);
+		GMT_map_basemap (GMT);
+		GMT_plane_perspective (GMT, -1, 0.0);
+		GMT_plotend (GMT);
 		Return (GMT_OK);
 	}
 
@@ -640,7 +640,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processing shape file\n");
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	t_reg = GMT_change_grdreg (Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (i = 0; i < n_drape; i++) {
@@ -648,7 +648,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->G.file[i]), (void **)&Drape[i])) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			if (Drape[i]->header->nx != Topo->header->nx || Drape[i]->header->ny != Topo->header->ny) drape_resample = TRUE;
-			d_reg[i] = GMT_change_grdreg (Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+			d_reg[i] = GMT_change_grdreg (GMT, Drape[i]->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
 	}
@@ -658,8 +658,8 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	xval = GMT_memory (GMT, NULL, Topo->header->nx, double);
 	yval = GMT_memory (GMT, NULL, Topo->header->ny, double);
 
-	for (i = 0; i < Topo->header->nx; i++) xval[i] = GMT_grd_col_to_x (i, Topo->header);
-	for (j = 0; j < Topo->header->ny; j++) yval[j] = GMT_grd_row_to_y (j, Topo->header);
+	for (i = 0; i < Topo->header->nx; i++) xval[i] = GMT_grd_col_to_x (GMT, i, Topo->header);
+	for (j = 0; j < Topo->header->ny; j++) yval[j] = GMT_grd_row_to_y (GMT, j, Topo->header);
 
 	if (!GMT->current.proj.xyz_pos[2]) d_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
@@ -702,7 +702,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Now tracing contour interval %8g\r", cval);
 			take_out = (first) ? cval : cval - P->range[c-1].z_low;
 			first = FALSE;
-			GMT_grd_loop (Topo, row, col, ij) {
+			GMT_grd_loop (GMT, Topo, row, col, ij) {
 				if (!GMT_is_fnan (Z->data[ij])) Z->data[ij] -= (float)take_out;
 				if (Z->data[ij] == 0.0) Z->data[ij] += (float)small;
 			}
@@ -748,7 +748,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Topo)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 			Z = Topo;
 		}
-		GMT_change_grdreg (Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
+		GMT_change_grdreg (GMT, Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
 	}
 
 	if (Ctrl->I.active) {	/* Illumination wanted */
@@ -760,7 +760,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
-		i_reg = GMT_change_grdreg (Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
+		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
@@ -784,20 +784,20 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Start creating PostScript plot\n");
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
 	PSL_setformat (PSL, 3);
 
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	if (GMT->current.proj.three_D) GMT_map_basemap (GMT, PSL); /* Plot basemap first if 3-D */
-	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	if (GMT->current.proj.three_D) GMT_map_basemap (GMT); /* Plot basemap first if 3-D */
+	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	GMT_plane_perspective (GMT, -1, 0.0);
 
 	xx = GMT_memory (GMT, NULL, max, double);
 	yy = GMT_memory (GMT, NULL, max, double);
 	if (Ctrl->N.active) {
 		PSL_comment (PSL, "Plot the plane at desired level\n");
-		GMT_setpen (GMT, PSL, &Ctrl->W.pen[2]);
+		GMT_setpen (GMT, &Ctrl->W.pen[2]);
 		if (!GMT->current.proj.z_project.draw[0]) {	/* Southern side */
 			if (GMT->common.R.oblique) {
 				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
@@ -805,7 +805,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (i = 0; i < Z->header->nx; i++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[i], &yy[i]);
+				for (i = 0; i < Z->header->nx; i++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[i], &yy[i]);
 				PSL_plotline (PSL, xx, yy, Z->header->nx, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
@@ -816,7 +816,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (i = 0; i < Z->header->nx; i++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[i], &yy[i]);
+				for (i = 0; i < Z->header->nx; i++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[i], &yy[i]);
 				PSL_plotline (PSL, xx, yy, Z->header->nx, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
@@ -827,7 +827,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (j = 0; j < Z->header->ny; j++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (j, Z->header), Ctrl->N.level, &xx[j], &yy[j]);
+				for (j = 0; j < Z->header->ny; j++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[j], &yy[j]);
 				PSL_plotline (PSL, xx, yy, Z->header->ny, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
@@ -838,7 +838,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (j = 0; j < Z->header->ny; j++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (j, Z->header), Ctrl->N.level, &xx[j], &yy[j]);
+				for (j = 0; j < Z->header->ny; j++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[j], &yy[j]);
 				PSL_plotline (PSL, xx, yy, Z->header->ny, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
@@ -875,18 +875,18 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Tiling without interpolation\n");
 
-		if (Ctrl->T.outline) GMT_setpen (GMT, PSL, &Ctrl->T.pen);
+		if (Ctrl->T.outline) GMT_setpen (GMT, &Ctrl->T.pen);
 		GMT_memset (&S, 1, struct GMT_LINE_SEGMENT);
 		S.coord = GMT_memory (GMT, NULL, 2, double *);
-		GMT_grd_loop (Z, row, col, k) {	/* Compute rgb for each pixel */
+		GMT_grd_loop (GMT, Z, row, col, k) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[k]) && Ctrl->T.skip) continue;
 			if (Ctrl->I.active && Ctrl->T.skip && GMT_is_fnan (Intens->data[k])) continue;
 			GMT_get_rgb_from_z (GMT, P, Topo->data[k], fill.rgb);
 			if (Ctrl->I.active) GMT_illuminate (GMT, Intens->data[k], fill.rgb);
 			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
-			GMT_setfill (GMT, PSL, &fill, Ctrl->T.outline);
+			GMT_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
-			GMT_geo_polygons (GMT, PSL, &S);
+			GMT_geo_polygons (GMT, &S);
 			GMT_free (GMT, xx);
 			GMT_free (GMT, yy);
 		}
@@ -922,10 +922,10 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
 			y_drape = GMT_memory (GMT, NULL, Z->header->ny, double);
 			if (Ctrl->I.active) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
-			for (col = 0; col < Z->header->nx; col++) x_drape[col] = GMT_grd_col_to_x (col, Z->header);
-			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (row, Z->header);
+			for (col = 0; col < Z->header->nx; col++) x_drape[col] = GMT_grd_col_to_x (GMT, col, Z->header);
+			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (GMT, row, Z->header);
 			bin = 0;
-			GMT_grd_loop (Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
+			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row]);
 				if (GMT_is_fnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
@@ -949,7 +949,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			ix = GMT_memory (GMT, NULL, Topo->header->nm, GMT_LONG);
 			iy = GMT_memory (GMT, NULL, Topo->header->nm, GMT_LONG);
 			bin = 0;
-			GMT_grd_loop (Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
+			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				if (GMT_is_fnan (Topo->data[ij]))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
@@ -1134,7 +1134,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
 		PSL_comment (PSL, "Start of mesh plot\n");
-		GMT_setpen (GMT, PSL, &Ctrl->W.pen[1]);
+		GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->Q.monochrome) Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (j = j_start; j != j_stop; j += j_inc) {
 			y_bottom = yval[j];
@@ -1150,7 +1150,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
 				GMT_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
 				GMT_geoz_to_xy (GMT, x_left, y_top, (double)(Topo->data[ij+ij_inc[3]]), &xx[3], &yy[3]);
-				GMT_setfill (GMT, PSL, &Ctrl->Q.fill, TRUE);
+				GMT_setfill (GMT, &Ctrl->Q.fill, TRUE);
 				PSL_plotpolygon (PSL, xx, yy, 4);
 				if (Ctrl->W.contour) {
 					pen_set = FALSE;
@@ -1163,12 +1163,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							k++;
 						}
 						if (!pen_set) {
-							GMT_setpen (GMT, PSL, &Ctrl->W.pen[0]);
+							GMT_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = TRUE;
 						}
 						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
 					}
-					if (pen_set) GMT_setpen (GMT, PSL, &Ctrl->W.pen[1]);
+					if (pen_set) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 				}
 			}
 		}
@@ -1187,7 +1187,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		vcont = GMT_memory (GMT, NULL, max, double);
 
 		PSL_comment (PSL, "Start of filled surface\n");
-		if (Ctrl->Q.outline) GMT_setpen (GMT, PSL, &Ctrl->W.pen[1]);
+		if (Ctrl->Q.outline) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 
 		for (j = j_start; j != j_stop; j += j_inc) {
 			y_bottom = yval[j];
@@ -1460,12 +1460,12 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							k++;
 						}
 						if (!pen_set) {
-							GMT_setpen (GMT, PSL, &Ctrl->W.pen[0]);
+							GMT_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = TRUE;
 						}
 						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
 					}
-					if (pen_set) GMT_setpen (GMT, PSL, &Ctrl->W.pen[1]);
+					if (pen_set) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 					if (Ctrl->Q.outline) {
 						for (k = 0; k < 4; k++) GMT_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
 						PSL_setfill (PSL, GMT->session.no_rgb, TRUE);
@@ -1498,56 +1498,56 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->W.pen[1].style || Ctrl->W.pen[0].style) PSL_setdash (PSL, CNULL, 0);
 
-	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_off (GMT, PSL);
+	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_off (GMT);
 
 	if (Ctrl->N.facade) {	/* Cover the two front sides */
 		PSL_comment (PSL, "Painting the frontal facade\n");
-		GMT_setpen (GMT, PSL, &Ctrl->W.pen[2]);
+		GMT_setpen (GMT, &Ctrl->W.pen[2]);
 		PSL_setfill (PSL, Ctrl->N.rgb, TRUE);
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (i = n = 0, ij = sw; i < Z->header->nx; i++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
+			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
 			for (j = n = 0, ij = ne; j < Z->header->ny; j++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
 			for (i = n = 0, ij = nw; i < Z->header->nx; i++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (i, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
+			for (i = Z->header->nx - 1; i >= 0; i--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, i, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
 			for (j = n = 0, ij = nw; j < Z->header->ny; j++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, j, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (j = Z->header->ny - 1; j >= 0; j--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, j, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, n);
 		}
 	}
 
 	if (GMT->current.proj.three_D)
-		GMT_vertical_axis (GMT, PSL, 2);	/* Draw foreground axis */
+		GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	else
-		GMT_map_basemap (GMT, PSL);	/* Plot basemap last if not 3-D */
+		GMT_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	/* Free memory */
 
@@ -1572,9 +1572,9 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, binij);
 	}
 
-	GMT_change_grdreg (Topo->header, t_reg);	/* Reset registration, if required */
+	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
 	if (Ctrl->I.active) {
-		GMT_change_grdreg (Intens->header, i_reg);	/* Reset registration, if required */
+		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
 	}
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
@@ -1583,7 +1583,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, z);
 	GMT_free (GMT, v);
 	if (Ctrl->G.active) for (i = 0; i < n_drape; i++) {
-		GMT_change_grdreg (Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
+		GMT_change_grdreg (GMT, Drape[i]->header, d_reg[i]);	/* Reset registration, if required */
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");

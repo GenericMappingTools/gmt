@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.17 2011-05-16 08:47:59 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.18 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 	*s = p;
 }
 
-void decode_columns (char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
+void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
 {
 	GMT_LONG i, start, stop, pos, col;
 	char p[GMT_BUFSIZ];
@@ -151,7 +151,7 @@ void decode_columns (char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
 	else {	/* Set the selected columns */
 		for (i = 0; i < n_col; i++) skip[i] = TRUE;
 		pos = col = 0;
-		while ((GMT_strtok (txt, ",", &pos, p))) {
+		while ((GMT_strtok (GMT, txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 			else {
@@ -1526,7 +1526,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array ((void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i) {
 				GMT_mode (GMT, T->segment[s]->coord[col], i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1544,7 +1544,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array ((void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i) {
 		GMT_mode (GMT, z, i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1688,7 +1688,7 @@ void table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array ((void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i) {
 				med = (i%2) ? T->segment[s]->coord[col][i/2] : 0.5 * (T->segment[s]->coord[col][(i-1)/2] + T->segment[s]->coord[col][i/2]);
@@ -1704,7 +1704,7 @@ void table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array ((void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i) {
 		med = (i%2) ? z[i/2] : 0.5 * (z[(i-1)/2] + z[i/2]);
@@ -1775,7 +1775,7 @@ void table_MED (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array ((void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i)
 				med = (i%2) ? T->segment[s]->coord[col][i/2] : 0.5 * (T->segment[s]->coord[col][(i-1)/2] + T->segment[s]->coord[col][i/2]);
@@ -1790,7 +1790,7 @@ void table_MED (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATA
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array ((void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i)
 		med = (i%2) ? z[i/2] : 0.5 * (z[(i-1)/2] + z[i/2]);
@@ -1847,7 +1847,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array ((void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
 			for (i = info->T->segment[s]->n_rows; GMT_is_dnan (T->segment[s]->coord[col][i-1]) && i > 1; i--);
 			if (i)
 				GMT_mode (GMT, T->segment[s]->coord[col], i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -1862,7 +1862,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 			k += info->T->segment[s]->n_rows;
 		}
 	}
-	GMT_sort_array ((void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
 	for (i = info->T->n_records; GMT_is_dnan (z[i-1]) && i > 1; i--);
 	if (i)
 		GMT_mode (GMT, z, i, i/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -2085,7 +2085,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array ((void *)T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
+			GMT_sort_array (GMT, (void *)T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE_TYPE);
 			p = GMT_quantile (GMT, T_prev->segment[s]->coord[col], factor[last], info->T->segment[s]->n_rows);
 			for (i = 0; i < info->T->segment[s]->n_rows; i++) T_prev->segment[s]->coord[col][i] = p;
 		}
@@ -2095,7 +2095,7 @@ void table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 		}
 	}
 	if (info->local) return;	/* Done with local */
-	GMT_sort_array ((void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)z, info->T->n_records, GMT_DOUBLE_TYPE);
 	p = GMT_quantile (GMT, z, factor[last], info->T->n_records);
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T_prev->segment[s]->coord[col][i] = p;
 	GMT_free (GMT, z);
@@ -2784,7 +2784,7 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 	/* Preliminary test-conversion to a number */
 
 	strcpy (copy, txt);
-	if (!GMT_not_numeric (copy)) {	/* Only check if we are not sure this is NOT a number */
+	if (!GMT_not_numeric (GMT, copy)) {	/* Only check if we are not sure this is NOT a number */
 		expect = (strchr (copy, 'T')) ? GMT_IS_ABSTIME : GMT_IS_UNKNOWN;	/* Watch out for dateTclock-strings */
 		check = GMT_scanf (GMT, copy, expect, &tmp);
 		possible_number = TRUE;
@@ -3098,7 +3098,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (strchr ("AINQSTVbfghios" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
-			decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol);
+			decode_columns (GMT, opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol);
 			continue;
 		}
 		if (opt->option == GMTAPI_OPT_OUTFILE) continue;	/* We do output after the loop */

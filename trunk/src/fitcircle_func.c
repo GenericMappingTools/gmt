@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.10 2011-05-09 02:19:06 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.11 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -192,7 +192,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, GMT_LON
 
 	if (norm == 1) {
 		for (i = 0; i < ndata; i++) work[i] = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
-		GMT_sort_array ((void *)work, ndata, GMT_DOUBLE_TYPE);
+		GMT_sort_array (GMT, (void *)work, ndata, GMT_DOUBLE_TYPE);
 		*circle_distance = (ndata%2) ?  work[ndata/2] : 0.5 * (work[(ndata/2)-1] + work[ndata/2]);
 	}
 	else {

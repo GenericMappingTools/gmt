@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.14 2011-05-16 21:23:11 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -575,17 +575,17 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Z)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
-	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (i, Z->header);
+	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (GMT, i, Z->header);
 	y_smt = GMT_memory (GMT, NULL, Z->header->ny, double);
-	for (j = 0; j < Z->header->ny; j++) y_smt[j] = D2R * GMT_lat_swap (GMT, GMT_grd_row_to_y (j, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	for (j = 0; j < Z->header->ny; j++) y_smt[j] = D2R * GMT_lat_swap (GMT, GMT_grd_row_to_y (GMT, j, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	lat_area = GMT_memory (GMT, NULL, Z->header->ny, double);
 
 	for (j = 0; j < Z->header->ny; j++) lat_area[j] = area * cos (y_smt[j]);
 	
 	x_cva = GMT_memory (GMT, NULL, G->header->nx, double);
-	for (i = 0; i < G->header->nx; i++) x_cva[i] = GMT_grd_col_to_x (i, G->header);
+	for (i = 0; i < G->header->nx; i++) x_cva[i] = GMT_grd_col_to_x (GMT, i, G->header);
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
-	for (j = 0; j < G->header->ny; j++) y_cva[j] = GMT_grd_row_to_y (j, G->header);
+	for (j = 0; j < G->header->ny; j++) y_cva[j] = GMT_grd_row_to_y (GMT, j, G->header);
 	if (Ctrl->A.file) {
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->A.file), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
@@ -661,7 +661,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	n_flow = n_nodes = 0;
-	GMT_grd_loop (Z, row, col, ij) {	/* Loop over all input nodes */
+	GMT_grd_loop (GMT, Z, row, col, ij) {	/* Loop over all input nodes */
 		/* STEP 1: Determine if z exceeds threshold and if so assign age */
 		if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 		if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
@@ -700,9 +700,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		printf ("> %ld %ld %ld %ld %g\n", n_nodes, np, row, col, cva_contribution);
 #endif
 		for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
-			i = GMT_grd_x_to_col (c[k++], G_rad->header);
+			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			j = GMT_grd_y_to_row (yg, G->header);
+			j = GMT_grd_y_to_row (GMT, yg, G->header);
 			if (i < 0 || i >= G->header->nx || j < 0 || j >= G->header->ny)	/* Outside the CVA box, flag as outside */
 				node = OUTSIDE;
 			else								/* Inside the CVA box, assign node ij */
@@ -755,7 +755,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;
-		GMT_grd_loop (G, row, col, node) {	/* Loop over all output nodes */
+		GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 			if (GMT_is_fnan (G->data[node])) continue;
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
 			if (G->data[node] > G->header->z_max) G->header->z_max = G->data[node];
@@ -813,7 +813,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
 				G->header->z_min = +DBL_MAX;
 				G->header->z_max = -DBL_MAX;
-				GMT_grd_loop (G, row, col, node) {	/* Loop over all output nodes */
+				GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 					if (GMT_is_fnan (CVA_inc[node])) continue;
 					if (CVA_inc[node] < G->header->z_min) G->header->z_min = CVA_inc[node];
 					if (CVA_inc[node] > G->header->z_max) G->header->z_max = CVA_inc[node];
@@ -874,7 +874,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			k_step = 3;	/* FLowlines have (x,y,t) here */
 			forth_flag = Ctrl->PA.active + 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
 			n_flow = n_nodes = 0;
-			GMT_grd_loop (Z, row, col, ij) {	/* Loop over all input nodes */
+			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Loop over all input nodes */
 				/* STEP 1: Determine if z exceeds threshold and if so assign age */
 				if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 				if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
@@ -891,9 +891,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				CVA_max = 0.0;
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
-					i = GMT_grd_x_to_col (c[k++], G_rad->header);
+					i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 					yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					j = GMT_grd_y_to_row (yg, G->header);
+					j = GMT_grd_y_to_row (GMT, yg, G->header);
 					if (Ctrl->PA.active) pa_val = c[k++];
 					if (i < 0 || i >= G->header->nx || j < 0 || j >= G->header->ny) continue;	/* Outside the CVA box, flag as outside */
 					node = GMT_IJP (G->header, j, i);
@@ -971,8 +971,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			col = GMT_col (G->header, max_ij);
 			row = GMT_row (G->header, max_ij);
-			out[0] = GMT_grd_col_to_x (col, G->header);
-			out[1] = GMT_grd_row_to_y (row, G->header);
+			out[0] = GMT_grd_col_to_x (GMT, col, G->header);
+			out[1] = GMT_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;
 			
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);	/* Write this to output */

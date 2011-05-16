@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.17 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -177,7 +177,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 				}
 #endif
 				j = pos = 0;
-				while (j < 5 && (GMT_strtok (line, "/", &pos, ptr))) {
+				while (j < 5 && (GMT_strtok (GMT, line, "/", &pos, ptr))) {
 					Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 					j++;
 				}
@@ -305,8 +305,8 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
-	for (col = 0; col < Grid->header->nx; col++) GMT_geo_to_xy (GMT, GMT_grd_col_to_x (col, Grid->header), 0.0, &x[col], &dummy);
-	for (row = 0; row < Grid->header->ny; row++) GMT_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (row, Grid->header), &dummy, &y[row]);
+	for (col = 0; col < Grid->header->nx; col++) GMT_geo_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
+	for (row = 0; row < Grid->header->ny; row++) GMT_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
 	i_dx_inch = 1.0 / fabs (x[1] - x[0]);
 	i_dy_inch = 1.0 / fabs (y[1] - y[0]);
 
@@ -414,7 +414,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, x);
 	GMT_free (GMT, y);
 
-	GMT_grd_loop (Grid, row, col, ij) {	/* Turn levels into mask values */
+	GMT_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = irint (Grid->data[ij]);
 		Grid->data[ij] = (float)Ctrl->N.mask[k];
 	}

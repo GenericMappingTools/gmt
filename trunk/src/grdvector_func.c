@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdvector_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -318,7 +318,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_grd_init (GMT, Grid[k]->header, options, TRUE);
 	}
 
-	if (!(Grid[0]->header->nx == Grid[1]->header->nx && Grid[0]->header->ny == Grid[1]->header->ny && GMT_grd_same_region (Grid[0], Grid[1])
+	if (!(Grid[0]->header->nx == Grid[1]->header->nx && Grid[0]->header->ny == Grid[1]->header->ny && GMT_grd_same_region (GMT, Grid[0], Grid[1])
 		&& Grid[0]->header->inc[GMT_X] == Grid[1]->header->inc[GMT_X] && Grid[0]->header->inc[GMT_Y] == Grid[1]->header->inc[GMT_Y])) {
 		GMT_report (GMT, GMT_MSG_FATAL, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
 		Return (EXIT_FAILURE);
@@ -336,9 +336,9 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* No grid to plot; just do empty map and return */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
-		GMT_plotinit (API, PSL, options);
-		GMT_map_basemap (GMT, PSL);
-		GMT_plotend (GMT, PSL);
+		GMT_plotinit (GMT, options);
+		GMT_map_basemap (GMT);
+		GMT_plotend (GMT);
 		Return (GMT_OK);
 	}
 
@@ -369,13 +369,13 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		shrink_properties = TRUE;
 	}
 	dim[6] = 0.0;
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_setpen (GMT, PSL, &Ctrl->W.pen);
-	if (!Ctrl->C.active) GMT_setfill (GMT, PSL, &Ctrl->G.fill, Ctrl->W.active);
+	GMT_setpen (GMT, &Ctrl->W.pen);
+	if (!Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 	
 
-        if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+        if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
 		struct GRD_HEADER tmp_h;
@@ -394,7 +394,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
-		y = GMT_grd_row_to_y (row, Grid[0]->header);
+		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
 
 			ij = GMT_IJP (Grid[0]->header, row, col);
@@ -417,7 +417,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			if (Ctrl->C.active) GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
 
-			x = GMT_grd_col_to_x (col, Grid[0]->header);
+			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
 			GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 
 			if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
@@ -444,7 +444,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 
 			if (!Ctrl->Q.active) {	/* Just a line segment */
-				if (Ctrl->C.active) GMT_setfill (GMT, PSL, &Ctrl->G.fill, Ctrl->W.active);
+				if (Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				PSL_plotsegment (PSL, plot_x, plot_y, x2, y2);
 				continue;
 			}
@@ -461,11 +461,11 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-        if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+        if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (EXIT_SUCCESS);
 }

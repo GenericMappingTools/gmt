@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdraster_func.c,v 1.21 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -31,6 +31,8 @@
  */
 
 #include "gmt_dbase.h"
+
+EXTERN_MSC void GMT_str_toupper (char *string);
 
 #if WORDS_BIGENDIAN == 0
 #define MY_ENDIAN 'L'	/* This machine is Little endian */
@@ -239,7 +241,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;		/* Skip segment headers */
 
 		/* Strip off trailing "\r\n" */
-		GMT_chop (record);
+		GMT_chop (GMT, record);
 		length = strlen(record);
 		if (length == 0) continue;	/* Skip blank lines */
 
@@ -565,9 +567,9 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		rasinfo[nfound].h.ny = (int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 		if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
-			expected_size = (GMT_LONG)(ceil (GMT_get_nm (rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125) + rasinfo[nfound].skip);
+			expected_size = (GMT_LONG)(ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125) + rasinfo[nfound].skip);
 		else
-			expected_size = (GMT_LONG)(GMT_get_nm (rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
+			expected_size = (GMT_LONG)(GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
 			strcpy (rasinfo[nfound].h.remark, path);
 			GMT_STAT (path, &F);
@@ -925,14 +927,14 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid->header->registration = myras.h.registration;
 	Grid->header->z_min = DBL_MAX;
 	Grid->header->z_max = -DBL_MAX;
-	GMT_set_grddim (Grid->header);
+	GMT_set_grddim (GMT, Grid->header);
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
-	grdlatorigin = GMT_row_to_y (0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
-	grdlonorigin = GMT_col_to_x (0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-	raslatorigin = GMT_row_to_y (0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
-	raslonorigin = GMT_col_to_x (0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
+	grdlatorigin = GMT_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+	grdlonorigin = GMT_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
+	raslatorigin = GMT_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
+	raslonorigin = GMT_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
 	irasstart = irint ((grdlonorigin - raslonorigin) / myras.h.inc[GMT_X]);
 	jrasstart = irint ((raslatorigin - grdlatorigin) / myras.h.inc[GMT_Y]);
 	if (myras.nglobal) while (irasstart < 0) irasstart += myras.nglobal;
@@ -942,7 +944,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
-		for (i = 0; i < Grid->header->nx; i++) x[i] = GMT_col_to_x (i, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
+		for (i = 0; i < Grid->header->nx; i++) x[i] = GMT_col_to_x (GMT, i, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
 		if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_REC))) Return (error);			/* Enables data output and sets access mode */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 	} else {	/* Need an entire (padded) grid */
@@ -981,7 +983,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		for (j = 0, jras = jrasstart; j < Grid->header->ny; j++, jras += jmult) {
-			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			y = GMT_row_to_y (GMT, j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
 				/* This entire row is outside the raster */
@@ -1021,7 +1023,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {
 		firstread = TRUE;
 		for (j = 0, jras = jrasstart; j < Grid->header->ny; j++, jras += jmult) {
-			y = GMT_row_to_y (j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			y = GMT_row_to_y (GMT, j, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
 			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, j, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || jras > myras.h.ny) {
 				/* This entire row is outside the raster */

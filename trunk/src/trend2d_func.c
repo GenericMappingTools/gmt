@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
+ *	$Id: trend2d_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -229,7 +229,7 @@ double get_chisq_2d (struct TREND2D_DATA *data, GMT_LONG n_data, GMT_LONG n_mode
 	return (chi);
 }
 
-void recompute_weights_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double *work, double *scale)
+void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, GMT_LONG n_data, double *work, double *scale)
 {
 	GMT_LONG i;
 	double k, ksq, rr;
@@ -239,7 +239,7 @@ void recompute_weights_2d (struct TREND2D_DATA *data, GMT_LONG n_data, double *w
 	   and compute chisq based on this.  */ 
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
-	GMT_sort_array ((void *)work, n_data, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)work, n_data, GMT_DOUBLE_TYPE);
 
 	if (n_data%2)
 		*scale = 1.4826 * work[n_data/2];
@@ -585,7 +585,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
-				recompute_weights_2d (data, n_data, work, &scale);
+				recompute_weights_2d (GMT, data, n_data, work, &scale);
 				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
 				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
@@ -598,7 +598,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (w_chisq < c_chisq) {
 				move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (data, n_data, work, &scale);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
 			}
 		}
 		/* First [robust] model has been found  */
@@ -616,7 +616,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.0);
 			if (Ctrl->N.robust) {
 				do {
-					recompute_weights_2d (data, n_data, work, &scale);
+					recompute_weights_2d (GMT, data, n_data, work, &scale);
 					move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 					load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
 					solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
@@ -629,7 +629,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (w_chisq < c_chisq) {
 					move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
 					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-					if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (data, n_data, work, &scale);
+					if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
 				}
 			}
 			/* Next [robust] model has been found  */
@@ -641,7 +641,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			rank--;
 			move_model_a_to_b_2d (o_model, c_model, n_model, &o_chisq, &c_chisq);
 			calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-			if (Ctrl->N.robust && Ctrl->weighted_output) recompute_weights_2d (data, n_data, work, &scale);
+			if (Ctrl->N.robust && Ctrl->weighted_output) recompute_weights_2d (GMT, data, n_data, work, &scale);
 		}
 	}
 	else {
@@ -653,7 +653,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
-				recompute_weights_2d (data, n_data, work, &scale);
+				recompute_weights_2d (GMT, data, n_data, work, &scale);
 				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
 				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
@@ -666,7 +666,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (w_chisq < c_chisq) {
 				move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (data, n_data, work, &scale);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
 			}
 		}
 	}

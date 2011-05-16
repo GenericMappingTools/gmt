@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.10 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -644,12 +644,12 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 
-	GMT_setpen (GMT, PSL, &Ctrl->W.pen);
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+	GMT_setpen (GMT, &Ctrl->W.pen);
+	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	old_is_world = GMT->current.map.is_world;
 
@@ -728,7 +728,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			fprintf (Ctrl->A.pnew, "%f %f %f %s\n", distance, n_dep, depth, col[3]);
 			fprintf (Ctrl->A.pextract, "%s", line);
 
-			GMT_setfill (GMT, PSL, &Ctrl->G.fill, Ctrl->L.active);
+			GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->S.size, Ctrl->S.symbol);
 		} else if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = atof (col[3]);
@@ -895,17 +895,17 @@ Definition of scalar moment.
 			}
 
 			if (Ctrl->S.plotmode == PLOT_TENSOR) {
-				GMT_setpen (GMT, PSL, &Ctrl->L.pen);
+				GMT_setpen (GMT, &Ctrl->L.pen);
 				ps_tensor (GMT, PSL, plot_x, plot_y, Ctrl->S.size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace);
 			}
 
 			if (Ctrl->S.zerotrace) {
-				GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+				GMT_setpen (GMT, &Ctrl->W.pen);
 				ps_tensor (GMT, PSL, plot_x, plot_y, Ctrl->S.size, T, N, P, NULL, NULL, TRUE, TRUE);
 			}
 
 			if (Ctrl->T.active) {
-				GMT_setpen (GMT, PSL, &Ctrl->T.pen);
+				GMT_setpen (GMT, &Ctrl->T.pen);
 				if (Ctrl->T.n_plane == 0) ps_meca (GMT, PSL, plot_x, plot_y, meca, Ctrl->S.size);
 				else ps_plan (GMT, PSL, plot_x, plot_y, meca, Ctrl->S.size, Ctrl->T.n_plane);
 				if (not_defined) {
@@ -914,7 +914,7 @@ Definition of scalar moment.
 					Ctrl->T.n_plane = n_plane_old;
 				}
 			} else if (Ctrl->S.plotmode == PLOT_DC) {
-				GMT_setpen (GMT, PSL, &Ctrl->L.pen);
+				GMT_setpen (GMT, &Ctrl->L.pen);
 				ps_mechanism (GMT, PSL, plot_x, plot_y, meca, Ctrl->S.size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 
@@ -925,17 +925,17 @@ Definition of scalar moment.
 					dc_to_axe (meca, &T, &N, &P);
 					axis2xy (plot_x, plot_y, Ctrl->S.size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 				}
-				GMT_setpen (GMT, PSL, &Ctrl->P2.pen);
-				GMT_setfill (GMT, PSL, &Ctrl->G2.fill, Ctrl->P2.active);
+				GMT_setpen (GMT, &Ctrl->P2.pen);
+				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A.size, P_sym);
-				GMT_setpen (GMT, PSL, &Ctrl->T2.pen);
-				GMT_setfill (GMT, PSL, &Ctrl->E2.fill, Ctrl->E2.active);
+				GMT_setpen (GMT, &Ctrl->T2.pen);
+				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->E2.active);
 				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A.size, T_sym);
 			}
 		}
 
 		if (!Ctrl->S.no_label) {
-			GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+			GMT_setpen (GMT, &Ctrl->W.pen);
 			switch (Ctrl->S.justify) {
 				case 2 :
 					PSL_plottext (PSL, plot_x, plot_y + Ctrl->S.size * 0.5 + Ctrl->S.offset, Ctrl->S.fontsize, event_title, angle, Ctrl->S.justify, form);
@@ -951,15 +951,15 @@ Definition of scalar moment.
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Number of records read: %li\n", n_rec);
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

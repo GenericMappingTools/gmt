@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.14 2011-05-16 08:47:59 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -138,7 +138,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 	
 	C->W.active = TRUE;
 	strcpy (txt, arg);
-	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
+	while (!error && (GMT_strtok (GMT, txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
 				switch (p[1]) {	/* Check which altitude mode we selected */
@@ -411,7 +411,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 			case 'F':	/* Set explicitly the output file name */
 				Ctrl->F.active = TRUE;
 				Ctrl->F.file = strdup (opt->arg);
-				GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+				GMT_chop_ext (GMT, Ctrl->F.file);	/* Make sure file name has no extension */
 				break;
 			case 'G':	/* Set GS path */
 				Ctrl->G.active = TRUE;
@@ -624,7 +624,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
 		while (fgets2 (line, GMT_BUFSIZ, fpl) != NULL) {
 			if (line[0] == '#' || line[0] == '\n') continue;
-			GMT_chop (line);
+			GMT_chop (GMT, line);
 			ps_names[Ctrl->In.n_files++] = strdup (line);
 			if (Ctrl->In.n_files > (GMT_LONG)n_alloc) {
 				n_alloc <<= 1;
@@ -867,7 +867,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					found_proj = TRUE;
 					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
 						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
-						GMT_chop (proj4_cmd);		/* Remove the new line char */
+						GMT_chop (GMT, proj4_cmd);		/* Remove the new line char */
 					}
 					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy") ||
 						!strcmp (proj4_name,"eqc") ) {		/* Linear case, use original coords */
@@ -997,6 +997,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
+			EXTERN_MSC void GMT_str_toupper (char *string);
 			strcpy (tag, &ext[Ctrl->T.device][1]);
 			GMT_str_toupper (tag);
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Convert to %s...", tag);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.19 2011-05-16 08:47:59 guru Exp $
+ *	$Id: psimage_func.c,v 1.20 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -401,13 +401,13 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = FALSE;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
@@ -435,13 +435,13 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame */
- 		GMT_setfill (GMT, PSL, NULL, TRUE);
-		GMT_setpen (GMT, PSL, &Ctrl->F.pen);
+ 		GMT_setfill (GMT, NULL, TRUE);
+		GMT_setpen (GMT, &Ctrl->F.pen);
  		PSL_plotbox (PSL, Ctrl->C.x, Ctrl->C.y, Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width, Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height);
  	}
 
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
-	GMT_plotend (GMT, PSL);
+	GMT_plane_perspective (GMT, -1, 0.0);
+	GMT_plotend (GMT);
 
 	if (free_GMT)
 		GMT_free (GMT, picture);

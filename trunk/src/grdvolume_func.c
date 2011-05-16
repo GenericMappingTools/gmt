@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.9 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -455,7 +455,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
-		GMT_grd_do_scaling (Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
+		GMT_grd_do_scaling (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) d_swap (Work->header->z_min, Work->header->z_max);

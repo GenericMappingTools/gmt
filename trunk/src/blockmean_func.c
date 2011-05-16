@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.11 2011-05-11 04:01:53 guru Exp $
+ *	$Id: blockmean_func.c,v 1.12 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,14 +246,14 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_read++;							/* Number of records read */
 
-		if (GMT_y_is_outside (in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
+		if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (in[GMT_X], Grid->header);
+		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		if (col < 0 || col >= Grid->header->nx) continue;
-		row = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 		if (row < 0 || row >= Grid->header->ny) continue;
 
 		/* OK, this point is definitively inside and will be used */
@@ -313,8 +313,8 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else {		/* Report block center */
 			col = GMT_col (Grid->header, node);
 			row = GMT_row (Grid->header, node);
-			out[GMT_X] = GMT_grd_col_to_x (col, Grid->header);
-			out[GMT_Y] = GMT_grd_row_to_y (row, Grid->header);
+			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
+			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}
 		if (Ctrl->S.mode)	/* Report block sums or weights */
 			out[GMT_Z] = (Ctrl->S.mode >= 2) ? zw[node].a[BLK_W] : zw[node].a[BLK_Z];

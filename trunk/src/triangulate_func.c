@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
+ *	$Id: triangulate_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -378,10 +378,10 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			   in the -R region (Grid->header->wesn[XLO]/x_max etc.)  Always, col_min <= col_max, row_min <= row_max.
 			 */
 
-			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = GMT_grd_x_to_col (xp, Grid->header);
-			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = GMT_grd_x_to_col (xp, Grid->header);
-			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = GMT_grd_y_to_row (yp, Grid->header);
-			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = GMT_grd_y_to_row (yp, Grid->header);
+			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = GMT_grd_x_to_col (GMT, xp, Grid->header);
+			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = GMT_grd_x_to_col (GMT, xp, Grid->header);
+			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = GMT_grd_y_to_row (GMT, yp, Grid->header);
+			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = GMT_grd_y_to_row (GMT, yp, Grid->header);
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */
@@ -395,10 +395,10 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (row_min < 0) row_min = 0;       if (row_max >= Grid->header->ny) row_max = Grid->header->ny - 1;
 
 			for (row = row_min; row <= row_max; row++) {
-				yp = GMT_grd_row_to_y (row, Grid->header);
+				yp = GMT_grd_row_to_y (GMT, row, Grid->header);
 				p = GMT_IJP (Grid->header, row, col_min);
 				for (col = col_min; col <= col_max; col++, p++) {
-					xp = GMT_grd_col_to_x (col, Grid->header);
+					xp = GMT_grd_col_to_x (GMT, col, Grid->header);
 
 					if (!GMT_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
 

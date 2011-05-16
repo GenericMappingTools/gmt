@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.297 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_map.c,v 1.298 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5818,21 +5818,21 @@ GMT_LONG GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n,
 GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, GMT_LONG nx, GMT_LONG ny, GMT_LONG dpi, GMT_LONG offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
-		header->nx = (int)GMT_get_n (header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
-		header->ny = (int)GMT_get_n (header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
-		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+		header->nx = (int)GMT_get_n (C, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
+		header->ny = (int)GMT_get_n (C, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
+		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else if (nx > 0 && ny > 0) {
 		header->nx = (int)nx;	header->ny = (int)ny;
-		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else if (dpi > 0) {
 		header->nx = (int)irint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - (int)offset;
 		header->ny = (int)irint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - (int)offset;
-		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
+		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_project_init: Necessary arguments not set\n");
@@ -5842,8 +5842,8 @@ GMT_LONG GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double
 
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
-	GMT_grd_setpad (header, C->current.io.pad);			/* Assign default pad */
-	GMT_set_grddim (header);	/* Set all dimensions before returning */
+	GMT_grd_setpad (C, header, C->current.io.pad);			/* Assign default pad */
+	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
 
 	GMT_report (C, GMT_MSG_NORMAL, "Grid projection from size %ldx%ld to %dx%d\n", nx, ny, header->nx, header->ny);
 	return (GMT_NOERROR);
@@ -5890,10 +5890,10 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 	/* Precalculate grid coordinates */
 
-	GMT_row_loop  (I, row_in) y_in[row_in] = GMT_grd_row_to_y (row_in, I->header);
-	GMT_col_loop2 (I, col_in) x_in[col_in] = GMT_grd_col_to_x (col_in, I->header);
-	GMT_row_loop  (O, row_out) y_out[row_out] = GMT_grd_row_to_y (row_out, O->header);
-	GMT_col_loop2 (O, col_out) x_out[col_out] = GMT_grd_col_to_x (col_out, O->header);
+	GMT_row_loop  (C, I, row_in) y_in[row_in] = GMT_grd_row_to_y (C, row_in, I->header);
+	GMT_col_loop2 (C, I, col_in) x_in[col_in] = GMT_grd_col_to_x (C, col_in, I->header);
+	GMT_row_loop  (C, O, row_out) y_out[row_out] = GMT_grd_row_to_y (C, row_out, O->header);
+	GMT_col_loop2 (C, O, col_out) x_out[col_out] = GMT_grd_col_to_x (C, col_out, O->header);
 
 	if (GMT_IS_RECT_GRATICULE (C)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (C, NULL, I->header->nx, double);
@@ -5901,16 +5901,16 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 		x_out_proj = GMT_memory (C, NULL, O->header->nx, double);
 		y_out_proj = GMT_memory (C, NULL, O->header->ny, double);
 		if (inverse) {
-			GMT_row_loop  (I, row_in)  GMT_xy_to_geo (C, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
-			GMT_col_loop2 (I, col_in)  GMT_xy_to_geo (C, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
-			GMT_row_loop  (O, row_out) GMT_geo_to_xy (C, I->header->wesn[YLO], y_out[row_out], &x_proj, &y_out_proj[row_out]);
-			GMT_col_loop2 (O, col_out) GMT_geo_to_xy (C, x_out[col_out], I->header->wesn[YLO], &x_out_proj[col_out], &y_proj);
+			GMT_row_loop  (C, I, row_in)  GMT_xy_to_geo (C, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
+			GMT_col_loop2 (C, I, col_in)  GMT_xy_to_geo (C, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
+			GMT_row_loop  (C, O, row_out) GMT_geo_to_xy (C, I->header->wesn[YLO], y_out[row_out], &x_proj, &y_out_proj[row_out]);
+			GMT_col_loop2 (C, O, col_out) GMT_geo_to_xy (C, x_out[col_out], I->header->wesn[YLO], &x_out_proj[col_out], &y_proj);
 		}
 		else {
-			GMT_row_loop  (I, row_in) GMT_geo_to_xy (C, I->header->wesn[XLO], y_in[row_in], &x_proj, &y_in_proj[row_in]);
-			GMT_col_loop2 (I, col_in) GMT_geo_to_xy (C, x_in[col_in], I->header->wesn[YLO], &x_in_proj[col_in], &y_proj);
-			GMT_row_loop (O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
-			GMT_col_loop2 (O, col_out) {	/* Here we must also align longitudes properly */
+			GMT_row_loop  (C, I, row_in) GMT_geo_to_xy (C, I->header->wesn[XLO], y_in[row_in], &x_proj, &y_in_proj[row_in]);
+			GMT_col_loop2 (C, I, col_in) GMT_geo_to_xy (C, x_in[col_in], I->header->wesn[YLO], &x_in_proj[col_in], &y_proj);
+			GMT_row_loop  (C, O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
+			GMT_col_loop2 (C, O, col_out) {	/* Here we must also align longitudes properly */
 				GMT_xy_to_geo (C, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
 				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_SMALL) x_out_proj[col_out] += 360.0;
@@ -5920,15 +5920,15 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 		}
 	}
 
-	GMT_grd_loop (O, row_out, col_out, ij_out) O->data[ij_out] = C->session.f_NaN;	/* So that nodes outside will retain a NaN value */
+	GMT_grd_loop (C, O, row_out, col_out, ij_out) O->data[ij_out] = C->session.f_NaN;	/* So that nodes outside will retain a NaN value */
 
 	/* PART 1: Project input grid points and do a blockmean operation */
 
 	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		nz = GMT_memory (C, NULL, O->header->size, short int);
-		GMT_row_loop (I, row_in) {	/* Loop over the input grid row coordinates */
+		GMT_row_loop (C, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
-			GMT_col_loop (I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
+			GMT_col_loop (C, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
 				if (GMT_IS_RECT_GRATICULE (C))
 					x_proj = x_in_proj[col_in];
 				else if (inverse)
@@ -5940,9 +5940,9 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
-				row_out = GMT_grd_y_to_row (y_proj, O->header);
+				row_out = GMT_grd_y_to_row (C, y_proj, O->header);
 				if (row_out < 0 || row_out >= O->header->ny) continue;	/* Outside our grid region */
-				col_out = GMT_grd_x_to_col (x_proj, O->header);
+				col_out = GMT_grd_x_to_col (C, x_proj, O->header);
 				if (col_out < 0 || col_out >= O->header->nx) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -5959,9 +5959,9 @@ GMT_LONG GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRI
 
 	/* PART 2: Create weighted average of interpolated and observed points */
 
-	GMT_row_loop (O, row_out) {	/* Loop over the output grid row coordinates */
+	GMT_row_loop (C, O, row_out) {	/* Loop over the output grid row coordinates */
 		if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_out_proj[row_out];
-		GMT_col_loop (O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
+		GMT_col_loop (C, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (GMT_IS_RECT_GRATICULE (C))
 				x_proj = x_out_proj[col_out];
 			else if (inverse)
@@ -6052,10 +6052,10 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 	/* Precalculate grid coordinates */
 
-	GMT_row_loop  (I, row_in) y_in[row_in] = GMT_grd_row_to_y (row_in, I->header);
-	GMT_col_loop2 (I, col_in) x_in[col_in] = GMT_grd_col_to_x (col_in, I->header);
-	GMT_row_loop  (O, row_out) y_out[row_out] = GMT_grd_row_to_y (row_out, O->header);
-	GMT_col_loop2 (O, col_out) x_out[col_out] = GMT_grd_col_to_x (col_out, O->header);
+	GMT_row_loop  (C, I, row_in) y_in[row_in] = GMT_grd_row_to_y (C, row_in, I->header);
+	GMT_col_loop2 (C, I, col_in) x_in[col_in] = GMT_grd_col_to_x (C, col_in, I->header);
+	GMT_row_loop  (C, O, row_out) y_out[row_out] = GMT_grd_row_to_y (C, row_out, O->header);
+	GMT_col_loop2 (C, O, col_out) x_out[col_out] = GMT_grd_col_to_x (C, col_out, O->header);
 
 	if (GMT_IS_RECT_GRATICULE (C)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (C, NULL, I->header->nx, double);
@@ -6063,16 +6063,16 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 		x_out_proj = GMT_memory (C, NULL, O->header->nx, double);
 		y_out_proj = GMT_memory (C, NULL, O->header->ny, double);
 		if (inverse) {
-			GMT_row_loop  (I, row_in)  GMT_xy_to_geo (C, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
-			GMT_col_loop2 (I, col_in)  GMT_xy_to_geo (C, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
-			GMT_row_loop  (O, row_out) GMT_geo_to_xy (C, I->header->wesn[YLO], y_out[row_out], &x_proj, &y_out_proj[row_out]);
-			GMT_col_loop2 (O, col_out) GMT_geo_to_xy (C, x_out[col_out], I->header->wesn[YLO], &x_out_proj[col_out], &y_proj);
+			GMT_row_loop  (C, I, row_in)  GMT_xy_to_geo (C, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
+			GMT_col_loop2 (C, I, col_in)  GMT_xy_to_geo (C, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
+			GMT_row_loop  (C, O, row_out) GMT_geo_to_xy (C, I->header->wesn[YLO], y_out[row_out], &x_proj, &y_out_proj[row_out]);
+			GMT_col_loop2 (C, O, col_out) GMT_geo_to_xy (C, x_out[col_out], I->header->wesn[YLO], &x_out_proj[col_out], &y_proj);
 		}
 		else {
-			GMT_row_loop  (I, row_in) GMT_geo_to_xy (C, I->header->wesn[XLO], y_in[row_in], &x_proj, &y_in_proj[row_in]);
-			GMT_col_loop2 (I, col_in) GMT_geo_to_xy (C, x_in[col_in], I->header->wesn[YLO], &x_in_proj[col_in], &y_proj);
-			GMT_row_loop (O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
-			GMT_col_loop2 (O, col_out) {	/* Here we must also align longitudes properly */
+			GMT_row_loop  (C, I, row_in) GMT_geo_to_xy (C, I->header->wesn[XLO], y_in[row_in], &x_proj, &y_in_proj[row_in]);
+			GMT_col_loop2 (C, I, col_in) GMT_geo_to_xy (C, x_in[col_in], I->header->wesn[YLO], &x_in_proj[col_in], &y_proj);
+			GMT_row_loop  (C, O, row_out) GMT_xy_to_geo (C, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
+			GMT_col_loop2 (C, O, col_out) {	/* Here we must also align longitudes properly */
 				GMT_xy_to_geo (C, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
 				if (C->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_SMALL) x_out_proj[col_out] += 360.0;
@@ -6082,7 +6082,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 		}
 	}
 
-	//GMT_grd_loop (O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
+	//GMT_grd_loop (C, O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
 		//for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 	for (b = 0; b < 4; b++) z_int_bg[b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
 
@@ -6090,9 +6090,9 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 	if (C->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		nz = GMT_memory (C, NULL, O->header->size, short int);
-		GMT_row_loop (I, row_in) {	/* Loop over the input grid row coordinates */
+		GMT_row_loop (C, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_in_proj[row_in];
-			GMT_col_loop (I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
+			GMT_col_loop (C, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
 				if (GMT_IS_RECT_GRATICULE (C))
 					x_proj = x_in_proj[col_in];
 				else if (inverse)
@@ -6104,9 +6104,9 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
-				row_out = GMT_grd_y_to_row (y_proj, O->header);
+				row_out = GMT_grd_y_to_row (C, y_proj, O->header);
 				if (row_out < 0 || row_out >= O->header->ny) continue;	/* Outside our grid region */
-				col_out = GMT_grd_x_to_col (x_proj, O->header);
+				col_out = GMT_grd_x_to_col (C, x_proj, O->header);
 				if (col_out < 0 || col_out >= O->header->nx) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -6126,9 +6126,9 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 
 	/* PART 2: Create weighted average of interpolated and observed points */
 
-	GMT_row_loop (O, row_out) {	/* Loop over the output grid row coordinates */
+	GMT_row_loop (C, O, row_out) {	/* Loop over the output grid row coordinates */
 		if (GMT_IS_RECT_GRATICULE (C)) y_proj = y_out_proj[row_out];
-		GMT_col_loop (O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
+		GMT_col_loop (C, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (GMT_IS_RECT_GRATICULE (C))
 				x_proj = x_out_proj[col_out];
 			else if (inverse)

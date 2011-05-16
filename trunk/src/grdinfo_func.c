@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.14 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -223,7 +223,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&opt->arg, (void **)&G)) Return (GMT_DATA_READ_ERROR);
-		subset = GMT_is_subset (G->header, wesn);	/* Subset requested */
+		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing file %s\n", G->header->name);
@@ -239,7 +239,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
 			ij_min = ij_max = n = 0;
-			GMT_grd_loop (G, row, col, ij) {
+			GMT_grd_loop (GMT, G, row, col, ij) {
 				if (GMT_is_fnan (G->data[ij])) continue;
 				if (G->data[ij] < z_min) {
 					z_min = G->data[ij];
@@ -260,12 +260,12 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			n_nan = G->header->nm - n;
 			col = GMT_col (G->header, ij_min);
 			row = GMT_row (G->header, ij_min);
-			x_min = GMT_grd_col_to_x (col, G->header);
-			y_min = GMT_grd_row_to_y (row, G->header);
+			x_min = GMT_grd_col_to_x (GMT, col, G->header);
+			y_min = GMT_grd_row_to_y (GMT, row, G->header);
 			col = GMT_col (G->header, ij_max);
 			row = GMT_row (G->header, ij_max);
-			x_max = GMT_grd_col_to_x (col, G->header);
-			y_max = GMT_grd_row_to_y (row, G->header);
+			x_max = GMT_grd_col_to_x (GMT, col, G->header);
+			y_max = GMT_grd_row_to_y (GMT, row, G->header);
 		}
 
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and L1 scale */
@@ -275,11 +275,11 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Note that this option rearranges the input grid, so if a memory location is passed then
 			 * the grid in the calling program is no longer the original values */
 			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* TRUE if input is a read-only array */
-			GMT_grd_pad_off (G2);	/* Undo pad if one existed */
-			GMT_sort_array ((void *)G2->data, G2->header->nm, GMT_FLOAT_TYPE);
+			GMT_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
+			GMT_sort_array (GMT, (void *)G2->data, G2->header->nm, GMT_FLOAT_TYPE);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
 			for (ij = 0; ij < n; ij++) G2->data[ij] = (float)fabs (G2->data[ij] - median);
-			GMT_sort_array ((void *)G2->data, n, GMT_FLOAT_TYPE);
+			GMT_sort_array (GMT, (void *)G2->data, n, GMT_FLOAT_TYPE);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.14 2011-05-16 21:23:11 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -383,9 +383,9 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	latfactor  = GMT_memory (GMT, NULL, G->header->ny, double);
 	ilatfactor = GMT_memory (GMT, NULL, G->header->ny, double);
 
-	for (col = 0; col < G->header->nx; col++) xpos[col] = GMT_grd_col_to_x (col, G_rad->header);
+	for (col = 0; col < G->header->nx; col++) xpos[col] = GMT_grd_col_to_x (GMT, col, G_rad->header);
 	for (row = 0; row < G->header->ny; row++) {
-		ypos[row] = GMT_grd_col_to_x (row, G_rad->header);
+		ypos[row] = GMT_grd_col_to_x (GMT, row, G_rad->header);
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}
@@ -473,9 +473,9 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* OK, this point is within our region, get node index */
 
-			col = GMT_grd_x_to_col (c[kx], G_rad->header);
+			col = GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			row = GMT_grd_y_to_row (yg, G->header);
+			row = GMT_grd_y_to_row (GMT, yg, G->header);
 			node = GMT_IJP (G->header, row, col);
 
 			if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */
@@ -528,7 +528,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;
-		GMT_grd_loop (G, row, col, node) {	/* Loop over all output nodes */
+		GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
 			if (GMT_is_fnan (G->data[node])) continue;
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
 			if (G->data[node] > G->header->z_max) G->header->z_max = G->data[node];

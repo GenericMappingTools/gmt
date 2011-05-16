@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdproject_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -371,7 +371,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			use_ny = Rect->header->ny;
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (Geo->header);
+		GMT_set_grddim (GMT, Geo->header);
 		Geo->data = GMT_memory (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, TRUE);
 
@@ -408,8 +408,8 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Rect->header->wesn[YLO] += GMT->current.proj.origin[GMT_Y];
 			Rect->header->wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 		}
-		Rect->header->inc[GMT_X] = GMT_get_inc (Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
-		Rect->header->inc[GMT_Y] = GMT_get_inc (Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
+		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
@@ -453,7 +453,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (Rect->header);
+		GMT_set_grddim (GMT, Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
 		GMT_grd_project (GMT, Geo, Rect, FALSE);
 		GMT_grd_init (GMT, Rect->header, options, TRUE);
@@ -483,8 +483,8 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Rect->header->wesn[YHI] += Ctrl->C.northing;
 
 		}
-		Rect->header->inc[GMT_X] = GMT_get_inc (Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
-		Rect->header->inc[GMT_Y] = GMT_get_inc (Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
+		Rect->header->inc[GMT_X] = GMT_get_inc (GMT, Rect->header->wesn[XLO], Rect->header->wesn[XHI], Rect->header->nx, Rect->header->registration);
+		Rect->header->inc[GMT_Y] = GMT_get_inc (GMT, Rect->header->wesn[YLO], Rect->header->wesn[YHI], Rect->header->ny, Rect->header->registration);
 		strcpy (Rect->header->x_units, unit_name);
 		strcpy (Rect->header->y_units, unit_name);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.22 2011-05-16 21:23:10 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -613,7 +613,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 			case 'D':	/* Look for duplications */
 				Ctrl->D.active = TRUE;
 				pos = 0;
-				while (GMT_strtok (opt->arg, "+", &pos, p)) {
+				while (GMT_strtok (GMT, opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* Gave a new +a<dmax> value */
 							GMT_report (GMT, GMT_MSG_FATAL, "+a not implemented yet\n");
@@ -677,7 +677,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 				}
 				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
 				pos = 0;
-				while (GMT_strtok (s, "+", &pos, p)) {
+				while (GMT_strtok (GMT, s, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* All points must be inside polygon */
 							Ctrl->N.all = TRUE;
@@ -1224,9 +1224,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
 					ID = (GMT_LONG)GMT_get_aspatial_value (GMT, GMT_IS_Z, S2);
-				else if (GMT_parse_segment_item (S2->header, "-Z", seg_label))	/* Look for segment header ID */
+				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
-				else if (GMT_parse_segment_item (S2->header, "-L", seg_label))	/* Look for segment header ID */
+				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
 					GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
@@ -1259,7 +1259,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %ld segment %ld is inside polygon # %ld\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
-						if (GMT_parse_segment_item (S->header, "-Z", NULL))
+						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %ld-%ld already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];

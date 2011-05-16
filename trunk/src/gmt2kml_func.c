@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.18 2011-05-16 08:47:56 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.19 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -357,7 +357,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 			case 'L':	/* Extended data */
  				Ctrl->L.active = TRUE;
 				pos = Ctrl->L.n_cols = 0;
-				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
+				while ((GMT_strtok (GMT, opt->arg, ",", &pos, p))) {
 					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
 					p[k] = ' ';
 					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
@@ -419,7 +419,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 			case 'Z':	/* Visibility control */
 				Ctrl->Z.active = TRUE;
 				pos = 0;
-				while ((GMT_strtok (&opt->arg[1], "+", &pos, p))) {
+				while ((GMT_strtok (GMT, &opt->arg[1], "+", &pos, p))) {
 				switch (p[0]) {
 					case 'a':	/* Altitude range */
 						if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
@@ -822,7 +822,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						printf ("<name>%s</name>\n", T->segment[seg]->label);
 					else
 						printf ("<name>%s Set %ld</name>\n", name[Ctrl->F.mode], set_nr);
-					if (GMT_parse_segment_item (T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
+					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
 				}
 				else {	/* Line or polygon means we lay down the placemark first*/
 					tabs (N++); printf ("<Placemark>\n");
@@ -836,11 +836,11 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						tabs (N), printf ("<name>%s %ld</name>\n", name[Ctrl->F.mode], set_nr);
 					description[0] = 0;
 					do_description = FALSE;
-					if (GMT_parse_segment_item (T->segment[seg]->header, "-I", buffer)) { 
+					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
 						do_description = TRUE;
 						strcat (description, buffer);
 					}
-					if (GMT_parse_segment_item (T->segment[seg]->header, t_opt, buffer)) { 
+					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, buffer)) { 
 						if (do_description) strcat (description, " ");
 						strcat (description, buffer);
 						do_description = TRUE;
