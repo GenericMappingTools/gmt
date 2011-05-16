@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.114 2011-05-16 23:36:05 remko Exp $
+ *	$Id: gmt_nc.c,v 1.115 2011-05-16 23:47:04 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,6 +109,8 @@ void gmt_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units
 		nc_inq_varname (ncid, varid, name);
 	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, (size_t)GRD_UNIT_LEN80) && units[0]) 
 		sprintf (name_units, "%s [%s]", name, units);
+	else
+		strcpy (name_units, name);
 }
 
 void gmt_nc_put_units (int ncid, int varid, char *name_units)
