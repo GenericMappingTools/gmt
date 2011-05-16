@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.67 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.68 2011-05-16 21:43:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -542,9 +542,9 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 		if (API->object[i]->direction != direction) continue;		/* Wrong direction */
 		if (API->object[i]->family != family) continue;			/* Wrong family */
 		if (API->object[i]->geometry != geometry) continue;		/* Wrong geometry */
-		if (API->object[i]->data == data) item = API->object[i]->ID;	/* Already registered */
+		if (API->object[i]->data == data) item = API->object[i]->ID;	/* Yes: already registered */
 	}
-	*object_ID = item;			/* The ID of the object or -1 */
+	*object_ID = item;			/* The ID of the object (or -1) */
 	return (item != GMTAPI_NOTSET);		/* Either found or not */
 }
 
@@ -2352,15 +2352,16 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
-	if (GMTAPI_is_registered (API, family, geometry, direction, data, object_ID)) {
+	if (GMTAPI_is_registered (API, family, geometry, direction, data, object_ID)) {	/* Registered before */
 		if ((error = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, *object_ID, direction, &item)) != GMT_OK) return (GMT_Report_Error (API, error));
-		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn) {	/* Copy the subset region if it was given (for grids/images) */
+		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn) {	/* Update the subset region if given (for grids/images only) */
 			S = API->object[item];	/* Use S as shorthand */
 			GMT_memcpy (S->wesn, wesn, 4, double);
 			S->region = 1;
 		}
-		return (GMT_OK);	/* Already registered */
+		return (GMT_OK);	/* Already registeredso we are done */
 	}
+	
 	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
 	m = method - (via + 1) * GMT_VIA_VECTOR;
 	
