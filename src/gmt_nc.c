@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.108 2011-05-15 19:04:34 remko Exp $
+ *	$Id: gmt_nc.c,v 1.109 2011-05-16 01:46:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -298,15 +298,20 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Get information about x variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[0]], header->x_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy))
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-		else if (!j)
+			header->registration = (j || fabs (dummy[0] - xy[0]) + fabs (dummy[1] - xy[header->nx-1]) < GMT_CONV_LIMIT) ? GMT_GRIDLINE_REG : GMT_PIXEL_REG;
+		}
+		else if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
-		else
+			header->registration = GMT_GRIDLINE_REG;
+		}
+		else {
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
+			header->registration = GMT_GRIDLINE_REG;
+		}
 		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
-		header->registration = (j || fabs (header->wesn[XLO] - xy[0]) + fabs (header->wesn[XHI] - xy[header->nx-1]) < 0.5 * header->inc[GMT_X]) ? GMT_GRIDLINE_REG : GMT_PIXEL_REG;
 
 		/* Get information about y variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[1]], header->y_units);
