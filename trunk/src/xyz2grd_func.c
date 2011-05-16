@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.14 2011-05-14 00:04:06 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.15 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -392,7 +392,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->xy_off = 0.5 * Grid->header->registration;
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->nx - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->ny - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
-		GMT_set_grddim (GMT, Grid->header);
+		GMT_set_grddim (Grid->header);
 		GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
@@ -478,7 +478,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 
-	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_set_z_io (&io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = FALSE;	/* No point testing */
@@ -572,7 +572,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "Found %ld records, but %ld was expected (aborting)!\n", ij, io.n_expected);
 			Return (EXIT_FAILURE);
 		}
-		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
+		GMT_check_z_io (&io, Grid);	/* This fills in missing periodic row or column */
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (Grid->header->wesn[XHI], Grid->header->wesn[XLO]) && Grid->header->registration == GMT_GRIDLINE_REG) {	/* Make sure longitudes got replicated */

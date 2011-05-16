@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.16 2011-05-09 19:03:08 guru Exp $
+ *    $Id: minmax_func.c,v 1.17 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -391,7 +391,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				xyzmin[i] = +DBL_MAX;
 				xyzmax[i] = -DBL_MAX;
 			}
-			GMT_quad_reset (GMT, Q, ncol);
+			GMT_quad_reset (Q, ncol);
 			n = 0;
 			file[0] = '\0';
 			if (done || do_report) continue;	/* We are done OR have no data record to process yet */

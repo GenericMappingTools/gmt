@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.194 2011-05-15 22:39:17 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.195 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -435,7 +435,7 @@ GMT_LONG GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *h
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 0), file);
-	GMT_set_grddim (C, header);	/* Set all integer dimensions and xy_off */
+	GMT_set_grddim (header);	/* Set all integer dimensions and xy_off */
 
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -502,7 +502,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	}
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_FATAL, "Warning: scale_factor should not be 0.\n");
 	GMT_grd_setpad (header, pad);		/* Copy the pad to the header */
-	GMT_set_grddim (C, header);		/* Update all dimensions */
+	GMT_set_grddim (header);		/* Update all dimensions */
 	GMT_grd_do_scaling (grid, header->size, header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -923,7 +923,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
+GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row)
 {	/* Writes the entire row vector to the grdfile */
 
 	GMT_LONG i, size, err;
@@ -953,14 +953,14 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG 
 	return (GMT_NOERROR);
 }
 
-void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
+void GMT_set_grddim (struct GRD_HEADER *h)
 {	/* Assumes pad is set and then computes nx, ny, mx, my, nm, size, xy_off based on w/e/s/n.  */
 	h->nx = GMT_grd_get_nx (h);		/* Set nx, ny based on w/e/s/n and offset */
 	h->ny = GMT_grd_get_ny (h);
 	h->mx = GMT_grd_get_nxpad (h, h->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
 	h->my = GMT_grd_get_nypad (h, h->pad);
 	h->nm = GMT_grd_get_nm (h);		/* Sets the number of actual data items */
-	h->size = GMT_grd_get_size (C, h);	/* Sets the nm items needed to hold this array */
+	h->size = GMT_grd_get_size (h);		/* Sets the nm items needed to hold this array */
 	h->xy_off = 0.5 * h->registration;
 	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
@@ -1397,7 +1397,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	Grid->header->registration = GMT_PIXEL_REG;	/* These are always pixel grids */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (Grid->header, C->current.io.pad);			/* Assign default pad */
-	GMT_set_grddim (C, Grid->header);					/* Set all dimensions before returning */
+	GMT_set_grddim (Grid->header);					/* Set all dimensions before returning */
 	Grid->data = GMT_memory (C, NULL, Grid->header->size, float);
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
@@ -1442,7 +1442,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	return (GMT_NOERROR);
 }
 
-void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
+void GMT_grd_pad_off (struct GMT_GRID *G)
 {	/* Shifts the grid contents so there is no pad.  The remainder of
  	 * the array is not reset and should not be addressed.
 	 * If pad is zero then we do nothing.
@@ -1478,7 +1478,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad)
 	h = GMT_duplicate_gridheader (C, G->header);
 	
 	GMT_grd_setpad (G->header, pad);		/* Pad is now active and set to specified dimensions */
-	GMT_set_grddim (C, G->header);			/* Update all dimensions to reflect the padding */
+	GMT_set_grddim (G->header);			/* Update all dimensions to reflect the padding */
 	for (row = G->header->ny-1; row >= 0; row--) {
 		ijp = GMT_IJP (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
 		ij0 = GMT_IJ0 (h, row, 0);		/* Index of start of this row's first column in unpadded grid */
@@ -1487,7 +1487,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_LONG *pad)
 	GMT_free (C, h);	/* Done with this header */
 }
 
-void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
+void GMT_grd_pad_zero (struct GMT_GRID *G)
 {	/* Sets all boundary row/col nodes to zero and sets
 	 * the header->BC to GMT_IS_NOTSET.
 	 */
@@ -1585,11 +1585,11 @@ GMT_LONG GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wes
 	GMT_RI_prepare (C, Grid->header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (Grid->header, C->current.io.pad);	/* Assign default pad */
-	GMT_set_grddim (C, Grid->header);	/* Set all dimensions before returning */
+	GMT_set_grddim (Grid->header);	/* Set all dimensions before returning */
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, GMT_LONG registration)
+GMT_LONG GMT_change_grdreg (struct GRD_HEADER *header, GMT_LONG registration)
 {
 	GMT_LONG old_registration;
 	double F;
@@ -1625,7 +1625,7 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID *G)
 	if (n == 0) G->header->z_min = G->header->z_max = C->session.d_NaN;
 }
 
-GMT_LONG GMT_init_complex (struct GMT_CTRL *C, GMT_LONG complex_mode, GMT_LONG *inc, GMT_LONG *off)
+GMT_LONG GMT_init_complex (GMT_LONG complex_mode, GMT_LONG *inc, GMT_LONG *off)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & 64 then we do not want to write a header [output only; only some formats]
 	 * complex_mode = 0 means real data
@@ -1714,7 +1714,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 		I->header->wesn[YLO] = dumb;
 	}
 
-	GMT_set_grddim (C, I->header);		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
+	GMT_set_grddim (I->header);		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
 
 	GMT_free (C, to_gdalread);
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )

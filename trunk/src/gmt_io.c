@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.275 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmt_io.c,v 1.276 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1057,8 +1057,8 @@ GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
 
 GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG i, pos, col_no, in_col, col_pos, n_convert, n_use;
-	GMT_LONG done = FALSE, bad_record, set_nan_flag;
+	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_use = 0;
+	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val, **ptr = (double **)data;
 
@@ -1084,7 +1084,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			return (0);
 		}
 		/* Here we are passed any header records implied by -h */
-		while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (C, line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;	/* Skip blank lines */
+		while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;	/* Skip blank lines */
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up and get the next record */
 		if (line[0] == '#') {	/* Got a file header, take action and return */
 			strcpy (C->current.io.current_record, line);
@@ -1242,7 +1242,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 	return (1);
 }
 
-GMT_LONG GMT_is_a_blank_line (struct GMT_CTRL *C, char *line) {
+GMT_LONG GMT_is_a_blank_line (char *line) {
 	/* Returns TRUE if we should skip this line (because it is blank) */
 	GMT_LONG i = 0;
 	while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;	/* Wind past leading whitespace or tabs */
@@ -1357,7 +1357,7 @@ GMT_LONG gmt_bin_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, double *ptr)
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
 	for (i = k = 0; i < n_out; i++) {
 		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C,  C->current.io.geo.range, &ptr[col_pos]);
+		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C->current.io.geo.range, &ptr[col_pos]);
 		if (C->current.io.fmt[GMT_OUT][i].skip < 0) gmt_x_write (C, fp, -C->current.io.fmt[GMT_OUT][i].skip);	/* Pre-fill */
 		k += C->current.io.fmt[GMT_OUT][i].io (C, fp, 1, &ptr[col_pos]);
 		if (C->current.io.fmt[GMT_OUT][i].skip > 0) gmt_x_write (C, fp, C->current.io.fmt[GMT_OUT][i].skip);	/* Post-fill */
@@ -1419,7 +1419,7 @@ void gmt_format_geo_output (struct GMT_CTRL *C, GMT_LONG is_lat, double geo, cha
 	GMT_LONG k, n_items, d, m, s, m_sec, minus, h_pos = 0;
 	char hemi[3], *f;
 
-	if (!is_lat) GMT_lon_range_adjust (C,  C->current.io.geo.range, &geo);
+	if (!is_lat) GMT_lon_range_adjust (C->current.io.geo.range, &geo);
 	if (C->current.io.geo.decimal) {	/* Easy */
 		f = (C->current.io.o_format[is_lat]) ? C->current.io.o_format[is_lat] : C->current.setting.format_float_out;
 		sprintf (text, f, geo);
@@ -1438,7 +1438,7 @@ void gmt_format_geo_output (struct GMT_CTRL *C, GMT_LONG is_lat, double geo, cha
 	}
 
 	for (k = n_items = 0; k < 3; k++) if (C->current.io.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
-	minus = GMT_geo_to_dms (C, geo, n_items, C->current.io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	minus = GMT_geo_to_dms (geo, n_items, C->current.io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (minus) text[0] = '-';	/* Must manually insert leading minus sign when degree == 0 */
 	if (C->current.io.geo.n_sec_decimals) {		/* Wanted fraction printed */
 		if (n_items == 3)
@@ -1533,7 +1533,7 @@ void GMT_io_init (struct GMT_CTRL *C)
 	GMT_memcpy (C->current.io.io_header, C->current.setting.io_header, 2, GMT_LONG);
 }
 
-void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
+void GMT_lon_range_adjust (GMT_LONG range, double *lon)
 {
 	switch (range) {	/* Adjust to the desired range */
 		case GMT_IS_0_TO_P360:		/* Make 0 <= lon < 360 */
@@ -1555,7 +1555,7 @@ void GMT_lon_range_adjust (struct GMT_CTRL *C, GMT_LONG range, double *lon)
 	}
 }
 
-void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items)
+void GMT_quad_reset (struct GMT_QUAD *Q, GMT_LONG n_items)
 {	/* Allocate and initialize the QUAD struct needed to find min/max of a set of longitudes */
 	GMT_LONG i;
 	
@@ -1572,7 +1572,7 @@ struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, GMT_LONG n_items)
 {	/* Allocate an initialize the QUAD struct needed to find min/max of longitudes */
 	struct GMT_QUAD *Q = GMT_memory (C, NULL, n_items, struct GMT_QUAD);
 	
-	GMT_quad_reset (C, Q, n_items);
+	GMT_quad_reset (Q, n_items);
 	
 	return (Q);
 }
@@ -1581,7 +1581,7 @@ void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x)
 {	/* Update quad array for this longitude x */
 	GMT_LONG way, quad_no;
 	for (way = 0; way < 2; way++) {
-		GMT_lon_range_adjust (C, Q->range[way], &x);	/* Set -180/180, then 0-360 range */
+		GMT_lon_range_adjust (Q->range[way], &x);	/* Set -180/180, then 0-360 range */
 		Q->min[way] = MIN (x, Q->min[way]);
 		Q->max[way] = MAX (x, Q->max[way]);
 	}
@@ -1647,7 +1647,7 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	}
 }
 
-GMT_LONG GMT_geo_to_dms (struct GMT_CTRL *C, double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix)
+GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix)
 {
 	/* Convert floating point degrees to dd:mm[:ss][.xxx].  Returns TRUE if d = 0 and val is negative */
 	GMT_LONG minus, isec, imin;
@@ -2537,7 +2537,7 @@ GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, GMT_LONG n, void *data)
 	return (C->current.io.write_item (C, fp, n, ptr));
 }
 	
-GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
+GMT_LONG GMT_set_z_io (struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
 
@@ -2550,7 +2550,7 @@ GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *
 	return (GMT_NOERROR);
 }
 
-void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
+void GMT_check_z_io (struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	/* Routine to fill in the implied periodic row or column that was missing.
 	 * We must allow for padding in G->data */
@@ -2561,11 +2561,10 @@ void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
 	if (r->y_missing) for (col = 0, k_top = GMT_IJP (G->header, 0, 0), k_bot = GMT_IJP (G->header, G->header->ny-1, 0); col < G->header->nx; col++) G->data[col+k_top] = G->data[col+k_bot];
 }
 
-GMT_LONG gmt_get_ymdj_order (struct GMT_CTRL *C, char *text, struct GMT_DATE_IO *S, GMT_LONG mode)
+GMT_LONG gmt_get_ymdj_order (struct GMT_CTRL *C, char *text, struct GMT_DATE_IO *S)
 {	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
 	 * order[0] is the order of the year, [1] is month, etc.
-	 * Items not encountered are left as -1. mode is 0 for text i/o
-	 * and 1 for plot format.
+	 * Items not encountered are left as -1.
 	 */
 
 	GMT_LONG i, j, order, n_y, n_m, n_d, n_j, n_w, n_delim, last, error = 0;
@@ -2982,7 +2981,7 @@ void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, G
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
-	gmt_get_ymdj_order (C, form, S, mode);
+	gmt_get_ymdj_order (C, form, S);
 
 	/* Craft the actual C-format to use for i/o date strings */
 
@@ -3312,7 +3311,7 @@ GMT_LONG gmt_scanf_g_calendar (struct GMT_CTRL *C, char *s, GMT_LONG *rd)
 			if (ival[0] < 0 || ival[0] > 99) return (-1);
 			ival[0] = GMT_y2_to_y4_yearfix (C, ival[0]);
 		}
-		k = (GMT_is_gleap (C, ival[0])) ? 366 : 365;
+		k = (GMT_is_gleap (ival[0])) ? 366 : 365;
 		if (ival[3] < 1 || ival[3] > k) return (-1);
 		*rd = GMT_rd_from_gymd (C, ival[0], 1, 1) + ival[3] - 1;
 		return (0);
@@ -3357,7 +3356,7 @@ GMT_LONG gmt_scanf_g_calendar (struct GMT_CTRL *C, char *s, GMT_LONG *rd)
 		ival[0] = GMT_y2_to_y4_yearfix (C, ival[0]);
 	}
 
-	if (GMT_g_ymd_is_bad (C, ival[0], ival[1], ival[2]) ) return (-1);
+	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (-1);
 
 	*rd = GMT_rd_from_gymd (C, ival[0], ival[1], ival[2]);
 	return (0);
@@ -3370,7 +3369,7 @@ GMT_LONG gmt_scanf_calendar (struct GMT_CTRL *C, char *s, GMT_LONG *rd)
 	return (gmt_scanf_g_calendar (C, s, rd));
 }
 
-GMT_LONG gmt_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
+GMT_LONG gmt_scanf_geo (char *s, double *val)
 {
 	/* Try to read a character string token stored in s, knowing that it should be a geographical variable.
 	If successful, stores value in val and returns one of GMT_IS_FLOAT, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON,
@@ -3393,28 +3392,21 @@ GMT_LONG gmt_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 	if (!(isdigit ((int)s[k-1]))) {
 		suffix = s[k-1];
 		switch (suffix) {
-			case 'W':
-			case 'w':
+			case 'W': case 'w':
 				negate = TRUE;
 				retval = GMT_IS_LON;
 				break;
-			case 'E':
-			case 'e':
+			case 'E': case 'e':
 				retval = GMT_IS_LON;
 				break;
-			case 'S':
-			case 's':
+			case 'S': case 's':
 				negate = TRUE;
 				retval = GMT_IS_LAT;
 				break;
-			case 'N':
-			case 'n':
+			case 'N': case 'n':
 				retval = GMT_IS_LAT;
 				break;
-			case 'G':
-			case 'g':
-			case 'D':
-			case 'd':
+			case 'G': case 'g': case 'D': case 'd':
 				retval = GMT_IS_GEO;
 				break;
 			case '.':	/* Decimal point without decimals, e.g., 123. */
@@ -3448,12 +3440,13 @@ GMT_LONG gmt_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 
 	if (ncolons && retval == GMT_IS_FLOAT) retval = GMT_IS_GEO;
 
+	dd = 0.0;
 	switch (ncolons) {
 		case 0:
-			if ((sscanf(scopy, "%lf", &dd)) != 1) return (GMT_IS_NAN);
+			if ((sscanf (scopy, "%lf", &dd)) != 1) return (GMT_IS_NAN);
 			break;
 		case 1:
-			if ((sscanf(scopy, "%" GMT_LL "d:%lf", &id, &dm)) != 2) return (GMT_IS_NAN);
+			if ((sscanf (scopy, "%" GMT_LL "d:%lf", &id, &dm)) != 2) return (GMT_IS_NAN);
 			dd = dm * GMT_MIN2DEG;
 			if (id < 0)	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
@@ -3464,7 +3457,7 @@ GMT_LONG gmt_scanf_geo (struct GMT_CTRL *C, char *s, double *val)
 			}
 			break;
 		case 2:
-			if ( (sscanf(scopy, "%" GMT_LL "d:%" GMT_LL "d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
+			if ((sscanf (scopy, "%" GMT_LL "d:%" GMT_LL "d:%lf", &id, &im, &ds)) != 3) return (GMT_IS_NAN);
 			dd = im * GMT_MIN2DEG + ds * GMT_SEC2DEG;
 			if (id < 0)	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
@@ -3618,7 +3611,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 		if (negate_year) return (GMT_IS_NAN);			/* negative years not allowed in ISO calendar  */
 		if ( (j = sscanf(&s[k], "%4" GMT_LL "d-W%2" GMT_LL "d-%1" GMT_LL "d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
 		for (k = j; k < 3; k++) ival[k] = 1;
-		if (GMT_iso_ywd_is_bad (C, ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+		if (GMT_iso_ywd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
 		*t = GMT_rdc2dt (C, GMT_rd_from_iywd (C, ival[0], ival[1], ival[2]), x);
 		return (GMT_IS_ABSTIME);
 	}
@@ -3642,7 +3635,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 		*t = GMT_rdc2dt (C, GMT_rd_from_gymd (C, ival[0], 1, 1) + ival[1] - 1, x);
 	}
 	else {
-		if (GMT_g_ymd_is_bad (C, ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+		if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
 		*t = GMT_rdc2dt (C, GMT_rd_from_gymd (C, ival[0], ival[1], ival[2]), x);
 	}
 
@@ -3667,7 +3660,7 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 
 	if (expectation & GMT_IS_GEO) {
 		/* True if either a lat or a lon is expected  */
-		return (gmt_scanf_geo (C, s, val));
+		return (gmt_scanf_geo (s, val));
 	}
 
 	else if (expectation == GMT_IS_FLOAT) {
@@ -3740,7 +3733,7 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 
 	else if (expectation & GMT_IS_UNKNOWN) {
 		/* True if we dont know but must try both geographic or float formats  */
-		return (gmt_scanf_geo (C, s, val));
+		return (gmt_scanf_geo (s, val));
 	}
 
 	else {
@@ -3888,7 +3881,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 		if (!no_segments) {			/* Handle info stored in multi-seg header record */
 			char buffer[GMT_BUFSIZ];
 			GMT_memset (buffer, GMT_BUFSIZ, char);
-			if (GMT_parse_segment_item (C, in, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
+			if (GMT_parse_segment_item (in, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			if (strlen (in)) T->segment[seg]->header = strdup (in);
 		}
 
@@ -4048,7 +4041,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 	
 	if (!header || !header[0]) return (0);
 
-	if (GMT_parse_segment_item (C, header, "-G", line)) {	/* Found a potential -G option */
+	if (GMT_parse_segment_item (header, "-G", line)) {	/* Found a potential -G option */
 		test_fill = def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
 			fill->rgb[0] = fill->rgb[1] = fill->rgb[2] = -1.0, fill->use_pattern = FALSE;
@@ -4069,7 +4062,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 		}
 		/* Failure is OK since -Gjunk may appear in text strings - we then do nothing (hence no else clause) */
 	}
-	if (P && GMT_parse_segment_item (C, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
+	if (P && GMT_parse_segment_item (header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", (size_t)3))	{	/* Got -ZNaN */
 			GMT_get_fill_from_z (C, P, C->session.d_NaN, fill);
 			*use_fill = TRUE;
@@ -4087,7 +4080,7 @@ GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_
 
 	if (processed == 2) GMT_report (C, GMT_MSG_FATAL, "Warning: segment header has both -G and -Z options\n");	/* Giving both -G and -Z is a problem */
 
-	if (GMT_parse_segment_item (C, header, "-W", line)) {	/* Found a potential -W option */
+	if (GMT_parse_segment_item (header, "-W", line)) {	/* Found a potential -W option */
 		test_pen = def_pen;	/* Set test pen to the default, may be overruled later */
 		if (line[0] == '-') {	/* Turn outline OFF */
 			*pen = def_pen;	/* Set pen to default */
@@ -4113,7 +4106,7 @@ void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 	GMT_LONG i = 0, k, j, j0, done;
 	char *p = NULL, q[2] = {'\"', '\''};
 
-	if (GMT_parse_segment_item (C, line, "-L", label)) return;	/* Found -L */
+	if (GMT_parse_segment_item (line, "-L", label)) return;	/* Found -L */
 
 	label[0] = '\0';	/* Remove previous label */
 	if (!line || !line[0]) return;	/* Line is empty */
@@ -4136,7 +4129,7 @@ void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 	if (!done) sscanf (&line[i], "%s", label);
 }
 
-GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string)
+GMT_LONG GMT_parse_segment_item (char *in_string, char *pattern, char *out_string)
 {
 	/* Scans the in_string for the occurrence of an option switch (e.g, -L) and
 	 * if found, extracts the argument and returns it via out_string.  Function
@@ -4161,7 +4154,7 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	return (TRUE);
 }
 
-void gmt_write_ogr_header (struct GMT_CTRL *C, FILE *fp, struct GMT_OGR *G)
+void gmt_write_ogr_header (FILE *fp, struct GMT_OGR *G)
 {	/* Write out table-level OGR/GMT header metadata */
 	GMT_LONG k;
 	char *flavor = "egpw";
@@ -4234,12 +4227,12 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 				case GMT_IS_W:	/* Pick up from -W<pen> */
 				case GMT_IS_Z:	/* Pick up from -Z<value> */
 					col = -C->common.a.col[k] - 1;	/* So -3 becomes 2 etc */
-					if (GMT_parse_segment_item (C, C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
+					if (GMT_parse_segment_item (C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
 					break;
 				case GMT_IS_L:	/* Pick up from -L<value> */
 					col = -C->common.a.col[k] - 1;	/* So -3 becomes 2 etc */
 					if (S->label) fprintf (fp, "%s%s%s", quote[col], S->label, quote[col]);
-					else if (GMT_parse_segment_item (C, C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
+					else if (GMT_parse_segment_item (C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
 					break;
 				default:	/* Regular column cases */
 					if (S->ogr) gmt_write_formatted_ogr_value (C, fp, k, C->common.a.type[k], S->ogr);
@@ -4396,7 +4389,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 			}
 		}
 		/* OK, successfully passed the constant column tests, if any */
-		for (seg = 0; seg < T->n_segments; seg++) {	/* Free up columns now stored as aspatial values */
+		for (seg = col = 0; seg < T->n_segments; seg++) {	/* Free up columns now stored as aspatial values */
 			S = T->segment[seg];
 			for (k = 0; k < T->ogr->n_aspatial; k++) if (C->common.a.col[k] > 0) GMT_free (C, S->coord[C->common.a.col[k]]);
 			for (col = k = 0; k < T->n_columns; k++) {
@@ -4467,7 +4460,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	GMT_LONG ascii, close_file = FALSE, append, save, row = 0, seg, col, k;
+	GMT_LONG ascii, close_file = FALSE, append, save = 0, row = 0, seg, col, k;
 	int *fd = NULL;
 	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	double *out = NULL;
@@ -4529,7 +4522,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 		if (ascii && C->current.io.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
-		if (table->ogr) gmt_write_ogr_header (C, fp, table->ogr);	/* Must write OGR/GMT header */
+		if (table->ogr) gmt_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
 
 	out = GMT_memory (C, NULL, table->n_columns, double);
@@ -5161,7 +5154,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			}
 			n_read++;
 			if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header records */
-				if (GMT_parse_segment_item (C, C->current.io.segment_header, "-D", line)) {	/* Found a potential -D<dist> option in the header */
+				if (GMT_parse_segment_item (C->current.io.segment_header, "-D", line)) {	/* Found a potential -D<dist> option in the header */
 					if (sscanf (line, "%lg", &d) == 1) T->segment[seg]->dist = d;	/* If readable, assign it to dist, else leave as zero */
 				}
 			}
@@ -5178,7 +5171,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header record */
 			char buffer[GMT_BUFSIZ];
 			GMT_memset (buffer, GMT_BUFSIZ, char);
-			if (GMT_parse_segment_item (C, C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
+			if (GMT_parse_segment_item (C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
 			if (strlen (C->current.io.segment_header)) T->segment[seg]->header = strdup (C->current.io.segment_header);
 			if (C->current.io.ogr == 1) gmt_copy_ogr_seg (C, T->segment[seg], C->current.io.OGR);	/* Copy over any feature-specific values */
 		}
@@ -5235,7 +5228,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 				for (k = 0; k < T->segment[seg]->n_columns; k++) T->segment[seg]->coord[k][row] = T->segment[seg]->coord[k][0];
 				T->segment[seg]->n_rows++;
 			}
-			if (GMT_parse_segment_item (C, T->segment[seg]->header, "-Ph", NULL)) T->segment[seg]->pol_mode = GMT_IS_HOLE;
+			if (GMT_parse_segment_item (T->segment[seg]->header, "-Ph", NULL)) T->segment[seg]->pol_mode = GMT_IS_HOLE;
 			/* If this is a hole then set link from previous segment to this one */
 			if (seg && GMT_polygon_is_hole (T->segment[seg])) T->segment[seg-1]->next = T->segment[seg];
 		}
@@ -5513,7 +5506,7 @@ void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_LONG free_v
 	*V = NULL;
 }
 
-GMT_LONG GMT_not_numeric (struct GMT_CTRL *C, char *text)
+GMT_LONG GMT_not_numeric (char *text)
 {
 	/* TRUE if text cannot represent a valid number  However,
 	 * FALSE does not therefore mean we have a valid number because

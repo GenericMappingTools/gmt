@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.59 2011-05-15 17:42:27 remko Exp $
+ *	$Id: gmt_grd.h,v 1.60 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,7 +171,7 @@ enum GMT_wesnIDs {XLO, XHI, YLO, YHI, ZLO, ZHI};
 
 /* GMT_grd_get_size computes grid size including the padding, and doubles it if complex values */
 
-#define GMT_grd_get_size(C,h) (((h->complex_mode > 0) + 1) * h->mx * h->my)
+#define GMT_grd_get_size(h) (((h->complex_mode > 0) + 1) * h->mx * h->my)
 
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
  * Use GMT_IJP when array is padded by BC rows/cols, else use GMT_IJ0.  In both cases

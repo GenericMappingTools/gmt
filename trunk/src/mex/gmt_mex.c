@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.c,v 1.5 2011-04-29 03:08:12 guru Exp $
+ *	$Id: gmt_mex.c,v 1.6 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 		G->header->wesn[YHI] = (G->header->registration == GMT_PIXEL_REG) ? y[G->header->ny-1] + 0.5 * G->header->inc[GMT_Y] : y[G->header->ny-1];
 	}
 	GMT_grd_setpad (G->header, API->GMT->current.io.pad);	/* Assign default pad */
-	GMT_set_grddim (API->GMT, G->header);
+	GMT_set_grddim (G->header);
 	return (z);
 }
 

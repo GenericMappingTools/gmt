@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.14 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG last_row, n_rows, out_col, n_out_seg = 0, error = 0;
 	GMT_LONG tbl, seg, col, row, n_cols_in, n_cols_out, out_seg = 0;
 	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item;
+	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item = 0;
 	
 	double *val = NULL;
 

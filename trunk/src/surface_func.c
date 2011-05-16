@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: surface_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -528,7 +528,8 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	}
 }
 
-void new_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
+#if 0
+void new_initialize_grid (struct SURFACE_INFO *C)
 {	/*
 	 * For the initial gridsize, load constrained nodes with weighted avg of their data;
 	 * and then do something with the unconstrained ones.
@@ -572,6 +573,7 @@ void new_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 	C->n_empty--;
 	 }
 }
+#endif
 
 GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
@@ -1822,7 +1824,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_RI_prepare (GMT, C.Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, C.Grid->header, 1), Ctrl->G.file);
-	GMT_set_grddim (GMT, C.Grid->header);
+	GMT_set_grddim (C.Grid->header);
 
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);

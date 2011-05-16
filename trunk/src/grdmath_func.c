@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.20 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdmath_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -230,7 +230,7 @@ void grd_ABS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 	if (constant[last] && factor[last] == 0.0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning, operand == 0!\n");
 	if (constant[last]) a = fabs (factor[last]);
 	for (node = 0; node < info->size; node++) stack[last]->data[node] = (float)((constant[last]) ? a : fabs ((double)stack[last]->data[node]));
-	GMT_grd_pad_zero (GMT, stack[last]);	/* Reset the boundary pad, if needed */
+	GMT_grd_pad_zero (stack[last]);	/* Reset the boundary pad, if needed */
 }
 
 void grd_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -491,8 +491,8 @@ void grd_CORRCOEFF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_
 		return;
 	}
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[prev]);				/* Undo pad if one existed so we can sort */
-	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[prev]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 	coeff = GMT_corrcoeff_f (GMT, stack[prev]->data, stack[last]->data, info->nm, 0);
 	GMT_grd_pad_on (GMT, stack[prev], pad);		/* Reinstate the original pad */
 	GMT_grd_pad_on (GMT, stack[last], pad);		/* Reinstate the original pad */
@@ -655,7 +655,7 @@ void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 			stack[last]->data[node] = (float)(c * (stack[last]->data[node+1] - 2.0 * stack[last]->data[node] + left));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]);	/* Reset the boundary pad */
+	GMT_grd_pad_zero (stack[last]);	/* Reset the boundary pad */
 }
 
 void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -689,7 +689,7 @@ void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 			stack[last]->data[node] = (float)(c * (stack[last]->data[node+mx] - 2 * stack[last]->data[node] + bottom));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]);	/* Reset the boundary pad */
+	GMT_grd_pad_zero (stack[last]);	/* Reset the boundary pad */
 }
 
 void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -806,7 +806,7 @@ void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 			stack[last]->data[node] = (float)(c * (stack[last]->data[node+mx] - bottom));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]);	/* Reset the boundary pad */
+	GMT_grd_pad_zero (stack[last]);	/* Reset the boundary pad */
 }
 
 void grd_DEG2KM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], GMT_LONG *constant, double *factor, GMT_LONG last)
@@ -1599,7 +1599,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 	/* Sort will put any NaNs to the end - we then count to find the real data */
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array ((void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n) {
@@ -1681,7 +1681,7 @@ void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 	/* Sort will put any NaNs to the end - we then count to find the real data */
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array ((void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n) {
@@ -1742,7 +1742,7 @@ void grd_MED (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *
 	}
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array ((void *)stack[last], info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n)
@@ -1795,7 +1795,7 @@ void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	}
 
 	GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+	GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array ((void *)stack[last]->data, info->nm, GMT_FLOAT_TYPE);
 	for (n = info->nm; GMT_is_fnan (stack[last]->data[n-1]) && n > 1; n--);
 	if (n)
@@ -2044,7 +2044,7 @@ void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 	}
 	else {
 		GMT_memcpy (pad, stack[last]->header->pad, 4, GMT_LONG);	/* Save original pad */
-		GMT_grd_pad_off (GMT, stack[last]);				/* Undo pad if one existed so we can sort */
+		GMT_grd_pad_off (stack[last]);				/* Undo pad if one existed so we can sort */
 		GMT_sort_array ((void *)stack[prev]->data, info->nm, GMT_FLOAT_TYPE);
 		p = (float) GMT_quantile_f (GMT, stack[prev]->data, factor[last], (GMT_LONG)info->nm);
 		GMT_memset (stack[last]->data, info->size, float);	/* Wipes everything */
@@ -2752,7 +2752,7 @@ GMT_LONG decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, doub
 
 	/* Preliminary test-conversion to a number */
 
-	if (!GMT_not_numeric (GMT, opt->arg)) {	/* Only check if we are not sure this is NOT a number */
+	if (!GMT_not_numeric (opt->arg)) {	/* Only check if we are not sure this is NOT a number */
 		expect = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : GMT_IS_UNKNOWN;	/* Watch out for dateTclock-strings */
 		check = GMT_scanf (GMT, opt->arg, expect, &tmp);
 		possible_number = TRUE;
@@ -2924,7 +2924,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(opt->arg), (void **)&G_in)) Return (GMT_DATA_READ_ERROR);	/* Get subset only */
 		}
 		GMT_memcpy (info.G->header, G_in->header, 1, struct GRD_HEADER);
-		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
+		GMT_set_grddim (info.G->header);			/* To adjust for the pad */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G_in);
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.17 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.18 2011-05-16 08:47:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -486,7 +486,7 @@ void tabs (GMT_LONG ntabs)
 	while (ntabs--) putchar ('\t');
 }
 
-void print_altmode (struct GMT_CTRL *GMT, GMT_LONG extrude, GMT_LONG fmode, GMT_LONG altmode, GMT_LONG ntabs)
+void print_altmode (GMT_LONG extrude, GMT_LONG fmode, GMT_LONG altmode, GMT_LONG ntabs)
 {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n"); 
@@ -772,7 +772,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			tabs (N); printf ("<styleUrl>#GMT%ld</styleUrl>\n", index);
 			tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-			print_altmode (GMT, Ctrl->E.active, FALSE, Ctrl->A.mode, N);
+			print_altmode (Ctrl->E.active, FALSE, Ctrl->A.mode, N);
 			tabs (N); printf ("<coordinates>");
 			ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
 			ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
@@ -822,7 +822,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						printf ("<name>%s</name>\n", T->segment[seg]->label);
 					else
 						printf ("<name>%s Set %ld</name>\n", name[Ctrl->F.mode], set_nr);
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
+					if (GMT_parse_segment_item (T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
 				}
 				else {	/* Line or polygon means we lay down the placemark first*/
 					tabs (N++); printf ("<Placemark>\n");
@@ -836,11 +836,11 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						tabs (N), printf ("<name>%s %ld</name>\n", name[Ctrl->F.mode], set_nr);
 					description[0] = 0;
 					do_description = FALSE;
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
+					if (GMT_parse_segment_item (T->segment[seg]->header, "-I", buffer)) { 
 						do_description = TRUE;
 						strcat (description, buffer);
 					}
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, buffer)) { 
+					if (GMT_parse_segment_item (T->segment[seg]->header, t_opt, buffer)) { 
 						if (do_description) strcat (description, " ");
 						strcat (description, buffer);
 						do_description = TRUE;
@@ -848,7 +848,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
 					tabs (N); printf ("<styleUrl>#GMT%ld</styleUrl>\n", index);
 					tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-					print_altmode (GMT, Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
+					print_altmode (Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
 					if (Ctrl->F.mode == POLYGON) {
 						tabs (N++); printf ("<outerBoundaryIs>\n");
 						tabs (N++); printf ("<LinearRing>\n");
@@ -918,7 +918,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						}
 						tabs (N); printf ("<styleUrl>#GMT%ld</styleUrl>\n", index);
 						tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-						print_altmode (GMT, Ctrl->E.active, FALSE, Ctrl->A.mode, N);
+						print_altmode (Ctrl->E.active, FALSE, Ctrl->A.mode, N);
 						tabs (N); printf ("<coordinates>");
 						ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
 						ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");

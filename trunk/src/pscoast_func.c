@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.17 2011-05-12 01:33:30 remko Exp $
+ *	$Id: pscoast_func.c,v 1.18 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -522,9 +522,9 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG clobber_background, paint_polygons = FALSE, donut;
 	GMT_LONG donut_hell = FALSE, world_map_save, clipping;
 
-	double bin_x[5], bin_y[5], out[2];
+	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
-	double *xtmp = NULL, *ytmp = NULL, left, right, anti_x, anti_y, x_0, y_0, x_c, y_c, dist;
+	double left, right, anti_x = 0.0, anti_y = 0.0, x_0 = 0.0, y_0 = 0.0, x_c, y_c, dist;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
@@ -758,7 +758,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Assemble one or more segments into polygons */
 
-			if ((np = GMT_assemble_shore (GMT, &c, direction, TRUE, shift, west_border, east_border, &p)) == 0) continue;
+			if ((np = GMT_assemble_shore (GMT, &c, direction, TRUE, west_border, east_border, &p)) == 0) continue;
 
 			/* Get clipped polygons in x,y inches that can be plotted */
 
@@ -809,7 +809,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		if (Ctrl->W.active && c.ns) {	/* Draw or dump shorelines, no need to assemble polygons */
-			if ((np = GMT_assemble_shore (GMT, &c, 1, FALSE, shift, west_border, east_border, &p)) == 0) continue;
+			if ((np = GMT_assemble_shore (GMT, &c, 1, FALSE, west_border, east_border, &p)) == 0) continue;
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {

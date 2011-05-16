@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.16 2011-05-15 23:41:09 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.17 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,7 @@ void new_table (struct GMT_CTRL *GMT, double ***s, GMT_LONG n_col, GMT_LONG n)
 	*s = p;
 }
 
-void decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
+void decode_columns (char *txt, GMT_LONG *skip, GMT_LONG n_col, GMT_LONG t_col)
 {
 	GMT_LONG i, start, stop, pos, col;
 	char p[GMT_BUFSIZ];
@@ -2784,7 +2784,7 @@ GMT_LONG decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, st
 	/* Preliminary test-conversion to a number */
 
 	strcpy (copy, txt);
-	if (!GMT_not_numeric (GMT, copy)) {	/* Only check if we are not sure this is NOT a number */
+	if (!GMT_not_numeric (copy)) {	/* Only check if we are not sure this is NOT a number */
 		expect = (strchr (copy, 'T')) ? GMT_IS_ABSTIME : GMT_IS_UNKNOWN;	/* Watch out for dateTclock-strings */
 		check = GMT_scanf (GMT, copy, expect, &tmp);
 		possible_number = TRUE;
@@ -2817,11 +2817,11 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, kk, op = 0, nstack = 0, new_stack = -1, use_t_col = 0, status, n_macros;
 	GMT_LONG consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS];
-	GMT_LONG n_records, n_rows, n_columns = 0, n_segments, seg, alloc_mode[GMTMATH_STACK_SIZE];
+	GMT_LONG n_records, n_rows = 0, n_columns = 0, n_segments, seg, alloc_mode[GMTMATH_STACK_SIZE];
 	GMT_LONG constant[GMTMATH_STACK_SIZE], error = FALSE, set_equidistant_t = FALSE;
 	GMT_LONG read_stdin = FALSE, t_check_required = TRUE, got_t_from_file = FALSE, done;
 
-	double factor[GMTMATH_STACK_SIZE], t_noise, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
+	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
 	char *outfile = CNULL;
 #include "gmtmath_op.h"
@@ -3098,7 +3098,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (strchr ("AINQSTVbfghios" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
-			decode_columns (GMT, opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol);
+			decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol);
 			continue;
 		}
 		if (opt->option == GMTAPI_OPT_OUTFILE) continue;	/* We do output after the loop */

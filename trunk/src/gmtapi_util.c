@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.65 2011-05-15 23:41:09 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.66 2011-05-16 08:47:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -282,7 +282,7 @@ GMT_LONG GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, dou
 	
 	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
 	GMT_grd_setpad (h_tmp, C->current.io.pad);	/* Use the system pad setting by default */
-	GMT_set_grddim (C, h_tmp);			/* Computes all integer parameters */
+	GMT_set_grddim (h_tmp);				/* Computes all integer parameters */
 	size = h_tmp->size;				/* This is the size needed to hold grid + padding */
 	GMT_free (C, h_tmp);
 	return (size);
@@ -1340,7 +1340,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			I->alloc_mode = GMT_ALLOCATED;
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
-			GMT_set_grddim (API->GMT, I->header);	/* Set all dimensions */
+			GMT_set_grddim (I->header);	/* Set all dimensions */
 			I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
 			GMT_grd_loop (I, row, col, ij) {
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
@@ -1551,7 +1551,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G->alloc_mode = GMT_ALLOCATED;
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
-			GMT_set_grddim (API->GMT, G->header);	/* Set all dimensions */
+			GMT_set_grddim (G->header);	/* Set all dimensions */
 			G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 			GMT_grd_loop (G, row, col, ij) {
 				ij_orig = API->GMT_2D_to_index[M->shape] (row, col, M->dim, complex_mode);
@@ -2932,7 +2932,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 			break;
 	}
 
-	if (mode == GMT_WRITE_DOUBLE || GMT_WRITE_TEXT) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
+	if (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
 	
 	if (S->n_alloc && API->current_rec[GMT_OUT] == S->n_alloc) {	/* Must allocate more memory */
 		GMT_LONG size;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.77 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_shore.c,v 1.78 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
  * GMT_init_br :		Opens selected border/river database and initializes structures
  * GMT_get_br_bin :		Returns all selected border/river data for this bin
  * GMT_assemble_shore :		Creates polygons or lines from shoreline segments
- * GMT_prep_shore_polygons :		Wraps polygons if necessary and prepares them for use
+ * GMT_prep_shore_polygons :	Wraps polygons if necessary and prepares them for use
  * GMT_assemble_br :		Creates lines from border or river segments
  * GMT_free_shore :		Frees up memory used by shorelines for this bin
  * GMT_free_br :		Frees up memory used by shorelines for this bin
@@ -152,14 +152,14 @@ void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, GMT_L
 	}
 }
 
-void gmt_shore_path_shift (double *lon, double *lat, GMT_LONG n, double edge)
+void gmt_shore_path_shift (double *lon, GMT_LONG n, double edge)
 {
 	GMT_LONG i;
 	
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
 }
 
-void gmt_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost)
+void gmt_shore_path_shift2 (double *lon, GMT_LONG n, double west, double east, GMT_LONG leftmost)
 {
 	GMT_LONG i;
 	
@@ -602,7 +602,7 @@ GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
 
 	for (s = 0; s < c->ns; s++) {
 		c->seg[s].level = get_level (seg_info[s]);
-		c->seg[s].n = (seg_info[s] >> 9);
+		c->seg[s].n = (short)(seg_info[s] >> 9);
 		c->seg[s].entry = (seg_info[s] >> 3) & 7;
 		c->seg[s].exit = seg_info[s] & 7;
 		c->seg[s].fid = (c->GSHHS_area[seg_ID[s]] < 0) ? RIVERLAKE : c->seg[s].level;
@@ -784,9 +784,8 @@ GMT_LONG GMT_get_br_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_BR *c, GMT_L
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, GMT_LONG shift, double west, double east, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, double west, double east, struct GMT_GSHHS_POL **pol)
 /* assemble: TRUE if polygons is needed */
-/* shift: TRUE if longitudes may have to be shifted */
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
@@ -806,7 +805,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 			p[id].level = c->seg[id].level;
 			p[id].fid = c->seg[id].fid;
 			p[id].interior = FALSE;
-			gmt_shore_path_shift2 (p[id].lon, p[id].lat, p[id].n, west, east, c->leftmost_bin);
+			gmt_shore_path_shift2 (p[id].lon, p[id].n, west, east, c->leftmost_bin);
 		}
 	
 		*pol = p;
@@ -944,7 +943,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, GMT_LONG d
 
 	if (c->ns > 0) p = GMT_memory (C, p, P, struct GMT_GSHHS_POL);
 	
-	for (id = 0; id < P; id++) gmt_shore_path_shift2 (p[id].lon, p[id].lat, p[id].n, west, east, c->leftmost_bin);
+	for (id = 0; id < P; id++) gmt_shore_path_shift2 (p[id].lon, p[id].n, west, east, c->leftmost_bin);
 
 	*pol = p;
 	return (P);
@@ -964,7 +963,7 @@ GMT_LONG GMT_assemble_br (struct GMT_CTRL *C, struct GMT_BR *c, GMT_LONG shift, 
 		p[id].lat = GMT_memory (C, NULL, c->seg[id].n, double);
 		p[id].n = gmt_copy_to_br_path (p[id].lon, p[id].lat, c, id);
 		p[id].level = c->seg[id].level;
-		if (shift) gmt_shore_path_shift (p[id].lon, p[id].lat, p[id].n, edge);
+		if (shift) gmt_shore_path_shift (p[id].lon, p[id].n, edge);
 	}
 	
 	*pol = p;

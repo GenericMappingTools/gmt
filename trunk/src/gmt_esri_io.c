@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.24 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.25 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,7 +227,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		c = header->title[len-3];
 		header->title[len-3] = '\0';
 		header->wesn[XLO] = atof (&header->title[len-6]);
-		header->title[len-3] = c;		/* Reset because this function is called at least twice */
+		header->title[len-3] = (char)c;		/* Reset because this function is called at least twice */
 		if ( header->title[len-7] == 'W' || header->title[len-7] == 'w' ) header->wesn[XLO] *= -1; 
 		if (header->wesn[YHI] > -60) {
 			header->wesn[YLO] = header->wesn[YHI] - 50; 
@@ -261,7 +261,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		c = header->title[len-4];
 		header->title[len-4] = '\0';
 		header->wesn[YLO] = atof (&header->title[len-6]);
-		header->title[len-3] = c;		/* Reset because this function is called at least twice */
+		header->title[len-3] = (char)c;		/* Reset because this function is called at least twice */
 		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1; 
 		header->wesn[YHI] = header->wesn[YLO] + 1; 
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
@@ -453,7 +453,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		return (GMT_GRDIO_OPEN_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -571,7 +571,7 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		write_esri_info (C, fp, header);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];

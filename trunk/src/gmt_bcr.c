@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.20 2011-04-26 18:34:12 remko Exp $
+ *	$Id: gmt_bcr.c,v 1.21 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -80,7 +80,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG gmt_bcr_reject (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, double yy)
+GMT_LONG gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 	
@@ -98,7 +98,7 @@ GMT_LONG gmt_bcr_reject (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, do
 	return (0);	/* Good to use */
 }
 
-GMT_LONG gmt_bcr_prep (struct GMT_CTRL *C, struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
+GMT_LONG gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
 	GMT_LONG i, j, ij;
 	double x, y, wp, wq, w;
@@ -234,11 +234,11 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 	
-	if (gmt_bcr_reject (C, G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
+	if (gmt_bcr_reject (G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
 	
-	ij = gmt_bcr_prep (C, G->header, xx, yy, wx, wy);
+	ij = gmt_bcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < G->header->bcr_n; j++) {
@@ -265,11 +265,11 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 	
-	if (gmt_bcr_reject (C, G->header, xx, yy)) return (1);	/* NaNs or outside */
+	if (gmt_bcr_reject (G->header, xx, yy)) return (1);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx wy */
 	
-	ij = gmt_bcr_prep (C, G->header, xx, yy, wx, wy);
+	ij = gmt_bcr_prep (G->header, xx, yy, wx, wy);
 
 	GMT_memset (retval, 4, double);
 	wsum = 0.0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.60 2011-05-15 22:27:24 guru Exp $
+ *	$Id: grdimage_func.c,v 1.61 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,7 +343,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE;
-	GMT_LONG k, byte, nx, ny, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
+	GMT_LONG k, byte, nx = 0, ny = 0, index = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	GMT_LONG colormask_offset = 0, nm, node, kk, try, gray_only = FALSE;
 	GMT_LONG node_RGBA = 0;		/* Counter for the RGB(A) image array. */
 	
@@ -358,7 +358,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
-	struct GRD_HEADER *header_work;	/* Pointer to a GMT header for the image or grid */
+	struct GRD_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 
 #ifdef USE_GDAL
 	GMT_LONG do_indexed = FALSE;

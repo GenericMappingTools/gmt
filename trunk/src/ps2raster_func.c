@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.13 2011-05-11 17:30:33 jluis Exp $
+ *	$Id: ps2raster_func.c,v 1.14 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -527,7 +527,7 @@ char *fgets2 (char *s, int n, FILE *stream)
 	n--;	/* Max chars to read */
 	while (!done && (c = fgetc (stream)) != EOF) {
 		if (c == '\r') c = '\n';	/* Replace ugly \r with nice \n */
-		s[k++] = c;			/* Add to the growing buffer */
+		s[k++] = (char)c;		/* Add to the growing buffer */
 		if (c == '\n' || k == n) s[k] = '\0', done = TRUE;	/* Get \n or ran out of space */
 	}
 	return ((k == 0) ? NULL : s);

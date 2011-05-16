@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.20 2011-05-14 00:04:06 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1197,7 +1197,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
-		GMT_LONG tbl, seg, seg2, ID, row, first, last, n, p, np, n_inside, *count = NULL;
+		GMT_LONG tbl, seg, seg2, ID = -1, row, first, last, n, p, np, n_inside, *count = NULL;
 		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;
@@ -1224,9 +1224,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
 					ID = (GMT_LONG)GMT_get_aspatial_value (GMT, GMT_IS_Z, S2);
-				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
+				else if (GMT_parse_segment_item (S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
-				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
+				else if (GMT_parse_segment_item (S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
 					GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
@@ -1259,7 +1259,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %ld segment %ld is inside polygon # %ld\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
-						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
+						if (GMT_parse_segment_item (S->header, "-Z", NULL))
 							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %ld-%ld already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
@@ -1285,7 +1285,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active) {	/* Do geospatial operations */
-		GMT_LONG n_split, tbl, seg, n_segs, crossing;
+		GMT_LONG n_split = 0, tbl, seg, n_segs, crossing;
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT **L = NULL;

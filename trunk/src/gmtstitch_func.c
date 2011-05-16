@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.14 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -205,7 +205,7 @@ GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG connect (struct GMT_CTRL *GMT, struct LINK *S, int id, int order, double cutoff, GMT_LONG nn_check, double nn_dist)
+GMT_LONG connect (struct LINK *S, int id, int order, double cutoff, GMT_LONG nn_check, double nn_dist)
 {	/* Checks if OK to connect this segment to its nearest neighbor and returns TRUE if OK */
 
 	if (S[S[id].buddy[order].id].used) return (FALSE);		/* Segment has been used already */
@@ -215,7 +215,7 @@ GMT_LONG connect (struct GMT_CTRL *GMT, struct LINK *S, int id, int order, doubl
 	return (FALSE);							/* Failed all tests */
 }
 
-GMT_LONG Copy_This_Segment (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, GMT_LONG out_start, GMT_LONG in_start, GMT_LONG in_end)
+GMT_LONG Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, GMT_LONG out_start, GMT_LONG in_start, GMT_LONG in_end)
 {
 	GMT_LONG i, j, k, inc, done = FALSE;
 	
@@ -366,8 +366,8 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, TRUE);
 				
 				T[CLOSED][out_seg]->header = strdup (D[GMT_IN]->table[k]->segment[j]->header);
-				out_p = Copy_This_Segment (GMT, D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], 0, 0, np-1);
-				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (GMT, D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon */
+				out_p = Copy_This_Segment (D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], 0, 0, np-1);
+				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (D[GMT_IN]->table[k]->segment[j], T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon */
 				n_islands++;
 				out_seg++;
 				n_closed++;
@@ -377,7 +377,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_alloc_segment (GMT, T[OPEN][out_seg], np, n_columns, TRUE);
 				
 				T[OPEN][out_seg]->header = strdup (D[GMT_IN]->table[k]->segment[j]->header);
-				out_p = Copy_This_Segment (GMT, D[GMT_IN]->table[k]->segment[j], T[OPEN][out_seg], 0, 0, np-1);
+				out_p = Copy_This_Segment (D[GMT_IN]->table[k]->segment[j], T[OPEN][out_seg], 0, 0, np-1);
 				n_open++;
 			}
 			else { /* Unless -C: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points */
@@ -566,7 +566,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #if DEBUG2
 		GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id].orig_id);
 #endif
-		while (!done && connect (GMT, seg, (int)id, (int)end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
+		while (!done && connect (seg, (int)id, (int)end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
 			id2 = seg[id].buddy[end_order].id;
 #if DEBUG2
 			GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", seg[id2].orig_id);
@@ -623,7 +623,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					n = np;
 				}
 				GMT_report (GMT, GMT_MSG_DEBUG, "Forward %s", D[GMT_IN]->table[G]->segment[L]->header);
-				out_p = Copy_This_Segment (GMT, D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, j, np-1);
+				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, j, np-1);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];
 				if (first) p_first_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0], p_first_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];
@@ -638,7 +638,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					n = np;
 				}
 				GMT_report (GMT, GMT_MSG_DEBUG, "Reversed %s", D[GMT_IN]->table[G]->segment[L]->header);
-				out_p = Copy_This_Segment (GMT, D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, np-1-j, 0);
+				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, np-1-j, 0);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];
 				if (first) p_first_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1], p_first_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];

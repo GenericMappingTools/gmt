@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.12 2011-05-14 00:04:07 guru Exp $
+ *	$Id: redpol_func.c,v 1.13 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1208,7 +1208,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	Gout->header->registration = Gin->header->registration;
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
 	Gout->header->pad[XLO] = Gout->header->pad[XHI] = Gout->header->pad[YLO] = Gout->header->pad[YHI] = 2;
-	GMT_set_grddim (GMT, Gout->header);	/* SHOULDN'T IT USE GMT->current.io.pad INSTEAD ???? */
+	GMT_set_grddim (Gout->header);	/* SHOULDN'T IT USE GMT->current.io.pad INSTEAD ???? */
 
 	if (GMT->common.R.active) {
 		if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] || Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) {

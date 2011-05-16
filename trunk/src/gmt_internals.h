@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.7 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_internals.h,v 1.8 2011-05-16 08:47:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ EXTERN_MSC void GMT_encode (struct GMT_CTRL *C, void *vptr, GMT_LONG k, float z,
 EXTERN_MSC GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, GMT_LONG justify);
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *C, char *name);
 EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *C);
-EXTERN_MSC GMT_LONG GMT_geo_to_dms (struct GMT_CTRL *C, double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
+EXTERN_MSC GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
 EXTERN_MSC double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level);
 EXTERN_MSC GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC void GMT_get_primary_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT_LONG *primary, GMT_LONG *secondary);
@@ -83,8 +83,8 @@ EXTERN_MSC double GMT_xx_to_x (struct GMT_CTRL *C, double xx);
 EXTERN_MSC double GMT_yy_to_y (struct GMT_CTRL *C, double yy);
 EXTERN_MSC double GMT_zz_to_z (struct GMT_CTRL *C, double zz);
 EXTERN_MSC GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, GMT_LONG y2);	/* Convert a 2-digit year to a 4-digit year */
-EXTERN_MSC GMT_LONG GMT_g_ymd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG m, GMT_LONG d);	/* Check range of month and day for Gregorian YMD calendar values  */
-EXTERN_MSC GMT_LONG GMT_iso_ywd_is_bad (struct GMT_CTRL *C, GMT_LONG y, GMT_LONG w, GMT_LONG d);	/* Check range of week and day for ISO W calendar.  */
+EXTERN_MSC GMT_LONG GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d);	/* Check range of month and day for Gregorian YMD calendar values  */
+EXTERN_MSC GMT_LONG GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, GMT_LONG np, double *work_x, double *work_y);
 EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *C, double y);
 EXTERN_MSC GMT_LONG GMT_map_path (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double **x, double **y);
@@ -102,7 +102,7 @@ EXTERN_MSC GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LO
 EXTERN_MSC GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table);
 EXTERN_MSC void GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, struct GMT_TEXTSET **Dout, GMT_LONG mode);
 
-EXTERN_MSC GMT_LONG GMT_gmonth_length (struct GMT_CTRL *C, GMT_LONG year, GMT_LONG month);
+EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
 EXTERN_MSC void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.273 2011-05-09 19:03:08 guru Exp $
+ *	$Id: mgd77.c,v 1.274 2011-05-16 08:47:59 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5265,7 +5265,7 @@ double MGD77_time_to_fyear (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double 
 double MGD77_cal_to_fyear (struct GMT_CTRL *C, struct GMT_gcal *cal) {
 	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
 	double n_days;
-	n_days = (GMT_is_gleap (C, cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
+	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
@@ -5293,7 +5293,7 @@ void	MGD77_dt2rdc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, GMT_LO
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
-	i = GMT_splitinteger (C, t_sec, 86400, s) + F->utime.rata_die;
+	i = GMT_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
 	*rd = (GMT_LONG)(i);
 }
 
@@ -5313,7 +5313,7 @@ void	MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, 
 	MGD77_dt2rdc (C, F, t, &rd, &x);
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
-	i = GMT_splitinteger (C, x, 60, &cal->sec);
+	i = GMT_splitinteger (x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;

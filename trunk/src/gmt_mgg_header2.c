@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.51 2011-05-08 03:45:26 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.52 2011-05-16 08:47:57 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -146,7 +146,7 @@ GMT_LONG gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	return (GMT_NOERROR);
 }
 
-static void gmt_MGG2toGMT (struct GMT_CTRL *C, MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
+static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 {
 	GMT_LONG one_or_zero;
 	
@@ -222,7 +222,7 @@ GMT_LONG GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	GMT_fclose (C, fp);
 	
-	gmt_MGG2toGMT (C, &mggHeader, header);
+	gmt_MGG2toGMT (&mggHeader, header);
 	
 	return (GMT_NOERROR);
 }
@@ -261,6 +261,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_LONG piping = FALSE, swap_all = FALSE, is_float = FALSE;
 	long long_offset;	/* For fseek only */
 	
+	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
 	if (!strcmp (header->name, "=")) {
 		fp = C->session.std[GMT_IN];
 		piping = TRUE;
@@ -277,7 +278,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 			
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -368,7 +369,7 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 	
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];

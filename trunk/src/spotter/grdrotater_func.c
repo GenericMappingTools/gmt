@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.20 2011-05-14 00:04:07 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -440,8 +440,8 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->common.R.wesn[XLO] = S->min[GMT_X];	GMT->common.R.wesn[XHI] = S->max[GMT_X];
 		GMT->common.R.wesn[YLO] = S->min[GMT_Y];	GMT->common.R.wesn[YHI] = S->max[GMT_Y];
 		/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
-		GMT_lon_range_adjust (GMT,  GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
-		GMT_lon_range_adjust (GMT,  GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
+		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
+		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
 		if (GMT->common.R.wesn[XLO] > GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	

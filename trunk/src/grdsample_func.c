@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdsample_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -215,7 +215,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		Gout->header->registration = Gin->header->registration;
 
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_set_grddim (GMT, Gout->header);
+	GMT_set_grddim (Gout->header);
 
 	if (GMT->common.R.active) {
 		if (!Gout->header->nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {

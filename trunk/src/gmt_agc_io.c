@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.38 2011-05-07 19:21:41 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.39 2011-05-16 08:47:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,7 +45,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 Private Functions used by the public functions:
 
-GMT_LONG ReadRecord (FILE *fpi, GMT_LONG recnum, float *z)
+GMT_LONG ReadRecord (FILE *fpi, float *z)
 GMT_LONG WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
 void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
@@ -63,7 +63,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define AGCHEADINDICATOR	"agchd:"
 # define PARAMSIZE		(GMT_LONG)((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
-GMT_LONG ReadRecord (FILE *fpi, GMT_LONG recnum, float *z)
+GMT_LONG ReadRecord (FILE *fpi, float *z)
 {	/* Reads one block of data, including pre- and post-headers */
 	GMT_LONG nitems;
 	float garbage[PREHEADSIZE];
@@ -80,7 +80,7 @@ GMT_LONG WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
 {	/* Writes one block of data, including pre- and post-headers */
 	if (GMT_fwrite ((void *)prerec, sizeof(float), (size_t)PREHEADSIZE, file) < (size_t)PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 	if (GMT_fwrite ((void *)rec, sizeof(float), (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT), file) < (size_t)(ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite( (void *)postrec, sizeof(float), (size_t)POSTHEADSIZE, file) < (size_t)POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite ((void *)postrec, sizeof(float), (size_t)POSTHEADSIZE, file) < (size_t)POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
 	return (GMT_NOERROR);
 }
 
@@ -232,7 +232,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -252,7 +252,7 @@ GMT_LONG GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
-		if (ReadRecord (fp, block, (float *)z)) return (GMT_GRDIO_READ_FAILED);
+		if (ReadRecord (fp, (float *)z)) return (GMT_GRDIO_READ_FAILED);
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
@@ -322,7 +322,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (C, complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -347,7 +347,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_PIXEL_REG) {
-		GMT_change_grdreg (C, header, GMT_GRIDLINE_REG);
+		GMT_change_grdreg (header, GMT_GRIDLINE_REG);
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdproject_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -371,7 +371,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			use_ny = Rect->header->ny;
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (GMT, Geo->header);
+		GMT_set_grddim (Geo->header);
 		Geo->data = GMT_memory (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, TRUE);
 
@@ -453,7 +453,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (GMT, Rect->header);
+		GMT_set_grddim (Rect->header);
 		Rect->data = GMT_memory (GMT, NULL, Rect->header->size, float);
 		GMT_grd_project (GMT, Geo, Rect, FALSE);
 		GMT_grd_init (GMT, Rect->header, options, TRUE);

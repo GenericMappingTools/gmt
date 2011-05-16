@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdraster_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -925,7 +925,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid->header->registration = myras.h.registration;
 	Grid->header->z_min = DBL_MAX;
 	Grid->header->z_max = -DBL_MAX;
-	GMT_set_grddim (GMT, Grid->header);
+	GMT_set_grddim (Grid->header);
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
