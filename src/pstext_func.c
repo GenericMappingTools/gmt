@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.23 2011-05-16 21:23:10 guru Exp $
+ *	$Id: pstext_func.c,v 1.24 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,6 +28,9 @@
 
 #include "pslib.h"
 #include "gmt.h"
+
+EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
+EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
 #define PSTEXT_CLIP		1
 #define PSTEXT_PLOT		2
@@ -106,8 +109,6 @@ struct PSTEXT_INFO {
 	struct GMT_PEN vecpen;
 	struct GMT_FILL boxfill;
 };
-
-EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
 
 void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSTEXT_CTRL *C;
@@ -528,7 +529,6 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
-	EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

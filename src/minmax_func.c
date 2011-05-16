@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.18 2011-05-16 21:23:10 guru Exp $
+ *    $Id: minmax_func.c,v 1.19 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,6 +25,9 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
+EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
@@ -60,9 +63,6 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		GMT_LONG col;
 	} T;
 };
-
-EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
-EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 GMT_LONG strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, GMT_LONG col)
 {	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */

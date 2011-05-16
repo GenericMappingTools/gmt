@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.15 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,8 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+
+EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 
 struct GRDFILTER_CTRL {
 	struct In {
@@ -105,8 +107,6 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 	if (C->G.file) free ((void *)C->G.file);	
 	GMT_free (GMT, C);	
 }
-
-EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
 
 void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *weight, double output_lat, double par[], double x_off, double y_off)
 {

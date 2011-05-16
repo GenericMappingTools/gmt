@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.11 2011-05-11 09:48:21 guru Exp $
+ *	$Id: originator_func.c,v 1.12 2011-05-16 22:22:31 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -106,6 +106,9 @@
  
 #include "spotter.h"
 #include "gmt_proj.h"
+
+EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
+EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
 
 #define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
@@ -330,9 +333,6 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
-
-EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
-EXTERN_MSC GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
 
 #define Return(code) {Free_originator_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 

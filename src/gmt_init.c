@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.513 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmt_init.c,v 1.514 2011-05-16 22:22:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,7 +55,9 @@
 #include "pslib.h"
 #include "gmt.h"
 #include "gmt_internals.h"
+
 EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
+EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
 #ifdef DEBUG
 /* This is used to help is find memory leaks */
@@ -94,8 +96,6 @@ static char *GMT_weekdays[7] = {	/* Days of the week in English [Default] */
 static char *GMT_just_string[12] = {	/* Strings to specify justification */
 	"", "BL", "BC", "BR", "", "ML", "MC", "MR", "", "TL", "TC", "TR"
 };
-
-EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
 /* Local variables to gmt_init.c */
 

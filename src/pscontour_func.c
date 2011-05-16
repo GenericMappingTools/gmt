@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.20 2011-05-16 21:23:10 guru Exp $
+ *	$Id: pscontour_func.c,v 1.21 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,8 @@
 
 #include "pslib.h"
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link);
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
@@ -125,8 +127,6 @@ struct PSCONTOUR_CHAIN {
 	struct PSCONTOUR_PT *end;
 	struct PSCONTOUR_CHAIN *next;
 };
-
-EXTERN_MSC GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, GMT_LONG n, int **link);
 
 void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCONTOUR_CTRL *C;

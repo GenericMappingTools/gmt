@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtset_func.c,v 1.5 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtset_func.c,v 1.6 2011-05-16 22:22:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,6 +26,8 @@
  
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+
+EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 
 /* Control structure for gmtset */
 
@@ -132,7 +134,6 @@ GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	struct GMTSET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: makecpt_func.c,v 1.11 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,6 +29,8 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
@@ -80,8 +82,6 @@ struct MAKECPT_CTRL {
 		GMT_LONG active;
 	} Z;
 };
-
-EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 void *New_makecpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAKECPT_CTRL *C;

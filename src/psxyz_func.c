@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.16 2011-05-16 21:23:11 guru Exp $
+ *	$Id: psxyz_func.c,v 1.17 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,6 +26,8 @@
 
 #include "pslib.h"
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
 
 /* Control structure for psxyz */
 
@@ -78,8 +80,6 @@ struct PSXYZ_DATA {
 	char *string;
 	struct GMT_CUSTOM_SYMBOL *custom;
 };
-
-EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
 
 void *New_psxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXYZ_CTRL *C;

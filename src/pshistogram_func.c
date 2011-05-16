@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.11 2011-05-16 21:23:10 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.12 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,6 +25,10 @@
 
 #include "pslib.h"
 #include "gmt.h"
+
+#ifdef GMT_COMPAT
+EXTERN_MSC GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
+#endif
 
 struct PSHISTOGRAM_CTRL {
 	struct Out {	/* -> */
@@ -347,10 +351,6 @@ GMT_LONG GMT_pshistogram_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	return (EXIT_FAILURE);
 }
-
-#ifdef GMT_COMPAT
-EXTERN_MSC GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
-#endif
 
 GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options)
 {
