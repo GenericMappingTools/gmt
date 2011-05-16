@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1026 2011-05-16 21:23:09 guru Exp $
+	$Id: ChangeLog,v 1.1027 2011-05-16 23:55:12 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-16	remko
+	* pslib.*:		Adjusted description of PSL_beginplot argument "absolute" so it conforms
+				to the actual workings (reset moved at end).
 
 2011-05-16	pwessel
 	* *.[ch]:		Clarified what is the lower-level GMT API for module development:

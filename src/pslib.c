@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.258 2011-05-08 03:45:27 guru Exp $
+ *	$Id: pslib.c,v 1.259 2011-05-16 23:52:33 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1259,7 +1259,7 @@ PSL_LONG PSL_plotpoint_ (double *x, double *y, PSL_LONG *pen)
 #endif
 
 PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
-{	/* Finalizes the current plot layer; see PSL_end for terminating PSL session. */
+{	/* Finalizes the current plot layer; see PSL_endsession for terminating PSL session. */
 
 	psl_pattern_cleanup (PSL);
 	PSL_setdash (PSL, NULL, 0.0);
@@ -1279,15 +1279,13 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 			PSL_command (PSL, "%%%%BoundingBox: %d %d %d %d\n", (int)floor(x0), (int)floor(y0), (int)ceil(x1), (int)ceil(y1));
 			PSL_command (PSL, "%%%%HiResBoundingBox: %g %g %g %g\n", x0, y0, x1, y1);
 		}
-		PSL_comment (PSL, "Reset translations and scale and call showpage\n");
-		PSL_command (PSL, "%ld %ld T %g %g scale", -psl_ix(PSL, PSL->init.origin[0]), -psl_iy(PSL, PSL->init.origin[1]), PSL->init.dpi/PSL->init.magnify[0], PSL->init.dpi/PSL->init.magnify[1]);
-		if (PSL->internal.landscape) PSL_command (PSL, " -90 R %g 0 T", -PSL->internal.p_width);
-		PSL_command (PSL, " 0 A\nshowpage\n");
+		PSL_comment (PSL, "Reset transformations and call showpage\n");
+		PSL_command (PSL, "U\nshowpage\n");
 		if (!PSL->internal.eps_format) PSL_command (PSL, "\n%%%%Trailer\n");
 		PSL_command (PSL, "\nend\n");
 		if (!PSL->internal.eps_format) PSL_command (PSL, "%%%%EOF\n");
 	}
-	else if (PSL->internal.absolute)
+	else if (PSL->internal.restore)	/* Restore the origin of the plotting */
 		PSL_command (PSL, "%ld %ld T 0 A\n", -psl_ix(PSL, PSL->init.origin[0]), -psl_iy(PSL, PSL->init.origin[1]));
 	else
 		PSL_command (PSL, "0 A\n");
@@ -1304,13 +1302,13 @@ PSL_LONG PSL_endplot_ (PSL_LONG *lastpage)
 }
 #endif
 
-PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG absolute, double xyorigin[], double page_size[], struct EPS *eps)
+PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG restore, double xyorigin[], double page_size[], struct EPS *eps)
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait
    overlay:	TRUE if this is an overlay plot [FALSE means print headers and macros first]
    colormode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
-   absolute:	0 = relative positions, 1 = absolute positions
-   xyorigin:	Sets a new origin relative to old (but see absolute above)
+   restore:		TRUE = restore origin at end
+   xyorigin:	Sets a new origin relative to old (but see origin above)
    page_size:	Physical width and height of paper used in points
    eps:		structure with Document info.  !! Fortran version (PSL_beginplot_) does not have this argument !!
 */
@@ -1340,7 +1338,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	}
 
 	PSL->internal.color_mode = colormode;
-	PSL->internal.absolute = absolute & PSL_ABS;
+	PSL->internal.restore = restore;
 	PSL->internal.p_width  = fabs (page_size[0]);
 	PSL->internal.p_height = fabs (page_size[1]);
 	manual_feed = (page_size[0] < 0.0);			/* Want Manual Request for paper */
@@ -1456,7 +1454,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		scl = 1.0 / PSL->internal.dpp;
 		PSL_comment (PSL, "Scale initialized to %g, so 1 %s equals %g Postscript units\n", scl, uname[PSL->init.unit], PSL->internal.dpu);
 
-		if (PSL->internal.landscape) PSL_command (PSL, "%g 0 T 90 R\n", PSL->internal.p_width);
+		PSL_command (PSL, "V ");
+		if (PSL->internal.landscape) PSL_command (PSL, "%g 0 T 90 R ", PSL->internal.p_width);
 		PSL_command (PSL, "%g %g scale\n", PSL->init.magnify[0] * scl, PSL->init.magnify[1] * scl);
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
