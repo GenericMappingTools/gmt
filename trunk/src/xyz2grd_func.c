@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.16 2011-05-16 21:23:11 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.17 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,6 +26,10 @@
  */
  
 #include "gmt.h"
+
+#ifdef GMT_COMPAT
+EXTERN_MSC void GMT_str_tolower (char *string);
+#endif
 
 struct XYZ2GRD_CTRL {
 	struct In {
@@ -354,7 +358,6 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		float value;
 		char line[GMT_BUFSIZ], *not_used = NULL;
 		FILE *fp = GMT->session.std[GMT_IN];
-		EXTERN_MSC void GMT_str_tolower (char *string);
 		
 		if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->In.file);

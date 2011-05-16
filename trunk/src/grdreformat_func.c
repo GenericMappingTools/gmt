@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdreformat_func.c,v 1.11 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,6 +25,8 @@
 
 #include "gmt.h"
 
+EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
+
 struct GRDREFORMAT_CTRL {
 	struct IO {
 		GMT_LONG active;
@@ -34,8 +36,6 @@ struct GRDREFORMAT_CTRL {
 		GMT_LONG active;
 	} N;
 };
-
-EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
 
 void *New_grdreformat_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDREFORMAT_CTRL *C;

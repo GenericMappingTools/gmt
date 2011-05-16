@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.20 2011-05-16 21:23:11 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.21 2011-05-16 22:22:31 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -21,6 +21,10 @@
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
+
+#ifdef GMT_COMPAT
+	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+#endif
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -339,9 +343,6 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	char file[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef GMT_COMPAT
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
-#endif
 
 	GMT_memset (file, GMT_BUFSIZ, char);
 	

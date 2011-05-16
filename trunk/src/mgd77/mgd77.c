@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.275 2011-05-16 21:23:11 guru Exp $
+ *	$Id: mgd77.c,v 1.276 2011-05-16 22:22:31 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -43,6 +43,7 @@ struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 
 EXTERN_MSC GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
 EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
+EXTERN_MSC void GMT_str_toupper (char *string);
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
 
@@ -737,7 +738,6 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	struct tm *T;
 	FILE *fp_err;
 	struct MGD77_HEADER_PARAMS *P;
-	EXTERN_MSC void GMT_str_toupper (char *string);
 
 	if (!F->verbose_level) return;	/* No verbosity desired */
 

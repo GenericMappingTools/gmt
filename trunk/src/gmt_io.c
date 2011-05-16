@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.277 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmt_io.c,v 1.278 2011-05-16 22:22:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -90,6 +90,10 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
+
+EXTERN_MSC GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG *first_ID);
+EXTERN_MSC GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction);
+EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG direction, GMT_LONG *item_no);
 
 #ifndef WIN32
 #include <dirent.h>
@@ -4324,9 +4328,6 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	struct GMT_DATASET *M = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	struct GMTAPI_DATA_OBJECT O;
-	EXTERN_MSC GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG *first_ID);
-	EXTERN_MSC GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction);
-	EXTERN_MSC GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG direction, GMT_LONG *item_no);
 	
 	/* When this functions is called we have already registered the output destination.  This will normally
 	 * prevent us from register the data set separately in order to call GMT_minmax.  We must temporarily

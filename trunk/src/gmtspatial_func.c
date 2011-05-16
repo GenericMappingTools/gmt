@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.22 2011-05-16 21:23:10 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.23 2011-05-16 22:22:30 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,6 +25,8 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 
 #define POL_IS_CW 1
 #define POL_IS_CCW 0
@@ -738,7 +740,6 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 
 #define Return(code) {Free_gmtspatial_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
-EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE, geometry = GMT_IS_POLY;

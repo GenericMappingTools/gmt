@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.16 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,6 +34,8 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+
+EXTERN_MSC void GMT_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #include <process.h>
@@ -997,7 +999,6 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
-			EXTERN_MSC void GMT_str_toupper (char *string);
 			strcpy (tag, &ext[Ctrl->T.device][1]);
 			GMT_str_toupper (tag);
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Convert to %s...", tag);

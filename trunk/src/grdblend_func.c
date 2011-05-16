@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.26 2011-05-16 21:23:10 guru Exp $
+ *    $Id: grdblend_func.c,v 1.27 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,6 +39,10 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
+EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
 
 #define BLEND_UPPER	0
 #define BLEND_LOWER	1
@@ -95,10 +99,6 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	double wesn[4];					/* Boundaries of inner region */
 	float *z;					/* Row vector holding the current row from this file */
 };
-
-EXTERN_MSC GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
-EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
-EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
 
 #define N_NOT_SUPPORTED	8
 

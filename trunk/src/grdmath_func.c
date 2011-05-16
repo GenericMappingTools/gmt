@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.22 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdmath_func.c,v 1.23 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,11 @@
  */
 
 #include "gmt.h"
+
+EXTERN_MSC GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
+EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, GMT_LONG n_macros, struct MATH_MACRO *M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, GMT_LONG n_macros, struct MATH_MACRO **M);	
+EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG *id);
 
 #define GRDMATH_ARG_IS_OPERATOR		 0
 #define GRDMATH_ARG_IS_FILE		-1
@@ -81,8 +86,6 @@ struct GRDMATH_INFO {
 };
 
 /* External math-related functions from gmt*.c not in standard gmt*.h files */
-
-EXTERN_MSC double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, GMT_LONG *id);
 
 void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMATH_CTRL *C = NULL;
@@ -2823,10 +2826,6 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
-	EXTERN_MSC GMT_LONG gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
-	EXTERN_MSC GMT_LONG gmt_find_macro (char *arg, GMT_LONG n_macros, struct MATH_MACRO *M);
-	EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, GMT_LONG n_macros, struct MATH_MACRO **M);
-	
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));

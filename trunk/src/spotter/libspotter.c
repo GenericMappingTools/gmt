@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.77 2011-05-11 09:49:55 guru Exp $
+ *	$Id: libspotter.c,v 1.78 2011-05-16 22:22:31 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -50,6 +50,8 @@
  */
 
 #include "spotter.h"
+
+EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 
 #define SPOTTER_N_STEPS		360
 #define SPOTTER_DEL_STEP	(TWO_PI/SPOTTER_N_STEPS)
@@ -1599,8 +1601,6 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	*Y = lat;
 	return (n);
 }			
-
-EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 
 GMT_LONG spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y)
 {	/* ORTHOGRAPHIC PROJECTION */

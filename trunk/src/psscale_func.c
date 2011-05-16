@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
+ *	$Id: psscale_func.c,v 1.13 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,9 @@
 
 #include "pslib.h"
 #include "gmt.h"
+
+EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */
@@ -85,10 +88,6 @@ struct PSSCALE_CTRL {
 		char *file;
 	} Z;
 };
-
-EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-
-EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item);
 
 void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;

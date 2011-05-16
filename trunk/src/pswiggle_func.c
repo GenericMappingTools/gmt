@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.10 2011-05-16 22:22:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,6 +33,10 @@
  
 #include "pslib.h"
 #include "gmt.h"
+
+#ifdef GMT_COMPAT
+EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+#endif
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
@@ -231,10 +235,6 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	
 	return (EXIT_FAILURE);
 }
-
-#ifdef GMT_COMPAT
-EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
-#endif
 
 GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
