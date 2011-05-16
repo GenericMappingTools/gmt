@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.70 2011-04-29 23:37:29 remko Exp $
+ *	$Id: pslib.h,v 1.71 2011-05-16 23:52:33 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -174,9 +174,11 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_IS_FILL		1
 #define PSL_IS_FONT		2
 
-/* Positioning types */
+#if 0
+/* Positioning types for origin */
 
 #define PSL_ABS			1
+#endif
 
 /* Clipping types */
 
@@ -271,7 +273,7 @@ struct PSL_CTRL {
 		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
 		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
 		PSL_LONG image_format;		/* 0 writes images in ascii, 2 uses binary	*/
-		PSL_LONG absolute;		/* TRUE will reset origin, FALSE means relative position	*/
+		PSL_LONG restore;		/* TRUE will reset origin at closing, FALSE keep relative position	*/
 		PSL_LONG eps_format;		/* TRUE makes EPS file, FALSE means PS file	*/
 		PSL_LONG N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
 		PSL_LONG compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
@@ -338,7 +340,7 @@ struct imageinfo {
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
 EXTERN_MSC PSL_LONG PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
 EXTERN_MSC PSL_LONG PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n, double rgb[], PSL_LONG flag);
-EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG absolute, double xyorigin[], double page_size[], struct EPS *eps);
+EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG restore, double xyorigin[], double page_size[], struct EPS *eps);
 EXTERN_MSC PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P, PSL_LONG mode);
