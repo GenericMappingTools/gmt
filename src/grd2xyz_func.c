@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2xyz_func.c,v 1.17 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grd2xyz_func.c,v 1.18 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -240,13 +240,13 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", G->header->name);
 
-		if (GMT_is_subset (G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+		if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(opt->arg), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 
 		n_total += G->header->nm;
 
-		GMT_err_fail (GMT, GMT_set_z_io (&io, G), opt->arg);
+		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			PFL save = GMT->current.io.output;
@@ -307,9 +307,9 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
 			sprintf (record, "nodata_value %ld", (GMT_LONG)irint (Ctrl->E.nodata));
 			GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write a text record */
-			GMT_row_loop (G, row) {	/* Scanlines, starting in the north (ymax) */
+			GMT_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
-				GMT_col_loop (G, row, col, ij) {
+				GMT_col_loop (GMT, G, row, col, ij) {
 					if (GMT_is_fnan (G->data[ij]))
 						sprintf (item, "%ld", (GMT_LONG)irint (Ctrl->E.nodata));
 					else if (Ctrl->E.floating)
@@ -338,8 +338,8 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Compute grid node positions once only */
 
-			for (row = 0; row < G->header->ny; row++) y[row] = GMT_grd_row_to_y (row, G->header);
-			for (col = 0; col < G->header->nx; col++) x[col] = GMT_grd_col_to_x (col, G->header);
+			for (row = 0; row < G->header->ny; row++) y[row] = GMT_grd_row_to_y (GMT, row, G->header);
+			for (col = 0; col < G->header->nx; col++) x[col] = GMT_grd_col_to_x (GMT, col, G->header);
 
 			if (GMT->current.io.io_header[GMT_OUT] && first) {
 				if (!G->header->x_units[0]) strcpy (G->header->x_units, "x");
@@ -354,7 +354,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				first = FALSE;
 			}
 
-			GMT_grd_loop (G, row, col, ij) {
+			GMT_grd_loop (GMT, G, row, col, ij) {
 				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 				if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
 				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)out);		/* Write this to output */

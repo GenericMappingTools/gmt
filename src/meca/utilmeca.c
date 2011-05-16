@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.31 2011-04-29 20:13:32 remko Exp $
+/*	$Id: utilmeca.c,v 1.32 2011-05-16 21:23:11 guru Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 	radius_size = size * 0.5;
 
 	/*  argument is DIAMETER!!*/
-	GMT_setfill (GMT, PSL, E, outline);
+	GMT_setfill (GMT, E, outline);
 	ssize[0] = radius_size*2.0;
 	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 
@@ -178,7 +178,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 				str -= increment;
 			}
 			npoints = i + 1;
-			GMT_setfill (GMT, PSL, F, outline);
+			GMT_setfill (GMT, F, outline);
 			PSL_plotpolygon (PSL, x, y, npoints);
 			i = -1;
 		}
@@ -195,7 +195,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 		if (fault > 0.) {
 			/* inverse fault, close compressing part */
 			npoints = i+1;
-			GMT_setfill (GMT, PSL, F, outline);
+			GMT_setfill (GMT, F, outline);
 			PSL_plotpolygon (PSL, x, y, npoints);
 		}
 		else {
@@ -209,7 +209,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 				str -= increment;
 			}
 			npoints = i + 1;
-			GMT_setfill (GMT, PSL, F, outline);
+			GMT_setfill (GMT, F, outline);
 			PSL_plotpolygon (PSL, x, y, npoints);
 		}
 	}
@@ -229,7 +229,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 		x[i] = x0;
 		y[i] = y0;
 		npoints = i + 1;
-		GMT_setfill (GMT, PSL, F, outline);
+		GMT_setfill (GMT, F, outline);
 		PSL_plotpolygon (PSL, x, y, npoints);
 		/* second compressing part */
 		i = 0;
@@ -244,7 +244,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 		x[i] = x0;
 		y[i] = y0;
 		npoints = i + 1;
-		GMT_setfill (GMT, PSL, F, outline);
+		GMT_setfill (GMT, F, outline);
 		PSL_plotpolygon (PSL, x, y, npoints);
 	}
 	else {
@@ -294,7 +294,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 		}
 
 		npoints = i + 1;
-		GMT_setfill (GMT, PSL, F, outline);
+		GMT_setfill (GMT, F, outline);
 		PSL_plotpolygon (PSL, x, y, npoints);
 
 		/* first nodal plane till null axis */
@@ -341,7 +341,7 @@ double ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 		}
 
 		npoints = i + 1;
-		GMT_setfill (GMT, PSL, F, outline);
+		GMT_setfill (GMT, F, outline);
 		PSL_plotpolygon (PSL, x, y, npoints);
 	}
 	return (radius_size*2.);
@@ -705,12 +705,12 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 		ssize[0] = radius_size*2.0;
 		if (vi > 0.) {
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, PSL, C, lineout);
+			GMT_setfill (GMT, C, lineout);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		}
 		if (vi < 0.) {
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, PSL, E, lineout);
+			GMT_setfill (GMT, E, lineout);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		}
 		return (radius_size*2.);
@@ -740,13 +740,13 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 
 	if (iso < -1) {
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, PSL, E, lineout);
+		GMT_setfill (GMT, E, lineout);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		return(ssize[0]);
 	}
 	else if (iso > 1-f) {
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, PSL, C, lineout);
+		GMT_setfill (GMT, C, lineout);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		return(ssize[0]);
 	}
@@ -927,14 +927,14 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 		fprintf(stderr, "Warning: big isotropic component, case not fully tested! \n");
 		if (jp_flag == 1){
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, PSL, F1, lineout);
+			GMT_setfill (GMT, F1, lineout);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 			F1 = E; F2 = C;
 		}
 		/* second case added. JP, DEC 2010 */
 		if (jp_flag == 2){
 			ssize[0] = radius_size*2.0;
-			GMT_setfill (GMT, PSL, F1, lineout);
+			GMT_setfill (GMT, F1, lineout);
 			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 			F2 = E; F1 = C;
 		}
@@ -942,7 +942,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	else {
 /* end patch to fix big_iso case plotting problems.  */
 		ssize[0] = radius_size*2.0;
-		GMT_setfill (GMT, PSL, F2, lineout);
+		GMT_setfill (GMT, F2, lineout);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 	}
 	switch (n) {
@@ -951,7 +951,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 				xp1[i] = x[i]; yp1[i] = y[i];
 			}
 			npoints = i;
-			GMT_setfill (GMT, PSL, F1, outline);
+			GMT_setfill (GMT, F1, outline);
 			PSL_plotpolygon (PSL, xp1, yp1, npoints);
 			break;
 		case 1 :
@@ -971,7 +971,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 				yp1[i++] = y0 + radius_size * co;
 			}
 			npoints = i;
-			GMT_setfill (GMT, PSL, F1, outline);
+			GMT_setfill (GMT, F1, outline);
 			PSL_plotpolygon (PSL, xp1, yp1, npoints);
 			for (i=0; i<j2; i++) {
 				xp2[i] = x2[i]; yp2[i] = y2[i];
@@ -989,7 +989,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 				yp2[i++] = y0 + radius_size * co;
 			}
 			npoints = i;
-			GMT_setfill (GMT, PSL, F1, outline);
+			GMT_setfill (GMT, F1, outline);
 			PSL_plotpolygon (PSL, xp2, yp2, npoints);
 			break;
 		case 2 :
@@ -1009,7 +1009,7 @@ Have not found a case where this works properly.  JP, NOV. 2010
 					xp1[i] = x2[ii]; yp1[i++] = y2[ii];
 				}
 				npoints = i;
-				GMT_setfill (GMT, PSL, F1, outline);
+				GMT_setfill (GMT, F1, outline);
 				PSL_plotpolygon (PSL, xp1, yp1, npoints);
 				break;
 			}
@@ -1027,7 +1027,7 @@ Have not found a case where this works properly.  JP, NOV. 2010
 				yp1[i++] = y0+ radius_size * co;
 			}
 			npoints = i;
-			GMT_setfill (GMT, PSL, F1, outline);
+			GMT_setfill (GMT, F1, outline);
 			PSL_plotpolygon (PSL, xp1, yp1, npoints);
 			for (i=0; i<j2; i++) {
 				xp2[i] = x2[i]; yp2[i] = y2[i];
@@ -1045,7 +1045,7 @@ Have not found a case where this works properly.  JP, NOV. 2010
 				yp2[i++] = y0+ radius_size * co;
 			}
 			npoints = i;
-			GMT_setfill (GMT, PSL, F1, outline);
+			GMT_setfill (GMT, F1, outline);
 			PSL_plotpolygon (PSL, xp2, yp2, npoints);
 			break;
 	}

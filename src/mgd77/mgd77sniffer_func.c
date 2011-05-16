@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.22 2011-05-16 21:23:11 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -45,6 +45,7 @@
 
 EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
 EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
+EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
 
 GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
@@ -527,7 +528,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			case 'W':	/* Choose which warning types to go to stdout (default - all) */
 				do_regression = FALSE;
 				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = FALSE;
-				while (GMT_strtok (opt->arg, ",", &pos, &c)) {
+				while (GMT_strtok (GMT, opt->arg, ",", &pos, &c)) {
 					if (c == 'v')
 						warn[VALUE_WARN] = TRUE;
 					else if (c == 'g')
@@ -614,7 +615,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	 	}
 		else {
 			while (GMT_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
-				GMT_chop (custom_limit_line);					/* Rid the world of CR/LF */
+				GMT_chop (GMT, custom_limit_line);					/* Rid the world of CR/LF */
 				if (sscanf (custom_limit_line,"%s %s %s %s %s", field_abbrev, tmp_min, tmp_max, tmp_maxSlope, tmp_area) == 5) {
 					i = 0;
 					while (strcmp (mgd77snifferdefs[i].abbrev, field_abbrev) && i <= MGD77_N_NUMBER_FIELDS) i++;

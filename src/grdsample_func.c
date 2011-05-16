@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.20 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdsample_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -215,7 +215,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		Gout->header->registration = Gin->header->registration;
 
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_set_grddim (Gout->header);
+	GMT_set_grddim (GMT, Gout->header);
 
 	if (GMT->common.R.active) {
 		if (!Gout->header->nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {
@@ -229,8 +229,8 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 
 	if (!Ctrl->I.active) {
-		Gout->header->inc[GMT_X] = GMT_get_inc (Gout->header->wesn[XLO], Gout->header->wesn[XHI], Gout->header->nx, Gout->header->registration);
-		Gout->header->inc[GMT_Y] = GMT_get_inc (Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->ny, Gout->header->registration);
+		Gout->header->inc[GMT_X] = GMT_get_inc (GMT, Gout->header->wesn[XLO], Gout->header->wesn[XHI], Gout->header->nx, Gout->header->registration);
+		Gout->header->inc[GMT_Y] = GMT_get_inc (GMT, Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->ny, Gout->header->registration);
 	}
 
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Gout->header, 1), Ctrl->G.file);
@@ -256,7 +256,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	lon = GMT_memory (GMT, NULL, Gout->header->nx, double);
 	for (col = 0; col < Gout->header->nx; col++) {
-		lon[col] = GMT_grd_col_to_x (col, Gout->header);
+		lon[col] = GMT_grd_col_to_x (GMT, col, Gout->header);
 		if (!Gout->header->nxp)
 			/* Nothing */;
 		else if (lon[col] > Gin->header->wesn[XHI])
@@ -267,15 +267,15 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	/* Loop over input point and estinate output values */
 	
-	GMT_row_loop (Gout, row) {
-		lat = GMT_grd_row_to_y (row, Gout->header);
+	GMT_row_loop (GMT, Gout, row) {
+		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gout->header->nyp)
 			/* Nothing */;
 		else if (lat > Gin->header->wesn[YHI])
 			lat -= Gin->header->inc[GMT_Y] * Gout->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gout->header->nyp;
-		GMT_col_loop (Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
+		GMT_col_loop (GMT, Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 	}
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */

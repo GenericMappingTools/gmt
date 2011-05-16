@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.12 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.13 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -381,7 +381,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
-			GMT_grd_loop (G[k], row, col, ij) {
+			GMT_grd_loop (GMT, G[k], row, col, ij) {
 				if (GMT_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
@@ -401,7 +401,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Ctrl->L.min = G[0]->header->z_max;	/* This is just to double check G[k]->header->z_min, G[k]->header->z_max  */
 		Ctrl->L.max = G[0]->header->z_min;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
-			GMT_grd_loop (G[k], row, col, ij) {
+			GMT_grd_loop (GMT, G[k], row, col, ij) {
 				if (GMT_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
@@ -509,7 +509,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else {
 			nfound = 0;
 			for (k = 0; k < ngrd; k++) {	/* For each grid */
-				GMT_grd_loop (G[k], row, col, ij) {
+				GMT_grd_loop (GMT, G[k], row, col, ij) {
 					if (!GMT_is_fnan (G[k]->data[ij]) && G[k]->data[ij] <= cdf_cpt[j].z) nfound++;
 				}
 			}

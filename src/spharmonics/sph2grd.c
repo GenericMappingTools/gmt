@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.22 2011-05-09 19:03:08 guru Exp $
+ *    $Id: sph2grd.c,v 1.23 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -220,10 +220,10 @@ int main (int argc, char **argv)
 
 	grd = (float *) GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.progname);
 	lon = (double *) GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.progname);
-	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
+	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (GMT, i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
 		
 	for (j = ij = 0; j < header.ny; j++) {
-		lat = GMT_row_to_y (j, header.y_min, header.y_max, header.y_inc, header.xy_off, header.ny);
+		lat = GMT_row_to_y (GMT, j, header.y_min, header.y_max, header.y_inc, header.xy_off, header.ny);
 		if (GMT->current.setting.verbose) {
 			fprintf (stderr, "Working on latitude: ");
 			GMT_ascii_output_col (stderr, lat, GMT_Y);

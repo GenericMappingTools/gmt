@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmedian_func.c,v 1.10 2011-05-16 08:47:56 guru Exp $
+ *    $Id: blockmedian_func.c,v 1.11 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
+void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
 	GMT_LONG go_quickly, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
@@ -186,8 +186,8 @@ void median_output (struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first
 		GMT_LONG row, col;
 		row = GMT_row (h, data[node].i);
 		col = GMT_col (h, data[node].i);
-		out[GMT_X] = GMT_grd_col_to_x (col, h);
-		out[GMT_Y] = GMT_grd_row_to_y (row, h);
+		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);
+		out[GMT_Y] = GMT_grd_row_to_y (GMT, row, h);
 		return;
 	}
 
@@ -299,14 +299,14 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_read++;						/* Number of records read */
 
-		if (GMT_y_is_outside (in[GMT_Y], wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
+		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;		/* Outside x-range (or longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (in[GMT_X], Grid->header);
+		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		if (col < 0 || col >= Grid->header->nx ) continue;
-		row = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 		if (row < 0 || row >= Grid->header->ny ) continue;
 
 		/* OK, this point is definitively inside and will be used */
@@ -369,7 +369,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Now we have weight sum [and copy of z in case of -E]; now calculate the quantile(s): */
 
-		median_output (Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, quantile, n_quantiles, data);
+		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, quantile, n_quantiles, data);
 
 		if (box_and_whisker) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
 			out[3] = z_tmp[0];	/* 0% quantile (min value) */
@@ -383,7 +383,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Turn z_tmp into absolute deviations from the median (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array ((void *)z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, (void *)z_tmp, nz, GMT_DOUBLE_TYPE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be L1 MAD-based scale */
 			}

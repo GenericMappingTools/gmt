@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.78 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_shore.c,v 1.79 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -233,7 +233,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 		fp = fopen (path, "r");
 		while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 			if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
-			GMT_chop (dir);		/* Chop off LF or CR/LF */
+			GMT_chop (C, dir);		/* Chop off LF or CR/LF */
 			sprintf (path, "%s%c%s%s", dir, DIR_DELIM, stem, ".cdf");
 			if (!access (path, R_OK)) {
 				fclose (fp);

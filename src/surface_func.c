@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
+ *	$Id: surface_func.c,v 1.17 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -602,7 +602,7 @@ GMT_LONG read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 
 		if (GMT_is_dnan (in[GMT_Z])) continue;
-		if (GMT_y_is_outside (in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
+		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
 
 		i = (GMT_LONG)floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5);
@@ -1295,7 +1295,7 @@ GMT_LONG gcd_euclid (GMT_LONG a, GMT_LONG b)
 	return (u);
 }
 
-double guess_surface_time (GMT_LONG factors[], GMT_LONG nx, GMT_LONG ny)
+double guess_surface_time (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LONG nx, GMT_LONG ny)
 {
 	/* Routine to guess a number proportional to the operations
 	 * required by surface working on a user-desired grid of
@@ -1333,7 +1333,7 @@ double guess_surface_time (GMT_LONG factors[], GMT_LONG nx, GMT_LONG ny)
 
 	gcd = gcd_euclid ((GMT_LONG)nx, (GMT_LONG)ny);
 	if (gcd > 1) {
-		nfactors = GMT_get_prime_factors (gcd, factors);
+		nfactors = GMT_get_prime_factors (GMT, gcd, factors);
 		nxg = (GMT_LONG)(nx/gcd);
 		nyg = (GMT_LONG)(ny/gcd);
 		if (nxg < 3 || nyg < 3) {
@@ -1388,7 +1388,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions decreasing  */
 	struct SURFACE_SUGGESTION *sug = NULL;
 
-	users_time = guess_surface_time (factors, nx, ny);
+	users_time = guess_surface_time (GMT, factors, nx, ny);
 	xstop = 2*nx;
 	ystop = 2*ny;
 
@@ -1404,7 +1404,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 			nyg = ny2 * ny3 * ny5;
 			if (nyg < ny || nyg > ystop) continue;
 
-			current_time = guess_surface_time (factors, nxg, nyg);
+			current_time = guess_surface_time (GMT, factors, nxg, nyg);
 			if (current_time < users_time) {
 				n_sug++;
 				sug = GMT_memory (GMT, sug, n_sug, struct SURFACE_SUGGESTION);
@@ -1824,7 +1824,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_RI_prepare (GMT, C.Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, C.Grid->header, 1), Ctrl->G.file);
-	GMT_set_grddim (C.Grid->header);
+	GMT_set_grddim (GMT, C.Grid->header);
 
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
@@ -1891,7 +1891,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Set up factors and reset grid to first value  */
 
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
-	C.n_fact = GMT_get_prime_factors ((GMT_LONG)C.grid, C.factors);
+	C.n_fact = GMT_get_prime_factors (GMT, (GMT_LONG)C.grid, C.factors);
 	set_grid_parameters (&C);
 	while (C.block_nx < 4 || C.block_ny < 4) {
 		smart_divide (&C);

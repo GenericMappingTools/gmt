@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.5 2011-04-23 00:56:09 guru Exp $
+ *    $Id: psvelo_func.c,v 1.6 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -306,13 +306,13 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
         if (Ctrl->E.active) Ctrl->L.active = TRUE;
 
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	old_is_world = GMT->current.map.is_world;
 	station_name = GMT_memory (GMT, NULL, 64, char);
@@ -426,7 +426,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = Ctrl->A.vector_shape, dim[6] = 0.0;
-					GMT_setfill (GMT, PSL, &Ctrl->G.fill, Ctrl->L.active);
+					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					
 					justify = plot_vx - plot_x > 0. ? 7 : 5;
@@ -434,7 +434,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 				}
 				else {
-					GMT_setfill (GMT, PSL, &Ctrl->G.fill, 1);
+					GMT_setfill (GMT, &Ctrl->G.fill, 1);
 					ssize = POINTSIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, GMT_SYMBOL_CIRCLE);
 					justify = 10;
@@ -479,13 +479,13 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->D.active)  GMT_report (GMT, GMT_MSG_NORMAL, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
 	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *	$Id: pslegend_func.c,v 1.10 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -206,7 +206,7 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 {
 	struct GMT_PEN faint_pen;
 	GMT_init_pen (C, &faint_pen, 0.0);
-	GMT_setpen (C, P, &faint_pen);
+	GMT_setpen (C, &faint_pen);
 	PSL_plotsegment (P, x0, y0, x1, y0);
 }
 #endif
@@ -299,8 +299,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_Find_Option (API, 'J', options, &j_ptr);
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	}
-	GMT_plotinit (API, PSL, options);
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plotinit (GMT, options);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
 	GMT_memset (GMT->current.setting.map_origin, 2, double);
@@ -323,8 +323,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	current_fill = Ctrl->G.fill;
 
 	if (Ctrl->F.active) {	/* First draw legend frame box */
-		GMT_setpen (GMT, PSL, &GMT->current.setting.map_frame_pen);
-		GMT_setfill (GMT, PSL, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
+		GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
+		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
 		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, PSL_RECT);
@@ -387,7 +387,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				sscanf (&line[2], "%s %s", txt_a, txt_b);
 				L = GMT_to_inch (GMT, txt_a);
 				if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ");
-				GMT_setpen (GMT, PSL, &current_pen);
+				GMT_setpen (GMT, &current_pen);
 				y0 -= quarter_line_spacing;
 				PSL_plotsegment (PSL, Ctrl->D.lon + L, y0, Ctrl->D.lon + Ctrl->D.width - L, y0);
 				y0 -= quarter_line_spacing;
@@ -472,7 +472,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
 					GMT_LONG pos = 0;
 					strcpy (txt_cpy, opt);
-					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
+					while ((GMT_strtok (GMT, txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'u':	/* Label put behind annotation */
 								gave_label = FALSE;
@@ -671,7 +671,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_pen_syntax (GMT, 'V', " ");
 						Return (GMT_RUNTIME_ERROR);
 					}
-					GMT_setpen (GMT, PSL, &current_pen);
+					GMT_setpen (GMT, &current_pen);
 					for (i = 1; i < n_columns; i++) {
 						x_off = Ctrl->D.lon + i * Ctrl->D.width / n_columns;
 						PSL_plotsegment (PSL, x_off, y_start-V+quarter_line_spacing, x_off, y0+V-quarter_line_spacing);
@@ -738,8 +738,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		GMT_free_textset (GMT, &D[PAR]);
 
-	GMT_map_basemap (GMT, PSL);
-	GMT_plotend (GMT, PSL);
+	GMT_map_basemap (GMT);
+	GMT_plotend (GMT);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 

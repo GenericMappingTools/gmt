@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psrose_func.c,v 1.11 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -473,14 +473,14 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
 	GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
 	x_origin = Ctrl->S.scale;	y_origin = ((half_only) ? 0.0 : Ctrl->S.scale);
 	PSL_setorigin (PSL, x_origin, y_origin, 0.0, PSL_FWD);
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	if (!Ctrl->S.normalize) Ctrl->S.scale /= max_radius;
 
-	GMT_setpen (GMT, PSL, &Ctrl->W.pen);
+	GMT_setpen (GMT, &Ctrl->W.pen);
 	if (windrose) {
 		for (i = 0; i < n; i++) {
 			sincosd (90.0 - azimuth[i], &s, &c);
@@ -491,7 +491,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (sector_plot && !Ctrl->A.rose && Ctrl->G.fill.rgb[0] >= 0) {	/* Draw pie slices for sector plot if fill is requested */
 
-		GMT_setfill (GMT, PSL, &(Ctrl->G.fill), FALSE);
+		GMT_setfill (GMT, &(Ctrl->G.fill), FALSE);
 		for (bin = 0; bin < n_bins; bin++) {
 			az = bin * Ctrl->A.inc - az_offset + half_bin_width;
 			dim[1] = (90.0 - az - Ctrl->A.inc);
@@ -565,7 +565,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			dim[0] = xr, dim[1] = yr;
 			dim[2] = Ctrl->M.v_width, dim[3] = Ctrl->M.h_length, dim[4] = Ctrl->M.h_width;
 			dim[5] = GMT->current.setting.map_vector_shape, dim[6] = 0.0;
-			GMT_setfill (GMT, PSL, &f, TRUE);       /* Use fill structure */
+			GMT_setfill (GMT, &f, TRUE);       /* Use fill structure */
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}
 
@@ -582,7 +582,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Ctrl->L.w = strdup ("WEST");	Ctrl->L.e = strdup ("EAST");	Ctrl->L.s = strdup ("SOUTH");	Ctrl->L.n = strdup ("NORTH");
 	}
 	if (GMT->current.map.frame.plot) {	/* Draw grid lines etc */
-		GMT_setpen (GMT, PSL, &GMT->current.setting.map_grid_pen[0]);
+		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 		off = max_radius * Ctrl->S.scale;
 		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
 		for (i = 0; i <= n_alpha; i++) {
@@ -598,7 +598,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			PSL_plotarc (PSL, 0.0, 0.0, i * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[0];
-		form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_title);
+		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_plottext (PSL, 0.0, off + y, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, 2, form);
 
 		GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
@@ -618,12 +618,12 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					sprintf (text, "0%c",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.n = strdup (text);
 				}
 			}
-			form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_label);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 			y = -(3.0 * GMT->current.setting.map_annot_offset[0] + GMT->session.font[GMT->current.setting.font_annot[0].id].height * asize);
 			if (GMT->current.map.frame.axis[GMT_X].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_X].label, 0.0, 10, form);
 			y = -(5.0 * GMT->current.setting.map_annot_offset[0] + GMT->session.font[GMT->current.setting.font_annot[0].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, 10, form);
-			form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_annot[0]);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_annot[0].size, "0", 0.0, 10, form);
 			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? irint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
 			for (i = 1; i <= n_annot; i++) {
@@ -635,7 +635,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 		else {
-			form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_label);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 			PSL_plottext (PSL, 0.0, -off - 2.0 * GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_label.size, Ctrl->L.s, 0.0, 10, form);
 			if (!Ctrl->F.active) {	/* Draw scale bar */
 				PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
@@ -647,23 +647,23 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				else
 					sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval);
-				form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_annot[0]);
+				form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 				PSL_plottext (PSL, (max_radius - 0.5 * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -(off + GMT->current.setting.map_annot_offset[0]), GMT->current.setting.font_annot[0].size, text, 0.0, 10, form);
 			}
 			y = -(off + 5.0 * GMT->current.setting.map_annot_offset[0] + GMT->session.font[GMT->current.setting.font_annot[0].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
-			form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_label);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, 10, form);
 		}
-		form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_label);
+		form = GMT_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_plottext (PSL, off + 2.0 * GMT->current.setting.map_annot_offset[0], 0.0, GMT->current.setting.font_label.size, Ctrl->L.e, 0.0, 5, form);
 		PSL_plottext (PSL, -off - 2.0 * GMT->current.setting.map_annot_offset[0], 0.0, GMT->current.setting.font_label.size, Ctrl->L.w, 0.0, 7, form);
 		PSL_plottext (PSL, 0.0, off + 2.0 * GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_label.size, Ctrl->L.n, 0.0, 2, form);
 		PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 	}
 	
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
+	GMT_plane_perspective (GMT, -1, 0.0);
 	PSL_setorigin (PSL, -x_origin, -y_origin, 0.0, PSL_INV);
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	GMT_free (GMT, sum);
 	GMT_free (GMT, xx);

@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.19 2011-04-23 02:14:13 guru Exp $
+ *	$Id: grdwrite.c,v 1.20 2011-05-16 21:23:11 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,7 +72,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 
 	/* 6. Transpose from Matlab orientation to grd orientation */
-	GMT_grd_loop (G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];
+	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];
 	
 	/* 7. Write the grid */
 	if (GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET)) mexErrMsgTxt ("Failure to Begin IO\n");

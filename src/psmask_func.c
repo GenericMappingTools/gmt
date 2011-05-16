@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.13 2011-05-16 08:47:59 guru Exp $
+ *	$Id: psmask_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,8 +114,8 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	more = TRUE;
 	do {
 		ij = GMT_IJP (h, j, i);
-		x0 = GMT_grd_col_to_x (i, h);
-		y0 = GMT_grd_row_to_y (j, h);
+		x0 = GMT_grd_col_to_x (GMT, i, h);
+		y0 = GMT_grd_row_to_y (GMT, j, h);
 		n_cuts = 0;
 		k0 = kk;
 
@@ -261,8 +261,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 				edge_word = (GMT_LONG)(ij / 32 + info->offset);
 				edge_bit = (GMT_LONG)(ij % 32);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
-					*x[0] = GMT_grd_col_to_x (i, h);
-					*y[0] = GMT_grd_row_to_y (j, h);
+					*x[0] = GMT_grd_col_to_x (GMT, i, h);
+					*y[0] = GMT_grd_row_to_y (GMT, j, h);
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 3, max);
 					go_on = FALSE;
@@ -285,8 +285,8 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 				edge_word = (GMT_LONG)(ij / 32 + info->offset);
 				edge_bit = (GMT_LONG)(ij % 32);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
-					*x[0] = GMT_grd_col_to_x (i, h);
-					*y[0] = GMT_grd_row_to_y (j, h);
+					*x[0] = GMT_grd_col_to_x (GMT, i, h);
+					*y[0] = GMT_grd_row_to_y (GMT, j, h);
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 2, max);
 					go_on = FALSE;
@@ -564,11 +564,11 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else if (!Ctrl->T.active)
 		GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 
-	if (make_plot) GMT_plotinit (API, PSL, options);
+	if (make_plot) GMT_plotinit (GMT, options);
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
-		GMT_map_basemap (GMT, PSL);
+		GMT_map_basemap (GMT);
 		GMT_report (GMT, GMT_MSG_NORMAL, "clipping off!\n");
 	}
 	else {	/* Start new clip_path */
@@ -595,7 +595,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			dj = irint (0.5 * Ctrl->S.radius * Grid->header->r_inc[GMT_Y] + GMT_CONV_LIMIT);
 		}
 
-		if (make_plot) GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (make_plot) GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory, read and process data file\n");
 
@@ -603,8 +603,8 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
 		GMT_setnval (GMT->current.io.pad, 4, 0);		/* Change default pad to 0 only */
-		GMT_grd_setpad (Grid->header, GMT->current.io.pad);	/* Change pad to 0 */
-		GMT_set_grddim (Grid->header);
+		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change pad to 0 */
+		GMT_set_grddim (GMT, Grid->header);
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
 
 		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> irint(0.5) actually rounds to 1 */
@@ -626,14 +626,14 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 			n_read++;
 
-			if (GMT_y_is_outside (in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;		/* Outside y-range */
+			if (GMT_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (GMT_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 			/* Determine the node closest to the data point */
 
-			i = GMT_grd_x_to_col (in[GMT_X], Grid->header);
+			i = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 			if (i < 0 || i >= Grid->header->nx) continue;
-			j = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+			j = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 			if (j < 0 || j >= Grid->header->ny) continue;
 
 			if (node_only) {
@@ -644,17 +644,17 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				/* Set coordinate of this node */
 
-				x0 = GMT_grd_col_to_x (i, Grid->header);
-				y0 = GMT_grd_row_to_y (j, Grid->header);
+				x0 = GMT_grd_col_to_x (GMT, i, Grid->header);
+				y0 = GMT_grd_row_to_y (GMT, j, Grid->header);
 
 				/* Set this and all nodes within radius distance to 1 */
 
 				for (ii = i - di; ii <= i + di; ii++) {
 					if (ii < 0 || ii >= Grid->header->nx) continue;
-					x1 = GMT_grd_col_to_x (ii, Grid->header);
+					x1 = GMT_grd_col_to_x (GMT, ii, Grid->header);
 					for (jj = j - dj; jj <= j + dj; jj++) {
 						if (jj < 0 || jj >= Grid->header->ny) continue;
-						y1 = GMT_grd_row_to_y (jj, Grid->header);
+						y1 = GMT_grd_row_to_y (GMT, jj, Grid->header);
 						distance = GMT_distance (GMT, x1, y1, x0, y0);
 						if (distance > Ctrl->S.radius) continue;
 						ij = GMT_IJP (Grid->header, jj, ii);
@@ -691,7 +691,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			n_edges = Grid->header->ny * (GMT_LONG )ceil (Grid->header->nx / 16.0);
 			edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
 
-			if (make_plot) GMT_map_basemap (GMT, PSL);
+			if (make_plot) GMT_map_basemap (GMT);
 
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the clip path\n");
 
@@ -709,9 +709,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					D->table[0]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLES && !D->table[0]->file[GMT_OUT])
-						D->table[0]->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+						D->table[0]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENTS)
-						S->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
 				first = FALSE;
@@ -734,10 +734,10 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			double *grd_x = NULL, grd_y, y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tiling...\n");
 			grd_x = GMT_memory (GMT, NULL, Grid->header->nx, double);
-			for (i = 0; i < Grid->header->nx; i++) grd_x[i] = GMT_grd_col_to_x (i, Grid->header);
+			for (i = 0; i < Grid->header->nx; i++) grd_x[i] = GMT_grd_col_to_x (GMT, i, Grid->header);
 
 			for (j = 0; j < Grid->header->ny; j++) {
-				grd_y = GMT_grd_row_to_y (j, Grid->header);
+				grd_y = GMT_grd_row_to_y (GMT, j, Grid->header);
 				y_bot = grd_y - inc2[GMT_Y];
 				y_top = grd_y + inc2[GMT_Y];
 				ij = GMT_IJP (Grid->header, j, 1);
@@ -750,7 +750,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
 					
-					GMT_setfill (GMT, PSL, &Ctrl->G.fill, FALSE);
+					GMT_setfill (GMT, &Ctrl->G.fill, FALSE);
 					if ((*GMT->current.map.will_it_wrap) (GMT, xp, yp, plot_n, &start)) {	/* Polygon wraps */
 
 						/* First truncate against left border */
@@ -774,17 +774,17 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			GMT_free (GMT, grd_x);
 
-			GMT_map_basemap (GMT, PSL);
+			GMT_map_basemap (GMT);
 		}
 
-		if (make_plot) GMT_plane_perspective (GMT, PSL, -1, 0.0);
+		if (make_plot) GMT_plane_perspective (GMT, -1, 0.0);
 
 		GMT_free (GMT, grd);
 		GMT_free_grid (GMT, &Grid, FALSE);
 		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_NORMAL, "clipping on!\n");
 	}
 
-	if (make_plot) GMT_plotend (GMT, PSL);
+	if (make_plot) GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

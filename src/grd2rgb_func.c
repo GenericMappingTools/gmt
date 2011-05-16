@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2rgb_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: grd2rgb_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -300,7 +300,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 				Ctrl->W.active = TRUE;
 				guess = TRUE;
 				entry = pos = 0;
-				while ((GMT_strtok (opt->arg, "/", &pos, ptr))) {
+				while ((GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
 					if (ptr[0] != '=') {
 						switch (entry) {
 							case 0:
@@ -403,7 +403,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				
 			sprintf (grdfile, Ctrl->G.name, rgb[i]);
 			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[i]);
-			GMT_grd_loop (Grid, row, col, ij) {
+			GMT_grd_loop (GMT, Grid, row, col, ij) {
 				index = GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)GMT_s255 (f_rgb[i]);
 			}
@@ -451,13 +451,13 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		Grid->header->nx = GMT_get_n (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Ctrl->I.inc[GMT_X], Grid->header->registration);
-		Grid->header->ny = GMT_get_n (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], Grid->header->registration);
+		Grid->header->nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Ctrl->I.inc[GMT_X], Grid->header->registration);
+		Grid->header->ny = GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], Grid->header->registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
 			Grid->header->nx = (int)Ctrl->W.nx;
 			Grid->header->ny = (int)Ctrl->W.ny;
-			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Grid->header->nx, Grid->header->registration);
-			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
+			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XLO], Grid->header->nx, Grid->header->registration);
+			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
 		}
 		if (header.width != Grid->header->nx) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, Grid->header->nx);
@@ -483,7 +483,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			sprintf (Grid->header->remark, "Grid of %s components in the 0-255 range", comp[i]);
 			k3 = i;
 			k = 0;
-			GMT_grd_loop (Grid, row, col, ij) {
+			GMT_grd_loop (GMT, Grid, row, col, ij) {
 				if (header.depth == 8)	/* Gray ramp */
 					Grid->data[ij] = (float)picture[k++];
 				else {				/* 24-bit image */

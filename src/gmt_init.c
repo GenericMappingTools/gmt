@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.512 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_init.c,v 1.513 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1175,7 +1175,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		C->common.R.oblique = FALSE;
 	i = pos = 0;
 	GMT_memset (p, 6, double);
-	while ((GMT_strtok (string, "/", &pos, text))) {
+	while ((GMT_strtok (C, string, "/", &pos, text))) {
 		if (i > 5) {
 			error++;
 			return (error);		/* Have to break out here to avoid segv on p[6]  */
@@ -1261,7 +1261,7 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
 		C->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
-	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
+	while ((GMT_strtok (C, arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
 			C->common.a.type[C->common.a.n_aspatial] = gmt_ogr_get_type ((char *)(c+1));
 			c[0] = '\0';	/* Truncate off the type */
@@ -1482,7 +1482,7 @@ GMT_LONG gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 		return (GMT_NOERROR);
 	}
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((GMT_strtok (C, copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
@@ -1548,7 +1548,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 	strncpy (copy, arg, (size_t)GMT_BUFSIZ);
 	for (i = 0; i < GMT_BUFSIZ; i++) C->current.io.col_skip[i] = TRUE;	/* Initially, no input column is requested */
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((GMT_strtok (C, copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		convert = 0, scale = 0.0, offset = 0.0;
 
 		if ((c = strchr (p, 'o'))) {	/* Look for offset */
@@ -1610,7 +1610,7 @@ GMT_LONG gmt_parse_o_option (struct GMT_CTRL *C, char *arg)
 	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
 	strncpy (copy, arg, (size_t)GMT_BUFSIZ);
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((GMT_strtok (C, copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3 */
@@ -1994,7 +1994,7 @@ GMT_LONG gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 
 	/* Now look for +modifiers */
 
-	while ((GMT_strtok (&item[k], "+", &pos, p))) {
+	while ((GMT_strtok (C, &item[k], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Turn off antialias */
 				C->common.n.antialias = FALSE;
@@ -2072,7 +2072,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 	C->current.proj.z_project.fixed = TRUE;
 	k++;
 	if (!item[k]) return 0;	/* No specific settings given, we will apply default values in 3D init */
-	while ((GMT_strtok (&item[k], "+", &pos, p))) {
+	while ((GMT_strtok (C, &item[k], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
@@ -2117,7 +2117,7 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	if (n == 0) return (FALSE);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
-	while (!error && (GMT_strtok (item, ",", &pos, p))) {	/* While it is not empty, process it */
+	while (!error && (GMT_strtok (C, item, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9 */
 			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
@@ -2200,7 +2200,7 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
-		GMT_chop (line);	/* Get rid of [\r]\n */
+		GMT_chop (C, line);	/* Get rid of [\r]\n */
 		if (rec == 1 && (strlen (line) < 7 || line[6] != '5')) {
 			GMT_message (C, "Warning: Your gmt.conf file may not be GMT 5 compatible\n");
 		}
@@ -2437,7 +2437,7 @@ GMT_LONG gmt_load_encoding (struct GMT_CTRL *C)
 	while (fgets (line, GMT_TEXT_LEN256, in))
 	{
 		pos = 0;
-		while ((GMT_strtok (line, " /\t\n", &pos, symbol)))
+		while ((GMT_strtok (C, line, " /\t\n", &pos, symbol)))
 		{
 			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
 			{
@@ -2510,7 +2510,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 	GMT_LONG pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
 	char fmt[GMT_TEXT_LEN64], *p = NULL;
 	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
-	while ((GMT_strtok (value, ",", &pos, fmt))) {
+	while ((GMT_strtok (C, value, ",", &pos, fmt))) {
 		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
 			if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
 				sscanf (fmt, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
@@ -3208,9 +3208,9 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #else
 				pos = 0;
 #endif
-				GMT_strtok (lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
+				GMT_strtok (C, lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
 				C->current.setting.ps_page_size[0] = GMT_convert_units (C, txt_a, GMT_PT, GMT_PT);
-				GMT_strtok (lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
+				GMT_strtok (C, lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
 				C->current.setting.ps_page_size[1] = GMT_convert_units (C, txt_b, GMT_PT, GMT_PT);
 				if (C->current.setting.ps_page_size[0] <= 0.0) error++;
 				if (C->current.setting.ps_page_size[1] <= 0.0) error++;
@@ -4263,7 +4263,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
-		GMT_chop (line);	/* Get rid of [\r]\n */
+		GMT_chop (C, line);	/* Get rid of [\r]\n */
 		if (rec == 1) {	/* Copy version from gmt.conf */
 			sscanf (line, "# GMT %s", string);
 			fprintf (fpo, "# GMT %s Defaults file\n", string);
@@ -4794,7 +4794,7 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 	while (!done && fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments lines */
-		GMT_chop (line);		/* Remove linefeed,CR */
+		GMT_chop (C, line);		/* Remove linefeed,CR */
 		if (line[0] == '\0') continue;	/* Skip blank lines */
 		if (!strncmp (line, "EOF", (size_t)3)) {		/* Logical end of .gmtcommands file */
 			done = TRUE;

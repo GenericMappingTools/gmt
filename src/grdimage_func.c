@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.61 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdimage_func.c,v 1.62 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -426,8 +426,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ( (Ctrl->D.mode && GMT->common.R.active) || (!Ctrl->D.mode && Ctrl->I.active) ) {
 			GMT_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
 			/* Get actual size of each pixel */
-			dx = GMT_get_inc (I->header->wesn[XLO], I->header->wesn[XHI], I->header->nx, I->header->registration);
-			dy = GMT_get_inc (I->header->wesn[YLO], I->header->wesn[YHI], I->header->ny, I->header->registration);
+			dx = GMT_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->nx, I->header->registration);
+			dy = GMT_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->ny, I->header->registration);
 			I->header->inc[GMT_X] = dx;	I->header->inc[GMT_Y] = dy;
 			I->header->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
 			I->header->r_inc[GMT_Y] = 1.0 / dy;
@@ -489,8 +489,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set further above. Do it now */
 
 	if (n_grids && Ctrl->In.do_rgb) {	/* Must ensure all three grids are coregistered */
-		if (!GMT_grd_same_region (Grid_orig[0], Grid_orig[1])) error++;
-		if (!GMT_grd_same_region (Grid_orig[0], Grid_orig[2])) error++;
+		if (!GMT_grd_same_region (GMT, Grid_orig[0], Grid_orig[1])) error++;
+		if (!GMT_grd_same_region (GMT, Grid_orig[0], Grid_orig[2])) error++;
 		if (!(Grid_orig[0]->header->inc[GMT_X] == Grid_orig[1]->header->inc[GMT_X] && Grid_orig[0]->header->inc[GMT_X] == 
 			Grid_orig[2]->header->inc[GMT_X])) error++;
 		if (!(Grid_orig[0]->header->nx == Grid_orig[1]->header->nx && Grid_orig[0]->header->nx == Grid_orig[2]->header->nx)) error++;
@@ -519,17 +519,17 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
 		/* No grid to plot; just do empty map and bail */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_map_basemap (GMT, PSL);
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
-		GMT_plotend (GMT, PSL);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_map_basemap (GMT);
+		GMT_plane_perspective (GMT, -1, 0.0);
+		GMT_plotend (GMT);
 		Return (EXIT_SUCCESS);
 	}
 
 	if (n_grids) {
-		nx = GMT_get_n (wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
-		ny = GMT_get_n (wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
+		nx = GMT_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
+		ny = GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
 #ifdef USE_GDAL
@@ -540,9 +540,9 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		if (!Ctrl->N.active) GMT_map_clip_on (GMT, PSL,GMT->session.no_rgb, 3);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
 	/* Read data */
@@ -800,8 +800,8 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	
 	/* Get actual size of each pixel */
-	dx = GMT_get_inc (header_work->wesn[XLO], header_work->wesn[XHI], header_work->nx, header_work->registration);
-	dy = GMT_get_inc (header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);
+	dx = GMT_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], header_work->nx, header_work->registration);
+	dy = GMT_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);
 
 #ifdef USE_GDAL
 	if (Ctrl->A.active) {
@@ -924,11 +924,11 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (!Ctrl->A.active) {
-		if (!Ctrl->N.active) GMT_map_clip_off (GMT, PSL);
+		if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-		GMT_map_basemap (GMT, PSL);
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
-		GMT_plotend (GMT, PSL);
+		GMT_map_basemap (GMT);
+		GMT_plane_perspective (GMT, -1, 0.0);
+		GMT_plotend (GMT);
 	}
 
 	if (need_to_project && n_grids)

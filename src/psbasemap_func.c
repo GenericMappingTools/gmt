@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.20 2011-04-23 02:14:13 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,28 +171,28 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	if (Ctrl->G.active) {	/* Paint the inside of the map with specified fill */
 		double *x = NULL, *y = NULL;
 		GMT_LONG np, donut;
 		np = GMT_map_clip_path (GMT, &x, &y, &donut);
-		GMT_setfill (GMT, PSL, &Ctrl->G.fill, FALSE);
+		GMT_setfill (GMT, &Ctrl->G.fill, FALSE);
 		PSL_plotpolygon (PSL, x, y, (1 + donut) * np);
 		GMT_free (GMT, x);
 		GMT_free (GMT, y);
 	}
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
-	if (Ctrl->L.active) GMT_draw_map_scale (GMT, PSL, &Ctrl->L.item);
-	if (Ctrl->T.active) GMT_draw_map_rose (GMT, PSL, &Ctrl->T.item);
+	if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
+	if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);
 
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
+	GMT_plane_perspective (GMT, -1, 0.0);
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

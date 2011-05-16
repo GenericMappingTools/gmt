@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.119 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_customio.c,v 1.120 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -520,7 +520,7 @@ GMT_LONG GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	strcpy (t_head.name, header->name);
 	if ((status = GMT_native_read_grd_info (C, &t_head))) return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0) return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
-	nm = GMT_get_nm (t_head.nx, t_head.ny);
+	nm = GMT_get_nm (C, t_head.nx, t_head.ny);
 	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
 	item_size = (double)((buf.st_size - GRD_HEADER_SIZE) / nm);	/* Estimate size of elements */
 	size = irint (item_size);
@@ -1213,8 +1213,8 @@ GMT_LONG GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		header->wesn[XLO] = h6.wesn[XLO];	header->wesn[XHI] = h6.wesn[XHI];
 		header->wesn[YLO] = h6.wesn[YLO];	header->wesn[YHI] = h6.wesn[YHI];
 		header->z_min = h6.z_min;		header->z_max = h6.z_max;
-		header->inc[GMT_X] = GMT_get_inc (h6.wesn[XLO], h6.wesn[XHI], h6.nx, header->registration);
-		header->inc[GMT_Y] = GMT_get_inc (h6.wesn[YLO], h6.wesn[YHI], h6.ny, header->registration);
+		header->inc[GMT_X] = GMT_get_inc (C, h6.wesn[XLO], h6.wesn[XHI], h6.nx, header->registration);
+		header->inc[GMT_Y] = GMT_get_inc (C, h6.wesn[YLO], h6.wesn[YHI], h6.ny, header->registration);
 	}
 	else {			/* Format GMT_GRD_IS_SD */
 		strcpy (header->title, "Grid originally in Surfer 7 format");
@@ -1553,7 +1553,7 @@ GMT_LONG GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		to_gdalread->Z.complex = (int)complex_mode;
 	}
 
-	subset = GMT_is_subset (header, wesn);	/* We have a Sub-region demand */
+	subset = GMT_is_subset (C, header, wesn);	/* We have a Sub-region demand */
 	if (subset) {	/* We have a Sub-region demand */
 		to_gdalread->R.active = TRUE;
 		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.8 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_internals.h,v 1.9 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,6 +101,7 @@ EXTERN_MSC struct GMT_PALETTE *GMT_create_palette (struct GMT_CTRL *C, GMT_LONG 
 EXTERN_MSC GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TEXT_TABLE **table);
 EXTERN_MSC GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TEXTSET *D, GMT_LONG table);
 EXTERN_MSC void GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, struct GMT_TEXTSET **Dout, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_init_complex (GMT_LONG complex, GMT_LONG *inc, GMT_LONG *off);
 
 EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
 EXTERN_MSC void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
@@ -109,6 +110,13 @@ EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1,
 EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text);
 EXTERN_MSC GMT_LONG GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, GMT_LONG n, double step, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_check_url_name (char *fname);
+EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
+EXTERN_MSC GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
+EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
+EXTERN_MSC GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *token);
+EXTERN_MSC void GMT_str_tolower (char *string);
+EXTERN_MSC void GMT_str_toupper (char *string);
 
 /* Functions declared in gmt_proj.c */
 

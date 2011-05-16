@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.8 2011-05-14 00:04:06 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,19 +129,19 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", name[negative]);
-		GMT_setfill (GMT, PSL, fill, FALSE);
+		GMT_setfill (GMT, fill, FALSE);
 		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, n);
 	}
 
 	if (outline) { /* Then draw wiggle outline */
 		PSL_comment (PSL, "Wiggle line\n");
-		GMT_setpen (GMT, PSL, pen_o);
+		GMT_setpen (GMT, pen_o);
 		PSL_plotline (PSL, &GMT->current.plot.x[1], &GMT->current.plot.y[1], np, PSL_MOVE + PSL_STROKE);
 	}
 
 	if (track) {	/* Finally draw track line */
 		PSL_comment (PSL, "Track line\n");
-		GMT_setpen (GMT, PSL, pen_t);
+		GMT_setpen (GMT, pen_t);
 		PSL_plotline (PSL, x, y, np, PSL_MOVE + PSL_STROKE);
 	}
 }
@@ -152,7 +152,7 @@ void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	double dy, off, xx[4], yy[4];
 	char txt[GMT_TEXT_LEN256];
 
-	GMT_setpen (GMT, PSL, &GMT->current.setting.map_tick_pen);
+	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen);
 
 	if (!gave_xy) {	/* Project lon,lat to get position of scale */
 		GMT_geo_to_xy (GMT, x0, y0, &xx[0], &yy[0]);
@@ -171,7 +171,7 @@ void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	GMT_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
 	PSL_plotline (PSL, xx, yy, (GMT_LONG)4, PSL_MOVE + PSL_STROKE);
 	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length : 0.0) + GMT->current.setting.map_annot_offset[0];
-	form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_annot[0]);
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 	PSL_plottext (PSL, x0 + off, y0, GMT->current.setting.font_annot[0].size, txt, 0.0, 5, form);
 }
 
@@ -387,9 +387,9 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	Ctrl->Z.scale = 1.0 / Ctrl->Z.scale;
 
@@ -413,7 +413,7 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	stop_az  = (Ctrl->A.value + 90.0) * D2R;
 	fix_az = Ctrl->I.value * D2R;
 
-	GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	/* Allocate memory */
 
@@ -479,13 +479,13 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	
-	GMT_map_clip_off (GMT, PSL);
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_clip_off (GMT);
+	GMT_map_basemap (GMT);
 
 	if (Ctrl->S.active) GMT_draw_z_scale (GMT, PSL, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.length, Ctrl->Z.scale, Ctrl->S.cartesian, Ctrl->S.label);
 
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
-	GMT_plotend (GMT, PSL);
+	GMT_plane_perspective (GMT, -1, 0.0);
+	GMT_plotend (GMT);
 
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);

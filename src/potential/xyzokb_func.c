@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.12 2011-05-14 00:04:07 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.13 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,7 +325,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				switch (opt->arg[0]) {
 					case 'd':	/* Surface computed by triangulate */
 						j = 0;
-						while (GMT_strtok (&opt->arg[1], "/", &pos, ptr)) {
+						while (GMT_strtok (GMT, &opt->arg[1], "/", &pos, ptr)) {
 							switch (j) {
 								case 0:
 									Ctrl->T.xyz_file = strdup(ptr);
@@ -657,9 +657,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			z_th = facet_raw (Ctrl, i, Ctrl->M.active);
 		if (z_th) {
 			if (Ctrl->G.active) { /* grid */
-				GMT_row_loop(Gout,row) {
+				GMT_row_loop (GMT, Gout,row) {
 					y_obs[row] = (Ctrl->M.active) ? ((y[row]+central_lat) * Ctrl->N.d_to_m): y[row];
-					GMT_col_loop(Gout,row,col,ij) {
+					GMT_col_loop (GMT, Gout,row,col,ij) {
 						x_obs[col] = (Ctrl->M.active) ? ((x[col]-central_long)*Ctrl->N.d_to_m*cos_vec[row]): x[col]; 
 						if (Ctrl->S.active)
 							DO = TRUE;

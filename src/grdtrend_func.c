@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.10 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -266,25 +266,25 @@ void load_pstuff (double *pstuff, GMT_LONG n_model, double x, double y, GMT_LONG
 	return;
 }
 
-void compute_trend (struct GMT_GRID *T, double *xval, double *yval, double *gtd, GMT_LONG n_model, double *pstuff)
+void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, GMT_LONG n_model, double *pstuff)
 {	/* Find trend from a model  */
 	GMT_LONG row, col, k, ij;
 
-	GMT_grd_loop (T, row, col, ij) {
+	GMT_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
 		T->data[ij] = 0.0;
 		for (k = 0; k < n_model; k++) T->data[ij] += (float)(pstuff[k]*gtd[k]);
 	}
 }
 
-void compute_resid (struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
+void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
 	GMT_LONG row, col, ij;
 
-	GMT_grd_loop (T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
+	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_GRID *G, double *xval, double *yval, double *gtd, GMT_LONG n_model)
+void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, GMT_LONG n_model)
 {
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
@@ -300,9 +300,9 @@ void grd_trivial_model (struct GMT_GRID *G, double *xval, double *yval, double *
 
 	/* Now accumulate sums */
 
-	GMT_row_loop (G, row) {
+	GMT_row_loop (GMT, G, row) {
 		y2 = yval[row] * yval[row];
-		GMT_col_loop (G, row, col, ij) {
+		GMT_col_loop (GMT, G, row, col, ij) {
 			x2 = xval[col] * xval[col];
 			sumx2 += x2;
 			sumy2 += y2;
@@ -324,12 +324,12 @@ void grd_trivial_model (struct GMT_GRID *G, double *xval, double *yval, double *
 	return;
 }
 
-double compute_chisq (struct GMT_GRID *R, struct GMT_GRID *W, double scale)
+double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
 	GMT_LONG row, col, ij;
 	double tmp, chisq = 0.0;
 
-	GMT_grd_loop (R, row, col, ij) {
+	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
 		tmp = R->data[ij];
 		if (scale != 1.0) tmp /= scale;
@@ -340,17 +340,17 @@ double compute_chisq (struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 	return (chisq);
 }
 
-double compute_robust_weight (struct GMT_GRID *R, struct GMT_GRID *W)
+double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W)
 {	/* Find weights from residuals  */
 	GMT_LONG row, col, j = 0, j2, ij;
 	double r, mad, scale;
 
-	GMT_grd_loop (R, row, col, ij) {
+	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
 		W->data[j++] = (float)fabs((double)R->data[ij]);
 	}
 
-	GMT_sort_array ((void *)R->data, j, GMT_FLOAT_TYPE);
+	GMT_sort_array (GMT, (void *)R->data, j, GMT_FLOAT_TYPE);
 
 	j2 = j / 2;
 	mad = (j%2) ? W->data[j2] : 0.5 *(W->data[j2] + W->data[j2 - 1]);
@@ -361,7 +361,7 @@ double compute_robust_weight (struct GMT_GRID *R, struct GMT_GRID *W)
 
 	/* Use weight according to Huber (1981), but squared */
 
-	GMT_grd_loop (R, row, col, ij) {
+	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) {
 			W->data[ij] = R->data[ij];
 			continue;
@@ -395,7 +395,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, GMT_LONG n_model
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, GMT_LONG n_model, struct GMT_GRID *W, GMT_LONG weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, GMT_LONG n_model, struct GMT_GRID *W, GMT_LONG weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
@@ -416,9 +416,9 @@ void load_gtg_and_gtd (struct GMT_GRID *G, double *xval, double *yval, double *p
 	   because it is possible that we skip data when i = 0.
 	   Loop over all data */
 
-	GMT_row_loop (G, row) {
+	GMT_row_loop (GMT, G, row) {
 		load_pstuff (pstuff, n_model, xval[0], yval[row], 0, 1);
-		GMT_col_loop (G, row, col, ij) {
+		GMT_col_loop (GMT, G, row, col, ij) {
 
 			if (GMT_is_fnan (G->data[ij]))continue;
 
@@ -499,7 +499,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);
-	if (GMT_is_subset (G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 
 	/* Check for NaNs (we include the pad for simplicity)  */
@@ -560,38 +560,38 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* Do the problem */
 
 	if (trivial) {
-		grd_trivial_model (G, xval, yval, gtd, Ctrl->N.value);
-		compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
-		if (Ctrl->D.active) compute_resid (G, T, R);
+		grd_trivial_model (GMT, G, xval, yval, gtd, Ctrl->N.value);
+		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
+		if (Ctrl->D.active) compute_resid (GMT, G, T, R);
 	}
 	else {	/* Problem is not trivial  !!  */
 
-		load_gtg_and_gtd (G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
+		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
 		if (ierror) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 			return (EXIT_FAILURE);
 		}
-		compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
-		if (Ctrl->D.active || Ctrl->N.robust) compute_resid (G, T, R);
+		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
+		if (Ctrl->D.active || Ctrl->N.robust) compute_resid (GMT, G, T, R);
 
 		if (Ctrl->N.robust) {
-			chisq = compute_chisq (R, W, scale);
+			chisq = compute_chisq (GMT, R, W, scale);
 			iterations = 1;
 			sprintf (format, "Robust iteration %%d:  Old Chi Squared: %s  New Chi Squared: %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			do {
 				old_chisq = chisq;
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
-				scale = compute_robust_weight (R, W);
-				load_gtg_and_gtd (G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
+				scale = compute_robust_weight (GMT, R, W);
+				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, &ierror, 1);
 				if (ierror) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
 					return (EXIT_FAILURE);
 				}
-				compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
-				compute_resid (G, T, R);
-				chisq = compute_chisq (R, W, scale);
+				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
+				compute_resid (GMT, G, T, R);
+				chisq = compute_chisq (GMT, R, W, scale);
 				GMT_report (GMT, GMT_MSG_NORMAL, format, GMT->init.progname, iterations, old_chisq, chisq);
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
@@ -599,8 +599,8 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			/* Get here when new model not significantly better; use old one */
 
 			GMT_memcpy (gtd, old, Ctrl->N.value, double);
-			compute_trend (T, xval, yval, gtd, Ctrl->N.value, pstuff);
-			compute_resid (G, T, R);
+			compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
+			compute_resid (GMT, G, T, R);
 		}
 	}
 

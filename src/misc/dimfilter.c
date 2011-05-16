@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.20 2011-05-14 00:04:07 guru Exp $
+ * $Id: dimfilter.c,v 1.21 2011-05-16 21:23:11 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -538,9 +538,9 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Compute nearest xoutput i-indices and shifts once */
 		
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
-			x_out = GMT_grd_col_to_x (col_out, Gout->header);	/* Current longitude */
-			i_origin[col_out] = GMT_grd_x_to_col (x_out, Gin->header);
-			if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (i_origin[col_out], Gin->header);
+			x_out = GMT_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
+			i_origin[col_out] = GMT_grd_x_to_col (GMT, x_out, Gin->header);
+			if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (GMT, i_origin[col_out], Gin->header);
 		}
 		
 		/* Now we can do the filtering  */
@@ -592,10 +592,10 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (row_out = 0; row_out < Gout->header->ny; row_out++) {
 		
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %ld\r", row_out);
-			y_out = GMT_grd_row_to_y (row_out, Gout->header);
-			j_origin = GMT_grd_y_to_row (y_out, Gin->header);
+			y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);
+			j_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
-			if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (j_origin, Gin->header);
+			if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (GMT, j_origin, Gin->header);
 			
 			for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 			
@@ -874,7 +874,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef OBSOLETE								
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
-						GMT_sort_array ((void *)work_array2, n, GMT_DOUBLE_TYPE);
+						GMT_sort_array (GMT, (void *)work_array2, n, GMT_DOUBLE_TYPE);
 						GMT_getmad (GMT, work_array2, n, z, &scale);
 					}
 					else {		/* Get weighted stdev. */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
 			strcpy (name, &line[start]);
-			GMT_chop (name);
+			GMT_chop (GMT, name);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */
@@ -201,7 +201,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
 			strcpy (description, &line[start]);
-			GMT_chop (description);
+			GMT_chop (GMT, description);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)buffer);	/* Write this to output */

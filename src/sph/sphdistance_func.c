@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.11 2011-05-14 00:04:07 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -421,8 +421,8 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	grid_lon = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	grid_lat = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (col = 0; col < Grid->header->nx; col++) grid_lon[col] = GMT_grd_col_to_x (col, Grid->header);
-	for (row = 0; row < Grid->header->ny; row++) grid_lat[row] = GMT_grd_row_to_y (row, Grid->header);
+	for (col = 0; col < Grid->header->nx; col++) grid_lon[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+	for (row = 0; row < Grid->header->ny; row++) grid_lat[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 	
 	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
 		n = Table->n_segments;
@@ -477,10 +477,10 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		prepare_polygon (P);	/* Determine the enclosing sector */
 
-		s_row = GMT_grd_y_to_row (P->min[GMT_Y], Grid->header);
-		n_row = GMT_grd_y_to_row (P->max[GMT_Y], Grid->header);
-		w_col = GMT_grd_x_to_col (P->min[GMT_X], Grid->header);
-		e_col = GMT_grd_x_to_col (P->max[GMT_X], Grid->header);
+		s_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+		n_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+		w_col = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		e_col = GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
 
 		for (row = n_row; row <= s_row; row++) {	/* For each scanline intersecting this polygon */
 			for (ii = w_col; ii <= e_col; ii++) {	/* March along the scanline */

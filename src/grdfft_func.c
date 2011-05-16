@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.22 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdfft_func.c,v 1.23 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -509,7 +509,7 @@ GMT_LONG parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
 	
 	n_tokens = pos = 0;
-	while ((GMT_strtok (&line[i], "/", &pos, p))) {
+	while ((GMT_strtok (GMT, &line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Too many slashes in -F.\n");
 			return (TRUE);
@@ -685,7 +685,7 @@ GMT_LONG get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
 	return (retval);
 }
 
-void fourt_stats (GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, GMT_LONG *s, double *t)
+void fourt_stats (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, GMT_LONG *s, double *t)
 {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
@@ -727,18 +727,17 @@ void fourt_stats (GMT_LONG nx, GMT_LONG ny, GMT_LONG *f, double *r, GMT_LONG *s,
 	GMT_LONG n_factors, i, sum2, sumnot2, nnot2;
 	GMT_LONG nonsymx, nonsymy, nonsym, storage, ntotal;
 	double err_scale;
-	EXTERN_MSC GMT_LONG GMT_get_prime_factors (GMT_LONG n, GMT_LONG *f);
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-	n_factors = GMT_get_prime_factors (nx, f);
+	n_factors = GMT_get_prime_factors (C, nx, f);
 	nonsymx = get_non_symmetric_f (f, n_factors);
-	n_factors = GMT_get_prime_factors (ny, f);
+	n_factors = GMT_get_prime_factors (C, ny, f);
 	nonsymy = get_non_symmetric_f (f, n_factors);
 	nonsym = MAX (nonsymx, nonsymy);
 
 	/* Now get factors of ntotal  */
-	ntotal = GMT_get_nm (nx,ny);
-        n_factors = GMT_get_prime_factors (ntotal, f);
+	ntotal = GMT_get_nm (C, nx, ny);
+        n_factors = GMT_get_prime_factors (C, ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
 	*s = (storage == 2) ? 0 : storage;
 
@@ -773,7 +772,7 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
-	fourt_stats (nx, ny, f, &given_err, &given_space, &given_time);
+	fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx * ny;
 	given_space *= 8;
 	if (do_print) GMT_report (GMT, GMT_MSG_FATAL, " Data dimension\t%ld %ld\ttime factor %.8g\trms error %.8e\tbytes %ld\n",
@@ -800,7 +799,7 @@ void suggest_fft (struct GMT_CTRL *GMT, GMT_LONG nx, GMT_LONG ny, struct FFT_SUG
                         nyg = ny2 * ny3 * ny5;
                         if (nyg < ny || nyg > ystop) continue;
 
-			fourt_stats (nxg, nyg, f, &current_err, &current_space, &current_time);
+			fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
 			current_space += nxg*nyg;
 			current_space *= 8;
 			if (current_err < best_err) {
@@ -903,7 +902,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 
 	/* Get here when nx2 and ny2 are set to the vals we will use.  */
 
-	fourt_stats (Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
+	fourt_stats (GMT, Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
 	GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension %d %d\tFFT dimension %ld %ld\n",
 		Gin->header->nx, Gin->header->ny, Ctrl->N.nx2, Ctrl->N.ny2);
 

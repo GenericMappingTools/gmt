@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdedit_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -275,11 +275,11 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 			n_data++;
 
-			if (GMT_y_is_outside (in[GMT_Y],  G->header->wesn[YLO], G->header->wesn[YHI])) continue;	/* Outside y-range */
+			if (GMT_y_is_outside (GMT, in[GMT_Y],  G->header->wesn[YLO], G->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (GMT_x_is_outside (GMT, &in[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) continue;	/* Outside x-range */
-			row = GMT_grd_y_to_row (in[GMT_Y], G->header);
+			row = GMT_grd_y_to_row (GMT, in[GMT_Y], G->header);
 			if (row < 0 || row >= G->header->ny) continue;
-			col = GMT_grd_x_to_col (in[GMT_X], G->header);
+			col = GMT_grd_x_to_col (GMT, in[GMT_X], G->header);
 			if (col < 0 || col >= G->header->nx) continue;
 			k = GMT_IJP (G->header, row, col);
 			G->data[k] = (float)in[GMT_Z];
@@ -314,7 +314,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		/* Now transpose the matrix */
 
 		a_tr = GMT_memory (GMT, NULL, G->header->size, float);
-		GMT_grd_loop (G, row, col, ij) {
+		GMT_grd_loop (GMT, G, row, col, ij) {
 			ij_tr = GMT_IJP (h_tr, col, row);
 			a_tr[ij_tr] = G->data[ij];
 		}
@@ -328,7 +328,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	else {	/* Change the domain boundaries */
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		if (Ctrl->T.active) {	/* Grid-line <---> Pixel toggling of the header */
-			GMT_change_grdreg (G->header, 1 - G->header->registration);
+			GMT_change_grdreg (GMT, G->header, 1 - G->header->registration);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Toggled registration mode in file %s from %s to %s\n", 
 				Ctrl->In.file, registration[1-G->header->registration], registration[G->header->registration]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Reset region in file %s to %g/%g/%g/%g\n", 
@@ -341,8 +341,8 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			Ctrl->A.active = TRUE;	/* Must ensure -R -I compatibility */
 		}
 		if (Ctrl->A.active) {
-			G->header->inc[GMT_X] = GMT_get_inc (G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
-			G->header->inc[GMT_Y] = GMT_get_inc (G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
+			G->header->inc[GMT_X] = GMT_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
+			G->header->inc[GMT_Y] = GMT_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Reset grid-spacing in file %s to %g/%g\n",
 				Ctrl->In.file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}

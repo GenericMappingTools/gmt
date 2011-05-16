@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_parse.c,v 1.14 2011-05-16 08:47:58 guru Exp $
+ *	$Id: gmtapi_parse.c,v 1.15 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -102,7 +102,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 		char p[GMT_BUFSIZ], *txt_in = (char *)in;	/* Passed a single text string */
 		if ((new_args = GMT_memory (G, NULL, n_alloc, char *)) == NULL) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));
 
-		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words */
+		while ((GMT_strtok (API->GMT, txt_in, " ", &pos, p))) {	/* Break up string into separate words */
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
@@ -134,7 +134,7 @@ GMT_LONG GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args_in, void *
 		}
 		else {		/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			/* Yet, negative numbers pose a problem as their leading - is seen as an option.  Next we address this */
-			if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (args[arg])) {
+			if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) {
 				first_char = 0, option = GMTAPI_OPT_INFILE;		/* A negative number, most likely; convert to "file" for now */
 			}
 			else {	/* Seems like a regular option setting */
@@ -313,7 +313,7 @@ GMT_LONG GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, struc
 	if (option == GMTAPI_OPT_INFILE) {	/* Distinguish between filenames and numbers */
 		char file[GMT_BUFSIZ];
 		/* Note: Numbers (e.g., -0.544, 135, -1.8e+10, 133:30:23W, and 1766-12-09T12:15:11) have all been assigned as "files"; here we fix this */
-		if (GMT_access (API->GMT, file, F_OK) && !GMT_not_numeric (arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
+		if (GMT_access (API->GMT, file, F_OK) && !GMT_not_numeric (API->GMT, arg)) {	/* It is a number only if (1) we cannot find a file by that name and (2) it has a valid number syntax */
 			option = GMTAPI_OPT_NUMBER;	/* Reassign as a "number option -#" (Note: There is no -# since # means comment in most shells; we just use -# internally) */
 		}
 		/* Note: Programs (like g**math) that may expect both numbers and files should check if an argument can be both and give appropriate warnings */
@@ -324,7 +324,7 @@ GMT_LONG GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg, struc
 						/* segfaults later on since few functions check for NULL pointers  */
 	else {					/* If arg is set to something (may be an empty string): */
 		new->arg = strdup (arg);	/* Allocate space for the argument and duplicate it in the option structure */
-		GMT_chop (new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
+		GMT_chop (API->GMT, new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
 	}
 	*ptr = new;	/* Pass back the pointer to the allocated option structure */
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_get_func.c,v 1.8 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_get_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -252,7 +252,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				Return (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
-				GMT_chop (line);	/* Get rid of [CR]LF */
+				GMT_chop (GMT, line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
 				if ((p = strchr (line, '.'))) line[(int)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, (int)n_tracks);	/* Return track id # for this leg */

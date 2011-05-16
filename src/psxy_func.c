@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.23 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psxy_func.c,v 1.24 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -653,9 +653,9 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (S.G.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 	
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 	if (Ctrl->T.active) {
-		GMT_plotend (GMT, PSL);
+		GMT_plotend (GMT);
 		Return (GMT_OK);
 	}
 
@@ -671,14 +671,14 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 	if (S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || (not_line && !Ctrl->N.active)) {
 		if (!S.G.delay) {
-			GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 			clip_set = TRUE;
 		}
 	}
-	if (penset_OK) GMT_setpen (GMT, PSL, &current_pen);
+	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, PSL, &S.font);	/* Set the required font */
+	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);	/* Set the required font */
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;	/* So we can see ellipses that have centers outside -R */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set && GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
@@ -732,7 +732,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (read_symbol) {	/* Must do special processing */
 				text_rec = (char *)(*record);	/* Get current text record */
 				/* First establish the symbol type given at the end of the record */
-				GMT_chop (text_rec);	/* Get rid of \n \r */
+				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" ,\t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, FALSE);
@@ -769,7 +769,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->E.active) {
 				if (Ctrl->E.mode) GMT_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
 				if (Ctrl->E.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
-				GMT_setpen (GMT, PSL, &Ctrl->E.pen);
+				GMT_setpen (GMT, &Ctrl->E.pen);
 				if (error_x) {
 					if (error_type[GMT_X] == 0)
 						plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read);
@@ -790,8 +790,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			if (Ctrl->W.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 
-			GMT_setfill (GMT, PSL, &current_fill, outline_active);
-			GMT_setpen (GMT, PSL, &current_pen);
+			GMT_setfill (GMT, &current_fill, outline_active);
+			GMT_setpen (GMT, &current_pen);
 
 			dim[0] = (S.read_size) ? in[ex1] : S.size_x;
 			if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;
@@ -861,16 +861,16 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					}
 					else if (S.symbol == GMT_SYMBOL_ELLIPSE)	/* Got axis in km */
-						GMT_geo_ellipse (GMT, PSL, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					else
-						GMT_geo_rectangle (GMT, PSL, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					break;
 				case GMT_SYMBOL_TEXT:
 					if (Ctrl->G.active && !outline_active)
 						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 					else if (!Ctrl->G.active)
 						PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-					(void) GMT_setfont (GMT, PSL, &S.font);
+					(void) GMT_setfont (GMT, &S.font);
 					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, PSL_MC, outline_active);
 					break;
 				case GMT_SYMBOL_VECTOR:
@@ -925,7 +925,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					for (j = 0; j < S.n_required; j++) dim[j+1] = in[ex1+S.read_size+j];
-					GMT_draw_custom_symbol (GMT, PSL, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
+					GMT_draw_custom_symbol (GMT, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
 					break;
 			}
 		}
@@ -959,7 +959,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				if (change & 4 && penset_OK) GMT_setpen (GMT, PSL, &current_pen);
+				if (change & 4 && penset_OK) GMT_setpen (GMT, &current_pen);
 				if (change & 1) polygon = TRUE;
 				if (change & 2 && !Ctrl->L.active) {
 					polygon = FALSE;
@@ -979,8 +979,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					L->n_rows = GMT_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
-					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_geo_polygons (GMT, PSL, L);
+					GMT_setfill (GMT, &current_fill, outline_active);
+					GMT_geo_polygons (GMT, L);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
@@ -990,11 +990,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				else {	/* Plot line */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
-					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_draw_front (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
+					GMT_setfill (GMT, &current_fill, outline_active);
+					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
 			}
 		}
@@ -1005,19 +1005,19 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
-		GMT_contlabel_plot (GMT, PSL, &S.G);
+		GMT_contlabel_plot (GMT, &S.G);
 		GMT_contlabel_free (GMT, &S.G);
 	}
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 
-	if (clip_set) GMT_map_clip_off (GMT, PSL);
+	if (clip_set) GMT_map_clip_off (GMT);
 
 	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
 	GMT->current.map.is_world = old_is_world;
 
-	GMT_map_basemap (GMT, PSL);
-	GMT_plotend (GMT, PSL);
+	GMT_map_basemap (GMT);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

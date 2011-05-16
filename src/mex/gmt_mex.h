@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.h,v 1.3 2011-04-23 02:14:13 guru Exp $
+ *	$Id: gmt_mex.h,v 1.4 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -37,7 +37,7 @@
 #define GMT_IS_PS	9	/* Use for PS output; use GMT_IS_GRID or GMT_IS_DATASET for data */
 
 void GMTMEX_grdheader2info (mxArray *plhs[], struct GMT_GRID *G, int item);
-void GMTMEX_grdxy (mxArray *plhs[], struct GMT_GRID *G, int px, int py);
+void GMTMEX_grdxy (struct GMTAPI_CTRL *API, mxArray *plhs[], struct GMT_GRID *G, int px, int py);
 void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_GRID *G);
 void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_VECTOR *V);
 double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], int nrhs, struct GMT_GRID *G);

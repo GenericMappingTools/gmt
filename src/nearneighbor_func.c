@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.14 2011-05-14 00:04:06 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -299,8 +299,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	d_col = GMT_memory (GMT, NULL, Grid->header->ny, GMT_LONG);
 	x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (col = 0; col < Grid->header->nx; col++) x0[col] = GMT_grd_col_to_x (col, Grid->header);
-	for (row = 0; row < Grid->header->ny; row++) y0[row] = GMT_grd_row_to_y (row, Grid->header);
+	for (col = 0; col < Grid->header->nx; col++) x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+	for (row = 0; row < Grid->header->ny; row++) y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 	if (Ctrl->S.mode) {	/* Input data is geographical */
 		max_d_col = (GMT_LONG) (ceil (Grid->header->nx / 2.0) + 0.1);
 		actual_max_d_col = 0;
@@ -340,7 +340,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table and segment headers */
 		
 		if (GMT_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
-		if (GMT_y_is_outside (in[GMT_Y], y_bottom, y_top)) continue;		/* Outside y-range */
+		if (GMT_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
 
 		/* Store this point in memory */
@@ -352,8 +352,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Find row/col indices of the node closest to this data point */
 
-		col_0 = GMT_grd_x_to_col (in[GMT_X], Grid->header);
-		row_0 = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+		col_0 = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+		row_0 = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 
 		/* Loop over all nodes within radius of this node */
 
@@ -429,8 +429,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
 	ij0 = -1;
-	GMT_row_loop (Grid, row) {
-		GMT_col_loop (Grid, row, col, ij) {
+	GMT_row_loop (GMT, Grid, row) {
+		GMT_col_loop (GMT, Grid, row, col, ij) {
 			if (!grid_node[++ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
 				Grid->data[ij] = (float)Ctrl->E.value;

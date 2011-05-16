@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.25 2011-05-16 08:47:59 guru Exp $
+ *    $Id: grdblend_func.c,v 1.26 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -122,7 +122,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	/* Needed to decode the inner region -Rw/e/s/n string */
 
 	i = pos = 0;
-	while (!error && (GMT_strtok (string, "/", &pos, text))) {
+	while (!error && (GMT_strtok (GMT, string, "/", &pos, text))) {
 		error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], GMT_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], &wesn[i]), text);
 		i++;
 	}
@@ -212,13 +212,13 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		if (!(GMT_IS_ZERO (fmod (B[n].G.header.wesn[XLO] - h->wesn[XLO], h->inc[GMT_X])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[XHI] - h->wesn[XLO], h->inc[GMT_X]))
 			&& GMT_IS_ZERO (fmod (B[n].G.header.wesn[YLO] - h->wesn[YLO], h->inc[GMT_Y])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[YHI] - h->wesn[YHI], h->inc[GMT_Y])))) {
 			double wesn[4];
-			wesn[XLO] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XLO], h), h);
+			wesn[XLO] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G.header.wesn[XLO], h), h);
 			while (wesn[XLO] < h->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
-			wesn[XHI] = GMT_grd_col_to_x (GMT_grd_x_to_col (B[n].G.header.wesn[XHI], h), h);
+			wesn[XHI] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G.header.wesn[XHI], h), h);
 			while (wesn[XHI] > h->wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
-			wesn[YLO] = GMT_grd_row_to_y (GMT_grd_y_to_row (B[n].G.header.wesn[YLO], h), h);
+			wesn[YLO] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G.header.wesn[YLO], h), h);
 			while (wesn[YLO] < h->wesn[YLO]) wesn[YLO] += h->inc[GMT_Y];
-			wesn[YHI] = GMT_grd_row_to_y (GMT_grd_y_to_row (B[n].G.header.wesn[YHI], h), h);
+			wesn[YHI] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G.header.wesn[YHI], h), h);
 			while (wesn[YHI] > h->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s is phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
@@ -562,7 +562,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, &S.header, 1), Ctrl->G.file);
 
-	n_tot = GMT_get_nm (S.header.nx, S.header.ny);
+	n_tot = GMT_get_nm (GMT, S.header.nx, S.header.ny);
 
 	z = GMT_memory (GMT, NULL, S.header.nx, float);	/* Memory for one output row */
 

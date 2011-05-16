@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdclip_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdclip_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,13 +188,13 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);
-	if (GMT_is_subset (G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
 
 	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* TRUE if input is a read-only array */
 
-	GMT_grd_loop (G, row, col, k) {	/* Checking if extremes are exceeded (need not check NaN) */
+	GMT_grd_loop (GMT, G, row, col, k) {	/* Checking if extremes are exceeded (need not check NaN) */
 		if (Ctrl->S.mode & 1 && G->data[k] > Ctrl->S.high) {
 			Out->data[k] = Ctrl->S.above;
 			n_above++;

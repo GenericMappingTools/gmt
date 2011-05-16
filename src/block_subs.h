@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.20 2011-04-23 02:14:12 guru Exp $
+ *    $Id: block_subs.h,v 1.21 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -106,3 +106,11 @@ void * NEW (struct GMT_CTRL *G) {	/* Allocate and initialize a new control struc
 void FREE (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
 	GMT_free (G, C);	
 }
+
+#if !defined(BLOCKMEAN)	/* Only used by blockmean */
+/* blockmedian and blockmode */
+EXTERN_MSC int BLK_compare_x (const void *point_1, const void *point_2);
+EXTERN_MSC int BLK_compare_y (const void *point_1, const void *point_2);
+EXTERN_MSC int BLK_compare_index_z (const void *point_1, const void *point_2);
+EXTERN_MSC int BLK_compare_sub (const void *point_1, const void *point_2, int item);
+#endif

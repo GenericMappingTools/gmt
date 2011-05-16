@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.13 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -453,11 +453,11 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.mode) {	/* Data on a sphere so must check for both periodic and polar wrap-arounds */
 		spherical = TRUE;
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
-		nx_wrap = GMT_get_n (0.0, 360.0, Gin->header->inc[GMT_X], Gin->header->registration);
+		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], Gin->header->registration);
 		/* Determine the equivalent row numbers or the S-most row after going across the S pole and up along the other meridian */
-		sp_wrap_row = 2 * GMT_grd_y_to_row (-90.0, Gin->header) - Gin->header->registration;
+		sp_wrap_row = 2 * GMT_grd_y_to_row (GMT, -90.0, Gin->header) - Gin->header->registration;
 		/* Determine the equivalent row numbers or the N-most row after going across the N pole and down along the other meridian */
-		np_wrap_row = 2 * GMT_grd_y_to_row (90.0, Gin->header) - (Gin->header->ny - 1) + Gin->header->registration;
+		np_wrap_row = 2 * GMT_grd_y_to_row (GMT, 90.0, Gin->header) - (Gin->header->ny - 1) + Gin->header->registration;
 	}	
 
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
@@ -565,9 +565,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Compute nearest xoutput i-indices and shifts once */
 
 	for (col_out = 0; col_out < Gout->header->nx; col_out++) {
-		x_out = GMT_grd_col_to_x (col_out, Gout->header);	/* Current longitude */
-		i_origin[col_out] = GMT_grd_x_to_col (x_out, Gin->header);
-		if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (i_origin[col_out], Gin->header);
+		x_out = GMT_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
+		i_origin[col_out] = GMT_grd_x_to_col (GMT, x_out, Gin->header);
+		if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (GMT, i_origin[col_out], Gin->header);
 	}
 
 	/* Determine how much effort to compute weights:
@@ -603,9 +603,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #else
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %ld\r", row_out);
 #endif
-		y_out = GMT_grd_row_to_y (row_out, Gout->header);		/* Current output y [or latitude] */
+		y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);		/* Current output y [or latitude] */
 		lat_out = (Ctrl->D.mode == 5) ? IMG2LAT (y_out) : y_out;	/* Adjust lat if IMG grid */
-		j_origin = GMT_grd_y_to_row (y_out, Gin->header);		/* Closest row in input grid */
+		j_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);		/* Closest row in input grid */
 		if (Ctrl->D.mode == 3) par[GRDFILTER_X_SCALE] = GMT->current.proj.DIST_KM_PR_DEG * cosd (lat_out);	/* Update flat-earth longitude scale */
 
 		if (Ctrl->D.mode > 2) {	/* Update max filterweight nodes to deal with for this latitude */
@@ -615,7 +615,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 			
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights */
-		if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (j_origin, Gin->header);
+		if (!fast_way) y_shift = y_out - GMT_grd_row_to_y (GMT, j_origin, Gin->header);
 
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 
@@ -769,7 +769,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->F.highpass) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
-		GMT_grd_loop (Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
+		GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
 	}
 	
 	/* At last, that's it!  Output: */

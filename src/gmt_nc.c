@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.111 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_nc.c,v 1.112 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -310,7 +310,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
 			header->registration = GMT_GRIDLINE_REG;
 		}
-		header->inc[GMT_X] = GMT_get_inc (header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
+		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
 
 		/* Get information about y variable */
@@ -330,7 +330,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		}
 		else
 			header->y_order = 1;
-		header->inc[GMT_Y] = GMT_get_inc (header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
+		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
 		GMT_free (C, xy);
@@ -429,13 +429,13 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
 		xy = GMT_memory (C, NULL,  MAX (header->nx,header->ny), double);
-		for (i = 0; i < header->nx; i++) xy[i] = GMT_grd_col_to_x (i, header);
+		for (i = 0; i < header->nx; i++) xy[i] = GMT_grd_col_to_x (C, i, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
 		if (header->y_order > 0) {
-			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_col_to_x (i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
+			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_col_to_x (C, i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		else {
-			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_row_to_y (i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
+			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_row_to_y (C, i, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[1]], xy));
 		GMT_free (C, xy);

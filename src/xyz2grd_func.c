@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.15 2011-05-16 08:47:59 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.16 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -354,6 +354,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		float value;
 		char line[GMT_BUFSIZ], *not_used = NULL;
 		FILE *fp = GMT->session.std[GMT_IN];
+		EXTERN_MSC void GMT_str_tolower (char *string);
 		
 		if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->In.file);
@@ -392,7 +393,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->header->xy_off = 0.5 * Grid->header->registration;
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->nx - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->ny - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
-		GMT_set_grddim (Grid->header);
+		GMT_set_grddim (GMT, Grid->header);
 		GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
@@ -478,7 +479,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 
-	GMT_err_fail (GMT, GMT_set_z_io (&io, Grid), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = FALSE;	/* No point testing */
@@ -525,15 +526,15 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Grid->data[gmt_ij] = (Ctrl->N.active && in[zcol] == Ctrl->N.value) ? GMT->session.f_NaN : (float)in[zcol];
 		}
 		else {	/* Get x, y, z */
-			if (GMT_y_is_outside (in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+			if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 			if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 			/* Ok, we are inside the region - process data */
 
-			col = GMT_grd_x_to_col (in[GMT_X], Grid->header);
+			col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 			if (col == -1) col++, n_confused++;
 			if (col == Grid->header->nx) col--, n_confused++;
-			row = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+			row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 			if (row == -1) row++, n_confused++;
 			if (row == Grid->header->ny) row--, n_confused++;
 			ij = GMT_IJ0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
@@ -572,7 +573,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "Found %ld records, but %ld was expected (aborting)!\n", ij, io.n_expected);
 			Return (EXIT_FAILURE);
 		}
-		GMT_check_z_io (&io, Grid);	/* This fills in missing periodic row or column */
+		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT_360_RANGE (Grid->header->wesn[XHI], Grid->header->wesn[XLO]) && Grid->header->registration == GMT_GRIDLINE_REG) {	/* Make sure longitudes got replicated */

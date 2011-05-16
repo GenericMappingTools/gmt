@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.11 2011-05-16 21:23:11 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -179,7 +179,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 			case 'A':
 				Ctrl->A.active = TRUE;
 				pos = 0;
-				while ((GMT_strtok (opt->arg, "+", &pos, p))) {
+				while ((GMT_strtok (C->GMT, opt->arg, "+", &pos, p))) {
 					switch (p[0]) {
 						case 'a':
 							Ctrl->A.fixed_alt = TRUE;

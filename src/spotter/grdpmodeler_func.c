@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.11 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -289,9 +289,9 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G_mod->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (row, G_mod->header);
+	for (row = 0; row < G_mod->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (GMT, row, G_mod->header);
 	for (row = 0; row < G_mod->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
-	for (col = 0; col < G_mod->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (col, G_mod->header);
+	for (col = 0; col < G_mod->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G_mod->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
@@ -300,7 +300,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = 2;	/* Need +- around 0 here */
 
-	GMT_grd_loop (G_mod, row, col, node) {
+	GMT_grd_loop (GMT, G_mod, row, col, node) {
 		G_mod->data[node] = GMT->session.f_NaN;
 		if (Ctrl->F.active) {
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */

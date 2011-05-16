@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.21 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.22 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -436,7 +436,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		}
 	}
 
-	form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_annot[0]);
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
@@ -459,13 +459,13 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		/* Pick the mid-latitude and march along that line from east to west */
 
 		this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
-		row = MIN (G->header->ny - 1, GMT_grd_y_to_row (this_lat, G->header));	/* Get closest j-row */
-		this_lat = GMT_grd_row_to_y (row, G->header);	/* Get its matching latitude */
-		col = GMT_grd_x_to_col (xmin, G->header);		/* Westernmost point */
-		stop = GMT_grd_x_to_col (xmax, G->header);	/* Eastermost point */
+		row = MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
+		this_lat = GMT_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
+		col = GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
+		stop = GMT_grd_x_to_col (GMT, xmax, G->header);	/* Eastermost point */
 		done = FALSE;
 		while (!done && col <= stop) {
-			this_lon = GMT_grd_col_to_x (col, G->header);	/* Current longitude */
+			this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
 			GMT_geo_to_xy (GMT, this_lon, this_lat, &x0, &y0);
 			inside = GMT_non_zero_winding (GMT, x0, y0, save[i].x, save[i].y, np);
 			if (inside == 2)	/* OK, this point is inside */
@@ -495,7 +495,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			GMT_free (GMT, s);
 			continue;
 		}
-		GMT_setpen (GMT, PSL, &save[i].pen);
+		GMT_setpen (GMT, &save[i].pen);
 		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label)	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
@@ -527,12 +527,12 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void GMT_grd_minmax (struct GMT_GRID *Grid, double xyz[2][3])
+void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine the grid's global min and max locations and z values */
 	GMT_LONG row, col, ij, i, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
 
-	GMT_grd_loop (Grid, row, col, ij) {
+	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		if (GMT_is_fnan (Grid->data[ij])) continue;
 		if (Grid->data[ij] < z_extreme[0]) {
 			z_extreme[0] = Grid->data[ij];
@@ -544,8 +544,8 @@ void GMT_grd_minmax (struct GMT_GRID *Grid, double xyz[2][3])
 		}
 	}
 	for (i = 0; i < 2; i++) {	/* 0 is min, 1 is max */
-		xyz[i][GMT_X] = GMT_grd_col_to_x (GMT_col (Grid->header, i_minmax[i]), Grid->header);
-		xyz[i][GMT_Y] = GMT_grd_row_to_y (GMT_row (Grid->header, i_minmax[i]), Grid->header);
+		xyz[i][GMT_X] = GMT_grd_col_to_x (GMT, GMT_col (Grid->header, i_minmax[i]), Grid->header);
+		xyz[i][GMT_Y] = GMT_grd_row_to_y (GMT, GMT_row (Grid->header, i_minmax[i]), Grid->header);
 		xyz[i][GMT_Z] = z_extreme[i];
 	}
 }
@@ -560,17 +560,17 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 		C = G->segment[i];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
 			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
-			row = GMT_grd_y_to_row (y_on, Grid->header);
+			row = GMT_grd_y_to_row (GMT, y_on, Grid->header);
 			if (row < 0 || row >= Grid->header->ny) continue;		/* Somehow, outside y range */
 			while (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
 			while (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
-			col = GMT_grd_x_to_col (x_on, Grid->header);
+			col = GMT_grd_x_to_col (GMT, x_on, Grid->header);
 			if (col < 0 || col >= Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
 			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
-			x_node = GMT_grd_col_to_x (col, Grid->header);
-			y_node = GMT_grd_row_to_y (row, Grid->header);
+			x_node = GMT_grd_col_to_x (GMT, col, Grid->header);
+			y_node = GMT_grd_row_to_y (GMT, row, Grid->header);
 			GMT_geo_to_xy (GMT, x_node, y_node, &x_node_p, &y_node_p);	/* Projected coordinates of nearest node point */
 			dx = x_node_p - C->L[k].x;
 			dy = y_node_p - C->L[k].y;
@@ -654,9 +654,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 		if (make_plot) {
-			GMT_plotinit (API, PSL, options);
-			GMT_map_basemap (GMT, PSL);
-			GMT_plotend (GMT, PSL);
+			GMT_plotinit (GMT, options);
+			GMT_map_basemap (GMT);
+			GMT_plotend (GMT);
 		}
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 		Return (GMT_OK);
@@ -668,7 +668,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {	/* Must transform z grid */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
-		GMT_grd_do_scaling (G->data, G->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
+		GMT_grd_do_scaling (GMT, G->data, G->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		G->header->z_min = (G->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		G->header->z_max = (G->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) d_swap (G->header->z_min, G->header->z_max);
@@ -775,9 +775,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours found\n");
 		if (make_plot) {
-			GMT_plotinit (API, PSL, options);
-			GMT_map_basemap (GMT, PSL);
-			GMT_plotend (GMT, PSL);
+			GMT_plotinit (GMT, options);
+			GMT_map_basemap (GMT);
+			GMT_plotend (GMT);
 		}
 		GMT_free (GMT, contour);
 		GMT_free (GMT, cont_type);
@@ -795,7 +795,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	(void)GMT_malloc2 (GMT, contour, cont_angle, 0, n_contours, double);
 	n_alloc = GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, n_contours, char);
 
-	GMT_grd_minmax (G, xyz);
+	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
 
 	for (i = 0; i < 3; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];	/* Used if -D is set */
@@ -849,9 +849,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
 	for (c = 0; c < n_contours; c++) {	/* For each contour value cval */
@@ -904,9 +904,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLES && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, cval, closed, cont_counts);
+						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENTS)
-						S->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, cval, closed, cont_counts);
+						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, closed, cont_counts);
 				}
 				if (make_plot && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
@@ -962,16 +962,16 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);	/* Must possibly adjust label angles so that label is readable when following contours */
 
-		GMT_contlabel_plot (GMT, PSL, &Ctrl->contour);
+		GMT_contlabel_plot (GMT, &Ctrl->contour);
 		GMT_contlabel_free (GMT, &Ctrl->contour);
 
-		if (!Ctrl->contour.delay) GMT_map_clip_off (GMT, PSL);
+		if (!Ctrl->contour.delay) GMT_map_clip_off (GMT);
 
-		GMT_map_basemap (GMT, PSL);
+		GMT_map_basemap (GMT);
 
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
+		GMT_plane_perspective (GMT, -1, 0.0);
 
-		GMT_plotend (GMT, PSL);
+		GMT_plotend (GMT);
 	}
 
 	GMT_free_grid (GMT, &G_orig, TRUE);

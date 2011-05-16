@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.21 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.22 2011-05-16 21:23:11 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -250,7 +250,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
 		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
 		for (i = 0; i < add; i++) {
-			pol->segment[0]->coord[GMT_X][i] = GMT_col_to_x (i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			pol->segment[0]->coord[GMT_X][i] = GMT_col_to_x (GMT, i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			pol->segment[0]->coord[GMT_Y][i] = h->wesn[YLO];
 		}
 	}
@@ -261,7 +261,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 	pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np, double);
 	for (j = 0; j < add; j++) {	/* Loop along east border from south to north */
 		pol->segment[0]->coord[GMT_X][np+j] = h->wesn[XHI];
-		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	/* Add north border e->w */
@@ -277,7 +277,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, pol->segment[0]->coord[GMT_X], add + np, double);
 		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np, double);
 		for (i = 0; i < add; i++) {
-			pol->segment[0]->coord[GMT_X][np+i] = GMT_col_to_x (h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			pol->segment[0]->coord[GMT_X][np+i] = GMT_col_to_x (GMT, h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			pol->segment[0]->coord[GMT_Y][np+i] = h->wesn[YHI];
 		}
 	}
@@ -288,7 +288,7 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 	pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np + 1, double);
 	for (j = 0; j < add; j++) {	/* Loop along west border from north to south */
 		pol->segment[0]->coord[GMT_X][np+j] = h->wesn[XLO];
-		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	pol->segment[0]->coord[GMT_X][np] = pol->segment[0]->coord[GMT_X][0];	/* Close polygon explicitly */
@@ -456,8 +456,8 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	grd_y = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G_rot->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (row, G_rot->header);
-	for (col = 0; col < G_rot->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (col, G_rot->header);
+	for (row = 0; row < G_rot->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (GMT, row, G_rot->header);
+	for (col = 0; col < G_rot->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G_rot->header);
 	for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
@@ -466,7 +466,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, -Ctrl->e.w, R);	/* Make inverse rotation using negative angle */
 	
-	GMT_grd_loop (G_rot, row, col, ij_rot) {
+	GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
 		if (not_global) {
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
@@ -493,8 +493,8 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			lon = pol->segment[seg]->coord[GMT_X][rec];
 			while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
-			col = GMT_grd_x_to_col (lon, G_rot->header);
-			row = GMT_grd_y_to_row (pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+			col = GMT_grd_x_to_col (GMT, lon, G_rot->header);
+			row = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
 			/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
 			for (row2 = (row - PAD); row2 <= (row + PAD); row2++) {
 				if (row2 < 0 || row2 >= G_rot->header->ny) continue;
@@ -506,9 +506,9 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, TRUE);	/* Recover degree lon lat representation */
 					yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					col_o = GMT_grd_x_to_col (xx, G->header);
+					col_o = GMT_grd_x_to_col (GMT, xx, G->header);
 					if (col_o < 0 || col_o >= G->header->nx) continue;
-					row_o = GMT_grd_y_to_row (yy, G->header);
+					row_o = GMT_grd_y_to_row (GMT, yy, G->header);
 					if (row_o < 0 || row_o >= G->header->ny) continue;
 					ij = GMT_IJP (G->header, row_o, col_o);
 					G_rot->data[ij_rot] = G->data[ij];

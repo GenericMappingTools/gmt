@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+ *	$Id: psxyz_func.c,v 1.16 2011-05-16 21:23:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -317,19 +317,19 @@ void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, d
 			case 0:	/* yz plane positive side */
 				sign = 1.0;
 			case 1:	/* negative side */
-				GMT_plane_perspective (GMT, PSL, GMT_X, x + sign * x_size);
+				GMT_plane_perspective (GMT, GMT_X, x + sign * x_size);
 				PSL_plotbox (PSL, y - y_size, z - z_size, y + y_size, z + z_size);
 				break;
 			case 2:	/* xz plane positive side */
 				sign = 1.0;
 			case 3:	/* negative side */
-				GMT_plane_perspective (GMT, PSL, GMT_Y, y + sign * y_size);
+				GMT_plane_perspective (GMT, GMT_Y, y + sign * y_size);
 				PSL_plotbox (PSL, x - x_size, z - z_size, x + x_size, z + z_size);
 				break;
 			case 4:	/* xy plane positive side */
 				sign = 1.0;
 			case 5:	/* negative side */
-				GMT_plane_perspective (GMT, PSL, GMT_Z, z + sign * z_size);
+				GMT_plane_perspective (GMT, GMT_Z, z + sign * z_size);
 				PSL_plotbox (PSL, x - x_size, y - y_size, x + x_size, y + y_size);
 				break;
 		}
@@ -465,22 +465,22 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_plane_perspective (GMT, PSL, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 
-	GMT_map_basemap (GMT, PSL);
+	GMT_map_basemap (GMT);
 
 	if (GMT->current.proj.z_pars[0] == 0.0 && !Ctrl->N.active) {
-		GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		clip_set = TRUE;
 	}
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = TRUE;
 
-	if (penset_OK) GMT_setpen (GMT, PSL, &current_pen);
+	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, PSL, &S.font);		/* Set the required font */
+	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);		/* Set the required font */
 	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_VECTOR) && S.v_just == 3) {
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
@@ -493,10 +493,10 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.active) {
 		/* Shift the plot a bit. This is a bit frustrating, since the only way to do this
 		   easily is to undo the perspective, shift, then redo. */
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
+		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_xyz_to_xy (GMT, Ctrl->D.dx, Ctrl->D.dy, Ctrl->D.dz, &DX, &DY);
 		PSL_setorigin (PSL, DX, DY, 0.0, PSL_FWD);
-		GMT_plane_perspective (GMT, PSL, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+		GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 	}
 	GMT->current.io.skip_if_NaN[GMT_Z] = TRUE;	/* Extend GMT NaN-handling to the z-coordinate */
 
@@ -545,7 +545,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (read_symbol) {	/* Must do special processing */
 				text_rec = (char *)(*record);	/* Get current text record */
 				/* First establish the symbol type given at the end of the record */
-				GMT_chop (text_rec);	/* Get rid of \n \r */
+				GMT_chop (GMT, text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" ,\t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 1, FALSE);
@@ -693,8 +693,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 
-			GMT_setfill (GMT, PSL, &data[i].f, data[i].outline);
-			GMT_setpen (GMT, PSL, &data[i].p);
+			GMT_setfill (GMT, &data[i].f, data[i].outline);
+			GMT_setpen (GMT, &data[i].p);
 
 			switch (data[i].symbol) {
 				case GMT_SYMBOL_NONE:
@@ -706,7 +706,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_geo_to_xy (GMT, data[i].x, data[i].y + 0.5 * data[i].dim[0], &x_2, &y_2);
 						data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 					}
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotbox (PSL, data[i].x, data[i].y - 0.5 * data[i].dim[0], data[i].dim[2], data[i].y + 0.5 * data[i].dim[0]);
 					break;
 				case GMT_SYMBOL_BARY:
@@ -716,7 +716,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_geo_to_xy (GMT, data[i].x + 0.5 * data[i].dim[0], data[i].y, &x_2, &y_2);
 						data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 					}
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotbox (PSL, data[i].x - 0.5 * data[i].dim[0], data[i].y, data[i].x + 0.5 * data[i].dim[0], data[i].dim[2]);
 					break;
 				case GMT_SYMBOL_COLUMN:
@@ -759,20 +759,20 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				case GMT_SYMBOL_INVTRIANGLE:
 				case GMT_SYMBOL_DIAMOND:
 				case GMT_SYMBOL_RECT:
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, data[i].symbol);
 					break;
 				case GMT_SYMBOL_ELLIPSE:
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					if (data[i].flag & 2)
-						GMT_geo_ellipse (GMT, PSL, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+						GMT_geo_ellipse (GMT, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
 					else
 						PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_ELLIPSE);
 					break;
 				case GMT_SYMBOL_ROTRECT:
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					if (data[i].flag & 2)
-						GMT_geo_rectangle (GMT, PSL, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+						GMT_geo_rectangle (GMT, data[i].x, data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
 					else
 						PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_ROTRECT);
 					break;
@@ -781,8 +781,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						PSL_setcolor (PSL, data[i].f.rgb, PSL_IS_FILL);
 					else if (!fill_active)
 						PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
-					(void) GMT_setfont (GMT, PSL, &S.font);
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					(void) GMT_setfont (GMT, &S.font);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plottext (PSL, data[i].x, data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
 					free ((void*)data[i].string);
 					break;
@@ -810,7 +810,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					dim[4] = data[i].dim[2] * S.h_width;
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = S.v_double_heads ? 1.0 : 0.0;
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_MARC:
@@ -819,24 +819,24 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					dim[2] = data[i].dim[2];
 					dim[3] = GMT->current.setting.map_vector_shape;
 					dim[4] = (double)S.v_double_heads;
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, dim, PSL_MARC);
 					break;
 				case GMT_SYMBOL_WEDGE:
 					data[i].dim[0] *= 0.5;
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, PSL_WEDGE);
 					break;
 				case GMT_SYMBOL_ZDASH:
 					GMT_xyz_to_xy (GMT, data[i].x, data[i].y, data[i].z, &x_1, &y_1);
-					GMT_plane_perspective (GMT, PSL, -1, 0.0);
+					GMT_plane_perspective (GMT, -1, 0.0);
 					PSL_plotsymbol (PSL, x_1, y_1, data[i].dim, PSL_YDASH);
 					break;
 				case GMT_SYMBOL_CUSTOM:
-					GMT_plane_perspective (GMT, PSL, GMT_Z, data[i].z);
+					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					dim[0] = data[i].dim[0];
 					for (j = 0; j < S.n_required; j++) dim[j+1] = data[i].dim[j];
-					GMT_draw_custom_symbol (GMT, PSL, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
+					GMT_draw_custom_symbol (GMT, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
 					GMT_free (GMT, data[i].custom);
 					break;
 			}
@@ -873,7 +873,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				if (change & 4 && penset_OK) GMT_setpen (GMT, PSL, &current_pen);
+				if (change & 4 && penset_OK) GMT_setpen (GMT, &current_pen);
 				if (change & 1) polygon = TRUE;
 				if (change & 2 && !Ctrl->L.active) {
 					polygon = FALSE;
@@ -900,29 +900,29 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				yp = GMT_memory (GMT, NULL, n, double);
 
 				if (polygon) {
-					GMT_plane_perspective (GMT, PSL, -1, 0.0);
+					GMT_plane_perspective (GMT, -1, 0.0);
 					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
-					GMT_setfill (GMT, PSL, &current_fill, outline_active);
+					GMT_setfill (GMT, &current_fill, outline_active);
 					PSL_plotpolygon (PSL, xp, yp, n);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					/* Note that this always be plotted in the XY-plane */
-					GMT_plane_perspective (GMT, PSL, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+					GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
 					GMT_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, Ctrl->L.active, &S.G);
 					GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since GMT_hold_contour reallocates to fit the array */
 				}
 				else {	/* Plot line */
-					GMT_plane_perspective (GMT, PSL, -1, 0.0);
+					GMT_plane_perspective (GMT, -1, 0.0);
 					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
 					PSL_plotline (PSL, xp, yp, n, PSL_MOVE + PSL_STROKE);
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
-					GMT_plane_perspective (GMT, PSL, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+					GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
-					GMT_setfill (GMT, PSL, &current_fill, outline_active);
-					GMT_draw_front (GMT, PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
+					GMT_setfill (GMT, &current_fill, outline_active);
+					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
 
 				GMT_free (GMT, xp);
@@ -936,21 +936,21 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
-		GMT_contlabel_plot (GMT, PSL, &S.G);
+		GMT_contlabel_plot (GMT, &S.G);
 		GMT_contlabel_free (GMT, &S.G);
 	}
 
-	if (clip_set) GMT_map_clip_off (GMT, PSL);
+	if (clip_set) GMT_map_clip_off (GMT);
 
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
+	GMT_plane_perspective (GMT, -1, 0.0);
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
 	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
-	GMT_vertical_axis (GMT, PSL, 2);	/* Draw foreground axis */
+	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 
-	GMT_plotend (GMT, PSL);
+	GMT_plotend (GMT);
 
 	Return (GMT_OK);
 }

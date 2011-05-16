@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.10 2011-05-14 00:04:06 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.11 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -173,7 +173,7 @@ GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALE
 	double rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
 	struct GMT_FILL *f = NULL;
 
-	if (draw_outline) GMT_setpen (GMT, PSL, pen);
+	if (draw_outline) GMT_setpen (GMT, pen);
 
 	if (flip_to_y) {
 		px = y;
@@ -225,13 +225,13 @@ GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALE
 			else if (cpt) {
 				index = GMT_get_rgb_from_z (GMT, P, xval, rgb);
 				if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))	/* Pattern */
-					GMT_setfill (GMT, PSL, f, draw_outline);
+					GMT_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);
 				PSL_plotpolygon (PSL, px, py, (GMT_LONG)4);
 			}
 			else {
-				GMT_setfill (GMT, PSL, fill, draw_outline);
+				GMT_setfill (GMT, fill, draw_outline);
 				PSL_plotpolygon (PSL, px, py, (GMT_LONG)4);
 			}
 		}
@@ -251,7 +251,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *st
 
 	if (n < 3) return (-1);
 
-	GMT_sort_array ((void *)data, n, GMT_DOUBLE_TYPE);
+	GMT_sort_array (GMT, (void *)data, n, GMT_DOUBLE_TYPE);
 
 	/* Get median */
 	j = n/2;
@@ -650,20 +650,20 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
 
-	GMT_plotinit (API, PSL, options);
+	GMT_plotinit (GMT, options);
 
-	GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-	GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active) ) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Fatal error during box plotting.\n");
 		Return (EXIT_FAILURE);
 	}
-	GMT_map_clip_off (GMT, PSL);
+	GMT_map_clip_off (GMT);
 
-	GMT_map_basemap (GMT, PSL);
-	GMT_plane_perspective (GMT, PSL, -1, 0.0);
-	GMT_plotend (GMT, PSL);
+	GMT_map_basemap (GMT);
+	GMT_plane_perspective (GMT, -1, 0.0);
+	GMT_plotend (GMT);
 
 	GMT_free (GMT, data);
 	GMT_free (GMT, F.boxh);

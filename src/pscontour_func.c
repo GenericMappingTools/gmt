@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.19 2011-05-14 00:04:06 guru Exp $
+ *	$Id: pscontour_func.c,v 1.20 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -263,7 +263,7 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))
-		GMT_setfill (GMT, PSL, f, FALSE);
+		GMT_setfill (GMT, f, FALSE);
 	else
 		PSL_setfill (PSL, rgb, -2);
 	/* Contours drawn separately later if desired */
@@ -287,7 +287,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 	}
 
-	form = GMT_setfont (GMT, PSL, &GMT->current.setting.font_annot[0]);
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
@@ -309,8 +309,8 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		/* Now try to find a data point inside this contour */
 		
 		for (j = 0, k = -1; k < 0 && j < nn; j++) {
-			if (GMT_y_is_outside (y[j], ymin, ymax)) continue;	/* Outside y-range */
-			if (GMT_y_is_outside (x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
+			if (GMT_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
+			if (GMT_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
 			
 			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[i].x, save[i].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
@@ -329,7 +329,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		n_ticks = (GMT_LONG)(s / tick_gap);
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
-		GMT_setpen (GMT, PSL, &save[i].pen);
+		GMT_setpen (GMT, &save[i].pen);
 		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label)	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
@@ -867,15 +867,15 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		GMT_plotinit (API, PSL, options);
-		GMT_plane_perspective (GMT, PSL, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-        	if (!(Ctrl->N.active  || Ctrl->contour.delay)) GMT_map_clip_on (GMT, PSL, GMT->session.no_rgb, 3);
+		GMT_plotinit (GMT, options);
+		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+        	if (!(Ctrl->N.active  || Ctrl->contour.delay)) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[0];
 	}
 
 	if (Ctrl->L.active) {	/* Draw triangular mesh */
 
-		GMT_setpen (GMT, PSL, &Ctrl->L.pen);
+		GMT_setpen (GMT, &Ctrl->L.pen);
 
 		for (i = k = 0; i < np; i++) {	/* For all triangles */
 
@@ -1193,9 +1193,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLES && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
+						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENTS)
-						S->file[GMT_OUT] = GMT_make_filename (Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
+						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
 					GMT_free (GMT, xtmp);
 					GMT_free (GMT, ytmp);
 				}
@@ -1231,7 +1231,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				GMT_free (GMT, save);
 			}
-			GMT_contlabel_plot (GMT, PSL, &Ctrl->contour);
+			GMT_contlabel_plot (GMT, &Ctrl->contour);
 			GMT_contlabel_free (GMT, &Ctrl->contour);
 		}
 	}
@@ -1245,10 +1245,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (make_plot) {
-		if (!(Ctrl->N.active || Ctrl->contour.delay)) GMT_map_clip_off (GMT, PSL);
-		GMT_map_basemap (GMT, PSL);
-		GMT_plane_perspective (GMT, PSL, -1, 0.0);
-		GMT_plotend (GMT, PSL);
+		if (!(Ctrl->N.active || Ctrl->contour.delay)) GMT_map_clip_off (GMT);
+		GMT_map_basemap (GMT);
+		GMT_plane_perspective (GMT, -1, 0.0);
+		GMT_plotend (GMT);
 	}
 
 	GMT_free (GMT, x);

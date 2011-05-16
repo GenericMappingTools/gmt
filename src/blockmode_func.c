@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: blockmode_func.c,v 1.9 2011-05-11 04:01:53 guru Exp $
+ *    $Id: blockmode_func.c,v 1.10 2011-05-16 21:23:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -260,14 +260,14 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		n_read++;						/* Number of records read */
 
-		if (GMT_y_is_outside (in[GMT_Y], wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (in[GMT_X], Grid->header);
+		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		if (col < 0 || col >= Grid->header->nx ) continue;
-		row = GMT_grd_y_to_row (in[GMT_Y], Grid->header);
+		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 		if (row < 0 || row >= Grid->header->ny ) continue;
 
 		/* OK, this point is definitively inside and will be used */
@@ -321,8 +321,8 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->C.active) {	/* Use block center */
 			row = GMT_row (Grid->header, data[first_in_cell].i);
 			col = GMT_col (Grid->header, data[first_in_cell].i);
-			out[GMT_X] = GMT_grd_col_to_x (col, Grid->header);
-			out[GMT_Y] = GMT_grd_row_to_y (row, Grid->header);
+			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
+			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}
 		else {
 			out[GMT_X] = data[first_in_cell].a[GMT_X];
@@ -398,7 +398,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			/* Turn z_tmp into absolute deviations from the mode (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array ((void *)z_tmp, nz, GMT_DOUBLE_TYPE);
+				GMT_sort_array (GMT, (void *)z_tmp, nz, GMT_DOUBLE_TYPE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be LMS MAD-based scale */
 			}

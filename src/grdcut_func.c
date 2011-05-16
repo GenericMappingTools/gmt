@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.11 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdcut_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -221,10 +221,10 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 		/* Evaluate the new grid boundary */
-		wesn_new[XLO] = GMT_grd_col_to_x (i0, G->header);
-		wesn_new[XHI] = GMT_grd_col_to_x (i1, G->header);
-		wesn_new[YHI] = GMT_grd_row_to_y (j0, G->header);
-		wesn_new[YLO] = GMT_grd_row_to_y (j1, G->header);
+		wesn_new[XLO] = GMT_grd_col_to_x (GMT, i0, G->header);
+		wesn_new[XHI] = GMT_grd_col_to_x (GMT, i1, G->header);
+		wesn_new[YHI] = GMT_grd_row_to_y (GMT, j0, G->header);
+		wesn_new[YLO] = GMT_grd_row_to_y (GMT, j1, G->header);
 		GMT_free (GMT, G->data);	/* Free the grid array only as we need the header below */
 	}
 	else {	/* Just the usual subset selection via -R */

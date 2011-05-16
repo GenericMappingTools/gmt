@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.16 2011-05-16 08:47:59 guru Exp $
+ *	$Id: grdmask_func.c,v 1.17 2011-05-16 21:23:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,7 +169,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 						break;
 					default:	/* Standard out/on/in constant values */
 						j = pos = 0;
-						while (j < GRDMASK_N_CLASSES && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
+						while (j < GRDMASK_N_CLASSES && (GMT_strtok (GMT, opt->arg, "/", &pos, ptr))) {
 							Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 							j++;
 						}
@@ -309,15 +309,15 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			S = D->table[tbl]->segment[seg];		/* Current segment */
 			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constrains */
 				for (k = 0; k < S->n_rows; k++) {
-					if (GMT_y_is_outside (S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
+					if (GMT_y_is_outside (GMT, S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 					xtmp = S->coord[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
 					if (GMT_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
-					col_0 = GMT_grd_x_to_col (xtmp, Grid->header);
+					col_0 = GMT_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = GMT_grd_y_to_row (S->coord[GMT_Y][k], Grid->header);
+					row_0 = GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
@@ -333,8 +333,8 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						for (col = col_0 - d_col; col <= (col_0 + d_col); col++) {
 							if (col < 0 || col >= Grid->header->nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
-							x0 = GMT_grd_col_to_x (col, Grid->header);
-							y0 = GMT_grd_row_to_y (row, Grid->header);
+							x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
+							y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], x0, y0);
 							if (distance > Ctrl->S.radius) continue;
 							Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
@@ -347,7 +347,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for polygon IDs in the data headers */
 					if (S->ogr)	/* OGR data */
 						ID = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
-					else if (GMT_parse_segment_item (S->header, "-L", seg_label))	/* Look for segment header ID */
+					else if (GMT_parse_segment_item (GMT, S->header, "-L", seg_label))	/* Look for segment header ID */
 						ID = atof (seg_label);
 					else
 						GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
@@ -357,7 +357,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 				for (row = 0; row < Grid->header->ny; row++) {
 
-					yy = GMT_grd_row_to_y (row, Grid->header);
+					yy = GMT_grd_row_to_y (GMT, row, Grid->header);
 					
 					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
 					
@@ -370,7 +370,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 					/* Here we will have to consider the x coordinates as well */
 					for (col = 0; col < Grid->header->nx; col++) {
-						xx = GMT_grd_col_to_x (col, Grid->header);
+						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
 						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 
