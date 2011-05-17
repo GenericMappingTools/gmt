@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.21 2011-05-17 21:37:44 jluis Exp $
+ *	$Id: psimage_func.c,v 1.22 2011-05-17 22:12:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,6 +48,7 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
 		GMT_LONG active;
+		GMT_LONG mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
@@ -173,7 +174,6 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				Ctrl->G.active = TRUE;
 				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case F|f|B|b switching below */
 				switch (letter) {
-					case 'F':
 					case 'f':
 						/* Set color for foreground pixels */
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
@@ -183,7 +183,6 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 							n_errors++;
 						}
 						break;
-					case 'B':
 					case 'b':
 						/* Set color for background pixels */
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
@@ -193,13 +192,13 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 							n_errors++;
 						}
 						break;
-					case 'T':
 					case 't':
 						/* Set transparent color */
 						if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.t_rgb)) {
 							GMT_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
+						Ctrl->G.mode = 1;
 						break;
 					default:	/* Gave either -G<r/g/b>, -G-, or -G<colorname>; all treated as -Gf */
 						if (opt->arg[0] == '-' && opt->arg[1] == '\0')
@@ -339,7 +338,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
-		GMT_set_pad (GMT, 0);	/* Temporary turn off padding since we will use image exactly as is */
+		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->In.file, (void **)&I)) 
 			Return (GMT_DATA_READ_ERROR);
@@ -361,10 +360,11 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
-		if (known) 			/* EPS or Sun raster file */
-			PSL_free (PSL, picture);
-		else
-			GMT_free (GMT, picture);
+		if (known) PSL_free (PSL, picture);	/* EPS or Sun raster file */
+#ifdef USE_GDAL
+		else	/* Got it via GMT_Get_Data */
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);
+#endif
 		picture = buffer;
 	}
 
@@ -379,7 +379,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef USE_GDAL
-		GMT_free (GMT, picture);
+		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);	/* If I is NULL then nothing is done */
 #else
 		PSL_free (PSL, picture);
 #endif
@@ -450,6 +450,9 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
+#ifdef USE_GDAL
+	GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&I);	/* If I is NULL then nothing is done */
+#endif
 	if (free_GMT)
 		GMT_free (GMT, picture);
 	else if (known)
