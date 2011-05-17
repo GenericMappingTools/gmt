@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.13 2011-05-17 00:50:57 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.14 2011-05-17 00:58:27 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -529,7 +529,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else {	/* Must read a second file */
 
-				x2sys_err_fail (GMT, (s->read_file) (trk_name[B], &data[1], s, &data_set[1], &GMT->current.io, &n_rec[1]), trk_name[B]);
+				x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[B], &data[1], s, &data_set[1], &GMT->current.io, &n_rec[1]), trk_name[B]);
 
 				has_time[1] = FALSE;
 				if (got_time) {	/* Check to make sure we do in fact have time */
