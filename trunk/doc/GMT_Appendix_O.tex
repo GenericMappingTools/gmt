@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.29 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.30 2011-05-17 03:02:06 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -44,7 +44,7 @@ distance along the line.  To ensure that closed lines whose total length is less
 than {\it dist} get annotated, we may append {\it frac} which will place the first
 label at the distance $d =$ {\it dist} $\times$ {\it frac} from the start of a closed
 line (and every {\it dist} thereafter).  If not given, {\it frac} defaults to 0.25.
-\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$e$|$k$|$m$|$n}][/{\it frac}].
+\item [D:] Full syntax is {\bf D}{\it dist}[{\bf d$|$m$|$s$|$e$|$f$|$k$|$M$|$n}][/{\it frac}].
 This option is similar to {\bf d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
 planet we are dealing with.} surface distances along the lines are considered.  Append the
@@ -107,6 +107,7 @@ your choice ({\bf c$|$i$|$m$|$p}), or give \% to indicate that the clearance sho
 fixed percentage of the label font size in use.  The default is 15\%.
 \item [+d:] Debug mode.  This is useful when testing contour placement as it will draw the normally
 invisible helper lines and points in the label placement algorithms above.
+\item [+d:] Delayed mode, to delay the plotting of the text as text clipping is set instead.
 \item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
 default font is given by \textbf{FONT\_ANNOT\_PRIMARY}.
 \item [+g:] Selects opaque rather than the default transparent text boxes.  You may optionally append

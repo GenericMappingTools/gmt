@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.280 2011-05-17 01:22:10 guru Exp $
+ *	$Id: gmt_io.c,v 1.281 2011-05-17 03:02:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1727,7 +1727,7 @@ void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)
 {
 	GMT_LONG k;
 	char c = ' ';
-	if (dir == GMT_IN) {	/* Use fread since we dont know if stream or file */
+	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
 		for (k = 0; k < C->current.io.io_n_header_items; k++) GMT_fread ((void *)&c, sizeof (char), (size_t)1, fp);
 	}
 	else {

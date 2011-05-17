@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.143 2011-05-03 00:21:15 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.144 2011-05-17 03:02:06 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -306,7 +306,7 @@ these options in order of importance (some are use a lot more than others).
 \Opt{o}	&	Specifies which output columns to write  \\ \hline
 \Opt{p}	&	Controls perspective views for plots  \\ \hline
 \Opt{r}	&	Sets the grid registration to pixel [Default is gridline]  \\ \hline
-\Opt{s}	&	Controls output of records where {\it z} is NaN  \\ \hline
+\Opt{s}	&	Controls output of records containing one or more NaNs  \\ \hline
 \Opt{t}	&	Change layer PDF transparency  \\ \hline
 \Opt{:}	&	Assumes input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
 \end{tabular}
@@ -356,7 +356,7 @@ that you are using geographical coordinates in one of the following ways:
 \item Add \textbf{W}, \textbf{E}, \textbf{S}, or \textbf{N} to the coordinate limits or add the generic \textbf{D} or
 \textbf{G}. Example: \Opt{R}\emph{0}/\emph{360G}/\emph{-90}/\emph{90N}.
 \end{itemize}
-
+Alternatively, you may indicate geographical coordinates by supplying \Opt{fg}; see Section \ref{sec:fg_option}.
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [\emph{date}]\textbf{T}[\emph{clock}], where \emph{date} must be in the
 \emph{yyyy}[\emph{-mm}[\emph{-dd}]] (year, month, day-of-month)
@@ -818,7 +818,7 @@ and read such data files.
 If you need to populate GMT data columns with (constant) values specified by aspatial
 attributes, use \Opt{a} and append any number of comma-separated {\it col=name}
 associations.  E.g., {\it 2=depth} will read the spatial {\it x,y} columns from the
-file and add a third ({it z}) column based on the value of the aspatial field called
+file and add a third ({\it z}) column based on the value of the aspatial field called
 {\it depth}.  You can also associate aspatial fields with other settings such as
 labels, fill colors, pens, and values used to look-up colors.  Do so by letting
 the {\it col} value be one of {\bf D}, {\bf G}, {\bf L}, {\bf T}, {\bf W}, or {\bf Z}.  This
@@ -853,14 +853,14 @@ When using native binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[\emph{n}]\textbf{t} option,
-where \emph{n} is the actual number of data columns  and \textbf{t}
+where \emph{n} is the actual number of data columns and \textbf{t}
 must be one of \textbf{c} (signed 1-byte character), \textbf{u}
 (unsigned 1-byte character), \textbf{h} (signed 2-byte int), \textbf{H}
 (unsigned 2-byte int), \textbf{i} (signed 4-byte int), \textbf{I}
 (unsigned 4-byte int), \textbf{l} (signed 8-byte int), \textbf{K}
 (unsigned 8-byte int), \textbf{f} (4-byte single-precision float), and
 \textbf{d} (8-byte double-precision float).  For a mixed-type data record
-you can concatenate several [\emph{n}]\textbf{t} combination,
+you can concatenate several [\emph{n}]\textbf{t} combinations,
 separated by commas.  You may append \textbf{w}
 to any of the items to force byte-swapping.  Alternatively, append
 \textbf{+L}$|$\textbf{B} to indicate that the entire data file
@@ -869,13 +869,13 @@ Here, \emph{n} is the number of each items in your binary file.
 Note that \emph{n} may be larger than \emph{m}, the number of
 columns that the \GMT\ program requires to do its task.
 If \emph{n} is not given then it defaults to \emph{m} and all columns
-are assumed to be of the single specified type \textbf{t} [double if not set].
+are assumed to be of the single specified type \textbf{t} [\textbf{d} (double), if not set].
 If \emph{n} $<$ \emph{m} an error is generated.
 
-For binary output, use the \Opt{bo}[\emph{n}]\textbf{t} option; see \Opt{bi} for
+For binary output, use the \Opt{bo}[\emph{n}]\textbf{t} option; see \Opt{bi} for further
 details.
 
-Because of its meta data, reading netCDF tables (i.e. netCDF files containing 1-dimensional arrays)
+Because of its meta data, reading netCDF tables (i.e., netCDF files containing 1-dimensional arrays)
 is quite a bit less complex than reading native binary files. When feeding netCDF tables to programs
 like \GMTprog{psxy}, the program will automatically recognize the format and read whatever amount of
 columns are needed for that program. To steer which columns are to be read, the user can
@@ -895,6 +895,7 @@ value is embedded in the \PS\ file and will make a printer issue the chosen
 number of copies without respooling.
 
 \subsection{Data type selection: The \Opt{f} option}
+\label{sec:fg_option}
 \index{Table!format}
 \index{Input!format \Opt{fi}}
 \index{Output!format \Opt{fo}}
@@ -906,13 +907,13 @@ what kind of data each input or output column contains.  This is accomplished wi
 the \Opt{f} option.  Following an optional \textbf{i} (for input only) or \textbf{o} (for output
 only), we append a text string with information about each column (or range of columns) separated by commas.
 Each string starts with the column number (0 is first column) followed by either
-x (longitude), y (latitude), T (absolute calendar time) or t (relative time).  If
+\textbf{x} (longitude), \textbf{y} (latitude), \textbf{T} (absolute calendar time) or \textbf{t} (relative time).  If
 several consecutive columns have the same format you may specify a range of columns
-rather than a single column, i.e., 0-4 for the first 5 columns.  For example, if our
+rather than a single column, i.e., 0--4 for the first 5 columns.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar
-coordinates in the columns 3 and 4, we would specify \textbf{fi}0y,1x,3-4T.  All other columns
+coordinates in the columns 3 and 4, we would specify \textbf{fi}0\textbf{y},1\textbf{x},3-4\textbf{T}.  All other columns
 are assumed to have the default, floating point format and need not be set individually.
-The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (geographic coordinates).
+The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (i.e., geographic coordinates).
 For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data}.
 
 \subsection{Data gap detection: The \Opt{g} option}
@@ -964,17 +965,23 @@ skipped (on input) or padded with the space character (on output).
 \label{sec:incols}
 The \Opt{i}\emph{columns} option allows you to specify which
 input file data columns to use and it what order.  By default, \GMT\ will
-read all the data columns in the file, starting with the first column.
+read all the data columns in the file, starting with the first column (0).
 Using \Opt{i} modifies that process.  For instance, to use the 4th, 7th, and
 3rd data column as the required {\it x,y,z} to \GMTprog{blockmean} you would
-specify \Opt{i}3,6,2 (since 0 is the first column).
+specify \Opt{i}3,6,2 (since 0 is the first column). The chosen data columns
+will be used as is.  Optionally, you can specify that input columns should be
+transformed according to a linear or logarithmic conversion.  Do so by appending
+[\textbf{l}][\textbf{s}{\it scale}][\textbf{o}{\it offset}] to each column (or range
+of columns).  All items are optional: The \textbf{l} implies we should first take
+$\log_{10}$ of the data [leave as is]. Next, we may scale the result by the given {\it scale} [1].
+Finally, we add in the specified {\it offset} [0].
 
 \subsection{Grid interpolation parameters: The \Opt{n} option}
 \index{\Opt{n} (Grid resampling parameters)}
 \index{Resampling \Opt{n}}
 \label{sec:resample}
-The \Opt{n}\emph{type} option controls parameters that are
-used when 2-D grids are resampled.  You can select the type
+The \Opt{n}\emph{type} option controls parameters 
+used for 2-D grids resampling.  You can select the type
 of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
 \Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
 For programs that support it, antialiasing is by default on;
@@ -1024,7 +1031,7 @@ command will be used.
 \index{\Opt{r} Grid registration}
 \index{grid file!registration|(}
 \label{sec:grid_registration}
-2-D grids in \GMT\ may have their nodes registered in one of two ways, known
+All 2-D grids in \GMT\ have their nodes organized in one of two ways, known
 as \emph{gridline}- and \emph{pixel} registration.  The \GMT\ default is
 gridline registration; programs that allow for the creation of grids can
 use the \Opt{r} option to select pixel registration instead.
@@ -1034,8 +1041,8 @@ use the \Opt{r} option to select pixel registration instead.
 
 In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value
-in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on the
-nodes (Figure~\ref{fig:GMT_registration}).
+in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on each
+node (Figure~\ref{fig:GMT_registration}).
 In the case of grid line registration the number of nodes are
 related to region and grid spacing by \\
 
@@ -1043,7 +1050,6 @@ related to region and grid spacing by \\
 nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\ 
 ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
 \end{array} \]
-
 which for the example in Figure~\ref{fig:GMT_registration} yields $nx = ny = 4$.
 
 \GMTfig[h]{GMT_registration}{Gridline- and pixel-registration of data nodes.}
@@ -1063,9 +1069,8 @@ to region and grid spacing by \\
 nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\ 
 ny & =  &       (y_{max} - y_{min}) / y_{inc}
 \end{array} \]
-
-Thus, given the same region (\Opt{R}), the pixel node registered grids have one less
-column and one less row than the grid line registered grids; here we
+Thus, given the same region (\Opt{R}) and grid spacing, the pixel-registered grids have one less
+column and one less row than the gridline-registered grids; here we
 find $nx = ny = 3$.
 
 \index{grid file!registration!pixel|)}
@@ -1078,7 +1083,7 @@ find $nx = ny = 3$.
 We can use this option to suppress output for records whose {\it z}-value equals NaN
 (by default we output all records).  Alternatively, append {\bf r} to reverse the suppression,
 i.e., only output the records whose {\it z}-value equals NaN.  Use \Opt{sa} to suppress
-output records where one or more fields equal NaN.  Finally, you can supply
+output records where one or more fields (and not necessarily {\it z}) equal NaN.  Finally, you can supply
 a comma-separated list of all columns or column ranges to consider for this NaN test.
 
 \subsection{Layer PDF transparency: The \Opt{t} option}
@@ -1190,9 +1195,13 @@ This feature allows you to connect programs with pipes if
 you like.  If your input is ASCII and has one or more header
 records that do not begin with \#, you must use the \Opt{h}
 option (see Section~\ref{sec:header}).
-For binary table data no headers are allowed.
 ASCII files may in many cases also contain segment-headers
-separating data segments.  These are called ``multi-segment files'';
+separating data segments.  These are called ``multi-segment files''.
+For binary table data the \Opt{h} option may specify how many bytes should
+be skipped before the data section is reached.
+Binary files may also contain segment-headers
+separating data segments.  These segment-headers are simply data records
+whose fields are all set to NaN;
 see Appendix~\ref{app:B} for complete documentation. 
 
 If filenames are given for reading, \GMT\ programs will first look for them in the
@@ -1260,8 +1269,8 @@ The syntax for redirection differ among the main shells (Bash and C-shell).
 Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is reading because you have selected
 a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
-providing as input using the \Opt{f} switch. When binary input data are expected (\Opt{bi}) they must all
-be floating point numbers, however for ASCII input there are numerous
+providing as input using the \Opt{f} switch. When binary input data are expected (\Opt{bi}) you must
+specify exactly the format of the records.  However, for ASCII input there are numerous
 ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
 of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
 flexibility for calendar data.  Geographical coordinates, for example, can be given in decimal degrees
@@ -1314,7 +1323,8 @@ systems since such files cannot easily be modified after they
 have been created.  \GMT\ programs also write many comments to
 the plot file which make it easier for users to orient
 themselves should they need to edit the file (e.g., \% Start
-of x-axis).  All \GMT\ programs create \PS\ code by
+of x-axis)\footnote{To keep \PS\ files small, such comments are by default
+turned off; see \textbf{PS\_COMMENTS} to enable them.}.  All \GMT\ programs create \PS\ code by
 calling the \textbf{PSL} plot library (The user may call these
 functions from his/her own C or FORTRAN plot programs. See the
 manual pages for \textbf{PSL} syntax).  Although \GMT\ programs
@@ -1324,7 +1334,7 @@ cases not covered by these programs.  Some knowledge of
 directly into the plot file.  By default, \GMT\ will produce
 freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
-\progname{IslandDraw}, \progname{CorelDraw}, \progname{Illustrator} or \progname{Freehand} for further
+\progname{CorelDraw}, \progname{Illustrator} or \progname{InkScape} for further
 embellishment, change the \textbf{PS\_MEDIA} setting in the \filename{gmt.conf}
 file.  See Appendix~\ref{app:C} and the \GMTprog{gmt.conf} man page for more details.
 
@@ -1887,7 +1897,7 @@ sd & Golden Software Surfer format 7 (double)	\\ \hline
 af & Atlantic Geoscience Center AGC (float)	\\ \hline
 ei & ESRI Arc/Info ASCII Grid Interchange format (integer)	\\ \hline
 ef & ESRI Arc/Info ASCII Grid Interchange format (float)	\\ \hline
-gd & Read-only via GDAL [EXPERIMENTAL] (float)	\\ \hline
+gd & Read-only via GDAL\footnote{Requires building \GMT\ with GDAL.} (float)	\\ \hline
 \end{tabular}
 \caption{\gmt\ grid file formats.}
 \label{tbl:grdformats}
