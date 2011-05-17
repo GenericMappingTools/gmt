@@ -67,14 +67,14 @@ to change the boundaries from geodetic longitudes to geographic and put a new ti
 the header.  We accomplish this by
 .br
 .sp
-BD(grdedit) data.nc OPT(R)-60/-50/10/30 OPT(D)=/=/=/=/=/"Gravity Anomalies"/=
+grdedit data.nc -R-60/-50/10/30 -D=/=/=/=/=/"Gravity Anomalies"/=
 .br
 .sp
 The grid world.nc has the limits 0/360/-72/72.  To shift the
 data so that the limits would be -180/180/-72/72, use
 .br
 .sp
-BD(grdedit) world.nc OPT(R)-180/180/-72/72 OPT(S)
+grdedit world.nc -R-180/180/-72/72 -S
 .br
 .sp
 The file junk.nc was created prior to BD(GMT) 3.1 with incompatible
@@ -82,14 +82,14 @@ OPT(R) and OPT(I) arguments.  To reset the x- and y-increments
 we run
 .br
 .sp
-BD(grdedit) junk.nc OPT(A)
+grdedit junk.nc -A
 .br
 .sp
 The file junk.nc was created prior to BD(GMT) 4.1.3 and does not contain the required
 information to indicate that the grid is geographic.  To add this information, run
 .br
 .sp
-BD(grdedit) junk.nc OPT(fg)
+grdedit junk.nc -fg
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2xyz (1),

@@ -86,15 +86,15 @@ attenuate their effect, the significance level of the F test must be kept low.
 .SH EXAMPLES
 To remove a linear trend from data.xy by ordinary least squares, use:  
 .sp
-BD(trend1d) data.xy OPT(F)xr OPT(N)2 > detrended_data.xy 
+trend1d data.xy -Fxr -N2 > detrended_data.xy 
 .sp
 To make the above linear trend robust with respect to outliers, use:
 .sp
-BD(trend1d) data.xy OPT(F)xr OPT(N)2BD(r) > detrended_data.xy 
+trend1d data.xy -Fxr -N2r > detrended_data.xy 
 .sp
-To find out how many terms (up to 20, say) in a robust Fourier interpolant are significant in fitting data.xy, use:
+To find out how many terms (up to 20, say in a robust Fourier interpolant are significant in fitting data.xy, use:
 .sp
-BD(trend1d) data.xy OPT(Nf)20BD(r) OPT(I) OPT(V)
+trend1d data.xy -Nf20r -I -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtmath (1),

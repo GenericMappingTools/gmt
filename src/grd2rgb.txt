@@ -44,13 +44,13 @@ because the guessing algorithm makes uses of FFTs.
 To use the color palette topo.cpt to create r, g, b component grids from hawaii_grv.nc file, use
 .br
 .sp
-BD(grd2rgb) hawaii_grv.nc OPT(C)topo.cpt OPT(G)hawaii_grv_%c.nc
+grd2rgb hawaii_grv.nc -Ctopo.cpt -Ghawaii_grv_%c.nc
 .br
 .sp
 To output the red component from the Sun raster radiation.ras file, use
 .br
 .sp
-BD(grd2rgb) radiation.ras OPT(L)r OPT(G)comp_%c.nc
+grd2rgb radiation.ras -Lr -Gcomp_%c.nc
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

@@ -148,38 +148,38 @@ To take the square root of the content of the second data column being piped thr
 by process1 and pipe it through a 3rd process, use
 .br
 .sp
-process1 | BD(gmtmath) STDIN BD(SQRT \=) | process3
+process1 | gmtmath STDIN SQRT = | process3
 .br
 .sp
 To take log10 of the average of 2 data files, use
 .br
 .sp
-BD(gmtmath) file1.d file2.d BD(ADD) 0.5 BD(MUL LOG10 \=) file3.d
+gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
 .br
 .sp
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
 .br
 .sp
-BD(gmtmath) samples.d BD(T SQRT) 350 BD(MUL )2500 BD(ADD SUB \=) | lpr
+gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
 .br
 .sp
 To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
 .br
 .sp
-BD(gmtmath) OPT(C)1,4-6 sizes.1 sizes.2 BD(ADD) sizes.3 BD(ADD 3 DIV \=) ave.d
+gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
 .br
 .sp
 To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
 .br
 .sp
-set mode_age = `BD(gmtmath) OPT(S) OPT(T) ages.d BD(MODE \=)`
+set mode_age = `gmtmath -S -T ages.d MODE =`
 .br
 .sp
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 .br
 .sp
-BD(gmtmath) OPT(T)t.d BD(T DILOG \=) dilog.d
+gmtmath -Tt.d T DILOG = dilog.d
 .br
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
@@ -188,7 +188,7 @@ As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
 and store the result in the shell variable z:
 .br
 .sp
-set z = `BD(gmtmath) OPT(Q) 1 1.75 BD(ADD) 2.2 BD(DIV) 60 BD(COSD ADD KEI \=)`
+set z = `gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 .br
 .sp
 To use BD(gmtmath) as a general least squares equation solver, imagine that the current table is the
@@ -200,13 +200,13 @@ Then, you need a 4-column augmented table loaded with t in column 0 and your obs
 The calculation becomes
 .br
 .sp
-BD(gmtmath) OPT(N)4/1 OPT(A)ty.d BD(-C)0 1 BD(ADD \-C)2 1.55 BD(STEPT ADD \-Ca LSQFIT \=) solution.d
+gmtmath -N4/1 -Aty.d -C0 1 ADD \-C2 1.55 STEPT ADD \-Ca LSQFIT \= solution.d
 .br
 .sp
 Note we use the OPT(C) option to select which columns we are working on, then make active all the
 columns we need (here all of them, with OPT(Ca)) before calling BD(LSQFIT).  The second and fourth
 columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
-a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
+a pre-calculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .br
 .sp
@@ -216,7 +216,7 @@ Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.
 .br
 Holmes, S. A., and W. E. Featherstone, 2002,  A unified approach to the Clenshaw summation and the
-recursive computation of very high degree and order normalised associated Legendre functions.
+recursive computation of very high degree and order normalized associated Legendre functions.
 IT(Journal of Geodesy), 76, 279-299.
 .br
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery, 1992, 

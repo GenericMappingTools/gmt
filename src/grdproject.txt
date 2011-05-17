@@ -71,14 +71,14 @@ You may ask to project only a subset of the grid by specifying a smaller input I
 To transform the geographical grid dbdb5.nc onto a pixel Mercator grid at 300 dpi, run
 .br
 .sp
-BD(grdproject) dbdb5.nc OPT(R)20/50/12/25 OPT(Jm)0.25BD(i) OPT(E)300 OPT(r)
+grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r
 OPT(G)dbdb5_merc.nc 
 .br
 .sp
 To inversely transform the file topo_tm.nc back onto a geographical grid, use
 .br
 .sp
-BD(grdproject) topo_tm.nc OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 OPT(I) OPT(D)5BD(m) OPT(V) OPT(G)topo.nc
+grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
 .br
 .sp
 This assumes, of course, that the coordinates in topo_tm.nc were created with the same projection parameters.
@@ -87,7 +87,7 @@ To inversely transform the file topo_utm.nc (which is in UTM meters) back to a g
 specify a one-to-one mapping with meter as the measure unit:
 .br
 .sp
-BD(grdproject) topo_utm.nc OPT(R)203/205/60/65 OPT(Ju)5/1:1 OPT(I) OPT(Mm) OPT(G)topo.nc OPT(V)
+grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
 .br
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular

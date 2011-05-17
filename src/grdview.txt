@@ -123,7 +123,7 @@ at LEN_1 cm/degree along the standard parallels 18 and 24, with vertical scale L
 looking at the surface from SW at 30 degree elevation, run 
 .br
 .sp
-BD(grdview) hawaii_grav.nc SCALE1 OPT(C)hawaii.cpt ZSCALE1 OPT(Qm) OPT(N)-100 OPT(p)225/30 OPT(Wc) > hawaii_grav_image.ps
+grdview hawaii_grav.nc SCALE1 -Chawaii.cpt ZSCALE1 -Qm -N-100 -p225/30 -Wc > hawaii_grav_image.ps
 .br
 .sp
 To create a illuminated color perspective plot of the gridded data set image.nc, using the color
@@ -131,13 +131,13 @@ palette file color.rgb, with linear scaling at 10 cm/x-unit
 and tickmarks every 5 units, with intensities provided by the file intens.nc, and looking from the SE, use
 .br
 .sp
-BD(grdview) image.nc SCALE2 OPT(C)color.rgb OPT(Qs) OPT(p)135/30 OPT(I)intens.nc  > image3D.ps
+grdview image.nc SCALE2 -Ccolor.rgb -Qs -p135/30 -Iintens.nc  > image3D.ps
 .br
 .sp
 To make the same plot using the rastering option with dpi = 50, use
 .br
 .sp
-BD(grdview) image.nc SCALE2 OPT(C)color.rgb OPT(Qi)50 OPT(p)135/30 OPT(I)intens.nc  > image3D.ps
+grdview image.nc SCALE2 -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc  > image3D.ps
 .br
 .sp
 To create a color IT(PostScript) perspective plot of the gridded data set magnetics.nc, using the color
@@ -145,16 +145,16 @@ palette file mag_intens.cpt, draped over the relief given by the file topography
 and tickmarks every 1 degree, with intensities provided by the file topo_intens.nc, and looking from the SE, run
 .br
 .sp
-BD(grdview) topography.nc SCALE3 OPT(G)magnetics.nc OPT(C)mag_intens.cpt OPT(Qs) OPT(p)140/30 OPT(I)topo_intens.nc  > draped3D.ps
+grdview topography.nc SCALE3 -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc  > draped3D.ps
 .br
 .sp
 Given topo.nc and the Landsat image veggies.ras, first run BD(grd2rgb) to get the red, green, and blue grids, and then drape
 this image over the topography and shade the result for good measure.  The commands are
 .br
 .sp
-BD(grd2rgb) veggies.ras OPT(G)layer_%c.nc
+grd2rgb veggies.ras -Glayer_%c.nc
 .br
-BD(grdview) topo.nc SCALE3 OPT(Qi) OPT(p)140/30 OPT(I)topo_intens.nc OPT(G)layer_r.nc,layer_g.nc,layer_b.nc > image.ps
+grdview topo.nc SCALE3 -Qi -p140/30 -Itopo_intens.nc -Glayer_r.nc,layer_g.nc,layer_b.nc > image.ps
 .SH REMARKS
 For the OPT(Qs) option:  IT(PostScript) provides no way of smoothly varying colors within a polygon, so colors can only
 vary from polygon to polygon.  To obtain smooth images this way you may resample the grid file(s) using BD(grdsample) or

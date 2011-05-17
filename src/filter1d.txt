@@ -104,7 +104,7 @@ and distance (in m) with a 10 km Gaussian filter, removing outliers, and output 
 value every 2 km between 0 and 100 km:
 .br
 .sp
-BD(filter1d) cruise.gmtd OPT(T)0/1.0e5/2000 OPT(FG)10000 OPT(N)3 OPT(V) > filtered_cruise.gmtd
+filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered_cruise.gmtd
 .br
 .sp
 Data along track often have uneven sampling and gaps which we do not want to interpolate using BD(sample1d).
@@ -112,7 +112,7 @@ To find the median depth in a 50 km window every 25 km along the track of cruise
 checking for gaps of 10km and asymmetry of 0.3:
 .br
 .sp
-BD(filter1d) v3312.dt OPT(FM)50 OPT(T)0/100000/25 OPT(L)10 OPT(S)0.3 > v3312_filt.dt
+filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.dt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR sample1d (1)

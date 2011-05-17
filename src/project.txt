@@ -125,14 +125,14 @@ Width controls.  Project only those points whose IT(q) coordinate is within IT(w
 .SH EXAMPLES
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 .sp
-BD(project) OPT(C)-50/10 OPT(E)-10/30 OPT(G)10 OPT(Q) > great_circle_points.xyp
+project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
 .sp
 (Note that great_circle_points.xyp could now be used as input for BD(grdtrack), etc. ).
 .sp
 To project the shiptrack gravity, magnetics, and bathymetry in c2610.xygmb along a great circle through an origin at 30S, 30W, the great circle having 
 an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, run:
 .sp 
-BD(project) c2610.xygmb OPT(C)-30/-30 OPT(A)-20 OPT(W)-10000/0 OPT(L)-500/500 OPT(F)pz OPT(Q) > c2610_projected.pgmb
+project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610_projected.pgmb
 .sp
 (Note in this example that OPT(W)-10000/0 is used to admit any value with a large negative IT(q) coordinate.  This 
 will take those points which are on our right as we walk along the great circle path, or to the NE in this example.)
@@ -140,18 +140,18 @@ will take those points which are on our right as we walk along the great circle 
 To make a Cartesian coordinate transformation of mydata.xy so that the new origin is at 5,3 and the new IT(x) axis (IT(p)) 
 makes an angle of 20 degrees with the old IT(x) axis, use:
 .sp
-BD(project) mydata.xy OPT(C)5/3 OPT(A)70 OPT(F)pq > mydata.pq
+project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
 .sp
 To take data in the file pacific.lonlat and transform it into oblique coordinates using a pole from the hotspot reference 
 frame and placing the oblique zero meridian (IT(p) = 0 line) through Tahiti, run:
 .sp
-BD(project) pacific.lonlat OPT(T)-75/68 OPT(C)-149:26/-17:37 OPT(F)pq > pacific.pq
+project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
 .sp
 Suppose that pacific_topo.nc is a grid file of bathymetry, and you want to make a file of flowlines in the hotspot reference 
 frame.  If you run:
 .sp
-BD(grd2xyz) pacific_topo.nc | BD(project) OPT(T)-75/68 OPT(C)0/-90 OPT(F)xyq | BD(xyz2grd) 
-OPT(R)IT(etc) OPT(I)IT(etc) OPT(C)flow.nc
+grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd 
+-Retc -Ietc -Cflow.nc
 .sp
 then flow.nc is a file in the same area as pacific_topo.nc, but flow contains the latitudes about the pole of the projection.  
 You now can use grdcontour on flow.nc to draw lines of constant oblique latitude, which are flow lines in the hotspot frame.

@@ -105,9 +105,9 @@ You want to use a 100km low\-pass filter to smooth the tracks and a 500km high\-
 filter to detrend the magnetic anomalies.  Try this:
 .br
 .sp
-BD(gmtlist) cag71 OPT(R)300/315/12/20 OPT(F)xyzdh | 
-BD(splitxyz) OPT(A)90/15 OPT(F)100/-500 OPT(D)100 OPT(S) OPT(V) OPT(fg) | 
-BD(pswiggle) OPT(R)300/315/12/20 OPT(Jm)0.6 OPT(Ba)5BD(f)1:.cag71: OPT(T)1 OPT(W)0.75p OPT(G)gray OPT(Z)200 > cag71_wiggles.ps
+gmtlist cag71 -R300/315/12/20 -Fxyzdh | 
+splitxyz -A90/15 -F100/-500 -D100 -S -V -fg | 
+pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1 -W0.75p -Ggray -Z200 > cag71_wiggles.ps
 .br
 .sp
 MGD-77 users: For this application we recommend that you extract d, h from BD(mgd77list) rather than
@@ -117,7 +117,7 @@ have BD(splitxyz) compute them separately.
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named IT(survey)_\fI###.txt\fP (when gap exceeds 100 km).  Try this:
 .sp
-BD(splitxyz) survey.bin OPT(N)survey_%3.3d.txt OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(fg) OPT(bi))3
+splitxyz survey.bin -Nsurvey_%3.3d.txt -V -G100 -D100 -: -fg -bi3d
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mgd77list (1),

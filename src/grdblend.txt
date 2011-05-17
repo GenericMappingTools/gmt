@@ -85,13 +85,13 @@ piece_4.nc	-R<subregion_4> 1
 Then run
 .br
 .sp
-BD(grdblend) blend.job OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> BD(-V)
+grdblend blend.job -Gblend.nc -R<full_region> -I<dx/dy> -V
 .br
 .sp
 To blend all the grids called MB_*.nc given them all equal weight, try
 .br
 .sp
-BD(grdblend) MB_*.nc OPT(G)blend.nc OPT(R)<full_region> OPT(I)<dx/dy> BD(-V)
+grdblend MB_*.nc -Gblend.nc -R<full_region> -I<dx/dy> -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2xyz (1),

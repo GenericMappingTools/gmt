@@ -97,7 +97,7 @@ using vector rather than stick plot, and scale vector magnitudes so that LEN2 un
 equal 1 inch, run 
 .br
 .sp
-BD(grdvector) r.nc theta.nc SCALE OPT(A) OPT(Q) SCL2 > gradient.ps
+grdvector r.nc theta.nc SCALE -A -Q SCL2 > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"

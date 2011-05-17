@@ -48,7 +48,11 @@ one of several data types (all binary except BD(a)):
 .br
 	BD(h)  short 2-byte integer
 .br
+	BD(H)  unsigned short 2-byte integer
+.br
 	BD(i)  4-byte integer
+.br
+	BD(I)  unsigned 4-byte integer
 .br
 	BD(l)  long (8-byte) integer [requires 64-bit mode]
 .br
@@ -87,13 +91,13 @@ To edit individual values in the 5' by 5' hawaii_grv.nc file, dump the .nc
 to ASCII:
 .br
 .sp
-BD(grd2xyz) hawaii_grv.nc > hawaii_grv.xyz
+grd2xyz hawaii_grv.nc > hawaii_grv.xyz
 .br
 .sp
 To write a single precision binary file without the x,y positions from the file raw_data.nc file, using scanline orientation, run
 .br
 .sp
-BD(grd2xyz) raw_data.nc OPT(ZTLf) > hawaii_grv.b
+grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
 .SH "SEE ALSO"
 .IR gmt.conf (5),
 .IR gmt (1),

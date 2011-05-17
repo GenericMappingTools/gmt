@@ -47,13 +47,13 @@ Specify this information using 1 of 2 formats:
 To set all nodes on land to NaN, and nodes over water to 1, using the high resolution data set, do
 .br
 .sp
-BD(grdlandmask) OPT(R)-60/-40/-40/-30 OPT(Dh) OPT(i)5BD(m) OPT(N)1/NaN OPT(G)land_mask.nc OPT(V)
+grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
 .br
 .sp
 To make a 1x1 degree global grid with the hierarchical levels of the nodes based on the low resolution data:
 .br
 .sp
-BD(grdlandmask) OPT(R)0/360/-90/90 OPT(Dl) OPT(I)1 OPT(N)0/1/2/3/4 OPT(G)levels.nc OPT(V)
+grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
 #include "explain_gshhs.txt"
 .SH "SEE ALSO"
 .IR gmt (1),

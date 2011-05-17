@@ -99,13 +99,13 @@ you should consider projecting the grid file onto a rectangular coordinate syste
 To upward continue the sea-level magnetic anomalies in the file mag_0.nc to a level 800 m above sealevel:
 .br
 .sp
-BD(grdfft) mag_0.nc OPT(C)800 OPT(V) OPT(G)mag_800.nc 
+grdfft mag_0.nc -C800 -V -Gmag_800.nc 
 .br
 .sp
 To transform geoid heights in m (geoid.nc) on a geographical grid to free-air gravity anomalies in mGal:
 .br
 .sp
-BD(grdfft) geoid.nc OPT(Dg) OPT(V) OPT(G)grav.nc
+grdfft geoid.nc -Dg -V -Ggrav.nc
 .br
 .sp
 To transform gravity anomalies in mGal (faa.nc) to deflections of the vertical (in micro-radians) in the
@@ -113,14 +113,14 @@ To transform gravity anomalies in mGal (faa.nc) to deflections of the vertical (
 finally scale radians to micro-radians:
 .br
 .sp
-BD(grdfft) faa.nc OPT(Ig)38 OPT(S)1e6 OPT(V) OPT(G)defl_38.nc
+grdfft faa.nc -Ig38 -S1e6 -V -Gdefl_38.nc
 .br
 .sp
 Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
 compute these as mGal/m^2 by differentiating twice:
 .br
 .sp
-BD(grdfft) gravity.nc OPT(D) OPT(D) OPT(V) OPT(G)grav_2nd_derivative.nc
+grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 .br
 .sp
 The first order gravity anomaly (in mGal) due to the compensating surface caused 
@@ -128,7 +128,7 @@ by the topography load topo.nc (in m) on a 20 km thick elastic plate, assumed to
 be 4 km beneath the observation level can be computed as
 .br
 .sp
-BD(grdfft) topo.nc OPT(T)20000/2800/3330/1030/2300 OPT(S)0.022 OPT(C)4000 OPT(G)comp_faa.nc
+grdfft topo.nc -T20000/2800/3330/1030/2300 -S0.022 -C4000 -Gcomp_faa.nc
 .br
 .sp
 where 0.022 is the scale needed for the first term in Parker's expansion for\"'

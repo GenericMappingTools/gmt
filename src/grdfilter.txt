@@ -104,7 +104,7 @@ Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry from 140E t
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
 and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
 .sp
-BD(grdfilter) north_pacific_dbdb5.nc OPT(G)filtered_pacific.nc OPT(Fm)600 OPT(D)4 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
+grdfilter north_pacific_dbdb5.nc -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize
 the filter weights for the variation in gridbox size with latitude, and correctly determine which nodes are needed for the convolution

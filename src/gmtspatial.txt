@@ -93,20 +93,20 @@ polygons of length 4 or 5 that exactly match the OPT(R) clipping polygon.
 To compute the area of all geographic polygons in the multisegment file polygons.d, run 
 .br
 .sp
-BD(gmtspatial) polygons.d OPT(M) > areas.d
+gmtspatial polygons.d -M > areas.d
 .br
 .sp
-Same data. but now orient all polygons to go counter-clockwise and write their areas to
+Same data, but now orient all polygons to go counter-clockwise and write their areas to
 the segment headers, run 
 .br
 .sp
-BD(gmtspatial) polygons.d OPT(M+) OPT(E+) > areas.d
+gmtspatial polygons.d -M+ -E+ > areas.d
 .br
 .sp
 To determine the intersections between the polygons A.d and B.d, run 
 .br
 .sp
-BD(gmtspatial) A.d B.d OPT(Ce) > crossovers.d
+gmtspatial A.d B.d -Ce > crossovers.d
 .br
 .sp
 .SH "SEE ALSO"

@@ -277,8 +277,8 @@ To plot blue columns (width = LEN_1 cm) at the positions listed in the file heig
 viewing it from the southeast at 30 degree elevation, use:
 .br
 .sp
-BD(psxyz) heights.xyz OPT(R)0/10/0/10/0/100 OPT_1
-OPT(G)blue OPT(B)2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 OPT(p)135/30 OPT(Uc) OPT(W) OPT(P) > heights.ps
+psxyz heights.xyz -R0/10/0/10/0/100 OPT_1
+-Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P > heights.ps
 .SH SEGMENT HEADER PARSING
 Segment header records may contain one of more of the following options:
 .br

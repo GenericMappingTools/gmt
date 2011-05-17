@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtaverage_func.c,v 1.5 2011-05-09 02:19:06 guru Exp $
+ *    $Id: gmtaverage_func.c,v 1.6 2011-05-17 04:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -189,7 +189,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtaverage", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRbf:", "ghio>" GMT_OPT("H"), options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("H"), options))) Return (error);
 	Ctrl = (struct GMTAVERAGE_CTRL *) New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtaverage_parse (API, Ctrl, options))) Return (error);
 
@@ -200,10 +200,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_Find_Option (API, 'T', options, &t_ptr);	/* Find the required -T option */
 	
 	switch (t_ptr->arg[0]) {	/* Determine what GMT_block* module we need */
-		case 'm':	/* Call blockmean */
-		case 'n':
-		case 's':
-		case 'w':
+		case 'm': case 'n': case 's': case 'w':	/* Call blockmean */
 			t_ptr->option = 'S';	/* Since blockmean uses -S, not -T to select type */
 			func = GMT_blockmean;
 			break;

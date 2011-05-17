@@ -96,33 +96,33 @@ To extract the second layer from a 3-dimensional grid named temp from a COARDS-c
 climate.nc:
 .br
 .sp
-BD(grdreformat) climate.nc?temp[1] temp.nc BD(-V)
+grdreformat climate.nc?temp[1] temp.nc -V
 .br
 .sp
 To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.nc:
 .br
 .sp
-BD(grdreformat) data.nc ras_data.b4=bf OPT(V)
+grdreformat data.nc ras_data.b4=bf -V
 .br
 .sp
 To make a 2-byte short integer file, scale it by 10, subtract 32000, setting
 NaNs to -9999, do
 .br
 .sp
-BD(grdreformat) values.nc shorts.i2=bs/10/-32000/-9999 OPT(V)
+grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
 .br
 .sp
 To create a Sun standard 8-bit rasterfile for a subset of the data file image.nc,
 assuming the range in image.nc is 0-1 and we need 0-255, run
 .br
 .sp
-BD(grdreformat) image.nc OPT(R)-60/-40/-40/-30 image.ras8=rb/255/0 OPT(V)
+grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
 .br
 .sp
 To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
 .br
 .sp
-BD(grdreformat) etopo2.nc etopo2.i2=bs OPT(N) OPT(V)
+grdreformat etopo2.nc etopo2.i2=bs -N -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdmath (1)

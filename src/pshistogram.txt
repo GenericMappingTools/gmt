@@ -89,7 +89,7 @@ To draw a histogram of the data v3206.t containing seafloor depths, using a 250 
 bin width, center bars, and draw bar outline, use:
 .br
 .sp
-BD(pshistogram) v3206.t OPT(JX)h OPT(W)250 OPT(F) OPT(L)P0.5BD(p) OPT(V) > plot.ps
+pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
 .br
 .sp
 If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,
@@ -98,8 +98,7 @@ bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 co
 and use black bars, run:
 .br
 .sp
-BD(pshistogram) errors.xy OPT(W)1 OPT(R)-10/10/0/0 SCALE
-OPT(B)2:Error:/100:Counts: OPT(G)black OPT(i)1 OPT(V) > plot.ps
+pshistogram errors.xy -W1 -R-10/10/0/0 SCALE -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
 .br
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.

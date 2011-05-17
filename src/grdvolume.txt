@@ -51,32 +51,32 @@ Optionally subtract IT(shift) before scaling data by IT(fact). [Default is no sc
 To determine the volume in km^3 under the surface hawaii_topo.nc (height in km), use
 .br
 .sp
-BD(grdvolume) hawaii_topo.nc OPT(Sk)
+grdvolume hawaii_topo.nc -Sk
 .br
 .sp
 To find the volume between the surface peaks.nc and the contour z = 250, use
 .br
 .sp
-BD(grdvolume) peaks.nc OPT(Sk) OPT(C)250
+grdvolume peaks.nc -Sk -C250
 .br
 .sp
 To search for the contour, between 100 and 300 in steps of 10, that maximizes the ratio of volume
 to surface area for the file peaks.nc, use
 .br
 .sp
-BD(grdvolume) peaks.nc OPT(Sk) OPT(C)100/300/10 OPT(Th) > results.d
+grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
 .br
 .sp
 To see the areas and volumes for all the contours in the previous example, use
 .br
 .sp
-BD(grdvolume) peaks.nc OPT(Sk) OPT(C)100/300/10 > results.d
+grdvolume peaks.nc -Sk -C100/300/10 > results.d
 .SH "NOTES"
-BD(grdvolume) distinguishes between gridline and gridcell oriented grids. In both cases the area and
-volume are computed up to the grid boundaries. That means that in the first case the gridcells on
-the boundary only contribute half their area (and volume), whereas in the second case all gridcells
+BD(grdvolume) distinguishes between gridline and pixel-registered grids. In both cases the area and
+volume are computed up to the grid boundaries. That means that in the first case the grid cells on
+the boundary only contribute half their area (and volume), whereas in the second case all grid cells
 are fully used. The exception is when the OPT(C) flag is used: since contours do not extend beyond
-the outermost gridpoint, both grid types are treated the same. That means the outer rim in gridcell
+the outermost grid point, both grid types are treated the same. That means the outer rim in pixel
 oriented grids is ignored when using the OPT(C) flag.
 .SH "SEE ALSO"
 .IR gmt (1),

@@ -88,19 +88,19 @@ To make an overlay IT(PostScript) file that will mask out the regions of a conto
 where there is no control data using clip polygons, use:
 .br
 .sp
-BD(psmask) africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5BD(m) OPT(JM)10BD(i) OPT(O) OPT(K) > mask.ps
+psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
 .br
 .sp
 We do it again, but this time we wish to save the clipping polygons to file all_pols.txt:
 .br
 .sp
-BD(psmask) africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5BD(m) OPT(D)all_pols.txt
+psmask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
 .br
 .sp
 A repeat of the first example but this time we use white tiling:
 .br
 .sp
-BD(psmask) africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5BD(m) OPT(JM)10BD(i) OPT(T) OPT(O) OPT(K) OPT(G)white > mask.ps
+psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite > mask.ps
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtcolors (5),

@@ -77,21 +77,21 @@ To triangulate the points in the file samples.xyz, store the triangle informatio
 make a grid for the given area and spacing, use
 .br
 .sp
-BD(triangulate) samples.xyz OPT(bo) OPT(R)0/30/0/30 OPT(I)2 OPT(G)surf.nc > samples.ijk
+triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
 .br
 .sp
 To draw the optimal Delaunay triangulation network based on the same file using a
 LEN-cm-wide Mercator map, use
 .br
 .sp
-BD(triangulate) samples.xyz OPT(M) OPT(R)-100/-90/30/34 SCALE | BD(psxy) OPT(R)-100/-90/30/34 SCALE
-OPT(W)0.5BD(p) OPT(B)1 > network.ps
+triangulate samples.xyz -M -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCALE
+-W0.5p -B1 > network.ps
 .br
 .sp
 To instead plot the Voronoi cell outlines, try
 .br
-BD(triangulate) samples.xyz OPT(M) OPT(Q) OPT(R)-100/-90/30/34 SCALE | BD(psxy) OPT(R)-100/-90/30/34 SCALE
-OPT(W)0.5BD(p) OPT(B)1 > cells.ps
+triangulate samples.xyz -M -Q -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCALE
+-W0.5p -B1 > cells.ps
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR pscontour (1)

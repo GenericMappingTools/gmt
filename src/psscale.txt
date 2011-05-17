@@ -118,7 +118,7 @@ To append a vertical color scale (LEN_1 cm long; LEN_2 cm wide) to the right of 
 high, using illumination, and show back- and foreground colors, and annotating every 5 units, use
 .br
 .sp
-BD(psscale) SCALE OPT(O) OPT(C)colors.cpt OPT(I) OPT(E) OPT(B)5:BATHYMETRY:/:m: >> map.ps
+psscale SCALE -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: >> map.ps
 .SH NOTES
 When the cpt file is discrete and no illumination is specified, the color bar will be painted
 using polygons.  For all other cases we must paint with an image.  Some color printers may give

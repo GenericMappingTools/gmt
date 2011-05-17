@@ -67,7 +67,7 @@ Only works when OPT(I) is selected.
 To find the extreme values in the file ship_gravity.xygd:
 .br
 .sp
-BD(minmax) ship_gravity.xygd
+minmax ship_gravity.xygd
 .br
 .sp
 Output should look like
@@ -80,14 +80,14 @@ To find the extreme values in the file track.xy to the nearest 5 units and use t
 region to draw a line using psxy, run
 .br
 .sp
-BD(psxy) `BD(minmax) OPT(I)5 track.xy` track.xy OPT(Jx)1 OPT(B)5 OPT(P) > track.ps
+psxy `minmax -I5 track.xy` track.xy -Jx1 -B5 -P > track.ps
 .br
 .sp
 To find the min and max values for each of the first 4 columns, but rounded to integers, and
 return the result individually for each data file, use
 .br
 .sp
-BD(minmax) profile_*.txt OPT(C) OPT(I)1/1/1/1
+minmax profile_*.txt -C -I1/1/1/1
 .SH BUGS
 The OPT(I) option does not yet work properly with time series data (e.g., OPT(f)0T).  Thus, such
 variable intervals as months and years are not calculated.  Instead, specify your interval in the

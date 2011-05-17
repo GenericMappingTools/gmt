@@ -80,13 +80,13 @@ To make an overlay IT(PostScript) file that will set up a complex clip area to w
 subsequent plotting will be confined, run:
 .br
 .sp
-BD(psclip) my_region.xy OPT(R)0/40/0/40 OPT(Jm)0.3BD(i) OPT(O) OPT(K) > clip_mask_on.ps
+psclip my_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip_mask_on.ps
 .br
 .sp
 To deactivate the clipping in an existing plotfile, run:
 .br
 .sp
-BD(psclip) OPT(C) OPT(O) >> complex_plot.ps
+psclip -C -O >> complex_plot.ps
 .SH BUGS
 BD(psclip) cannot handle polygons that contain the south or north pole.  For such polygons,
 you should split them into two and make each explicitly contain the polar point.  The two

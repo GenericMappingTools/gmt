@@ -60,10 +60,9 @@ Suppose you have lon,lat,grav data along a twisty ship track in the file ship.xy
 project this data onto a great circle and resample it in distance, in order to filter it or check its spectrum.  Do the following:
 .br
 .sp
-BD(fitcircle) ship.xyg OPT(L)2 
+fitcircle ship.xyg -L2 
 .sp
-BD(project) ship.xyg OPT(C)IT(ox)/IT(oy) OPT(T)IT(px)/IT(py) OPT(S) OPT(F)pz | BD(sample1d) OPT(S)\-100 OPT(I)1 
-> output.pg
+project ship.xyg -Cox/oy -Tpx/py -S -Fpz | sample1d -S-100 -I1 > output.pg
 .sp
 Here, IT(ox)/IT(oy) is the lon/lat of the mean from BD(fitcircle), and IT(px)/IT(py) is the lon/lat 
 of the pole.  The file output.pg has distance, gravity data sampled every 1 km along the great circle which best fits ship.xyg

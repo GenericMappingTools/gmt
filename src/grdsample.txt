@@ -58,14 +58,14 @@ important.  Use bilinear to minimize the propagation of NaNs.
 To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:
 .br
 .sp
-BD(grdsample) hawaii_5by5_topo.nc OPT(I)1BD(m) OPT(G)hawaii_1by1_topo.nc
+grdsample hawaii_5by5_topo.nc -I1m -Ghawaii_1by1_topo.nc
 .br
 .sp
 To translate the gridline-registered file surface.nc to pixel registration while
 keeping the same region and grid interval:
 .br
 .sp
-BD(grdsample) surface.nc OPT(T) OPT(G)pixel.nc
+grdsample surface.nc -T -Gpixel.nc
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdedit (1),

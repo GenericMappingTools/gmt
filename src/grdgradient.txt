@@ -155,14 +155,14 @@ normalized gradients
 imitating light sources in the north and west directions:
 .br
 .sp
-BD(grdgradient) geoid.nc OPT(A)0/270 OPT(G)gradients.nc OPT(Ne)0.6 OPT(V)
+grdgradient geoid.nc -A0/270 -Ggradients.nc -Ne0.6 -V
 .br
 .sp
 To find the azimuth orientations of seafloor fabric in the file  
 topo.nc:
 .br
 .sp
-BD(grdgradient) topo.nc OPT(Dno) OPT(G)azimuths.nc OPT(V)
+grdgradient topo.nc -Dno -Gazimuths.nc -V
 .br
 .sp
 .SH REFERENCES

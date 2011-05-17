@@ -71,14 +71,14 @@ To find the height intervals that divide the file heights.nc into 16 divisions o
 equal area:
 .br
 .sp
-BD(grdhisteq) heights.nc OPT(C)16 OPT(D) > levels.d
+grdhisteq heights.nc -C16 -D > levels.d
 .br
 .sp
 To make the poorly distributed intensities in the file raw_intens.nc suitable for use
 with BD(grdimage) or BD(grdview), run
 .br
 .sp
-BD(grdhisteq) raw_intens.nc OPT(G)smooth_intens.nc OPT(N) OPT(V)
+grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
 .SH RESTRICTIONS
 If you use BD(grdhisteq) to make a gaussian output for gradient shading
 in BD(grdimage) or BD(grdview), you should be aware of the following:  the output will be

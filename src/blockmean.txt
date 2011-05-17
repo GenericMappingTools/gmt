@@ -68,7 +68,7 @@ without it 9.5 <= (IT(x),IT(y)) < 10.5 is one of 36 blocks.
 .sp
 To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 .sp
-BD(blockmean) hawaii.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) > hawaii_5x5.xyg
+blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmedian (1),
 .IR blockmode (1),

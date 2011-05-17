@@ -89,20 +89,20 @@ To make a cpt file with z-values from -200 to 200, with discrete color changes e
 25, and using a polar blue-white-red colortable:
 .br
 .sp
-BD(makecpt) OPT(C)IT(polar) OPT(T)-200/200/25 > colors.cpt
+makecpt -Cpolar -T-200/200/25 > colors.cpt
 .br
 .sp
 To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
 continuous default rainbow colors:
 .br
 .sp
-BD(makecpt) OPT(T)-2/6/1 OPT(Z) > rainbow.cpt
+makecpt -T-2/6/1 -Z > rainbow.cpt
 .br
 .sp
 To make a GEBCO look-alike cpt file for bathymetry, run
 .br
 .sp
-BD(makecpt) OPT(C)gebco > my_gebco.cpt
+makecpt -Cgebco > my_gebco.cpt
 .SH BUGS
 Since BD(makecpt) will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names

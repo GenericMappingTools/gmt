@@ -145,26 +145,26 @@ line we simply replace it with the listed argument list.  No macro may call anot
 As an example, the following macro expects three arguments (radius x0 y0) and sets the
 modes that are inside the given circle to 1 and those outside to 0:
 .sp
-BD(INCIRCLE) = BD(CDIST EXCH DIV 1 LE) : IT(usage: r x y INCIRCLE to return 1 inside circle)
+INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1 inside circle
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
 .br
 .sp
-BD(grdmath) file1.nc file2.nc BD(ADD) 0.5 BD(MUL LOG10 =) file3.nc
+grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 .br
 .sp
 Given the file ages.nc, which holds seafloor ages in m.y., use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to estimate normal seafloor depths:
 .br
 .sp
-BD(grdmath) ages.nc BD(SQRT) 350 BD(MUL )2500 BD(ADD =) depths.nc
+grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 .br
 .sp
 To find the angle a (in degrees) of the largest principal stress from the stress tensor given by the
 three files s_xx.nc s_yy.nc, and s_xy.nc from the relation tan (2*a) = 2 * s_xy / (s_xx - s_yy), use
 .br
 .sp
-BD(grdmath) 2 s_xy.nc BD(MUL) s_xx.nc s_yy.nc BD(SUB DIV ATAN2) 2 BD(DIV =) direction.nc
+grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
 .br
 .sp
 To calculate the fully normalized spherical harmonic of degree 8 and order
@@ -172,15 +172,15 @@ To calculate the fully normalized spherical harmonic of degree 8 and order
 imaginary amplitude 1.1:
 .br
 .sp
-BD(grdmath) OPT(R)0/360/-90/90 OPT(I)1 8 4 BD(YML) 1.1 BD(MUL EXCH) 0.4 BD(MUL ADD) = harm.nc
+grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 .br
 .sp
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
 .br
 .sp
-BD(grdmath) faa.nc BD(DUP EXTREMA) 2 BD(EQ MUL DUP) 100 BD(GT MUL) 0 BD(NAN) = z.nc
+grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
 .br
-BD(grd2xyz) z.nc OPT(S) > max.xyz
+grd2xyz z.nc -S > max.xyz
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.

@@ -33,7 +33,7 @@ Set all data[i] < IT(low) to IT(below).
 .SH EXAMPLES
 To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 .sp
-BD(grdclip) data.nc OPT(G)new_data.nc OPT(Sa)70/NaN OPT(Sb)0/0 OPT(V)
+grdclip data.nc -Gnew_data.nc -Sa70/NaN -Sb0/0 -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdlandmask (1),

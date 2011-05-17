@@ -141,14 +141,14 @@ Append BD(+o) to open a folder or document in the sidebar when loaded [closed].
 To convert a file with point locations (lon, lat) into a KML file with red circle symbols, try
 .br
 .sp
-gmt2kml mypoints.txt OPT(Gf)red OPT(Fs) > mypoints.kml
+gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
 .br
 .sp
 To convert a multisegment file with lines (lon, lat) separated by segment headers that contain
 a OPT(L)labelstring with the feature name, selecting a thick white pen, and title the document, try
 .br
 .sp
-gmt2kml mylines.txt OPT(W)thick,white OPT(Fl) OPT(T)"Lines from here to there" > mylines.kml
+gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 .br
 .sp
 To convert a multisegment file with polygons (lon, lat) separated by segment headers that contain
@@ -156,14 +156,14 @@ a OPT(L)labelstring with the feature name, selecting a thick black pen and semi-
 giving a title to the document, and prescribing a particular region limit, try
 .br
 .sp
-gmt2kml mypolygons.txt OPT(Gf)yellow+t0.5 OPT(Fp) OPT(T)"My polygons" OPT(R)30/90/-20/40 > mypolygons.kml
+gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 .br
 .sp
 To convert a file with point locations (lon, lat, time) into a KML file with green circle symbols that
 will go active at the specified time and stay active going forward, try
 .br
 .sp
-awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt2kml OPT(Gf)green OPT(Ft) > mytimepoints.kml
+awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt2kml -Gfgreen -Ft > mytimepoints.kml
 .SH "LIMITATIONS"
 Google Earth has trouble displaying filled polygons across the Dateline.  For now you must manually break
 any polygon crossing the dateline into a west and east polygon and plot them separately.
