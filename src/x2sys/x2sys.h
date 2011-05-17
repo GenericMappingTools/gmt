@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.62 2011-05-17 00:50:56 guru Exp $
+ *	$Id: x2sys.h,v 1.63 2011-05-17 00:54:58 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -147,7 +147,7 @@ struct X2SYS_INFO {
 	GMT_LONG *use_column;		/* Array of T/F for which columns to use */
 	GMT_LONG geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	GMT_LONG dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
-	PFI read_file;			/* Pointer to function that reads this file */
+	PFL read_file;			/* Pointer to function that reads this file */
 	GMT_LONG file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	GMT_LONG ascii_out;		/* TRUE if output should be in ascii */
 	GMT_LONG multi_segment;		/* TRUE if there are multiple segments in this file */

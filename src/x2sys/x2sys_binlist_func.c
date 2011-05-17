@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.7 2011-05-11 09:48:21 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.8 2011-05-17 00:50:56 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -263,7 +263,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Reading file %s ", trk_name[i]);
 
-		x2sys_err_fail (GMT, (s->read_file) (trk_name[i], &data, s, &p, &GMT->current.io, &j), trk_name[i]);
+		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[i], &data, s, &p, &GMT->current.io, &j), trk_name[i]);
 		GMT_report (GMT, GMT_MSG_NORMAL, "[%s]\n", s->path);
 		
 		if (Ctrl->E.active) {	/* Project coordinates */

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.160 2011-05-16 21:23:11 guru Exp $
+ *	$Id: x2sys.c,v 1.161 2011-05-17 00:54:58 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	X->unit[X2SYS_DIST_SELECTION][0] = 'k';		X->unit[X2SYS_DIST_SELECTION][1] = '\0';	/* Initialize for geographic data (km and m/s) */
 	X->unit[X2SYS_SPEED_SELECTION][0] = GMT_MAP_DIST_UNIT;	X->unit[X2SYS_SPEED_SELECTION][1] = '\0';
 	if (!strcmp (fname, "mgd77+")) {
-		X->read_file = (PFI) x2sys_read_mgd77ncfile;
+		X->read_file = (PFL) x2sys_read_mgd77ncfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
 		X->dist_flag = 2;	/* Creat circle distances */
@@ -234,21 +234,21 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	}
 #ifdef GMT_COMPAT
 	else if (!strcmp (fname, "gmt")) {
-		X->read_file = (PFI) x2sys_read_gmtfile;
+		X->read_file = (PFL) x2sys_read_gmtfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
 		X->dist_flag = 2;	/* Creat circle distances */
 	}
 #endif
 	else if (!strcmp (fname, "mgd77")) {
-		X->read_file = (PFI) x2sys_read_mgd77file;
+		X->read_file = (PFL) x2sys_read_mgd77file;
 		X->geographic = TRUE;
 		X->geodetic = 0;
 		X->dist_flag = 2;	/* Creat circle distances */
 		MGD77_Init (C, &M);	/* Initialize MGD77 Machinery */
 	}
 	else {
-		X->read_file = (PFI) x2sys_read_file;
+		X->read_file = (PFL) x2sys_read_file;
 		X->dist_flag = 0;			/* Cartesian distances */
 		X->unit[X2SYS_DIST_SELECTION][0] = 'c';	/* Reset to Cartesian */
 		X->unit[X2SYS_SPEED_SELECTION][0] = 'c';	/* Reset to Cartesian */
@@ -290,7 +290,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 
 	}
 	fclose (fp);
-	if (X->file_type == X2SYS_NETCDF) X->read_file = (PFI) x2sys_read_ncfile;
+	if (X->file_type == X2SYS_NETCDF) X->read_file = (PFL) x2sys_read_ncfile;
 
 	if (i < n_alloc) X->info = GMT_memory (C, X->info, i, struct X2SYS_DATA_INFO);
 	X->n_fields = X->n_out_columns = i;
