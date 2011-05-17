@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.57 2011-04-24 13:56:46 remko Exp $
+#	$Id: GNUmakefile,v 1.58 2011-05-17 16:37:56 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -183,17 +183,17 @@ $(EX_PS:.ps=.pdf) $(AN_PS:.ps=.pdf):	%.pdf: %.ps
 
 # Turn scripts into TeX files for inclusion in the documentation. Keep comments in these.
 $(DOCPS0:.ps=.tex) fig/functions.tex:	fig/%.tex:	scripts/%.sh
-	pr -t -e scripts/$*.sh | egrep -v 'Id:|. functions.sh' > fig/$*.tex
+	pr -t -e scripts/$*.sh | egrep -v 'Id:|functions.sh' > fig/$*.tex
 
 # Turn scripts into TeX files for inclusion in the documentation. Remove comments in these.
 $(DOCPS1:.ps=.tex):	fig/%.tex:	scripts/%.sh
-	pr -t -e scripts/$*.sh | egrep -v '^#|^$$|. functions.sh' > fig/$*.tex
+	pr -t -e scripts/$*.sh | egrep -v '^#|^$$|functions.sh' > fig/$*.tex
 
 # Keep the comments in the examples, but remove CVS tag.
 $(EX_PS:.ps=.tex):	%.tex:	%.ps
-	pr -t -e $(subst fig/example_,examples/*/job,$*).sh | egrep -v 'Id:|. ../functions.sh' > $*.tex
+	pr -t -e $(subst fig/example_,examples/*/job,$*).sh | egrep -v 'Id:|functions.sh' > $*.tex
 $(AN_PS:.ps=.tex):	%.tex:	%.ps
-	pr -t -e $(subst fig/anim_,examples/*/anim_,$*).sh | egrep -v 'Id:|. ../functions.sh' > $*.tex
+	pr -t -e $(subst fig/anim_,examples/*/anim_,$*).sh | egrep -v 'Id:|functions.sh' > $*.tex
 fig/volcano.tex:	../share/custom/volcano.def
 	pr -t -e ../share/custom/volcano.def | egrep -v 'Id:' > $@
 fig/bullseye.tex:	examples/ex20/bullseye.def
