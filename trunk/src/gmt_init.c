@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.514 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmt_init.c,v 1.515 2011-05-17 22:12:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4967,6 +4967,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	C->common.a.active = C->common.b.active[GMT_IN] = C->common.b.active[GMT_OUT] = C->common.c.active = FALSE;
 	C->common.f.active[GMT_IN] = C->common.f.active[GMT_OUT] = C->common.g.active = C->common.h.active = FALSE;
 	C->common.p.active = C->common.s.active = C->common.t.active = C->common.colon.active = FALSE;
+	GMT_memset (C->common.b.ncol, 2, GMT_LONG);
 
 	*Ccopy = Csave;				/* Pass back out for safe-keeping by the module until GMT_end_module is called */
 	C->init.module_name = mod_name;		/* Current module in charge */
