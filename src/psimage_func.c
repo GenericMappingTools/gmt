@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.20 2011-05-16 21:23:10 guru Exp $
+ *	$Id: psimage_func.c,v 1.21 2011-05-17 21:37:44 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -361,7 +361,10 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
-		PSL_free (PSL, picture);
+		if (known) 			/* EPS or Sun raster file */
+			PSL_free (PSL, picture);
+		else
+			GMT_free (GMT, picture);
 		picture = buffer;
 	}
 
@@ -421,16 +424,20 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (i = 0; i < Ctrl->N.nx; i++) {
 			x = Ctrl->C.x + i * Ctrl->W.width;
 			if (header.depth == 0)
-				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, (GMT_LONG)header.length, header.width, header.height, (GMT_LONG)header.xorigin, (GMT_LONG)header.yorigin);
+				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, (GMT_LONG)header.length, 
+						header.width, header.height, (GMT_LONG)header.xorigin, (GMT_LONG)header.yorigin);
 			else if (header.depth == 1) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.width, header.height, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
+					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+							header.width, header.height, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
 				else
-					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
+					PSL_plotbitimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+							header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
 			}
 			else
-				 PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, PS_transparent * header.width, header.height, PS_interpolate * header.depth);
+				 PSL_plotcolorimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, 
+						 PS_transparent * header.width, header.height, PS_interpolate * header.depth);
 		}
 	}
 
