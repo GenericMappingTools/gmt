@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.16 2011-05-17 00:23:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -291,6 +291,10 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			stdev = (n > 1) ? sqrt (sum2 / (x-1)) : GMT->session.d_NaN;
 			rms = (n > 0) ? sqrt (sum2 / x + mean * mean) : GMT->session.d_NaN;
 			mean = (n > 0) ? mean : GMT->session.d_NaN;
+		}
+
+		if (GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO])) {
+			GMT->current.io.geo.range = (G->header->wesn[XHI] < 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 		}
 
 		/* OK, time to report results */

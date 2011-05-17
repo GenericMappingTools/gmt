@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.22 2011-05-16 21:23:11 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.23 2011-05-17 00:23:50 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -2905,7 +2905,7 @@ int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD7
 			y = D[rec].number[MGD77_LATITUDE];
 			/* Adjust cruise longitude if necessary; We know cruise is between +/-180 */
 			if (info->G->header->wesn[XLO] >= 0.0 && D[rec].number[MGD77_LONGITUDE] < 0.0)
-				GMT_lon_range_adjust (GMT_IS_0_TO_P360, &x);	/* Adjust to 0-360 range */
+				GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &x);	/* Adjust to 0-360 range */
 		}
 		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
 		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */

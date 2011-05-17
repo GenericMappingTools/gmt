@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_utm_zones.sh,v 1.8 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_utm_zones.sh,v 1.9 2011-05-17 00:23:50 guru Exp $
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 . ./functions.sh
@@ -103,5 +103,5 @@ EOF
 awk '{if ($1 < 0) printf "-180 %s %s\\232S\n", $1, -$1}' $$.L.d | pstext -R -J -O -K -N -D-0.05i/0 -F+f10p+jRM >> GMT_utm_zones.ps
 awk '{if ($1 > 0) printf "-180 %s %s\\232N\n", $1,  $1}' $$.L.d | pstext -R -J -O -K -N -D-0.05i/0 -F+f10p+jRM >> GMT_utm_zones.ps
 echo "-180 0 0\\232" | pstext -R -J -O -K -N -D-0.05i/0 -F+f10p+jRM >> GMT_utm_zones.ps
-psxy -R -J -O /dev/null >> GMT_utm_zones.ps
+psxy -R -J -O -T >> GMT_utm_zones.ps
 rm -f $$.*.d

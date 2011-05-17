@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.13 2011-05-17 00:23:50 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -298,7 +298,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Evalute model prediction grid\n");
 
 	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
-	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = 2;	/* Need +- around 0 here */
+	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	GMT_grd_loop (GMT, G_mod, row, col, node) {
 		G_mod->data[node] = GMT->session.f_NaN;

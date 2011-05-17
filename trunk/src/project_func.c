@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.12 2011-04-29 03:08:12 guru Exp $
+ *	$Id: project_func.c,v 1.13 2011-05-17 00:23:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -422,8 +422,8 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 #ifdef GMT_COMPAT
 			case 'D':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
-				if (opt->arg[0] == 'g') GMT->current.io.geo.range = 0;
-				if (opt->arg[0] == 'd') GMT->current.io.geo.range = 2;
+				if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+				if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 				break;
 #endif
 			case 'E':

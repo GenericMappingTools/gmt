@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.513 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmt_support.c,v 1.514 2011-05-17 00:23:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3271,7 +3271,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				else {					/* Label at a fixed angle */
 					G->label_angle = atof (&p[1]);
 					G->angle_type = 2;
-					GMT_lon_range_adjust (GMT_IS_M180_TO_P180, &G->label_angle);	/* Now -180/+180 */
+					GMT_lon_range_adjust (GMT_IS_M180_TO_P180_RANGE, &G->label_angle);	/* Now -180/+180 */
 					while (fabs (G->label_angle) > 90.0) G->label_angle -= copysign (180.0, G->label_angle);
 				}
 				break;
@@ -8687,10 +8687,12 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_LONG 
 		if (C->current.plot.calclock.geo.wesn == 2) hemi[h_pos++] = ' ';
 		if (lonlat == 0) {
 			switch (C->current.plot.calclock.geo.range) {
-				case 0:
+				case GMT_IS_0_TO_P360_RANGE:
+				case GMT_IS_0_TO_P360:
 					hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : 'E';
 					break;
-				case 1:
+				case GMT_IS_M360_TO_0_RANGE:
+				case GMT_IS_M360_TO_0:
 					hemi[h_pos] = (GMT_IS_ZERO (val)) ? 0 : 'W';
 					break;
 				default:
@@ -10026,7 +10028,7 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	double r;
 	struct GMT_LINE_SEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 	
-	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (GMT_IS_0_TO_P360, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 	GMT_alloc_segment (C, Sx, 2*S->n_rows, S->n_columns, TRUE);	/* Temp segment with twice the number of points as we will add crossings*/
 	
 	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */
