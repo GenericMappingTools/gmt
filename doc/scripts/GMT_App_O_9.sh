@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_O_9.sh,v 1.13 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_App_O_9.sh,v 1.14 2011-05-17 00:23:50 guru Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
@@ -32,4 +32,4 @@ cat << EOF | pstext -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+
 2.33E	48.87N	CT	Paris
 17W	28N	CT	Canaries
 EOF
-psxy -R -J -O /dev/null >> GMT_App_O_9.ps
+psxy -R -J -O -T >> GMT_App_O_9.ps

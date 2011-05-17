@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.278 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmt_io.c,v 1.279 2011-05-17 00:23:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1540,19 +1540,27 @@ void GMT_io_init (struct GMT_CTRL *C)
 void GMT_lon_range_adjust (GMT_LONG range, double *lon)
 {
 	switch (range) {	/* Adjust to the desired range */
+		case GMT_IS_0_TO_P360_RANGE:		/* Make 0 <= lon <= 360 */
+			while ((*lon) < 0.0) (*lon) += 360.0;
+			while ((*lon) > 360.0) (*lon) -= 360.0;
+			break;
 		case GMT_IS_0_TO_P360:		/* Make 0 <= lon < 360 */
 			while ((*lon) < 0.0) (*lon) += 360.0;
 			while ((*lon) >= 360.0) (*lon) -= 360.0;
+			break;
+		case GMT_IS_M360_TO_0_RANGE:		/* Make -360 <= lon <= 0 */
+			while ((*lon) < -360.0) (*lon) += 360.0;
+			while ((*lon) > 0) (*lon) -= 360.0;
 			break;
 		case GMT_IS_M360_TO_0:		/* Make -360 < lon <= 0 */
 			while ((*lon) <= -360.0) (*lon) += 360.0;
 			while ((*lon) > 0) (*lon) -= 360.0;
 			break;
-		case GMT_IS_M180_TO_P180:	/* Make -180 < lon < +180 */
+		case GMT_IS_M180_TO_P180_RANGE:	/* Make -180 <= lon <= +180 */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) > 180.0) (*lon) -= 360.0;
 			break;
-		case GMT_IS_M180_TO_P180_GIS:	/* Make -180 < lon < +180 [Special case where +180 is not desired] */
+		case GMT_IS_M180_TO_P180:	/* Make -180 <= lon < +180 [Special case where +180 is not desired] */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
 			break;
@@ -1567,8 +1575,8 @@ void GMT_quad_reset (struct GMT_CTRL *C, struct GMT_QUAD *Q, GMT_LONG n_items)
 	for (i = 0; i < n_items; i++) {
 		Q[i].min[0] = Q[i].min[1] = +DBL_MAX;
 		Q[i].max[0] = Q[i].max[1] = -DBL_MAX;
-		Q[i].range[0] = GMT_IS_M180_TO_P180;
-		Q[i].range[1] = GMT_IS_0_TO_P360;
+		Q[i].range[0] = GMT_IS_M180_TO_P180_RANGE;
+		Q[i].range[1] = GMT_IS_0_TO_P360_RANGE;
 	}
 }
 
@@ -1607,7 +1615,7 @@ GMT_LONG GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q)
 	else if (n_quad == 2 && ((Q->quad[0] && Q->quad[2]) || (Q->quad[1] && Q->quad[3])))	/* Funny quadrant gap, pick shortest longitude extent */
 		way = ((Q->max[0] - Q->min[0]) < (Q->max[1] - Q->min[1])) ? 0 : 1;
 	else					/* Either will do, use default settings */
-		way = (C->current.io.geo.range == 0) ? 1 : 0;
+		way = (C->current.io.geo.range == GMT_IS_0_TO_P360_RANGE) ? 1 : 0;
 	/* Final adjustments */
 	if (Q->min[way] > Q->max[way]) Q->min[way] -= 360.0;
 	if (Q->min[way] < 0.0 && Q->max[way] < 0.0) Q->min[way] += 360.0, Q->max[way] += 360.0;
@@ -4451,7 +4459,7 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 		D->n_segments = T->n_segments = n_segs;	/* Update number of segments */
 		
 	}
-	C->current.io.geo.range = 2;	/* Select the -180/180 output range format */
+	C->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Select the -180/180 output range format */
 	return (0);
 }
 
@@ -5388,15 +5396,16 @@ void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 {
 	GMT_LONG k;
 	if (!table) return;		/* Do not try to free NULL pointer */
-	if (!table->segment) return;	/* Do not try to free NULL pointer of segments */
-	for (k = 0; k < table->n_segments; k++) GMT_free_segment (C, table->segment[k]);
 	for (k = 0; k < table->n_headers; k++) free ((void *)table->header[k]);
 	if (table->n_headers) GMT_free (C, table->header);
-	GMT_free (C, table->segment);
 	GMT_free (C, table->min);
 	GMT_free (C, table->max);
 	for (k = 0; k < 2; k++) if (table->file[k]) free ((void *)table->file[k]);
 	GMT_free_ogr (C, &(table->ogr), 1);
+	if (table->segment) {	/* Free segments */
+		for (k = 0; k < table->n_segments; k++) GMT_free_segment (C, table->segment[k]);
+		GMT_free (C, table->segment);
+	}
 	GMT_free (C, table);
 }
 

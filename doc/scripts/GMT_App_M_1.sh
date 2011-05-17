@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_M_1.sh,v 1.6 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_App_M_1.sh,v 1.7 2011-05-17 00:23:50 guru Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
@@ -41,4 +41,4 @@ do
 	y2=`gmtmath -Q $y2 $dy ADD =`
 done
 
-psxy -R -J -O /dev/null >> $ps
+psxy -R -J -O -T >> $ps

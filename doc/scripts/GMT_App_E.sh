@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.11 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_App_E.sh,v 1.12 2011-05-17 00:23:50 guru Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -42,4 +42,4 @@ do
 	y=$dy
 	x=$back
 done
-psxy -R -J /dev/null -O >> $ps
+psxy -R -J -T -O >> $ps

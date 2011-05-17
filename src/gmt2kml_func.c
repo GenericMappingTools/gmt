@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.20 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.21 2011-05-17 00:23:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -617,7 +617,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	out[GMT_Z] = Ctrl->A.altitude;
 	strcpy (GMT->current.setting.io_col_separator, ",");	/* Specify comma-separated output */
-	GMT->current.io.geo.range = 2;				/* Want -180/+180 longitude output format */
+	GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;		/* Want -180/+180 longitude output format */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);

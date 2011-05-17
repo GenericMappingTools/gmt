@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.7 2011-05-11 04:01:54 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.8 2011-05-17 00:23:50 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -468,23 +468,23 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (quad[0] && quad[3]) {	/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
 			xmin = xmin2;
 			xmax = xmax2;
-			GMT->current.io.geo.range = 2;	/* Override this setting explicitly */
+			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Override this setting explicitly */
 		}
 		else if (quad[1] && quad[2]) {	/* Longitudes on either side of the date line, must user 0/360 notation */
 			xmin = xmin1;
 			xmax = xmax1;
-			GMT->current.io.geo.range = 0;	/* Override this setting explicitly */
+			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;	/* Override this setting explicitly */
 		}
 		else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3]))) {	/* Funny quadrant gap, pick shortest longitude extent */
 			if ((xmax1 - xmin1) < (xmax2 - xmin2)) {	/* 0/360 more compact */
 				xmin = xmin1;
 				xmax = xmax1;
-				GMT->current.io.geo.range = 0;	/* Override this setting explicitly */
+				GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;	/* Override this setting explicitly */
 			}
 			else {						/* -180/+180 more compact */
 				xmin = xmin2;
 				xmax = xmax2;
-				GMT->current.io.geo.range = 2;	/* Override this setting explicitly */
+				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Override this setting explicitly */
 			}
 		}
 		else {						/* Either will do, use default settings */
