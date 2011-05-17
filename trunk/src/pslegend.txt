@@ -147,8 +147,8 @@ Sets the linespacing factor in units of the current annotation font size [1.1].
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-BD(pslegend) OPT(R)-10/10/-10/10 OPT(JM)6i OPT(G)azure1 OPT(Dx)0.5i/0.5i/5i/3.3i/BL
-OPT(C)0.1i/0.1i OPT(L)1.2 OPT(F) OPT(B)5f1 << EOF >> map.ps
+pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
+-C0.1i/0.1i -L1.2 -F -B5f1 << EOF >> map.ps
 .br
 \# Legend test for pslegend
 .br

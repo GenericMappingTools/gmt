@@ -166,32 +166,32 @@ To convert the file psfile.ps to PNG using a tight BoundingBox and rotating it b
 orientation in case it was in Landscape mode:
 .br
 .sp
-BD(ps2raster) psfile.ps OPT(A) OPT(P) OPT(Tg)
+ps2raster psfile.ps -A -P -Tg
 .br
 .sp
 To create a 3 pages PDF file from 3 individual PS files
 .br
 .sp
-BD(ps2raster) OPT(TF) OPT(F)abc a.ps b.ps c.ps
+ps2raster -TF -Fabc a.ps b.ps c.ps
 .br
 .sp
 To create a simple linear map with pscoast and convert it to tif with a .tfw
 the tight BoundingBox computation.
 .br
 .sp
-BD(pscoast) OPT(JX12cd) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --MAP_FRAME_TYPE=inside > cara.ps
+pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
 .br
 .sp
-BD(ps2raster) cara OPT(Tt) OPT(W)
+ps2raster cara -Tt -W
 .br
 .sp
 To create a Mercator version of the above example and use GDAL to produce a true geotiff file.
 .br
 .sp
-BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) OPT(P) OPT(G200) --MAP_FRAME_TYPE=inside > cara.ps
+pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
 .br
 .sp
-BD(gdalwarp) -s_srs +proj=merc cara.tif carageo.tiff 
+gdalwarp -s_srs +proj=merc cara.tif carageo.tiff 
 .br
 .sp
 To create a Polar Stereographic geotiff file of Patagonia

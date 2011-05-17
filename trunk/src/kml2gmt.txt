@@ -27,6 +27,10 @@ longitude and latitude].
 #include "explain_colon.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
+To extract the lon,lat values from the KML file google.kml, try
+.br
+.sp
+kml2gmt google.kml -V > google.txt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

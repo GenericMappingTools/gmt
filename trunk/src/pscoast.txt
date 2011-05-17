@@ -145,25 +145,25 @@ To plot a green Africa with white outline on blue background, with permanent maj
 on a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-BD(pscoast) OPT(R)-30/30/-40/40 SCALE_M1 OPT(B)5 OPT(I)1/1p,blue OPT(I)2/0.25p,blue 
-OPT(N)1/0.25p,- OPT(W)0.25p,white OPT(G)green OPT(S)blue OPT(P) > africa.ps
+pscoast -R-30/30/-40/40 SCALE_M1 -B5 -I1/1p,blue -I2/0.25p,blue 
+-N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P > africa.ps
 .br
 .sp
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, run
 .br
 .sp
-BD(pscoast) OPT(R)-30/-10/60/65 SCALE_M2 OPT(B)5 OPT(Gp)100/28 > iceland.ps
+pscoast -R-30/-10/60/65 SCALE_M2 -B5 -Gp100/28 > iceland.ps
 .br
 .sp
 To initiate a clip path for Africa so that the subsequent colorimage of gridded topography is only
 seen over land, using a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-BD(pscoast) OPT(R)-30/30/-40/40 SCALE_M1 OPT(B)5 OPT(Gc) OPT(P) OPT(K) > africa.ps
+pscoast -R-30/30/-40/40 SCALE_M1 -B5 -Gc -P -K > africa.ps
 .br
-BD(grdimage) SCALE_M1 etopo5.nc OPT(C)colors.cpt OPT(O) OPT(K) >> africa.ps
+grdimage SCALE_M1 etopo5.nc -Ccolors.cpt -O -K >> africa.ps
 .br
-BD(pscoast) OPT(Q) OPT(O) >> africa.ps
+pscoast -Q -O >> africa.ps
 .sp
 BD(pscoast) will first look for coastline files in directory BD($GMT_SHAREDIR)/coast
 If the desired file is not found, it will look for the file

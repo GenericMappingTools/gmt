@@ -110,28 +110,28 @@ it to 8 by 10 cm (thereby possibly changing the aspect ratio), and making the wh
 use
 .br
 .sp
-BD(psimage) scanned_face.ras OPT(W)8BD(c)/10BD(c) -Gtwhite > image.ps
+psimage scanned_face.ras -W8c/10c -Gtwhite > image.ps
 .br
 .sp
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled accordingly), and outline with a thin, blue pen,
 use
 .br
 .sp
-BD(psimage) logo.jpg OPT(W)1BD(i) -Fthin,blue > image.ps
+psimage logo.jpg -W1i -Fthin,blue > image.ps
 .br
 .sp
 To include an Encapsulated IT(PostScript) file tiger.eps with its upper right corner 2 inch to the right
 and 1 inch up from the current location, and have its width scaled to 3 inches, while keeping the aspect ratio, use
 .br
 .sp
-BD(psimage) tiger.eps OPT(C)2BD(i)/1BD(i)/TR OPT(W)3BD(i) > image.ps
+psimage tiger.eps -C2i/1i/TR -W3i > image.ps
 .br
 .sp
 To replicate the 1-bit raster image template 1_bit.ras, colorize it (brown background and
 red foreground), and setting each of 5 by 5 tiles to be 1 cm wide, use
 .br
 .sp
-BD(psimage) 1_bit.ras OPT(Gb)brown OPT(Gf)red OPT(N)5 OPT(W)1BD(c) > image.ps
+psimage 1_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtcolors (5),

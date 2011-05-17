@@ -112,7 +112,7 @@ given in the color palette file topo.cpt on a Lambert map
 at LEN_L inch/degree along the standard parallels 18 and 24, use 
 .br
 .sp
-BD(pscontour) topo.xyz OPT(R)320/330/20/30 SCALE_L OPT(C)topo.cpt OPT(W)0.5BD(p) > topo.ps
+pscontour topo.xyz -R320/330/20/30 SCALE_L -Ctopo.cpt -W0.5p > topo.ps
 .br
 .sp
 To create a color IT(PostScript) plot of the numerical temperature solution obtained on a triangular mesh
@@ -120,7 +120,7 @@ whose node coordinates and temperatures are stored in temp.xyz and mesh arrangem
 the colors in temp.cpt, run
 .br
 .sp
-BD(pscontour) temp.xyz OPT(R)0/150/0/100 OPT(Jx)0.1 OPT(C)temp.cpt OPT(G) OPT(W)0.25BD(p) > temp.ps
+pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 .SH BUGS
 Sometimes there will appear to be thin lines of the wrong color in the image.
 This is a round-off problem which may be remedied by using a higher value of
@@ -130,7 +130,7 @@ To save the triangulated 100-m contour lines in topo.txt and separate them into 
 (one for each contour level), try 
 .br
 .sp
-BD(pscontour) topo.txt OPT(C)100 OPT(D)contours_%.0f.txt
+pscontour topo.txt -C100 -Dcontours_%.0f.txt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

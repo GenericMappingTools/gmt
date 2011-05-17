@@ -116,7 +116,7 @@ learn from BD(grdinfo).  So you can do this to see some points on the
 CDF(Z) curve (use OPT(V) option to see more):
 .br
 .sp
-BD(grd2cpt) mydata.nc OPT(V) > /dev/null
+grd2cpt mydata.nc -V > /dev/null
 .br
 .sp
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
@@ -124,7 +124,7 @@ data below zero in computing CDF(Z), and use the built-in master cpt file
 relief, run
 .br
 .sp
-BD(grd2cpt) mydata.nc OPT(C)IT(relief) BD(-L)0/10000 BD(-S)0/200/20 > mydata.cpt
+grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

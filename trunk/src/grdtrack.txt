@@ -97,14 +97,14 @@ To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg (An ASCII
 table containing longitude, latitude, and SEASAT-derived gravity, preceded by one header record):
 .br
 .sp
-BD(grdtrack) track_4.xyg OPT(G)hawaii_topo.nc OPT(H) > track_4.xygt
+grdtrack track_4.xyg -Ghawaii_topo.nc -h > track_4.xygt
 .br
 .sp
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute predicted bathymetry on a Mercator
 grid) and the Muller et al age grid age.3.2.nc along the lon,lat coordinates given in the file cruise_track.xy, try
 .br
 .sp
-BD(grdtrack) cruise_track.xy OPT(G)topo.8.2.img,1,1 OPT(G)age.3.2.nc > depths-age.d
+grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
 .br
 .sp
 To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute free-air anomalies on a Mercator
@@ -112,7 +112,7 @@ grid) along 100-km-long cross-profiles that are orthogonal to the line segment g
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 .br
 .sp
-BD(grdtrack) track.xy OPT(G)grav.18.1.img,0.1,1 OPT(C)100k/3k/25k > xprofiles.d
+grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3k/25k > xprofiles.d
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR surface (1),

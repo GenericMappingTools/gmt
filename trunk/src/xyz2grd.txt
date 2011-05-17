@@ -107,22 +107,22 @@ Not used with binary data.
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br
 .sp
-BD(xyz2grd) hawaii_grv.xyz OPT(D)degree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
-OPT(G)hawaii_grv_new.nc OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(V)
+xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+-Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 .br
 .sp
-To create a grid file from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
+To create a grid file from the raw binary (3-column, single-precision scanline-oriented data raw.b, use
 .br
 .sp
-BD(xyz2grd) raw.b OPT(D)m/m/m/1/0/=/= OPT(G)raw.nc OPT(R)0/100/0/100 OPT(I)1 OPT(V) OPT(Z) OPT(b)3
+xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 .br
 .sp
-To make a grid file from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
+To make a grid file from the raw binary USGS DEM (short integer scanline-oriented data topo30. on the NGDC
 global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.
-On such machines (like Sun), use
+On such machines (like Sun, use
 .br
 .sp
-BD(xyz2grd) topo30. OPT(D)m/m/m/1/0/=/= OPT(G)ustopo.nc OPT(R)234/294/24/50 OPT(I)30s OPT(N)-9999 OPT(B) OPT(ZTLhw)
+xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
 .br
 .sp
 Say you have received a binary file with 4-byte floating points that were
@@ -130,7 +130,7 @@ written on a machine of different byte-order than yours.  You can swap the
 byte-order with
 .br
 .sp
-BD(xyz2grd) floats.bin OPT(S)new_floats.bin OPT(V) OPT(Zf)
+xyz2grd floats.bin -Snew_floats.bin -V -Zf
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2xyz (1),

@@ -146,13 +146,13 @@ To plot the outlines of the text strings stored in the file text.d on a Mercator
 the given specifications, use
 .br
 .sp
-BD(pstext) text.d OPT(R)-30/30/-10/20 OPT(Jm)0.1BD(i) OPT(P) OPT(B)5 OPT(S)0.5BD(p) > plot.ps
+pstext text.d -R-30/30/-10/20 -Jm0.1i -P -B5 -S0.5p > plot.ps
 .br
 .sp
 To add a typeset figure caption for a 3-inch wide illustration, use
 .br
 .sp
-BD(pstext) OPT(R)0/3/0/5 OPT(JX)3BD(i) OPT(O) OPT(H) OPT(M) OPT(N) << EOF >> figure.ps
+pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
 .br
 This is an optional header record
 .br

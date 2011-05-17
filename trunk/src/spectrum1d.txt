@@ -93,13 +93,13 @@ Write Wavelength rather than frequency in column 1 of the output file[s] [Defaul
 Suppose data.g is gravity data in mGal, sampled every 1.5 km.  To write its power spectrum, in mGal**2-km, 
 to the file data.xpower, use  
 .sp
-BD(spectrum1d) data.g OPT(S)256 OPT(D)1.5 OPT(N)data
+spectrum1d data.g -S256 -D1.5 -Ndata
 .sp
 Suppose in addition to data.g you have data.t, which is topography in meters sampled at the same points as 
 data.g.  To estimate various features of the transfer function, considering data.t as input and data.g as 
 output, use
 .sp
-paste data.t data.g | BD(spectrum1d) OPT(S)256 OPT(D)1.5 OPT(N)data OPT(C)
+paste data.t data.g | spectrum1d -S256 -D1.5 -Ndata -C
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdfft (1)

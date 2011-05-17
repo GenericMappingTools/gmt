@@ -136,7 +136,7 @@ To extract the subset of data set that is within 300 km of any of the points in 
 100 km away from the lines in lines.d, run
 .br
 .sp
-BD(gmtselect) lonlatfile OPT(fg) OPT(C)300k/pts.d OPT(L)100/lines.d OPT(Il) > subset
+gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 .br
 .sp
 Here, you must specify OPT(fg) so the program knows you are processing geographical data.
@@ -146,19 +146,19 @@ To keep all points in data.d within the specified region, except the points on l
 coastlines), use
 .br
 .sp
-BD(gmtselect) data.d OPT(R)120/121/22/24 OPT(Dh) OPT(Nk)/BD(s) > subset
+gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
 .br
 .sp
 To return all points in quakes.d that are inside or on the spherical polygon lonlatpath.d, try
 .br
 .sp
-BD(gmtselect) quakes.d OPT(F)lonlatpath.d OPT(fg) > subset1
+gmtselect quakes.d -Flonlatpath.d -fg > subset1
 .br
 .sp
 To return all points in stations.d that are within 5 cm of the point in origin.d for a certain projection, try
 .br
 .sp
-BD(gmtselect) stations.d OPT(C)5/origin.d OPT(R)20/50/-10/20 OPT(JM)20c --PROJ_LENGTH_UNIT=cm > subset2
+gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
 #include "explain_gshhs.txt"
 .SH "SEE ALSO"
 .IR gmt (1),

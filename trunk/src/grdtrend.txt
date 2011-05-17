@@ -63,14 +63,14 @@ polynomial surface.  See BD(grdmath) if you need to evaluate the trend using the
 To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:
 .br
 .sp
-BD(grdtrend) hawaii_topo.nc OPT(N)3 OPT(D)hawaii_residual.nc
+grdtrend hawaii_topo.nc -N3 -Dhawaii_residual.nc
 .br
 .sp
 To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the result in 
 hawaii_trend.nc and the weights used in hawaii_weight.nc, and reporting the progress:
 .br
 .sp
-BD(grdtrend) hawaii_topo.nc OPT(N)10BD(r) OPT(T)hawaii_trend.nc OPT(W)hawaii_weight.nc OPT(V)
+grdtrend hawaii_topo.nc -N10r -Thawaii_trend.nc -Whawaii_weight.nc -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdfft (1),

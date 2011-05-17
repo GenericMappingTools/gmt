@@ -68,7 +68,7 @@ OPT(T)IT(zmin/zmax/dz) for use by BD(makecpt).
 To obtain all the information about the data set in file hawaii_topo.nc:
 .br
 .sp
-BD(grdinfo) OPT(L1) OPT(L2) OPT(M) hawaii_topo.nc
+grdinfo -L1 -L2 -M hawaii_topo.nc
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2cpt (1),

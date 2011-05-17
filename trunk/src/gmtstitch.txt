@@ -76,14 +76,14 @@ into as few complete lines as possible,
 assuming the end points slop could be up to 0.1 mm, run
 .br
 .sp
-BD(gmtstitch) segment_*.d OPT(Tf)0.1 > new_segments.d
+gmtstitch segment_*.d -Tf0.1 > new_segments.d
 .br
 .sp
 To combine the digitized segments in the multisegment file my_lines.d (whose coordinates are in lon,lat)
 into as few complete lines as possible, assuming the end points slop could be up to 150 m, and write
 the complete segments to separate files called Map_segment_0001.dat,  Map_segment_0002.dat, etc., run
 .sp
-BD(gmtstitch) my_lines.d OPT(T)150e OPT(D)Map_segment_%4.4d.dat
+gmtstitch my_lines.d -T150e -DMap_segment_%4.4d.dat
 .sp
 .SH "SEE ALSO"
 .IR gmt (1),

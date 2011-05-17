@@ -63,31 +63,31 @@ Suppose you have a file with lon, lat called points.txt.  You want to compute th
 of these points and the location 133/34.  Try 
 .br
 .sp
-BD(gmtvector) points.txt OPT(S)133/34 OPT(TD) OPT(fg) > angles.txt
+gmtvector points.txt -S133/34 -TD -fg > angles.txt
 .br 
 .sp
 To rotate the same points 35 degrees around a pole at 133/34, and output Cartesian 3-D vectors, use
 .br
 .sp
-BD(gmtvector) points.txt OPT(Tr)133/34 OPT(Co) OPT(fg) > reconstructed.txt
+gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
 .br 
 .sp
 To compute the cross-product between the two Cartesian vectors 0.5/1/2 and 1/0/0.4, and normalizing the result, try
 .br
 .sp
-BD(gmtvector) OPT(A)0.5/1/2 OPT(Tx) OPT(S)1/0/0.4 OPT(N) OPT(C) > cross.txt
+gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
 .br 
 .sp
 To rotate the 2-D vector, given in polar form as r = 2 and theta = 35, by an angle of 120, try
 .br
 .sp
-BD(gmtvector) OPT(A)2/35 OPT(Tr)120 > rotated.txt
+gmtvector -A2/35 -Tr120 > rotated.txt
 .br 
 .sp
 To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
 .br
 .sp
-BD(gmtvector) OPT(A)123/35 OPT(S)-155/-30 OPT(Ta) OPT(fg) > midpoint.txt
+gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
 .SH ROTATIONS
 For more advanced 3-D rotations as used in plate tectonic reconstructions, see the GMT "spotter" supplement.
 .SH "SEE ALSO"

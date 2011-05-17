@@ -75,24 +75,24 @@ without it 9.5 <= (IT(x),IT(y)) < 10.5 is one of 36 blocks.
 To find 5 by 5 minute block mode values from the double precision binary data in hawaii_b.xyg
 and output an ASCII table, run
 .sp
-BD(gmtaverage) hawaii_b.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(To) OPT(bi)3 > hawaii_5x5.xyg
+gmtaverage hawaii_b.xyg -R198/208/18/25 -I5m -To -bi3 > hawaii_5x5.xyg
 .br
 .sp
 To find 5 by 5 minute block mean values from the same file, run
 .sp
-BD(gmtaverage) hawaii.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(Tm) > hawaii_5x5.xyg
+gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tm > hawaii_5x5.xyg
 .br
 .sp
 To find the number of data points in each 5 by 5 minute block from the same file, run
 .sp
-BD(gmtaverage) hawaii.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(Tn) > hawaii_5x5.xyn
+gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tn > hawaii_5x5.xyn
 .br
 .sp
 To compute the shape of a data distribution per bin via a box-and-whisker diagram we need the 0%, 25%,
 50%, 75%, and 100% quantiles.  To do so on a global 5 by 5 degree basis from the ASCII table depths.xyz
 and send output to an ASCII table, run
 .sp
-BD(gmtaverage) depths.xyz OPT(Rg) OPT(I)5 OPT(Te) OPT(Eb) OPT(r) > depths_5x5.txt
+gmtaverage depths.xyz -Rg -I5 -Te -Eb -r > depths_5x5.txt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

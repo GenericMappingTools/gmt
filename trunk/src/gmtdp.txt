@@ -40,14 +40,14 @@ not Cartesian then append the distance unit (see UNITS).
 To reduce the geographic line segment.d using a tolerance of 2 km, run 
 .br
 .sp
-BD(gmtdp) segment.d OPT(T)2k > new_segment.d
+gmtdp segment.d -T2k > new_segment.d
 .br
 .sp
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45
 and write the reduced lines to file new_xylines.d, run 
 .br
 .sp
-BD(gmtdp) xylines.d OPT(T)0.45 > new_xylines.d
+gmtdp xylines.d -T0.45 > new_xylines.d
 .SH BUGS
 One known issue with the Douglas-Peucker has to do with crossovers.
 Specifically, it cannot be guaranteed that the reduced line does

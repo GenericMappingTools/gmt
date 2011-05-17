@@ -15,7 +15,7 @@ script as the environment variable BD(GMT_TMPDIR).
 Run the shell script IT(script.gmt) in isolation mode
 .br
 .sp
-BD(isogmt) sh script.gmt
+isogmt sh script.gmt
 .br
 .SH "SEE ALSO"
 .IR gmt (1),

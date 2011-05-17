@@ -290,28 +290,28 @@ Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickm
 and gridlines every 15 minutes, use
 .br
 .sp
-BD(psxy) DSDP.xy OPT(R)150/154/18/23 OPT_1 OPT(G)red OPT(B)1BD(g)15BD(m) | lpr
+psxy DSDP.xy -R150/154/18/23 OPT_1 -Gred -B1g15m | lpr
 .br
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
 4th column and color based on the depth in the third using the color palette cpt on a linear map, use
 .br
 .sp
-BD(psxy) quakes.xyzm OPT(R)0/1000/0/1000 OPT_2 OPT(Sc) OPT(C)cpt OPT(B)200 > map.ps
+psxy quakes.xyzm -R0/1000/0/1000 OPT_2 -Sc -Ccpt -B200 > map.ps
 .br
 .sp
 To plot the file trench.xy on a Mercator map, with white triangles with sides LEN_1 inch on the left
 side of the line, spaced every LEN_3 inch, use
 .br
 .sp
-BD(psxy) trench.xy OPT(R)150/200/20/50 OPT_3 OPT(G)white OPT(W) OPT(B)10 | lpr
+psxy trench.xy -R150/200/20/50 OPT_3 -Gwhite -W -B10 | lpr
 br
 .sp
 To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given
 by the magnitude in the 4th column, and color based on the third column via the color palette cpt on a linear map, use
 .br
 .sp
-BD(psxy) misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > t.ps
+psxy misc.d -R0/100/-50/100 OPT_2 -S -Ccpt -B20 > t.ps
 .SH SEGMENT HEADER PARSING
 Segment header records may contain one of more of the following options:
 .br

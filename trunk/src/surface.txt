@@ -100,7 +100,7 @@ To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg,
 a IT(convergence_limit) = 0.1 milligal, writing the result to a file called hawaii_grd.nc, 
 and monitoring each iteration, try:
 .sp
-BD(surface) hawaii_5x5.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(G)hawaii_grd.nc OPT(T)0.25 OPT(C)0.1 OPT(Vl)
+surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
 .SH BUGS
 BD(surface) will complain when more than one data point is found for
 any node and suggest that you run BD(blockmean), BD(blockmedian), or BD(blockmode) first.  If you

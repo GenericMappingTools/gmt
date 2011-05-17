@@ -63,22 +63,22 @@ If OPT(S) is not set then we consider the input data to define closed polygon(s)
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do
 .sp
-BD(grdmask) coastline_*.xy OPT(R)-60/-40/-40/-30 OPT(I)5BD(m) OPT(N)1/0/0 OPT(G)land_mask.nc OPT(V)
+grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc -V
 .br
 .sp
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
-BD(grdmask) data.xyz OPT(R)-60/-40/-40/-30 OPT(I)5BD(m) OPT(N)NaN/1/1 OPT(S)50BD(k) OPT(G)data_mask.nc OPT(V)
+grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc -V
 .br
 .sp
 To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, do
 .sp
-BD(grdmask) plates.gmt OPT(R)-40/40/-40/40 OPT(I)2BD(m) OPT(Ni) OPT(G)plate_IDs.nc OPT(V)
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Ni -Gplate_IDs.nc -V
 .br
 .sp
 Same exercise, but instead compute running polygon IDs starting at 100, do
 .sp
-BD(grdmask) plates.gmt OPT(R)-40/40/-40/40 OPT(I)2BD(m) OPT(Np)100 OPT(G)plate_IDs.nc OPT(V)
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdlandmask (1),

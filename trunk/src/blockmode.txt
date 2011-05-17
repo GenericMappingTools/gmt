@@ -68,7 +68,7 @@ without it 9.5 <= (IT(x),IT(y)) < 10.5 is one of 36 blocks.
 To find 5 by 5 minute block mode estimates from the double precision binary data in
 hawaii_b.xyg and output an ASCII table, run:
 .sp
-BD(blockmode) hawaii_b.xyg OPT(R)198/208/18/25 OPT(I)5BD(m) OPT(bi)3 > hawaii_5x5.xyg
+blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),

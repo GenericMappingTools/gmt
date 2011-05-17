@@ -73,20 +73,20 @@ To resample the file profiles.tdgmb, which contains (time,distance,gravity,magne
 at 1km equidistant intervals using Akima's spline, use\"'
 .br
 .sp
-BD(sample1d) profiles.tdgmb OPT(I)1 OPT(Fa) OPT(T)1 > profiles_equi_d.tdgmb
+sample1d profiles.tdgmb -I1 -Fa -T1 > profiles_equi_d.tdgmb
 .br
 .sp
 To resample the file depths.dt at positions listed in the file grav_pos.dg, using a cubic spline
 for the interpolation, use
 .br
 .sp
-BD(sample1d) depths.dt OPT(N)grav_pos.dg OPT(Fc) > new_depths.dt
+sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
 .br
 .sp
 To resample the file track.txt which contains lon, lat, depth every 2 nautical miles, use
 .br
 .sp
-BD(sample1d) track.txt OPT(I)2BD(n) > new_track.dt
+sample1d track.txt -I2n > new_track.dt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),
