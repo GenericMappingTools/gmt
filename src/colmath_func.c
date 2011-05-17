@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: colmath_func.c,v 1.7 2011-05-14 00:04:06 guru Exp $
+ *	$Id: colmath_func.c,v 1.8 2011-05-17 12:59:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,6 +28,10 @@
  */
 
 #include "gmt.h"
+
+#ifdef GMT_COMPAT
+	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+#endif
 
 /* Control structure for colmath */
 
@@ -109,9 +113,6 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 	GMT_LONG n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef GMT_COMPAT
-	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.15 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.16 2011-05-17 12:57:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -31,6 +31,9 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
+#ifdef GMT_COMPAT
+	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+#endif
 
 /* Control structure for gmtconvert */
 
@@ -141,9 +144,6 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 	GMT_LONG n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef GMT_COMPAT
-	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
