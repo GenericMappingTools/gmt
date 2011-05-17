@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.515 2011-05-17 01:22:10 guru Exp $
+ *	$Id: gmt_support.c,v 1.516 2011-05-17 21:25:28 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5906,11 +5906,10 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		return (-1);
 	}
 
-	/* Check that pad is at least 2 */
-	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
-	if (bok > 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_grid_set called with a pad < 2.\n");
-		return (-1);
+	/* Check if pad is requested */
+	if (G->header->pad[0] < 2 ||  G->header->pad[1] < 2 ||  G->header->pad[2] < 2 ||  G->header->pad[3] < 2) {
+		GMT_report (C, GMT_MSG_DEBUG, "Pad not large enough for BC assignments; no BCs applied\n");
+		return(GMT_NOERROR);
 	}
 
 	/* Initialize stuff:  */
@@ -6304,7 +6303,8 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
 		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_image_set called with a pad < 2.\n");
-		return (-1);
+		//return (-1);
+		return (GMT_NOERROR);
 	}
 
 	/* Initialize stuff:  */
