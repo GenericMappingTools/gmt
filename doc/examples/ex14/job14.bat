@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.15 2011-03-15 02:06:31 guru Exp $
+REM		$Id: job14.bat,v 1.16 2011-05-17 01:22:10 guru Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
@@ -24,7 +24,7 @@ grdcontour data.nc -J -B2f1WSne -C25 -A50 -Gd3i -S4 -O -K -X-3.25i -Y-3.55i >> %
 psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> %ps%
 REM Fit bicubic trend to data and compare to gridded surface
 grdtrend data.nc -N10 -Ttrend.nc
-project -C0/0 -E7/7 -G0.1 > track
+project -C0/0 -E7/7 -G0.1 -N > track
 grdcontour trend.nc -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> %ps%
 psxy -R -J track -Wthick,. -O -K >> %ps%
 REM Sample along diagonal

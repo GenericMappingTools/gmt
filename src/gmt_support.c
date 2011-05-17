@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.514 2011-05-17 00:23:50 guru Exp $
+ *	$Id: gmt_support.c,v 1.515 2011-05-17 01:22:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -10058,7 +10058,7 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 		length = pos[seg] - start + 1;	/* Length of new segment */
 		GMT_alloc_segment (C, L[seg], length, S->n_columns, TRUE);		/* Allocate array space for coordinates */
 		for (col = 0; col < S->n_columns; col++) GMT_memcpy (L[seg]->coord[col], &(Sx->coord[col][start]), length, double);	/* Copy coordinates */
-		L[seg]->range = (L[seg]->coord[GMT_X][length/2] > 180.0) ? 3 : 2;	/* Formatting ID to enable special -180 and +180 formatting on outout */
+		L[seg]->range = (L[seg]->coord[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
 		/* Modify label to part number */
 		sprintf (label, "%s part %ld", txt, seg);
 		L[seg]->label = strdup (label);

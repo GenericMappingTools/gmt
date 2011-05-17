@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.279 2011-05-17 00:23:50 guru Exp $
+ *	$Id: gmt_io.c,v 1.280 2011-05-17 01:22:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2830,18 +2830,18 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
 
-	S->range = 2;			/* -180/+180 range, may be overwritten below by + or - */
+	S->range = GMT_IS_M180_TO_P180_RANGE;			/* -180/+180 range, may be overwritten below by + or - */
 	S->decimal = S->wesn = S->no_sign = FALSE;
 
 	i1 = strlen (text) - 1;
 	for (i = order = 0; i <= i1; i++) {
 		switch (text[i]) {
-			case '+':	/* Want [0-360> range [Default] */
-				S->range = 0;
+			case '+':	/* Want [0-360 range [Default] */
+				S->range = GMT_IS_0_TO_P360_RANGE;
 				if (i != 0) error++;		/* Only valid as first flag */
 				break;
-			case '-':	/* Want <-360-0] range [i.e., western longitudes] */
-				S->range = 1;
+			case '-':	/* Want [-360-0] range [i.e., western longitudes] */
+				S->range = GMT_IS_M360_TO_0_RANGE;
 				if (i != 0) error++;		/* Only valid as first flag */
 				break;
 			case 'D':	/* Want to use decimal degrees using D_FORMAT [Default] */
