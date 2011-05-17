@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.23 2011-05-16 22:22:30 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.24 2011-05-17 12:55:14 jluis Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,6 +27,7 @@
 #include "gmt.h"
 
 EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
+void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
 #define POL_IS_CW 1
 #define POL_IS_CCW 0
@@ -1290,7 +1291,6 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT **L = NULL;
-		void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 		
 		Dout = GMT_create_dataset (GMT, D->n_tables, 1, D->n_columns, 0);
 		Dout->n_segments = 0;

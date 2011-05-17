@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.17 2011-05-16 21:23:11 guru Exp $
+ *	$Id: surface_func.c,v 1.18 2011-05-17 12:50:14 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,6 +40,8 @@
  */
 
 #include "gmt.h"
+
+int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions decreasing  */
 
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
@@ -1385,7 +1387,6 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, GMT_LONG factors[], GMT_LO
 	GMT_LONG nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
 	GMT_LONG xstop, ystop;	/* Set to 2*nx, 2*ny  */
 	GMT_LONG n_sug = 0;	/* N of suggestions found  */
-	int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions decreasing  */
 	struct SURFACE_SUGGESTION *sug = NULL;
 
 	users_time = guess_surface_time (GMT, factors, nx, ny);
