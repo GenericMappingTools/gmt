@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.61 2011-04-29 03:08:12 guru Exp $
+ *	$Id: x2sys.h,v 1.62 2011-05-17 00:50:56 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,11 +259,11 @@ EXTERN_MSC GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, GMT_LONG mode
 EXTERN_MSC void x2sys_path (struct GMT_CTRL *C, char *fname, char *path);
 
 EXTERN_MSC GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
-EXTERN_MSC GMT_LONG x2sys_read_file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_mgd77file (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_file        (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_gmtfile     (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_mgd77file   (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 EXTERN_MSC GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-EXTERN_MSC GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+EXTERN_MSC GMT_LONG x2sys_read_ncfile      (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 EXTERN_MSC GMT_LONG x2sys_n_data_cols (struct GMT_CTRL *C, struct X2SYS_INFO *s);
 EXTERN_MSC GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, GMT_LONG *n);
 EXTERN_MSC GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, GMT_LONG *nf);
