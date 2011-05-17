@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.42 2011-04-07 00:55:30 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.43 2011-05-17 03:02:06 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright (c) 2000-2011.
@@ -25,9 +25,12 @@ read both ASCII, native binary, and netCDF table data.
 
 \subsubsection{Optional file header records}
 The first data record may be preceded by 1 or more header records.
-When using such files, make sure to use the \Opt{h} option and set
+Any records that begins with '\#' is considered a header or comment
+line and are always processed correctly.  If your data file has leading
+header records that do \emph{not} start with '\#' then you must
+make sure to use the \Opt{h} option and set
 the parameter \textbf{IO\_N\_HEADER\_RECS} in the \filename{gmt.conf} file
-(System default is 1 header record if \Opt{h} is set; you may also
+(\GMT\ default is 1 header record if \Opt{h} is set; you may also
 use \Opt{h}\emph{nrecs} directly).  Fields
 within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
@@ -45,7 +48,7 @@ furthermore clog up the directory. \GMT\ provides a mechanism for
 keeping more than one profile in a file.  Such files are called
 \emph{multiple segment files} and are identical to the ones
 just outlined except that they have segment headers interspersed with
-data records that signal the start of a segment.
+data records that signal the start of a new segment.
 The segment headers may be of any format, but all must have the same
 character in the first column.  The unique character is by default
 '$>$', but you can override that by modifying the \textbf{IO\_SEGMENT\_MARKER}
@@ -66,16 +69,25 @@ general-purpose text descriptions.  These settings
 
 \GMT\ programs also support native binary tables to speed up input-output
 for i/o-intensive tasks like gridding and preprocessing.  Files
-may have no header (hence the \Opt{h} option cannot be used)
-and all data must either be single or double precision (no mixing
-allowed).  Multiple segment files are allowed and the
+may have a header section and the \Opt{h}{\it n} option can be used to skip the
+first {\it n} bytes.  The data can be in any format, mixing different data types
+and even contained byte-swapped items.  For input, specify \Opt{bi} and append
+one or more comma-separated combinations of
+{\it n}{\bf t}, where {\bf t} is one of {\bf c} (signed byte),
+{\bf u} (unsigned byte), {\bf h} (signed 2-byte int), {\bf U} (unsigned
+2-byte int), {\bf i} (signed 4-byte int), {\bf I} (unsigned 4-byte int),
+{\bf l} (signed 8-byte int), {\bf L} (unsigned 8-byte int), {\bf f}
+(4-byte single-precision float), and {\bf d} (8-byte double-precision
+float).  Append {\bf w} to any item to force byte-swapping.
+Alternatively, append {\bf +L} or {\bf +B} to indicate that the entire data file
+should be read as little- or big-endian, respectively.
+Here, {\it n} is the number of each data type in your binary input file; the
+total number may exceeds the columns actually needed by the program.  If no
+{\it n} is specified we assume that {\bf t} applies to all columns and
+that {\it n} is implied by the expectation of the program.
+Multiple segment files are allowed and the
 segment headers are assumed to be records where all the fields equal 
-NaN.  The format and number of fields are specified with the \Opt{b} option.
-Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
-where \textbf{s} designates single precision (default is \textbf{d} for double) and
-\emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}].
-If you need to swap the byte-order on either input or output you must use upper case
-\textbf{S} or \textbf{D} instead.
+NaN.
 
 \subsection{NetCDF tables}
 \index{Table!netCDF}
