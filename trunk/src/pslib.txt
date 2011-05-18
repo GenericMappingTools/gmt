@@ -160,8 +160,7 @@ units.
 .RE
 .br
 .sp
-BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode),
-ARG(long,restore), ARG(double,xoff), ARG(double,yoff), ARG(double,pagesize)[], ARG(struct EPS,*eps))
+BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode), ARG(char,origin)[], ARG(double,xy_offset)[], ARG(double,pagesize)[], ARG(struct EPS,*eps))
 .RS 5
 Controls the initiation (or continuation) of a particular plot within the current session.
 Pass file pointer IT(fp) where the PS code will be written; if NULL then the output is written to IT(stdout).
@@ -169,9 +168,13 @@ The IT(orientation) may be landscape (PSL_LANDSCAPE or 0) or portrait (PSL_PORTR
 Set IT(overlay) to PSL_OVERLAY (0) if the following PS code should be appended to an existing plot;
 otherwise pass PSL_INIT (1) to start a new plot. Let IT(colormode) be one of PSL_RGB (0), PSL_CMYK (1), PSL_HSV (2) or PSL_GRAY (3);
 this setting controls how colors are presented in the PS code.
-The IT(restore) setting is either PSL_FALSE (0) of PSL_TRUE (1) and controls whether the specified offsets (next two arguments) are
-are undone at the end of the plot (during PSL_endplot). A value of PSL_TRUE for IT(restore) will reset to the current origin.
-The IT(xoff) and IT(yoff) are used to move the origin relative to the current origin.
+The IT(origin) setting determines for x and y separately the origin of the specified offsets (next
+argument). Each of the two characters are either
+'r' for an offset relative to the current origin,
+'a' for a temporaty adjustment of the origin which is undone during BD(PSL_endplot),
+'f' for a placement of the origin relative to the lower left corner of the page,
+'c' for a placement of the origin relative to the center of the page.
+The array IT(xy_offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
 IT(pagesize) means the physical width and height of the plotting media in points (typically 612 by 792 for
 Letter or 595 by 842 for A4 format). 
 The EPS structure is defined in the psl.h include file and contains information that will make up the comments header of a EPS file.

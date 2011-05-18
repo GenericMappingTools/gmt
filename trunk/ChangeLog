@@ -1,13 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1028 2011-05-18 00:37:05 jluis Exp $
+	$Id: ChangeLog,v 1.1029 2011-05-18 01:52:54 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2011-05-18	remko
+	* pslib.*:		Changed PSL_beginplot to no longer mention "absolute" positioning,
+				but use "origin" to specify the origin of the offset ('r', 'a',
+				'f', 'c') for each direction.
 2011-05-18	jluis
 	* psimage_func.c:	Now is able to plot also indexed images imported via GDAL
-
-2011-05-16	remko
-	* pslib.*:		Adjusted description of PSL_beginplot argument "absolute" so it conforms
-				to the actual workings (reset moved at end).
 
 2011-05-16	pwessel
 	* *.[ch]:		Clarified what is the lower-level GMT API for module development:

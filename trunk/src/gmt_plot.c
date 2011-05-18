@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.331 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmt_plot.c,v 1.332 2011-05-18 01:52:53 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3571,7 +3571,7 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	eps = gmt_epsinfo (C);
 	strcpy (P->init.encoding, C->current.setting.ps_encoding.name);
 	
-	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.absolute,
+	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.absolute ? "aa" : "rr",
 		C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
 
 	/* Issue the comments that allow us to trace down what command created this layer */

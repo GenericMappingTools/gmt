@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.71 2011-05-16 23:52:33 remko Exp $
+ *	$Id: pslib.h,v 1.72 2011-05-18 01:52:53 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -244,7 +244,6 @@ struct PSL_CTRL {
 		double page_size[2];		/* Width and height of paper used in points	*/
 		double dpi;			/* Selected dots per inch			*/
 		double magnify[2];		/* Global scale values [1/1]			*/
-		double origin[2];		/* Origin offset [1/1]				*/
 		struct EPS *eps;		/* structure with Document info			*/
 	} init;
 	struct CURRENT {	/* Variables and settings that changes via PSL_* calls */
@@ -267,13 +266,25 @@ struct PSL_CTRL {
 		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
 		char *USERDIR;			/* Pointer to path of directory with user definitions (~/.gmt) */
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
+		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
+		double xy_offset[2];		/* Origin offset [1/1]				*/
+		double bb[4];			/* Boundingbox arguments			*/
+		double p_width;			/* Paper width in points, set in PSL_beginplot();	*/
+		double p_height;		/* Paper height in points, set in PSL_beginplot();	*/
+		double dpu;			/* PS dots per unit.  Must be set through PSL_beginplot();		*/
+		double dpp;			/* PS dots per point.  Must be set through PSL_beginplot();		*/
+		double x2ix;			/* Scales user x to PS dots		*/
+		double y2iy;			/* Scales user y to PS dots		*/
+		double p2u;			/* Scales dimensions in points (e.g., fonts, linewidths) to user units (e.g. inch)		*/
+		double axis_limit[4];		/* The current xmin, xmax, ymin, ymax settings for axes */
+		double axis_pos[2];		/* Lower left placement for axes */
+		double axis_dim[2];		/* Lengths of axes */
 		PSL_LONG verbose;		/* TRUE for verbose output, FALSE remains quiet	*/
 		PSL_LONG comments;		/* TRUE for writing comments to output, FALSE strips all comments */
 		PSL_LONG overlay;		/* TRUE if overlay (-O)				*/
 		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
 		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
 		PSL_LONG image_format;		/* 0 writes images in ascii, 2 uses binary	*/
-		PSL_LONG restore;		/* TRUE will reset origin at closing, FALSE keep relative position	*/
 		PSL_LONG eps_format;		/* TRUE makes EPS file, FALSE means PS file	*/
 		PSL_LONG N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
 		PSL_LONG compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
@@ -281,21 +292,10 @@ struct PSL_CTRL {
 		PSL_LONG line_cap;		/* 0, 1, or 2 for butt, round, or square [butt] */
 		PSL_LONG line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter] */
 		PSL_LONG miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
-		double bb[4];			/* Boundingbox arguments			*/
 		PSL_LONG ix, iy;		/* Absolute coordinates of last point		*/
-		double p_width;			/* Paper width in points, set in PSL_beginplot();	*/
-		double p_height;		/* Paper height in points, set in PSL_beginplot();	*/
 		PSL_LONG length;		/* Image row output byte counter		*/
 		PSL_LONG n_userimages;		/* Number of specified custom patterns		*/
-		double dpu;			/* PS dots per unit.  Must be set through PSL_beginplot();		*/
-		double dpp;			/* PS dots per point.  Must be set through PSL_beginplot();		*/
-		double x2ix;			/* Scales user x to PS dots		*/
-		double y2iy;			/* Scales user y to PS dots		*/
-		double p2u;			/* Scales dimensions in points (e.g., fonts, linewidths) to user units (e.g. inch)		*/
 		PSL_LONG x0, y0;		/* x,y PS offsets */
-		double axis_limit[4];		/* The current xmin, xmax, ymin, ymax settings for axes */
-		double axis_pos[2];		/* Lower left placement for axes */
-		double axis_dim[2];		/* Lengths of axes */
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
 		struct PSL_FONT {
 			double height;		/* Height of A for unit fontsize */
@@ -340,7 +340,7 @@ struct imageinfo {
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
 EXTERN_MSC PSL_LONG PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
 EXTERN_MSC PSL_LONG PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n, double rgb[], PSL_LONG flag);
-EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, PSL_LONG restore, double xyorigin[], double page_size[], struct EPS *eps);
+EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, char origin[], double xy_offset[], double page_size[], struct EPS *eps);
 EXTERN_MSC PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P, PSL_LONG mode);
