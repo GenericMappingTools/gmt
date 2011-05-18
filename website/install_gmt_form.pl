@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.49 2011-03-15 02:06:46 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.50 2011-05-18 21:20:46 remko Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -33,7 +33,6 @@ mkdir $PDIR;
 
 $form_version	= $gmt_form{'form_version'};
 $unit		= $gmt_form{'radio_unit'};
-$eps		= $gmt_form{'radio_eps'};
 $flock		= $gmt_form{'radio_flock'};
 $cdf		= $gmt_form{'radio_netcdf'};
 $ftpmode	= $gmt_form{'radio_ftpmode'};
@@ -103,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.49 $, on
+# Processed by install_gmt_form.pl $Revision: 1.50 $, on
 #
 #	$now
 #
@@ -324,13 +323,6 @@ if ($unit eq "SI") {
 }
 else {
 	print FILE "GMT_si=n\n";
-}
-
-if ($eps eq "PS") {
-	print FILE "GMT_ps=y\n";
-}
-else {
-	print FILE "GMT_ps=n\n";
 }
 
 if ($gmt_sharedir eq "" && $gmt_share ne "") {

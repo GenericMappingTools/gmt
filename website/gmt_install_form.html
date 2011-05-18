@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.91 2011-03-15 02:06:46 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.92 2011-05-18 21:20:46 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.91 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.92 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -55,28 +55,9 @@ man page for how to change this choice at a later time).  Individual users can a
 with gmtset MEASURE_UNIT cm|inch</I><BR>
 <HR>
 
-<!--  PS OR EPS SELECTION  -->
-
-<B>2. Select default PostScript output format for GMT:</B><BR>
-
-<INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED> Freeform PostScript (PS)<BR>
-<INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
-<P>
-<I>Note: GMT-produced PostScript files will by default
-use the printer configuration command <b>setpagedevice</b> to set image area (i.e., paper size) and
-to select specific paper trays, including the manual tray (e.g., when making overhead
-transparencies).  Encapsulated PostScript files (EPS) are not allowed to use this command.  Some older
-PostScript previewers (like Sun's pageview) do not understand <b>setpagedevice</b>, while more up-to-date
-previewers like GNU ghostview does.  The parameter PAPER_MEDIA is used to choose between EPS and PS output
-and this can be changed at run-time with the gmtset command.  Thus, this radio button only affects the
-initial default selection.  Choose EPS if you do not need to worry about paper trays.  Choose the default
-PS if you need the extra flexibility offered.  Please read the gmtdefaults man page and Appendix C
-for more details.</I><BR>
-<HR>
-
 <!--  POSIX FILE LOCKING SELECTION  -->
 
-<B>3. Select POSIX Advisory File Locking:<BR></B>
+<B>2. Select POSIX Advisory File Locking:<BR></B>
 
 <INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock"> YES. Use file locking<BR>
 <INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock" CHECKED> NO. Do not use file locking<BR>
