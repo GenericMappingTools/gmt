@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.23 2011-05-18 00:23:03 jluis Exp $
+ *	$Id: psimage_func.c,v 1.24 2011-05-18 00:34:30 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -362,14 +362,14 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				I->data[n--] = g_table[I->data[j]];
 				I->data[n--] = r_table[I->data[j]];	/* Now we can overwrite this value */
 			}
-			I->n_bands = 3;
+			I->header->n_bands = 3;
 			GMT_free (GMT, r_table);	GMT_free (GMT, g_table);	GMT_free (GMT, b_table);
 		}
 
 		picture = (unsigned char *)I->data;
 		header.width = I->header->nx;
 		header.height = I->header->ny;
-		header.depth = (int)(I->n_bands * 8);
+		header.depth = (int)(I->header->n_bands * 8);
 	}
 #else
 	else {	/* Without GDAL we can only read EPS and Sun raster */
