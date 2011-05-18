@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_defaults.h,v 1.40 2011-05-02 19:34:31 guru Exp $
+ *	$Id: gmt_defaults.h,v 1.41 2011-05-18 21:22:30 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -138,7 +138,6 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 #endif
 	GMT_LONG ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	GMT_LONG ps_media;			/* Default paper media [25(Letter)] */
-	GMT_LONG ps_epsformat;			/* TRUE if we are writing EPS [PS] */
 	GMT_LONG ps_comments;			/* TRUE if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;
