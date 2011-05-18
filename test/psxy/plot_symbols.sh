@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: plot_symbols.sh,v 1.12 2011-03-15 02:06:46 guru Exp $
+#	$Id: plot_symbols.sh,v 1.13 2011-05-18 16:20:25 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -7,7 +7,7 @@
 header "Test psxy and all the symbols with fill"
 
 ps=plot_symbols.ps
-psxy -R0/4/1/6 -Jx1i -P -B0g1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
+psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	-
 > Plain red symbols -W- -Gred

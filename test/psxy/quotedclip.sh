@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: quotedclip.sh,v 1.5 2011-03-22 16:37:13 remko Exp $
+#	$Id: quotedclip.sh,v 1.6 2011-05-18 16:20:25 remko Exp $
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths
@@ -9,7 +9,7 @@ header "Test psxy quoted lines with clipping and delayed text"
 
 ps=quotedclip.ps
 
-psbasemap -R0/10/0/10 -JX15c/10c -Ggray70 -K -P -B0:."Clip path from straight text": --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
+psbasemap -R0/10/0/10 -JX15c/10c -Ggray70 -K -P -B:."Clip path from straight text": --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
 
 psxy -R -J -W1p,red -Sqn1:+Lh+e+s18 -O -K << EOF >> $ps
 > "The quick brown fox jumps over the lazy dog"
@@ -28,7 +28,7 @@ psxy -R -J -L -Gorange -W0.5p -O -K box.txt >> $ps
 
 psclip -Cs -O -K >> $ps
 
-psbasemap -R -J -Ggray70 -O -K -Y12c  -B0:."Clip path from curved text": --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p >> $ps
+psbasemap -R -J -Ggray70 -O -K -Y12c  -B:."Clip path from curved text": --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p >> $ps
 
 cat << EOF > t.txt
 > "In the Future, the Present will look like Today"

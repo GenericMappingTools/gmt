@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_F.sh,v 1.18 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_App_F.sh,v 1.19 2011-05-18 16:24:14 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
 . ./functions.sh
@@ -191,7 +191,7 @@ psxy -R -J -O -K -Glightgray << EOF >> GMT_App_F_stand+.ps
 5	31
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_stand+.ps
-psxy -R -J -O -B0g1 -Wthick << EOF >> GMT_App_F_stand+.ps
+psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_stand+.ps
 >
 0	3
 9	3
@@ -245,7 +245,7 @@ psxy -R -J -O -K -Glightgray << EOF >> GMT_App_F_iso+.ps
 5	19
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_iso+.ps
-psxy -R -J -O -B0g1 -Wthick << EOF >> GMT_App_F_iso+.ps
+psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_iso+.ps
 >
 0	3
 9	3
@@ -303,7 +303,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:Symbol:N -P -K -Glightgray -Y2.58i << EOF > 
 8	15
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
-psxy -R -J -O -K -B0g1 -Wthick << EOF >> GMT_App_F_symbol.ps
+psxy -R -J -O -K -Bg1 -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 0	4
 9	4
@@ -351,7 +351,7 @@ psxy -R0/9/20/32 -J -O -K -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 8	31
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_symbol.ps
-psxy -R -J -O -B0g1 -Wthick << EOF >> GMT_App_F_symbol.ps
+psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_symbol.ps
 >
 1	20
 1	32
@@ -406,7 +406,7 @@ psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:ZapfDingbats:N -P -K -Glightgray -Y2.58i << 
 8	15
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
-psxy -R -J -O -B0g1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
+psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
 9	4
@@ -454,7 +454,7 @@ psxy -R0/9/20/32 -J -O -K -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 8	31
 EOF
 pstext $$.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
-psxy -R -J -O -B0g1 -Wthick << EOF >> GMT_App_F_dingbats.ps
+psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 1	20
 1	32

@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 14
-#		$Id: job14.sh,v 1.20 2011-03-15 02:06:31 guru Exp $
+#		$Id: job14.sh,v 1.21 2011-05-18 16:24:14 remko Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
@@ -19,7 +19,7 @@ blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
 
 # Then draw blockmean cells
 
-psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -B0g1 -X3.25i >> $ps
+psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> $ps
 psxy -R0/7/0/7 -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> $ps
 # Reformat to one decimal for annotation purposes
 gmtconvert mean.xyz --FORMAT_FLOAT_OUT=%.1f | \

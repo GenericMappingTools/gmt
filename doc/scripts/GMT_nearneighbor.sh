@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_nearneighbor.sh,v 1.7 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_nearneighbor.sh,v 1.8 2011-05-18 16:24:14 remko Exp $
 #
 . ./functions.sh
 
-psxy -R0/2/0/2 -Jx1i -B0g0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
+psxy -R0/2/0/2 -Jx1i -Bg0.25 -Sc0.025 -Gblack -P -K << EOF > GMT_nearneighbor.ps
 0.04	1.8
 0.3	0.3
 0.31	0.7

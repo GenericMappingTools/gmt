@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_M_1.sh,v 1.7 2011-05-17 00:23:50 guru Exp $
+#	$Id: GMT_App_M_1.sh,v 1.8 2011-05-18 16:24:14 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
@@ -13,7 +13,7 @@ n=`cat $$.lis | wc -l`
 # dy is line spacing and y0 is total box height
 
 gmtset MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
-psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B0 > $ps
+psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B/ > $ps
 
 i=1
 y=0.475
@@ -28,8 +28,8 @@ do
 	makecpt -C$left -T-1/1/0.25 > $$.left2.cpt
 	makecpt -C$right -Z > $$.right.cpt
 	makecpt -C$right -T-1/1/0.25 > $$.right2.cpt
-	psscale -D1.55/$y/2.70/0.125h -C$$.left.cpt -B0 -O -K >> $ps
-	psscale -D4.50/$y/2.70/0.125h -C$$.right.cpt -B0 -O -K >> $ps
+	psscale -D1.55/$y/2.70/0.125h -C$$.left.cpt -B/ -O -K >> $ps
+	psscale -D4.50/$y/2.70/0.125h -C$$.right.cpt -B/ -O -K >> $ps
 	psscale -D1.55/$y2/2.70/0.125h -C$$.left2.cpt -Bf0.25 -O -K >> $ps
 	psscale -D4.50/$y2/2.70/0.125h -C$$.right2.cpt -Bf0.25 -O -K >> $ps
 	pstext -R -J -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC >> $ps <<- END
