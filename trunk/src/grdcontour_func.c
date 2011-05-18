@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.22 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.23 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -244,11 +244,11 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Annotation control */
-				/* Format: -A[-|<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+l<label>][+o|O|t][+s<size>][+p<pen>][+u<unit>] */
+				/* Format: -A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+s<size>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
 
 				Ctrl->A.active = TRUE;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-][<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g[<fill>]][+j<just>][+o][+p[<pen>]][+s<size>][+u<unit>][+v]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+s<size>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
@@ -594,7 +594,7 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0};
+	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
 	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0;
 	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl;
 	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
@@ -640,12 +640,13 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
+	need_proj = !Ctrl->D.active || Ctrl->contour.save_labels;	/* Turn off mapping if -D was used, unless +t was set */
 
 	/* Determine what wesn to pass to map_setup */
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
-	if (make_plot && GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
+	if (need_proj && GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
 
 	/* Determine the wesn to be used to actually read the grid file */
 
@@ -839,12 +840,9 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				two_only = TRUE;
 			}
 		}
-		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
 		D = GMT_create_dataset (GMT, n_tables, 0, 3, 0);	/* An empty table */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
 		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	}
 
 	if (make_plot) {
@@ -908,7 +906,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					else if (io_mode == GMT_WRITE_SEGMENTS)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, closed, cont_counts);
 				}
-				if (make_plot && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
+				if (need_proj && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
 						GMT_get_format (GMT, cval, Ctrl->contour.unit, CNULL, format);
@@ -916,7 +914,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 					else
 						cont_label[0] = '\0';
-					if (cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
+					if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 						if (n_save == n_alloc) n_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
 						(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, nn, 0, double);
 						GMT_memcpy (save[n_save].x, xp, nn, double);
@@ -938,12 +936,19 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
+		GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
 		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, (void **)&(Ctrl->D.file), (void *)D))) Return (error);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);
+	}
+
+	if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
+		if ((error = GMT_contlabel_save (GMT, &Ctrl->contour))) Return (error);
 	}
 
 	if (make_plot) {
@@ -963,8 +968,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);	/* Must possibly adjust label angles so that label is readable when following contours */
 
 		GMT_contlabel_plot (GMT, &Ctrl->contour);
-		GMT_contlabel_free (GMT, &Ctrl->contour);
-
+		
 		if (!Ctrl->contour.delay) GMT_map_clip_off (GMT);
 
 		GMT_map_basemap (GMT);
@@ -973,6 +977,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_plotend (GMT);
 	}
+
+	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);
 
 	GMT_free_grid (GMT, &G_orig, TRUE);
 	GMT_free (GMT, edge);

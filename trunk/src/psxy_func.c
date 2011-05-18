@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.25 2011-05-16 22:22:31 guru Exp $
+ *	$Id: psxy_func.c,v 1.26 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1005,6 +1005,9 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
+		if (&S.G.save_labels) {	/* Want to save the line label locations (lon, lat, angle, label) */
+			if ((error = GMT_contlabel_save (GMT, &S.G))) Return (error);
+		}
 		GMT_contlabel_plot (GMT, &S.G);
 		GMT_contlabel_free (GMT, &S.G);
 	}

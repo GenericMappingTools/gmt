@@ -1,14 +1,26 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1029 2011-05-18 01:52:54 remko Exp $
+	$Id: ChangeLog,v 1.1030 2011-05-18 02:22:17 guru Exp $
 -----------------------------------------------------------------------------------------
 
-2011-05-18	remko
-	* pslib.*:		Changed PSL_beginplot to no longer mention "absolute" positioning,
-				but use "origin" to specify the origin of the offset ('r', 'a',
-				'f', 'c') for each direction.
 2011-05-18	jluis
 	* psimage_func.c:	Now is able to plot also indexed images imported via GDAL
 
+2011-05-17	pwessel
+	* grdcontour_func.c:	New contour label modifier +t|T[<file>] to save label locations to file.
+	* pscontour_func.c:	---"---
+	* psxy_func.c:		New quoted line label modifier +t|T[<file>] to save label locations to file.
+	* psxyz_func.c:		---"---
+				This feature can be used to plot contours or quoted lines in KML with
+				annotation labels via gmt2kml.
+	* gmt2kml_func.c:	Use -I- to turn symbol plotting off (just plot label).
+
+2011-05-17	remko
+	* pslib.*:		Changed PSL_beginplot to no longer mention "absolute" positioning,
+				but use "origin" to specify the origin of the offset ('r', 'a',
+				'f', 'c') for each direction.
+2011-05-16	remko
+	* pslib.*:		Adjusted description of PSL_beginplot argument "absolute" so it conforms
+				to the actual workings (reset moved at end).
 2011-05-16	pwessel
 	* *.[ch]:		Clarified what is the lower-level GMT API for module development:
 				Functions in gmt_prototypes.h; all expects the GMT control pointer.

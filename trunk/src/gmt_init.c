@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.515 2011-05-17 22:12:40 guru Exp $
+ *	$Id: gmt_init.c,v 1.516 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -611,7 +611,7 @@ void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 	 */
 
 	GMT_LONG i;
-	char pad[16];
+	char pad[16], *type[2] = {"Contour", "Line"};
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
 	GMT_message (C, "%s +a<angle> will place all annotations at a fixed angle.\n", pad);
@@ -642,6 +642,8 @@ void GMT_label_syntax (struct GMT_CTRL *C, GMT_LONG indent, GMT_LONG kind)
 	GMT_message (C, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
 	GMT_message (C, "%s   Optionally append a pen [Default is default pen].\n", pad);
 	GMT_message (C, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
+	GMT_message (C, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind]);
+	GMT_message (C, "%s   use +T to save (x y angle label) instead\n", pad);
 	GMT_message (C, "%s +u<unit> to append unit to all labels; Start unit with - for\n", pad);
 	GMT_message (C, "%s   no space between annotation and unit.\n", pad);
 	if (kind == 0) GMT_message (C, "%s  If no unit appended, use z-unit from grdfile [no unit].\n", pad);

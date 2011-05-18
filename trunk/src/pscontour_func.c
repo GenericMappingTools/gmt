@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.21 2011-05-16 22:22:31 guru Exp $
+ *	$Id: pscontour_func.c,v 1.22 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1219,6 +1219,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_free (GMT, yp);
 			}
 			GMT_free (GMT, head_c);
+		}
+		if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
+			if ((error = GMT_contlabel_save (GMT, &Ctrl->contour))) Return (error);
 		}
 		if (make_plot) {
 			if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */

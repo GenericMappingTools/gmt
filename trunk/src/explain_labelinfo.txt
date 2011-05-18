@@ -28,10 +28,6 @@ Selects opaque text boxes [Default is transparent]; optionally specify the color
 .TP
 BD(+j)IT(just)
 Sets label justification [Default is MC].  Ignored when OPT(SqN)|BD(n)+|-1 is used.
-.TP
-\fB+k\fP\fIcolor\fP
-Sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
-(See SPECIFYING COLOR below).
 #if !defined(CONTOUR)
 .TP
 BD(+l)IT(label)
@@ -81,8 +77,13 @@ color = black, style = solid].
 BD(+r)IT(min_rad)
 Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
 .TP
-\fB+s\fP\fIsize\fP
-Sets the desired font size in points [Default is 9].
+\fB+t[\fP\fIfile\fP]
+#ifdef GRID
+Saves contour label x, y, and text to IT(file) [Contour_labels.txt].
+#else
+Saves line label x, y, and text to IT(file) [Line_labels.txt].
+#endif
+Use \fB+T\fP to save x, y, angle, text instead.
 .TP
 BD(+u)IT(unit)
 Appends IT(unit) to all line labels. If IT(unit) starts with a leading hyphen (-) then there will be no space
