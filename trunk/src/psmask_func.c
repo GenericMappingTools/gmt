@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
+ *	$Id: psmask_func.c,v 1.15 2011-05-18 13:11:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -536,9 +536,6 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-
-	if (!GMT->current.proj.x_off_supplied && GMT->common.O.active) GMT->current.setting.map_origin[GMT_X] = 0.0;
-	if (!GMT->current.proj.y_off_supplied && GMT->common.O.active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
