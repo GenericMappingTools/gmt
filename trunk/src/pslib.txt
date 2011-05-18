@@ -160,7 +160,7 @@ units.
 .RE
 .br
 .sp
-BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode), ARG(char,origin)[], ARG(double,xy_offset)[], ARG(double,pagesize)[], ARG(struct EPS,*eps))
+BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode), ARG(char,origin)[], ARG(double,offset)[], ARG(double,pagesize)[], ARG(struct EPS,*eps))
 .RS 5
 Controls the initiation (or continuation) of a particular plot within the current session.
 Pass file pointer IT(fp) where the PS code will be written; if NULL then the output is written to IT(stdout).
@@ -174,7 +174,7 @@ argument). Each of the two characters are either
 'a' for a temporaty adjustment of the origin which is undone during BD(PSL_endplot),
 'f' for a placement of the origin relative to the lower left corner of the page,
 'c' for a placement of the origin relative to the center of the page.
-The array IT(xy_offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
+The array IT(offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
 IT(pagesize) means the physical width and height of the plotting media in points (typically 612 by 792 for
 Letter or 595 by 842 for A4 format). 
 The EPS structure is defined in the psl.h include file and contains information that will make up the comments header of a EPS file.

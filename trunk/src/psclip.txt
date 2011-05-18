@@ -40,7 +40,7 @@ straight text.  Both OPT(Cc) and OPT(Cs) assumes only one level of text clipping
 we thus reduce the clip level by one.  To undo one level of
 polygon clipping (perhaps initiated by earlier psclip, pscoast, or psmask calls) use OPT(C).
 You can undo all clip levels with OPT(Ca) or a specific number with OPT(C)IT(n).
-Also supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
+Also supply OPT(X) and OPT(Y) settings if you have moved since the clip started.
 #include "explain_-J.txt"
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"

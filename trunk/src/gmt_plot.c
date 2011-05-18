@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.333 2011-05-18 02:22:17 guru Exp $
+ *	$Id: gmt_plot.c,v 1.334 2011-05-18 15:39:29 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3459,7 +3459,7 @@ struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
 		fclose (fp);
 		x0 = orig_x0;
 		y0 = orig_y0;
-		if (C->current.ps.absolute) {	/* Absolute */
+		if (C->current.ps.origin[GMT_X] == 'f') {	/* Absolute */
 			x0 = C->current.setting.map_origin[GMT_X];
 			y0 = C->current.setting.map_origin[GMT_Y];
 		}
@@ -3523,10 +3523,10 @@ struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
 	new->x1 = MAX (old_x1, new->x1);
 	new->y1 = MAX (old_y1, new->y1);
 
-	if (C->current.ps.absolute) {	/* Undo Absolute */
-		x0 = orig_x0;
-		y0 = orig_y0;
-	}
+	/* Undo origin adjustment */
+
+	if (C->current.ps.origin[GMT_X] == 'a') x0 = orig_x0;
+	if (C->current.ps.origin[GMT_Y] == 'a') y0 = orig_y0;
 
 	/* Update the bb file or tell use */
 
@@ -3608,18 +3608,17 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	/* Default for overlay plots is no shifting */
 
-	if (!C->current.proj.x_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_X] = 0.0;
-	if (!C->current.proj.y_off_supplied && C->common.O.active) C->current.setting.map_origin[GMT_Y] = 0.0;
+	if (!C->common.X.active && C->common.O.active) C->current.setting.map_origin[GMT_X] = 0.0;
+	if (!C->common.Y.active && C->common.O.active) C->current.setting.map_origin[GMT_Y] = 0.0;
 
-	k = C->current.setting.ps_orientation;	/* k and !k gives 0,1 or 1,0 depending on -P */
-	if (C->current.proj.x_off_supplied == 2) C->current.setting.map_origin[GMT_X] = 0.5 * (fabs(C->current.setting.ps_page_size[!k]/PSL_POINTS_PER_INCH) - C->current.map.width);	/* Want to x center plot on current page size */
-	if (C->current.proj.y_off_supplied == 2) C->current.setting.map_origin[GMT_Y] = 0.5 * (fabs(C->current.setting.ps_page_size[k]/PSL_POINTS_PER_INCH)  - C->current.map.height);	/* Want to y center plot on current page size */
+	/* Adjust offset when centering plot on center of page (PS does the rest) */
+	if (C->current.ps.origin[GMT_X] == 'c') C->current.setting.map_origin[GMT_X] -= 0.5 * C->current.map.width;
+	if (C->current.ps.origin[GMT_Y] == 'c') C->current.setting.map_origin[GMT_Y] -= 0.5 * C->current.map.height;
 
 	eps = gmt_epsinfo (C);
 	strcpy (P->init.encoding, C->current.setting.ps_encoding.name);
 	
-	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.absolute ? "aa" : "rr",
-		C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
+	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.origin, C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 

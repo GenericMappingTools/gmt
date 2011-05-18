@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1030 2011-05-18 02:22:17 guru Exp $
+	$Id: ChangeLog,v 1.1031 2011-05-18 15:39:29 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-18	remko
+	* gmt_init.c:		Two routines GMT_parse_[X|Y]_option replaced by single GMT_parse_XY_option.
+				-X and -Y option now support modifiers a|c|f|r, treated separately!
+	* explain_-XY*.text:	---"---
+	* test/psbasemap/origin.sh:	Test new -X and -Y functionality.
 
 2011-05-18	jluis
 	* psimage_func.c:	Now is able to plot also indexed images imported via GDAL

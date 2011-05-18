@@ -2,11 +2,11 @@
 GMT_X_OPT GMT_Y_OPT
 Shift plot origin relative to the current origin by (IT(x-shift),IT(y-shift)) and
 optionally append the length unit (BD(c), BD(i), or BD(p)).
-You can prepend BD(a) to shift the origin back to the original position after plotting,
-or prepend  BD(r) [Default] to reset the current origin to the new location.
-If OPT(O) is used then the default (IT(x-shift),IT(y-shift)) is (0,0), otherwise it is
-(r1i, r1i) or (r2.5c, r2.5c).
-Alternatively, give BD(c) to align the center coordinate (x or y) of the plot with the center of the page
-based on current page size.
+You can
+prepend BD(a) to shift the origin back to the original position after plotting,
+prepend BD(c) to center the plot on the center of the paper (optionally add shift),
+prepend BD(f) to shift the origin relative to the fixed lower left corner of the page, or
+prepend BD(r) [Default] to move the origin relative to its current location.
+If OPT(O) is used then the default (IT(x-shift),IT(y-shift)) is (r0), otherwise it is (r1i).
 When OPT(X) or OPT(Y) are used without any further arguments, the values from the last use of that option
 in a previous BD(GMT) command will be used.
