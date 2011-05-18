@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.12 2011-05-17 00:23:50 guru Exp $
+#	$Id: GMT_App_E.sh,v 1.13 2011-05-18 16:24:14 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -24,7 +24,7 @@ $xwidth	$ywidth
 0	$ywidth
 END
 
-psbasemap -R0/5.75/0/7.55 -Jx1i -P -B0 -K > $ps
+psbasemap -R0/5.75/0/7.55 -Jx1i -P -B/ -K > $ps
 for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 do
 	for ix in 1 2 3 4 5 6

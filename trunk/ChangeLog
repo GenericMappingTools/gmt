@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1031 2011-05-18 15:39:29 remko Exp $
+	$Id: ChangeLog,v 1.1032 2011-05-18 16:25:28 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-18	remko
@@ -7,6 +7,7 @@
 				-X and -Y option now support modifiers a|c|f|r, treated separately!
 	* explain_-XY*.text:	---"---
 	* test/psbasemap/origin.sh:	Test new -X and -Y functionality.
+	* *.sh, *.bat:		Replaced -B0 with -B/ and -B0g<value> with -Bg<value>.
 
 2011-05-18	jluis
 	* psimage_func.c:	Now is able to plot also indexed images imported via GDAL

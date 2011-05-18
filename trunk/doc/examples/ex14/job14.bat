@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.16 2011-05-17 01:22:10 guru Exp $
+REM		$Id: job14.bat,v 1.17 2011-05-18 16:24:14 remko Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
@@ -15,7 +15,7 @@ psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -Gblack -P -K -Y6.45
 pstext table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> %ps%
 blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
 REM Then draw blocmean cells
-psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -B0g1 -X3.25i >> %ps%
+psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> %ps%
 psxy -R0/7/0/7 -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> %ps%
 gmtconvert mean.xyz --FORMAT_FLOAT_OUT=%%.1f | pstext -R -J -D0.15c/0 -F+f6p+jLM -O -K -Gwhite -W -C0.01i -N >> %ps%
 REM Then surface and contour the data

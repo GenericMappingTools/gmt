@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.18 2011-03-15 02:06:31 guru Exp $
+REM             $Id: job23.bat,v 1.19 2011-05-18 16:24:14 remko Exp $
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM
@@ -29,7 +29,7 @@ echo 178.42	-18.13	SUVA		LM >> cities.d
 echo 237.67	47.58	SEATTLE		RM >> cities.d
 echo 28.20	-25.75	PRETORIA	LM >> cities.d
 
-pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 -B0g30:."Distances from %name% to the World": -K -Dc -Wthinnest > %ps%
+pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 -Bg30:."Distances from %name% to the World": -K -Dc -Wthinnest > %ps%
 
 grdcontour dist.nc -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> %ps%
 

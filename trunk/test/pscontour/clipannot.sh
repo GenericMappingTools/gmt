@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: clipannot.sh,v 1.2 2011-03-22 18:41:32 guru Exp $
+#	$Id: clipannot.sh,v 1.3 2011-05-18 16:20:25 remko Exp $
 
 . ../functions.sh
 header "Test pscontour for clip path set by annotations"
@@ -20,7 +20,7 @@ psxy -R -J -O -K -W1p,red << EOF >> $ps
 0	8.2
 10	8.2
 EOF
-psbasemap -R -J -O -K -B0g0.2 >> $ps
+psbasemap -R -J -O -K -Bg0.2 >> $ps
 psclip -Cs -O -K  >> $ps
 psbasemap -R -J -O -B2WSne:."Delayed Annotations": >> $ps
 rm -f tmp.nc tmp.xyz

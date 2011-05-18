@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: xy2ij.sh,v 1.14 2011-05-01 01:11:29 jluis Exp $
+#	$Id: xy2ij.sh,v 1.15 2011-05-18 16:20:25 remko Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -63,7 +63,7 @@ psxy -R -J pixel_ij.d -Sc0.15 -Gblack -O -K -N >> $ps
 pstext -R -J pixel_ij.d -F+f8p,white -O -K -N >> $ps
 
 # Now do the same with gridline orientation
-psbasemap -R0.5/5.5/0.5/5.5 -J -O -B0g1 -K -Y4.7 >> $ps
+psbasemap -R0.5/5.5/0.5/5.5 -J -O -Bg1 -K -Y4.7 >> $ps
 paste grid_xy.d grid_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
 	| psxy -R0/5/0/5 -J -O -B1Wsne -Wdefault -K >> $ps
 psxy -R -J grid.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps

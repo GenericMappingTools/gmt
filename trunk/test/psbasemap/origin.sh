@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: origin.sh,v 1.2 2011-05-18 15:39:29 remko Exp $
+#	$Id: origin.sh,v 1.3 2011-05-18 16:20:25 remko Exp $
 
 . ../functions.sh
 header "Test positioning with -X and -Y"
@@ -10,7 +10,7 @@ n=0
 
 plot () {
 	let n=$n+1
-	pstext -R0/1/0/1 -JX1i -B0 -F+jMC $1 $2 $3 <<%
+	pstext -R0/1/0/1 -JX1i -B/ -F+jMC $1 $2 $3 <<%
 0.5 0.3 $1
 0.5 0.7 ($n)
 %
