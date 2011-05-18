@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.73 2011-04-25 17:43:05 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.74 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -245,12 +245,12 @@ artificial illumination.  For this example we will use
 \GMTprog{grdmath} to make a grid file that contains the surface given
 by the function $z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}$, where
 $r^2 = (x^2 + y^2)$.  The illumination is obtained by passing
-two grid files to \GMTprog{grdview}: One with the {\it z}-values
+two grid files to \GMTprog{grdview}: One with the \emph{z}-values
 (the surface) and another with intensity values (which should
 be in the \PM 1 range).  We use \GMTprog{grdgradient} to compute
 the horizontal gradients in the direction of the artificial
 light source.  The \filename{gray.cpt} file only has one line that states
-that all {\it z} values should have the gray level 128.  Thus,
+that all \emph{z} values should have the gray level 128.  Thus,
 variations in shade are entirely due to variations in gradients,
 or illuminations.  We choose to illuminate from the SW and view
 the surface from SE:
@@ -279,7 +279,7 @@ sector diagrams, and wind rose diagrams).  We will show an
 example that involves both programs.  The file \filename{fractures.yx}
 contains a compilation of fracture lengths and directions as
 digitized from geological maps.  The file \filename{v3206.t} contains
-all the bathymetry measurements from {\it Vema} cruise 3206.
+all the bathymetry measurements from \emph{Vema} cruise 3206.
 Our complete figure (Figure~\ref{fig:GMT_example_06}) was made running
 this script:
 
@@ -433,7 +433,7 @@ Here is the shell script to generate the RGB cube in Figure~\ref{fig:GMT_example
 Our next example (Figure~\ref{fig:GMT_example_12})
 operates on a data set of topographic
 readings non-uniformly distributed in the plane (Table
-5.11 in Davis: {\it Statistics and Data Analysis in Geology},
+5.11 in Davis: \emph{Statistics and Data Analysis in Geology},
 J. Wiley).  We use \GMTprog{triangulate} to perform the optimal
 Delaunay triangulation, then use the output to draw the
 resulting network.  We label the node numbers as well as
@@ -460,9 +460,9 @@ the field (Cartesian or polar components) are stored in
 separate grid files.  In this example we use \GMTprog{grdmath}
 to generate a surface $z(x, y) = x \cdot \exp(-x^2 -y^2)$
 and to calculate $\nabla z$ by
-returning the {\it x}- and {\it y}-derivatives separately.
+returning the \emph{x}- and \emph{y}-derivatives separately.
 We superpose the gradient vector field and the surface
-{\it z} and also plot the components of the gradient
+\emph{z} and also plot the components of the gradient
 in separate windows.
 A \GMTprog{pstext} call to place a header finishes the plot
 (Figure~\ref{fig:GMT_example_13}:
@@ -537,8 +537,8 @@ This point was extracted from the grid files using \GMTprog{grdinfo}.
 data:  a Delaunay triangulation (see Section~\ref{sec:example_12}) which
 forms $z(x, y)$ as a union of planar triangular facets.
 One advantage of this method is that it will not extrapolate
-$z(x, y)$ beyond the convex hull of the input ({\it x, y})
-data.  Another is that it will not estimate a {\it z} value
+$z(x, y)$ beyond the convex hull of the input (\emph{x, y})
+data.  Another is that it will not estimate a \emph{z} value
 above or below the local bounds on any triangle.
 A disadvantage is that the $z(x, y)$ surface is not
 differentiable, but has sharp kinks at triangle edges and
@@ -548,13 +548,13 @@ reasonable, but it can be filtered later (last panel below).
 (smooth and differentiable) interpolation of $z(x, y)$ onto
 a grid, after which the grid may be illustrated (\GMTprog{grdcontour},
 \GMTprog{grdimage}, \GMTprog{grdview}).  \GMTprog{surface} will interpolate
-to all ({\it x, y}) points in a rectangular region, and thus
+to all (\emph{x, y}) points in a rectangular region, and thus
 will extrapolate beyond the convex hull of the data.  However,
 this can be masked out in various ways (see Section~\ref{sec:example_15}).
 
 A more serious objection is that \GMTprog{surface} may estimate
-{\it z} values outside the local range of the data (note area
-near {\it x} = 0.8, {\it y} = 5.3).  This commonly happens when
+\emph{z} values outside the local range of the data (note area
+near \emph{x} = 0.8, \emph{y} = 5.3).  This commonly happens when
 the default tension value of zero is used to create a ``minimum
 curvature'' (most smooth) interpolant.  \GMTprog{surface} can be
 used with non-zero tension to partially  overcome this problem.
@@ -572,9 +572,9 @@ interpolate the data to a grid and then filter the grid using
 containing ``NaN'' values and it can do  median and mode filters
 as well as convolutions.  Shown here is \GMTprog{triangulate} followed
 by \GMTprog{grdfilter}.  Note that the filter has done some
-extrapolation beyond the convex hull of the original {\it x, y}
+extrapolation beyond the convex hull of the original \emph{x, y}
 values.  The ``best'' smooth approximation of $z(x, y)$ depends
-on the errors in the data and the physical laws obeyed by {\it z}.
+on the errors in the data and the physical laws obeyed by \emph{z}.
 \GMT\ cannot always do the ``best'' thing but it offers great
 flexibility through its combinations of tools.  We illustrate all
 four solutions using a CPT file that contains color fills,
@@ -681,7 +681,7 @@ when designing a new symbol.
 \begin{enumerate}
 \item Use \GMTprog{psbasemap} (or
 engineering paper!) to set up an empty grid that goes from
--0.5 to +0.5 in both {\it x} and {\it y}.  Use ruler and
+-0.5 to +0.5 in both \emph{x} and \emph{y}.  Use ruler and
 compass to draw your new symbol using straight lines,
 arcs of circles, and stand-alone geometrical objects (see \GMTprog{psxy} man page for
 a full description of symbol design).  In this Section we will create two new symbols:
@@ -696,23 +696,23 @@ simple set of rules.  In our case we describe our volcano and bulls eye
 using these three freeform polygon generators:
 
 \begin{tabbing} 
-$x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
-$x_0$ $y_0$ {\bf M} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Start new element at $x_0$, $y_0$ \\ 
-$x_1$ $y_1$ {\bf D} \> Draw straight line from current point to $x_1$, $y_1$ around ($x_0$, $y_0$) \\ 
-$x_0$ $y_0$ $r$ $\alpha_1$ $\alpha_2$ {\bf A} \> Draw
+$x_0$ $y_0$ $r$ \textbf{C} [ \Opt{G}\emph{fill} ] [ \Opt{W}\emph{pen} ] \=Draw \kill
+$x_0$ $y_0$ \textbf{M} [ \Opt{G}\emph{fill} ] [ \Opt{W}\emph{pen} ] \> Start new element at $x_0$, $y_0$ \\ 
+$x_1$ $y_1$ \textbf{D} \> Draw straight line from current point to $x_1$, $y_1$ around ($x_0$, $y_0$) \\ 
+$x_0$ $y_0$ $r$ $\alpha_1$ $\alpha_2$ \textbf{A} \> Draw
 arc segment of radius $r$ from angle $\alpha_1$ to $\alpha_2$
 \end{tabbing} 
 
 We also add a few stand-alone circles (for other symbols, see \GMTprog{psxy} man page):
 
 \begin{tabbing} 
-$x_0$ $y_0$ $r$ {\bf C} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \=Draw \kill
-$x_0$ $y_0$ $r$ {\bf c} [ \Opt{G}{\it fill} ] [ \Opt{W}{\it pen} ] \> Draw
+$x_0$ $y_0$ $r$ \textbf{C} [ \Opt{G}\emph{fill} ] [ \Opt{W}\emph{pen} ] \=Draw \kill
+$x_0$ $y_0$ $r$ \textbf{c} [ \Opt{G}\emph{fill} ] [ \Opt{W}\emph{pen} ] \> Draw
 single circle of radius $r$ around $x_0$, $y_0$ \\
 \end{tabbing} 
 
 The optional \Opt{G} and \Opt{W} can be used to hardwire
-the color fill and pen for segments (use {\bf --} to disallow
+the color fill and pen for segments (use \textbf{--} to disallow
 fill or line for any specific feature).  By default the segments
 are painted based on the values of the command line settings.
 
@@ -947,7 +947,7 @@ grid using a linear projection with a suitable scale (here 0.25 inches per degre
 To overlay basemaps and features that has geographic longitude/latitude coordinates we must remember
 two key issues:
 \begin{enumerate}
-	\item This is a \emph{spherical} Mercator grid so we must use {\bf --PROJ\_ELLIPSOID}=Sphere with all
+	\item This is a \emph{spherical} Mercator grid so we must use \textbf{--PROJ\_ELLIPSOID}=Sphere with all
 	commands that involve projections (or use \GMTprog{gmtset} to change the setting).
 	\item Select Mercator projection and use the same scale that was used with the linear projection.
 \end{enumerate}
@@ -978,7 +978,7 @@ the same map there are a few things you must consider:
 	Conversely, if you instead know the lon/lat corners then you need to convert those
 	to UTM coordinates.  You now have the ability to specify two domains with the \Opt{R} setting:
 	The linear UTM meter domain when plotting UTM data and the geographic domain (remember to use the
-	rectangular variant of \Opt{R} that ends with the modifier {\bf r}) when plotting lon/lat data.
+	rectangular variant of \Opt{R} that ends with the modifier \textbf{r}) when plotting lon/lat data.
 	\item Make sure you use the same scale (and not width) with both the linear and UTM projection.
 \end{enumerate}
 
@@ -1022,7 +1022,7 @@ them.
 \index{Example!Trigonometric functions plotted in graph mode|(}
 
 Finally, we end with a simple mathematical illustration of sine and cosine, highlighting the
-{it graph} mode for linear projections and the new curved vectors for angles.
+\emph{graph} mode for linear projections and the new curved vectors for angles.
 
 \script{example_30}
 

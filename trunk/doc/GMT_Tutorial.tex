@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.76 2011-04-07 00:55:30 guru Exp $
+%       $Id: GMT_Tutorial.tex,v 1.77 2011-05-18 22:23:49 remko Exp $
 %
 %       The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -199,7 +199,7 @@ unlimited number of rows.  We distinguish between two groups:
 
 \item Single segment [Default]
 
-\item Multi-segment with internal header records ({\bf --M})
+\item Multi-segment with internal header records (\Opt{M})
 \end{itemize}
 
 \item Binary (to speed up input/output)
@@ -208,7 +208,7 @@ unlimited number of rows.  We distinguish between two groups:
 
 \item Single segment [Default]
 
-\item Multi-segment (segment headers are all NaN fields) ({\bf --M})
+\item Multi-segment (segment headers are all NaN fields) (\Opt{M})
 \end{itemize}
 
 \end{itemize}
@@ -265,7 +265,7 @@ There are 6 general categories of output produced by \GMT:
 
 \item Statistics \& Summaries.
 
-\item Warnings and Errors, written to {\it stderr}.
+\item Warnings and Errors, written to \emph{stderr}.
 
 \item Exit status (0 means success, otherwise failure).
 
@@ -298,8 +298,8 @@ GMTprogram input-file >> output-file       # Append to existing file
 
 \noindent
 In this example, and in all those to follow, it is assumed that you do not have the shell
-variable {\bf noclobber} set. If you do, it prevents accidental overwriting of existing files.
-That may be a noble cause, but it is extremely annoying. So please, {\bf unset noclobber}.
+variable \textbf{noclobber} set. If you do, it prevents accidental overwriting of existing files.
+That may be a noble cause, but it is extremely annoying. So please, \textbf{unset noclobber}.
 
 \subsection{Piping ($|$)}
 \index{UNIX@\UNIX!piping}
@@ -391,9 +391,9 @@ consult their manual pages on the \GMT\ web site for reference.
 \index{Linear projection \Opt{JX}}
 \index{Projection!linear}
 
-We start by making the basemap frame for a linear {\it x-y} plot.
-We want it to go from 10 to 70 in {\it x}, annotating every 10, and
-from -3 to 8 in {\it y}, annotating every 1.  The final plot should be
+We start by making the basemap frame for a linear \emph{x-y} plot.
+We want it to go from 10 to 70 in \emph{x}, annotating every 10, and
+from -3 to 8 in \emph{y}, annotating every 1.  The final plot should be
 4 by 3 inches in size.  Here's how we do it:
 
 {\small\begin{verbatim}
@@ -423,7 +423,7 @@ You can view the result with \progname{ghostview} \filename{plot.ps}.
 \index{Projection!logarithmic}
 
 We next will show how to do a basemap for a log--log plot.  We will
-assume that the raw {\it x} data range from 3 to 9613 and {\it y}
+assume that the raw \emph{x} data range from 3 to 9613 and \emph{y}
 ranges from $3.2 \cdot 10^{20}$ to $6.8 \cdot 10^{24}$.  One possibility is
 
 {\small\begin{verbatim} 
@@ -440,11 +440,11 @@ psbasemap -R1/10000/1e20/1e25 -JX9il/6il \
 
 \begin{enumerate}
 
-\item Do not append {\bf l} to the axes lengths.
+\item Do not append \textbf{l} to the axes lengths.
 
-\item Leave the {\bf p} modifier out of the \Opt{B} string.
+\item Leave the \textbf{p} modifier out of the \Opt{B} string.
 
-\item Add {\bf g}3 to each side of the slash in \Opt{B}.
+\item Add \textbf{g}3 to each side of the slash in \Opt{B}.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -460,11 +460,11 @@ of several cylindrical projections offered by \GMT; here we
 will only have time to focus on one such projection.  The
 complete syntax is simply \\
 
-\Opt{JM}{\it width} \\
+\Opt{JM}\emph{width} \\
 
 To make coastline maps we use \GMTprog{pscoast} which automatically will
 access the \GMT\ coastline data base derived from the GSHHS
-database\footnote{See {\it Wessel and Smith} [1996].}.  In addition
+database\footnote{See \emph{Wessel and Smith} [1996].}.  In addition
 to the common switches we may need to use some of several \GMTprog{pscoast}
 -specific options (see Table~\ref{tbl:pscoast}).
 
@@ -474,7 +474,7 @@ to the common switches we may need to use some of several \GMTprog{pscoast}
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
 \Opt{A} & Exclude small features or those of high hierarchical levels (see Appendix K)\\ \hline
-\Opt{D} & Select data resolution ({\bf f}ull, {\bf h}igh, {\bf i}ntermediate, {\bf l}ow, or {\bf c}rude) \\ \hline
+\Opt{D} & Select data resolution (\textbf{f}ull, \textbf{h}igh, \textbf{i}ntermediate, \textbf{l}ow, or \textbf{c}rude) \\ \hline
 \Opt{G} & Set color of dry areas (default does not paint) \\ \hline
 \Opt{I} & Draw rivers (chose features from one or more hierarchical categories) \\ \hline
 \Opt{L} & Plot map scale (length scale can be km, miles, or nautical miles) \\ \hline
@@ -509,7 +509,7 @@ to another setting (see the \GMTprog{gmt.conf} man page), and plot again.
 
 \item Pick a region that includes the north or south poles.
 
-%\item Try \Opt{W}0.25{\bf p} instead of (or in addition to) \Opt{G}.
+%\item Try \Opt{W}0.25\textbf{p} instead of (or in addition to) \Opt{G}.
 
 \item Try \Opt[0.25{\textbf{p}}]{W} instead of (or in addition to) \Opt{G}.
 
@@ -593,11 +593,11 @@ We conclude the survey of map projections with the Eckert IV and VI projections
 (\Opt{JK}), two of several projections used for global thematic maps; They
 are both equal-area projections whose syntax is \\
 
-%\Opt{JK}[{\bf f$|$s}]$lon_0/width$ \\
+%\Opt{JK}[\textbf{f$|$s}]$lon_0/width$ \\
 \Opt[{$[${\textbf{f\textbar s}}$]lon_0/width$}]{JK} \\
 
 \noindent
-where {\bf f} gives Eckert IV (4) and {\bf s} (Default) gives Eckert VI (6).
+where \textbf{f} gives Eckert IV (4) and \textbf{s} (Default) gives Eckert VI (6).
 The $lon_0$ is the central meridian (which takes precedence over
 the mid-value implied by the \Opt{R} setting).  A simple Eckert VI world map
 is thus generated by
@@ -680,13 +680,13 @@ shows a complete list of the options.
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
 \Opt{A} & Suppress line interpolation along great circles \\ \hline
-\Opt{C}{\it CPT} & Let symbol color be determined from $z$-values and the {\it CPT} file \\ \hline
-\Opt{E}[{\bf x}$|${\bf X}][{\bf y}$|${\bf Y}][{\it cap}][/{\it pen}] & Draw selected error bars with specified attributes \\ \hline
-\Opt{G}{\it fill} & Set color for symbol or fill for polygons \\ \hline
+\Opt{C}\emph{CPT} & Let symbol color be determined from $z$-values and the \emph{CPT} file \\ \hline
+\Opt{E}[\textbf{x}$|$\textbf{X}][\textbf{y}$|$\textbf{Y}][\emph{cap}][/\emph{pen}] & Draw selected error bars with specified attributes \\ \hline
+\Opt{G}\emph{fill} & Set color for symbol or fill for polygons \\ \hline
 \Opt{L} & Explicitly close polygons \\ \hline
 \Opt{N} & Do Not clip symbols at map borders \\ \hline
-\Opt{S[symbol]}[{\it size}] & Select one of several symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
-\Opt{W}{\it pen} & Set {\it pen} for line or symbol outline \\ \hline
+\Opt{S[symbol]}[\emph{size}] & Select one of several symbols (See Table~\ref{tbl:psxysymbols}) \\ \hline
+\Opt{W}\emph{pen} & Set \emph{pen} for line or symbol outline \\ \hline
 \end{tabular}
 \caption{Optional switches in the \protect\GMTprog{psxy} program.}
 \label{tbl:psxy}
@@ -696,7 +696,7 @@ The symbols can either be transparent (using \Opt{W} only, not \Opt{G})
 or solid (\Opt{G}, with optional outline using \Opt{W}).  The \Opt{S}
 option takes the code for the desired symbol and optional size information.
 If no symbol is given it is expected to be given in the last column of each record in the input
-file.  The {\it size} is optional since individual sizes for
+file.  The \emph{size} is optional since individual sizes for
 symbols may also be provided by the input data.  The main symbols available to
 us are shown in Table~\ref{tbl:psxysymbols}.
 
@@ -707,39 +707,42 @@ us are shown in Table~\ref{tbl:psxysymbols}.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Symbol}} \\ \hline 
-\Opt{S-}{\it size} & horizontal dash; {\it size} is length of dash \\ \hline
-\Opt{Sa}{\it size} & st{\bf a}r; {\it size} is radius of circumscribing circle \\ \hline
-\Opt{Sb}{\it size}[/{\it base}][{\bf u}] & {\bf b}ar; {\it size} is bar width, append {\bf u} if {\it size} is in {\it x}-units \\
- & Bar extends from {\it base} [0] to the {\it y}-value \\ \hline
-\Opt{Sc}{\it size} & {\bf c}ircle; {\it size} is the diameter \\ \hline
-\Opt{Sd}{\it size} & {\bf d}iamond; {\it size} is its side \\ \hline
-\Opt{Se} & {\bf e}llipse; {\it direction} (CCW from horizontal), {\it major}, and {\it minor} axes in inches \\
+\Opt{S-}\emph{size} & horizontal dash; \emph{size} is length of dash \\ \hline
+\Opt{Sa}\emph{size} & st\textbf{a}r; \emph{size} is radius of circumscribing circle \\ \hline
+\Opt{Sb}\emph{size}[/\emph{base}][\textbf{u}] & \textbf{b}ar; \emph{size} is bar width, append \textbf{u} if \emph{size} is in
+\emph{x}-units \\
+ & Bar extends from \emph{base} [0] to the \emph{y}-value \\ \hline
+\Opt{Sc}\emph{size} & \textbf{c}ircle; \emph{size} is the diameter \\ \hline
+\Opt{Sd}\emph{size} & \textbf{d}iamond; \emph{size} is its side \\ \hline
+\Opt{Se} & \textbf{e}llipse; \emph{direction} (CCW from horizontal), \emph{major}, and \emph{minor} axes in inches \\
  & are read from the input file \\ \hline
-\Opt{SE} & {\bf e}llipse; {\it azimuth} (CW from vertical), {\it major}, and {\it minor} axes in kilometers \\
+\Opt{SE} & \textbf{e}llipse; \emph{azimuth} (CW from vertical), \emph{major}, and \emph{minor} axes in kilometers \\
  & are read from the input file\\ \hline
-\Opt{Sg}{\it size} & octa{\bf g}on; {\it size} is its side \\ \hline
-\Opt{Sh}{\it size} & {\bf h}exagon; {\it size} is its side \\ \hline
-\Opt{Si}{\it size} & {\bf i}nverted triangle; {\it size} is its side \\ \hline
-\Opt{Sk}{\it symbol}/{\it size} & {\bf k}ustom symbol; {\it size} is its side \\ \hline
-\Opt{Sl}{\it size}/{\it string}[\%{\it font}] & {\bf l}etter; {\it size} is fontsize.  Append a letter or text string, and optionally a font \\ \hline
-\Opt{Sn}{\it size} & pe{\bf n}tagon; {\it size} is its side \\ \hline
-\Opt{Sp} & {\bf p}oint; no size needed (1 pixel at current resolution is used) \\ \hline
-\Opt{Sr}{\it size} & {\bf r}ect, {\it width} and {\it height} are read from input file \\ \hline
-\Opt{Ss}{\it size} & {\bf s}quare, {\it size} is its side \\ \hline
-\Opt{St}{\it size} & {\bf t}riangle; {\it size} is its side \\ \hline
-\Opt{Sv}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector; {\it direction} (CCW from horizontal) and {\it length} are read from input data \\
+\Opt{Sg}\emph{size} & octa\textbf{g}on; \emph{size} is its side \\ \hline
+\Opt{Sh}\emph{size} & \textbf{h}exagon; \emph{size} is its side \\ \hline
+\Opt{Si}\emph{size} & \textbf{i}nverted triangle; \emph{size} is its side \\ \hline
+\Opt{Sk}\emph{symbol}/\emph{size} & \textbf{k}ustom symbol; \emph{size} is its side \\ \hline
+\Opt{Sl}\emph{size}/\emph{string}[\%\emph{font}] & \textbf{l}etter; \emph{size} is fontsize.  Append a letter or text string, and optionally a font \\ \hline
+\Opt{Sn}\emph{size} & pe\textbf{n}tagon; \emph{size} is its side \\ \hline
+\Opt{Sp} & \textbf{p}oint; no size needed (1 pixel at current resolution is used) \\ \hline
+\Opt{Sr}\emph{size} & \textbf{r}ect, \emph{width} and \emph{height} are read from input file \\ \hline
+\Opt{Ss}\emph{size} & \textbf{s}quare, \emph{size} is its side \\ \hline
+\Opt{St}\emph{size} & \textbf{t}riangle; \emph{size} is its side \\ \hline
+\Opt{Sv}[\emph{thick}/\emph{length}/\emph{width}][\textbf{n}\emph{norm}] & \textbf{v}ector; \emph{direction} (CCW from
+horizontal) and \emph{length} are read from input data \\
  & Optionally, append the thickness of the vector and the width and length of the \\
- & arrow-head.  If the {\bf n}{\it norm} is appended, all vectors whose lengths are less than \\
- & {\it norm} will have their attributes scaled by length/{\it norm} \\ \hline
-\Opt{SV}[{\it thick}/{\it length}/{\it width}][{\bf n}{\it norm}] & {\bf v}ector, except {\it azimuth} (degrees east of north) is expected instead of {\it direction} \\
+ & arrow-head.  If the \textbf{n}\emph{norm} is appended, all vectors whose lengths are less than \\
+ & \emph{norm} will have their attributes scaled by length/\emph{norm} \\ \hline
+\Opt{SV}[\emph{thick}/\emph{length}/\emph{width}][\textbf{n}\emph{norm}] & \textbf{v}ector, except \emph{azimuth} (degrees east
+of north) is expected instead of \emph{direction} \\
  & The angle on the map is calculated based on the chosen map projection \\ \hline
-\Opt{Sw}[{\it size} & pie {\bf w}edge; {\it start} and {\it stop} directions (CCW from horizontal) are read from \\
+\Opt{Sw}[\emph{size} & pie \textbf{w}edge; \emph{start} and \emph{stop} directions (CCW from horizontal) are read from \\
  & input data \\ \hline
-\Opt{Sx}{\it size} & cross; {\it size} is length of crossing lines \\ \hline
-\Opt{Sy}{\it size} & vertical dash; {\it size} is length of dash \\ \hline
+\Opt{Sx}\emph{size} & cross; \emph{size} is length of crossing lines \\ \hline
+\Opt{Sy}\emph{size} & vertical dash; \emph{size} is length of dash \\ \hline
 \end{tabular}
-\caption{The symbol option in \protect\GMTprog{psxy}.  Lower case symbols ({\bf a, c, d, g, h, i, n, s, t, x})
-will fit inside a circle of given diameter.  Upper case symbols ({\bf A, C, D, G, H, I, N, S, T, X}) will have area equal to that of a circle of given diameter.}
+\caption{The symbol option in \protect\GMTprog{psxy}.  Lower case symbols (\textbf{a, c, d, g, h, i, n, s, t, x})
+will fit inside a circle of given diameter.  Upper case symbols (\textbf{A, C, D, G, H, I, N, S, T, X}) will have area equal to that of a circle of given diameter.}
 \label{tbl:psxysymbols}
 \end{table} 
 
@@ -752,14 +755,14 @@ is (optional items are in brackets []): \\
 $x\mbox{  } y$ [ $z$ ] [ $size$ ] [ $\sigma_x$ ] [ $\sigma_y$ ] [ $symbol$ ] \\
 
 Thus, the only required input columns are the first two which must contain the
-longitude and latitude (or {\it x} and {\it y}).  The remaining items
+longitude and latitude (or \emph{x} and \emph{y}).  The remaining items
 apply when one (or more) of the following conditions are met:
 
 \begin{enumerate}
 
 \item If you want the color of each symbol to be determined individually,
 supply a CPT file with the \Opt{C} option and let the 3rd data column
-contain the {\it z}-values to be used with the CPT file.
+contain the \emph{z}-values to be used with the CPT file.
 
 \item If you want the size of each symbol to be determined individually,
 append the size in a separate column.
@@ -767,21 +770,21 @@ append the size in a separate column.
 \item To draw error bars, use the \Opt{E} option and give one or two
 additional data columns with the \PM dx and \PM dy values; the form of
 \Opt{E} determines if one (\Opt{Ex} or \Opt{Ey}) or two (\Opt{Exy})
-columns are needed.  If upper case flags {\bf X} or {\bf Y} are given then
+columns are needed.  If upper case flags \textbf{X} or \textbf{Y} are given then
 we will instead draw a ``box-and-whisker'' symbol and the $\sigma_x$ (or
 $\sigma_y$) must represent 4 columns containing the minimum, the 25 and 75\%
 quartiles, and the maximum value.  The given $x$ (or $y$) coordinate is taken as the 50\%
 quartile (median).
 \index{Error bars}
 
-\item If you draw vectors with \Opt{Sv} (or \Opt{SV}) then {\it size} is
-actually two columns containing the {\it direction} (or {\it azimuth})
-and {\it length} of each vector.
+\item If you draw vectors with \Opt{Sv} (or \Opt{SV}) then \emph{size} is
+actually two columns containing the \emph{direction} (or \emph{azimuth})
+and \emph{length} of each vector.
 \index{Vectors}
 
-\item If you draw ellipses (\Opt{Se}) then {\it size} is actually three
-columns containing the {\it direction} and the {\it major} and {\it minor}
-axes in plot units (with \Opt{SE} we expect {\it azimuth} instead and axes
+\item If you draw ellipses (\Opt{Se}) then \emph{size} is actually three
+columns containing the \emph{direction} and the \emph{major} and \emph{minor}
+axes in plot units (with \Opt{SE} we expect \emph{azimuth} instead and axes
 lengths in km).
 \index{Ellipses}
 
@@ -925,7 +928,7 @@ and color:
 }
 
 Apart from comment lines (starting with \#), each record in the CPT file
-governs the color of a symbol whose {\it z} value falls in the range between
+governs the color of a symbol whose \emph{z} value falls in the range between
 $z_0$ and $z_1$.  If the colors for the lower and upper levels differ
 then an intermediate color will be linearly interpolated given the $z$
 value.  Here, we have chosen constant color intervals.
@@ -940,7 +943,7 @@ psxy -R -J -O -Cquakes.cpt quakes.d -Sci -Wthinnest >> map.ps
 }
 
 \noindent
-where the {\bf i} appended to the \Opt{Sc} option ensures that symbols
+where the \textbf{i} appended to the \Opt{Sc} option ensures that symbols
 sizes are interpreted to be in inches.
 \subsection{More exercises}
 
@@ -963,14 +966,14 @@ switches, there are 8 options that are particularly useful (Table~\ref{tbl:pstex
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it dx}/{\it dy} & Spacing between text and the text box (see \Opt{G} and \Opt{W}) \\ \hline
-\Opt{D}{\it dx}/{\it dy} & Offsets the projected location of the strings \\ \hline
-\Opt{G}{\it fill} & Paint the text box (see \Opt{C} and \Opt{T}) \\ \hline
+\Opt{C}\emph{dx}/\emph{dy} & Spacing between text and the text box (see \Opt{G} and \Opt{W}) \\ \hline
+\Opt{D}\emph{dx}/\emph{dy} & Offsets the projected location of the strings \\ \hline
+\Opt{G}\emph{fill} & Paint the text box (see \Opt{C} and \Opt{T}) \\ \hline
 \Opt{L} & Lists the font ids and exits \\ \hline
 \Opt{N} & Deactivates clipping at the borders \\ \hline
-\Opt{S}{\it pen} & Selects outline font and sets pen attributes \\ \hline
+\Opt{S}\emph{pen} & Selects outline font and sets pen attributes \\ \hline
 \Opt{T}\textbf{o}$|$\textbf{O}$|$\textbf{c}$|$\textbf{C} & Selects shape of text box rectangle (see \Opt{G} and \Opt{W}) \\ \hline
-\Opt{W}[{\it pen}] & Draw the text box outline (see \Opt{C} and \Opt{T}) \\ \hline
+\Opt{W}[\emph{pen}] & Draw the text box outline (see \Opt{C} and \Opt{T}) \\ \hline
 \end{tabular}
 \caption{Some of the most frequently used options in \protect\GMTprog{pstext}.}
 \label{tbl:pstext}
@@ -982,12 +985,12 @@ The input data to \GMTprog{pstext} is expected to contain the following
 information: \\
 \index{pstext@\GMTprog{pstext} input format}
 
-{\it x   y   size   angle   fontno   justify   text} \\ 
+\emph{x   y   size   angle   fontno   justify   text} \\ 
 
-The {\it size} argument is the font size in points, the {\it angle} is the
+The \emph{size} argument is the font size in points, the \emph{angle} is the
 angle (measured counterclockwise) between the text's baseline and the
-horizontal, {\it justify} indicates which point on the text-string should
-correspond to the given {\it x, y} location, and {\it text} is the text
+horizontal, \emph{justify} indicates which point on the text-string should
+correspond to the given \emph{x, y} location, and \emph{text} is the text
 string or sentence to plot.  Figure~\ref{fig:GMT_pstext_justify} illustrates these concepts and shows
 the relevant two-character codes used for justification.
 \index{Text justification}
@@ -1133,16 +1136,16 @@ useful options:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{A}{\it annot\_int} & Annotation interval and attributes \\ \hline
-\Opt{C}{\it cont\_int} & Contour interval \\ \hline
-\Opt{G}{\it gap} & Controls placement of contour annotations \\ \hline
-\Opt{L}{\it low}/{\it high} & Only draw contours within the {\it low} to {\it high} range \\ \hline
-\Opt{Q}{\it cut} & Do not draw contours with fewer than {\it cut} points \\ \hline
-\Opt{S}{\it smooth} & Resample contours every {\it x\_inc}/{\it smooth} increment \\ \hline
-\Opt{T}[{\bf +}$|${\bf -}][{\it gap}/{\it length}][:{\it LH}] & Draw tick-marks in downhill direction for innermost closed contours \\ \hline
+\Opt{A}\emph{annot\_int} & Annotation interval and attributes \\ \hline
+\Opt{C}\emph{cont\_int} & Contour interval \\ \hline
+\Opt{G}\emph{gap} & Controls placement of contour annotations \\ \hline
+\Opt{L}\emph{low}/\emph{high} & Only draw contours within the \emph{low} to \emph{high} range \\ \hline
+\Opt{Q}\emph{cut} & Do not draw contours with fewer than \emph{cut} points \\ \hline
+\Opt{S}\emph{smooth} & Resample contours every \emph{x\_inc}/\emph{smooth} increment \\ \hline
+\Opt{T}[\textbf{+}$|$\textbf{-}][\emph{gap}/\emph{length}][:\emph{LH}] & Draw tick-marks in downhill direction for innermost closed contours \\ \hline
  & Add tick spacing and length, and characters to plot at the center of closed contours. \\ \hline
-\Opt{W}[{\bf a}$|${\bf c}]{\it pen} & Set contour and annotation pens \\ \hline
-\Opt{Z}{\it factor}[/{\it offset}] & [Subtract {\it offset}] and multiply data by {\it factor} prior to processing \\ \hline
+\Opt{W}[\textbf{a}$|$\textbf{c}]\emph{pen} & Set contour and annotation pens \\ \hline
+\Opt{Z}\emph{factor}[/\emph{offset}] & [Subtract \emph{offset}] and multiply data by \emph{factor} prior to processing \\ \hline
 \end{tabular}
 \caption{The most useful options in \protect\GMTprog{grdcontour}.}
 \label{tbl:grdcontour}
@@ -1186,10 +1189,10 @@ two scenarios:
 
 \begin{enumerate}
 
-\item The ({\it x}, {\it y}, {\it z}) data are available on a regular
+\item The (\emph{x}, \emph{y}, \emph{z}) data are available on a regular
 lattice grid.
 
-\item The ({\it x}, {\it y}, {\it z}) data are distributed unevenly
+\item The (\emph{x}, \emph{y}, \emph{z}) data are distributed unevenly
 in the plane.
 
 \end{enumerate}
@@ -1205,9 +1208,10 @@ All \GMT\ gridding programs have in common the requirement that the
 user must specify the grid domain and output filename: \\
 
 \begin{tabular}{ll}
-\Opt{R}{\it xmin}/{\it xmax}/{\it ymin}/{\it ymax}      & The desired grid extent \\
-\Opt{I}{\it xinc}[{\bf m}$|${\bf c}][/{\it yinc}[{\bf m}$|${\bf c}]]    & The grid spacing (append {\bf m} or {\bf c} for minutes or seconds of arc) \\
-\Opt{G}{\it gridfile}   & The output grid filename \\
+\Opt{R}\emph{xmin}/\emph{xmax}/\emph{ymin}/\emph{ymax}      & The desired grid extent \\
+\Opt{I}\emph{xinc}[\textbf{m}$|$\textbf{c}][/\emph{yinc}[\textbf{m}$|$\textbf{c}]]    & The grid spacing (append \textbf{m} or
+\textbf{c} for minutes or seconds of arc) \\
+\Opt{G}\emph{gridfile}   & The output grid filename \\
 \end{tabular} 
 
 \subsection{Nearest neighbor gridding}
@@ -1220,7 +1224,7 @@ way to grid data when the data density is high.  \GMTprog{nearneighbor}
 is a local procedure which means it will only consider the control
 data that is close to the desired output grid node.  
 Only data points inside a specified search radius will
-be used, and we may also impose the condition that each of the {\it n}
+be used, and we may also impose the condition that each of the \emph{n}
 sectors must have at least one data point in order to assign the nodal
 value.  The nodal value is computed as a weighted average of the nearest
 data point per sector inside the search radius, with each point weighted
@@ -1241,9 +1245,9 @@ The most important switches are listed in Table~\ref{tbl:nearneighbor}.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{S}{\it radius}[{\bf k}] & Sets search radius.  Append {\bf k} to indicate radius in kilometers [Default is {\it x}-units] \\ \hline
-\Opt{E}{\it empty} & Assign this value to unconstrained nodes [Default is NaN] \\ \hline
-\Opt{N}{\it sectors} & Sector search, indicate number of sectors [Default is 4] \\ \hline
+\Opt{S}\emph{radius}[\textbf{k}] & Sets search radius.  Append \textbf{k} to indicate radius in kilometers [Default is \emph{x}-units] \\ \hline
+\Opt{E}\emph{empty} & Assign this value to unconstrained nodes [Default is NaN] \\ \hline
+\Opt{N}\emph{sectors} & Sector search, indicate number of sectors [Default is 4] \\ \hline
 \Opt{W} & Read relative weights from the 4th column of input data \\ \hline
 \end{tabular}
 \caption{Switches used with the \protect\GMTprog{nearneighbor} program.}
@@ -1310,18 +1314,18 @@ $t \rightarrow 0$ we obtain the minimum curvature solution, while as
 $t \rightarrow \infty$ we go towards a harmonic solution (which is linear
 in cross-section).  The theory behind all this is quite involved
 and we do not have the time to explain it all here, please see
-{\it Smith and Wessel} [1990] for details.  Some of the most important
+\emph{Smith and Wessel} [1990] for details.  Some of the most important
 switches for this program are indicated in Table~\ref{tbl:surface}\footnote{The
-\Opt{A} option is necessary for geographic grids since {\it x\_inc} shrinks with latitude.  Rule of thumb: set {\it aspect} = cosine of the average latitude.}.
+\Opt{A} option is necessary for geographic grids since \emph{x\_inc} shrinks with latitude.  Rule of thumb: set \emph{aspect} = cosine of the average latitude.}.
 
 \begin{table}[h]
 \small
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{A}{\it aspect} & Sets aspect ratio for anisotropic grids. \\ \hline
-\Opt{C}{\it limit} & Sets convergence limit.  Default is 1/1000 of data range. \\ \hline
-\Opt{T}{\it tension} & Sets the tension [Default is 0] \\ \hline
+\Opt{A}\emph{aspect} & Sets aspect ratio for anisotropic grids. \\ \hline
+\Opt{C}\emph{limit} & Sets convergence limit.  Default is 1/1000 of data range. \\ \hline
+\Opt{T}\emph{tension} & Sets the tension [Default is 0] \\ \hline
 \end{tabular}
 \caption{Some of the options in \protect\GMTprog{surface}.}
 \label{tbl:surface}
@@ -1347,7 +1351,7 @@ all take the same options (listed in Table~\ref{tbl:preprocess}).
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
 \Opt{N} & Choose pixel node registration [Default is gridline] \\ \hline
-\Opt{W}[{\bf i}$|${\bf o}] & Append {\bf i} or {\bf o} to read or write weights in the 4th column \\ \hline
+\Opt{W}[\textbf{i}$|$\textbf{o}] & Append \textbf{i} or \textbf{o} to read or write weights in the 4th column \\ \hline
 \end{tabular}
 \caption{Some of the preprocessing options.}
 \label{tbl:preprocess}
@@ -1494,10 +1498,10 @@ and grid-line intervals for the colorbars.)
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it CPT file} & The required CPT file \\ \hline
-\Opt{D}{\it xpos}/{\it ypos}/{\it length}/{\it width}[{\bf h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
-        & Append {\bf h} to get horizontal bar and give center/top instead \\ \hline
-\Opt{I}{\it max\_intensity} & Add illumination effects \\ \hline
+\Opt{C}\emph{CPT file} & The required CPT file \\ \hline
+\Opt{D}\emph{xpos}/\emph{ypos}/\emph{length}/\emph{width}[\textbf{h}] & Sets the position of the center/left and dimensions of scale bar. \\ \hline
+        & Append \textbf{h} to get horizontal bar and give center/top instead \\ \hline
+\Opt{I}\emph{max\_intensity} & Add illumination effects \\ \hline
 \end{tabular}
 \caption{The main switches and options in \protect\GMTprog{psscale}.}
 \label{tbl:psscale}
@@ -1518,7 +1522,7 @@ psscale -D3i/9i/4i/0.5ih -Ccont.cpt -B:continuous: -I0.5 -O >> bar.ps
 \begin{enumerate}
 
 \item Redo the \GMTprog{makecpt} exercise using the master table
-{\it hot} and redo the bar plot.
+\emph{hot} and redo the bar plot.
 
 \item Try specifying \Opt{B}10g5.
 
@@ -1605,8 +1609,8 @@ and a CPT file; the main other options are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{E}{\it dpi} & Sets the desired resolution of the image [Default is data resolution] \\ \hline
-\Opt{I}{\it intenfile} & Use artificial illumination using intensities from {\it intensfile} \\ \hline
+\Opt{E}\emph{dpi} & Sets the desired resolution of the image [Default is data resolution] \\ \hline
+\Opt{I}\emph{intenfile} & Use artificial illumination using intensities from \emph{intensfile} \\ \hline
 \Opt{M} & Force gray shade using the (television) YIQ conversion \\ \hline
 \end{tabular}
 \caption{The main options in \protect\GMTprog{grdimage}.}
@@ -1636,11 +1640,11 @@ required input and output filenames, the available options are
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{A}{\it azimuth} & Azimuthal direction for gradients \\ \hline
+\Opt{A}\emph{azimuth} & Azimuthal direction for gradients \\ \hline
 \Opt{M} & Indicates that this is a geographic grid \\ \hline
-\Opt{N}[{\bf t}$|${\bf e}][{\it norm}[/{\it offset}]] & Normalize gradients by {\it norm/offset} [= 1/0 by default]. \\
-        & Insert {\bf t} to normalize by the $tan^{-1}$ transformation. \\
-        & Insert {\bf e} to normalize by the cumulative Laplace distribution. \\ \hline
+\Opt{N}[\textbf{t}$|$\textbf{e}][\emph{norm}[/\emph{offset}]] & Normalize gradients by \emph{norm/offset} [= 1/0 by default]. \\
+        & Insert \textbf{t} to normalize by the $tan^{-1}$ transformation. \\
+        & Insert \textbf{e} to normalize by the cumulative Laplace distribution. \\ \hline
 \end{tabular}
 \caption{The \protect\GMTprog{grdgradient} options.}
 \label{tbl:grdgradient}
@@ -1650,15 +1654,15 @@ Figure~\ref{fig:GMT_atan} shows that raw slopes from bathymetry tend to be
 far from normally distributed (left).  By using the inverse tangent
 transformation we can ensure a more uniform distribution (right).
 The inverse tangent transform simply takes the raw slope estimate
-(the {\it x} value at the arrow) and returns the corresponding inverse
+(the \emph{x} value at the arrow) and returns the corresponding inverse
 tangent value (normalized to fall in the \PM 1 range; horizontal
-arrow pointing to the {\it y}-value).
+arrow pointing to the \emph{y}-value).
 
 \GMTfig[h]{GMT_atan}{How the inverse tangent operation works.}
 
 Both \Opt{Ne} and \Opt{Nt} yield well behaved gradients.  Personally,
 we prefer to use the \Opt{Ne} option; the value of
-{\it norm} is subjective and you may experiment somewhat in the
+\emph{norm} is subjective and you may experiment somewhat in the
 0.5--5 range.  For our case we choose
 
 {\small\begin{verbatim}
@@ -1767,13 +1771,13 @@ Regardless of plot type, some arguments must be specified; these are
 
 \begin{enumerate}
 
-\item {\it relief\_file}; a gridded data set of the surface.
+\item \emph{relief\_file}; a gridded data set of the surface.
 
 \item \Opt{J} for the desired map projection.
 
-\item \Opt{JZ}{\it height} for the vertical scaling.
+\item \Opt{JZ}\emph{height} for the vertical scaling.
 
-\item \Opt{E}{\it azimuth}/{\it elevation} for vantage point.
+\item \Opt{E}\emph{azimuth}/\emph{elevation} for vantage point.
 
 \end{enumerate}
 
@@ -1785,14 +1789,14 @@ In addition, some options may be required:
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}} & \multicolumn{1}{c|}{\emph{Purpose}} \\ \hline 
-\Opt{C}{\it CPT file} & The {\it CPT file} is required for color -coded surfaces and for contoured mesh plots \\ \hline
-\Opt{G}{\it drape\_file} & Assign colors using {\it drape\_file} instead of {\it relief\_file} \\ \hline
-\Opt{I}{\it intens\_file} & File with illumination intensities \\ \hline
+\Opt{C}\emph{CPT file} & The \emph{CPT file} is required for color -coded surfaces and for contoured mesh plots \\ \hline
+\Opt{G}\emph{drape\_file} & Assign colors using \emph{drape\_file} instead of \emph{relief\_file} \\ \hline
+\Opt{I}\emph{intens\_file} & File with illumination intensities \\ \hline
 \Opt{Qm} & Selects mesh plot \\ \hline
-\Opt{Qs}[{\bf m}] & Surface plot using polygons; append {\bf m} to show mesh.  This option allows for \Opt{W} \\ \hline
-\Opt{Qi}{\it dpi}[{\bf g}] & Image by scan-line conversion.  Specify {\it dpi}; append {\bf g} to force gray-shade image. \\ \hline
-\Opt{Qc}{\it dpi}[{\bf g}] & Same as \Opt{Qi} but using PostScript Level 3 to make NaN color transparent. \\ \hline
-\Opt{W}{\it pen} & Draw contours on top of surface (except with \Opt{Qi} or \Opt{Qc}) \\ \hline
+\Opt{Qs}[\textbf{m}] & Surface plot using polygons; append \textbf{m} to show mesh.  This option allows for \Opt{W} \\ \hline
+\Opt{Qi}\emph{dpi}[\textbf{g}] & Image by scan-line conversion.  Specify \emph{dpi}; append \textbf{g} to force gray-shade image. \\ \hline
+\Opt{Qc}\emph{dpi}[\textbf{g}] & Same as \Opt{Qi} but using PostScript Level 3 to make NaN color transparent. \\ \hline
+\Opt{W}\emph{pen} & Draw contours on top of surface (except with \Opt{Qi} or \Opt{Qc}) \\ \hline
 \end{tabular}
 \caption{The most useful options in \protect\GMTprog{grdview}.}
 \label{tbl:grdview}
@@ -1843,7 +1847,7 @@ grdview us.nc -JM6i -E135/35 -Qc50 -Ius_i.nc -Ctopo.cpt -V -B2 \
 This plot is pretty crude since we selected 50 dpi but it is fast
 to render and allows us to try alternate values for vantage point
 and scaling.  When we settle on the final values we select the
-appropriate {\it dpi} for the final output device and let it rip.
+appropriate \emph{dpi} for the final output device and let it rip.
 
 \subsubsection{Exercises}
 \index{Exercises|(}
@@ -1854,7 +1858,7 @@ appropriate {\it dpi} for the final output device and let it rip.
 
 \item Redo \GMTprog{grdgradient} with another illumination direction and replot.
 
-\item Select a higher {\it dpi}, e.g., 200.
+\item Select a higher \emph{dpi}, e.g., 200.
 
 \end{enumerate}
 \index{Exercises|)}
@@ -1865,22 +1869,22 @@ appropriate {\it dpi} for the final output device and let it rip.
 \begin{enumerate}
 
 \item Smith, W.H.F., and P. Wessel, Gridding with continuous curvature
-splines in tension, {\it Geophysics}, {\it 55}, 293--305, 1990.
+splines in tension, \emph{Geophysics}, \emph{55}, 293--305, 1990.
 
 \item Wessel, P., and W.H.F. Smith, Free software helps map and
-display data, {\it EOS Trans. AGU}, {\it 72}, 441, 1991.
+display data, \emph{EOS Trans. AGU}, \emph{72}, 441, 1991.
 
 \item Wessel, P., and W.H.F. Smith, New version of the Generic
-Mapping Tools released, {\it EOS Trans. AGU}, {\it 76}, 329, 1995.
+Mapping Tools released, \emph{EOS Trans. AGU}, \emph{76}, 329, 1995.
 
 \item Wessel, P., and W.H.F. Smith, A global, self-consistent,
-hierarchical, high-resolution shoreline database, {\it J. Geophys. Res.},
-{\it 101}, 8741--8743, 1996.
+hierarchical, high-resolution shoreline database, \emph{J. Geophys. Res.},
+\emph{101}, 8741--8743, 1996.
 
 \item Wessel, P., and W.H.F. Smith, New, improved version of the Generic
-Mapping Tools released, {\it EOS Trans. AGU}, {\it 79}, 579, 1998.
+Mapping Tools released, \emph{EOS Trans. AGU}, \emph{79}, 579, 1998.
 
-\item Wessel, P., and W.H.F. Smith, The Generic Mapping Tools Technical Reference and Cookbook, {\it Version 4.2.0}, pp. 155, 2007.
+\item Wessel, P., and W.H.F. Smith, The Generic Mapping Tools Technical Reference and Cookbook, \emph{Version 4.2.0}, pp. 155, 2007.
 
 \end{enumerate}
 

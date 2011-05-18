@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Quick_reference.tex,v 1.19 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Quick_reference.tex,v 1.20 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -11,7 +11,7 @@
 
 \par FILTERING OF 1-D AND 2-D DATA:\par 
 
-\par 	blockmean/median/mode	L2, L1, and mode estimate ({\it x},{\it y},{\it z}) data filters/decimators\par 
+\par 	blockmean/median/mode	L2, L1, and mode estimate (\emph{x},\emph{y},\emph{z}) data filters/decimators\par 
 
 \par 	filter1d	Filter 1-D data (time series)\par 
 
@@ -35,7 +35,7 @@
 
 \par 	pscoast	Plot coastlines, filled continents, rivers, and political borders\par 
 
-\par 	pscontour	Direct contouring or imaging of {\it xyz} data by triangulation \par 
+\par 	pscontour	Direct contouring or imaging of \emph{xyz} data by triangulation \par 
 
 \par 	pshistogram	Plot a histogram\par 
 
@@ -65,7 +65,7 @@
 
 \par 	surface	Continuous curvature gridding algorithm\par 
 
-\par 	triangulate	Perform optimal Delauney triangulation on {\it xyz} data\par 
+\par 	triangulate	Perform optimal Delauney triangulation on \emph{xyz} data\par 
 
 \par \par 
 
@@ -123,7 +123,7 @@
 
 \par 	grdreformat	Convert from one grid format to another\par 
 
-\par 	splitxyz	Split {\it xyz} table data into several segments\par 
+\par 	splitxyz	Split \emph{xyz} table data into several segments\par 
 
 \par 	xyz2grd	Convert table data to 2-D grid file\par 
 
@@ -145,11 +145,11 @@
 
 \par 	fitcircle	Finds best-fitting great or small circles\par 
 
-\par 	grdtrend	Fits polynomial trends to grid files ({\it z} = f({\it x},{\it y}))\par 
+\par 	grdtrend	Fits polynomial trends to grid files (\emph{z} = f(\emph{x},\emph{y}))\par 
 
-\par 	trend1d	Fits polynomial or Fourier trends to {\it y} = f({\it x}) series\par 
+\par 	trend1d	Fits polynomial or Fourier trends to \emph{y} = f(\emph{x}) series\par 
 
-\par 	trend2d	Fits polynomial trends to {\it z} = f({\it x},{\it y}) series\par 
+\par 	trend2d	Fits polynomial trends to \emph{z} = f(\emph{x},\emph{y}) series\par 
 
 \par \par 
 
@@ -157,7 +157,7 @@
 
 \par 	grd2cpt	Make color palette table from grid files\par 
 
-\par 	grdclip	Limit the {\it z}-range in gridded data sets\par 
+\par 	grdclip	Limit the \emph{z}-range in gridded data sets\par 
 
 \par 	grdedit	Modify grid header information\par 
 
@@ -187,63 +187,63 @@
 
 \par STANDARDIZED COMMAND LINE OPTIONS:\par 
 
-\par \Opt{B}{\it xtick}[{\it :text:}][{\it /ytick}[{\it :text:}]][{\it /ztick}[{\it :text:}]][{\it WESNZwesnz+}][{\it :.title:}]	Tickmarks\par 
+\par \Opt{B}\emph{xtick}[\emph{:text:}][\emph{/ytick}[\emph{:text:}]][\emph{/ztick}[\emph{:text:}]][\emph{WESNZwesnz+}][\emph{:.title:}]	Tickmarks\par 
 
 \par \Opt{J} Map projection.  Give \underline{width} or use lower case code and specify map \underline{scale}\par 
 
-\par 	\Opt{JA}{\it lon0/lat0/width}	Lambert azimuthal equal area\par 
+\par 	\Opt{JA}\emph{lon0/lat0/width}	Lambert azimuthal equal area\par 
 
-\par 	\Opt{JB}{\it lon0/lat0/lat1/lat2/width}	Albers conic equal area\par 
+\par 	\Opt{JB}\emph{lon0/lat0/lat1/lat2/width}	Albers conic equal area\par 
 
-\par 	\Opt{JC}{\it lon0/lat0/width}	Cassini cylindrical\par 
+\par 	\Opt{JC}\emph{lon0/lat0/width}	Cassini cylindrical\par 
 
-\par 	\Opt{JCyl\_stere}{\it lon0/lat0/width}	Cylindrical stereographic\par 
+\par 	\Opt{JCyl\_stere}\emph{lon0/lat0/width}	Cylindrical stereographic\par 
 
-\par 	\Opt{JE}{\it lon0/lat0/width}	Azimuthal equidistant\par 
+\par 	\Opt{JE}\emph{lon0/lat0/width}	Azimuthal equidistant\par 
 
-\par 	\Opt{JF}{\it lon0/lat0horizon/width}	Azimuthal Gnomonic\par 
+\par 	\Opt{JF}\emph{lon0/lat0horizon/width}	Azimuthal Gnomonic\par 
 
-\par 	\Opt{JG}{\it lon0/lat0/width}	Azimuthal orthographic\par 
+\par 	\Opt{JG}\emph{lon0/lat0/width}	Azimuthal orthographic\par 
 
-\par 	\Opt{JH}{\it lon0/width}	Hammer equal area\par 
+\par 	\Opt{JH}\emph{lon0/width}	Hammer equal area\par 
 
-\par 	\Opt{JI}{\it lon0/width}	Sinusoidal equal area\par 
+\par 	\Opt{JI}\emph{lon0/width}	Sinusoidal equal area\par 
 
-\par 	\Opt{JJ}{\it lon0/width}	Miller cylindrical\par 
+\par 	\Opt{JJ}\emph{lon0/width}	Miller cylindrical\par 
 
-\par 	\Opt{JK}{\it lon0/width}	Eckert IV equal area\par 
+\par 	\Opt{JK}\emph{lon0/width}	Eckert IV equal area\par 
 
-\par 	\Opt{JL}{\it lon0/lat0/lat1/lat2/width}	Lambert conic conformal\par 
+\par 	\Opt{JL}\emph{lon0/lat0/lat1/lat2/width}	Lambert conic conformal\par 
 
-\par 	\Opt{JM}{\it width }or{\it }\Opt{JM}{\it lon0/lat0/width}	Mercator cylindrical\par 
+\par 	\Opt{JM}\emph{width }or\emph{}\Opt{JM}\emph{lon0/lat0/width}	Mercator cylindrical\par 
 
-\par 	\Opt{JN}{\it lon0/width}	Robinson\par 
+\par 	\Opt{JN}\emph{lon0/width}	Robinson\par 
 
-\par 	\Opt{JOa}{\it lon0/lat0/az/width}	Oblique Mercator, 1:	origin and azimuth\par 
+\par 	\Opt{JOa}\emph{lon0/lat0/az/width}	Oblique Mercator, 1:	origin and azimuth\par 
 
-\par 	\Opt{JOb}{\it lon0/lat0/lon1/lat1/width}	Oblique Mercator, 2:	two points\par 
+\par 	\Opt{JOb}\emph{lon0/lat0/lon1/lat1/width}	Oblique Mercator, 2:	two points\par 
 
-\par 	\Opt{JOc}{\it lon0/lat0/lonp/latp/width}	Oblique Mercator, 3:	origin and pole\par 
+\par 	\Opt{JOc}\emph{lon0/lat0/lonp/latp/width}	Oblique Mercator, 3:	origin and pole\par 
 
-\par 	\Opt{JP}{\it width}	Polar ({\it q}, {\it r}) (or cylindrical)\par 
+\par 	\Opt{JP}\emph{width}	Polar (\emph{q}, \emph{r}) (or cylindrical)\par 
 
-\par 	\Opt{JPoly}{\it lon0/width}	Polyconic\par 
+\par 	\Opt{JPoly}\emph{lon0/width}	Polyconic\par 
 
-\par 	\Opt{JQ}{\it lon0/width}	Equidistant cylindrical (Plate Carr\'{e})\par 
+\par 	\Opt{JQ}\emph{lon0/width}	Equidistant cylindrical (Plate Carr\'{e})\par 
 
-\par 	\Opt{JR}{\it lon0/width}	Winkel Tripel\par 
+\par 	\Opt{JR}\emph{lon0/width}	Winkel Tripel\par 
 
-\par 	\Opt{JS}{\it lon0/lat0/width}	General stereographic\par 
+\par 	\Opt{JS}\emph{lon0/lat0/width}	General stereographic\par 
 
-\par 	\Opt{JT}{\it lon0/width}	Transverse Mercator\par 
+\par 	\Opt{JT}\emph{lon0/width}	Transverse Mercator\par 
 
-\par 	\Opt{JU}{\it zone/width}	Universal Transverse Mercator (UTM)\par 
+\par 	\Opt{JU}\emph{zone/width}	Universal Transverse Mercator (UTM)\par 
 
-\par 	\Opt{JW}{\it lon0/width}	Mollweide\par 
+\par 	\Opt{JW}\emph{lon0/width}	Mollweide\par 
 
-\par 	\Opt{JX}{\it width}[{\bf l}|{\bf p}][/{\it heigh}t[{\bf l}|{\bf p}]][{\bf d}]	Linear, log$_{10}$, and $x^a$--$y^b$\par 
+\par 	\Opt{JX}\emph{width}[\textbf{l}|\textbf{p}][/\emph{heigh}t[\textbf{l}|\textbf{p}]][\textbf{d}]	Linear, log$_{10}$, and $x^a$--$y^b$\par 
 
-\par 	\Opt{JY}{\it lon0/lats/width}	General cylindrical equal area\par 
+\par 	\Opt{JY}\emph{lon0/lats/width}	General cylindrical equal area\par 
 
 \par \Opt{K}	Append more PostScript later\par 
 
@@ -251,30 +251,30 @@
 
 \par \Opt{P}	Select Portrait orientation\par 
 
-\par \Opt{R}{\it west/east/south/north}[{\it /zmin/zmax}][{\bf r}]	Specify Region of interest\par 
+\par \Opt{R}\emph{west/east/south/north}[\emph{/zmin/zmax}][\textbf{r}]	Specify Region of interest\par 
 
-\par \Opt{U}[{\it /dx/dy}/][{\it label}]	Plot time-stamp on plot\par 
+\par \Opt{U}[\emph{/dx/dy}/][\emph{label}]	Plot time-stamp on plot\par 
 
 \par \Opt{V}	Run in verbose mode\par 
 
-\par \Opt{X}{\it off} \Opt{Y}{\it off}	Shift lower left corner of plot [1/1]\par 
+\par \Opt{X}\emph{off} \Opt{Y}\emph{off}	Shift lower left corner of plot [1/1]\par 
 
-\par \Opt{a}{\it name=col,}	Set aspatial column associations\par 
+\par \Opt{a}\emph{name=col,}	Set aspatial column associations\par 
 
-\par \Opt{c}{\it copies}	Set number of plot copies [1]\par 
+\par \Opt{c}\emph{copies}	Set number of plot copies [1]\par 
 
-\par \Opt{f}{\it info}	Specifies the data format on a per column basis  \par
+\par \Opt{f}\emph{info}	Specifies the data format on a per column basis  \par
 
-\par \Opt{g}{\it info}	Identify data gaps based on supplied criteria  \par
+\par \Opt{g}\emph{info}	Identify data gaps based on supplied criteria  \par
 
-\par \Opt{h}{\it [n\_headers]}	Input/output ASCII tables have header record[s]\par 
+\par \Opt{h}\emph{[n\_headers]}	Input/output ASCII tables have header record[s]\par 
 
-\par \Opt{p}{\it azim/elev}[{it zlevel}][{\bf +}{\it lon0/lat0}[/{\it z0}]][{\bf +v}{\it x0/y0}]	Perspective views\par
+\par \Opt{p}\emph{azim/elev}[\emph{zlevel}][\textbf{+}\emph{lon0/lat0}[/\emph{z0}]][\textbf{+v}\emph{x0/y0}]	Perspective views\par
 
-\par \Opt{s}[{\bf r}]	Controls output of records where {\it z} is NaN	\par
+\par \Opt{s}[\textbf{r}]	Controls output of records where \emph{z} is NaN	\par
 
-\par \Opt{t}[{\it trans}]	Sets layer PDF transparency  \par
+\par \Opt{t}[\emph{trans}]	Sets layer PDF transparency  \par
 
-\par \Opt{:}	Expect {\it y}/{\it x} input rather than {\it x}/{\it y}\par 
+\par \Opt{:}	Expect \emph{y}/\emph{x} input rather than \emph{x}/\emph{y}\par 
 
 \end{document}

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_K.tex,v 1.24 2011-03-24 20:48:00 remko Exp $
+%	$Id: GMT_Appendix_K.tex,v 1.25 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -148,16 +148,16 @@ The decimation was carried out using the Douglas-Peucker (DP)
 line-reduction algorithm\footnote{Douglas, D.H., and T. K. Peucker,
 1973, Algorithms for the reduction of the number of points
 required to represent a digitized line or its caricature,
-{\it Canadian Cartographer}, 10, 112--122.}.  We chose the
+\emph{Canadian Cartographer}, 10, 112--122.}.  We chose the
 cutoffs so that each subset was approximately 20\% the size of
 the next higher resolution.  The five resolutions are called
-{\bf f}ull, {\bf h}igh, {\bf i}ntermediate, {\bf l}ow, and
-{\bf c}rude; they are accessed in \GMTprog{pscoast}, \GMTprog{gmtselect},
+\textbf{f}ull, \textbf{h}igh, \textbf{i}ntermediate, \textbf{l}ow, and
+\textbf{c}rude; they are accessed in \GMTprog{pscoast}, \GMTprog{gmtselect},
 and \GMTprog{grdlandmask} with the \Opt{D} option\footnote{ The full
 and high resolution files are in separate archives because of their
 size.  Not all users may need these files as the intermediate data
 set is better than the data provided with version 2.1.4.}.  For each of
-these 5 data sets ({\bf f}, {\bf h}, {\bf i}, {\bf l}, {\bf c})
+these 5 data sets (\textbf{f}, \textbf{h}, \textbf{i}, \textbf{l}, \textbf{c})
 we specified an equidistant grid (1\DS, 2\DS, 5\DS,
 10\DS, 20\DS) and split all polygons into line-segments
 that each fit inside one of the many boxes defined by these grid
@@ -172,7 +172,7 @@ integer format to preserve precision and written in netCDF format
 for ultimate portability across hardware platforms\footnote{
 If you need complete polygons in a simpler format, see the article
 on GSHHS\index{GSHHS} (Wessel, P., and W. H. F. Smith, 1996, A Global, self-consistent, hierarchical, high-resolution shoreline database,
-{\it J. Geophys. Res. 101}, 8741--8743).}.
+\emph{J. Geophys. Res. 101}, 8741--8743).}.
 
 \item While we are now back to a file of line-segments we are in
 a much better position to create smaller polygons for painting.

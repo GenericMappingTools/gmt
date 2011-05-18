@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_Q.tex,v 1.2 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Appendix_Q.tex,v 1.3 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -111,7 +111,7 @@ followed by both spatial and aspatial data.  In this section we look at the meta
 \subsection{Format version}
 
 The comment header line will include a version identifier providing for
-possible different versions in future.  It is indicated by the {\bf @V} sequence.
+possible different versions in future.  It is indicated by the \textbf{@V} sequence.
 
 \begin{table}[h]
 \small
@@ -131,7 +131,7 @@ Parsing of the OGR/GMT format is only activated if the version code-sequence has
 \subsection{Geometry types}
 
 The words and characters used to specify the geometry type
-(preceded by the {\bf @G} code sequence on
+(preceded by the \textbf{@G} code sequence on
 the header comment line), are listed in Table~\ref{tbl:geometries}.
 \begin{table}[h]
 \small
@@ -166,9 +166,9 @@ An example \GMT\ polygon file header using this specification (in format 1.0) is
 \subsection{Domain and map projections}
 
 The new format will also support region and projection information. The
-region will be stored in \GMT\ \Opt{R} format (i.e.: \Opt{R}{\it W/E/S/N},
-where the {\it W/E/S/N} values represent the extent of features); the
-{\bf @R} code sequence marks the domain information.
+region will be stored in \GMT\ \Opt{R} format (i.e.: \Opt{R}\emph{W/E/S/N},
+where the \emph{W/E/S/N} values represent the extent of features); the
+\textbf{@R} code sequence marks the domain information.
 A sample region header is:
 
 \begin{verbatim}
@@ -176,8 +176,8 @@ A sample region header is:
 \end{verbatim}
 
 Projection information will be represented as four optional strings,
-prefixed by {\bf @J} (J being the \GMT\ character for projection information.
-The {\bf @J} code will be followed by a character identifying the format, as shown
+prefixed by \textbf{@J} (J being the \GMT\ character for projection information.
+The \textbf{@J} code will be followed by a character identifying the format, as shown
 in Table~\ref{tbl:projectspec}.
 
 \begin{table}[H]
@@ -205,7 +205,7 @@ AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,\
 AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]"
 \end{verbatim}
 
-Note that an OGR-generated file will not have a {\bf @Jg} string, as OGR does
+Note that an OGR-generated file will not have a \textbf{@Jg} string, as OGR does
 not have any knowledge of the \GMT\ projection specification format. 
 \GMT\ supports at least one of the other formats to provide interoperability with other Open Source
 related GIS software packages. One relatively simple approach, (with
@@ -214,7 +214,7 @@ some limitations), would be a lookup table matching EPSG codes to \GMT\ strings.
 \subsection{Declaration of aspatial fields}
 
 The string describing the aspatial field names associated with the features is
-flagged by the {\bf @N} prefix.
+flagged by the \textbf{@N} prefix.
 
 \begin{table}[H]
 \small
@@ -225,8 +225,8 @@ N	&	word$|$word$|$word	&	A ``$|$''-separated string of names of the attribute fi
 \label{tbl:Q3}
 \end{table} 
 \noindent
-Any name containing a space must be quoted.   The {\bf @N} selection must be combined with a matching string specifying the data type
-for each of the named fields, using the {\bf @T} prefix.
+Any name containing a space must be quoted.   The \textbf{@N} selection must be combined with a matching string specifying the data type
+for each of the named fields, using the \textbf{@T} prefix.
 \begin{table}[H]
 \small
 \centering
@@ -237,8 +237,8 @@ T	&	word$|$word$|$word	&		A ``$|$''-separated string of the attribute field data
 \end{table} 
 \noindent
 Available datatypes should largely follow the shapefile (DB3)
-specification, including {\bf string}, {\bf integer}, {\bf double},
-{\bf datetime}, and {\bf logical} (boolean).
+specification, including \textbf{string}, \textbf{integer}, \textbf{double},
+\textbf{datetime}, and \textbf{logical} (boolean).
 In OGR/GMT vector files, they will be stored as appropriately formatted text strings. 
 
 An example header record containing all these is
@@ -268,11 +268,11 @@ multipoint) data, no such separator is required. The comment line
 containing the aspatial data for each feature will immediately precede
 the coordinate line(s). Thus in the case of lines and polygons, it will
 immediately follow the ``{\textgreater}'' line. The data
-line will be a comment flag (``\#'') followed by {\bf @D}, followed by a string of
+line will be a comment flag (``\#'') followed by \textbf{@D}, followed by a string of
 ``$|$''-separated words comprising the data fields defined in the header record. 
 
 To allow for names and values containing spaces, such string items among
-the {\bf @N} or {\bf @D} specifiers must be enclosed in double quotes.
+the \textbf{@N} or \textbf{@D} specifiers must be enclosed in double quotes.
 (Where double quotes or pipe characters are included in the string,
 they must be escaped using ``$\backslash$''). Where any
 data values are null, they will be represented as no characters between
@@ -301,12 +301,12 @@ followed by similar coordinate sequences defining any holes (the
 
 To implement this in a way which is compatible with previous \GMT versions,
 each polygon feature must be able to be identified as the
-outer perimeter, or an inner ring (hole). This is done using a {\bf @P} or {\bf @H}
-on the data comment preceding the polygon coordinates. The {\bf @P} specifies
-a new feature boundary (perimeter), any following {\bf @H} polygons are
-holes, and must be within the preceding {\bf @P} polygon (as described in the
-shapefile specification). Any {\bf @H} polygons will NOT have any {\bf @D} values,
-as the aspatial attribute data pertain to the entire feature, the {\bf @H}
+outer perimeter, or an inner ring (hole). This is done using a \textbf{@P} or \textbf{@H}
+on the data comment preceding the polygon coordinates. The \textbf{@P} specifies
+a new feature boundary (perimeter), any following \textbf{@H} polygons are
+holes, and must be within the preceding \textbf{@P} polygon (as described in the
+shapefile specification). Any \textbf{@H} polygons will NOT have any \textbf{@D} values,
+as the aspatial attribute data pertain to the entire feature, the \textbf{@H}
 polygons are not new polygons, but are merely a continuation of the
 definition of the same feature.
 

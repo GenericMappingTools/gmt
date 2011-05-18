@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_API.tex,v 1.13 2011-05-14 00:04:06 guru Exp $
+%       $Id: GMT_API.tex,v 1.14 2011-05-18 22:23:49 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright (c) 2000-2011.
@@ -184,12 +184,12 @@ of variable.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
-\texttt{	long id;}		&       /* {\it An identification number} */ \\
-\texttt{	long n\_rows;}		&       /* {\it Number of rows in each vector} */ \\
-\texttt{	long n\_columns;}	&       /* {\it Number of vectors}  */\\
-\texttt{	long alloc\_mode;}	&       /* {\it Determines if we may free the vectors or not}  */\\
-\texttt{	long *type;}		&       /* {\it Array with data type for each vector}  */\\
-\texttt{	void **data;}		&       /* {\it Array with void pointers for each vector}  */\\
+\texttt{	long id;}		&       /* \emph{An identification number} */ \\
+\texttt{	long n\_rows;}		&       /* \emph{Number of rows in each vector} */ \\
+\texttt{	long n\_columns;}	&       /* \emph{Number of vectors}  */\\
+\texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
+\texttt{	long *type;}		&       /* \emph{Array with data type for each vector}  */\\
+\texttt{	void **data;}		&       /* \emph{Array with void pointers for each vector}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_VECTOR structure used to pass user data columns.}
@@ -215,17 +215,17 @@ read the data properly.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_MATRIX \{}} \\ 
-\texttt{	long id;}		&       /* {\it An identification number} */ \\
-\texttt{	long n\_rows;}		&       /* {\it Number of rows in the matrix} */ \\
-\texttt{	long n\_columns;}	&       /* {\it Number of columns in the matrix}  */\\
-\texttt{	long n\_layers;}	&       /* {\it Number of layers in a 3-D matrix}  */\\
-\texttt{	long registration;}	&       /* {\it 0 for gridline and 1 for pixel registration}  */\\
-\texttt{	long shape;}		&       /* {\it 0 = C (rows) and 1 = Fortran (cols)}  */\\
-\texttt{	long dim;}		&       /* {\it Length of dimension for row (C) or column (Fortran)}  */\\
-\texttt{	long alloc\_mode;}	&       /* {\it Determines if we may free the vectors or not}  */\\
-\texttt{	long type;}		&       /* {\it The matrix data type}  */\\
-\texttt{	double limit[6];}	&       /* {\it The min and max limits on x-, y-, and z-ranges}  */\\
-\texttt{	void *data;}		&       /* {\it Void pointer to the data matrix}  */\\
+\texttt{	long id;}		&       /* \emph{An identification number} */ \\
+\texttt{	long n\_rows;}		&       /* \emph{Number of rows in the matrix} */ \\
+\texttt{	long n\_columns;}	&       /* \emph{Number of columns in the matrix}  */\\
+\texttt{	long n\_layers;}	&       /* \emph{Number of layers in a 3-D matrix}  */\\
+\texttt{	long registration;}	&       /* \emph{0 for gridline and 1 for pixel registration}  */\\
+\texttt{	long shape;}		&       /* \emph{0 = C (rows) and 1 = Fortran (cols)}  */\\
+\texttt{	long dim;}		&       /* \emph{Length of dimension for row (C) or column (Fortran)}  */\\
+\texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
+\texttt{	long type;}		&       /* \emph{The matrix data type}  */\\
+\texttt{	double limit[6];}	&       /* \emph{The min and max limits on x-, y-, and z-ranges}  */\\
+\texttt{	void *data;}		&       /* \emph{Void pointer to the data matrix}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the GMT\_MATRIX structure used to pass a user data matrix.}
@@ -329,9 +329,9 @@ GMTAPI\_GMTPSL (1); else simply pass GMTAPI\_GMT (0).
 \index{Sources!Register Output}
 
 When using the standard \GMT\ programs, you specify input files on
-the command line or via special program options (e.g., \Opt{I}{\it intensity.nc}). The output of
+the command line or via special program options (e.g., \Opt{I}\emph{intensity.nc}). The output of
 the programs are either written to standard output (which you redirect to files or other programs)
-or to files specified by specific program options (e.g., \Opt{G}{\it output.nc}).  However, the
+or to files specified by specific program options (e.g., \Opt{G}\emph{output.nc}).  However, the
 \GMT\ API allows you to also specify input (and output) to come from (or go to) open file handles
 or program memory locations.  We will examine this more closely below.  Registering a
 resource is a required step before attempting to import or export data other that via file options
@@ -748,13 +748,13 @@ The module prototype for the text-based interface is
 GMT_module_cmd (struct GMTAPI_CTRL *API, long argc, char *argv[])
 \end{verbatim}
 In addition to the API control structure pointer, we expect an array \texttt{argv} of character strings that each
-holds a single command line argument (e.g., ``\Opt{R}{\it 120:30/134:45/8S/3N}'') as well as the count \texttt{argc}
+holds a single command line argument (e.g., ``\Opt{R}\emph{120:30/134:45/8S/3N}'') as well as the count \texttt{argc}
 of how many options are passed.  This, of course, is almost exactly how the stand-alone \GMT\
 programs are called (and reflects how they themselves are activated internally).  Depending on how
 your program obtains the necessary options you may find that this interface offers all you need.
 Note: if \texttt{argc} == 0 then \texttt{argv} will be further examined to see if it contains several options within a single string.
 If so we will break these into separate options.  This is useful if you wish to pass a single string such as
-``\Opt{R}{\it 120:30/134:45/8S/3N} \Opt{JM}{\it 6i} mydata.txt \Opt{Sc}0.2c''.
+``\Opt{R}\emph{120:30/134:45/8S/3N} \Opt{JM}\emph{6i} mydata.txt \Opt{Sc}0.2c''.
 
 \subsection{Set program options via linked structures}
 \index{Set program options via linked structures}
@@ -778,10 +778,10 @@ according to need.  The option structure is defined in Table \ref{tbl:options}.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_OPTION \{}} \\ 
-\texttt{char option;}			&       /* {\it Single character of the option (e.g.,'G' for} \Opt{G} */ \\
-\texttt{char *arg;}			&       /* {\it String pointer with arguments (NULL if not used)} */ \\
-\texttt{struct GMT\_OPTION *next;}	&       /* {\it Pointer to next option (NULL for last option)}  */\\
-\texttt{struct GMT\_OPTION *prev;}	&       /* {\it Pointer to previous option (NULL for first option)}  */\\
+\texttt{char option;}			&       /* \emph{Single character of the option (e.g.,'G' for} \Opt{G} */ \\
+\texttt{char *arg;}			&       /* \emph{String pointer with arguments (NULL if not used)} */ \\
+\texttt{struct GMT\_OPTION *next;}	&       /* \emph{Pointer to next option (NULL for last option)}  */\\
+\texttt{struct GMT\_OPTION *prev;}	&       /* \emph{Pointer to previous option (NULL for first option)}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
 \caption{Definition of the structure used to hold a single program option.}

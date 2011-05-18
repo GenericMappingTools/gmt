@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_6.tex,v 1.25 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Chapter_6.tex,v 1.26 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -13,7 +13,7 @@
 longitude and latitude to positions on a map.  In general, $x' = f(x,y,z)$ and $y' = g(x,y,z)$, where
 $z$ is implicitly given as the radial vector length to the $(x,y)$ point on the chosen ellipsoid.  The functions $f$ and $g$ can be
 quite nasty and we will refrain from presenting details in this document.  The interested read is referred to
-{\it Snyder} [1987]\footnote{Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.}.
+\emph{Snyder} [1987]\footnote{Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.}.
 We will mostly be using the \GMTprog{pscoast} command to demonstrate each of the projections.
 \GMT\ map projections are grouped into four categories depending on the
 nature of the projection.  The groups are
@@ -563,7 +563,7 @@ It was created with the command:
 While this example is centered on the Dateline, one can
 easily choose another configuration with the \Opt{R} option.
 A map centered on Greenwich would specify the region with
-{\bf -R}-180/180/-70/70. 
+\textbf{-R}-180/180/-70/70. 
 
 \index{Projection!cylindrical!Mercator \Opt{Jm} \Opt{JM}|)}
 \index{Mercator projection \Opt{Jm} \Opt{JM}|)}
@@ -607,7 +607,7 @@ equivalent of the 360\DS\ Mercator map.  Using the command
 
 \noindent
 we made the map illustrated in Figure~\ref{fig:GMT_TM}.  Note that
-when a world map is given (indicated by \Opt{R}{\it 0/360/s/n}), the arguments
+when a world map is given (indicated by \Opt{R}\emph{0/360/s/n}), the arguments
 are interpreted to mean oblique degrees, i.e., the 360\DS\ range is
 understood to mean the extent of the plot along the central meridian,
 while the ``south'' and ``north'' values represent how far from the
@@ -1010,7 +1010,7 @@ distributions.  It is occasionally referenced under the name
 homalographic projection.  Like the Hammer projection,
 outlined above, we need to specify only two parameters to
 completely define the mapping of longitudes and latitudes
-into rectangular {\it x}/{\it y} coordinates: 
+into rectangular \emph{x}/\emph{y} coordinates: 
 
 \begin{itemize} 
 \item The central meridian [Middle of your map].
@@ -1105,8 +1105,8 @@ and all parallels are straight lines; other meridians are
 equally spaced elliptical arcs (IV) or sinusoids (VI).  The scale is
 true along latitudes \PM 40\DS 30' (IV) and \PM 49\DS 16' (VI).
 Their main use is in thematic world maps.  To select Eckert IV you must
-use \Opt{JKf} ({\bf f} for ``four'') while Eckert VI is selected with
-\Opt{JKs} ({\bf s} for ``six'').  If no modifier is given it defaults to
+use \Opt{JKf} (\textbf{f} for ``four'') while Eckert VI is selected with
+\Opt{JKs} (\textbf{s} for ``six'').  If no modifier is given it defaults to
 Eckert VI.
 In addition, you must enter
 
@@ -1121,7 +1121,7 @@ Centered on the Dateline, the Eckert IV example below was created by this comman
 
 \GMTfig[h]{GMT_eckert4}{World map using the Eckert IV projection.}
 
-The same script, with {\bf s} instead of {\bf f}, yields the Eckert VI map:
+The same script, with \textbf{s} instead of \textbf{f}, yields the Eckert VI map:
 
 \GMTfig[h]{GMT_eckert6}{World map using the Eckert VI projection.}
 

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_5.tex,v 1.22 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Chapter_5.tex,v 1.23 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -26,7 +26,7 @@ which parameters define them, and demonstrate how they are used to create simple
 be using \GMTprog{psbasemap} (and occasionally \GMTprog{psxy}) to demonstrate the various transformations.
 Our illustrations may differ from those you reproduce with the same commands because of different settings
 in our \filename{gmt.conf} file.)  Finally, note that while we will specify dimensions in inches (by
-appending {\bf i}), you may want to use cm ({\bf c}), or points ({\bf p}) as unit instead
+appending \textbf{i}), you may want to use cm (\textbf{c}), or points (\textbf{p}) as unit instead
 (see the \GMTprog{gmt.conf} man page). 
 
 \section{Cartesian transformations}
@@ -91,8 +91,8 @@ is defined by stating
 \item scale in inches/unit (\Opt{Jx}) or axis length in inches (\Opt{JX})
 \end{itemize}
 
-If the {\it y}-scale or {\it y}-axis length is different from that of
-the {\it x}-axis (which is most often the case), separate the two
+If the \emph{y}-scale or \emph{y}-axis length is different from that of
+the \emph{x}-axis (which is most often the case), separate the two
 scales (or lengths) by a slash, e.g., \Opt{Jx}0.1i/0.5i or \Opt{JX}8i/5i. 
 Thus, our $y = \sqrt{x}$ data sets will plot as shown in Figure~\ref{fig:GMT_linear}.
 
@@ -105,11 +105,11 @@ The complete commands given to produce this plot were
 \index{Axes!reverse}
 
 \noindent
-Normally, the user's {\it x}-values will increase to the right
-and the {\it y}-values will increase upwards.  It should be noted
+Normally, the user's \emph{x}-values will increase to the right
+and the \emph{y}-values will increase upwards.  It should be noted
 that in many situations it is desirable to have the direction of
 positive coordinates be reversed.  For example, when plotting
-depth on the {\it y}-axis it makes more sense to have the positive
+depth on the \emph{y}-axis it makes more sense to have the positive
 direction downwards.  All that is required to reverse the sense of
 positive direction is to supply a negative scale (or axis length).
 Finally, sometimes it is convenient to specify the width (or height)
@@ -126,7 +126,7 @@ the length to be recomputed as 0.
 \GMTfig{GMT_linear_d}{Linear transformation of map coordinates.}
 
 While the Cartesian linear projection is primarily designed for regular floating point
-{\it x},{\it y} data, it is sometimes necessary to plot geographical
+\emph{x},\emph{y} data, it is sometimes necessary to plot geographical
 data in a linear projection.  This poses a problem since longitudes
 have a 360\DS\ periodicity.  \GMT\ therefore needs to be informed
 that it has been given geographical coordinates even though a linear transformation
@@ -158,9 +158,9 @@ former we append \textbf{T} after the axis scale (or width), while for the latte
 end of the \Opt{Jx} (or \Opt{JX}) option.
 However, other command line arguments (like the \Opt{R} option) may already specify whether the time
 coordinate is absolute or relative. An
-absolute time entry must be given as [{\it date}]\textbf{T}[{\it clock}]
-(with {\it date} given as {\it yyyy}[-{\it mm}[-{\it dd}]], {\it yyyy}[-{\it jjj}], or {\it yyyy}[-\textbf{W}{\it ww}[-{\it d}]], and {\it clock} using
-the {\it hh}[:{\it mm}[:{\it ss}[{\it .xxx}]]] 24-hour clock format) whereas the relative time is simply
+absolute time entry must be given as [\emph{date}]\textbf{T}[\emph{clock}]
+(with \emph{date} given as \emph{yyyy}[-\emph{mm}[-\emph{dd}]], \emph{yyyy}[-\emph{jjj}], or \emph{yyyy}[-\textbf{W}\emph{ww}[-\emph{d}]], and \emph{clock} using
+the \emph{hh}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]] 24-hour clock format) whereas the relative time is simply
 given as the units of time since the epoch followed by \textbf{t} (see \textbf{TIME\_UNIT} and \textbf{TIME\_EPOCH} for information
 on specifying the time unit and the epoch).  As a simple example, we will make a plot of a school week
 calendar (Figure~\ref{fig:GMT_linear_cal}).
@@ -192,15 +192,15 @@ users about it. In general, the options provided with \Opt{JX} will prevail.
 
 The log$_{10}$ transformation is simply $u' = a \log_{10}(u) + b$ and is selected by appending an \textbf{l}
 (lower case L) immediately following the scale (or axis length)
-value.  Hence, to produce a plot in which the {\it x}-axis is
-logarithmic (the {\it y}-axis remains linear, i.e., a semi-log plot), try 
+value.  Hence, to produce a plot in which the \emph{x}-axis is
+logarithmic (the \emph{y}-axis remains linear, i.e., a semi-log plot), try 
 
 \script{GMT_log} 
 
-\par Note that if {\it x}- and {\it y}-scaling are different and
+\par Note that if \emph{x}- and \emph{y}-scaling are different and
 a log$_{10}$-log$_{10}$ plot is desired, the \textbf{l} must be
-appended twice: Once after the {\it x}-scale (before the /) and
-once after the {\it y}-scale. 
+appended twice: Once after the \emph{x}-scale (before the /) and
+once after the \emph{y}-scale. 
 \index{Projection!cartesian!logarithmic|)}
 \index{Transformation!cartesian!logarithmic|)}
 \index{Logarithmic projection|)}
@@ -214,7 +214,7 @@ once after the {\it y}-scale.
 
 \GMTfig[h]{GMT_pow}{Exponential or power transformation of $x$-coordinates.}
 
-This projection uses $u' = a u^b + c$ and allows us to explore exponential relationships like {\it x$^p$} versus {\it y$^q$}.
+This projection uses $u' = a u^b + c$ and allows us to explore exponential relationships like \emph{x$^p$} versus \emph{y$^q$}.
 While $p$ and $q$ can be any values, we will select $p
 = 0.5$ and $q = 1$ which means we will plot $x$ versus $\sqrt{x}$.
 We indicate this scaling by appending a \textbf{p} (lower case P) followed
@@ -259,7 +259,7 @@ Consequently, the polar transformation is defined by providing
 \item scale in inches/unit (\Opt{Jp}) or full width of plot in inches (\Opt{JP})
 \item Optionally, insert \textbf{a} after \textbf{p$|$P} to indicate CW azimuths rather than CCW directions
 \item Optionally, append /$origin$ in degrees to indicate an angular offset [0]
-\item Optionally, append \textbf{r} to reverse the radial direction (here, {\it south} and {\it north} must be elevations in 0--90\DS\ range).
+\item Optionally, append \textbf{r} to reverse the radial direction (here, \emph{south} and \emph{north} must be elevations in 0--90\DS\ range).
 \item Optionally, append \textbf{z} to annotate depths rather than radius.
 \end{itemize}
 

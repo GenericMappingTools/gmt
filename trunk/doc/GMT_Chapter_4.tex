@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.144 2011-05-17 03:02:06 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.145 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -30,17 +30,17 @@ the units of your arguments by appending the unit character, as discussed below.
 handle a variety of units.  The choices are listed in Table~\ref{tbl:distunits};
 simply append the desired unit to the distance value you supply.  A value without
 a unit suffix will be consider to be in meters.  For example, a distance of
-30 nautical miles should be given as 30{\bf n}.
+30 nautical miles should be given as 30\textbf{n}.
 \begin{table}[H]
 \centering
 \index{Distance units}%
 \index{Units, distance}%
 \begin{tabular}{|l|l||l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} & \multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} \\ \hline
-{\bf d}	&	Degrees of arc		& {\bf m}	&	Minutes of arc  \\ \hline
-{\bf e}	&	Meters [Default]	& {\bf M}	&	Statute miles   \\ \hline
-{\bf f}	&	Feet 			& {\bf n}	&	Nautical miles  \\ \hline
-{\bf k}	&	Kilometers		& {\bf s}	&	Seconds of arc  \\ \hline
+\textbf{d}	&	Degrees of arc		& \textbf{m}	&	Minutes of arc  \\ \hline
+\textbf{e}	&	Meters [Default]	& \textbf{M}	&	Statute miles   \\ \hline
+\textbf{f}	&	Feet 			& \textbf{n}	&	Nautical miles  \\ \hline
+\textbf{k}	&	Kilometers		& \textbf{s}	&	Seconds of arc  \\ \hline
 \end{tabular}
 \caption{Distance units recognized by \gmt\ command line switches.}
 \label{tbl:distunits}
@@ -60,9 +60,9 @@ two points A and B as
 where $R$ is the mean (or spherical) radius of the planet, $\theta$ is latitude, and the difference in longitudes, $\Delta \lambda$,
 is adjusted for any jumps that might occur across Greenwich or the Dateline.  This approach is suitable
 when the points you use to compute $d_f$ do not greatly differ in latitude and computation
-speed is paramount. You can specify this mode of computation by using the {\bf -} prefix to
+speed is paramount. You can specify this mode of computation by using the \textbf{-} prefix to
 the specified distance (or to the unit itself in cases where no distance is required).
-A search radius of 50 statute miles using this mode of computation might be \Opt{S-}50{\bf M}.
+A search radius of 50 statute miles using this mode of computation might be \Opt{S-}50\textbf{M}.
 
 \subsubsection{Great circle distances}
 This is the default distance calculation, which will also approximate the planetary body by a sphere of mean
@@ -73,14 +73,14 @@ the Haversine equation
 	\label{eq:greatcircle}
 \end{equation}
 This approach is suitable for most situations unless exact calculations for an ellipsoid
-is required.  For instance, a search radius of 5000 feet using this mode of computation would be \Opt{S}5000{\bf f}.
+is required.  For instance, a search radius of 5000 feet using this mode of computation would be \Opt{S}5000\textbf{f}.
 
 
 \subsubsection{Geodesic distances}
 For the most accurate calculations we use a full ellipsoidal formulation.  Currently,
-we are using Rudoe's formula.  You select this mode of computation by using the {\bf +} prefix to
+we are using Rudoe's formula.  You select this mode of computation by using the \textbf{+} prefix to
 the specified distance (or to the unit itself in cases where no distance is required).
-For instance, a search radius of 20 km using this mode of computation would be \Opt{S+}20{\bf k}.
+For instance, a search radius of 20 km using this mode of computation would be \Opt{S+}20\textbf{k}.
 
 \subsection{Length units}
 
@@ -566,7 +566,7 @@ meanings.  The following concerns are specific to log axes:
 \begin{enumerate}
 \item \emph{stride} must be 1, 2, 3, or a negative integer $-n$.  Annotations/ticks will
 then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude range.
-For $-n$ the annotations will take place every {\it n}'th magnitude.
+For $-n$ the annotations will take place every \emph{n}'th magnitude.
 
 \item Append \textbf{l} to \emph{stride}. Then, log$_{10}$ of the annotation
 is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'')
@@ -680,7 +680,7 @@ be at least half of a full interval.
 \subsubsection{Custom axes}
 
 Irregularly spaced annotations or annotations based on look-up tables can be implemented using
-the \emph{custom} annotation mechanism.  Here, we given the {\bf c} (custom) type to the \Opt{B}
+the \emph{custom} annotation mechanism.  Here, we given the \textbf{c} (custom) type to the \Opt{B}
 option followed by a filename that contains the annotations (and or tick/grid-lines) for one axis.
 The file can contain any number of comments (lines starting with \#) and any number of records of
 the format
@@ -688,8 +688,8 @@ the format
 \emph{coord}\quad	\emph{type}\quad	[\emph{label}]
 \\
 The \emph{coord} is the location of the desired annotation, tick, or grid-line, whereas
-\emph{type} is a string composed of letters from {\bf a} (annotation), {\bf i} interval
-annotation, {\bf f} frame tick, and {\bf g} gridline.  You must use either {\bf a} or {\bf i}
+\emph{type} is a string composed of letters from \textbf{a} (annotation), \textbf{i} interval
+annotation, \textbf{f} frame tick, and \textbf{g} gridline.  You must use either \textbf{a} or \textbf{i}
 within one file; no mixing is allowed.  The coordinates should be arranged in increasing order.
 If \emph{label} is given it replaces the normal
 annotation based on the \emph{coord} value.  Our last example shows such a custom basemap
@@ -806,36 +806,36 @@ translations and preserve the aspatial metadata via a new OGR/GMT format
 specification (See Appendix Q).  For this to be useful we need a mechanism
 to associate certain metadata values with required input and output columns expected
 by \GMT\ programs.  The \Opt{a} option allows you to supply one or more
-comma-separated associations {\it col=name}, where
-{\it name} is the name of an aspatial attribute field in a OGR/GMT file
-and whose value we wish to as data input for column {\it col}.  The
+comma-separated associations \emph{col=name}, where
+\emph{name} is the name of an aspatial attribute field in a OGR/GMT file
+and whose value we wish to as data input for column \emph{col}.  The
 given aspatial field thus replaces any other value already set.  Note
-that {\it col = 0} is the first data columns.  Note that if no aspatial attributes
+that \emph{col = 0} is the first data columns.  Note that if no aspatial attributes
 are needed then the \Opt{a} option is not needed -- \GMT\ will still process
 and read such data files.
 
 \subsubsection{OGR/GMT input with \Opt{a} option}
 If you need to populate GMT data columns with (constant) values specified by aspatial
-attributes, use \Opt{a} and append any number of comma-separated {\it col=name}
-associations.  E.g., {\it 2=depth} will read the spatial {\it x,y} columns from the
-file and add a third ({\it z}) column based on the value of the aspatial field called
-{\it depth}.  You can also associate aspatial fields with other settings such as
+attributes, use \Opt{a} and append any number of comma-separated \emph{col=name}
+associations.  E.g., \emph{2=depth} will read the spatial \emph{x,y} columns from the
+file and add a third (\emph{z}) column based on the value of the aspatial field called
+\emph{depth}.  You can also associate aspatial fields with other settings such as
 labels, fill colors, pens, and values used to look-up colors.  Do so by letting
-the {\it col} value be one of {\bf D}, {\bf G}, {\bf L}, {\bf T}, {\bf W}, or {\bf Z}.  This
+the \emph{col} value be one of \textbf{D}, \textbf{G}, \textbf{L}, \textbf{T}, \textbf{W}, or \textbf{Z}.  This
 works analogously to how standard multi-segment files can pass such options via
 its segment headers (See Appendix B).
 
 \subsubsection{OGR/GMT output with \Opt{a} option}
 You can also make \GMT\ table-writing tools output the OGR/GMT format directly.
 Again, specify if certain \GMT\ data columns with constant values should be stored
-as aspatial metadata using the {\it col=name}[:{\it type}], where you can optionally
+as aspatial metadata using the \emph{col=name}[:\emph{type}], where you can optionally
 specify what data type it should be (double, integer, string, logical, byte, or
-datetime) [double is default].  As for input, you can also use the special {\it col}
-entries of {\bf D}, {\bf G}, {\bf L}, {\bf T}, {\bf W}, or {\bf Z} to have values stored
+datetime) [double is default].  As for input, you can also use the special \emph{col}
+entries of \textbf{D}, \textbf{G}, \textbf{L}, \textbf{T}, \textbf{W}, or \textbf{Z} to have values stored
 as options in segment headers be used as the source for the name aspatial field.
-Finally, for output you must append +{\bf g}{\it geometry}, where {\it geometry}
-can be any of [{\bf M}]{\bf POINT}$|${\bf LINE}$|${\bf POLY}; the {\bf M} represent
-the multi-versions of these three geometries.  Use upper-case +{\bf G} to signal that
+Finally, for output you must append +\textbf{g}\emph{geometry}, where \emph{geometry}
+can be any of [\textbf{M}]\textbf{POINT}$|$\textbf{LINE}$|$\textbf{POLY}; the \textbf{M} represent
+the multi-versions of these three geometries.  Use upper-case +\textbf{G} to signal that
 you want to split any line or polygon features that straddle the Dateline.
 
 \subsection{Binary table i/o: The \Opt{b} option}
@@ -923,19 +923,19 @@ For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data
 separated by multiple segment header records (see Appendix B).  However, if key data
 columns contain a NaN we may also use that information to break lines into multiple
 segments.  This behavior is modified by the parameter \textbf{IO\_NAN\_RECORDS} which
-by default is set to {\it skip}, meaning such records are considered bad and simply
+by default is set to \emph{skip}, meaning such records are considered bad and simply
 skipped.  If you wish such records to indicate a segment boundary then set this parameter
-to {\it pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
+to \emph{pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
 The \Opt{g} option is used to detect gaps based on one or more criteria (use \Opt{g+} if
 \emph{all} the criteria must be met; otherwise only one of the specified criteria needs
-to be met to signify a data gap).  Gaps can be based on excessive jumps in the {\it x}- or
-{\it y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
-Append the {\it gap} distance and optionally a unit for actual distances.
-For geographic data the optional unit may be arc {\bf d}egree, {\bf m}inute, and {\bf s}econd,
-or m{\bf e}ter [Default], {\bf f}eet, {\bf k}ilometer, {\bf M}iles, and {\bf n}autical miles.
+to be met to signify a data gap).  Gaps can be based on excessive jumps in the \emph{x}- or
+\emph{y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
+Append the \emph{gap} distance and optionally a unit for actual distances.
+For geographic data the optional unit may be arc \textbf{d}egree, \textbf{m}inute, and \textbf{s}econd,
+or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, \textbf{M}iles, and \textbf{n}autical miles.
 For programs that map data to map coordinates you can optionally specify these criteria to apply to
 the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or \Opt{gD}).
-In that case, choose from {\bf c}entimeter, {\bf i}nch or {\bf p}oint.
+In that case, choose from \textbf{c}entimeter, \textbf{i}nch or \textbf{p}oint.
 [Default unit is controlled by \textbf{PROJ\_LENGTH\_UNIT}].
 Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by \textbf{TIME\_UNIT}.
 
@@ -967,14 +967,14 @@ The \Opt{i}\emph{columns} option allows you to specify which
 input file data columns to use and it what order.  By default, \GMT\ will
 read all the data columns in the file, starting with the first column (0).
 Using \Opt{i} modifies that process.  For instance, to use the 4th, 7th, and
-3rd data column as the required {\it x,y,z} to \GMTprog{blockmean} you would
+3rd data column as the required \emph{x,y,z} to \GMTprog{blockmean} you would
 specify \Opt{i}3,6,2 (since 0 is the first column). The chosen data columns
 will be used as is.  Optionally, you can specify that input columns should be
 transformed according to a linear or logarithmic conversion.  Do so by appending
-[\textbf{l}][\textbf{s}{\it scale}][\textbf{o}{\it offset}] to each column (or range
+[\textbf{l}][\textbf{s}\emph{scale}][\textbf{o}\emph{offset}] to each column (or range
 of columns).  All items are optional: The \textbf{l} implies we should first take
-$\log_{10}$ of the data [leave as is]. Next, we may scale the result by the given {\it scale} [1].
-Finally, we add in the specified {\it offset} [0].
+$\log_{10}$ of the data [leave as is]. Next, we may scale the result by the given \emph{scale} [1].
+Finally, we add in the specified \emph{offset} [0].
 
 \subsection{Grid interpolation parameters: The \Opt{n} option}
 \index{\Opt{n} (Grid resampling parameters)}
@@ -985,17 +985,17 @@ used for 2-D grids resampling.  You can select the type
 of spline used (\Opt{nb} for B-spline smoothing, \Opt{nc} for bicubic [Default],
 \Opt{nl} for bilinear, or \Opt{nn} for nearest-node value).
 For programs that support it, antialiasing is by default on;
-optionally, append {\bf +a} to switch off antialiasing.
+optionally, append \textbf{+a} to switch off antialiasing.
 By default, boundary conditions are set according to the grid type and extent.
-Change boundary conditions by appending {\bf +b}{\it BC},
-where {\it BC} is either {\bf g} for geographic boundary conditions
-or one (or both) of  {\bf n} and {\bf p} for natural or periodic boundary
-conditions, respectively.  Append {\bf x} or {\bf y} to only apply the condition
+Change boundary conditions by appending \textbf{+b}\emph{BC},
+where \emph{BC} is either \textbf{g} for geographic boundary conditions
+or one (or both) of  \textbf{n} and \textbf{p} for natural or periodic boundary
+conditions, respectively.  Append \textbf{x} or \textbf{y} to only apply the condition
 in one dimension.  E.g., \Opt{nb+nxpy} would imply natural boundary conditions in
-the {\it x} direction and periodic conditions in the {\it y} direction.
-Finally, append {\bf +t}{\it threshold} to control
+the \emph{x} direction and periodic conditions in the \emph{y} direction.
+Finally, append \textbf{+t}\emph{threshold} to control
 how close to nodes with NaN the interpolation should go.  A
-{\it threshold} of 1.0 requires all (4 or 16) nodes involved in the
+\emph{threshold} of 1.0 requires all (4 or 16) nodes involved in the
 interpolation to be non-NaN. 0.5 will interpolate about half way from a
 non-NaN value; 0.1 will go about 90\% of the way, etc.
 
@@ -1018,12 +1018,12 @@ be told to view this flat illustration from a particular vantage point, resultin
 a perspective view.  You can select perspective view with the \Opt{p} option by setting
 the azimuth and elevation of the viewpoint [Default is 180/90].
 When \Opt{p} is used in consort with \Opt{Jz} or \Opt{JZ}, a third value can be appended which indicates
-at which {\it z}-level all 2D material, like the plot frame, is plotted (in perspective) 
+at which \emph{z}-level all 2D material, like the plot frame, is plotted (in perspective) 
 [Default is at the bottom of the z-axis].
-For frames used for animation, you may want to append {\bf +} to fix the center
-of your data domain (or specify a particular world coordinate point with {\bf +w}{\it lon0/lat}[{\it z}])
+For frames used for animation, you may want to append \textbf{+} to fix the center
+of your data domain (or specify a particular world coordinate point with \textbf{+w}\emph{lon0/lat}[\emph{z}])
 which will project to the center of your page size (or you may specify the coordinates
-of the \emph{projected} view point with {\bf +v}{\it x0/y0}.
+of the \emph{projected} view point with \textbf{+v}\emph{x0/y0}.
 When \Opt{p} is used without any further arguments, the values from the last use of \Opt{p} in a previous \GMT\
 command will be used.
 
@@ -1080,10 +1080,10 @@ find $nx = ny = 3$.
 \index{\Opt{s} NaN-record treatment}
 \index{NaN}
 
-We can use this option to suppress output for records whose {\it z}-value equals NaN
-(by default we output all records).  Alternatively, append {\bf r} to reverse the suppression,
-i.e., only output the records whose {\it z}-value equals NaN.  Use \Opt{sa} to suppress
-output records where one or more fields (and not necessarily {\it z}) equal NaN.  Finally, you can supply
+We can use this option to suppress output for records whose \emph{z}-value equals NaN
+(by default we output all records).  Alternatively, append \textbf{r} to reverse the suppression,
+i.e., only output the records whose \emph{z}-value equals NaN.  Use \Opt{sa} to suppress
+output records where one or more fields (and not necessarily \emph{z}) equal NaN.  Finally, you can supply
 a comma-separated list of all columns or column ranges to consider for this NaN test.
 
 \subsection{Layer PDF transparency: The \Opt{t} option}
@@ -1433,7 +1433,7 @@ Table~\ref{tbl:penex} contains additional examples of pen specifications suitabl
 \Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\ \hline 
 \Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline 
 \end{tabular}
-\caption{A few examples of pen specifications. The default width, color and style are determined by the {\bf MAP\_DEFAULT\_PEN} parameter.}
+\caption{A few examples of pen specifications. The default width, color and style are determined by the \textbf{MAP\_DEFAULT\_PEN} parameter.}
 \label{tbl:penex}
 \end{table}
 
@@ -1533,12 +1533,13 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 
 The fonts used by \GMT\ are typically set indirectly via the \GMT\ defaults parameters.
 However, some programs, like \GMTprog{pstext} may wish to have this information passed directly.
-A font is specified by a comma-delimited attribute list of {\it size}, {\it fonttype} and {\it fill}, each of which is optional.
-The {\it size} is the font size (usually in points) but {\bf c}, {\bf i} or {\bf p} can be added to indicate a specific unit.
-The {\it fonttype} is the name (case sensitive!) of the font or its equivalent numerical ID (e.g., Helvetica-Bold or 1).
-{\it fill} specifies the gray shade, color or pattern of the text (see section~\ref{sec:fill} above).
-Optionally, you may append {\bf =}{\it pen} to the {\it fill} value in order to draw the text outline with the specified {\it pen};
-if used you may optionally skip the filling of the text by setting {\it fill} to {\bf -}.
+A font is specified by a comma-delimited attribute list of \emph{size}, \emph{fonttype} and \emph{fill}, each of which is optional.
+The \emph{size} is the font size (usually in points) but \textbf{c}, \textbf{i} or \textbf{p} can be added to indicate a specific unit.
+The \emph{fonttype} is the name (case sensitive!) of the font or its equivalent numerical ID (e.g., Helvetica-Bold or 1).
+\emph{fill} specifies the gray shade, color or pattern of the text (see section~\ref{sec:fill} above).
+Optionally, you may append \textbf{=}\emph{pen} to the \emph{fill} value in order to draw the text outline with the specified
+\emph{pen};
+if used you may optionally skip the filling of the text by setting \emph{fill} to \textbf{-}.
 If any of the attributes is omitted their default or previous setting will be retained.
 See Appendix G for a list of all fonts recognized by \GMT.
 
@@ -1559,7 +1560,7 @@ while 100 is fully transparent (i.e., nothing will show).  As noted in section~\
 transparency on a layer-by-layer basis using the \Opt{t} option.  However, we may also set
 transparency as an attribute of stroke or fill (including for fonts) settings.  Here, transparency is requested by
 appending @\emph{transparency} to colors or pattern fills.  The transparency \emph{mode} can be changed
-by using the \GMT\ default parameter {\bf PS\_TRANSPARENCY}; the default is Normal but you can choose among
+by using the \GMT\ default parameter \textbf{PS\_TRANSPARENCY}; the default is Normal but you can choose among
 Color, ColorBurn, ColorDodge, Darken, Difference, Exclusion, HardLight, Hue,
 Lighten, Luminosity, Multiply, Normal, Overlay, Saturation, SoftLight, and Screen.
 For more information, see (search online for) the Adobe pdfmark Reference Manual.
@@ -1590,7 +1591,7 @@ hand or using text tools like \progname{awk} or \progname{perl}.
 Color palette tables (CPT) comes in two flavors: (1) Those designed to work with
 categorical data (e.g., data where interpolation of values is undefined) and
 (2) those designed for regular, continuously-varying data.  In both cases
-the {\it fill} information follows the format given in Section \ref{sec:fill}.
+the \emph{fill} information follows the format given in Section \ref{sec:fill}.
 
 \subsection{Categorical CPT files}
 
@@ -1605,13 +1606,13 @@ monotonically increasing but do not need to be consecutive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
-key$_1$ &  {\it fill} &  [;\emph{label}] \\ 
+key$_1$ &  \emph{fill} &  [;\emph{label}] \\ 
 \ldots & & \\ 
-key$_n$ &  {\it fill} &  [;\emph{label}] \\ 
+key$_n$ &  \emph{fill} &  [;\emph{label}] \\ 
 \end{tabular} 
 \end{center}
 
-The {\it fill} information follows the format given in Section \ref{sec:fill}.
+The \emph{fill} information follows the format given in Section \ref{sec:fill}.
 While not always applicable to categorical data, the background color (for
 \emph{key}-values $<$ \emph{key$_1$}), foreground color
 (for \emph{key}-values $>$ \emph{key$_{n}$}), and not-a-number (NaN) color (for
@@ -1635,7 +1636,7 @@ format of the regular CPT files is:
 \begin{tabular}{llllll}
 z$_0$ &  Color$_{min}$  &  z$_1$ & Color$_{max}$ &  [\bf{A}] & [;\emph{label}] \\ 
 \ldots & & & & & \\ 
-z$_{n-2}$ &  Color$_{min}$ &  z$_{n-1}$ &  Color$_{max}$ &  [{\bf A}] & [;\emph{label}] \\
+z$_{n-2}$ &  Color$_{min}$ &  z$_{n-1}$ &  Color$_{max}$ &  [\textbf{A}] & [;\emph{label}] \\
 \end{tabular} 
 \end{center}
 
@@ -2115,7 +2116,7 @@ masking and clipping of data sets.  Note that a few computers do not have native
 support.  At this point, this applies to some of the older Cray super-computers.  Users on such
 machines may have to adopt the old `-9999.99'' scheme to achieve the desired results.
 
-Data records that contain NaN values for the {\it x} or {\it y} columns (or the {\it z} column
+Data records that contain NaN values for the \emph{x} or \emph{y} columns (or the \emph{z} column
 for cases when 3-D Cartesian data are expected) are usually skipped during reading.  However,
 the presence of these bad records can be interpreted in two different ways, and this behavior
 is controlled by the \textbf{IO\_NAN\_RECORDS} defaults parameter.  The default setting (\emph{gap})
@@ -2146,10 +2147,10 @@ simply reports back how many bad records were skipped during reading; see Sectio
 	custom symbols and color palettes, and
 	shorthands for gridfile extensions via \filename{.gmt\_io}).  Users may also place their own
 	data files in this directory as \GMT\ programs will search for files given on the command
-	line in both {\bf \$GMT\_DATADIR} and {\bf \$GMT\_USERDIR}.
-\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the three files
-	\filename{.gmtcommands}, \filename{gmt.conf} and \filename{.gmt\_bb\_info}.  If not set
-	then these files are written to the current directory. See Appendix~\ref{app:P} for more on
-	the use of {\bf \$GMT\_TMPDIR}.
+	line in both \textbf{\$GMT\_DATADIR} and \textbf{\$GMT\_USERDIR}.
+\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the two files
+	\filename{.gmtcommands} and \filename{gmt.conf}.  If \textbf{\$GMT\_TMPDIR} is not set,
+	these files are written to the current directory. See Appendix~\ref{app:P} for more on
+	the use of \textbf{\$GMT\_TMPDIR}.
 \end{description}
 Note that files whose full path is given will never be searched for in any of these directories.

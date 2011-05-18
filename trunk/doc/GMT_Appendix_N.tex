@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_N.tex,v 1.8 2011-04-24 13:56:46 remko Exp $
+%	$Id: GMT_Appendix_N.tex,v 1.9 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -18,8 +18,8 @@
 The \GMT\ tools \GMTprog{psxy.c} and \GMTprog{psxyz.c} are capable of using
 custom symbols as alternatives to the built-in, standard geometrical shapes
 like circles, triangles, and many others.  One the command line, custom
-symbols are selected via the \Opt{Sk}{\it symbolname}[.{\it size}] symbol
-selection, where {\it symbolname} refers to a special symbol definition
+symbols are selected via the \Opt{Sk}\emph{symbolname}[.\emph{size}] symbol
+selection, where \emph{symbolname} refers to a special symbol definition
 file called \filename{symbolname.def} that must be available via the standard
 \GMT\ user paths.  Several custom symbols comes pre-configured with \GMT\
 (see Figure~\ref{fig:GMT_App_N_1})
@@ -58,9 +58,9 @@ symbol size.  However, more complicated symbol, such as the ellipse or vector sy
 require more parameters.  If your custom symbol requires more than a single size parameter
 you must include the line
 \begin{quote}
-	{\bf N}: {\it n\_extra\_parameters}
+	\textbf{N}: \emph{n\_extra\_parameters}
 \end{quote}
-before any other macro commands.  It is an optional statement in that {\it  n\_extra\_parameters} will
+before any other macro commands.  It is an optional statement in that \emph{n\_extra\_parameters} will
 default to 0 unless explicitly set.
 
 \subsection{Macro commands}
@@ -74,39 +74,39 @@ Table~\ref{tbl:custsymb}.
 \small
 \centering
 \begin{tabular}{|l|c|l|l|} \hline
-Name 		& 	Code	&	Purpose				&	Arguments \\ \hline
-rotate		&	{\bf R}	& Rotate the coordinate system		& $\alpha$ \\ \hline
-moveto		&	{\bf M}	& Set a new anchor point 		& $x_0, y_0$  \\ \hline
-drawto		&	{\bf D}	& Draw line from previous point 	& $x, y$  \\ \hline
-arc		&	{\bf A}	& Append circular arc to existing path 	& $x_c, y_c, r, \alpha_1, \alpha_2$  \\ \hline
-stroke		&	{\bf S}	& Stroke existing path only 		&  \\ \hline \hline
-texture		&	{\bf T}	& Change current pen and fill		&  \\ \hline \hline
-circle		&	{\bf c}	& Plot a circle 			& $x, y$,\emph{size}  \\ \hline
-cross		&	{\bf x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
-cross		&	{\bf x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
-diamond		&	{\bf d}	& Plot a diamond 			& $x, y$,\emph{size}  \\ \hline
-ellipse		&	{\bf e}	& Plot a ellipse 			& $x, y, \alpha$,\emph{major},\emph{minor}  \\ \hline
-hexagon		&	{\bf h}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
-invtriangle	&	{\bf i}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
-letter		&	{\bf l}	& Plot a letter 			& $x, y$,\emph{size}, \emph{string}  \\ \hline
-octagon		&	{\bf o}	& Plot a octagon 			& $x, y$,\emph{size}  \\ \hline
-pentagon	&	{\bf h}	& Plot a pentagon 			& $x, y$,\emph{size}  \\ \hline
-plus		&	{\bf h}	& Plot a plus sign 			& $x, y$,\emph{size}  \\ \hline
-rect		&	{\bf h}	& Plot a rectangle 			& $x, y$, \emph{width}, \emph{height}  \\ \hline
-square		&	{\bf h}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
-star		&	{\bf a}	& Plot a star 				& $x, y$,\emph{size}  \\ \hline
-triangle	&	{\bf h}	& Plot a triangle 			& $x, y$,\emph{size}  \\ \hline
-wedge		&	{\bf h}	& Plot a wedge 				& $x, y, r, \alpha_1, \alpha_2$  \\ \hline
-x-dash		&	{\bf -}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
-y-dash		&	{\bf y}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+Name 		& 	Code		&	Purpose				&	Arguments \\ \hline
+rotate		&	\textbf{R}	& Rotate the coordinate system		& $\alpha$ \\ \hline
+moveto		&	\textbf{M}	& Set a new anchor point 		& $x_0, y_0$  \\ \hline
+drawto		&	\textbf{D}	& Draw line from previous point 	& $x, y$  \\ \hline
+arc		&	\textbf{A}	& Append circular arc to existing path 	& $x_c, y_c, r, \alpha_1, \alpha_2$  \\ \hline
+stroke		&	\textbf{S}	& Stroke existing path only 		&  \\ \hline \hline
+texture		&	\textbf{T}	& Change current pen and fill		&  \\ \hline \hline
+circle		&	\textbf{c}	& Plot a circle 			& $x, y$,\emph{size}  \\ \hline
+cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
+cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
+diamond		&	\textbf{d}	& Plot a diamond 			& $x, y$,\emph{size}  \\ \hline
+ellipse		&	\textbf{e}	& Plot a ellipse 			& $x, y, \alpha$,\emph{major},\emph{minor}  \\ \hline
+hexagon		&	\textbf{h}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
+invtriangle	&	\textbf{i}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
+letter		&	\textbf{l}	& Plot a letter 			& $x, y$,\emph{size}, \emph{string}  \\ \hline
+octagon		&	\textbf{o}	& Plot a octagon 			& $x, y$,\emph{size}  \\ \hline
+pentagon	&	\textbf{h}	& Plot a pentagon 			& $x, y$,\emph{size}  \\ \hline
+plus		&	\textbf{h}	& Plot a plus sign 			& $x, y$,\emph{size}  \\ \hline
+rect		&	\textbf{h}	& Plot a rectangle 			& $x, y$, \emph{width}, \emph{height}  \\ \hline
+square		&	\textbf{h}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+star		&	\textbf{a}	& Plot a star 				& $x, y$,\emph{size}  \\ \hline
+triangle	&	\textbf{h}	& Plot a triangle 			& $x, y$,\emph{size}  \\ \hline
+wedge		&	\textbf{h}	& Plot a wedge 				& $x, y, r, \alpha_1, \alpha_2$  \\ \hline
+x-dash		&	\textbf{-}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
+y-dash		&	\textbf{y}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
 \end{tabular}
 \label{tbl:custsymb}
 \caption{List of macro codes used to define custom symbols.  Note that arguments are given first with the symbol code at the end.
-All angles are expected in degrees. The {\bf S} macro is only used if you just want to draw a line and not close/fill it as
+All angles are expected in degrees. The \textbf{S} macro is only used if you just want to draw a line and not close/fill it as
 a polygon [Default]; place it on its own line after your last path construction operator.}
 \end{table} 
-For {\bf M}, {\bf T}, and all the lower-case codes you may optionally append specific pens (with \Opt{W}{\it pen})
-and fills (with \Opt{G}{\it pen}).  These settings will override the pens and fills you may have specified
+For \textbf{M}, \textbf{T}, and all the lower-case codes you may optionally append specific pens (with \Opt{W}\emph{pen})
+and fills (with \Opt{G}\emph{pen}).  These settings will override the pens and fills you may have specified
 on the command line.  Passing \Opt{G}- or \Opt{W}- means no fill or outline, respectively.
 
 \subsection{Conditional statements}
@@ -141,7 +141,7 @@ expect \emph{constant} to contain two colon-separated values (e.g., 0:9.5).}
 \subsubsection{Simple conditional test}
 The simple if-test uses a one-line format, defined as
 \begin{quote}
-	{\bf if} \emph{var OP constant} {\bf then}  \emph{command}
+	\textbf{if} \emph{var OP constant} \textbf{then}  \emph{command}
 \end{quote}
 where \emph{var} must be one of the symbol parameters, specified as \$1, \$2, \$3, etc.
 You must document what these additional parameters control.  For example, to plot a
@@ -149,7 +149,7 @@ small cyan circle at (0.2, 0.3) with diameter 0.4 only if \$2 exceeds 45 you wou
 \begin{verbatim}
 	if $2 > 45 then 0.2 0.3 0.4 c -Gcyan
 \end{verbatim}
-Note that this form of the conditional test has no mechanism for an {\bf else} branch, but this can be accomplished
+Note that this form of the conditional test has no mechanism for an \textbf{else} branch, but this can be accomplished
 by repeating the test but reversing the logic for the second copy, e.g.,
 \begin{verbatim}
 	if $1 > 10 then 0 0 0.5 c -Gred
@@ -160,17 +160,17 @@ or you may instead consider the complete conditional construct below.
 
 The complete conditional test uses a multi-line format, such as
 \begin{tabbing}
-	{\bf if} \emph{var} \= \emph{OP constant} {\bf then}  \{ \\
+	\textbf{if} \emph{var} \= \emph{OP constant} \textbf{then}  \{ \\
 	\> $<$one or more lines with commands$>$ \\
-	\} {\bf elseif} \emph{var OP constant} {\bf then}  \{ \\
+	\} \textbf{elseif} \emph{var OP constant} \textbf{then}  \{ \\
 	\> $<$one or more lines with commands$>$ \\
-	\} {\bf else} \{ \\
+	\} \textbf{else} \{ \\
 	\> $<$one or more lines with commands$>$ \\
 	\}
 \end{tabbing}
-The {\bf elseif} (one or more) and {\bf else} branches are optional.  Note that the syntax is strictly enforced,
-meaning the opening brace must appear after {\bf then} with nothing following it, and the closing brace
-must appear by itself with no other text, and that the {\bf elseif} and {\bf else} statements must have both closing
+The \textbf{elseif} (one or more) and \textbf{else} branches are optional.  Note that the syntax is strictly enforced,
+meaning the opening brace must appear after \textbf{then} with nothing following it, and the closing brace
+must appear by itself with no other text, and that the \textbf{elseif} and \textbf{else} statements must have both closing
 and opening braces on the same line (and nothing else).  You may nest tests as well (up to 10 levels deep), e.g.,
 \begin{verbatim}
 if $1 > 45 then {
@@ -191,8 +191,8 @@ if $1 > 45 then {
 % [This may or may not be implemented in the future ]
 %For very complicated symbols it may in fact be simpler to design the entire symbol in
 %the \PS\ language.  In that case, your definition file may only contain the macro code
-%{\bf N} (if needed), and the rest of the file should contain the \PS\ code for the symbol,
-%starting with the naming \texttt{/Sk\_}{\it symbolname} and ending with the line \texttt{def}.  Your
+%\textbf{N} (if needed), and the rest of the file should contain the \PS\ code for the symbol,
+%starting with the naming \texttt{/Sk\_}\emph{symbolname} and ending with the line \texttt{def}.  Your
 %\PS\ code will be passed the symbol size and all \emph{n\_extra\_parameters} you have specified (if any).
 %\GMT\ will automatically encapsulate the symbol within a \emph{gsave--grestore} pair, thus limiting
 %any changes to the \PS\ state you may cause to the symbol execution only.
