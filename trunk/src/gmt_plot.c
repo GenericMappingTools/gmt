@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.334 2011-05-18 15:39:29 remko Exp $
+ *	$Id: gmt_plot.c,v 1.335 2011-05-18 21:32:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,6 @@
  * INTERNAL Functions include:
  *
  *	gmt_conic_map_boundary :	Plot basemap for conic projections
- *	gmt_epsinfo				Fill out info needed for PostScript header
  *	gmt_linear_map_boundary :	Plot basemap for Linear projections
  *	GMT_linearx_grid :		Draw linear x grid lines
  *	gmt_lineary_grid :		Draw linear y grid lines
@@ -3429,157 +3428,13 @@ char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
 	return (pStrOut);
 }
 
-#define PADDING 72.0	/* Amount of padding room for annotations in points (1 inch) */
-
-struct EPS *gmt_epsinfo (struct GMT_CTRL *C)
-{
-	/* Supply info about the EPS file that will be created */
-
-	GMT_LONG fno[PSL_MAX_EPS_FONTS], id, i, n_fonts, last, move_up = FALSE, not_used = 0;
-	double old_x0, old_y0, old_x1, old_y1, u_dx, u_dy, dy, x0, y0;
-	double tick_space, frame_space, orig_x0 = 0.0, orig_y0 = 0.0;
-	char info[GMT_BUFSIZ];
-	FILE *fp = NULL;
-	struct passwd *pw = NULL;
-	struct EPS *new = NULL;
-
-	new = GMT_memory (C, NULL, 1, struct EPS);
-
-	/* Set the name of .gmt_bb_info file */
-	if (C->session.TMPDIR)
-		sprintf (info, "%s%c.gmt_bb_info", C->session.TMPDIR, DIR_DELIM);
-	else
-		sprintf (info, ".gmt_bb_info");
-
-	/* First crudely estimate the boundingbox coordinates */
-
-	/* We do local fopen and not GMT_fopen here so we use fscanf, not GMT_fscanf */
-	if (C->common.O.active && (fp = fopen (info, "r")) != NULL) {	/* Must get previous boundingbox values */
-		not_used = fscanf (fp, "%d %d %lf %lf %lf %lf %lf %lf\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
-		fclose (fp);
-		x0 = orig_x0;
-		y0 = orig_y0;
-		if (C->current.ps.origin[GMT_X] == 'f') {	/* Absolute */
-			x0 = C->current.setting.map_origin[GMT_X];
-			y0 = C->current.setting.map_origin[GMT_Y];
-		}
-		else {			/* Relative */
-			x0 += C->current.setting.map_origin[GMT_X];
-			y0 += C->current.setting.map_origin[GMT_Y];
-		}
-	}
-	else {	/* New plot, initialize stuff */
-		old_x0 = old_y0 = old_x1 = old_y1 = 0.0;
-		x0 = C->current.setting.map_origin[GMT_X];	/* Always absolute the first time */
-		y0 = C->current.setting.map_origin[GMT_Y];
-		new->portrait = (int)C->current.setting.ps_orientation;
-		new->clip_level = 0;
-	}
-
-	/* Estimates the bounding box for this overlay */
-
-	new->x0 = C->session.u2u[GMT_INCH][GMT_PT] * x0;
-	new->y0 = C->session.u2u[GMT_INCH][GMT_PT] * y0;
-	new->x1 = new->x0 + C->session.u2u[GMT_INCH][GMT_PT] * (C->current.proj.z_project.xmax - C->current.proj.z_project.xmin);
-	new->y1 = new->y0 + C->session.u2u[GMT_INCH][GMT_PT] * (C->current.proj.z_project.ymax - C->current.proj.z_project.ymin);
-
-	tick_space = (C->current.setting.map_tick_length > 0.0) ? C->session.u2u[GMT_INCH][GMT_PT] * C->current.setting.map_tick_length : 0.0;
-	frame_space = C->session.u2u[GMT_INCH][GMT_PT] * C->current.setting.map_frame_width;
-	if (C->current.map.frame.header[0]) {	/* Make space for header text */
-		move_up = (GMT_is_geographic (C, GMT_IN) || C->current.map.frame.side[N_SIDE] & 2);
-		dy = ((move_up) ? (C->current.setting.font_annot[0].size + C->current.setting.font_label.size) * C->session.u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * C->current.setting.map_annot_offset[0];
-		new->y1 += tick_space + C->session.u2u[GMT_INCH][GMT_PT] * dy;
-	}
-
-	/* Find the max extent and use it if the overlay exceeds what we already have */
-
-	/* Extend box in all directions depending on what kind of frame annotations we have */
-
-	u_dx = (C->current.setting.map_logo && C->current.setting.map_logo_pos[GMT_X] < 0.0) ? -C->session.u2u[GMT_INCH][GMT_PT] * C->current.setting.map_logo_pos[GMT_X] : 0.0;
-	u_dy = (C->current.setting.map_logo && C->current.setting.map_logo_pos[GMT_Y] < 0.0) ? -C->session.u2u[GMT_INCH][GMT_PT] * C->current.setting.map_logo_pos[GMT_Y] : 0.0;
-	if (C->current.map.frame.plot && !C->current.proj.three_D) {
-		if (C->current.map.frame.side[W_SIDE]) new->x0 -= MAX (u_dx, ((C->current.map.frame.side[W_SIDE] & 2) ? PADDING : tick_space)); else new->x0 -= MAX (u_dx, frame_space);
-		if (C->current.map.frame.side[S_SIDE]) new->y0 -= MAX (u_dy, ((C->current.map.frame.side[S_SIDE] & 2) ? PADDING : tick_space)); else new->y0 -= MAX (u_dy, frame_space);
-		if (C->current.map.frame.side[E_SIDE]) new->x1 += (C->current.map.frame.side[E_SIDE] & 2) ? PADDING : tick_space; else new->x1 += frame_space;
-		if (C->current.map.frame.side[N_SIDE]) new->y1 += (C->current.map.frame.header[0] || C->current.map.frame.side[N_SIDE] & 2) ? PADDING : tick_space; else new->y1 += frame_space;
-	}
-	else if (C->current.proj.three_D) {
-		new->x0 -= MAX (u_dx, PADDING/2.0);
-		new->y0 -= MAX (u_dy, PADDING/2.0);
-		new->x1 += PADDING/2.0;
-		new->y1 += PADDING/2.0;
-	}
-	else if (C->current.setting.map_logo) {
-		new->x0 -= u_dx;
-		new->y0 -= u_dy;
-	}
-
-	/* Get the high water mark in all directions */
-
-	if (C->common.O.active) {
-		new->x0 = MIN (old_x0, new->x0);
-		new->y0 = MIN (old_y0, new->y0);
-	}
-	new->x1 = MAX (old_x1, new->x1);
-	new->y1 = MAX (old_y1, new->y1);
-
-	/* Undo origin adjustment */
-
-	if (C->current.ps.origin[GMT_X] == 'a') x0 = orig_x0;
-	if (C->current.ps.origin[GMT_Y] == 'a') y0 = orig_y0;
-
-	/* Update the bb file or tell use */
-
-	if (!C->common.K.active) {	/* Clobber the .gmt_bb_info file and add label padding */
-		(void) remove (info);	/* Don't really care if it is successful or not */
-	}
-	else if ((fp = fopen (info, "w")) != NULL) {	/* Update the .gmt_bb_info file */
-		fprintf (fp, "%d %d %g %g %g %g %g %g\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
-		fclose (fp);
-	}
-
-	/* Get font names used */
-
-	id = 0;
-	if (C->common.U.active) fno[id++] = C->current.setting.font_logo.id;	/* Add GMT logo font */
-	/* Add title font if a title was used */
-	if (C->current.map.frame.header[0]) fno[id++] = C->current.setting.font_title.id;
-	/* Add the label font if labels were used */
-	if (C->current.map.frame.axis[GMT_X].label[0] || C->current.map.frame.axis[GMT_Y].label[0] || C->current.map.frame.axis[GMT_Z].label[0]) fno[id++] = C->current.setting.font_label.id;
-	/* Always add annotation fonts */
-	fno[id++] = C->current.setting.font_annot[0].id;
-	fno[id++] = C->current.setting.font_annot[1].id;
-
-	GMT_sort_array (C, (void *)fno, id, GMT_LONG_TYPE);
-
-	last = -1;
-	for (i = n_fonts = 0; i < id; i++) {
-		if (fno[i] != last) {	/* To avoid duplicates */
-			new->fontno[n_fonts++] = (int)fno[i];
-			last = fno[i];
-		}
-	}
-	if (n_fonts < PSL_MAX_EPS_FONTS) new->fontno[n_fonts] = -1;	/* Terminate */
-
-	/* Get user name and date */
-
-	if ((pw = getpwuid (getuid ())) != NULL)
-		new->name = strdup (pw->pw_name);
-	else
-		new->name = strdup ("unknown");
-	sprintf (info, "GMT v%s Document from %s", GMT_VERSION, C->init.module_name);
-	new->title = strdup (info);
-
-	return (new);
-}
-
 GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
-	GMT_LONG k, id;
-	struct EPS *eps = NULL;
+	GMT_LONG k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
+	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
@@ -3603,7 +3458,6 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	/* Initialize the plot header and settings */
 
-	if (C->current.setting.ps_epsformat) C->current.setting.ps_page_size[1] = -fabs(C->current.setting.ps_page_size[1]);
 	if (C->common.P.active) C->current.setting.ps_orientation = TRUE;
 
 	/* Default for overlay plots is no shifting */
@@ -3612,13 +3466,37 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	if (!C->common.Y.active && C->common.O.active) C->current.setting.map_origin[GMT_Y] = 0.0;
 
 	/* Adjust offset when centering plot on center of page (PS does the rest) */
+
 	if (C->current.ps.origin[GMT_X] == 'c') C->current.setting.map_origin[GMT_X] -= 0.5 * C->current.map.width;
 	if (C->current.ps.origin[GMT_Y] == 'c') C->current.setting.map_origin[GMT_Y] -= 0.5 * C->current.map.height;
 
-	eps = gmt_epsinfo (C);
 	strcpy (P->init.encoding, C->current.setting.ps_encoding.name);
+
+	/* Get font names used */
+
+	id = 0;
+	if (C->common.U.active) fno[id++] = C->current.setting.font_logo.id;	/* Add GMT logo font */
+	/* Add title font if a title was used */
+	if (C->current.map.frame.header[0]) fno[id++] = C->current.setting.font_title.id;
+	/* Add the label font if labels were used */
+	if (C->current.map.frame.axis[GMT_X].label[0] || C->current.map.frame.axis[GMT_Y].label[0] || C->current.map.frame.axis[GMT_Z].label[0]) fno[id++] = C->current.setting.font_label.id;
+	/* Always add annotation fonts */
+	fno[id++] = C->current.setting.font_annot[0].id;
+	fno[id++] = C->current.setting.font_annot[1].id;
+
+	GMT_sort_array (C, (void *)fno, id, GMT_LONG_TYPE);
+
+	last = -1;
+	for (k = n_fonts = 0; k < id; k++) {
+		if (fno[k] != last) last = fno[n_fonts++] = fno[k]; /* To avoid duplicates */
+	}
+	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
+
+	/* Get title */
+
+	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, C->init.module_name);
 	
-	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.origin, C->current.setting.map_origin, C->current.setting.ps_page_size, eps);
+	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.origin, C->current.setting.map_origin, C->current.setting.ps_page_size, title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 
@@ -3666,9 +3544,6 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		}
 	}
 	if (C->current.setting.map_logo) gmt_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
-	if (eps->name) free ((void *)eps->name);
-	if (eps->title) free ((void *)eps->title);
-	if (eps) GMT_free (C, eps);
 	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
 	return (0);
 }
