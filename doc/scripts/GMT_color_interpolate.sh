@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_color_interpolate.sh,v 1.6 2011-05-18 16:24:14 remko Exp $
+#	$Id: GMT_color_interpolate.sh,v 1.7 2011-05-18 19:54:38 remko Exp $
 #
 . ./functions.sh
 ps=GMT_color_interpolate.ps
-psbasemap -Jx1i -R0/6.8/0/2.0 -B/ -K > $ps
+psbasemap -Jx1i -R0/6.8/0/2.0 -B0 -K > $ps
 
 # Plot polar color map in the left; right (top) and wrong (bottom)
 makecpt -Cpolar -T-1/1/1 -Z > tmp.cpt

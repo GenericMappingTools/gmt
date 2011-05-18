@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: legend.sh,v 1.17 2011-03-15 02:06:45 guru Exp $
+#	$Id: legend.sh,v 1.18 2011-05-18 19:54:38 remko Exp $
 #
 # Testing pslegend capabilities
 
@@ -33,7 +33,7 @@ M 5 5 600+u f
 G 0.05i
 I SOEST_block4.ras 3i CT
 G 0.05i
-B $$.cpt 0.2i 0.2i -B/
+B $$.cpt 0.2i 0.2i -B0
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
