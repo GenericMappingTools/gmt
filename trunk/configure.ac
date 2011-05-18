@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.113 2011-04-25 17:14:56 guru Exp $
+dnl $Id: configure.ac,v 1.114 2011-05-18 21:20:46 remko Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.113 $)
+AC_REVISION($Revision: 1.114 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -118,7 +118,6 @@ AC_ARG_ENABLE(openmp,   [  --enable-openmp         Enable parallel calculations 
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
 AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
-AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript as default output format [[Freeform PS]]])
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
@@ -677,19 +676,6 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-eps to set EPS as default format
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(for default PostScript format)
-if test "X$enable_eps" = "Xyes" ; then
-	EPS=true
-	AC_MSG_RESULT(EPS)
-else
-	EPS=false
-	AC_MSG_RESULT(PS)
-fi
-dnl
-dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-US for US units
 dnl -----------------------------------------------------------------
 dnl
@@ -883,18 +869,18 @@ if test -f doc/GMT_version.tex.in ; then
 fi
 AC_OUTPUT(src/config.mk src/gmt_version.h src/isogmt $morefiles)
 sed -e s/@UNITS@/Template\ SI/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
-	-e s/@PS_EPS@/false/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
 	share/conf/gmt.conf.in > share/conf/gmt_SI.conf
 sed -e s/@UNITS@/Template\ US/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
-	-e s/@PS_EPS@/false/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
 	share/conf/gmt.conf.in > share/conf/gmt_US.conf
 if test "$UNITS" = "SI" ; then
 	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/ISOLatin1+/ -e s/@PS_MEDIA@/a4/ -e s/@PROJ_LENGTH_UNIT@/cm/ \
-	-e s/@PS_EPS@/$EPS/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
 	share/conf/gmt.conf.in > share/conf/gmt.conf
 else
 	sed -e s/@UNITS@/System-wide/ -e s/@PS_CHAR_ENCODING@/Standard+/ -e s/@PS_MEDIA@/letter/ -e s/@PROJ_LENGTH_UNIT@/inch/ \
-	-e s/@PS_EPS@/$EPS/ -e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
+	-e s/@PACKAGE_VERSION@/$PACKAGE_VERSION/ \
 	share/conf/gmt.conf.in > share/conf/gmt.conf
 fi
 dnl
