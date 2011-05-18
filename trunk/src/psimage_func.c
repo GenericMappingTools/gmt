@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.22 2011-05-17 22:12:40 guru Exp $
+ *	$Id: psimage_func.c,v 1.23 2011-05-18 00:23:03 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -344,6 +344,28 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (GMT_DATA_READ_ERROR);
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
+
+		if (I->ColorMap != NULL) {
+			unsigned char *r_table = NULL, *g_table = NULL, *b_table = NULL;
+			r_table = GMT_memory (GMT, NULL, 256, unsigned char);
+			g_table = GMT_memory (GMT, NULL, 256, unsigned char);
+			b_table = GMT_memory (GMT, NULL, 256, unsigned char);
+			for (n = 0; n < 256; n++) {
+				r_table[n] = I->ColorMap[n*4    ];	/* 4 because color table is RGBA */
+				g_table[n] = I->ColorMap[n*4 + 1];
+				b_table[n] = I->ColorMap[n*4 + 2];
+			}
+			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
+			n = 3 * I->header->nm - 1;
+			for (j = I->header->nm - 1; j >= 0; j--) {
+				I->data[n--] = b_table[I->data[j]];
+				I->data[n--] = g_table[I->data[j]];
+				I->data[n--] = r_table[I->data[j]];	/* Now we can overwrite this value */
+			}
+			I->n_bands = 3;
+			GMT_free (GMT, r_table);	GMT_free (GMT, g_table);	GMT_free (GMT, b_table);
+		}
+
 		picture = (unsigned char *)I->data;
 		header.width = I->header->nx;
 		header.height = I->header->ny;
