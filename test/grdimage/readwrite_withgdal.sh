@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: readwrite_withgdal.sh,v 1.3 2011-05-11 01:23:07 jluis Exp $
+#	$Id: readwrite_withgdal.sh,v 1.4 2011-05-18 00:52:05 jluis Exp $
 
 . ../functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`
@@ -29,4 +29,4 @@ grdimage -D vader.jpg -JX4c/0 -X9c -O >> $ps
 
 rm -f somb.nc illum.nc
 
-#pscmp
+pscmp
