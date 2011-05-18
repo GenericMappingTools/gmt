@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.84 2011-05-11 19:16:27 guru Exp $
+ *	$Id: gmt_project.h,v 1.85 2011-05-18 15:39:29 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -200,8 +200,6 @@ struct GMT_PROJ {
 
 	GMT_LONG projection;		/* Gives the id number for the projection used */
 
-	GMT_LONG x_off_supplied;		/* Used to set xorigin/yorigin for overlay/final plots */
-	GMT_LONG y_off_supplied;
 	GMT_LONG units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
 	GMT_LONG north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	GMT_LONG edge[4];		/* TRUE if the edge is a map boundary */

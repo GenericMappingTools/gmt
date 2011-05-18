@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.260 2011-05-18 01:52:54 remko Exp $
+ *	$Id: pslib.c,v 1.261 2011-05-18 15:39:29 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1286,8 +1286,8 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 		if (!PSL->internal.eps_format) PSL_command (PSL, "%%%%EOF\n");
 	}
 	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
-		PSL_command (PSL, "%ld %ld TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.xy_offset[0]) : 0,
-			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.xy_offset[1]) : 0);
+		PSL_command (PSL, "%ld %ld TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
+			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.offset[1]) : 0);
 	if (PSL->internal.fp != stdout) fclose (PSL->internal.fp);
 	memset ((void *)PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	return (PSL_NO_ERROR);
@@ -1301,17 +1301,17 @@ PSL_LONG PSL_endplot_ (PSL_LONG *lastpage)
 }
 #endif
 
-PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, char origin[], double xy_offset[], double page_size[], struct EPS *eps)
+PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, char origin[], double offset[], double page_size[], struct EPS *eps)
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait
    overlay:	TRUE if this is an overlay plot [FALSE means print headers and macros first]
    colormode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
    origin:	Two characters indicating origin of new position for x and y respectively:
-			'r' = Relative to old position (default)
-			'a' = Relative to old position and resets at PSL_endplot
-			'f' = Relative to lower left corner of the page
-			'c' = Relative to center of the page
-   xy_offset:	Location of new origin relative to old in user units (see origin above)
+		'r' = Relative to old position (default)
+		'a' = Relative to old position and resets at PSL_endplot
+		'f' = Relative to lower left corner of the page
+		'c' = Relative to center of the page
+   offset:	Location of new origin relative to what is specified by "origin" (in user units)
    page_size:	Physical width and height of paper used in points
    eps:		structure with Document info.  !! Fortran version (PSL_beginplot_) does not have this argument !!
 */
@@ -1341,7 +1341,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	}
 
 	PSL->internal.color_mode = colormode;
-	if (!origin || !origin[0])
+	if (!origin)
 		PSL->internal.origin[0] = PSL->internal.origin[1] = 'r';
 	else
 		PSL->internal.origin[0] = origin[0], PSL->internal.origin[1] = origin[1];
@@ -1365,8 +1365,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 	right_now = time ((time_t *)0);
 	PSL->internal.landscape = !(overlay || orientation);	/* Only rotate if not overlay and not Portrait */
-	PSL->internal.xy_offset[0] = xy_offset[0];
-	PSL->internal.xy_offset[1] = xy_offset[1];
+	PSL->internal.offset[0] = offset[0];
+	PSL->internal.offset[1] = offset[1];
 
 	/* Initialize global variables */
 	strcpy (PSL->current.bw_format, "%.3lg A");			/* Default format used for grayshade value */
@@ -1485,13 +1485,13 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 	/* Set origin of the plot */
 #if 0
-	PSL_setorigin (PSL, xy_offset[0], xy_offset[1], 0.0, PSL_FWD);
+	PSL_setorigin (PSL, offset[0], offset[1], 0.0, PSL_FWD);
 #else
 	for (i = 0; i < 2; i++) {
 		switch (PSL->internal.origin[i]) {
-			case 'f': PSL_command (PSL, "%ld PSL_%corig sub ", psl_iz (PSL, xy_offset[i]), xy[i]); break;
-			case 'c': PSL_command (PSL, "%ld PSL_%corig sub PSL_page_%csize 2 div add ", psl_iz (PSL, xy_offset[i]), xy[i], xy[i]); break;
-			default : PSL_command (PSL, "%ld ", psl_iz (PSL, xy_offset[i])); break;
+			case 'f': PSL_command (PSL, "%ld PSL_%corig sub ", psl_iz (PSL, offset[i]), xy[i]); break;
+			case 'c': PSL_command (PSL, "%ld PSL_%corig sub PSL_page_%csize 2 div add ", psl_iz (PSL, offset[i]), xy[i], xy[i]); break;
+			default : PSL_command (PSL, "%ld ", psl_iz (PSL, offset[i])); break;
 		}
 	}
 	PSL_command (PSL, "TM\n");
@@ -1502,9 +1502,9 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 #ifdef FORT_BIND
 /* fortran interface */
-PSL_LONG PSL_beginplot_ (char *plotfile, PSL_LONG *overlay, char *origin, double *xy_offset, PSL_LONG *unit, double *page_size, const char *encoding, int nlen1, int nlen2, int nlen3)
+PSL_LONG PSL_beginplot_ (char *plotfile, PSL_LONG *overlay, char *origin, double *offset, PSL_LONG *unit, double *page_size, const char *encoding, int nlen1, int nlen2, int nlen3)
 {
-	 return (PSL_beginplot (PSL_FORTRAN, plotfile, *overlay, *origin, xy_offset, *unit, page_size, encoding, (struct EPS *)NULL));
+	 return (PSL_beginplot (PSL_FORTRAN, plotfile, *overlay, *origin, offset, *unit, page_size, encoding, (struct EPS *)NULL));
 }
 #endif
 

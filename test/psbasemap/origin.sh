@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: origin.sh,v 1.1 2011-05-17 01:37:55 remko Exp $
+#	$Id: origin.sh,v 1.2 2011-05-18 15:39:29 remko Exp $
 
 . ../functions.sh
 header "Test positioning with -X and -Y"
@@ -21,6 +21,18 @@ plot "-X2i -Y2i" -O -K >> $ps
 plot "-Xc -Yc" -O -K >> $ps
 plot -X-2i -O -K >> $ps
 plot "-Ya-2i" -O -K >> $ps
-plot "-Y-3i" -O >> $ps
+plot "-X1i" -O -K >> $ps
+plot "-Xc1i -Y-1i" -O -K >> $ps
+plot "-X -Y" -O -K >> $ps
+plot "-Xf6i -Y" -O -K >> $ps
+plot "-X -Y" -O -K >> $ps
+plot "-Xf4.75i -Yf5i" -O -K >> $ps
+psxy -Xf0 -Yf0 -R0/1/0/1 -JX8.5i/11i -Wthinnest,red -O >> $ps <<%
+0 0
+1 1
+>
+0 1
+1 0
+%
 
 pscmp
