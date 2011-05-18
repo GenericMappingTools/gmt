@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_RGBchart.sh,v 1.11 2011-05-18 16:24:14 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.12 2011-05-18 19:54:38 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
@@ -53,7 +53,7 @@ awk -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n",
 awk -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' allinfo.tmp > labels.tmp
 
 # Plot all tiles and texts
-psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B/ -Clookup.cpt -Sr -W rects.tmp -K > $ps
+psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -Clookup.cpt -Sr -W rects.tmp -K > $ps
 pstext -R -J -O -K labels.tmp -F+f --FONT=black >> $ps
 pstext -R -J -O -K blacktags.tmp -F+f --FONT=black >> $ps
 pstext -R -J -O -K whitetags.tmp -F+f --FONT=white >> $ps

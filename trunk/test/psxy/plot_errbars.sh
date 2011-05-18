@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: plot_errbars.sh,v 1.5 2011-05-18 16:20:25 remko Exp $
+#	$Id: plot_errbars.sh,v 1.6 2011-05-18 19:54:38 remko Exp $
 #
 # Plot error bars and test [+|-]<epen>
 
@@ -15,10 +15,10 @@ cat << EOF > $$.d
 5	5	5	1
 EOF
 makecpt -Crainbow -T0/6/1 > $$.cpt
-psxy -R0/6/0/6 -JX3i -P -B/ -Sc0.2i -C$$.cpt -W0.25p -X1i -Y2i $$.d -Ex/2p,red -K > $ps
-psxy -R -J -O -B/ -Sc0.2i -C$$.cpt -W0.25p -X3.25i $$.d -Ey/-1p -K >> $ps
-psxy -R -J -O -B/ -Sc0.2i -C$$.cpt -W+5p -X-3.25i -Y3.5i $$.d -Ey/+1p -K >> $ps
-psxy -R -J -O -B/ -Sc0.2i -C$$.cpt -W0.25p,red -X3.25i $$.d -Ex/-1p >> $ps
+psxy -R0/6/0/6 -JX3i -P -B0 -Sc0.2i -C$$.cpt -W0.25p -X1i -Y2i $$.d -Ex/2p,red -K > $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p -X3.25i $$.d -Ey/-1p -K >> $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W+5p -X-3.25i -Y3.5i $$.d -Ey/+1p -K >> $ps
+psxy -R -J -O -B0 -Sc0.2i -C$$.cpt -W0.25p,red -X3.25i $$.d -Ex/-1p >> $ps
 
 rm -f $$.d $$.cpt
 
