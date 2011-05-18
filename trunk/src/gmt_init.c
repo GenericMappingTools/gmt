@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.517 2011-05-18 15:38:50 remko Exp $
+ *	$Id: gmt_init.c,v 1.518 2011-05-18 16:15:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5620,7 +5620,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		default:
 			C->current.map.frame.primary = TRUE; k = 0; break;
 	}
-	C->common.B.set = (in[0] != ':' && in[0] != '/');
+	C->common.B.set = (in[k] != ':' && in[k] != '/');
 
 	/* C->current.map.frame.side[] may be set already when parsing gmt.conf flags */
 
