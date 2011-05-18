@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.516 2011-05-18 02:22:17 guru Exp $
+ *	$Id: gmt_init.c,v 1.517 2011-05-18 15:38:50 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -453,10 +453,11 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'X':
 		case 'Y':	/* Reset plot origin option */
 
-			GMT_message (C, "\t-X -Y To shift origin of plot to (<xshift>, <yshift>) [a%g%c, a%g%c].\n", C->current.setting.map_origin[GMT_X] * s, u, C->current.setting.map_origin[GMT_Y] * s, u);
-			GMT_message (C, "\t   Prepend a for absolute positioning [Default r is relative].\n");
-			GMT_message (C, "\t   Note: for overlays (-O), the default setting is [r0,r0].\n");
-			GMT_message (C, "\t   Give c to center plot on page in x and/or y.\n");
+			GMT_message (C, "\t-X -Y To shift origin of plot to (<xshift>, <yshift>).\n");
+			GMT_message (C, "\t   Prepend r for shift relative to current point (default), prepend a for temporary\n");
+			GMT_message (C, "\t   adjustment of origin, prepend f to position relative to lower left corner of page,\n");
+			GMT_message (C, "\t   prepend c for offset of center of plot to center of page.\n");
+			GMT_message (C, "\t   For overlays (-O), the default setting is [r0], otherwise [f%g%c].\n", C->current.setting.map_origin[GMT_Y] * s, u);
 			break;
 
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -979,8 +980,10 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 
 		case 'X':
 		case 'Y':
-			GMT_message (C, "\t-%c[a|c|r]<shift>[u]\n", option);
-			GMT_message (C, "\tPrepend a for absolute, c for center of page reference; u is unit.\n");
+			GMT_message (C, "\t-%c[a|c|f|r]<shift>[u]\n", option);
+			GMT_message (C, "\tPrepend a for temporaty adjustment, c for center of page reference,\n");
+			GMT_message (C, "\tf for lower left corner of page reference, r (or none) for relative to\n");
+			GMT_message (C, "\tcurrent position; u is unit (c, i, p).\n");
 			break;
 
 #ifdef GMT_COMPAT
@@ -1214,33 +1217,24 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	return (error);
 }
 
-GMT_LONG gmt_parse_X_option (struct GMT_CTRL *C, char *text)
+GMT_LONG gmt_parse_XY_option (struct GMT_CTRL *C, GMT_LONG axis, char *text)
 {
 	GMT_LONG i = 0;
-	if (!text || !text[0]) return (GMT_PARSE_ERROR);	/* -X requires an argument */
-	if (text[0] == 'r') i++;	/* Relative mode is default anyway */
-	if (text[0] == 'a') i++, C->current.ps.is_abs[GMT_X] = TRUE;
-	if (text[0] == 'c')
-		C->current.proj.x_off_supplied = 2;	/* Must center in map_setup */
-	else {
-		C->current.setting.map_origin[GMT_X] = GMT_to_inch (C, &text[i]);
-		C->current.proj.x_off_supplied = TRUE;
+	if (!text || !text[0]) {	/* Default is -Xr0 */
+		C->current.ps.origin[axis] = 'r';
+		C->current.setting.map_origin[axis] = 0.0;
+		return (GMT_NOERROR);
 	}
-	return (GMT_NOERROR);
-}
-
-GMT_LONG gmt_parse_Y_option (struct GMT_CTRL *C, char *text)
-{
-	GMT_LONG i = 0;
-	if (!text || !text[0]) return (GMT_PARSE_ERROR);	/* -Y requires an argument */
-	if (text[0] == 'r') i++;	/* Relative mode is default anyway */
-	if (text[0] == 'a') i++, C->current.ps.is_abs[GMT_Y] = TRUE;
-	if (text[0] == 'c')
-		C->current.proj.y_off_supplied = 2;	/* Must center in map_setup */
-	else {
-		C->current.setting.map_origin[GMT_Y] = GMT_to_inch (C, &text[i]);
-		C->current.proj.y_off_supplied = TRUE;
+	switch (text[0]) {
+		case 'r': case 'a': case 'f': case 'c':
+			C->current.ps.origin[axis] = text[0]; i++; break;
+		default:
+			C->current.ps.origin[axis] = 'r'; break;
 	}
+	if (text[i])
+		C->current.setting.map_origin[axis] = GMT_to_inch (C, &text[i]);
+	else	/* Allow use of -Xc or -Xf meaning -Xc0 or -Xf0 */
+		C->current.setting.map_origin[axis] = 0.0;
 	return (GMT_NOERROR);
 }
 
@@ -7200,13 +7194,13 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 		case 'x':
 		case 'X':
-			error += (GMT_more_than_once (C, C->common.X.active) || gmt_parse_X_option (C, item));
+			error += (GMT_more_than_once (C, C->common.X.active) || gmt_parse_XY_option (C, GMT_X, item));
 			C->common.X.active = TRUE;
 			break;
 
 		case 'y':
 		case 'Y':
-			error += (GMT_more_than_once (C, C->common.Y.active) || gmt_parse_Y_option (C, item));
+			error += (GMT_more_than_once (C, C->common.Y.active) || gmt_parse_XY_option (C, GMT_Y, item));
 			C->common.Y.active = TRUE;
 			break;
 
@@ -7344,14 +7338,6 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 	/* On error, give syntax message */
 
 	if (error) GMT_syntax (C, option);
-
-	/* First check that -X -Y was done correctly */
-
-	if ((C->current.proj.x_off_supplied && C->current.proj.y_off_supplied) && C->current.ps.is_abs[GMT_X] != C->current.ps.is_abs[GMT_Y]) {
-		error++;
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: -X -Y must both be absolute or relative\n");
-	}
-	if (C->current.ps.is_abs[GMT_X] && C->current.ps.is_abs[GMT_Y]) C->current.ps.absolute = TRUE;
 
 	return (error);
 }
