@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.73 2011-05-18 15:39:29 remko Exp $
+ *	$Id: pslib.h,v 1.74 2011-05-18 21:28:52 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -207,32 +207,6 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_N_PATTERNS		91	/* Current number of predefined patterns + 1, # 91 is user-supplied */
 #define PSL_MAX_EPS_FONTS	6
 
-/* Single, global structure used internally by pslib */
-
-struct EPS {    /* Holds info for eps files */
-/* For Encapsulated PostScript Headers:
-
-	You will need to supply a pointer to an EPS structure in order to
-	get correct information in the EPS header.  If you pass a NULL pointer
-	instead you will get default values for the BoundingBox plus no
-	info is provided about the users name, document title, and fonts used.
-	To fill in the structure you must:
-
-	- Determine the extreme dimensions of your plot in points (1/72 inch).
-	- Supply the user's name (or NULL)
-	- Supply the document's title (or NULL)
-	- Set the font values to the ids of the fonts used  First unused font must be set
- 	  to -1.  E.g., if 4 fonts are used, font[0], font[1], font[2], and
-	  font[3] must contain the integer ID of these fonts; font[4] = -1
-*/
-	double x0, x1, y0, y1;		/* Bounding box values in points */
-	int portrait;			/* TRUE if start of plot was portrait */
-	int clip_level;			/* Add/sub 1 as we clip/unclip - should end at 0 */
-	int fontno[PSL_MAX_EPS_FONTS];	/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
-	char *name;			/* User name */
-	char *title;			/* Plot title */
-};
-
 struct PSL_CTRL {
 	struct INIT {	/* Parameters set by user via PSL_beginplot() */
 		FILE *err;			/* Error stream (NULL means stderr)		*/
@@ -244,7 +218,6 @@ struct PSL_CTRL {
 		double page_size[2];		/* Width and height of paper used in points	*/
 		double dpi;			/* Selected dots per inch			*/
 		double magnify[2];		/* Global scale values [1/1]			*/
-		struct EPS *eps;		/* structure with Document info			*/
 	} init;
 	struct CURRENT {	/* Variables and settings that changes via PSL_* calls */
 		char string[PSL_BUFSIZ];	/* Last text string plotted			*/
@@ -268,7 +241,6 @@ struct PSL_CTRL {
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
 		double offset[2];		/* Origin offset [1/1]				*/
-		double bb[4];			/* Boundingbox arguments			*/
 		double p_width;			/* Paper width in points, set in PSL_beginplot();	*/
 		double p_height;		/* Paper height in points, set in PSL_beginplot();	*/
 		double dpu;			/* PS dots per unit.  Must be set through PSL_beginplot();		*/
@@ -285,7 +257,6 @@ struct PSL_CTRL {
 		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
 		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
 		PSL_LONG image_format;		/* 0 writes images in ascii, 2 uses binary	*/
-		PSL_LONG eps_format;		/* TRUE makes EPS file, FALSE means PS file	*/
 		PSL_LONG N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
 		PSL_LONG compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
 		PSL_LONG color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
@@ -340,7 +311,7 @@ struct imageinfo {
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
 EXTERN_MSC PSL_LONG PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
 EXTERN_MSC PSL_LONG PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n, double rgb[], PSL_LONG flag);
-EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, char origin[], double offset[], double page_size[], struct EPS *eps);
+EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[]);
 EXTERN_MSC PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P, PSL_LONG mode);

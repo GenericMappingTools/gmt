@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.261 2011-05-18 15:39:29 remko Exp $
+ *	$Id: pslib.c,v 1.262 2011-05-18 21:28:52 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -154,6 +154,7 @@
 
 #ifndef WIN32
 #include <unistd.h>
+#include <pwd.h>
 #endif
 
 /* Macro for exit since this should be returned when called from Matlab */
@@ -450,10 +451,10 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 
 #ifdef FORT_BIND
 /* Fortran binding */
-PSL_LONG PSL_beginsession_ (double rgb[])	/* Initialize PSL session */
+PSL_LONG PSL_beginsession_ ()	/* Initialize PSL session */
 {       /* Fortran version: We pass the hidden global GMT_FORTRAN structure */
 	PSL_FORTRAN = New_PSL_Ctrl ("Fortran");
-	return (PSL_beginsession (PSL_FORTRAN, rgb));
+	return (PSL_beginsession (PSL_FORTRAN));
 }
 #endif
 
@@ -465,11 +466,6 @@ PSL_LONG PSL_endsession (struct PSL_CTRL *PSL)
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL, PSL->internal.font[i].name);
 	PSL_free (PSL, PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL, PSL->internal.user_image[i]);
-	if (PSL->init.eps) {
-		PSL_free (PSL, PSL->init.eps->name);
-		PSL_free (PSL, PSL->init.eps->title);
-		PSL_free (PSL, PSL->init.eps);
-	}
 	PSL_free (PSL, PSL->internal.SHAREDIR);
 	PSL_free (PSL, PSL->internal.USERDIR);
 	PSL_free (PSL, PSL->init.encoding);
@@ -1267,23 +1263,12 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "[ /CA 1 /BM /Normal /SetTransparency pdfmark\n");
 
 	if (lastpage) {
-		if (!PSL->internal.eps_format)
-			PSL_command (PSL, "%%%%PageTrailer\n");
-		else {
-			double x0, y0, x1, y1;
-			x0 = MAX (PSL->init.magnify[0] * PSL->internal.bb[0], 0.0);
-			y0 = MAX (PSL->init.magnify[1] * PSL->internal.bb[1], 0.0);
-			x1 = PSL->init.magnify[0] * PSL->internal.bb[2];
-			y1 = PSL->init.magnify[1] * PSL->internal.bb[3];
-			PSL_command (PSL, "%%%%Trailer\n");
-			PSL_command (PSL, "%%%%BoundingBox: %d %d %d %d\n", (int)floor(x0), (int)floor(y0), (int)ceil(x1), (int)ceil(y1));
-			PSL_command (PSL, "%%%%HiResBoundingBox: %g %g %g %g\n", x0, y0, x1, y1);
-		}
+		PSL_command (PSL, "%%%%PageTrailer\n");
 		PSL_comment (PSL, "Reset transformations and call showpage\n");
 		PSL_command (PSL, "U\nshowpage\n");
-		if (!PSL->internal.eps_format) PSL_command (PSL, "\n%%%%Trailer\n");
+		PSL_command (PSL, "\n%%%%Trailer\n");
 		PSL_command (PSL, "\nend\n");
-		if (!PSL->internal.eps_format) PSL_command (PSL, "%%%%EOF\n");
+		PSL_command (PSL, "%%%%EOF\n");
 	}
 	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
 		PSL_command (PSL, "%ld %ld TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
@@ -1301,11 +1286,11 @@ PSL_LONG PSL_endplot_ (PSL_LONG *lastpage)
 }
 #endif
 
-PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG colormode, char origin[], double offset[], double page_size[], struct EPS *eps)
+PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[])
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait
    overlay:	TRUE if this is an overlay plot [FALSE means print headers and macros first]
-   colormode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
+   color_mode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
    origin:	Two characters indicating origin of new position for x and y respectively:
 		'r' = Relative to old position (default)
 		'a' = Relative to old position and resets at PSL_endplot
@@ -1313,7 +1298,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		'c' = Relative to center of the page
    offset:	Location of new origin relative to what is specified by "origin" (in user units)
    page_size:	Physical width and height of paper used in points
-   eps:		structure with Document info.  !! Fortran version (PSL_beginplot_) does not have this argument !!
+   title:	Title of the plot (or NULL if not specified)
+   font_no:	Array of font numbers used in the document (or NULL if not determined)
 */
 {
 	PSL_LONG i, manual_feed = FALSE;
@@ -1321,6 +1307,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	time_t right_now;
 	char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'};
 	double units_per_inch[4] = {2.54, 1.0, 0.0254, 72.0};	/* cm, inch, m, points per inch */
+	struct passwd *pw = NULL;
 
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
@@ -1330,17 +1317,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL->internal.overlay = overlay;
 	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2 * sizeof(double));
 
-	/* Duplicate entire contents of EPS structure - to be freed by PSL_endplot() */
-	PSL->init.eps = PSL_memory (PSL, NULL, 1, struct EPS);
-	if (eps) {	/* Copy over user's settings */
-		memcpy ((void *)PSL->init.eps, (void *)eps, sizeof(struct EPS));
-		PSL->init.eps->name = PSL_memory (PSL, NULL, strlen (eps->name) + 1, char);
-		strcpy (PSL->init.eps->name, eps->name);
-		PSL->init.eps->title = PSL_memory (PSL, NULL, strlen (eps->title) + 1, char);
-		strcpy (PSL->init.eps->title, eps->title);
-	}
-
-	PSL->internal.color_mode = colormode;
+	PSL->internal.color_mode = color_mode;
 	if (!origin)
 		PSL->internal.origin[0] = PSL->internal.origin[1] = 'r';
 	else
@@ -1348,7 +1325,6 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL->internal.p_width  = fabs (page_size[0]);
 	PSL->internal.p_height = fabs (page_size[1]);
 	manual_feed = (page_size[0] < 0.0);			/* Want Manual Request for paper */
-	PSL->internal.eps_format = (page_size[1] < 0.0);	/* Want EPS format */
 	PSL_settransparencymode (PSL, "Normal");		/* Default PDF transparency mode */
 
 	PSL->current.linewidth = -1.0;				/* Will be changed by PSL_setlinewidth */
@@ -1374,55 +1350,31 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg H");	/* Same, for HSV triplets */
 	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg K");	/* Same, for CMYK quadruples */
 
+	/* Get user name */
+	pw = getpwuid (getuid ());
+
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
-	if (eps) {	/* Document info is available */
-		if (PSL->init.eps->portrait) {	/* Plot originated as Portrait */
-			PSL->internal.bb[0] = PSL->init.eps->x0;
-			PSL->internal.bb[1] = PSL->init.eps->y0;
-			PSL->internal.bb[2] = PSL->init.eps->x1;
-			PSL->internal.bb[3] = PSL->init.eps->y1;
-		}
-		else {	/* Plot originated as Landscape */
-			PSL->internal.bb[0] = PSL->internal.p_width - PSL->init.eps->y1;
-			PSL->internal.bb[1] = PSL->init.eps->x0;
-			PSL->internal.bb[2] = PSL->internal.p_width - PSL->init.eps->y0;
-			PSL->internal.bb[3] = PSL->init.eps->x1;
-		}
-	}
-	else {		/* No info is available, default to Current Media Size */
-		PSL->internal.bb[0] = PSL->internal.bb[1] = 0.0;
-		PSL->internal.bb[2] = PSL->internal.p_width;
-		PSL->internal.bb[3] = (fabs (PSL->internal.p_height) < PSL_SMALL) ? PSL_PAGE_HEIGHT_IN_PTS : PSL->internal.p_height;
-	}
-
 	if (!overlay) {	/* Must issue PSL header */
-		if (PSL->internal.eps_format)
-			PSL_command (PSL, "%%!PS-Adobe-3.0 EPSF-3.0\n");
-		else
-			PSL_command (PSL, "%%!PS-Adobe-3.0\n");
+		PSL_command (PSL, "%%!PS-Adobe-3.0\n");
 
 		/* Write definitions of macros to plotfile */
 
-		if (PSL->internal.eps_format) {
-			PSL_command (PSL, "%%%%BoundingBox: (atend)\n");
-			PSL_command (PSL, "%%%%HiResBoundingBox: (atend)\n");
-		}
-		else {
-			PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", irint (PSL->internal.p_width), irint (PSL->internal.p_height));
-			PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
-		}
-		if (eps) {	/* Document info is available */
-			PSL_command (PSL, "%%%%Title: %s\n", PSL->init.eps->title);
+		PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", irint (PSL->internal.p_width), irint (PSL->internal.p_height));
+		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
+		if (title) {
+			PSL_command (PSL, "%%%%Title: %s\n", title);
 			PSL_command (PSL, "%%%%Creator: GMT\n");
-			PSL_command (PSL, "%%%%For: %s\n", PSL->init.eps->name);
-			PSL_command (PSL, "%%%%DocumentNeededResources: font");
-			for (i = 0; i < PSL_MAX_EPS_FONTS && PSL->init.eps->fontno[i] != -1; i++) PSL_command (PSL, " %s", PSL->internal.font[PSL->init.eps->fontno[i]].name);
-			PSL_command (PSL, "\n");
 		}
 		else {
 			PSL_command (PSL, "%%%%Title: PSL v%s document\n", PSL_Version);
 			PSL_command (PSL, "%%%%Creator: PSL\n");
+		}
+		if (pw) PSL_command (PSL, "%%%%For: %s\n", pw->pw_name);
+		if (font_no) {
+			PSL_command (PSL, "%%%%DocumentNeededResources: font");
+			for (i = 0; i < PSL_MAX_EPS_FONTS && font_no[i] != -1; i++) PSL_command (PSL, " %s", PSL->internal.font[font_no[i]].name);
+			PSL_command (PSL, "\n");
 		}
 
 		PSL_command (PSL, "%%%%CreationDate: %s", ctime(&right_now));
@@ -1432,7 +1384,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 			PSL_command (PSL, "%%%%Orientation: Landscape\n");
 		else
 			PSL_command (PSL, "%%%%Orientation: Portrait\n");
-		if (!PSL->internal.eps_format) PSL_command (PSL, "%%%%Pages: 1\n");
+		PSL_command (PSL, "%%%%Pages: 1\n");
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
@@ -1448,12 +1400,12 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
 		if (manual_feed)	/* Manual media feed requested */
 			PSL_command (PSL, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
-		else if (!PSL->internal.eps_format && PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
+		else if (PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
 			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
-		if (!PSL->internal.eps_format && PSL->init.copies > 1) PSL_command (PSL, "/#copies %ld def\n", PSL->init.copies);
+		if (PSL->init.copies > 1) PSL_command (PSL, "/#copies %ld def\n", PSL->init.copies);
 		PSL_command (PSL, "%%%%EndSetup\n\n");
 
-		if (!PSL->internal.eps_format) PSL_command (PSL, "%%%%Page: 1 1\n\n");
+		PSL_command (PSL, "%%%%Page: 1 1\n\n");
 
 		PSL_command (PSL, "%%%%BeginPageSetup\n");
 		PSL_comment (PSL, "Init coordinate system and scales\n");
@@ -1502,9 +1454,9 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 
 #ifdef FORT_BIND
 /* fortran interface */
-PSL_LONG PSL_beginplot_ (char *plotfile, PSL_LONG *overlay, char *origin, double *offset, PSL_LONG *unit, double *page_size, const char *encoding, int nlen1, int nlen2, int nlen3)
+PSL_LONG PSL_beginplot_ (PSL_LONG *orientation, PSL_LONG *overlay, PSL_LONG *color_mode, char *origin, double *offset, PSL_LONG *unit, double *page_size, char *title, char *font_no, int nlen1, int nlen2, int nlen3)
 {
-	 return (PSL_beginplot (PSL_FORTRAN, plotfile, *overlay, *origin, offset, *unit, page_size, encoding, (struct EPS *)NULL));
+	 return (PSL_beginplot (PSL_FORTRAN, NULL, *orientation, *overlay, *color_mode, *origin, offset, *unit, page_size, title, font_no));
 }
 #endif
 

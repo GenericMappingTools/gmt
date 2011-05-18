@@ -22,8 +22,8 @@ PSLIB is written in C but includes FORTRAN bindings
 and can therefore be called from both C and FORTRAN programs.
 To use this library, you must link your plotting program with
 PSLIB.  PSLIB is used by the BD(GMT) graphics programs to generate PS.
-PSLIB output can be freeform PS or EPS that conforms to the Adobe Encapsulated
-PS File Specification Version 3.0 (EPSL).
+PSLIB output is freeform PS that conforms to the Adobe PostScript
+File Specification Version 3.0.
 .LP
 Before any PSLIB calls can be issued, the plotting system must be
 initialized.  This is done by calling BD(PSL_beginsession), which initializes a new
@@ -160,10 +160,12 @@ units.
 .RE
 .br
 .sp
-BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,colormode), ARG(char,origin)[], ARG(double,offset)[], ARG(double,pagesize)[], ARG(struct EPS,*eps))
+BD(long PSL_beginplot) (ARG(struct PSL_CTRL,*P), ARG(FILE,*fp), ARG(long,orientation), ARG(long,overlay), ARG(long,color_mode),
+ARG(char,origin)[], ARG(double,offset)[], ARG(double,page_size)[], ARG(char,*title), ARG(long,font_no)[])
 .RS 5
 Controls the initiation (or continuation) of a particular plot within the current session.
 Pass file pointer IT(fp) where the PS code will be written; if NULL then the output is written to IT(stdout).
+The Fortran interface always sends to IT(stdout).
 The IT(orientation) may be landscape (PSL_LANDSCAPE or 0) or portrait (PSL_PORTRAIT or 1).
 Set IT(overlay) to PSL_OVERLAY (0) if the following PS code should be appended to an existing plot;
 otherwise pass PSL_INIT (1) to start a new plot. Let IT(colormode) be one of PSL_RGB (0), PSL_CMYK (1), PSL_HSV (2) or PSL_GRAY (3);
@@ -175,11 +177,11 @@ argument). Each of the two characters are either
 'f' for a placement of the origin relative to the lower left corner of the page,
 'c' for a placement of the origin relative to the center of the page.
 The array IT(offset) specifies the offset of the new origin relative to the position indicated by BD(origin).
-IT(pagesize) means the physical width and height of the plotting media in points (typically 612 by 792 for
+IT(page_size) means the physical width and height of the plotting media in points (typically 612 by 792 for
 Letter or 595 by 842 for A4 format). 
-The EPS structure is defined in the psl.h include file and contains information that will make up the comments header of a EPS file.
-Programmers who plan to call PSLIB routines should read the comments in psl.h first.  Note that the FORTRAN binding does not
-expect this last argument.  Pass NULL to have PSLIB do its best.
+The character string IT(title) can be used to specify the BD(%%Title:) header in the PS file (or use NULL for the default).
+The array IT(font_no) specifies all fonts used in the plot (by number), or use NULL to leave out the
+BD(%%DocumentNeededResources:) comment in the PS file.
 .RE
 .br
 .sp
