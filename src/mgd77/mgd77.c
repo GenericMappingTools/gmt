@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.276 2011-05-16 22:22:31 guru Exp $
+ *	$Id: mgd77.c,v 1.277 2011-05-18 17:44:31 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -23,6 +23,7 @@
 #include "mgd77_init.h"
 #include "mgd77_recalc.h"
 #ifndef WIN32
+#include <pwd.h>
 #include <dirent.h>
 #endif
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.63 2011-05-17 00:54:58 guru Exp $
+ *	$Id: x2sys.h,v 1.64 2011-05-18 17:44:31 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,6 +84,7 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 EXTERN_MSC int _chmod (const char *path, int mode);
 #endif
 #else
+#include <pwd.h>
 #include <sys/stat.h>
 #endif
 
