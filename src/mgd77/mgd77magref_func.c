@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.11 2011-05-16 21:23:11 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.12 2011-05-18 23:44:03 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -508,7 +508,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return ((int)error);	/* Registers default output destination, unless already set */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return ((int)error);			/* Enables data input and sets access mode */
 
-	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, (void **)&Din)) Return (GMT_DATA_READ_ERROR);
+	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return (GMT_DATA_READ_ERROR);
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return ((int)error);	/* Disables further data input */
 
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
@@ -616,8 +616,6 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) GMT_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) GMT_free (GMT, igrf_xyz);
-
-	Free_mgd77magref_Ctrl (GMT, Ctrl);	/* Deallocate control structure */
 
 	MGD77_end (GMT, &M);
 
