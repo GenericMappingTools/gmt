@@ -1,4 +1,4 @@
-/* $Id: psldemo.c,v 1.1 2011-04-12 01:28:31 remko Exp $
+/* $Id: psldemo.c,v 1.2 2011-05-18 01:52:53 remko Exp $
  *
  * psldemo.c: Test all PSL functions at least once
  */
@@ -35,7 +35,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL->internal.comments = PSL_YES;
 	PSL->init.encoding = strdup ("Standard+");
 	PSL_beginsession (PSL);
-	PSL_beginplot (PSL, NULL, PSL_PORTRAIT, PSL_INIT, PSL_RGB, PSL_REL, scales, Letter, NULL);
+	PSL_beginplot (PSL, NULL, PSL_PORTRAIT, PSL_INIT, PSL_RGB, "rr", scales, Letter, NULL);
 
 	/* Plot rectangle below the symbols */
 	

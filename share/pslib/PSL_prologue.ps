@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.29 2011-04-05 18:48:45 guru Exp $
+%-	$Id: PSL_prologue.ps,v 1.30 2011-05-18 01:52:54 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -104,6 +104,9 @@
 /tr {dup E neg exch sh neg G}!
 % Maximum of two numbers
 /mx {2 copy lt {exch} if pop}!
+% Translate and memorize advance
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 % To reencode one font with the provided encoding vector
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
