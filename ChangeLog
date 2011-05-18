@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1032 2011-05-18 16:25:28 remko Exp $
+	$Id: ChangeLog,v 1.1033 2011-05-18 21:34:16 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-18	remko
@@ -8,6 +8,12 @@
 	* explain_-XY*.text:	---"---
 	* test/psbasemap/origin.sh:	Test new -X and -Y functionality.
 	* *.sh, *.bat:		Replaced -B0 with -B/ and -B0g<value> with -Bg<value>.
+	* pslib.h:		Removed EPS struct.
+	* pslib.c, gmt_plot.c:		PSL_beginplot now has title and font_no arguments (Fortran too) instead of eps.
+	* configure.ac, website/*:	Removed --enable-eps setting.
+	* gmt_defaults.h, gmt.conf.in:	Removed PS_EPS setting.
+	* functions.sh, gmt_init.c:	---"---
+	* gmt_keywords.txt:	Moved PS_EPS and PS_COPIES to gmt_keywords.d
 
 2011-05-18	jluis
 	* psimage_func.c:	Now is able to plot also indexed images imported via GDAL

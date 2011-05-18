@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.518 2011-05-18 16:15:55 remko Exp $
+ *	$Id: gmt_init.c,v 1.519 2011-05-18 21:30:25 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3107,9 +3107,10 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-		case GMTCASE_PS_EPS:
-			error = gmt_true_false_or_error (lower_value, &C->current.setting.ps_epsformat);
+#ifdef GMT_COMPAT
+		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
+#endif
 		case GMTCASE_PS_IMAGE_COMPRESS:
 			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "none"))
@@ -3178,10 +3179,10 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				lower_value[ival] = '\0';
 				manual = TRUE;
 			}
-#ifdef GMT_COMPAT	/* Now use separate PS_EPS defaults to control PS/EPS formatting */
+#ifdef GMT_COMPAT
 			else if (lower_value[ival] == '+') {	/* EPS format selected */
 				lower_value[ival] = '\0';
-				C->current.setting.ps_epsformat = TRUE;
+				GMT_report (C, GMT_MSG_COMPAT, "Production of EPS format is no longer supported, remove + after paper size\n");
 			}
 #endif
 			if ((i = gmt_key_lookup (lower_value, GMT_media_name, GMT_N_MEDIA)) < GMT_N_MEDIA) {
@@ -3948,9 +3949,10 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_PS_DPI:
 			sprintf (value, "%g", C->current.setting.ps_dpi);
 			break;
-		case GMTCASE_PS_EPS:
-			sprintf (value, "%s", ft[C->current.setting.ps_epsformat]);
+#ifdef GMT_COMPAT
+		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
+#endif
 		case GMTCASE_PS_IMAGE_COMPRESS:
 			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
 			if (C->PSL->internal.compress == PSL_NONE)
@@ -5648,7 +5650,8 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 
 	for (i = 0; i < 3; i++) {	/* Process each axis separately */
 
-		if (!info[i][0]) continue;
+		if (!info[i][0]) continue;	 /* Skip empty format string */
+		if (info[i][0] == '0' && !info[i][1]) continue;	 /* Skip format '0' */
 
 		gmt_handle_atcolon (C, info[i], 0);	/* Temporarily modify text escape @: to @^ to avoid : parsing trouble */
 		GMT_enforce_rgb_triplets (C, info[i], GMT_BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */

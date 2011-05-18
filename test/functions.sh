@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.17 2011-05-11 01:26:25 jluis Exp $
+#	$Id: functions.sh,v 1.18 2011-05-18 21:27:48 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -49,4 +49,4 @@ export LD_LIBRARY_PATH=$srcdir:$srcdir/meca:$srcdir/mgd77:${LD_LIBRARY_PATH:-/us
 trap "\rm -f .gmt* gmt.conf" EXIT
 
 # Start with proper GMT defaults
-gmtset -Du PS_EPS false
+gmtset -Du
