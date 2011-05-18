@@ -25,4 +25,4 @@ export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
 trap "\rm -f .gmt* gmt.conf" EXIT
 
 # Start with proper GMT defaults
-gmtset -Du PS_EPS false FORMAT_TIME_LOGO "Version 5"
+gmtset -Du FORMAT_TIME_LOGO "Version 5"

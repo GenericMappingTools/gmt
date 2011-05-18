@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.4 2011-03-15 02:06:29 guru Exp $
+#	$Id: functions.sh,v 1.5 2011-05-18 21:27:48 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -40,4 +40,4 @@ trap "\rm -f .gmt* gmt.conf $$.*" EXIT
 
 # Start with proper GMT defaults
 gmtset -Du FONT_ANNOT_PRIMARY 10p FONT_ANNOT_SECONDARY 12p FONT_LABEL 14p \
-	MAP_FRAME_WIDTH 4p PS_CHAR_ENCODING ISOLatin1+ PS_EPS false
+	MAP_FRAME_WIDTH 4p PS_CHAR_ENCODING ISOLatin1+
