@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.43 2011-05-17 03:02:06 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.44 2011-05-18 22:23:49 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright (c) 2000-2011.
@@ -69,22 +69,22 @@ general-purpose text descriptions.  These settings
 
 \GMT\ programs also support native binary tables to speed up input-output
 for i/o-intensive tasks like gridding and preprocessing.  Files
-may have a header section and the \Opt{h}{\it n} option can be used to skip the
-first {\it n} bytes.  The data can be in any format, mixing different data types
+may have a header section and the \Opt{h}\emph{n} option can be used to skip the
+first \emph{n} bytes.  The data can be in any format, mixing different data types
 and even contained byte-swapped items.  For input, specify \Opt{bi} and append
 one or more comma-separated combinations of
-{\it n}{\bf t}, where {\bf t} is one of {\bf c} (signed byte),
-{\bf u} (unsigned byte), {\bf h} (signed 2-byte int), {\bf U} (unsigned
-2-byte int), {\bf i} (signed 4-byte int), {\bf I} (unsigned 4-byte int),
-{\bf l} (signed 8-byte int), {\bf L} (unsigned 8-byte int), {\bf f}
-(4-byte single-precision float), and {\bf d} (8-byte double-precision
-float).  Append {\bf w} to any item to force byte-swapping.
-Alternatively, append {\bf +L} or {\bf +B} to indicate that the entire data file
+\emph{n}\textbf{t}, where \textbf{t} is one of \textbf{c} (signed byte),
+\textbf{u} (unsigned byte), \textbf{h} (signed 2-byte int), \textbf{U} (unsigned
+2-byte int), \textbf{i} (signed 4-byte int), \textbf{I} (unsigned 4-byte int),
+\textbf{l} (signed 8-byte int), \textbf{L} (unsigned 8-byte int), \textbf{f}
+(4-byte single-precision float), and \textbf{d} (8-byte double-precision
+float).  Append \textbf{w} to any item to force byte-swapping.
+Alternatively, append \textbf{+L} or \textbf{+B} to indicate that the entire data file
 should be read as little- or big-endian, respectively.
-Here, {\it n} is the number of each data type in your binary input file; the
+Here, \emph{n} is the number of each data type in your binary input file; the
 total number may exceeds the columns actually needed by the program.  If no
-{\it n} is specified we assume that {\bf t} applies to all columns and
-that {\it n} is implied by the expectation of the program.
+\emph{n} is specified we assume that \textbf{t} applies to all columns and
+that \emph{n} is implied by the expectation of the program.
 Multiple segment files are allowed and the
 segment headers are assumed to be records where all the fields equal 
 NaN.

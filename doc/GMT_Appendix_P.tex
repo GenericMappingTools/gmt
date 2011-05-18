@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.19 2011-03-15 02:06:29 guru Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.20 2011-05-18 22:23:49 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -30,12 +30,8 @@ original \filename{gmt.conf} file. \emph{Isolation mode} avoids that issue.
 command line history from one command to the next (Section~\ref{sec:gmtcommands})
 so that shorthands like \Opt{R} or \Opt{J} can be used once it has been set in
 a previous \GMT\ command.  The existence of this file makes if impossible to run
-two \GMT\ scripts simultaneously in the same directory, since those \filename{.gmtcommand4}
+two \GMT\ scripts simultaneously in the same directory, since those \filename{.gmtcommands}
 files may clash (contain different histories) and adversely affect the results of both scripts.
-\item[\filename{.gmt\_bb\_info}.] This file contains the information about the
-BoundingBox (Section~\ref{sec:eps}) of the \PS\ output. This information too
-has to be transferred from one \GMT\ command to the next in a script. Again,
-running two commands simultaneously in the same directory may have disastrous effects on that file.
 \end{description}
 
 A cure to all these woes is the \emph{isolation mode} introduced in \GMT\ version
@@ -93,11 +89,11 @@ changes to your environment (the details are shell-dependent but explained by \p
 \begin{enumerate}
 \item \progname{gmtswitch} creates and maintains a symbolic link \filename{this\_gmt} in your home
 directory that will point to a directory with one of the installed GMT versions.
-\item Make sure {\bf \$HOME}/this\_gmt/bin is in your executable \textbf{PATH}.
+\item Make sure \textbf{\$HOME}/this\_gmt/bin is in your executable \textbf{PATH}.
 \end{enumerate}
 Make those edits, logout, and log and back in again.  The next time you run \progname{gmtswitch}
 you will be able to switch between versions.  Typing \progname{gmtswitch} with no argument will list the
-available versions in a numerical menu and prompt you to choose one, whereas \progname{gmtswitch} {\it version}
-will immediately switch to that version ({\it version} must be a piece of unique text making
+available versions in a numerical menu and prompt you to choose one, whereas \progname{gmtswitch} \emph{version}
+will immediately switch to that version (\emph{version} must be a piece of unique text making
 up the full path to a version, e.g., 3.4.2).  If you use \progname{tcsh} or \progname{csh} you may have to type
 ``rehash'' to initiate the path changes.
