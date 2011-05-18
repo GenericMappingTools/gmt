@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.20 2011-03-15 02:06:36 guru Exp $
+#	$Id: gmt_keywords.d,v 1.21 2011-05-18 21:26:51 remko Exp $
 #
 # List of all GMT 4 defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -76,6 +76,8 @@ PLOT_DATE_FORMAT
 PLOT_DEGREE_FORMAT
 POLAR_CAP
 PS_COLOR
+PS_COPIES
+PS_EPS
 PS_IMAGE_COMPRESS
 PS_IMAGE_FORMAT
 PS_LINE_CAP
