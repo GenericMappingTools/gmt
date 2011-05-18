@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.21 2011-05-17 00:23:50 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.22 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -202,6 +202,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -Gn- to turn off labels.\n");
 	GMT_message (GMT, "\t-I URL to an alternative icon used for the symbol [Google circle].\n");
 	GMT_message (GMT, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
+	GMT_message (GMT, "\t   Give -I- to not place any icons.\n");
 	GMT_message (GMT, "\t   [Default is a local icon with no directory path].\n");
 	GMT_message (GMT, "\t-K means allow for more KML code to be appended later [OFF].\n");
 	GMT_message (GMT, "\t-L Supply extended data informat via <col>:<name> strings [none].\n");
@@ -533,13 +534,15 @@ void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double so
 }
 
 void set_iconstyle (struct GMT_FILL *fill, double scale, char *iconfile, GMT_LONG N)
-{
+{	/* No icon = no symbol */
 	tabs (N++); printf ("<IconStyle>\n");
-	tabs (N); printf ("<scale>%g</scale>\n", scale);
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - fill->rgb[3])), GMT_ui255 (fill->rgb));
 	tabs (N++); printf ("<Icon>\n");
-	tabs (N); printf ("<href>%s</href>\n", iconfile);
+	if (iconfile[0] != '-') { tabs (N); printf ("<href>%s</href>\n", iconfile); }
 	tabs (--N); printf ("</Icon>\n");
+	if (iconfile[0] != '-') {
+		tabs (N); printf ("<scale>%g</scale>\n", scale);
+		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - fill->rgb[3])), GMT_ui255 (fill->rgb));
+	}
 	tabs (--N); printf ("</IconStyle>\n");
 }
 
@@ -664,7 +667,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Set style for labels */
 	tabs (N++); printf ("<LabelStyle>\n");
 	tabs (N); printf ("<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * Ctrl->G.fill[N_ID].rgb[3]), GMT_ui255 (Ctrl->G.fill[N_ID].rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - Ctrl->G.fill[N_ID].rgb[3])), GMT_ui255 (Ctrl->G.fill[N_ID].rgb));
 	tabs (--N); printf ("</LabelStyle>\n");
 	tabs (--N); printf ("</Style>\n");
 
@@ -690,31 +693,28 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		tabs (--N); printf ("</description>\n");
 	}
 	
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
-
 	if (Ctrl->N.mode == GET_LABEL) {	/* Special ASCII table processing */
 		GMT_LONG n_fields, ix, iy, n_rec = 0;
-		char in_buffer[GMT_BUFSIZ], C[4][GMT_TEXT_LEN64];
-		void **record = NULL;
+		char *record = NULL, C[4][GMT_TEXT_LEN64];
 		
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-		record = (void **)in_buffer;
+		if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, record)) != EOF) {	/* Keep returning records until we have no more files */
+		while ((n_fields = GMT_Get_Record (API, GMT_READ_TEXT, (void **)&record)) != EOF) {	/* Keep returning records until we have no more files */
 			if (GMT_REC_IS_ERROR (GMT)) Return (EXIT_FAILURE);
 			if (GMT_REC_IS_ANY_HEADER (GMT)) continue;	/* Skip table headers */
 			switch (n_coord) {
 				case 2:	/* Just lon, lat, label */
-					sscanf (in_buffer, "%s %s %[^\n]", C[ix], C[iy], label);
+					sscanf (record, "%s %s %[^\n]", C[ix], C[iy], label);
 					break;
 				case 3:	/* Just lon, lat, a, label */
-					sscanf (in_buffer, "%s %s %s %[^\n]", C[ix], C[iy], C[2], label);
+					sscanf (record, "%s %s %s %[^\n]", C[ix], C[iy], C[2], label);
 					break;
 				case 4:	/* Just lon, lat, a, b, label */
-					sscanf (in_buffer, "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], label);
+					sscanf (record, "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], label);
 					break;
 				case 5:	/* Just lon, lat, z, t1, t2, label */
-					sscanf (in_buffer, "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], label);
+					sscanf (record, "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], label);
 					break;
 			}
 			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
@@ -795,6 +795,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #else
 		char *t_opt = "-T";
 #endif
+		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */

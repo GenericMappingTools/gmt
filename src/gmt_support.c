@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.517 2011-05-17 22:03:03 jluis Exp $
+ *	$Id: gmt_support.c,v 1.518 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3222,6 +3222,7 @@ void GMT_contlabel_init (struct GMT_CTRL *C, struct GMT_CONTOUR *G, GMT_LONG mod
 		G->line_type = 0;
 		strcpy (G->line_name, "Line");
 	}
+	sprintf (G->label_file, "%s_labels.txt", G->line_name);
 	G->transparent = TRUE;
 	G->spacing = TRUE;
 	G->half_width = 5;
@@ -3246,7 +3247,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -3306,9 +3307,11 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
 				G->just = GMT_just_decode (C, txt_a, 6);
 				break;
+#if GMT_COMPAT
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
 				if (GMT_getfill (C, &p[1], &(G->font_label.fill))) bad++;
 				break;
+#endif
 			case 'l':	/* Exact Label specification */
 				strcpy (G->label, &p[1]);
 				G->label_type = 1;
@@ -3374,10 +3377,19 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				G->min_radius = GMT_to_inch (C, &p[1]);
 				break;
 
+#if GMT_COMPAT
 			case 's':	/* Font size specification (for backward compatibility only since size is part of font specification) */
 				G->font_label.size = GMT_convert_units (C, &p[1], GMT_PT, GMT_PT);
 				if (G->font_label.size <= 0.0) bad++;
 				break;
+#endif
+			case 'T':	/* Save contour label locations to given file [x y angle label] */
+				G->save_labels = 1;
+			case 't':	/* Save contour label locations to given file [x y label] */
+				G->save_labels++;
+				if (p[1]) strcpy (G->label_file, &p[1]);
+				break;
+				
 			case 'u':	/* Label Unit specification */
 				if (p[1]) strcpy (G->unit, &p[1]);
 				break;
@@ -4472,9 +4484,9 @@ struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, doubl
 	S = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
 	GMT_alloc_segment (C, S, n, n_cols, TRUE);
 	if (n_cols == 3)
-		sprintf (header, "%c %g contour -Z%g\n", (int)C->current.setting.io_seg_marker[GMT_OUT], z, z);
+		sprintf (header, "%g contour -Z%g", z, z);
 	else
-		sprintf (header, "%c clip contour\n", (int)C->current.setting.io_seg_marker[GMT_OUT]);
+		sprintf (header, "clip contour");
 	S->header = strdup (header);
 
 	GMT_memcpy (S->coord[GMT_X], x, n, double);

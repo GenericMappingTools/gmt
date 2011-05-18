@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.56 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_contour.h,v 1.57 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,14 +109,16 @@ struct GMT_CONTOUR {
 	GMT_LONG hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	GMT_LONG no_gap;		/* Clip contour or not depends on label placement */
 	GMT_LONG label_type;		/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
+	GMT_LONG save_labels;		/* TRUE if we wish to save label locations to a text file */
 	GMT_LONG data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
 	GMT_LONG debug;			/* TRUE of we want to draw helper lines/points */
 	GMT_LONG delay;			/* TRUE of we want to delay the actual annotation plotting until later */
 	GMT_LONG n_segments;		/* The number of segments */
 	GMT_LONG n_alloc;		/* How many allocated so far */
 	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
-	char option[GMT_BUFSIZ];		/* Copy of the option string */
+	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
+	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
 	char unit[GMT_TEXT_LEN64];	/* Unit for labels */
 	char prefix[GMT_TEXT_LEN64];	/* prefix for labels */
 	char line_name[16];		/* Name of line: contour or line */

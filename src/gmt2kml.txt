@@ -73,6 +73,7 @@ Optionally, use OPT(Gf-) to turn off polygon fill, and OPT(Gn-) to disable label
 OPT(I)IT(icon)
 Specify the URL to an alternative icon that should be used for the symbol [Default is a Google Earth circle].
 If the URL starts with + then we will prepend http://maps.google.com/mapfiles/kml/ to the name.
+To turn off icons entirely (e.g., when just wanting a text label), use OPT(I)-.
 [Default is a local icon with no directory path].
 .TP
 OPT(K)
@@ -164,6 +165,17 @@ will go active at the specified time and stay active going forward, try
 .br
 .sp
 awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt2kml -Gfgreen -Ft > mytimepoints.kml
+.br
+.sp
+To extract contours and labels every 10 units from the grid temp.nc and plot them in KML,
+using red lines at 75% transparency and red labels (no transparency), try
+.br
+.sp
+grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+.br
+gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
+.br
+gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 .SH "LIMITATIONS"
 Google Earth has trouble displaying filled polygons across the Dateline.  For now you must manually break
 any polygon crossing the dateline into a west and east polygon and plot them separately.

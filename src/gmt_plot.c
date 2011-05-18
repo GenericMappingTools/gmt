@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.332 2011-05-18 01:52:53 remko Exp $
+ *	$Id: gmt_plot.c,v 1.333 2011-05-18 02:22:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3032,6 +3032,53 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 
 /* Plotting functions related to contours */
 
+GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
+{
+	GMT_LONG i, k, error, kind, object_ID;
+	char word[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *name = strdup (G->label_file);
+	char *xname[2] = {"x", "lon"}, *yname[2] = {"y", "lat"};
+	double geo[2], angle;
+	struct GMT_CONTOUR_LINE *L = NULL;
+
+	/* Save the lon, lat, angle, text for each annotation to specified file*/
+
+	if (GMT_Register_IO (C->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_OUT, (void **)&name, NULL, NULL, &object_ID)) return (EXIT_FAILURE);
+	if ((error = GMT_set_cols (C, GMT_OUT, 1))) return (error);
+	if ((error = GMT_Begin_IO (C->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_REC))) return (error);	/* Enables data output and sets access mode */
+	free ((void *)name);
+	kind = GMT_is_geographic (C, GMT_IN);
+	if (G->save_labels == 2)
+		sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind],
+			C->current.setting.io_col_separator, C->current.setting.io_col_separator);
+	else 
+		sprintf (record, "# %s%s%s%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind], C->current.setting.io_col_separator);
+	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+	for (i = 0; i < G->n_segments; i++) {
+		L = G->segment[i];	/* Pointer to current segment */
+		if (!L->annot || L->n_labels == 0) continue;
+		for (k = 0; k < L->n_labels; k++) {
+			record[0] = 0;	/* Start with blank record */
+			GMT_xy_to_geo (C, &geo[GMT_X], &geo[GMT_Y], L->L[k].x, L->L[k].y);
+			GMT_ascii_format_col (C, word, geo[GMT_X], GMT_X);
+			strcat (record, word);
+			strcat (record, C->current.setting.io_col_separator);
+			GMT_ascii_format_col (C, word, geo[GMT_Y], GMT_Y);
+			strcat (record, word);
+			strcat (record, C->current.setting.io_col_separator);
+			if (G->save_labels == 2) {
+				angle = fmod (2.0 * (L->L[k].angle + 360.0), 360.0) / 2.0;	/* Get text line in 0-180 range */
+				GMT_ascii_format_col (C, word, angle, GMT_Z);
+				strcat (record, word);
+				strcat (record, C->current.setting.io_col_separator);
+			}
+			strcat (record, L->L[k].label);
+			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
+		}
+	}
+	if ((error = GMT_End_IO (C->parent, GMT_OUT, 0))) return (error);	/* Disables further data output */
+	return (GMT_NOERROR);
+}
+
 void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G)
 {
 	GMT_LONG i, j;
@@ -3059,7 +3106,7 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 {
 	GMT_LONG i, k;
 	int *pen = NULL;
-	struct GMT_CONTOUR_LINE *L;
+	struct GMT_CONTOUR_LINE *L = NULL;
 	for (i = 0; i < G->n_segments; i++) {
 		L = G->segment[i];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
