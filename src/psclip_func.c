@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.20 2011-05-18 15:39:29 remko Exp $
+ *	$Id: psclip_func.c,v 1.21 2011-05-18 21:29:15 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -189,15 +189,13 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 
 GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = FALSE, tbl, seg, i, first;
+	GMT_LONG error = FALSE;
 
-	double x0, y0, *x = NULL, *y = NULL;
+	double x0, y0;
 
 	struct PSCLIP_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
-	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -213,12 +211,15 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Ctrl = (struct PSCLIP_CTRL *)New_psclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psclip_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
-	first = !Ctrl->N.active;
 
 	/*---------------------------- This is the psclip main code ----------------------------*/
 
-	if (Ctrl->C.active) {
+	if (Ctrl->C.active)
 		GMT->current.ps.nclip = MIN (-1, -Ctrl->C.n);	/* Program terminates n levels of prior clipping */
+	else
+		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
+
+	if (Ctrl->C.active && !GMT->current.map.frame.plot) {
 		GMT_plotinit (GMT, options);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
@@ -226,55 +227,57 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_SUCCESS);
 	}
 
-	GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
-
 	/* Here we have -R -J etc to deal with */
 	
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plotinit (GMT, options);
-
+	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-
 	GMT_map_basemap (GMT);
 
-	/* Start new clip_path */
+	if (!Ctrl->C.active) {	/* Start new clip_path */
+		GMT_LONG tbl, seg, i, first = !Ctrl->N.active;
+		double *x = NULL, *y = NULL;
+		struct GMT_DATASET *D = NULL;
+		struct GMT_LINE_SEGMENT *S = NULL;
 
-	if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
+		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
-	if (!Ctrl->T.active) {
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
-		if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error);
+		if (!Ctrl->T.active) {
+			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
+			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+			if ((error = GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&D))) Return (error);
 
-		for (tbl = 0; tbl < D->n_tables; tbl++) {
-			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
-				S = D->table[tbl]->segment[seg];		/* Current segment */
-				if (D->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
-					x = GMT_memory (GMT, NULL, S->n_rows, double);
-					y = GMT_memory (GMT, NULL, S->n_rows, double);
-				}
-				else {	/* Reuse input arrays */
-					x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
-				}
+			for (tbl = 0; tbl < D->n_tables; tbl++) {
+				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
+					S = D->table[tbl]->segment[seg];		/* Current segment */
+					if (D->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
+						x = GMT_memory (GMT, NULL, S->n_rows, double);
+						y = GMT_memory (GMT, NULL, S->n_rows, double);
+					}
+					else {	/* Reuse input arrays */
+						x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
+					}
 
-				for (i = 0; i < S->n_rows; i++) {
-					GMT_geo_to_xy (GMT, S->coord[GMT_X][i], S->coord[GMT_Y][i], &x0, &y0);
-					x[i] = x0; y[i] = y0;
-				}
-				PSL_beginclipping (PSL, x, y, S->n_rows, GMT->session.no_rgb, first);
-				first = 0;
-				if (D->alloc_mode == GMT_READONLY) {	/* Free temp arrays */
-					GMT_free (GMT, x);	GMT_free (GMT, y);
+					for (i = 0; i < S->n_rows; i++) {
+						GMT_geo_to_xy (GMT, S->coord[GMT_X][i], S->coord[GMT_Y][i], &x0, &y0);
+						x[i] = x0; y[i] = y0;
+					}
+					PSL_beginclipping (PSL, x, y, S->n_rows, GMT->session.no_rgb, first);
+					first = 0;
+					if (D->alloc_mode == GMT_READONLY) {	/* Free temp arrays */
+						GMT_free (GMT, x);	GMT_free (GMT, y);
+					}
 				}
 			}
+			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
 		}
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
-		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&D);
-	}
 
-	/* Finalize the composite polygon clip path */
-	PSL_beginclipping (PSL, NULL, NULL, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
+		/* Finalize the composite polygon clip path */
+		PSL_beginclipping (PSL, NULL, NULL, (GMT_LONG)0, GMT->session.no_rgb, 2 + first);
+	}
 
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
