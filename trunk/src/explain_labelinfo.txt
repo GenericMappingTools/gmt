@@ -83,7 +83,7 @@ Saves contour label x, y, and text to IT(file) [Contour_labels.txt].
 #else
 Saves line label x, y, and text to IT(file) [Line_labels.txt].
 #endif
-Use \fB+T\fP to save x, y, angle, text instead.
+Use BD(+T) to save x, y, angle, text instead.
 .TP
 BD(+u)IT(unit)
 Appends IT(unit) to all line labels. If IT(unit) starts with a leading hyphen (-) then there will be no space

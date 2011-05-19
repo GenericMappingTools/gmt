@@ -100,7 +100,7 @@ Place a rectangle as background to the color scale.  You must specify either a p
 (with modifier BD(+p)IT(pen)) or a fill (with modifier BD(+g)IT(fill)), or both.  The size
 of the rectangle is computed from OPT(D) and the current fontsize and offset parameters.
 You can add (or remove) additional space on any side by appending BD(+s)IT(off), where BD(s) is one of
-\fBl\fPeft, \fBr\fPight, \fBb\fPottom, or \fBt\fPop.
+BD(l)eft, BD(r)ight, BD(b)ottom, or BD(t)op.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
