@@ -1,5 +1,5 @@
 #!/bin/bash
-#       $Id: ogrtest.sh,v 1.5 2011-03-28 20:28:50 guru Exp $
+#       $Id: ogrtest.sh,v 1.6 2011-05-19 17:26:27 remko Exp $
 #
 # Test grdmask for proper handling of perimeter and holes [OGR].
 
@@ -28,6 +28,7 @@ EOF
 grdimage ID.nc -Cmask.cpt -Jx0.5i -O -Ba2f1WSne -K -Y5i >> $ps
 psxy -RID.nc -J -O -K multihole.gmt -W0.25p,white >> $ps
 psscale -Cmask.cpt -D5.75i/2i/2i/0.15i -O -Li0.05i >> $ps
-#rm -f mask.cpt mask.nc ID.nc
+
+rm -f mask.cpt mask.nc ID.nc
 
 pscmp
