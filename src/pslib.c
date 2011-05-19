@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.263 2011-05-19 00:28:45 guru Exp $
+ *	$Id: pslib.c,v 1.264 2011-05-19 00:45:38 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -232,10 +232,6 @@
 #define PSL_abs(n) abs(n)
 #endif
 
-#ifdef FORT_BIND
-struct PSL_CTRL *PSL_FORTRAN;        /* Global structure needed for FORTRAN-77 (we think) */
-#endif
-
 /* Special macros and structure for PSL_plotparagraph */
 
 #define PSL_NO_SPACE		0
@@ -449,15 +445,6 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* Fortran binding */
-PSL_LONG PSL_beginsession_ ()	/* Initialize PSL session */
-{       /* Fortran version: We pass the hidden global GMT_FORTRAN structure */
-	PSL_FORTRAN = New_PSL_Ctrl ("Fortran");
-	return (PSL_beginsession (PSL_FORTRAN));
-}
-#endif
-
 PSL_LONG PSL_endsession (struct PSL_CTRL *PSL)
 {	/* Free up memory used by the PSL control structure */
 	PSL_LONG i;
@@ -472,14 +459,6 @@ PSL_LONG PSL_endsession (struct PSL_CTRL *PSL)
 	PSL_free (PSL, PSL);
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* Fortran binding */
-PSL_LONG PSL_endsession_ ()
-{
-	return (PSL_endsession (PSL_FORTRAN));
-}
-#endif
 
 PSL_LONG PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double az1, double az2, PSL_LONG type)
 {	/* Plot an arc with radius running in azimuth from az1 to az2.
@@ -499,15 +478,6 @@ PSL_LONG PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, d
 	PSL_command (PSL, (type & PSL_STROKE) ? " S\n" : "\n");
 	return (PSL_NO_ERROR);
 }
-
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotarc_ (double *x, double *y, double *radius, double *az1, double *az2, PSL_LONG *type)
-{
-	 return (PSL_plotarc (PSL_FORTRAN, *x, *y, *radius, *az1, *az2, *type));
-}
-#endif
 
 PSL_LONG PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, double annotfontsize, PSL_LONG side)
 {	/* Expects PSL_beginaxes to have been called first */
@@ -569,14 +539,6 @@ PSL_LONG PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label,
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotaxis_ (double *annotation_int, char *label, double *annotfontsize, PSL_LONG *side, int nlen)
-{
-	return (PSL_plotaxis (PSL_FORTRAN, *annotation_int, label, *annotfontsize, *side));
-}
-#endif
-
 PSL_LONG PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, PSL_LONG justify, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, double f_rgb[], double b_rgb[])
 {
 	/* Plots a 1-bit image or imagemask.
@@ -617,14 +579,6 @@ PSL_LONG PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotbitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PSL_LONG *nx, PSL_LONG *ny, double *f_rgb, double *b_rgb)
-{
-	return (PSL_plotbitimage (PSL_FORTRAN, *x, *y, *xsize, *ysize, buffer, *nx, *ny, f_rgb, b_rgb));
-}
-#endif
-
 PSL_LONG PSL_endclipping (struct PSL_CTRL *PSL, PSL_LONG n)
 {
 	/* n > 0 means restore clipping n times
@@ -648,13 +602,6 @@ PSL_LONG PSL_endclipping (struct PSL_CTRL *PSL, PSL_LONG n)
 	}
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_endclipping_ (PSL_LONG *mode) {
-	return (PSL_endclipping (PSL_FORTRAN, *mode));
-}
-#endif
 
 PSL_LONG PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n, double rgb[], PSL_LONG flag)
 {
@@ -685,14 +632,6 @@ PSL_LONG PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG
 	}
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_beginclipping_ (double *x, double *y, PSL_LONG *n, double *rgb, PSL_LONG *flag)
-{
-	return (PSL_beginclipping (PSL_FORTRAN, x, y, *n, rgb, *flag));
-}
-#endif
 
 PSL_LONG PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, PSL_LONG justify, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG nbits)
 {
@@ -781,54 +720,12 @@ PSL_LONG PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xs
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotcolorimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PSL_LONG *nx, PSL_LONG *ny, PSL_LONG *nbits, int nlen)
-{
-	return (PSL_plotcolorimage (PSL_FORTRAN, *x, *y, *xsize, *ysize, buffer, *nx, *ny, *nbits));
-}
-#endif
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_command_nonmacro (struct PSL_CTRL *PSL, char *text)
-{
-	PSL_command (PSL, "%s\n", text);
-	return (PSL_NO_ERROR);
-}
-
-PSL_LONG PSL_command_ (char *text, int nlen)
-{
-	return (PSL_command_nonmacro (PSL_FORTRAN, text));
-}
-
-/* fortran interface */
-PSL_LONG PSL_comment_nonmacro (struct PSL_CTRL *PSL, char *text)
-{
-	if (PSL->internal.comments) PSL_command (PSL, "%%\n%% %s\n%%\n", text);
-	return (PSL_NO_ERROR);
-}
-
-PSL_LONG PSL_comment_ (char *text, int nlen)
-{
-	return (PSL_comment_nonmacro (PSL_FORTRAN, text));
-}
-#endif
-
 PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *PSL, void **addr)
 {
 	if (!addr && *addr) free (*addr);
 	*addr = NULL;
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_free_ (void *ptr)
-{
-	return (PSL_free_nonmacro (PSL_FORTRAN, &ptr));
-}
-#endif
 
 PSL_LONG PSL_beginaxes (struct PSL_CTRL *PSL, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1)
 {	/* Set the box location and user x and y ranges */
@@ -846,14 +743,6 @@ PSL_LONG PSL_beginaxes (struct PSL_CTRL *PSL, double llx, double lly, double wid
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_beginaxes_ (double *llx, double *lly, double *width, double *height, double *x0, double *y0, double *x1, double *y1)
-{
-	return (PSL_beginaxes (PSL_FORTRAN, *llx, *lly, *width, *height, *x0, *y0, *x1, *y1));
-}
-#endif
-
 PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL)
 {	/* Turn off user coordinates to PS coordinates scaling */
 	memset ((void *)PSL->internal.axis_limit, 0, 4 * sizeof (double));
@@ -861,14 +750,6 @@ PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL)
 	PSL->internal.x2ix = PSL->internal.y2iy = PSL->internal.dpu;
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_endaxes_ ()
-{
-	return (PSL_endaxes (PSL_FORTRAN));
-}
-#endif
 
 PSL_LONG PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], PSL_LONG symbol)
 {	/* Plotting standard symbols
@@ -934,14 +815,6 @@ PSL_LONG PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[]
 	return (status);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotsymbol_ (double *x, double *y, double param, PSL_LONG symbol)
-{
-	return (PSL_plotsymbol (PSL_FORTRAN, *x, *y, param, *symbol));
-}
-#endif
-
 PSL_LONG PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1)
 {	/* Short line segment */
 	PSL_LONG ix, iy;
@@ -953,14 +826,6 @@ PSL_LONG PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1,
 	PSL_command (PSL, "%ld %ld M %ld %ld D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotsegment_ (double *x0, double *y0, double *x1, double *y1)
-{
-	 return (PSL_plotsegment (PSL_FORTRAN, *x0, *y0, *x1, *y1));
-}
-#endif
 
 PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, char *mode)
 {	/* Updates the current PDF transparency mode */
@@ -1008,22 +873,6 @@ PSL_LONG PSL_setfill (struct PSL_CTRL *PSL, double rgb[], PSL_LONG outline)
 
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setfill_ (struct PSL_CTRL *PSL, double *rgb, PSL_LONG *outline)
-{
-	 return (PSL_setfill (PSL_FORTRAN, rgb, *outline));
-}
-#endif
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setpattern_ (PSL_LONG *image_no, char *imagefile, PSL_LONG *image_dpi, double *f_rgb, double *b_rgb, int nlen)
-{
-	 return (PSL_setpattern (PSL_FORTRAN, *image_no, imagefile, *image_dpi, f_rgb, b_rgb));
-}
-#endif
 
 PSL_LONG PSL_setpattern (struct PSL_CTRL *PSL, PSL_LONG image_no, char *imagefile, PSL_LONG image_dpi, double f_rgb[], double b_rgb[])
 {
@@ -1131,14 +980,6 @@ PSL_LONG PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsiz
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotepsimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PSL_LONG size, PSL_LONG *nx, PSL_LONG *ny, PSL_LONG *ox, PSL_LONG *oy, int nlen)
-{
-	return (PSL_plotepsimage (PSL_FORTRAN, *x, *y, *xsize, *ysize, buffer, size, *nx, *ny, *ox, *oy));
-}
-#endif
-
 PSL_LONG PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n, PSL_LONG type)
 {	/* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
 	 * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
@@ -1191,14 +1032,6 @@ PSL_LONG PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n, P
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotline_ (double *x, double *y, PSL_LONG *n, PSL_LONG *type)
-{
-	return (PSL_plotline (PSL_FORTRAN, x, y, *n, *type));
-}
-#endif
-
 PSL_LONG PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, PSL_LONG pen)
 {
 	PSL_LONG ix, iy, idx, idy;
@@ -1246,14 +1079,6 @@ PSL_LONG PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, PSL_LONG pen)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotpoint_ (double *x, double *y, PSL_LONG *pen)
-{
-	return (PSL_plotpoint (PSL_FORTRAN, *x, *y, *pen));
-}
-#endif
-
 PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 {	/* Finalizes the current plot layer; see PSL_endsession for terminating PSL session. */
 
@@ -1278,21 +1103,11 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_endplot_ (PSL_LONG *lastpage)
-{
-	return (PSL_endplot (PSL_FORTRAN, *lastpage));
-}
-#endif
-
 #ifdef WIN32
-
 /* Make dummy functions so GMT will link under WIN32 where these functions do not exist */
 
 struct passwd *getpwuid (const int uid) { return ((struct passwd *)NULL); }
 int getuid (void) { return (0); }
-
 #endif
 
 PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[])
@@ -1445,9 +1260,6 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL_setfill (PSL, no_rgb, FALSE);
 
 	/* Set origin of the plot */
-#if 0
-	PSL_setorigin (PSL, offset[0], offset[1], 0.0, PSL_FWD);
-#else
 	for (i = 0; i < 2; i++) {
 		switch (PSL->internal.origin[i]) {
 			case 'f': PSL_command (PSL, "%ld PSL_%corig sub ", psl_iz (PSL, offset[i]), xy[i]); break;
@@ -1456,18 +1268,9 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		}
 	}
 	PSL_command (PSL, "TM\n");
-#endif
 
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_beginplot_ (PSL_LONG *orientation, PSL_LONG *overlay, PSL_LONG *color_mode, char *origin, double *offset, PSL_LONG *unit, double *page_size, char *title, char *font_no, int nlen1, int nlen2, int nlen3)
-{
-	 return (PSL_beginplot (PSL_FORTRAN, NULL, *orientation, *overlay, *color_mode, *origin, offset, *unit, page_size, title, font_no));
-}
-#endif
 
 PSL_LONG PSL_setlinecap (struct PSL_CTRL *PSL, PSL_LONG cap)
 {
@@ -1478,14 +1281,6 @@ PSL_LONG PSL_setlinecap (struct PSL_CTRL *PSL, PSL_LONG cap)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setlinecap_ (PSL_LONG *cap)
-{
-	return (PSL_setlinecap (PSL_FORTRAN, *cap));
-}
-#endif
-
 PSL_LONG PSL_setlinejoin (struct PSL_CTRL *PSL, PSL_LONG join)
 {
 	if (join != PSL->internal.line_join) {
@@ -1494,14 +1289,6 @@ PSL_LONG PSL_setlinejoin (struct PSL_CTRL *PSL, PSL_LONG join)
 	}
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setlinejoin_ (PSL_LONG *join)
-{
-	return (PSL_setlinejoin (PSL_FORTRAN, *join));
-}
-#endif
 
 PSL_LONG PSL_setmiterlimit (struct PSL_CTRL *PSL, PSL_LONG limit)
 {
@@ -1512,14 +1299,6 @@ PSL_LONG PSL_setmiterlimit (struct PSL_CTRL *PSL, PSL_LONG limit)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setmiterlimit_ (PSL_LONG *limit)
-{
-	return (PSL_setmiterlimit (PSL_FORTRAN, *limit));
-}
-#endif
-
 PSL_LONG PSL_plotbox (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1)
 {	/* Draw rectangle with corners (x0,y0) and (x1,y1) */
 	PSL_LONG llx, lly;
@@ -1528,12 +1307,6 @@ PSL_LONG PSL_plotbox (struct PSL_CTRL *PSL, double x0, double y0, double x1, dou
 	PSL_command (PSL, "%ld %ld %ld %ld Sb\n", psl_iy (PSL, y1) - lly, psl_ix (PSL, x1) - llx, llx, lly);
 	return (PSL_NO_ERROR);
 }
-#ifdef FORT_BIND
-PSL_LONG PSL_plotbox_ (PSL_LONG double *x0, double *y0, double *x1, double *y1)
-{
-	return (PSL_plotbox (PSL_FORTRAN, double *x0, double *y0, double *x1, double *y1));
-}
-#endif
 
 PSL_LONG PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n)
 {
@@ -1550,14 +1323,6 @@ PSL_LONG PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG n
 
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotpolygon_ (double *x, double *y, PSL_LONG *n)
-{
-	return (PSL_plotpolygon (PSL_FORTRAN, x, y, *n));
-}
-#endif
 
 PSL_LONG PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 {
@@ -1580,14 +1345,6 @@ PSL_LONG PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setdash_ (char *pattern, double *offset, int nlen)
-{
-	return (PSL_setdash (PSL_FORTRAN, pattern, *offset));
-}
-#endif
-
 PSL_LONG PSL_setfont (struct PSL_CTRL *PSL, PSL_LONG font_no)
 {
 	if (font_no == PSL->current.font_no) return (PSL_NO_ERROR);	/* Already set */
@@ -1600,14 +1357,6 @@ PSL_LONG PSL_setfont (struct PSL_CTRL *PSL, PSL_LONG font_no)
 	/* Encoding will be done by subsequent calls inside the text-producing routines though calls to psl_encodefont */
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setfont_ (PSL_LONG *font_no)
-{
-	return (PSL_setfont (PSL_FORTRAN, *font_no));
-}
-#endif
 
 PSL_LONG PSL_setformat (struct PSL_CTRL *PSL, PSL_LONG n_decimals)
 {
@@ -1623,14 +1372,6 @@ PSL_LONG PSL_setformat (struct PSL_CTRL *PSL, PSL_LONG n_decimals)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setformat_ (PSL_LONG *n_decimals)
-{
-	return (PSL_setformat (PSL_FORTRAN, *n_decimals));
-}
-#endif
-
 PSL_LONG PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth)
 {
 	if (linewidth < 0.0) {
@@ -1643,14 +1384,6 @@ PSL_LONG PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth)
 	PSL->current.linewidth = linewidth;
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setlinewidth_ (double *linewidth)
-{
-	 return (PSL_setlinewidth (PSL_FORTRAN, *linewidth));
-}
-#endif
 
 PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 {
@@ -1677,14 +1410,6 @@ PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setcolor_ (double *rgb, PSL_LONG *mode)
-{
-	 return (PSL_setcolor (PSL_FORTRAN, rgb, *mode));
-}
-#endif
-
 PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double dpi, double xyscales[], double page_rgb[])
 {
 	/* Changes the standard PSL defaults for:
@@ -1700,14 +1425,6 @@ PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double dpi, double xyscales[], d
 	if (page_rgb) PSL_rgb_copy (PSL->init.page_rgb, page_rgb);	/* Change media color */
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setdefaults_ (double *dpi, double xyscales, double page_rgb)
-{
-	 return (PSL_setdefaults (PSL_FORTRAN, *dpi, xyscales, page_rgb));
-}
-#endif
 
 PSL_LONG PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, PSL_LONG justify, double offset[], PSL_LONG mode)
 {
@@ -1787,14 +1504,6 @@ PSL_LONG PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fonts
 	strcpy (PSL->current.string, &text[i]);	/* Save the string */
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plottextbox_ (double *x, double *y, double *fontsize, char *text, double *angle, PSL_LONG *justify, double offset, PSL_LONG mode, int nlen)
-{
-	 return (PSL_plottextbox (PSL_FORTRAN, *x, *y, *fontsize, text, *angle, *justify, offset, *mode));
-}
-#endif
 
 PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char *text)
 {
@@ -2227,14 +1936,6 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plottext_ (double *x, double *y, double *fontsize, char *text, double *angle, PSL_LONG *justify, PSL_LONG *mode, int nlen)
-{
-	PSL_plottext (PSL_FORTRAN, *x, *y, *fontsize, text, *angle, *justify, *mode);
-}
-#endif
-
 PSL_LONG PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], PSL_LONG n, PSL_LONG node[], double fontsize, char *label[], PSL_LONG m, double angle[], PSL_LONG justify, double offset[], PSL_LONG mode)
 {
 	/* x,y		Array containing the label path
@@ -2303,14 +2004,6 @@ PSL_LONG PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plottextpath_ (double x[], double y[], PSL_LONG *n, PSL_LONG node[], double *fontsize, char *label[], PSL_LONG *m, double angle[], PSL_LONG *justify, double offset[], PSL_LONG *mode, int len)
-{
-	return (PSL_plottextpath (PSL_FORTRAN, x, y, *n, node, *fontsize, label, *m, angle, *justify, offset, *mode));
-}
-#endif
-
 PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LONG m, double fontsize, char *label[], double angle[], PSL_LONG justify, double offset[], PSL_LONG mode)
 {
 	/* x,y		Array containing the locations where labels will go
@@ -2378,14 +2071,6 @@ PSL_LONG PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], PSL_LON
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plottextclip_ (double x[], double y[], PSL_LONG *m, double *fontsize, char *label[], double angle[], PSL_LONG *justify, double offset[], PSL_LONG *mode, int len)
-{
-	return (PSL_plottextclip (PSL_FORTRAN, x, y, *m, *fontsize, label, angle, *justify, offset, *mode));
-}
-#endif
-
 PSL_LONG PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, PSL_LONG mode)
 {
 	/* mode = PSL_FWD: Translate origin, then rotate axes.
@@ -2396,14 +2081,6 @@ PSL_LONG PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, 
 	if (mode == PSL_FWD && !PSL_eq(angle,0.0)) PSL_command (PSL, "%g R\n", angle);
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_setorigin_ (double *x, double *y, double *angle, PSL_LONG *mode)
-{
-	return (PSL_setorigin (PSL_FORTRAN, *x, *y, *angle, *mode));
-}
-#endif
 
 PSL_LONG PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, PSL_LONG par_just)
 {	/* Initializes PSL parameters used to typeset paragraphs with PSL_plotparagraph */
@@ -2569,15 +2246,6 @@ PSL_LONG PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fon
 
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_plotparagraph_ (double *x, double *y, double *fontsize, char *paragraph, double *angle, PSL_LONG *par_just, int len) {
-
-	return (PSL_plotparagraph (PSL_FORTRAN, *x, *y, *fontsize, paragraph, *angle, *par_just));
-
-}
-#endif
 
 struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, PSL_LONG length, PSL_LONG fontno, double fontsize, PSL_LONG sub, PSL_LONG super, PSL_LONG small, PSL_LONG under, PSL_LONG space, double rgb[])
 {
@@ -2990,40 +2658,17 @@ PSL_LONG PSL_defunits (struct PSL_CTRL *PSL, char *param, double value)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_defunits_ (char *param, double value, int len) {
-	return (PSL_defunits (PSL_FORTRAN, param, *value));
-}
-#endif
-
 PSL_LONG PSL_defpoints (struct PSL_CTRL *PSL, char *param, double fontsize)
 {
 	PSL_command (PSL, "/%s %ld def\n", param, psl_ip (PSL, fontsize));
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_defpoints_ (char *param, double fontsize, int len)
-{
-	return (PSL_defpoints (PSL_FORTRAN, param, *fontsize));
-}
-#endif
-
 PSL_LONG PSL_definteger (struct PSL_CTRL *PSL, char *param, PSL_LONG value)
 {
 	PSL_command (PSL, "/%s %ld def\n", param, value);
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_definteger_ (char *param, PSL_LONG value, int len)
-{
-	return (PSL_definteger (PSL_FORTRAN, param, *value));
-}
-#endif
 
 PSL_LONG PSL_defpen (struct PSL_CTRL *PSL, char *param, double linewidth, char *style, double offset, double rgb[])
 {
@@ -3032,26 +2677,11 @@ PSL_LONG PSL_defpen (struct PSL_CTRL *PSL, char *param, double linewidth, char *
 	return (PSL_NO_ERROR);
 }
 
-#ifdef FORT_BIND
-/* fortran interface */
-PSL_LONG PSL_defpen_ (char *param, double width, char *style, double offset, double rgb[], int len1, int len2)
-{
-	return (PSL_defpen (PSL_FORTRAN, param, *width, style, *offset, rgb));
-}
-#endif
-
 PSL_LONG PSL_defcolor (struct PSL_CTRL *PSL, char *param, double rgb[])
 {
 	PSL_command (PSL, "/%s {%s} def\n", param, psl_putcolor (PSL, rgb));
 	return (PSL_NO_ERROR);
 }
-
-#ifdef FORT_BIND
-PSL_LONG PSL_defcolor_ (char *param, double rgb[], int len)
-{
-	return (PSL_defcolor (PSL_FORTRAN, param));
-}
-#endif
 
 PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture)
 {
@@ -3121,13 +2751,6 @@ PSL_LONG PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, u
 	return (PSL_NO_ERROR);	/* Dummy return to satisfy some compilers */
 }
 
-#ifdef FORT_BIND
-PSL_LONG PSL_loadimage_ (char *file, struct imageinfo *h, unsigned char **picture, int len1, int len2)
-{
-	return (PSL_loadimage (PSL_FORTRAN, file, h, picture));
-}
-#endif
-
 PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1)
 {
 	/* Reads the header of a Sun rasterfile (or any other).
@@ -3182,7 +2805,7 @@ PSL_LONG psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h
 }
 
 /* ----------------------------------------------------------------------
- * Support functions used in PSL_* functions.  No Fortran bindings needed.
+ * Support functions used in PSL_* functions.
  * ----------------------------------------------------------------------
  */
 

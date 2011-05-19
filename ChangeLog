@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1033 2011-05-18 21:34:16 remko Exp $
+	$Id: ChangeLog,v 1.1034 2011-05-19 00:45:38 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2011-05-19	remko
+	* pslib.c, pslib_f77.c:	Split off Fortran bindings
+
 2011-05-18	remko
+	* *.tex:		Removed .gmt_bb_info; replaced {\it} by \emph{} and {\bf} by \textbf{}.
 	* gmt_init.c:		Two routines GMT_parse_[X|Y]_option replaced by single GMT_parse_XY_option.
 				-X and -Y option now support modifiers a|c|f|r, treated separately!
 	* explain_-XY*.text:	---"---
