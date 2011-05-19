@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: hilow.sh,v 1.3 2011-03-28 19:07:45 guru Exp $
+#	$Id: hilow.sh,v 1.4 2011-05-19 17:25:16 remko Exp $
 #
 
 . ../functions.sh
@@ -23,6 +23,6 @@ makecpt -T0/10/1 -Crainbow > t.cpt
 pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -Ct.cpt -I -W0.25p -GlZ-/Z+ -O -K -Y4.25i >> $ps
 psxy t.txt -R -J -Sc0.1i -W2p -O >> $ps
 
-#rm -f t.txt t.cpt
+rm -f t.txt t.cpt
 
 pscmp
