@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.40 2011-05-19 02:51:14 remko Exp $
+ *	$Id: gmt_prototypes.h,v 1.41 2011-05-19 15:18:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -202,7 +202,7 @@ EXTERN_MSC GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[],
 EXTERN_MSC GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *fname, GMT_LONG line);
 EXTERN_MSC char *GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], double z, GMT_LONG closed, GMT_LONG count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode);
-EXTERN_MSC GMT_LONG GMT_getusername (struct GMT_CTRL *C, char *user);
+EXTERN_MSC char *GMT_putusername (struct GMT_CTRL *C);
 
 /* gmt_calclock.c: */
 

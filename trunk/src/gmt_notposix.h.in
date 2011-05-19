@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.h.in,v 1.20 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_notposix.h.in,v 1.21 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,36 +40,49 @@
 /* >>> THIS SECTION WILL BE MODIFIED BY configure <<<
  * >>> DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING!! <<< */
 
-/* HAVE_<func> is set to 0 (FALSE) or 1 (TRUE) depending on whether or
- * not <func> is available on this system.  The default setting is 0:
+/* HAVE_<func> is undefined or defined as 1 depending on whether or
+ * not <func> is available on this system.  The default setting is undefined:
  * none of the functions are available (the POSIX standard) */
 
-#define HAVE_COPYSIGN 0
-#define HAVE_LOG2 0
-#define HAVE_LOG1P 0
-#define HAVE_HYPOT 0
-#define HAVE_ACOSH 0
-#define HAVE_ASINH 0
-#define HAVE_ATANH 0
-#define HAVE_RINT 0
-#define HAVE_IRINT 0
-#define HAVE_ISNANF 0
-#define HAVE_ISNAND 0
-#define HAVE_ISNAN 0
-#define HAVE_J0 0
-#define HAVE_J1 0
-#define HAVE_JN 0
-#define HAVE_Y0 0
-#define HAVE_Y1 0
-#define HAVE_YN 0
-#define HAVE_ERF 0
-#define HAVE_ERFC 0
-#define HAVE_STRDUP 0
-#define HAVE_STRTOD 0
-#define HAVE_STRTOK_R 0
-#define HAVE_SINCOS 0
-#define HAVE_ALPHASINCOS 0
-#define WORDS_BIGENDIAN 0
+#undef HAVE_COPYSIGN
+#undef HAVE_LOG2
+#undef HAVE_LOG1P
+#undef HAVE_HYPOT
+#undef HAVE_ACOSH
+#undef HAVE_ASINH
+#undef HAVE_ATANH
+#undef HAVE_RINT
+#undef HAVE_IRINT
+#undef HAVE_ISNANF
+#undef HAVE_ISNAND
+#undef HAVE_ISNAN
+#undef HAVE_J0
+#undef HAVE_J1
+#undef HAVE_JN
+#undef HAVE_Y0
+#undef HAVE_Y1
+#undef HAVE_YN
+#undef HAVE_ERF
+#undef HAVE_ERFC
+#undef HAVE_POW
+#undef HAVE_SQRT
+#undef HAVE_SINCOS
+#undef HAVE_ALPHASINCOS
+#undef HAVE_FLOOR
+#undef HAVE_GETCWD
+#undef HAVE_GETPWUID
+#undef HAVE_GETTIMEOFDAY
+#undef HAVE_MEMSET
+#undef HAVE_MODF
+#undef HAVE_QSORT_R
+#undef HAVE_STRCHR
+#undef HAVE_STRDUP
+#undef HAVE_STRTOD
+#undef HAVE_STRTOK_R
+#undef HAVE_STRPBRK
+#undef HAVE_STRSTR
+#undef HAVE_STRTOL
+#undef WORDS_BIGENDIAN
 
 #endif	/* End of configure control */
 

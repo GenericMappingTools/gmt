@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.521 2011-05-19 02:51:14 remko Exp $
+ *	$Id: gmt_init.c,v 1.522 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1293,10 +1293,10 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 }
 
 #ifndef MY_ENDIAN
-#if WORDS_BIGENDIAN == 0
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#else
+#ifdef WORDS_BIGENDIAN
 #define MY_ENDIAN 'B'	/* This machine is Big endian */
+#else
+#define MY_ENDIAN 'L'	/* This machine is Little endian */
 #endif
 #endif
 

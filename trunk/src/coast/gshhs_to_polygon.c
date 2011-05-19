@@ -1,5 +1,5 @@
 /*
- *	$Id: gshhs_to_polygon.c,v 1.5 2011-04-12 13:06:42 remko Exp $
+ *	$Id: gshhs_to_polygon.c,v 1.6 2011-05-19 15:18:56 remko Exp $
  * 
  *	read a GSHHS file and and write a polygon.b format file to stdout
  * UNTESTED but should work. (-pw)
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 	fp_in = fopen(argv[1], "rb");
 		
 	while (fread ((void *)&gshhs_header, sizeof (struct GSHHS), 1, fp_in) == 1) {
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.id = swabi4 ((unsigned int)gshhs_header.id);
 		gshhs_header.n  = swabi4 ((unsigned int)gshhs_header.n);

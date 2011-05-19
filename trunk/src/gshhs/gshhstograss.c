@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.29 2011-05-19 02:51:15 remko Exp $
+/*	$Id: gshhstograss.c,v 1.30 2011-05-19 15:18:56 remko Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -47,14 +47,14 @@
 
 void help_msg(char *progname);
 void usage_msg (char *progname);
-void getusername(char *user);
+char *putusername();
 
 int main (int argc, char **argv)
 {
 	int i = 1;
 	double w, e, s, n, area, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
-	char source, *progname, *dataname = NULL, user[40], ascii_name[40], att1_name[40], att2_name[40];
+	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
@@ -156,8 +156,7 @@ int main (int argc, char **argv)
 	fprintf(ascii_fp,"ORGANIZATION: \n");
 	time(&tloc);
 	fprintf(ascii_fp,"DIGIT DATE:   %s",ctime(&tloc));
-	getusername(user);
-	fprintf(ascii_fp,"DIGIT NAME:   %s\n",user);
+	fprintf(ascii_fp,"DIGIT NAME:   %s\n",putusername());
 	fprintf(ascii_fp,"MAP NAME:     Global Shorelines\n");
 	fprintf(ascii_fp,"MAP DATE:     2004\n");
 	fprintf(ascii_fp,"MAP SCALE:    1\n");
@@ -282,21 +281,6 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
 
-void getusername (char *user)
-{
-#ifndef WIN32
-#include <pwd.h>
-	struct passwd *pw = NULL;
-	pw = getpwuid (getuid ());
-	if (pw) {
-		strcpy (user, pw->pw_name);
-		return;
-	}
-#endif
-	strcpy (user, "unknown");
-	return;
-}
-
 void help_msg (char *progname) {
 
 	fprintf (stderr,"gshhs to GRASS ASCII export tool\n\n");
@@ -324,4 +308,16 @@ void usage_msg (char *progname) {
 	fprintf (stderr, " -Y maxy       northern limit in decimal degrees\n");
 	fprintf (stderr, "\n");
 	
+}
+
+char *putusername ()
+{
+	static char *unknown = "unknown";
+#ifdef HAVE_GETPWUID
+#include <pwd.h>
+	struct passwd *pw = NULL;
+	pw = getpwuid (getuid ());
+	if (pw) return (pw->pw_name);
+#endif
+	return (unknown);
 }

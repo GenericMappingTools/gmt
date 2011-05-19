@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.196 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.197 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1409,7 +1409,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 	i2 = GMT_memory (C, NULL, n_cols, short int);
 	for (j = 0; j < Grid->header->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		if (GMT_fread ((void *)i2, sizeof (short int), (size_t)n_cols, fp) != (size_t)n_cols)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-#if defined(_WIN32) || WORDS_BIGENDIAN == 0
+#if !defined(WORDS_BIGENDIAN)
 		for (i = 0; i < n_cols; i++) i2[i] = GMT_swab2 (i2[i]);
 #endif
 		ij = GMT_IJP (Grid->header, j, 0);

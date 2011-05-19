@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.278 2011-05-19 02:51:15 remko Exp $
+ *	$Id: mgd77.c,v 1.279 2011-05-19 15:18:56 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2168,7 +2168,7 @@ void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	if (strcmp (F->utime.epoch, C->current.setting.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
-	GMT_getusername (C, F->user);
+	strcpy (F->user, GMT_putusername(C));
 	F->verbose_level = 0;
 	F->verbose_dest = 2;
 	F->format = MGD77_FORMAT_ANY;

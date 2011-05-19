@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.89 2011-04-23 02:14:11 guru Exp $
+#  $Id: GNUmakefile,v 1.90 2011-05-19 15:18:56 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 $(FILES):
 		touch $@
 else
-$(FILES):	guru/gmtguru.macros configure config.sub config.guess \
+$(FILES):	guru/gmtguru.macros configure config.sub config.guess src/gmt_notposix.h.in \
 		src/config.mk.in share/conf/gmt.conf.in src/gmt_version.h.in doc/GMT_version.tex.in
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \

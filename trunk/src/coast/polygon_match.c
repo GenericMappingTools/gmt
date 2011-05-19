@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.10 2011-04-29 03:08:12 guru Exp $
+ * $Id: polygon_match.c,v 1.11 2011-05-19 15:18:56 remko Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -35,7 +35,7 @@ struct POLYGON_OLD {
 };
 
 int pol_readheader_old (struct GMT3_POLY_OLD *h, FILE *fp);
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 void swab_polheader_old (struct GMT3_POLY_OLD *h);
 #endif
 int nothing_in_common2 (struct GMT3_POLY *hi, struct GMT3_POLY_OLD *hj, double *shift);
@@ -196,13 +196,13 @@ int pol_readheader_old (struct GMT3_POLY_OLD *h, FILE *fp)
 {
 	int n;
 	n = fread ((void *)h, sizeof (struct GMT3_POLY_OLD), 1, fp);
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 	swab_polheader_old (h);
 #endif
 	return (n);
 }
 
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 void swab_polheader_old (struct GMT3_POLY_OLD *h)
 {
 	unsigned int *i, j;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.519 2011-05-19 02:51:14 remko Exp $
+ *	$Id: gmt_support.c,v 1.520 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -141,7 +141,9 @@ GMT_LONG gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *
 #endif
 #endif
 
-#ifndef HAVE_QSORT_R
+#ifdef HAVE_QSORT_R
+void qsort_r(void *base, size_t nel, size_t width, void *thunk, int (*compar)(void *, const void *, const void *));
+#else
 double *GMT_x2sys_Y;	/* Must use global variable if there is no qsort_r on this system */
 #endif
 
@@ -3309,6 +3311,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 				break;
 #if GMT_COMPAT
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
+				GMT_report (C, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
 				if (GMT_getfill (C, &p[1], &(G->font_label.fill))) bad++;
 				break;
 #endif
@@ -3379,6 +3382,7 @@ GMT_LONG GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR 
 
 #if GMT_COMPAT
 			case 's':	/* Font size specification (for backward compatibility only since size is part of font specification) */
+				GMT_report (C, GMT_MSG_COMPAT, "+s<fontsize> in contour label spec is obsolete, now part of +f<font>\n");
 				G->font_label.size = GMT_convert_units (C, &p[1], GMT_PT, GMT_PT);
 				if (G->font_label.size <= 0.0) bad++;
 				break;
@@ -10085,17 +10089,14 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	return (n_split);	/* Return how many segments was made */
 }
 
-GMT_LONG GMT_getusername (struct GMT_CTRL *C, char *user)
+char *GMT_putusername (struct GMT_CTRL *C)
 {
-#ifndef WIN32
+	static char *unknown = "unknown";
+#ifdef HAVE_GETPWUID
 #include <pwd.h>
 	struct passwd *pw = NULL;
 	pw = getpwuid (getuid ());
-	if (pw) {
-		strcpy (user, pw->pw_name);
-		return (FALSE);
-	}
+	if (pw) return (pw->pw_name);
 #endif
-	strcpy (user, "unknown");
-	return (TRUE);
+	return (unknown);
 }

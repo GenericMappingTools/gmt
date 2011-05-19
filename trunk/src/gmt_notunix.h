@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.44 2011-05-19 02:51:14 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.45 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,16 +72,16 @@
 /* These functions are available under Windows with MSVC compilers */
 
 #define HAVE_COPYSIGN 1
-#define HAVE_LOG2 0
-#define HAVE_LOG1P 0
+#undef HAVE_LOG2
+#undef HAVE_LOG1P
 #define HAVE_HYPOT 1
-#define HAVE_ACOSH 0
-#define HAVE_ASINH 0
-#define HAVE_ATANH 0
-#define HAVE_RINT 0
-#define HAVE_IRINT 0
-#define HAVE_ISNANF 0
-#define HAVE_ISNAND 0
+#undef HAVE_ACOSH
+#undef HAVE_ASINH
+#undef HAVE_ATANH
+#undef HAVE_RINT
+#undef HAVE_IRINT
+#undef HAVE_ISNANF
+#undef HAVE_ISNAND
 #define HAVE_ISNAN 1
 #define HAVE_J0 1
 #define HAVE_J1 1
@@ -89,19 +89,18 @@
 #define HAVE_Y0 1
 #define HAVE_Y1 1
 #define HAVE_YN 1
-#define HAVE_ERF 0
-#define HAVE_ERFC 0
+#undef HAVE_ERF
+#undef HAVE_ERFC
 #define HAVE_STRDUP 1
 #define HAVE_STRTOD 1
 #ifdef __INTEL_COMPILER 
 #define HAVE_SINCOS 1
 #undef HAVE_STRTOK_R
-#define HAVE_STRTOK_R 0
 #else
-#define HAVE_SINCOS 0
+#undef HAVE_SINCOS
 #endif
-#define HAVE_ALPHASINCOS 0
-#define WORDS_BIGENDIAN 0
+#undef HAVE_ALPHASINCOS
+#undef WORDS_BIGENDIAN
 
 /* Several math functions exist but the names have a leading underscore */
 
