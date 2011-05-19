@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.12 2011-05-18 23:44:03 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.13 2011-05-19 15:51:23 jluis Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -193,7 +193,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 							break;
 						case 'y':
 							Ctrl->A.years = TRUE;
-							GMT->current.io.col_type[GMT_IN][2] = GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_IN][3] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
+							GMT->current.io.col_type[GMT_IN][2] = GMT->current.io.col_type[GMT_OUT][2] = 
+												GMT->current.io.col_type[GMT_IN][3] = 
+												GMT->current.io.col_type[GMT_OUT][3] = 
+												GMT_IS_FLOAT;
 							break;
 						default:
 							break;
@@ -382,8 +385,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_out);
-	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, "Syntax error: You cannot select both -F and -L options\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, 
+			"Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_out);
+	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
+			"Syntax error: You cannot select both -F and -L options\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -416,6 +421,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT = GMT_begin_module (API, "GMT_mgd77magref", &GMT_cpy);	/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-Vfb", "Hm", options))) Return ((int)error);
 	Ctrl = (struct MGD77MAGREF_CTRL *) New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
 	if ((error = GMT_mgd77magref_parse (API, Ctrl, options))) Return ((int)error);
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
@@ -424,13 +430,14 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 
-	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
-
 	Ctrl->CM4->CM4_D.dst = (double *) calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
-
-	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
+	/* Shorthand for these */
+	nval = Ctrl->CM4->CM4_F.n_field_components;
+	nfval = Ctrl->CM4->CM4_F.n_field_sources;
+	lval = Ctrl->CM4->CM4_L.n_curr_components;
+	lfval = Ctrl->CM4->CM4_L.n_curr_sources;
 
 	if (nfval && Ctrl->do_IGRF) GMT_message (GMT, "Warning. Source fields other than IGRF will be ignored. It's in the manual\n");
 
@@ -503,6 +510,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT->current.io.col_type[GMT_IN][t_col+1] = GMT->current.io.col_type[GMT_OUT][t_col+1] = GMT_IS_FLOAT;		/* Override any previous t_col = 3 settings */
 	if (!Ctrl->copy_input) GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;	/* No time on output */
 
+	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return ((int)error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return ((int)error);	/* Registers default input sources, unless already set */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return ((int)error);	/* Registers default output destination, unless already set */
@@ -511,7 +519,6 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return (GMT_DATA_READ_ERROR);
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return ((int)error);	/* Disables further data input */
 
-	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
