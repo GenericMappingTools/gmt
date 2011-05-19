@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.7 2011-05-16 21:23:11 guru Exp $
+ *	$Id: pssegy_func.c,v 1.8 2011-05-19 15:18:56 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -108,7 +108,11 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-	C->A.active = !WORDS_BIGENDIAN;
+#ifdef WORDS_BIGENDIAN
+	C->A.active = FALSE;
+#else
+	C->A.active = TRUE;
+#endif
 	C->M.value = 10000;
 	C->Q.value[X_ID] = 1.0; /* Ctrl->Q.value[X_ID], Ctrl->Q.value[Y_ID] are trace and sample interval */
 	return ((void *)C);

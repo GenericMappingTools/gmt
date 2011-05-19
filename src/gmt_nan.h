@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nan.h,v 1.11 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_nan.h,v 1.12 2011-05-19 15:18:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -44,13 +44,9 @@
 #elif defined(WIN32)
 #define GMT_make_fnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; *i = 0x7fffffff;}
 #define GMT_make_dnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0x7fffffff;}
-/* #define GMT_make_fnan(x) (((unsigned int *) &x)[0] = 0x7fffffff)
-#define GMT_make_dnan(x) (((unsigned int *) &x)[0] = 0xffffffff, ((unsigned int *) &x)[1] = 0x7fffffff) */
 #else
 #define GMT_make_fnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; *i = 0xffffffff;}
 #define GMT_make_dnan(x) { void *v; unsigned int *i; v = (void *)&x; i = (unsigned int *)v; i[0] = 0xffffffff; i[1] = 0xffffffff;}
-/* #define GMT_make_fnan(x) (((unsigned int *) &x)[0] = 0xffffffff)
-#define GMT_make_dnan(x) (((unsigned int *) &x)[0] = 0xffffffff, ((unsigned int *) &x)[1] = 0xffffffff) */
 #endif
 
 #if defined(NO_IEEE)
@@ -59,12 +55,12 @@
 #define GMT_is_fnan(x) isnanf((x))
 #elif defined(isnan)
 #define GMT_is_fnan(x) isnan((double)(x))
-#elif HAVE_ISNANF == 1
+#elif defined(HAVE_ISNANF)
 #define GMT_is_fnan(x) isnanf(x)
 extern int isnanf(float x);
-#elif HAVE_ISNAN == 1
+#elif defined(HAVE_ISNAN)
 #define GMT_is_fnan(x) isnan((double)(x))
-#elif HAVE_ISNAND == 1
+#elif defined(HAVE_ISNAND)
 #define GMT_is_fnan(x) isnand((double)(x))
 #else
 #define GMT_is_fnan(x) ((x) != (x))
@@ -76,10 +72,10 @@ extern int isnanf(float x);
 #define GMT_is_dnan(x) isnand((x))
 #elif defined(isnan)
 #define GMT_is_dnan(x) isnan((x))
-#elif HAVE_ISNAND == 1
+#elif defined(HAVE_ISNAND)
 #define GMT_is_dnan(x) isnand(x)
 extern int isnand(double x);
-#elif HAVE_ISNAN == 1
+#elif defined(HAVE_ISNAN)
 #define GMT_is_dnan(x) isnan(x)
 extern int isnan(double x);
 #else

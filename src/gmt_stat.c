@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.85 2011-05-16 21:23:10 guru Exp $
+ *	$Id: gmt_stat.c,v 1.86 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-#if HAVE_SINCOS == 0 && HAVE_ALPHASINCOS == 0
+#if !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS)
 /* Platform does not have sincos - make a dummy one with sin and cos */
 void sincos (double a, double *s, double *c)
 {
@@ -982,7 +982,7 @@ double GMT_erfinv (struct GMT_CTRL *C, double y)
 	return (x);
 }
 
-#if HAVE_ERF == 0 || HAVE_ERFC == 0
+#if !defined(HAVE_ERF) || !defined(HAVE_ERFC)
 
 /* Need to include the GMT error functions GMT_erf & GMT_erfc
  * since they are not in the user's local library.
@@ -1011,7 +1011,7 @@ static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
 	2.568520192289822};
 #endif
 
-#if HAVE_ERF == 0
+#if !defined(HAVE_ERF)
 double GMT_erf (double y)
 {
 	GMT_LONG i, sign = 1;
@@ -1064,7 +1064,7 @@ double GMT_erf (double y)
 }
 #endif
 
-#if HAVE_ERFC == 0
+#if !defined(HAVE_ERFC)
 double GMT_erfc (double y)
 {
 	GMT_LONG i, sign = 1;
@@ -1122,7 +1122,7 @@ double GMT_erfc (double y)
 }
 #endif
 
-#if HAVE_STRDUP == 0
+#if !defined(HAVE_STRDUP)
 char *GMT_strdup (const char *s) {
 	GMT_LONG n;
 	char *p = NULL;
@@ -1134,7 +1134,7 @@ char *GMT_strdup (const char *s) {
 }
 #endif
 
-#if HAVE_STRTOD == 0
+#if !defined(HAVE_STRTOD)
 double GMT_strtod (const char *s, char **ends) {
 
 	/* Given s, try to scan it to convert an
@@ -1585,7 +1585,7 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	return (F_mid);
 }
 
-#if HAVE_J0 == 0
+#if !defined(HAVE_J0)
 
 /* Alternative j0 coded from Numerical Recipes by Press et al */
 
@@ -1614,7 +1614,7 @@ double GMT_j0 (double x)
 
 #endif
 
-#if HAVE_J1 == 0
+#if !defined(HAVE_J1)
 
 /* Alternative j1 coded from Numerical Recipes by Press et al */
 
@@ -1643,7 +1643,7 @@ double GMT_j1 (double x)
 
 #endif
 
-#if HAVE_JN == 0
+#if !defined(HAVE_JN)
 
 #define ACC 40.0
 #define BIGNO 1.0e10
@@ -1702,7 +1702,7 @@ double GMT_jn (int n, double x)
 
 #endif
 
-#if HAVE_Y0 == 0
+#if !defined(HAVE_Y0)
 
 /* Alternative y0, y1, yn coded from Numerical Recipes by Press et al */
 
@@ -1732,7 +1732,7 @@ double GMT_y0 (double x)
 
 #endif
 
-#if HAVE_Y1 == 0
+#if !defined(HAVE_Y1)
 
 /* Alternative y1 coded from Numerical Recipes by Press et al */
 
@@ -1762,7 +1762,7 @@ double GMT_y1 (double x)
 
 #endif
 
-#if HAVE_YN == 0
+#if !defined(HAVE_YN)
 
 /* Alternative yn coded from Numerical Recipes by Press et al */
 
@@ -1894,7 +1894,7 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
 
-#if HAVE_HYPOT == 0
+#if !defined(HAVE_HYPOT)
 
 double GMT_hypot (double x, double y) {
 /* 	Return sqrt(x*x + y*y), guarding against
@@ -1955,7 +1955,7 @@ double GMT_hypot (double x, double y) {
 
 #endif
 
-#if HAVE_LOG1P == 0
+#if !defined(HAVE_LOG1P)
 
 double GMT_log1p (double x) {
 /* 	Approximate log(1 + x) fairly well for small x.
@@ -1980,7 +1980,7 @@ double GMT_log1p (double x) {
 
 #endif
 
-#if HAVE_ATANH == 0
+#if !defined(HAVE_ATANH)
 
 double GMT_atanh (double x) {
 /* 	Return hyperbolic arctangent of x.

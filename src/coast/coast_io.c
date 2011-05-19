@@ -1,5 +1,5 @@
 /*
- *	$Id: coast_io.c,v 1.8 2009-06-20 23:30:19 guru Exp $
+ *	$Id: coast_io.c,v 1.9 2011-05-19 15:18:56 remko Exp $
  */
 #define COASTLIB 1
 #include "wvs.h"
@@ -39,7 +39,7 @@ int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp)
  * which must be BIGENDIAN.  Only polygon_to_gshhs.c uses these directly
 */
 
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 void swab_polheader (struct GMT3_POLY *h);
 void swab_polpoints (struct LONGPAIR *p, int n);
 #endif
@@ -48,7 +48,7 @@ int pol_readheader2 (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
 	n = fread ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 	swab_polheader (h);
 #endif
 	return (n);
@@ -58,7 +58,7 @@ int pol_writeheader2 (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
 	struct GMT3_POLY *use_h;
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 	struct GMT3_POLY tmp_h;
 	tmp_h = *h;
 	swab_polheader (&tmp_h);
@@ -75,7 +75,7 @@ int pol_fread2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 	int n;
 
 	n = fread ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 	swab_polpoints (p, n_items);
 #endif
 	return (n);
@@ -84,14 +84,14 @@ int pol_fread2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 int pol_fwrite2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 	swab_polpoints (p, n_items);
 #endif
 	n = fwrite ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
 	return (n);
 }
 
-#if WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 void swab_polheader (struct GMT3_POLY *h)
 {
 	unsigned int *i, j;

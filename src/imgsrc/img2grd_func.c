@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.18 2011-05-14 00:04:06 guru Exp $
+/* $Id: img2grd_func.c,v 1.19 2011-05-19 15:18:56 remko Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -540,7 +540,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			exit (EXIT_FAILURE);
 		}
 
-#if defined(_WIN32) || WORDS_BIGENDIAN == 0
+#ifndef WORDS_BIGENDIAN
 		for (iout = 0; iout < navg * imgcoord.nxcol; iout++) row[iout] = GMT_swab2 (row[iout]);
 #endif
 

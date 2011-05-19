@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.26 2011-05-16 21:23:09 guru Exp $
+ *	$Id: gmt_esri_io.c,v 1.27 2011-05-19 15:18:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,10 +30,10 @@
   */
 
 #ifndef MY_ENDIAN
-#if WORDS_BIGENDIAN == 0
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#else
+#ifdef WORDS_BIGENDIAN
 #define MY_ENDIAN 'B'	/* This machine is Big endian */
+#else
+#define MY_ENDIAN 'L'	/* This machine is Little endian */
 #endif
 #endif
 

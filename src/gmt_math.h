@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.35 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_math.h,v 1.36 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,69 +42,69 @@ EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void 
 #define qsort GMT_qsort
 #endif
 
-#if defined(copysign)
-/* Macro already takes care of copysign - probably from BSD */
-#elif HAVE_COPYSIGN == 0
-#define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
-#else
+#if defined(HAVE_COPYSIGN)
 extern double copysign(double x, double y);
-#endif
-
-#if defined(log2)
-/* Macro already takes care of log2 - probably from BSD */
-#elif HAVE_LOG2 == 0
-#define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
+#elif defined(copysign)
+/* Macro already takes care of copysign - probably from BSD */
 #else
-extern double log2(double x);
+#define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #endif
 
-#if HAVE_LOG1P == 0
+#if defined(HAVE_LOG2)
+extern double log2(double x);
+#elif defined(log2)
+/* Macro already takes care of log2 - probably from BSD */
+#else
+#define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
+#endif
+
+#if defined(HAVE_LOG1P)
+extern double log1p(double x);
+#elif defined(log1p)
+/* Macro already takes care of log1p - probably from BSD */
+#else
 #define log1p(x) GMT_log1p(x)
 EXTERN_MSC double GMT_log1p(double x);
-#else
-extern double log1p(double x);
 #endif
 
-#if defined(hypot)
+#if defined(HAVE_HYPOT)
+extern double hypot(double x, double y);
+#elif defined(hypot)
 /* Macro already takes care of hypot - probably from BSD */
-#elif HAVE_HYPOT == 0
+#else
 #define hypot(x,y) GMT_hypot(x,y)
 EXTERN_MSC double GMT_hypot(double x, double y);
-#else
-extern double hypot(double x, double y);
 #endif
 
-#if HAVE_ACOSH == 0
-/* #define acosh(x) d_log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0))) */
-#define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
-#else
+#ifdef HAVE_ACOSH
 extern double acosh(double x);
-#endif
-
-#if HAVE_ASINH == 0
-/* #define asinh(x) d_log((x) + (hypot((x), 1.0))) */
-#define asinh(x) log((x) + (hypot((x), 1.0)))
 #else
-extern double asinh(double x);
+#define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
 #endif
 
-#if HAVE_ATANH == 0
+#ifdef HAVE_ASINH
+extern double asinh(double x);
+#else
+#define asinh(x) log((x) + (hypot((x), 1.0)))
+#endif
+
+#ifdef HAVE_ATANH
+extern double atanh(double x);
+#else
 #define atanh(x) GMT_atanh(x)
 EXTERN_MSC double GMT_atanh(double x);
-#else
-extern double atanh(double x);
 #endif
 
-#if HAVE_RINT == 0
-#define rint(x) (floor((x)+0.5))
-#else
+#ifdef HAVE_RINT
 extern double rint(double x);
+#else
+#define rint(x) (floor((x)+0.5))
 #endif
 
-#if HAVE_IRINT == 0
-#define irint(x) ((int)rint(x))
-#else
+#ifdef HAVE_IRINT
 extern int irint(double x);
+#else
+#define irint(x) ((int)rint(x))
 #endif
 
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
@@ -112,98 +112,98 @@ extern int irint(double x);
  * seek to use them.  If not available then we compile in
  * replacements from gmt_stat.c */
 
-#if defined(j0)
+#if defined(HAVE_J0)
+extern double j0(double x);
+#elif defined(j0)
 /* Macro already takes care of j0 - probably from BSD */
-#elif HAVE_J0 == 0
+#else
 #define j0(x) GMT_j0(x)
 EXTERN_MSC double GMT_j0(double x);
-#else
-extern double j0(double x);
 #endif
 
-#if defined(j1)
+#if defined(HAVE_J1)
+extern double j1(double x);
+#elif defined(j1)
 /* Macro already takes care of j1 - probably from BSD */
-#elif HAVE_J1 == 0
+#else
 #define j1(x) GMT_j1(x)
 EXTERN_MSC double GMT_j1(double x);
-#else
-extern double j1(double x);
 #endif
 
-#if defined(jn)
+#if defined(HAVE_JN)
+extern double jn(int n, double x);
+#elif defined(jn)
 /* Macro already takes care of jn - probably from BSD */
-#elif HAVE_JN == 0
+#else
 #define jn(n, x) GMT_jn(n, x)
 EXTERN_MSC double GMT_jn(int n, double x);
-#else
-extern double jn(int n, double x);
 #endif
 
-#if defined(y0)
+#if defined(HAVE_Y0)
+extern double y0(double x);
+#elif defined(y0)
 /* Macro already takes care of y0 - probably from BSD */
-#elif HAVE_Y0 == 0
+#else
 #define y0(x) GMT_y0(x)
 EXTERN_MSC double GMT_y0(double x);
-#else
-extern double y0(double x);
 #endif
 
-#if defined(y1)
+#if defined(HAVE_Y1)
+extern double y1(double x);
+#elif defined(y1)
 /* Macro already takes care of y1 - probably from BSD */
-#elif HAVE_Y1 == 0
+#else
 #define y1(x) GMT_y1(x)
 EXTERN_MSC double GMT_y1(double x);
-#else
-extern double y1(double x);
 #endif
 
-#if defined(yn)
+#if defined(HAVE_YN)
+extern double yn(int n, double x);
+#elif defined(yn)
 /* Macro already takes care of yn - probably from BSD */
-#elif HAVE_YN == 0
+#else
 #define yn(n, x) GMT_yn(n, x)
 EXTERN_MSC double GMT_yn(int n, double x);
-#else
-extern double yn(int n, double x);
 #endif
 
-#if defined(erf)
+#if defined(HAVE_ERF)
+extern double erf(double x);
+#elif defined(erf)
 /* Macro already takes care of erf - probably from BSD */
-#elif HAVE_ERF == 0
+#else
 #define erf(x) GMT_erf(x)
 EXTERN_MSC double GMT_erf(double x);
-#else
-extern double erf(double x);
 #endif
 
-#if defined(erfc)
+#if defined(HAVE_ERFC)
+extern double erfc(double x);
+#elif defined(erfc)
 /* Macro already takes care of erfc - probably from BSD */
-#elif HAVE_ERFC == 0
+#else
 #define erfc(x) GMT_erfc(x)
 EXTERN_MSC double GMT_erfc(double x);
-#else
-extern double erfc(double x);
 #endif
 
-#if defined(strdup)
+#if defined(HAVE_STRDUP)
+extern char *strdup(const char *s);
+#elif defined(strdup)
 /* Macro already takes care of strdup - probably from BSD */
-#elif HAVE_STRDUP == 0
+#else
 #define strdup(s) GMT_strdup(s)
 EXTERN_MSC char *GMT_strdup(const char *s);
-#else
-extern char *strdup(const char *s);
 #endif
 
-#if defined(strtod)
-/* Macro already takes care of strtod - probably from BSD */
-#elif HAVE_STRTOD == 0
-#define strtod(p, e) GMT_strtod(p, e)
-EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
-#else
+#if defined(HAVE_STRTOD)
 #if defined(WIN32) && !defined(__MINGW32__)
 #pragma warning( disable : 4273 )	/* The annoying inconsistent dll linkage */
 #pragma warning( disable : 4706 )	/* assignment within conditional expression */
 #endif
 extern double strtod(const char *nptr, char **endptr);
+#elif defined(strtod)
+/* Macro already takes care of strtod - probably from BSD */
+#else
+#define strtod(p, e) GMT_strtod(p, e)
+EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
@@ -211,13 +211,13 @@ extern double strtod(const char *nptr, char **endptr);
  * can be used instead.
  */
  
-#if HAVE_ALPHASINCOS == 1
-#define sincos(x,s,c) alpha_sincos (x, s, c)
-extern void alpha_sincos (double x, double *s, double *c);
+#if defined(HAVE_SINCOS)
+extern void sincos (double x, double *s, double *c);
 #elif defined(sincos)
 /* Macro already takes care of strtod - probably from BSD */
-#elif HAVE_SINCOS == 1
-extern void sincos (double x, double *s, double *c);
+#elif defined(HAVE_ALPHASINCOS)
+#define sincos(x,s,c) alpha_sincos (x, s, c)
+extern void alpha_sincos (double x, double *s, double *c);
 #else
 EXTERN_MSC void sincos (double x, double *s, double *c);
 #endif

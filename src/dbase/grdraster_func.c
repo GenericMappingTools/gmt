@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.21 2011-05-16 21:23:11 guru Exp $
+ *	$Id: grdraster_func.c,v 1.22 2011-05-19 15:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,10 +34,10 @@
 
 EXTERN_MSC void GMT_str_toupper (char *string);
 
-#if WORDS_BIGENDIAN == 0
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#else
+#ifdef WORDS_BIGENDIAN
 #define MY_ENDIAN 'B'	/* This machine is Little endian */
+#else
+#define MY_ENDIAN 'L'	/* This machine is Little endian */
 #endif
 
 struct GRDRASTER_CTRL {
@@ -638,10 +638,10 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	nrasters = load_rasinfo (GMT, &rasinfo, MY_ENDIAN);
 	for (i = 0; i < nrasters; i++) GMT_message (GMT, "%s\n", rasinfo[i].h.command);
 	GMT_message (GMT, "------------------------------------------------------------------------------------\n\n");
-#if WORDS_BIGENDIAN == 0
-	GMT_message (GMT, "grdraster default binary byte order is Little-endian\n");
-#else
+#ifdef WORDS_BIGENDIAN
 	GMT_message (GMT, "grdraster default binary byte order is Big-endian\n");
+#else
+	GMT_message (GMT, "grdraster default binary byte order is Little-endian\n");
 #endif
 	GMT_free (GMT, rasinfo);
 

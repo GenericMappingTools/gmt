@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1035 2011-05-19 02:51:15 remko Exp $
+	$Id: ChangeLog,v 1.1036 2011-05-19 15:18:56 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-19	remko
 	* pslib.c, pslib_f77.c:	Split off Fortran bindings
-	* pslib.c, gmt_support.c:	Make new *_getusername routines, returning "unknown" on WIN32.
+	* pslib.c, gmt_support.c:	Make new *_putusername routines, returning "unknown" on WIN32.
+	* gmt_notposix.h:	Properly use #undef HAVE_<func>, instead of #define HAVE_<func> 0
+	* *.[ch]:		Changed accordingly (needs #if defined() now)
+	* *.sh:			Replaced contour label spec +s and +k by +f
+	* *contour_func.c:	---"---
 
 2011-05-18	remko
 	* *.tex:		Removed .gmt_bb_info; replaced {\it} by \emph{} and {\bf} by \textbf{}.

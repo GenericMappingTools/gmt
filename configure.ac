@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.114 2011-05-18 21:20:46 remko Exp $
+dnl $Id: configure.ac,v 1.115 2011-05-19 15:18:56 remko Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.114 $)
+AC_REVISION($Revision: 1.115 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -242,31 +242,8 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
-AC_CHECK_FUNC(copysign, AC_DEFINE(HAVE_COPYSIGN), )
-AC_CHECK_FUNC(log2, AC_DEFINE(HAVE_LOG2), )
-AC_CHECK_FUNC(log1p, AC_DEFINE(HAVE_LOG1P), )
-AC_CHECK_FUNC(hypot, AC_DEFINE(HAVE_HYPOT), )
-AC_CHECK_FUNC(acosh, AC_DEFINE(HAVE_ACOSH), )
-AC_CHECK_FUNC(asinh, AC_DEFINE(HAVE_ASINH), )
-AC_CHECK_FUNC(atanh, AC_DEFINE(HAVE_ATANH), )
-AC_CHECK_FUNC(rint, AC_DEFINE(HAVE_RINT), )
-AC_CHECK_FUNC(irint, AC_DEFINE(HAVE_IRINT), )
-AC_CHECK_FUNC(isnanf, AC_DEFINE(HAVE_ISNANF), )
-AC_CHECK_FUNC(isnand, AC_DEFINE(HAVE_ISNAND), )
-AC_CHECK_FUNC(isnan, AC_DEFINE(HAVE_ISNAN), )
-AC_CHECK_FUNC(j0, AC_DEFINE(HAVE_J0), )
-AC_CHECK_FUNC(j1, AC_DEFINE(HAVE_J1), )
-AC_CHECK_FUNC(jn, AC_DEFINE(HAVE_JN), )
-AC_CHECK_FUNC(y0, AC_DEFINE(HAVE_Y0), )
-AC_CHECK_FUNC(y1, AC_DEFINE(HAVE_Y1), )
-AC_CHECK_FUNC(yn, AC_DEFINE(HAVE_YN), )
-AC_CHECK_FUNC(erf, AC_DEFINE(HAVE_ERF), )
-AC_CHECK_FUNC(erfc, AC_DEFINE(HAVE_ERFC), )
-AC_CHECK_FUNC(strdup, AC_DEFINE(HAVE_STRDUP), )
-AC_CHECK_FUNC(strtod, AC_DEFINE(HAVE_STRTOD), )
-AC_CHECK_FUNC(strtok_r, AC_DEFINE(HAVE_STRTOK_R), )
-AC_CHECK_FUNC(qsort_r, AC_DEFINE(HAVE_QSORT_R), )
-AC_CHECK_FUNCS([floor getcwd gettimeofday memset modf pow rint sqrt strchr strdup strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([copysign log2 log1p hypot acosh asinh atanh rint irint isnanf isnand isnan j0 j1 jn y0 y1 yn erf efc pow sqrt sincos alphasincos])
+AC_CHECK_FUNCS([floor getcwd getpwuid gettimeofday memset modf qsort_r strchr strdup strtod strtok_r strpbrk strrchr strstr strtol])
 dnl -----------------------------------------------------------------
 dnl Find out about byte order and if default compilation is 64-bit
 dnl -----------------------------------------------------------------
