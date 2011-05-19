@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.19 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.20 2011-05-19 23:12:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -315,7 +315,7 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtmath %s [API] - Reverse Polish Notation (RPN) calculator for table data\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtmath [-A<t_f(t).d>] [-C<cols>] [-F<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
+	GMT_message (GMT, "usage: gmtmath [-A<t_f(t).d>] [-C<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
 	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin/tmax/t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
@@ -343,7 +343,6 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   No additional data files may be specified.\n");
 	GMT_message (GMT, "\t-C Change which columns to operate on [Default is all except time].\n");
 	GMT_message (GMT, "\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n");
-	GMT_message (GMT, "\t-F Give comma-separated list of desired columns or ranges to output (0 is first column) [Default is all].\n");
 	GMT_message (GMT, "\t-I Reverses the output sequence into descending order [ascending].\n");
 	GMT_message (GMT, "\t-L Applies operators on a per-segment basis [cumulates operations across file].\n");
 	GMT_message (GMT, "\t-N Sets the number of columns and the id of the time column (0 is first) [2/0].\n");
