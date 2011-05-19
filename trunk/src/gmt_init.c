@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.519 2011-05-18 21:30:25 remko Exp $
+ *	$Id: gmt_init.c,v 1.520 2011-05-19 00:28:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1725,23 +1725,43 @@ GMT_LONG gmt_parse_U_option (struct GMT_CTRL *C, char *item) {
 }
 
 GMT_LONG gmt_parse_colon_option (struct GMT_CTRL *C, char *item) {
-	GMT_LONG error = 0;
+	GMT_LONG error = 0, way, off = 0, ok[2] = {FALSE, FALSE};
+	static char *mode[4] = {"i", "o", "", ""}, *dir[2] = {"input", "output"};
 	char kase = (item) ? item[0] : '\0';
-	/* Parse the -: option.  Full syntax: -:[i|o] */
+	/* Parse the -: option.  Full syntax: -:[i|o].
+	 * We know that if -f was given it has already been parsed due to the parsing order imposed.
+	 * Must check that -: does not conflict with -f */
+	
 	switch (kase) {
 		case 'i':	/* Toggle on input data only */
-			C->current.setting.io_lonlat_toggle[GMT_IN] = TRUE;
+			ok[GMT_IN] = TRUE;
 			break;
 		case 'o':	/* Toggle on output data only */
-			C->current.setting.io_lonlat_toggle[GMT_OUT] = TRUE;
+			ok[GMT_OUT] = TRUE;
 			break;
 		case '\0':	/* Toggle both input and output data */
-			C->current.setting.io_lonlat_toggle[GMT_IN] = C->current.setting.io_lonlat_toggle[GMT_OUT] = TRUE;
+			ok[GMT_IN] = ok[GMT_OUT] = TRUE;
+			off = 2;
 			break;
 		default:
-			error++;
+			error++;	/* Error */
 			break;
 	}
+	for (way = 0; !error && way < 2; way++) if (ok[way]) {
+		if (C->current.io.col_type[way][GMT_X] == GMT_IS_UNKNOWN && C->current.io.col_type[way][GMT_Y] == GMT_IS_UNKNOWN)	/* Dont know what x/y is yet */
+			C->current.setting.io_lonlat_toggle[way] = TRUE;
+		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_FLOAT && C->current.io.col_type[way][GMT_Y] == GMT_IS_FLOAT)	/* Cartesian x/y vs y/x cannot be identified */
+			C->current.setting.io_lonlat_toggle[way] = TRUE;
+		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)	/* Lon/lat becomes lat/lon */
+			C->current.setting.io_lonlat_toggle[way] = TRUE;
+		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_LAT && C->current.io.col_type[way][GMT_Y] == GMT_IS_LON)	/* Already lat/lon! */
+			GMT_report (C, GMT_MSG_FATAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
+		else {
+			GMT_report (C, GMT_MSG_FATAL, "Error: -:%s given but %s first two columns do not hold x/y or lon/lat\n", mode[way+off], dir[way]);
+			error++;
+		}
+	}
+	if (error) C->current.setting.io_lonlat_toggle[GMT_IN] = C->current.setting.io_lonlat_toggle[GMT_OUT] = FALSE;	/* Leave in case we had errors */
 	return (error);
 }
 
