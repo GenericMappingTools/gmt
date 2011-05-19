@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.85 2011-05-19 18:27:08 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.86 2011-05-19 20:56:22 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -375,7 +375,7 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
 		case 's':
 		case 'S':
@@ -567,6 +567,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
 		case 's':
 		case 'S':
@@ -952,16 +953,18 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 		case 'm':	/* 2-digit minutes */
 			(P->date.compact) ? sprintf (string, "%ld", calendar.min) : sprintf (string, "%2.2ld", calendar.min);
 			break;
-		case 'S':	/* Seconds via clock format */
 #ifdef GMT_COMPAT
 		case 'C':
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit C for seconds is deprecated; use S.\n");
 #endif
+		case 'S':	/* Seconds via clock format */
 			GMT_format_calendar (C, CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
-		case 's':	/* 2-digit seconds */
 #ifdef GMT_COMPAT
 		case 'c':
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
+		case 's':	/* 2-digit seconds */
 			(P->date.compact) ? sprintf (string, "%ld", (GMT_LONG)irint(calendar.sec)) : sprintf (string, "%2.2ld", (GMT_LONG)irint(calendar.sec));
 			break;
 		default:
