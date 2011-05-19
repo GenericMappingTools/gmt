@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.23 2011-05-17 00:23:50 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.24 2011-05-19 01:38:15 jluis Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -44,7 +44,6 @@
 #define NEG 0
 
 EXTERN_MSC GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month);
-EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
 EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
 
 GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
