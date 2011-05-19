@@ -77,7 +77,7 @@ color = black, style = solid].
 BD(+r)IT(min_rad)
 Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'
 .TP
-\fB+t[IT(file)]
+BD(+t)[IT(file)]
 #ifdef GRID
 Saves contour label x, y, and text to IT(file) [Contour_labels.txt].
 #else
