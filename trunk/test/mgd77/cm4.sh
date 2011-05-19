@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: cm4.sh,v 1.1 2011-05-18 23:36:15 jluis Exp $
+#	$Id: cm4.sh,v 1.2 2011-05-19 22:06:16 jluis Exp $
 #
 
 . ../functions.sh
@@ -16,7 +16,6 @@ lat=`tail -n +5 $dia | head -1 | awk '{print $3}'`
 alt=`tail -n +7 $dia | head -1 | awk '{print $2/1000}'`
 data=`tail -n +27 $dia | head -1 | awk '{print $1}'`
 
-echo $lon $lat $alt $data
 IGRF=`echo $lon $lat $alt $data | mgd77magref -Fxyz/0`
 
 tail -n +27 $dia | awk '{print $1"T"$2, sqrt($4*$4+$5*$5+$6*$6)}' > zz1.dat
@@ -51,6 +50,6 @@ echo ${m1[0]} ${t[0]} 10 0 17 CT IGRF = $IGRF | pstext -R -J -N -Xa7.5c -Ya3.0c 
 # Plot histogram of differences with mean removed
 gmtmath dif_T.dat $mean SUB = | pshistogram -F -W2 -G0 -JX4c/3c -BWN -Xa11.5c -O -K >> $ps
 
-rm -f zz1.dat zz2.dat
+rm -f zz1.dat zz2.dat dif_T.dat
 
 #pscmp
