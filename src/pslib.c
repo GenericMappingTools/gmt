@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.265 2011-05-19 02:51:15 remko Exp $
+ *	$Id: pslib.c,v 1.266 2011-05-19 03:00:45 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1122,7 +1122,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL_LONG i, manual_feed = FALSE;
 	double no_rgb[4] = {-1.0, -1.0, -1.0, 0.0}, dummy_rgb[4] = {-2.0, -2.0, -2.0, 0.0}, black[4] = {0.0, 0.0, 0.0, 0.0}, scl;
 	time_t right_now;
-	char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'}, *user;
+	char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'}, user[PSL_BUFSIZ];
 	double units_per_inch[4] = {2.54, 1.0, 0.0254, 72.0};	/* cm, inch, m, points per inch */
 
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
