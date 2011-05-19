@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.262 2011-05-18 21:28:52 remko Exp $
+ *	$Id: pslib.c,v 1.263 2011-05-19 00:28:45 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1284,6 +1284,15 @@ PSL_LONG PSL_endplot_ (PSL_LONG *lastpage)
 {
 	return (PSL_endplot (PSL_FORTRAN, *lastpage));
 }
+#endif
+
+#ifdef WIN32
+
+/* Make dummy functions so GMT will link under WIN32 where these functions do not exist */
+
+struct passwd *getpwuid (const int uid) { return ((struct passwd *)NULL); }
+int getuid (void) { return (0); }
+
 #endif
 
 PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[])
