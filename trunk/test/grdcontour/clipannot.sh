@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: clipannot.sh,v 1.3 2011-05-18 16:20:25 remko Exp $
+#	$Id: clipannot.sh,v 1.4 2011-05-19 14:46:39 remko Exp $
 
 . ../functions.sh
 header "Test grdcontour for clip path set by annotations"
@@ -10,7 +10,7 @@ ps=clipannot.ps
 # Then draw some lines intersection the annotations and draw
 # a dense gridline set.  Text should not have lines through them.
 grdmath -R0/10/0/10 -I0.1 X Y MUL = tmp.nc
-grdcontour -A20+e+c0.05i+s24 -C10 tmp.nc -JX6i -P -K > $ps
+grdcontour -A20+e+c0.05i+f24p -C10 tmp.nc -JX6i -P -K > $ps
 psxy -R -J -O -K -W1p,red << EOF >> $ps
 > line through 20 label
 0	0
