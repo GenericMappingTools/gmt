@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.14 2011-05-19 16:24:45 jluis Exp $
+ *	$Id: mgd77magref_func.c,v 1.15 2011-05-19 22:09:37 jluis Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -516,6 +516,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return (GMT_DATA_READ_ERROR);
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
+	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return ((int)error);
 	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return ((int)error);	/* Disables further data input */
 
