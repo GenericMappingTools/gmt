@@ -43,13 +43,13 @@ then a parallel. Or use OPT(Ap) to start following a parallel, then a meridian.
 (This can be practical for resampling lines along parallels, for example).
 Ignored unless OPT(C) is used.
 .TP
-OPT(C)IT(length)/IT(ds)[IT(spacing)]
+OPT(C)IT(length)BD(/)IT(ds)[BD(/)IT(spacing)]
 Use input line segments to create an equidistant and (optionally) equally-spaced set of crossing profiles along which
 we sample the grid(s) [Default simply samples the grid(s) at the input locations].
 Specify two length scales that control how the sampling is done:
-\fIlength\fP sets the full length of each cross-profile, while
-\fIds\fP is the distance increment along each cross-profile.
-Optionally, append /\fIspacing\fP for an equidistant spacing between cross-profiles [Default erects cross-profiles at the input coordinates].
+IT(length) sets the full length of each cross-profile, while
+IT(ds) is the distance increment along each cross-profile.
+Optionally, append BD(/)IT(spacing) for an equidistant spacing between cross-profiles [Default erects cross-profiles at the input coordinates].
 Append suitable units for each length scale (See UNITS below).
 The output columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
 .TP

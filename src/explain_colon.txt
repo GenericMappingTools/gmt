@@ -1,2 +1,2 @@
 .TP
-GMT_colon_OPT Expect (\fIlat,lon\fP) instead of (\fIlon,lat\fP).
+GMT_colon_OPT Expect (IT(lat),IT(lon)) instead of (IT(lon),IT(lat)).

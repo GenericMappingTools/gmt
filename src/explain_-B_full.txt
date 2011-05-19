@@ -19,7 +19,7 @@ BD(h) (hour, plot with 2 digits), BD(M) (minute, plot using BD(FORMAT_CLOCK_MAP)
 BD(S) (second, plot using BD(FORMAT_CLOCK_MAP)), BD(s) (second, plot with 2 digits).  Note for geographic axes
 BD(m) and BD(s) instead mean arc minutes and arc seconds.  All entities that are language-specific are under control
 by BD(TIME_LANGUAGE).  For custom annotations and intervals, let IT(xinfo), IT(yinfo), or IT(zinfo) be
-BD(c)\fIintfile,\fP, where IT(intfile) contains any number
+BD(c)IT(intfile), where IT(intfile) contains any number
 of records with IT(coord) IT(type) [IT(label)].  Here, IT(type) is one or more letters from BD(a)|BD(i), BD(f), and BD(g).
 For BD(a)|BD(i) you must supply a IT(label) that will be plotted at the IT(coord) location.
 To specify separate x and y ticks, separate the substrings that apply to the x and y
