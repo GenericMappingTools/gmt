@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.84 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.85 2011-05-19 18:27:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -372,12 +372,13 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 	}
 
 	switch (unit) {
-		case 's':
-		case 'S':
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
+			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
+		case 's':
+		case 'S':
 			if (step > 60) {
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in seconds must be <= 60\n");
 				retval = -1;
@@ -563,12 +564,13 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 	}
 	
 	switch (p->unit) {
-		case 's':
-		case 'S':
 #ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
 #endif
+		case 's':
+		case 'S':
+
 			k = p->step;
 			gmt_small_moment_interval (C, p, k, init);
 			break;
