@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.70 2011-04-27 15:35:24 remko Exp $
+#	$Id: Makefile,v 1.71 2011-05-19 20:51:24 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,7 +67,7 @@ PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
 
 LIBPS_O		= pslib.o
 LIBGMT_O	= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_fft.o gmt_grdio.o \
-		  gmt_io.o  gmt_nc.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o \
+		  gmt_io.o  gmt_nc.o gmt_notposix.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o \
 		  gmt_vector.o $(TRIANGLE_O) $(ALPHA_SINCOS_O) gmtapi_parse.o $(FUNCS_O)
 LIBGMTPS_O	= gmt_init.o gmt_map.o gmt_plot.o gmtapi_util.o $(FUNCSPS_O) $(API_O)
 
