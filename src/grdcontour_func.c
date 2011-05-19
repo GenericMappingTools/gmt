@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.23 2011-05-18 02:22:17 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.24 2011-05-19 15:16:21 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,7 +36,7 @@ struct GRDCONTOUR_CTRL {
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
-	struct A {	/* -A[-|<aint>][+a<angle>][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+l<label>][+o|O|t][+s<size>][+p<pen>][+u<unit>] */
+	struct A {	/* -A[-][labelinfo] */
 		GMT_LONG active;
 		GMT_LONG mode;	/* 1 turns off all labels */
 		double interval;
@@ -244,11 +244,9 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Annotation control */
-				/* Format: -A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+s<size>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
-
 				Ctrl->A.active = TRUE;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+k<rgb>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+s<size>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
