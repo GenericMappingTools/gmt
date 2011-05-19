@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.264 2011-05-19 00:45:38 remko Exp $
+ *	$Id: pslib.c,v 1.265 2011-05-19 02:51:15 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -154,7 +154,6 @@
 
 #ifndef WIN32
 #include <unistd.h>
-#include <pwd.h>
 #endif
 
 /* Macro for exit since this should be returned when called from Matlab */
@@ -328,6 +327,7 @@ PSL_LONG psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, 
 PSL_LONG psl_encodefont (struct PSL_CTRL *PSL, PSL_LONG font_no);
 PSL_LONG psl_putfont (struct PSL_CTRL *PSL, double fontsize);
 void psl_getorigin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2);
+PSL_LONG psl_getusername (char *user);
 
 /* These are used when the PDF pdfmark extension for transparency is used. */
 
@@ -1103,13 +1103,6 @@ PSL_LONG PSL_endplot (struct PSL_CTRL *PSL, PSL_LONG lastpage)
 	return (PSL_NO_ERROR);
 }
 
-#ifdef WIN32
-/* Make dummy functions so GMT will link under WIN32 where these functions do not exist */
-
-struct passwd *getpwuid (const int uid) { return ((struct passwd *)NULL); }
-int getuid (void) { return (0); }
-#endif
-
 PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[])
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait
@@ -1129,9 +1122,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL_LONG i, manual_feed = FALSE;
 	double no_rgb[4] = {-1.0, -1.0, -1.0, 0.0}, dummy_rgb[4] = {-2.0, -2.0, -2.0, 0.0}, black[4] = {0.0, 0.0, 0.0, 0.0}, scl;
 	time_t right_now;
-	char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'};
+	char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'}, *user;
 	double units_per_inch[4] = {2.54, 1.0, 0.0254, 72.0};	/* cm, inch, m, points per inch */
-	struct passwd *pw = NULL;
 
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
@@ -1174,9 +1166,6 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg H");	/* Same, for HSV triplets */
 	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg K");	/* Same, for CMYK quadruples */
 
-	/* Get user name */
-	pw = getpwuid (getuid ());
-
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
 	if (!overlay) {	/* Must issue PSL header */
@@ -1194,7 +1183,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 			PSL_command (PSL, "%%%%Title: PSL v%s document\n", PSL_Version);
 			PSL_command (PSL, "%%%%Creator: PSL\n");
 		}
-		if (pw) PSL_command (PSL, "%%%%For: %s\n", pw->pw_name);
+		psl_getusername (user);
+		PSL_command (PSL, "%%%%For: %s\n", user);
 		if (font_no) {
 			PSL_command (PSL, "%%%%DocumentNeededResources: font");
 			for (i = 0; i < PSL_MAX_EPS_FONTS && font_no[i] != -1; i++) PSL_command (PSL, " %s", PSL->internal.font[font_no[i]].name);
@@ -4467,6 +4457,21 @@ PSL_LONG psl_iz (struct PSL_CTRL *PSL, double z)
 PSL_LONG psl_ip (struct PSL_CTRL *PSL, double p)
 {	/* Convert PS points to PS dots */
 	return ((PSL_LONG)irint (p * PSL->internal.dpp));
+}
+
+PSL_LONG psl_getusername (char *user)
+{
+#ifndef WIN32
+#include <pwd.h>
+	struct passwd *pw = NULL;
+	pw = getpwuid (getuid ());
+	if (pw) {
+		strcpy (user, pw->pw_name);
+		return (FALSE);
+	}
+#endif
+	strcpy (user, "unknown");
+	return (TRUE);
 }
 
 #if defined (WIN32) || defined (__MINGW32__)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.518 2011-05-18 02:22:17 guru Exp $
+ *	$Id: gmt_support.c,v 1.519 2011-05-19 02:51:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -10083,4 +10083,19 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	*Lout = L;		/* Pass pointer to the array of segments */
 	
 	return (n_split);	/* Return how many segments was made */
+}
+
+GMT_LONG GMT_getusername (struct GMT_CTRL *C, char *user)
+{
+#ifndef WIN32
+#include <pwd.h>
+	struct passwd *pw = NULL;
+	pw = getpwuid (getuid ());
+	if (pw) {
+		strcpy (user, pw->pw_name);
+		return (FALSE);
+	}
+#endif
+	strcpy (user, "unknown");
+	return (TRUE);
 }
