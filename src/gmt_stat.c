@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.86 2011-05-19 15:18:56 remko Exp $
+ *	$Id: gmt_stat.c,v 1.87 2011-05-19 20:51:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,18 +34,13 @@
  *	GMT_kei:	Kelvin-Bessel function kei(x)
  *	GMT_ker:	Kelvin-Bessel function ker(x)
  *	GMT_plm:	Legendre polynomial of degree L order M
+ *	GMT_plm_bar:	Normalized Legendre polynomial of degree L order M
  *	GMT_i0:		Modified Bessel function 1st kind order 0
  *	GMT_i1:		Modified Bessel function 1st kind order 1
  *	GMT_i2:		Modified Bessel function 1st kind order N
  *	GMT_k0:		Modified Kelvin function 2nd kind order 0
  *	GMT_k1:		Modified Kelvin function 2nd kind order 1
  *	GMT_kn:		Modified Kelvin function 2nd kind order N
- *	GMT_j0:		Bessel function 1st kind order 0
- *	GMT_j1:		Bessel function 1st kind order 1
- *	GMT_jn:		Bessel function 1st kind order N
- *	GMT_y0:		Bessel function 2nd kind order 0
- *	GMT_y1:		Bessel function 2nd kind order 1
- *	GMT_yn:		Bessel function 2nd kind order N
  *	GMT_dilog:	The dilog function
  *	GMT_erfinv:	The inverse error function
  *	GMT_rand:	Uniformly distributed random numbers 0 < x < 1
@@ -59,14 +54,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
-
-#if !defined(HAVE_SINCOS) && !defined(HAVE_ALPHASINCOS)
-/* Platform does not have sincos - make a dummy one with sin and cos */
-void sincos (double a, double *s, double *c)
-{
-	*s = sin (a);	*c = cos (a);
-}
-#endif
 
 GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
 {
@@ -982,252 +969,6 @@ double GMT_erfinv (struct GMT_CTRL *C, double y)
 	return (x);
 }
 
-#if !defined(HAVE_ERF) || !defined(HAVE_ERFC)
-
-/* Need to include the GMT error functions GMT_erf & GMT_erfc
- * since they are not in the user's local library.
- */
-
-#ifndef SQRT_PI
-#define SQRT_PI 0.5641895835477563
-#endif
-
-static double p[5] = {113.8641541510502, 377.4852376853020,
-	3209.377589138469, 0.1857777061846032, 3.161123743870566};
-static double q[4] = {244.0246379344442, 1282.616526077372,
-	2844.236833439171, 23.60129095234412};
-static double p1[9] = {8.883149794388376, 66.11919063714163,
-	298.6351381974001, 881.9522212417691, 1712.047612634071,
-	2051.078377826071, 1230.339354797997, 2.153115354744038e-8,
-	0.5641884969886701};
-static double q1[8] = {117.6939508913125, 537.1811018620099,
-	1621.389574566690, 3290.799235733460, 4362.619090143247,
-	3439.367674143722, 1230.339354803749, 15.74492611070983};
-static double p2[6] = {-3.603448999498044e-01, -1.257817261112292e-01,
-	-1.608378514874228e-02, -6.587491615298378e-04,
-	-1.631538713730210e-02, -3.053266349612323e-01};
-static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
-	6.051834131244132e-02, 2.335204976268692e-03,
-	2.568520192289822};
-#endif
-
-#if !defined(HAVE_ERF)
-double GMT_erf (double y)
-{
-	GMT_LONG i, sign = 1;
-	double x, res, xsq, xnum, xden, xi;
-
-	x = y;
-	if (x < 0.0) {
-		sign = -1;
-		x = -x;
-	}
-	if (x < 1.0e-10)
-		res = x * p[2] / q[2];
-	else if (x < 0.477) {
-		xsq = x * x;
-		xnum = p[3] * xsq + p[4];
-		xden = xsq + q[3];
-		for (i = 0; i < 3; i++) {
-			xnum = xnum * xsq + p[i];
-			xden = xden * xsq + q[i];
-		}
-		res = x * xnum / xden;
-	}
-	else if (x <= 4.0)  {
-		xsq = x * x;
-		xnum = p1[7] * x + p1[8];
-		xden = x + q1[7];
-		for (i = 0; i < 7; i++) {
-			xnum = xnum * x + p1[i];
-			xden = xden * x + q1[i];
-		}
-		res = 1.0 - ((xnum / xden) * exp (-xsq));
-	}
-	else if (x < 6.375) {
-		xsq = x * x;
-		xi = 1.0 / xsq;
-		xnum = p2[4] * xi + p2[5];
-		xden = xi + q2[4];
-		for (i = 0; i < 4; i++) {
-			xnum = xnum * xi + p2[i];
-			xden = xden * xi + q2[i];
-		}
-		res = 1.0 - (((SQRT_PI + xi * xnum / xden) / x) * exp (-xsq));
-	}
-	else
-		res = 1.0;
-
-	if (sign == -1) res = -res;
-
-	return (res);
-}
-#endif
-
-#if !defined(HAVE_ERFC)
-double GMT_erfc (double y)
-{
-	GMT_LONG i, sign = 1;
-	double x, res, xsq, xnum, xden, xi;
-
-	x = y;
-	if (x < 0.0) {
-		sign = -1;
-		x = -x;
-	}
-	if (x < 1.0e-10) {
-		res = x * p[2] / q[2];
-		if (sign == -1) res = -res;
-		res = 1.0 - res;
-	}
-	else if (x < 0.477) {
-		xsq = x * x;
-		xnum = p[3] * xsq + p[4];
-		xden = xsq + q[3];
-		for (i = 0; i < 3; i++) {
-			xnum = xnum * xsq + p[i];
-			xden = xden * xsq + q[i];
-		}
-		res = x * xnum / xden;
-		if (sign == -1) res = -res;
-		res = 1.0 - res;
-	}
-	else if (x <= 4.0)  {
-		xsq = x * x;
-		xnum = p1[7] * x + p1[8];
-		xden = x + q1[7];
-		for (i = 0; i < 7; i++) {
-			xnum = xnum * x + p1[i];
-			xden = xden * x + q1[i];
-		}
-		res = (xnum / xden) * exp (-xsq);
-		if (sign == -1) res = 2.0 - res;
-	}
-	else if (x < 6.375) {
-		xsq = x * x;
-		xi = 1.0 / xsq;
-		xnum = p2[4] * xi + p2[5];
-		xden = xi + q2[4];
-		for (i = 0; i < 4; i++) {
-			xnum = xnum * xi + p2[i];
-			xden = xden * xi + q2[i];
-		}
-		res = ((SQRT_PI + xi * xnum / xden) / x) * exp (-xsq);
-		if (sign == -1) res = 2.0 - res;
-	}
-	else
-		res = 0.0;
-
-	return (res);
-}
-#endif
-
-#if !defined(HAVE_STRDUP)
-char *GMT_strdup (const char *s) {
-	GMT_LONG n;
-	char *p = NULL;
-
-	n = strlen (s) + 1;
-	p = (char *)malloc ((size_t)n);
-	strncpy (p, s, n);
-	return (p);
-}
-#endif
-
-#if !defined(HAVE_STRTOD)
-double GMT_strtod (const char *s, char **ends) {
-
-	/* Given s, try to scan it to convert an
-		ascii string representation of a
-		double, and return the double so
-		found.  If (ends != (char **)NULL),
-		return a pointer to the first char
-		of s which cannot be converted.
-
-	This routine is supplied in GMT because it
-	is not in the POSIX standard.  However, it
-	is in ANSI standard C, and so most systems
-	running GMT should have it as a library
-	routine.  If the library routine exists,
-	it should be used, as this one will probably
-	be slower.  Also, the library routine has
-	ways of dealing with LOCALE info on the
-	radix character, and error setting for
-	over and underflows.  Here, I rely on atof()
-	to do that.
-
-	Note that if s can be converted successfully
-	and a non-null ends was supplied, then on
-	return, *ends[0] == 0.
-
-	*/
-
-	char *t = NULL, savechar;
-	double x = 0.0;
-	GMT_LONG i, nsign[2], nradix[2], nexp, ndigits, error, inside = FALSE;
-
-	t = (char *)s;
-	i = 0;
-	ndigits = 0;
-	while (t[i] && isspace( (int)t[i]) ) i++;
-	if (t[i] == 0 || isalpha ( (int)t[i]) ) {
-		if (ends != (char **)NULL) *ends = (char *)s;
-		return (x);
-	}
-	nsign[0] = nsign[1] = nradix[0] = nradix[1] = nexp = error = 0;
-	while (t[i]) {
-		if (!isdigit((int)t[i])) {
-			switch (t[i]) {
-				case '+':
-				case '-':
-					nsign[nexp]++;
-					if (inside) error++;
-					inside = TRUE;
-					break;
-				case '.':	/* This hardwires the radix char,
-						instead of using LOCALE  */
-					nradix[nexp]++;
-					inside = TRUE;
-					break;
-				case 'e':
-				case 'E':
-					nexp++;
-					inside = FALSE;
-					break;
-				default:
-					error++;
-					break;
-			}
-			if (nexp > 1 || nradix[nexp] > 1 || nsign[nexp] > 1) error++;
-			if (error) {
-				if (ndigits == 0) {
-					if (ends != (char **)NULL) *ends = (char *)s;
-					return (0.0);
-				}
-				savechar = t[i];
-				t[i] = 0;
-				x = atof(t);
-				t[i] = savechar;
-				if (ends != (char **)NULL) *ends = &t[i];
-				return (x);
-			}
-		}
-		else {
-			ndigits++;
-			inside = TRUE;
-		}
-		i++;
-	}
-	if (ndigits == 0) {
-		if (ends != (char **)NULL) *ends = (char *)s;
-		return (0.0);
-	}
-	x = atof(t);
-	if (ends != (char **)NULL) *ends = &t[i];
-	return (x);
-}
-#endif
-
 GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
@@ -1585,209 +1326,6 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	return (F_mid);
 }
 
-#if !defined(HAVE_J0)
-
-/* Alternative j0 coded from Numerical Recipes by Press et al */
-
-double GMT_j0 (double x)
-{
-	double ax, z, xx, y, ans, ans1, ans2, s, c;
-
-	if ((ax = fabs (x)) < 8.0) {
-		y = x * x;
-		ans1 = 57568490574.0 + y * (-13362590354.0 + y * (651619640.7   + y * (-11214424.18    + y * (77392.33017   + y * (-184.9052456)))));
-		ans2 = 57568490411.0 + y * (  1029532985.0 + y * (  9494680.718 + y * (    59272.64853 + y * (  267.8532712 + y * 1.0))));
-		ans = ans1 / ans2;
-	}
-	else {
-		z = 8.0 / ax;
-		y = z * z;
-		xx = ax - 0.785398164;
-		ans1 = 1.0              + y * (-0.1098628627e-2 + y * ( 0.2734510407e-4 + y * (-0.2073370639e-5 + y * (0.2093887211e-6))));
-		ans2 = -0.1562499995e-1 + y * ( 0.1430488765e-3 + y * (-0.6911147651e-5 + y * ( 0.7621095161e-6 + y * (-0.934935152e-7))));
-		sincos (xx, &s, &c);
-		ans = d_sqrt (0.636619772 / ax) * (c * ans1 - z * s * ans2);
-	}
-
-	return (ans);
-}
-
-#endif
-
-#if !defined(HAVE_J1)
-
-/* Alternative j1 coded from Numerical Recipes by Press et al */
-
-double GMT_j1 (double x)
-{
-	double ax, z, xx, y, ans, ans1, ans2, s, c;
-
-	if ((ax = fabs (x)) < 8.0) {
-		y = x * x;
-		ans1 = x * (72362614232.0 + y * (-7895059235.0 + y * (242396853.1   + y * (-2972611.439    + y * (15704.48260   + y * (-30.16036606))))));
-		ans2 = 144725228442.0     + y * ( 2300535178.0 + y * ( 18583304.74  + y * (   99447.43394  + y * (  376.9991397 + y * 1.0))));
-		ans = ans1 / ans2;
-	}
-	else {
-		z = 8.0 / ax;
-		y = z * z;
-		xx = ax - 2.356194491;
-		ans1 = 1.0           + y * (  0.183105e-2     + y * (-0.3516396496e-4 + y * ( 0.2457520174e-5 + y * (-0.240337019e-6))));
-		ans2 = 0.04687499995 + y * ( -0.2002690873e-3 + y * ( 0.8449199096e-5 + y * (-0.88228987e-6   + y * ( 0.105787412e-6))));
-		sincos (xx, &s, &c);
-		ans = d_sqrt (0.636619772 / ax) * (c * ans1 - z * s * ans2);
-	}
-
-	return (ans);
-}
-
-#endif
-
-#if !defined(HAVE_JN)
-
-#define ACC 40.0
-#define BIGNO 1.0e10
-#define BIGNI 1.0e-10
-
-/* Alternative jn coded from Numerical Recipes by Press et al */
-
-double GMT_jn (int n, double x)
-{
-	int j, jsum, m;
-	double ax, bj, bjm, bjp, sum, tox, ans;
-
-	if (n == 0) return (GMT_j0 (x));
-	if (n == 1) return (GMT_j1 (x));
-
-	ax = fabs (x);
-	if (GMT_IS_ZERO (ax)) return (0.0);
-
-	if (ax > (double)n) {	/* Upwards recurrence */
-		tox = 2.0 / ax;
-		bjm = GMT_j0 (ax);
-		bj = GMT_j1 (ax);
-		for (j = 1; j < n; j++) {
-			bjp = (double)j * tox * bj - bjm;
-			bjm = bj;
-			bj = bjp;
-		}
-		ans = bj;
-	}
-	else {	/* More complicated here */
-		tox = 2.0 / ax;
-		m = 2 * ((n + (GMT_LONG) d_sqrt(ACC * n)) / 2);
-		jsum = 0;
-		bjp = ans = sum = 0.0;
-		bj = 1.0;
-		for (j = m; j > 0; j--) {
-			bjm = (double)j * tox * bj - bjp;
-			bjp = bj;
-			bj = bjm;
-			if (fabs (bj) > BIGNO) {
-				bj *= BIGNI;
-				bjp *= BIGNI;
-				ans *= BIGNI;
-				sum *= BIGNI;
-			}
-			if (jsum) sum += bj;
-			jsum = !jsum;
-			if (j == n) ans = bjp;
-		}
-		sum = 2.0 * sum - bj;
-		ans /= sum;
-	}
-
-	return ((x < 0.0 && (n % 2) == 1) ? -ans : ans);
-}
-
-#endif
-
-#if !defined(HAVE_Y0)
-
-/* Alternative y0, y1, yn coded from Numerical Recipes by Press et al */
-
-double GMT_y0 (double x)
-{
-	double z, ax, xx, y, ans, ans1, ans2, s, c;
-
-	if (x < 8.0) {
-		y = x * x;
-		ans1 = -2957821389.0 + y * (7062834065.0 + y * (-512359803.6   + y * (10879881.29    + y * (-86327.92757   + y * (228.4622733)))));
-		ans2 = 40076544269.0 + y * ( 745249964.8 + y * (   7189466.438 + y * (   47447.26470 + y * (   226.1030244 + y * 1.0))));
-		ans = (ans1 / ans2) + 0.636619772 * GMT_j0 (x) * d_log (x);
-	}
-	else {
-		z = 8.0 / x;
-		ax = fabs (x);
-		y = z * z;
-		xx = x - 0.785398164;
-		ans1 = 1.0              + y * (-0.1098628627e-2 + y * ( 0.2734510407e-4 + y * (-0.2073370639e-5 + y * (0.2093887211e-6))));
-		ans2 = -0.1562499995e-1 + y * ( 0.1430488765e-3 + y * (-0.6911147651e-5 + y * ( 0.7621095161e-6 + y * (-0.934935152e-7))));
-		sincos (xx, &s, &c);
-		ans = d_sqrt (0.636619772 / ax) * (s * ans1 - z * c * ans2);
-	}
-
-	return (ans);
-}
-
-#endif
-
-#if !defined(HAVE_Y1)
-
-/* Alternative y1 coded from Numerical Recipes by Press et al */
-
-double GMT_y1 (double x)
-{
-	double z, ax, xx, y, ans, ans1, ans2, s, c;
-
-	if (x < 8.0) {
-		y = x * x;
-		ans1 = x * (-0.4900604943e13 + y * (0.1275274390e13 + y * (-0.5153438139e11 + y * (0.7349264551e9 + y * (-0.4237922726e7 + y * (0.8511937935e4))))));
-		ans2 = 0.2499580570e14 +       y * (0.4244419664e12 + y * ( 0.3733650367e10 + y * (0.2245904002e8 + y * ( 0.1020426050e6 + y * (0.3549632885e3) + y))));
-		ans = (ans1 / ans2) + 0.636619772 * (GMT_j1 (x) * d_log (x) - 1.0 / x);
-	}
-	else {
-		z = 8.0 / x;
-		ax = fabs (x);
-		y = z * z;
-		xx = x - 2.356194491;
-		ans1 = 1.0              + y * (0.183105e-2 + y * ( -0.3516396496e-4 + y * (0.2457520174e-5 + y * (-0.240337019e-6))));
-		ans2 = 0.04687499995 + y * ( -0.2002690873e-3 + y * (0.8449199096e-5 + y * ( -0.88228987e-6 + y * (0.105787412e-6))));
-		sincos (xx, &s, &c);
-		ans = d_sqrt (0.636619772 / ax) * (s * ans1 - z * c * ans2);
-	}
-
-	return (ans);
-}
-
-#endif
-
-#if !defined(HAVE_YN)
-
-/* Alternative yn coded from Numerical Recipes by Press et al */
-
-double GMT_yn (int n, double x)
-{
-	int j;
-	double by, bym, byp, tox;
-
-	if (n == 0) return (GMT_y0 (x));
-	if (n == 1) return (GMT_y1 (x));
-
-	tox = 2.0 / x;
-	by = GMT_y1 (x);
-	bym = GMT_y0 (x);
-	for (j = 1; j < n; j++) {
-		byp = (double)j * tox * by - bym;
-		bym = by;
-		by = byp;
-	}
-
-	return (by);
-}
-
-#endif
-
 #define GMT_RAND_IQ 127773
 #define GMT_RAND_IA 16807
 #define GMT_RAND_IM INT_MAX
@@ -1885,7 +1423,7 @@ void GMT_chi2 (struct GMT_CTRL *C, double chi2, double nu, double *prob) {
 	/* Evaluate probability that chi2 will exceed the
 	 * theoretical chi2 by chance. */
 
- 	*prob = gmt_gammq (C, 0.5 * nu, 0.5 * chi2);
+	*prob = gmt_gammq (C, 0.5 * nu, 0.5 * chi2);
 }
 
 void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
@@ -1893,110 +1431,6 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
-
-#if !defined(HAVE_HYPOT)
-
-double GMT_hypot (double x, double y) {
-/* 	Return sqrt(x*x + y*y), guarding against
-	some overflows where possible.  If a local
-	library hypot() is available, it should be
-	used instead; it could be faster and more
-	accurate.  WHFS 30 March 2000  */
-
-	double a, b, c, d, r, s, t;
-
-	if (GMT_is_dnan (x)) return (x);
-	if (GMT_is_dnan (y)) return (y);
-
-	/* A complete implementation of IEEE exceptional values
-	would also return +Inf if either x or y is +/- Inf  */
-
-	if (x == 0.0) return (fabs (y));
-	if (y == 0.0) return (fabs (x));
-
-	a = fabs (x);
-	b = fabs (y);
-
-	/* If POSIX defined M_SQRT2 (= sqrt(2.0) to machine
-	precision) then we could say
-		if (a == b) return (a * M_SQRT2);
-	*/
-
-	if (a < b) {
-		c = b;
-		d = a/b;
-	}
-	else if (a == b) {
-		return (a * M_SQRT2);	/* Added 17 Aug 2001  */
-	}
-	else {
-		c = a;
-		d = b/a;
-	}
-
-	/* DBL_EPSILON is defined in POSIX float.h
-	as the smallest positive e such that 1+e > 1
-	in floating point.  */
-
-	if (d < DBL_EPSILON) return (c);
-
-	s = d*d;
-	if (s > DBL_EPSILON) return (c * sqrt (1.0 + s) );
-
-	t = 1.0 + d;
-	s = (2 * (d/t)) / t;
-
-	r = t * sqrt (1.0 - s);
-
-	if (r <= 1.0) return (c);
-
-	return (c * r);
-}
-
-#endif
-
-#if !defined(HAVE_LOG1P)
-
-double GMT_log1p (double x) {
-/* 	Approximate log(1 + x) fairly well for small x.
-	This should be used only if there isn't a better
-	library routine available.  WHFS 30 March 2000  */
-
-	double u;
-
-	if (GMT_is_dnan (x)) return (x);
-	if (x <= -1.0) {
-		GMT_make_dnan (u);
-		return (u);
-	}
-
-	u = 1.0 + x;
-
-	if (u == 1.0)
-		return (x);
-	else
-		return (log(u) * (x/(u - 1.0) ) );
-}
-
-#endif
-
-#if !defined(HAVE_ATANH)
-
-double GMT_atanh (double x) {
-/* 	Return hyperbolic arctangent of x.
-	This should be used only if there isn't a better
-	library routine available.  WHFS 30 March 2000  */
-
-	if (GMT_is_dnan (x)) return (x);
-	if (fabs (x) >= 1.0) {
-		GMT_make_dnan (x);
-		return (x);
-	}
-
-	return (0.5 * (log1p (x) - log1p (-x)));
-}
-
-#endif
 
 GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)
 {
@@ -2240,134 +1674,6 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, do
 	*scale = 1.4826 * med;
 }
 
-#if 0
-void GMT_getmad_BROKEN (double *x, GMT_LONG n, double location, double *scale)
-{
-	/* Compute MAD (Median Absolute Deviation) for a double data set */
-
-	double e_low, e_high, error, last_error;
-	GMT_LONG i_low, i_high, n_dev, n_dev_stop;
-
-	i_low = 0;
-	while (i_low < n && x[i_low] <= location) i_low++;
-	i_low--;
-
-	i_high = n - 1;
-	while (i_high >= 0 && x[i_high] >= location) i_high--;
-	i_high++;
-
-	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
-
-	n_dev_stop = n / 2;
-	error = last_error = 0.0;
-	n_dev = 0;
-
-	while (n_dev < n_dev_stop) {
-
-		last_error = error;
-
-		if (i_low < 0) {
-			error = x[i_high] - location;
-			i_high++;
-			n_dev++;
-		}
-
-		else if (i_high == n) {
-			error = location - x[i_low];
-			i_low--;
-			n_dev++;
-		}
-		else {
-			e_low = location - x[i_low];
-			e_high = x[i_high] - location;
-
-			if (e_low < e_high) {
-				error = e_low;
-				i_low--;
-				n_dev++;
-			}
-			else if (e_high < e_low) {
-				error = e_high;
-				i_high++;
-				n_dev++;
-			}
-			else {
-				error = e_high;
-				i_low--;
-				i_high++;
-				if ( !(n_dev)) n_dev--; /* First time count only once  */
-				n_dev += 2;
-			}
-		}
-	}
-
-	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
-}
-
-void GMT_getmad_f_BROKEN (float *x, GMT_LONG n, double location, double *scale)
-{
-	/* Compute MAD (Median Absolute Deviation) for a float data set */
-
-	double e_low, e_high, error, last_error;
-	GMT_LONG i_low, i_high, n_dev, n_dev_stop;
-
-	i_low = 0;
-	while (i_low < n && x[i_low] <= location) i_low++;
-	i_low--;
-
-	i_high = n - 1;
-	while (i_high >= 0 && x[i_high] >= location) i_high--;
-	i_high++;
-
-	while (i_high < i_low) i_high++, i_low--;	/* I think this must be added in (P. Wessel, 9/29/04) */
-
-	n_dev_stop = n / 2;
-	error = last_error = 0.0;
-	n_dev = 0;
-
-	while (n_dev < n_dev_stop) {
-
-		last_error = error;
-
-		if (i_low < 0) {
-			error = x[i_high] - location;
-			i_high++;
-			n_dev++;
-		}
-
-		else if (i_high == n) {
-			error = location - x[i_low];
-			i_low--;
-			n_dev++;
-		}
-		else {
-			e_low = location - x[i_low];
-			e_high = x[i_high] - location;
-
-			if (e_low < e_high) {
-				error = e_low;
-				i_low--;
-				n_dev++;
-			}
-			else if (e_high < e_low) {
-				error = e_high;
-				i_high++;
-				n_dev++;
-			}
-			else {
-				error = e_high;
-				i_low--;
-				i_high++;
-				if ( !(n_dev)) n_dev--; /* First time count only once  */
-				n_dev += 2;
-			}
-		}
-	}
-
-	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
-}
-#endif
-
 double GMT_extreme (struct GMT_CTRL *C, double x[], GMT_LONG n, double x_default, GMT_LONG kind, GMT_LONG way)
 {
 	/* Returns the extreme value in the x array according to:
@@ -2562,7 +1868,7 @@ void gmt_Cdiv (double A[], double B[], double C[])
 void gmt_Ccot (double Z[], double cotZ[])
 {	/* Complex cot(z) */
 	double sx, cx, e, A[2], B[2];
-	
+
 	sincos (2.0*Z[0], &sx, &cx);
 	e = exp (-2.0*Z[1]);
 	A[0] = -e * sx;		A[1] = B[0] = e * cx;
@@ -2658,45 +1964,45 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
 	double a[2], v[2], vp1[2], G[2], g[2], u[2], t[2], f[2];
 	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];
-	
+
 	*iter = 0;
-    	pq[PV_RE] = pq[QV_RE] = pq[PV_IM] = pq[QV_IM] = 0.0;	/* Initialize all answers to zero first */
+	pq[PV_RE] = pq[QV_RE] = pq[PV_IM] = pq[QV_IM] = 0.0;	/* Initialize all answers to zero first */
 	p_set = q_set = FALSE;
 	if (x == -1 && v_ri[GMT_IM] == 0.0) {	/* Check special values for real nu when x = -1 */
 			/* Special Pv(-1) values */
 		if ((v_ri[GMT_RE] > 0.0 && fmod (v_ri[GMT_RE], 2.0) == 1.0) || (v_ri[GMT_RE] < 0.0 && fmod (v_ri[GMT_RE], 2.0) == 0.0)) {	/* v = 1,3,5,.. or -2, -4, -6 */
- 			pq[PV_RE] = -1.0; p_set = TRUE;
+			pq[PV_RE] = -1.0; p_set = TRUE;
 		}
 		else if ((v_ri[GMT_RE] >= 0.0 && fmod (v_ri[GMT_RE], 2.0) == 0.0) || (v_ri[GMT_RE] < 0.0 && fmod (v_ri[GMT_RE]+1.0, 2.0) == 0.0)) {	/* v = 0,2,4,6 or -1,-3,-5,-7 */
- 			pq[PV_RE] = 1.0; p_set = TRUE;
+			pq[PV_RE] = 1.0; p_set = TRUE;
 		}
 		else if (v_ri[GMT_RE] > 0.0 && ((fact = v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) < 1.0 && fact > 0.0)) { /* 0 < v < 1, 2 < v < 3, 4 < v < 5, ... */
-   			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
+			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
 		}
 		else if (v_ri[GMT_RE] < 1.0 && ((fact = v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) < 1.0 && fact > 0.0)) {	/* -2 < v < -1, -4 < v < -3, -6 < v < -5 */
-   			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
+			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* -inf */
 		}
 		else if (v_ri[GMT_RE] > 1.0 && (v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) > 1.0) {	/* 1 < v < 2, 3 < v < 4, 5 < v < 6, .. */
-   			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
+			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
 		}
 		else if (v_ri[GMT_RE] < 2.0 && ( v_ri[GMT_RE]-2.0*floor(v_ri[GMT_RE]/2.0)) > 1.0) {	/* -3 < v < -2, -5 < v < -4, -7 < v < -6, .. */
-   			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
+			pq[PV_RE] = C->session.d_NaN; p_set = TRUE;	/* +inf */
 		}
 		/* Special Qv(-1) values */
 		if (v_ri[GMT_RE] > 0.0 && fmod (2.0 * v_ri[GMT_RE] - 1.0, 4.0) == 0.0) {	/* v = 1/2, 5/2, 9/2, ... */
-   			pq[QV_RE] = -M_PI_2; q_set = TRUE;
+			pq[QV_RE] = -M_PI_2; q_set = TRUE;
 		}
 		else if (v_ri[GMT_RE] > -1.0 && fmod (2.0 * v_ri[GMT_RE] + 1.0, 4.0) == 0.0) {	/* v = -1/2, 3/2, 7/2, ... */
-   			pq[QV_RE] = M_PI_2; q_set = TRUE;
+			pq[QV_RE] = M_PI_2; q_set = TRUE;
 		}
 		else if (v_ri[GMT_RE] < -1.0 && fmod (2.0 * v_ri[GMT_RE] - 1.0, 4.0) == 0.0) {	/* v = -3/2, -7/2, -11/2, ... */
-   			pq[QV_RE] = -M_PI_2; q_set = TRUE;
+			pq[QV_RE] = -M_PI_2; q_set = TRUE;
 		}
 		else if (v_ri[GMT_RE] < -2.0 && fmod (2.0 * v_ri[GMT_RE] + 1.0, 4.0) == 0.0) {	/* v = -5/2, -9/2, -13/2, ... */
-   			pq[QV_RE] = M_PI_2; q_set = TRUE;
+			pq[QV_RE] = M_PI_2; q_set = TRUE;
 		}
 		else {	/* Either -inf or +inf */
-   			pq[QV_RE] = C->session.d_NaN; q_set = TRUE;
+			pq[QV_RE] = C->session.d_NaN; q_set = TRUE;
 		}
 	}
 	else if (x == +1 && v_ri[GMT_IM] == 0.0) {	/* Check special values for real nu when x = +1 */
@@ -2704,7 +2010,7 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 		pq[QV_RE] = C->session.d_NaN; q_set = TRUE;
 	}
 	if (p_set && q_set) return;
-	
+
 	/* General case of |x| < 1 */
 
 	a[0] = a[1] = R[GMT_RE] = 1.0;	R[GMT_IM] = 0.0;
@@ -2722,9 +2028,9 @@ void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LON
 	z[GMT_RE] = 0.5 * M_PI * v[GMT_RE];	z[GMT_IM] = 0.5 * M_PI * v[GMT_IM];
 	ep = exp (z[GMT_IM]);	em = exp (-z[GMT_IM]);
 	sincos (z[GMT_RE], &sx, &cx);
-	s[GMT_RE] = 0.5 * sx * (em + ep); 
-	s[GMT_IM] = -0.5 * cx * (em - ep); 
-	c[GMT_RE] = 0.5 * cx * (em + ep); 
+	s[GMT_RE] = 0.5 * sx * (em + ep);
+	s[GMT_IM] = -0.5 * cx * (em - ep);
+	c[GMT_RE] = 0.5 * cx * (em + ep);
 	c[GMT_IM] = 0.5 * sx * (em - ep);
 	tmp[GMT_RE] = 0.5 + v[GMT_RE];	tmp[GMT_IM] = v[GMT_IM];
 	gmt_Cmul (tmp, tmp, w);

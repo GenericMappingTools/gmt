@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.37 2011-05-19 15:55:20 remko Exp $
+ *	$Id: gmt_math.h,v 1.38 2011-05-19 20:51:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,12 +36,6 @@
 #include "gmt_notposix.h"
 #endif
 
-#ifdef GMT_QSORT
-/* Must replace the system qsort with ours which is 64-bit compliant */
-EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
-#define qsort GMT_qsort
-#endif
-
 #if defined(copysign)
 /* Macro already takes care of copysign - probably from BSD */
 #elif defined(HAVE_COPYSIGN)
@@ -58,24 +52,6 @@ extern double log2(double x);
 #define log2(x) (log10(x)/0.30102999566398114250631579125183634459972381591796875)
 #endif
 
-#if defined(log1p)
-/* Macro already takes care of log1p - probably from BSD */
-#elif defined(HAVE_LOG1P)
-extern double log1p(double x);
-#else
-#define log1p(x) GMT_log1p(x)
-EXTERN_MSC double GMT_log1p(double x);
-#endif
-
-#if defined(hypot)
-/* Macro already takes care of hypot - probably from BSD */
-#elif defined(HAVE_HYPOT)
-extern double hypot(double x, double y);
-#else
-#define hypot(x,y) GMT_hypot(x,y)
-EXTERN_MSC double GMT_hypot(double x, double y);
-#endif
-
 #ifdef HAVE_ACOSH
 extern double acosh(double x);
 #else
@@ -86,13 +62,6 @@ extern double acosh(double x);
 extern double asinh(double x);
 #else
 #define asinh(x) log((x) + (hypot((x), 1.0)))
-#endif
-
-#ifdef HAVE_ATANH
-extern double atanh(double x);
-#else
-#define atanh(x) GMT_atanh(x)
-EXTERN_MSC double GMT_atanh(double x);
 #endif
 
 #ifdef HAVE_RINT
@@ -110,15 +79,14 @@ extern int irint(double x);
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
  * These functions are available on many platforms and we
  * seek to use them.  If not available then we compile in
- * replacements from gmt_stat.c */
+ * replacements from gmt_notposix.c */
 
 #if defined(j0)
 /* Macro already takes care of j0 - probably from BSD */
 #elif defined(HAVE_J0)
 extern double j0(double x);
 #else
-#define j0(x) GMT_j0(x)
-EXTERN_MSC double GMT_j0(double x);
+EXTERN_MSC double j0(double x);
 #endif
 
 #if defined(j1)
@@ -126,8 +94,7 @@ EXTERN_MSC double GMT_j0(double x);
 #elif defined(HAVE_J1)
 extern double j1(double x);
 #else
-#define j1(x) GMT_j1(x)
-EXTERN_MSC double GMT_j1(double x);
+EXTERN_MSC double j1(double x);
 #endif
 
 #if defined(jn)
@@ -135,8 +102,7 @@ EXTERN_MSC double GMT_j1(double x);
 #elif defined(HAVE_JN)
 extern double jn(int n, double x);
 #else
-#define jn(n, x) GMT_jn(n, x)
-EXTERN_MSC double GMT_jn(int n, double x);
+EXTERN_MSC double jn(int n, double x);
 #endif
 
 #if defined(y0)
@@ -144,8 +110,7 @@ EXTERN_MSC double GMT_jn(int n, double x);
 #elif defined(HAVE_Y0)
 extern double y0(double x);
 #else
-#define y0(x) GMT_y0(x)
-EXTERN_MSC double GMT_y0(double x);
+EXTERN_MSC double y0(double x);
 #endif
 
 #if defined(y1)
@@ -153,8 +118,7 @@ EXTERN_MSC double GMT_y0(double x);
 #elif defined(HAVE_Y1)
 extern double y1(double x);
 #else
-#define y1(x) GMT_y1(x)
-EXTERN_MSC double GMT_y1(double x);
+EXTERN_MSC double y1(double x);
 #endif
 
 #if defined(yn)
@@ -162,8 +126,7 @@ EXTERN_MSC double GMT_y1(double x);
 #elif defined(HAVE_YN)
 extern double yn(int n, double x);
 #else
-#define yn(n, x) GMT_yn(n, x)
-EXTERN_MSC double GMT_yn(int n, double x);
+EXTERN_MSC double yn(int n, double x);
 #endif
 
 #if defined(erf)
@@ -171,8 +134,7 @@ EXTERN_MSC double GMT_yn(int n, double x);
 #elif defined(HAVE_ERF)
 extern double erf(double x);
 #else
-#define erf(x) GMT_erf(x)
-EXTERN_MSC double GMT_erf(double x);
+EXTERN_MSC double erf(double x);
 #endif
 
 #if defined(erfc)
@@ -180,8 +142,29 @@ EXTERN_MSC double GMT_erf(double x);
 #elif defined(HAVE_ERFC)
 extern double erfc(double x);
 #else
-#define erfc(x) GMT_erfc(x)
-EXTERN_MSC double GMT_erfc(double x);
+EXTERN_MSC double erfc(double x);
+#endif
+
+#ifdef HAVE_ATANH
+extern double atanh(double x);
+#else
+EXTERN_MSC double atanh(double x);
+#endif
+
+#if defined(log1p)
+/* Macro already takes care of log1p - probably from BSD */
+#elif defined(HAVE_LOG1P)
+extern double log1p(double x);
+#else
+EXTERN_MSC double log1p(double x);
+#endif
+
+#if defined(hypot)
+/* Macro already takes care of hypot - probably from BSD */
+#elif defined(HAVE_HYPOT)
+extern double hypot(double x, double y);
+#else
+EXTERN_MSC double hypot(double x, double y);
 #endif
 
 #if defined(strdup)
@@ -189,8 +172,7 @@ EXTERN_MSC double GMT_erfc(double x);
 #elif defined(HAVE_STRDUP)
 extern char *strdup(const char *s);
 #else
-#define strdup(s) GMT_strdup(s)
-EXTERN_MSC char *GMT_strdup(const char *s);
+EXTERN_MSC char *strdup(const char *s);
 #endif
 
 #if defined(strtod)
@@ -202,13 +184,13 @@ EXTERN_MSC char *GMT_strdup(const char *s);
 #endif
 extern double strtod(const char *nptr, char **endptr);
 #else
-#define strtod(p, e) GMT_strtod(p, e)
-EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
+EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
  * Assembly wrapper provided by Lloyd Parkes <lloyd@must-have-coffee.gen.nz>
  * can be used instead.
+ * See alpha-sincos.s
  */
  
 #if defined(sincos)
@@ -220,6 +202,15 @@ extern void sincos (double x, double *s, double *c);
 extern void alpha_sincos (double x, double *s, double *c);
 #else
 EXTERN_MSC void sincos (double x, double *s, double *c);
+#endif
+
+/* Must replace the system qsort with ours which is 64-bit compliant
+ * See gmt_qsort.c.
+ */
+
+#ifdef GMT_QSORT
+EXTERN_MSC void GMT_qsort (void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
+#define qsort GMT_qsort
 #endif
 
 #endif /* _GMT_MATH_H */
