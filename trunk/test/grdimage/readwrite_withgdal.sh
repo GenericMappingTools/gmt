@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: readwrite_withgdal.sh,v 1.5 2011-05-19 17:11:52 remko Exp $
+#	$Id: readwrite_withgdal.sh,v 1.6 2011-05-19 22:29:52 jluis Exp $
 
 . ../functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`
@@ -11,10 +11,10 @@ header "Test grdimage with images through GDAL"
 ps=readwrite_withgdal.ps
 
 # RGB image
-grdimage -D needle.jpg -JX7c -P -Y20c -K > $ps
+grdimage -D needle.jpg -JX7c/0 -P -Y20c -K > $ps
 
 # Same image as above but as idexed
-grdimage -D needle.png -JX7c -X7.5c -O -K >> $ps
+grdimage -D needle.png -JX7c/0 -X7.5c -O -K >> $ps
 
 # Projected
 grdimage -Dr needle.jpg -Rd -JW10c -Bg30/g15 -X-5.0c -Y-7c -O -K >> $ps
