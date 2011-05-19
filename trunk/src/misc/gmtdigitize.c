@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.44 2011-05-16 21:23:11 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.45 2011-05-19 02:51:15 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -512,8 +512,12 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		} while (line[0] != '\0');
 	}
 	else {	/* Need real user's UID and GID since we need to chown */
+#ifdef WIN32
+		gid = uid = 0;
+#else
 		gid = getgid ();
 		uid = getuid ();
+#endif
 	}
 	
 	GMT_message (GMT, "\n\nStart digitizing, end by clicking %c button\n\n", END_BUTTON_CHAR);

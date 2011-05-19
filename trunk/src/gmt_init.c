@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.520 2011-05-19 00:28:45 guru Exp $
+ *	$Id: gmt_init.c,v 1.521 2011-05-19 02:51:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7746,15 +7746,6 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	return (C);
 }
-
-#ifdef WIN32
-
-/* Make dummy functions so GMT will link under WIN32 where these functions do not exist */
-
-struct passwd *getpwuid (const int uid) { return ((struct passwd *)NULL); }
-int getuid (void) { return (0); }
-
-#endif
 
 #ifdef SET_IO_MODE
 

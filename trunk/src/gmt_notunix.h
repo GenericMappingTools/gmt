@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.43 2011-05-15 23:02:50 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.44 2011-05-19 02:51:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -154,23 +154,6 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 #define X_OK 01
 #define F_OK 00
 
-/* This structure is normally taken from pwd.h */
-
-struct passwd {
-	char	*pw_name;
-	int	pw_uid;
-	int	pw_gid;
-	char	*pw_dir;
-	char	*pw_shell;
-};
-
-/* These two functions prototypes are normally in pwd.h & unistd.h;
- * Here, they are defined as dummies at the bottom of gmt_init.c
- * since there are no equivalents under Windows. */
-
-EXTERN_MSC struct passwd *getpwuid (const int uid);
-EXTERN_MSC int getuid (void);
-
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _;
  * it is defined in direct.h. */
@@ -228,29 +211,8 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
 
 #endif		/* End of NON-UNIX */
 
-#ifdef __MINGW32__ 
-
-/* This structure is normally taken from pwd.h */
-
-struct passwd {
-	char	*pw_name;
-	int	pw_uid;
-	int	pw_gid;
-	char	*pw_dir;
-	char	*pw_shell;
-};
-
-/* These two functions prototypes are normally in pwd.h & unistd.h;
- * Here, they are defined as dummies at the bottom of gmt_init.c
- * since there are no equivalents under Windows. */
-
-EXTERN_MSC struct passwd *getpwuid (const int uid);
-EXTERN_MSC int getuid (void);
-
-#endif
-
 /*===================================================================
- *		      U N I X   C L E AN - U P
+ *		      U N I X   C L E A N - U P
  *===================================================================*/
  
 /* Set a few Default Unix settings if they did not get set above */

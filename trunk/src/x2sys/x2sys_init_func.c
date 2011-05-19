@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.8 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.9 2011-05-19 02:51:15 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -252,11 +252,8 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	time_t right_now;
-#ifndef WIN32
-	struct passwd *pw;
-#endif
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
-	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
+	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ], user[GMT_BUFSIZ];
 
 	GMT_LONG error = FALSE;
 
@@ -394,12 +391,8 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
         right_now = time ((time_t *)0);
 	fprintf (fp, "# TAG file for system: %s\n", Ctrl->In.TAG);
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
-#ifndef WIN32
-	if ((pw = getpwuid (getuid ())) != NULL)
-		fprintf (fp, "# Initialized by: %s\n#\n", pw->pw_name);
-	else
-#endif
-		fprintf (fp, "# Initialized by: unknown\n#\n");
+	GMT_getusername (GMT, user);
+	fprintf (fp, "# Initialized by: %s\n#\n", user);
 	fprintf (fp, "-D%s", &Ctrl->D.file[d_start]);	/* Now a local *.def file in the TAG directory */
 	if (Ctrl->C.active) fprintf (fp, " %s", Ctrl->C.string);
 	if (Ctrl->E.active) fprintf (fp, " %s", Ctrl->E.string);

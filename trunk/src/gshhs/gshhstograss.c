@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.28 2011-04-23 02:14:13 guru Exp $
+/*	$Id: gshhstograss.c,v 1.29 2011-05-19 02:51:15 remko Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -40,30 +40,21 @@
 #include <sys/types.h>
 #ifdef WIN32
 #include <io.h>
-struct passwd {
-	char *pw_name;
-	int pw_uid;
-	int pw_gid;
-	char *pw_dir;
-	char *pw_shell;
-};
-struct passwd *getpwuid (const int uid);
-int getuid (void);
 #else
-#include <pwd.h>
 #include <unistd.h>
 #endif
 #include <time.h>
 
 void help_msg(char *progname);
 void usage_msg (char *progname);
+void getusername(char *user);
 
 int main (int argc, char **argv)
 {
 	int i = 1;
 	double w, e, s, n, area, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
-	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
+	char source, *progname, *dataname = NULL, user[40], ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
@@ -72,7 +63,6 @@ int main (int argc, char **argv)
 	struct GSHHS h;
 	int max_id=0;
 	time_t tloc;
-	struct passwd *pw;
 
 	progname = argv[0];
 
@@ -166,10 +156,8 @@ int main (int argc, char **argv)
 	fprintf(ascii_fp,"ORGANIZATION: \n");
 	time(&tloc);
 	fprintf(ascii_fp,"DIGIT DATE:   %s",ctime(&tloc));
-	if ((pw = getpwuid (getuid ())) != NULL)
-		fprintf(ascii_fp,"DIGIT NAME:   %s\n",pw->pw_name);
-	else
-		fprintf(ascii_fp,"DIGIT NAME:   unknown\n");
+	getusername(user);
+	fprintf(ascii_fp,"DIGIT NAME:   %s\n",user);
 	fprintf(ascii_fp,"MAP NAME:     Global Shorelines\n");
 	fprintf(ascii_fp,"MAP DATE:     2004\n");
 	fprintf(ascii_fp,"MAP SCALE:    1\n");
@@ -294,20 +282,20 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
 
-#ifdef WIN32
-
-/* Make dummy functions so gshhstograss will link under WIN32 */
-
-struct passwd *getpwuid (const int uid)
+void getusername (char *user)
 {
-	return ((struct passwd *)NULL);
-}
-
-int getuid (void) {
-	return (0);
-}
-
+#ifndef WIN32
+#include <pwd.h>
+	struct passwd *pw = NULL;
+	pw = getpwuid (getuid ());
+	if (pw) {
+		strcpy (user, pw->pw_name);
+		return;
+	}
 #endif
+	strcpy (user, "unknown");
+	return;
+}
 
 void help_msg (char *progname) {
 
