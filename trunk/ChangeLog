@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1036 2011-05-19 15:18:56 remko Exp $
+	$Id: ChangeLog,v 1.1037 2011-05-19 20:51:24 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-19	remko
@@ -9,6 +9,7 @@
 	* *.[ch]:		Changed accordingly (needs #if defined() now)
 	* *.sh:			Replaced contour label spec +s and +k by +f
 	* *contour_func.c:	---"---
+	* gmt_notposix.c:	Gathering of all non-POSIX replacements (from gmt_stat.c)
 
 2011-05-18	remko
 	* *.tex:		Removed .gmt_bb_info; replaced {\it} by \emph{} and {\bf} by \textbf{}.
