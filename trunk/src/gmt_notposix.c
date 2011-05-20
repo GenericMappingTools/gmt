@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.c,v 1.1 2011-05-19 20:51:24 remko Exp $
+ *	$Id: gmt_notposix.c,v 1.2 2011-05-20 11:27:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ void sincos (double a, double *s, double *c)
 #ifndef HAVE_J0
 /* Alternative j0 coded from Numerical Recipes by Press et al */
 
-double GMT_j0 (double x)
+double j0 (double x)
 {
 	double ax, z, xx, y, ans, ans1, ans2, s, c;
 
@@ -83,7 +83,7 @@ double GMT_j0 (double x)
 #ifndef HAVE_J1
 /* Alternative j1 coded from Numerical Recipes by Press et al */
 
-double GMT_j1 (double x)
+double j1 (double x)
 {
 	double ax, z, xx, y, ans, ans1, ans2, s, c;
 
@@ -115,21 +115,21 @@ double GMT_j1 (double x)
 
 /* Alternative jn coded from Numerical Recipes by Press et al */
 
-double GMT_jn (int n, double x)
+double jn (int n, double x)
 {
 	int j, jsum, m;
 	double ax, bj, bjm, bjp, sum, tox, ans;
 
-	if (n == 0) return (GMT_j0 (x));
-	if (n == 1) return (GMT_j1 (x));
+	if (n == 0) return (j0 (x));
+	if (n == 1) return (j1 (x));
 
 	ax = fabs (x);
-	if (GMT_IS_ZERO (ax)) return (0.0);
+	if (IS_ZERO (ax)) return (0.0);
 
 	if (ax > (double)n) {	/* Upwards recurrence */
 		tox = 2.0 / ax;
-		bjm = GMT_j0 (ax);
-		bj = GMT_j1 (ax);
+		bjm = j0 (ax);
+		bj = j1 (ax);
 		for (j = 1; j < n; j++) {
 			bjp = (double)j * tox * bj - bjm;
 			bjm = bj;
@@ -168,7 +168,7 @@ double GMT_jn (int n, double x)
 #ifndef HAVE_Y0
 /* Alternative y0, y1, yn coded from Numerical Recipes by Press et al */
 
-double GMT_y0 (double x)
+double y0 (double x)
 {
 	double z, ax, xx, y, ans, ans1, ans2, s, c;
 
@@ -176,7 +176,7 @@ double GMT_y0 (double x)
 		y = x * x;
 		ans1 = -2957821389.0 + y * (7062834065.0 + y * (-512359803.6   + y * (10879881.29    + y * (-86327.92757   + y * (228.4622733)))));
 		ans2 = 40076544269.0 + y * ( 745249964.8 + y * (   7189466.438 + y * (   47447.26470 + y * (   226.1030244 + y * 1.0))));
-		ans = (ans1 / ans2) + 0.636619772 * GMT_j0 (x) * d_log (x);
+		ans = (ans1 / ans2) + 0.636619772 * j0 (x) * d_log (x);
 	}
 	else {
 		z = 8.0 / x;
@@ -196,7 +196,7 @@ double GMT_y0 (double x)
 #ifndef HAVE_Y1
 /* Alternative y1 coded from Numerical Recipes by Press et al */
 
-double GMT_y1 (double x)
+double y1 (double x)
 {
 	double z, ax, xx, y, ans, ans1, ans2, s, c;
 
@@ -204,7 +204,7 @@ double GMT_y1 (double x)
 		y = x * x;
 		ans1 = x * (-0.4900604943e13 + y * (0.1275274390e13 + y * (-0.5153438139e11 + y * (0.7349264551e9 + y * (-0.4237922726e7 + y * (0.8511937935e4))))));
 		ans2 = 0.2499580570e14 +       y * (0.4244419664e12 + y * ( 0.3733650367e10 + y * (0.2245904002e8 + y * ( 0.1020426050e6 + y * (0.3549632885e3) + y))));
-		ans = (ans1 / ans2) + 0.636619772 * (GMT_j1 (x) * d_log (x) - 1.0 / x);
+		ans = (ans1 / ans2) + 0.636619772 * (j1 (x) * d_log (x) - 1.0 / x);
 	}
 	else {
 		z = 8.0 / x;
@@ -224,17 +224,17 @@ double GMT_y1 (double x)
 #ifndef HAVE_YN
 /* Alternative yn coded from Numerical Recipes by Press et al */
 
-double GMT_yn (int n, double x)
+double yn (int n, double x)
 {
 	int j;
 	double by, bym, byp, tox;
 
-	if (n == 0) return (GMT_y0 (x));
-	if (n == 1) return (GMT_y1 (x));
+	if (n == 0) return (y0 (x));
+	if (n == 1) return (y1 (x));
 
 	tox = 2.0 / x;
-	by = GMT_y1 (x);
-	bym = GMT_y0 (x);
+	by = y1 (x);
+	bym = y0 (x);
 	for (j = 1; j < n; j++) {
 		byp = (double)j * tox * by - bym;
 		bym = by;
@@ -246,7 +246,7 @@ double GMT_yn (int n, double x)
 #endif
 
 #if !defined(HAVE_ERF) || !defined(HAVE_ERFC)
-/* Need to include the GMT error functions GMT_erf & GMT_erfc
+/* Need to include the GMT error functions erf & erfc
  * since they are not in the user's local library.
  */
 
@@ -274,7 +274,7 @@ static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
 #endif
 
 #ifndef HAVE_ERF
-double GMT_erf (double y)
+double erf (double y)
 {
 	GMT_LONG i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
@@ -327,7 +327,7 @@ double GMT_erf (double y)
 #endif
 
 #ifndef HAVE_ERFC
-double GMT_erfc (double y)
+double erfc (double y)
 {
 	GMT_LONG i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
