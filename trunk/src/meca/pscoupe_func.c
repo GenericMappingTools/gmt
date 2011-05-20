@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.10 2011-05-16 21:23:11 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.11 2011-05-20 19:17:59 remko Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -83,9 +83,7 @@ struct PSCOUPE_CTRL {
 		GMT_LONG symbol;
 		GMT_LONG read_size;
 		GMT_LONG zerotrace;
-		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
-		char type;
 		double scale, size;
 		double fontsize, offset;
 		struct GMT_FILL fill;
@@ -105,7 +103,6 @@ struct PSCOUPE_CTRL {
 	} Z;
 	struct a2 {	/* -a[size[Psymbol[Tsymbol]] */
 		GMT_LONG active;
-		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
 	} a2;
@@ -179,9 +176,8 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[f]\n");
 	GMT_message (GMT, "\t   Add f to get the frame from the cross-section parameters.\n");
 	GMT_explain_options (GMT, "jRb");
-	GMT_message (GMT, "\t-E Set color used for extensive parts. [default is white]\n");
-	GMT_message (GMT, "\t-G Set color used for compressive parts. [default is black]\n");
-	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
+	GMT_fill_syntax (GMT, 'E', "Set color used for extensive parts. [default is white]\n");
+	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
@@ -217,8 +213,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   fontsize < 0 : no label written;\n");
 	GMT_message (GMT, "\t   offset is from the limit of the beach ball.\n");
 	GMT_message (GMT, "\t   By default label is above the beach ball. Add u to plot it under.\n");
-	GMT_message (GMT, "\t-s to select symbol type and symbol size (in user_unit)\n");
-	GMT_message (GMT, "\t  Choose between\n");
+	GMT_message (GMT, "\t-s Select symbol type and symbol size (in %s). Choose between:\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t    st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
 	GMT_message (GMT, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball using the current pen (see -W) or sets pen attribute. \n");
 	GMT_message (GMT, "\t n = 1 the only first nodal plane is plotted\n");
@@ -329,7 +324,6 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				break;
 			case 'S':	/* Mechanisms : get format [and size] */
 				Ctrl->S.active = TRUE;
-				Ctrl->S.type = opt->arg[0];
 				p = NULL;	strcpy (txt, &opt->arg[1]);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				Ctrl->S.scale = GMT_to_inch (GMT, txt);
@@ -341,7 +335,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
 				}
 
-				switch (Ctrl->S.type) {
+				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->S.readmode = READ_CMT;
 						break;
@@ -385,7 +379,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 
 			case 's':	/* Only points : get symbol [and size] */
 				Ctrl->S.active2 = TRUE;
-				Ctrl->S.type = opt->arg[0];
+				Ctrl->S.symbol = opt->arg[0];
 				p = NULL;	strcpy (txt, &opt->arg[1]);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				Ctrl->S.scale = GMT_to_inch (GMT, txt);
@@ -395,37 +389,6 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 					if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
 					if (GMT_IS_ZERO (Ctrl->S.offset)) Ctrl->S.offset = DEFAULT_OFFSET;
 					if (opt->arg[strlen (opt->arg)-1] == 'u') Ctrl->S.justify = 10;
-				}
-
-				switch (Ctrl->S.type) {
-					case 'a':
-						Ctrl->S.symbol = GMT_SYMBOL_STAR;
-						break;
-					case 'c':
-						Ctrl->S.symbol = GMT_SYMBOL_CIRCLE;
-						break;
-					case 'd':
-						Ctrl->S.symbol = GMT_SYMBOL_DIAMOND;
-						break;
-					case 'h':
-						Ctrl->S.symbol = GMT_SYMBOL_HEXAGON;
-						break;
-					case 'i':
-						Ctrl->S.symbol = GMT_SYMBOL_INVTRIANGLE;
-						break;
-					case 's':
-						Ctrl->S.symbol = GMT_SYMBOL_SQUARE;
-						break;
-					case 't':
-						Ctrl->S.symbol = GMT_SYMBOL_TRIANGLE;
-						break;
-					case 'x':
-						Ctrl->S.symbol = GMT_SYMBOL_CROSS;
-						break;
-					default:
-						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -s option: Unrecognized symbol type %c\n", Ctrl->S.type);
-						break;
 				}
 				if (GMT_IS_ZERO (Ctrl->S.scale)) Ctrl->S.read_size = TRUE;
 				Ctrl->S.size = Ctrl->S.scale;
@@ -454,8 +417,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 				Ctrl->a2.active = TRUE;
 				if (!opt->arg[0]) {	/* Set defaults */
 					strcpy (txt,"0.08i");
-					Ctrl->a2.P_sym_type = 'c';
-					Ctrl->a2.T_sym_type = 'c';
+					Ctrl->a2.P_symbol = Ctrl->a2.T_symbol = GMT_SYMBOL_CIRCLE;
 				}
 				else {
 					strcpy (txt, &opt->arg[1]);
@@ -466,71 +428,16 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 						strcpy (txt, p);
 						switch (strlen (txt)) {
 							case 1:
-								Ctrl->a2.P_sym_type = 'c';
-								Ctrl->a2.T_sym_type = 'c';
+								Ctrl->a2.P_symbol = Ctrl->a2.T_symbol = GMT_SYMBOL_CIRCLE;
 								break;
 							case 2:
-								Ctrl->a2.P_sym_type = txt[1];
-								Ctrl->a2.T_sym_type = txt[1];
+								Ctrl->a2.P_symbol = Ctrl->a2.T_symbol = txt[1];
 								break;
 							case 3:
-								Ctrl->a2.P_sym_type = txt[1];
-								Ctrl->a2.T_sym_type = txt[2];
+								Ctrl->a2.P_symbol = txt[1], Ctrl->a2.T_symbol = txt[2];
 								break;
 						}
 					}
-				}
-				switch (Ctrl->a2.P_sym_type) {
-					case 'a':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_STAR;
-						break;
-					case 'c':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_CIRCLE;
-						break;
-					case 'd':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_DIAMOND;
-						break;
-					case 'h':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_HEXAGON;
-						break;
-					case 'i':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_INVTRIANGLE;
-						break;
-					case 's':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_SQUARE;
-						break;
-					case 't':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_TRIANGLE;
-						break;
-					case 'x':
-						Ctrl->a2.P_symbol = GMT_SYMBOL_CROSS;
-						break;
-				}
-				switch (Ctrl->a2.T_sym_type) {
-					case 'a':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_STAR;
-						break;
-					case 'c':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_CIRCLE;
-						break;
-					case 'd':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_DIAMOND;
-						break;
-					case 'h':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_HEXAGON;
-						break;
-					case 'i':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_INVTRIANGLE;
-						break;
-					case 's':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_SQUARE;
-						break;
-					case 't':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_TRIANGLE;
-						break;
-					case 'x':
-						Ctrl->a2.T_symbol = GMT_SYMBOL_CROSS;
-						break;
 				}
 				break;
 			case 'e':	/* Set color for T axis symbol */
@@ -584,7 +491,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG ix, iy, n_fields, n_rec = 0, n_plane_old = 0, form = 0, error;
-	GMT_LONG P_sym = 0, T_sym = 0, no_size_needed, greenwich, old_is_world;
+	GMT_LONG no_size_needed, greenwich, old_is_world;
 	GMT_LONG i, transparence_old = 0, not_defined = 0;
 
 	double xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
@@ -730,7 +637,8 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->S.size, Ctrl->S.symbol);
-		} else if (Ctrl->S.readmode == READ_CMT) {
+		}
+		else if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = atof (col[3]);
 			meca.NP1.dip = atof (col[4]);
 			meca.NP1.rake = atof (col[5]);
@@ -741,7 +649,8 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			moment.exponent = atoi (col[10]);
 			if (moment.exponent == 0) meca.magms = atof (col[9]);
 			rot_meca (meca, Ctrl->A.PREF, &mecar);
-		} else if (Ctrl->S.readmode == READ_AKI) {
+		}
+		else if (Ctrl->S.readmode == READ_AKI) {
 			NP1.str = atof (col[3]);
 			NP1.dip = atof (col[4]);
 			NP1.rake = atof (col[5]);
@@ -927,10 +836,10 @@ Definition of scalar moment.
 				}
 				GMT_setpen (GMT, &Ctrl->P2.pen);
 				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
-				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A.size, P_sym);
+				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A.size, Ctrl->a2.P_symbol);
 				GMT_setpen (GMT, &Ctrl->T2.pen);
 				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->E2.active);
-				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A.size, T_sym);
+				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A.size, Ctrl->a2.T_symbol);
 			}
 		}
 
