@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: generate.sh,v 1.10 2011-03-15 02:06:45 guru Exp $
+#	$Id: generate.sh,v 1.11 2011-05-20 03:41:17 guru Exp $
 #
 # Tests project in generating lines
 
@@ -27,7 +27,7 @@ psxy -R -J -O -K -Sc0.1i -Gblue << EOF >> $ps
 2	20
 EOF
 
-# SPherical test
+# Spherical test
 
 # E-W line
 project -C10/10 -A90 -G10 -L-5/15 > $$.xy
