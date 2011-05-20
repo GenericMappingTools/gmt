@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_2b.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: meca_2b.sh,v 1.4 2011-05-20 19:16:02 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (2b)"
@@ -14,10 +14,10 @@ psmeca -P -R128/130/10/11.1 -a0.1i/cc -JX2i -Sc0.4i -B1 -Y8.5i -K << EOF > $ps
 129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
-(echo 128 11; echo 130 11) | psxy -R -J -K -O -W0.25p/255/0/0 >> $ps
-pstext -R -N -J -K -O << EOF >> $ps
-128 11 14 0 1 5 P1
-130 11 14 0 1 7 P2
+(echo 128 11; echo 130 11) | psxy -R -J -K -O -W0.25p,red >> $ps
+pstext -R -N -F+f14p,Helvetica-Bold+j -J -K -O << EOF >> $ps
+128 11 ML P1
+130 11 MR P2
 EOF
 
 y_offset=-2.5
@@ -67,6 +67,6 @@ pstext -X-5i -R0/10/0/15 -F+jBL+fHelvetica-Bold+f -Jx1i -O << EOF >> $ps
 3 8.0 20 vertical cross-section
 EOF
 
-rm -f Aa* Ab*
+rm -f Ab*
 
 pscmp

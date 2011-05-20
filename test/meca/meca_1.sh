@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_1.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: meca_1.sh,v 1.4 2011-05-20 19:16:02 remko Exp $
 #
 
 . ../functions.sh
@@ -11,7 +11,7 @@ gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORI
 
 # This is a strike-slip CMT mechanism in red
 # Best double couple overlays moment tensor
-psmeca -X2i -Y5i -R238.5/242/32.5/35.5 -Jm1.3i -B2/2/:.psmeca:WeSn -Sm0.4i/12u -T0 -P -C0.50p/0/0/0 -G255/0/0 -K -W0.75p/0 << EOF > $ps
+psmeca -X2i -Y5i -R238.5/242/32.5/35.5 -Jm1.3i -B2/2/:.psmeca:WeSn -Sm0.4i/12u -T0 -P -C0.5p -Gred -K -W0.75p << EOF > $ps
 # lon     lat     dep mrr  mtt   mff  mrt  mrf   mtf  exp plon plat
 239.384 34.556   33 -.27 -2.13 2.40 -.07 -1.32 -.79 24  240.0 35  tensor
 EOF
@@ -22,7 +22,7 @@ gmtset FONT_ANNOT_PRIMARY Times-Roman
 # New second argument -Sa is font size in points
 # Old psvelomeca format is used
 
-psmeca -o -R -J -Sa0.4i/16 -C0.25p/0/0/255 -O -K -N << EOF >> $ps
+psmeca -o -R -J -Sa0.4i/16 -C0.25p,blue -O -K -N << EOF >> $ps
 # lon    lat         strike  dip  rake   Mw     plon plat
 241.459  34.2088    112.3  42.2  89.8   6.6     238. 35.0 first
 241.459  34.2088    120.0  60.0  86.0   5.2     238. 34.0 second
