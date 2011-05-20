@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.68 2011-05-16 21:43:40 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.69 2011-05-20 03:29:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1696,6 +1696,8 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			if (GMTAPI_need_grdpadding (G->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G, API->GMT->current.io.pad);	/* Adjust pad */
 			G->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
 			GMT_grd_zminmax (API->GMT, G);	/* Must set zmin/zmax since we are not writing */
+			GMT_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			*S->ptr = (void *)G;
 			S->data = *S->ptr;
 			break;
