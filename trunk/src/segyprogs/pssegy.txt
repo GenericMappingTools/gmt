@@ -56,8 +56,8 @@ You IT(must) specify at least one of OPT(W) and OPT(F).
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP
-OPT(B)IT(bias)
-Bias to apply to data (added to sample values).
+OPT(A)
+Flip the default byte-swap state (default assumes data have a bigendian byte-order).
 .TP
 OPT(C)IT(clip)
 Sample value at which to clip data (clipping is applied to both positive and
