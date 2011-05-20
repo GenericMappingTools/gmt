@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.116 2011-05-20 11:55:14 remko Exp $
+dnl $Id: configure.ac,v 1.117 2011-05-20 13:22:29 remko Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.116 $)
+AC_REVISION($Revision: 1.117 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -242,8 +242,8 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([copysign log2 log1p hypot acosh asinh atanh rint irint isnanf isnand isnan j0 j1 jn y0 y1 yn erf erfc pow sqrt sincos alphasincos])
-AC_CHECK_FUNCS([floor getcwd getpwuid gettimeofday memset modf qsort_r strchr strdup strtod strtok_r strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([copysign log2 log1p hypot acosh asinh atanh rint irint isnanf isnand isnan j0 j1 jn y0 y1 yn erf erfc sincos alphasincos])
+AC_CHECK_FUNCS([getpwuid qsort_r strdup strtod strtok_r])
 dnl -----------------------------------------------------------------
 dnl Find out about byte order and if default compilation is 64-bit
 dnl -----------------------------------------------------------------
