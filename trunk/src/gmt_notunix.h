@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.48 2011-05-20 14:01:23 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.49 2011-05-20 14:33:52 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,6 +115,7 @@
 #define GMT_STAT _stat
 #if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in unix */
 #define strtok_r strtok_s
+#define HAVE_STRTOK_R 1
 #endif
 
 typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
@@ -127,9 +128,9 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
  * WIN32 will set _WIN32 but the converse is not true.
  *
  * _WIN32 is set whenever we are compiling GMT on a PC not running
- * a Unix flavor.  This is true when GMT is to be installed under
- * Cygwin32.  _WIN32, when set, causes the directory delimiter to
- * be set to \ instead of /, and also attempts to deal with the fact
+ * a Unix flavor. 
+ * _WIN32, when set, causes the directory delimiter to be set
+ * to \ instead of /, and also attempts to deal with the fact
  * that DOS file systems have both TEXT and BINARY file modes.
  */
 
@@ -193,7 +194,7 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
  *
  *	 		  NON-UNIX
  *
- *	 This section applies to WIN32, Cygwin, and possibly DJGPP
+ *	 This section applies to WIN32, and possibly Mingw
  *
  *--------------------------------------------------------------------*/
  
