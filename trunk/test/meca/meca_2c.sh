@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_2c.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
+#	$Id: meca_2c.sh,v 1.3 2011-05-20 19:16:02 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (2c)"
@@ -31,7 +31,7 @@ done
 y_offset=-2.5
 x_offset=-5
 for a in 120 160 200 ; do
-    pscoupe -R -J -Ba100f10/a50f10WesN -E255/255/255 \
+    pscoupe -R -J -Ba100f10/a50f10WesN -Ewhite \
         -N -L -Sc0.4 -Ab128/11/$a/250/90/400/0/100f -G200 -a0.1i/cc \
         -Y$y_offset -X$x_offset -O -K << EOF >> $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny
@@ -45,7 +45,7 @@ done
 y_offset=-2.5
 x_offset=-5
 for a in 240 280 320 ; do
-    pscoupe -R -J -Ba100f10/a50f10WesN -E255/255/255 \
+    pscoupe -R -J -Ba100f10/a50f10WesN -Ewhite \
         -N -L -Sc0.4 -Ab130/10.5/$a/250/90/200/0/100f -G200 -a0.1i/cc \
         -Y$y_offset -X$x_offset -O -K << EOF >> $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny
@@ -57,8 +57,10 @@ EOF
     x_offset=2.5
 done
 pstext -X-5i -R0/10/0/15 -F+jBL+fHelvetica-Bold+f -Jx1i -O << EOF >> $ps
-3 8.5 24 0 1 1 Variation of azimuth
-3 8.0 20 0 1 1 vertical cross-section
+3 8.5 24 Variation of azimuth
+3 8.0 20 vertical cross-section
 EOF
+
+rm -f Ab*
 
 pscmp

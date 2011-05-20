@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_4.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: meca_4.sh,v 1.4 2011-05-20 19:16:02 remko Exp $
 #
 
 . ../functions.sh
@@ -42,8 +42,8 @@ pscoast -O -R238.5/242/32.5/35.5 -Jm1.3i -W0.25p -Di -K >> $ps
 #     of dimension Esig by Nsig.
  
 #
-psvelo << EOF -Y-4.5i -R-10/10/-10/10 -W5/255/0/0 \
- -Se0.2/0.39/12 -B1g1/WeSn -Jx0.2i/0.2i -G0/255/0 -E0/0/255 -L -N \
+psvelo << EOF -Y-4.5i -R-10/10/-10/10 -W5p,red \
+ -Se0.2/0.39/12 -B1g1/WeSn -Jx0.2i/0.2i -Ggreen -Eblue -L -N \
 -A0.1i/0.76c/0.3i -O -K >> $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)

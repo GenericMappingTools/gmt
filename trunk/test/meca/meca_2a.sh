@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_2a.sh,v 1.3 2011-03-15 02:06:45 guru Exp $
+#	$Id: meca_2a.sh,v 1.4 2011-05-20 19:16:02 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (2a)"
@@ -14,7 +14,7 @@ psmeca -P -R128/130/10/11.1 -a0.1i/cc -JX2i -Sc0.4i -B1 -Y8.5i -K << EOF > $ps
 129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
-(echo 128 11; echo 130 11) | psxy -R -J -K -O -W0.25p/255/0/0 >> $ps
+(echo 128 11; echo 130 11) | psxy -R -J -K -O -W0.25p,red >> $ps
 pstext -R -J -F+fHelvetica-Bold+j -K -O -N << EOF >> $ps
 128 11 LM P1
 130 11 RM P2
@@ -76,3 +76,7 @@ pstext -X-5i -R0/10/0/15 -F+jBL+fHelvetica-Bold+f -Jx1i -O << EOF >> $ps
 3 8.5 24 Variation of dip
 3 8.0 20 W-E cross-section
 EOF
+
+rm -f Aa*
+
+pscmp
