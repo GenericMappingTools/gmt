@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.22 2011-05-19 15:18:56 remko Exp $
+ *	$Id: grdraster_func.c,v 1.23 2011-05-20 15:13:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -33,12 +33,6 @@
 #include "gmt_dbase.h"
 
 EXTERN_MSC void GMT_str_toupper (char *string);
-
-#ifdef WORDS_BIGENDIAN
-#define MY_ENDIAN 'B'	/* This machine is Little endian */
-#else
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#endif
 
 struct GRDRASTER_CTRL {
 	struct In {
@@ -635,7 +629,7 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t[<text> can be a unique substring of the description].\n\n");
 	GMT_message (GMT, "#	Data Description	Unit	Coverage		Spacing	Registration\n");
 	GMT_message (GMT, "------------------------------------------------------------------------------------\n");
-	nrasters = load_rasinfo (GMT, &rasinfo, MY_ENDIAN);
+	nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN);
 	for (i = 0; i < nrasters; i++) GMT_message (GMT, "%s\n", rasinfo[i].h.command);
 	GMT_message (GMT, "------------------------------------------------------------------------------------\n\n");
 #ifdef WORDS_BIGENDIAN
@@ -763,7 +757,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
-	if (!(nrasters = load_rasinfo (GMT, &rasinfo, MY_ENDIAN))) Return (EXIT_FAILURE);
+	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN))) Return (EXIT_FAILURE);
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %ld data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */

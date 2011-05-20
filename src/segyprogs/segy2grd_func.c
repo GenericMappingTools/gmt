@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.14 2011-05-19 15:18:56 remko Exp $
+ *	$Id: segy2grd_func.c,v 1.15 2011-05-20 15:13:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -264,11 +264,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, read_cont = FALSE;
-#ifdef WORDS_BIGENDIAN
-	GMT_LONG swap_bytes = FALSE;
-#else
-	GMT_LONG swap_bytes = TRUE;
-#endif
+	GMT_LONG swap_bytes = !GMT_BIGENDIAN;
 
 	GMT_LONG ij, ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
 	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, n_samp=0, ix, isamp, ij0;

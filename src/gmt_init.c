@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.522 2011-05-19 15:18:56 remko Exp $
+ *	$Id: gmt_init.c,v 1.523 2011-05-20 15:13:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1292,14 +1292,6 @@ GMT_LONG gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 	return (GMT_NOERROR);
 }
 
-#ifndef MY_ENDIAN
-#ifdef WORDS_BIGENDIAN
-#define MY_ENDIAN 'B'	/* This machine is Big endian */
-#else
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#endif
-#endif
-
 GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 {
 	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
@@ -1314,8 +1306,7 @@ GMT_LONG gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	if ((p = strchr (text, '+'))) {	/* Yes */
 		*p = '\0';	/* Temporarily chop off the modifier */
 		switch (p[1]) {
-			case 'L': swab = (MY_ENDIAN == 'B');	break;	/* Must swap */
-			case 'B': swab = (MY_ENDIAN == 'L');	break;	/* Must swap */
+			case 'B': case 'L': swab = (p[1] != GMT_ENDIAN); break;	/* Must swap */
 			default:
 				GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
 				return (EXIT_FAILURE);
