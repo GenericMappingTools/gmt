@@ -1,2 +1,3 @@
 .TP
-GMT_B_OPT Sets map boundary intervals.
+GMT_B_OPT
+Sets map boundary intervals.

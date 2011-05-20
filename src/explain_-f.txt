@@ -1,2 +1,3 @@
 .TP
-GMT_f_OPT Special formatting of input and/or output columns.
+GMT_f_OPT
+Special formatting of input and/or output columns.

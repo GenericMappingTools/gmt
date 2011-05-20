@@ -290,46 +290,46 @@ Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickm
 and gridlines every 15 minutes, use
 .br
 .sp
-psxy DSDP.xy -R150/154/18/23 OPT_1 -Gred -B1g15m | lpr
+BD(psxy) DSDP.xy OPT(R)150/154/18/23 OPT_1 OPR(G)red OPT(B)1BD(g)15BD(m) > map.ps
 .br
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
 4th column and color based on the depth in the third using the color palette cpt on a linear map, use
 .br
 .sp
-psxy quakes.xyzm -R0/1000/0/1000 OPT_2 -Sc -Ccpt -B200 > map.ps
+BD(psxy) quakes.xyzm OPT(R)0/1000/0/1000 OPT_2 OPT(Sc) OPT(C)cpt OPT(B)200 > map.ps
 .br
 .sp
 To plot the file trench.xy on a Mercator map, with white triangles with sides LEN_1 inch on the left
 side of the line, spaced every LEN_3 inch, use
 .br
 .sp
-psxy trench.xy -R150/200/20/50 OPT_3 -Gwhite -W -B10 | lpr
-br
+BD(psxy) trench.xy OPT(R)150/200/20/50 OPT_3 OPT(G)white OPT(W) OPT(B)10 > map.ps
+.br
 .sp
 To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given
 by the magnitude in the 4th column, and color based on the third column via the color palette cpt on a linear map, use
 .br
 .sp
-psxy misc.d -R0/100/-50/100 OPT_2 -S -Ccpt -B20 > t.ps
+BD(psxy) misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > map.ps
 .SH SEGMENT HEADER PARSING
 Segment header records may contain one of more of the following options:
 .br
-OPT(G)IT(fill) Use the new IT(fill) and turn filling on
+OPT(G)IT(fill)	Use the new IT(fill) and turn filling on
 .br
-OPT(G-) Turn filling off
+OPT(G-)		Turn filling off
 .br
-OPT(G) Revert to default fill (none if not set on command line)
+OPT(G)		Revert to default fill (none if not set on command line)
 .br
-OPT(W)IT(pen) Use the new IT(pen) and turn outline on
+OPT(W)IT(pen)	Use the new IT(pen) and turn outline on
 .br
-OPT(W) Revert to default pen BD(MAP_DEFAULT_PEN) (if not set on command line)
+OPT(W)		Revert to default pen BD(MAP_DEFAULT_PEN) (if not set on command line)
 .br
-OPT(W-) Turn outline off
+OPT(W-)		Turn outline off
 .br
-OPT(Z)IT(zval) Obtain fill via cpt lookup using z-value IT(zval)
+OPT(Z)IT(zval)	Obtain fill via cpt lookup using z-value IT(zval)
 .br
-OPT(ZNaN) Get the NaN color from the cpt file
+OPT(ZNaN)	Get the NaN color from the cpt file
 .SH CUSTOM SYMBOLS
 BD(psxy) allows users to define and plot their own custom symbols.
 This is done by encoding the symbol using our custom symbol macro code described in Appendix N.

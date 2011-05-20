@@ -1,2 +1,3 @@
 .TP
-GMT_X_OPT GMT_Y_OPT Shift plot origin.
+GMT_X_OPT GMT_Y_OPT
+Shift plot origin.
