@@ -1,2 +1,3 @@
 .TP
-GMT_p_OPT Select perspective view.
+GMT_p_OPT
+Select perspective view.

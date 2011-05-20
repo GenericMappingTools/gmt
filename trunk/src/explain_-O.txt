@@ -1,2 +1,3 @@
 .TP
-OPT(O) Append to existing plot.
+OPT(O)
+Append to existing plot.
