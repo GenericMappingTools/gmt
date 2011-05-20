@@ -1,12 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1040 2011-05-20 13:49:06 jluis Exp $
+	$Id: ChangeLog,v 1.1041 2011-05-20 14:02:59 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-20	jluis
-	* gmt_notunix.h:	Remove #define HAVE_SINCOS 1 for Intel compilers because it's extremly slow 
+	* gmt_notunix.h:	Remove #define HAVE_SINCOS 1 for Intel compilers because it's extremely slow 
 
 2011-05-20	remko
 	* gmt_io.c:		Fixed bug in parsing segment headers (did not allow empty argument after option)
+	* gmt_math.h:		No longer include gmt_notposix.h (moved to gmt.h and pslib.c)
+	* pslib.c, gmt.h:	For logical reasons, include BOTH gmt_notunix.h, then gmt_notposix.h
+	* gmt_notunix.h:	No longer define SET_IN_NOTUNIX, but simply define _GMT_NOTPOSIX_H.
 
 2011-05-19	remko
 	* pslib.c, pslib_f77.c:	Split off Fortran bindings
