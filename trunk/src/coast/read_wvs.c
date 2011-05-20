@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.6 2009-06-05 00:25:12 guru Exp $
+ *	$Id: read_wvs.c,v 1.7 2011-05-20 13:03:42 remko Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -94,7 +94,6 @@
         todeg     - conversion factor from deltas to degrees.
         lat       - latitude of current point (degrees +90.0).
         lon       - longitude of current point (degrees).
-        dummy     - dummy pointer for modf function.
 
         Arguments:
 
@@ -256,10 +255,10 @@ if neccessary*/
   wlon = g_wlondd;
   elon = g_elondd;
 
-  if (modf((double)g_nlatdd,&dummy)==0.0) nlat--;
-  if (modf((double)g_elondd,&dummy)==0.0) elon--;
-  if (g_wlondd<0.0 && modf((double)g_wlondd,&dummy)!=0.0) wlon--;
-  if (g_elondd<0.0 && modf((double)g_elondd,&dummy)!=0.0) elon--;
+  if (fmod(g_nlatdd,1.0)==0.0) nlat--;
+  if (fmod(g_elondd,1.0)==0.0) elon--;
+  if (g_wlondd<0.0 && fmod(g_wlondd,1.0)!=0.0) wlon--;
+  if (g_elondd<0.0 && fmod(g_elondd,1.0)!=0.0) elon--;
 /*Latitude loop*/
   for (i=slat; i<=nlat; i++)
   {
@@ -620,8 +619,7 @@ beginning of the next line and set the counter.*/
     }
   }
 /*If the current point is within the area, store it and set the flag.*/
-  if (ylat>=g_slatdd && ylat<=g_nlatdd && lon>=g_wlondd &&
-    lon<=g_elondd)
+  if (ylat>=g_slatdd && ylat<=g_nlatdd && lon>=g_wlondd && lon<=g_elondd)
   {
     npts++;
     latray[npts] = ylat;
