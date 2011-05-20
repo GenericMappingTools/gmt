@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.214 2011-05-18 21:33:45 remko Exp $
+ *	$Id: gmt.h,v 1.215 2011-05-20 13:59:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -94,6 +94,7 @@ extern "C" {
 
 #include "gmt_types.h"		/* All basic typedef declarations */
 #include "gmt_notunix.h"	/* Stuff for Windows */
+#include "gmt_notposix.h"	/* Non-POSIX extensions */
 #ifndef WIN32
 #include <unistd.h>
 #endif
