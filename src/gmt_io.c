@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.281 2011-05-17 03:02:06 guru Exp $
+ *	$Id: gmt_io.c,v 1.282 2011-05-20 01:49:05 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4147,7 +4147,7 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	 * if found, extracts the argument and returns it via out_string.  Function
 	 * return TRUE if the pattern was found and FALSE otherwise.
 	 * out_string must be allocated and have space for the copying */
-	char *t = NULL, q;
+	char *t = NULL;
 	GMT_LONG k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
@@ -4156,13 +4156,12 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	k = (GMT_LONG)t - (GMT_LONG)in_string;	/* Position of pattern in in_string */
 	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (FALSE);	/* Option not first or preceeded by whitespace */
 	t += 2;	/* Position of the argument */
-	if (t[0] == '\"' || t[0] == '\'') {	/* Quoted argument, must find terminal quote */
-		for (k = 1, q = t[0]; k < strlen (t) && t[k] != q; k++);	/* Find next quote */
-		strncpy (out_string, &t[1], (size_t)(--k));
-		out_string[k] = '\0';	/* Terminate string */
-	}
-	else	/* No quote, just one word */
-		sscanf (t, "%s", out_string);
+	if (t[0] == '\"')	/* Double quoted argument, must scan from next character until terminal quote */
+		sscanf (++t, "%[^\"]", out_string);
+	else if (t[0] == '\'')	/* Single quoted argument, must scan from next character until terminal quote */
+		sscanf (++t, "%[^\']", out_string);
+	else	/* Scan until next white space; stop also when there is leading white space, indicating no argument at all! */
+		sscanf (t, "%[^ \t]", out_string);
 	return (TRUE);
 }
 

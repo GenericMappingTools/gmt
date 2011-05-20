@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1038 2011-05-19 20:52:35 remko Exp $
+	$Id: ChangeLog,v 1.1039 2011-05-20 01:50:40 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-20	remko
+	* gmt_io.c:		Fixed bug in parsing segment headers (did not allow empty argument after option)
 
 2011-05-19	remko
 	* pslib.c, pslib_f77.c:	Split off Fortran bindings
