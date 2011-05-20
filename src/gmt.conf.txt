@@ -447,10 +447,6 @@ instead, with threshold set by BD(PS_MITER_LIMIT)), IT(round) join where a
 circular arc is used to fill in the cracks at the kinks, and IT(bevel) join which
 is a miter join that is cut off so kinks are triangular in shape [miter].
 .TP
-.B PS_EPS
-To indicate you are making an EPS file, set this setting to true.
-Then, BD(GMT) will attempt to issue a tight bounding box  [DEF_EPS]
-.TP
 .B PS_MEDIA
 Sets the physical format of the current plot paper [PAPER_SI (or PAPER_US)].  The following
 formats (and their widths and heights in points) are recognized (Additional
