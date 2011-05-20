@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.45 2011-05-19 15:18:56 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.46 2011-05-20 13:22:29 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,15 +91,17 @@
 #define HAVE_YN 1
 #undef HAVE_ERF
 #undef HAVE_ERFC
-#define HAVE_STRDUP 1
-#define HAVE_STRTOD 1
 #ifdef __INTEL_COMPILER 
 #define HAVE_SINCOS 1
-#undef HAVE_STRTOK_R
 #else
 #undef HAVE_SINCOS
 #endif
 #undef HAVE_ALPHASINCOS
+#undef HAVE_GETPWUID
+#undef HAVE_QSORT_R
+#define HAVE_STRDUP 1
+#define HAVE_STRTOD 1
+#undef HAVE_STRTOK_R
 #undef WORDS_BIGENDIAN
 
 /* Several math functions exist but the names have a leading underscore */
