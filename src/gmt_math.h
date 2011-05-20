@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.38 2011-05-19 20:51:24 remko Exp $
+ *	$Id: gmt_math.h,v 1.39 2011-05-20 14:02:00 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -31,10 +31,6 @@
 
 #ifndef _GMT_MATH_H
 #define _GMT_MATH_H
-
-#ifndef SET_IN_NOTUNIX
-#include "gmt_notposix.h"
-#endif
 
 #if defined(copysign)
 /* Macro already takes care of copysign - probably from BSD */
