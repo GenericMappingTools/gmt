@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.78 2011-05-16 22:22:31 guru Exp $
+ *	$Id: libspotter.c,v 1.79 2011-05-20 03:41:17 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -406,6 +406,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (EXIT_FAILURE);
 		}
+		GMT_report (C, GMT_MSG_VERBOSE, "Using GPlates plate id file %s\n", Plates);
 		A_id = B_id = 0;
 		while ((A_id == 0 || B_id == 0) && GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
@@ -428,6 +429,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (EXIT_FAILURE);
 		}
+		GMT_report (C, GMT_MSG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = TRUE;
 	}
 	else if ((fp = GMT_fopen (C, file, "r")) == NULL) {
