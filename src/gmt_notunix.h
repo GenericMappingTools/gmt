@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.46 2011-05-20 13:22:29 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.47 2011-05-20 13:46:42 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,11 +91,7 @@
 #define HAVE_YN 1
 #undef HAVE_ERF
 #undef HAVE_ERFC
-#ifdef __INTEL_COMPILER 
-#define HAVE_SINCOS 1
-#else
 #undef HAVE_SINCOS
-#endif
 #undef HAVE_ALPHASINCOS
 #undef HAVE_GETPWUID
 #undef HAVE_QSORT_R
