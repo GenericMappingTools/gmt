@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.267 2011-05-19 15:18:56 remko Exp $
+ *	$Id: pslib.c,v 1.268 2011-05-20 13:59:27 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -150,6 +150,7 @@
 #include "pslib.h"
 #include "pslconfig.h"
 #include "gmt_notunix.h"
+#include "gmt_notposix.h"
 #include "gmt_math.h"
 
 #ifndef WIN32
