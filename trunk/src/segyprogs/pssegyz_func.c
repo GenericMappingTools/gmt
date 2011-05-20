@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.8 2011-05-19 15:18:56 remko Exp $
+ *	$Id: pssegyz_func.c,v 1.9 2011-05-20 15:13:57 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -113,11 +113,7 @@ void *New_pssegyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
-#ifdef WORDS_BIGENDIAN
-	C->A.active = FALSE;
-#else
-	C->A.active = TRUE;
-#endif
+	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
 	C->Q.value[X_ID] = 1.0; /* Ctrl->Q.value[X_ID], Ctrl->Q.value[Z_ID] are trace and sample interval */
 	return ((void *)C);

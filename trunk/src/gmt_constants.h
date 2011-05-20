@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_constants.h,v 1.8 2011-04-29 03:08:11 guru Exp $
+ *	$Id: gmt_constants.h,v 1.9 2011-05-20 15:13:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,5 +143,14 @@
 #define GMT_BC_IS_PERIODIC	2
 #define GMT_BC_IS_POLE		3
 #define GMT_BC_IS_DATA		4
+
+/* Help us with big and little endianness */
+#ifdef WORDS_BIGENDIAN
+#define GMT_BIGENDIAN	TRUE
+#define GMT_ENDIAN		'B'
+#else
+#define GMT_BIGENDIAN	FALSE
+#define GMT_ENDIAN		'L'
+#endif
 
 #endif  /* _GMT_CONSTANTS_H */

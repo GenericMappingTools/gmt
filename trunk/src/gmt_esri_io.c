@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_esri_io.c,v 1.27 2011-05-19 15:18:55 remko Exp $
+ *	$Id: gmt_esri_io.c,v 1.28 2011-05-20 15:13:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,14 +28,6 @@
   *
   * Joaquim Luis, Mars 2011.
   */
-
-#ifndef MY_ENDIAN
-#ifdef WORDS_BIGENDIAN
-#define MY_ENDIAN 'B'	/* This machine is Big endian */
-#else
-#define MY_ENDIAN 'L'	/* This machine is Little endian */
-#endif
-#endif
 
 GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Determine if file is an ESRI Interchange ASCII file */
@@ -435,8 +427,8 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	if (header->flags[0]) {	/* We are dealing with a ESRI .hdr file or GTOPO30, SRTM30, SRTM1|3 */
 		r_mode = "rb";
-		if (((header->flags[0] == 'M' || header->flags[0] == 'B') && (MY_ENDIAN == 'L')) ||
-			((header->flags[0] == 'L') && (MY_ENDIAN == 'B')) ) 
+		if (((header->flags[0] == 'M' || header->flags[0] == 'B') && !GMT_BIGENDIAN) ||
+			(header->flags[0] == 'L' && GMT_BIGENDIAN)) 
 			swap = TRUE;
 		nBits = header->bits;
 		is_binary = TRUE;
