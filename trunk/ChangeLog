@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1039 2011-05-20 01:50:40 remko Exp $
+	$Id: ChangeLog,v 1.1040 2011-05-20 13:49:06 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-20	jluis
+	* gmt_notunix.h:	Remove #define HAVE_SINCOS 1 for Intel compilers because it's extremly slow 
 
 2011-05-20	remko
 	* gmt_io.c:		Fixed bug in parsing segment headers (did not allow empty argument after option)
