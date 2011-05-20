@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.47 2011-05-20 13:46:42 jluis Exp $
+ *	$Id: gmt_notunix.h,v 1.48 2011-05-20 14:01:23 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,6 +57,8 @@
 
 #if defined(WIN32) && !defined(__MINGW32__)	/* Start of Windows setup */
 
+#define _GMT_NOTPOSIX_H	/* This forces the following not to be reset in gmt_notposix.h */
+
 /* This section will override those in gmt_notposix.h which cannot
  * automatically be generated under Windows.
  */
@@ -66,8 +68,6 @@
 #pragma warning( disable : 4996 )
 #pragma warning( disable : 4005 )
 #pragma warning( disable : 4018)	/* '<' : signed/unsigned mismatch */
-
-#define SET_IN_NOTUNIX	/* This forces the following not to be reset in gmt_notposix.h */
 
 /* These functions are available under Windows with MSVC compilers */
 
@@ -213,7 +213,6 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
  *===================================================================*/
  
 /* Set a few Default Unix settings if they did not get set above */
-
 
 #ifndef DIR_DELIM
 #define DIR_DELIM '/'
