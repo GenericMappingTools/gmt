@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.h.in,v 1.22 2011-05-20 13:22:29 remko Exp $
+ *	$Id: gmt_notposix.h.in,v 1.23 2011-05-20 14:01:23 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,16 +26,14 @@
  * take advantage of the built-in functions if they exist and provide
  * alternative definitions otherwise.  For some non-Unix Operating
  * Systems, like Win32, these settings have already been hard-wired
- * into gmt_notunix.h and SET_IN_NOTUNIX is defined so we do not
- * override the system-specific settings.
+ * into gmt_notunix.h and _GMT_NOTPOSIX_H is defined there so we do not
+ * override those system-specific settings.
  *
  * Version:	5
  */
 
 #ifndef _GMT_NOTPOSIX_H
 #define _GMT_NOTPOSIX_H
-
-#ifndef SET_IN_NOTUNIX	/* Start of configure control */
 
 /* >>> THIS SECTION WILL BE MODIFIED BY configure <<<
  * >>> DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING!! <<< */
@@ -72,7 +70,5 @@
 #undef HAVE_STRTOD
 #undef HAVE_STRTOK_R
 #undef WORDS_BIGENDIAN
-
-#endif	/* End of configure control */
 
 #endif /* _GMT_NOTPOSIX_H */
