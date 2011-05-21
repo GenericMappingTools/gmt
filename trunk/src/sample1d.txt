@@ -16,7 +16,7 @@ Several interpolation schemes are available.  Extrapolation outside the range of
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile)
-This is a multi-column ASCII [of binary, see OPT(b)] file with one column containing the independent variable (which must
+This is a multi-column ASCII [of binary, see GMT_bi_OPT] file with one column containing the independent variable (which must
 be monotonically in/de-creasing) and the remaining columns holding misc. data values.
 If no file is provided, BD(sample1d) reads from standard input.
 .SH OPTIONAL ARGUMENTS

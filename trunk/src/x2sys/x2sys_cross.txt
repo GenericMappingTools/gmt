@@ -67,7 +67,7 @@ Report the values of each track at the crossover [Default reports the crossover 
 #include "explain_help.txt"
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
-OPT(bo) is set).  When ASCII is chosen, the output format depends on
+GMT_bo_OPT is set).  When ASCII is chosen, the output format depends on
 whether or not old-style XOVER output (OPT(L)) has been selected [See
 the BD(x_over) man page for more details].
 If ASCII, then the first record contains the name of the tag used, the second

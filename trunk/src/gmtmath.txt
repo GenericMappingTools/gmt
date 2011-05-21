@@ -17,7 +17,7 @@ may therefore be evaluated; the final result is written to an output file
 [or standard output].
 When two data tables are on the stack, each element in file A is modified by the corresponding element in file B.
 However, some operators only require one operand (see below).  If no data tables are used in the
-expression then options OPT(T), OPT(N) can be set (and optionally OPT(b) to indicate the data domain).
+expression then options OPT(T), OPT(N) can be set (and optionally GMT_bo_OPT to indicate the data type).
 If STDIN is given, <stdin> will be read and placed on the stack as if a file with that content
 had been given on the command line.  By default, all columns except the
 "time" column are operated on, but this can be changed (see OPT(C)).
@@ -25,7 +25,7 @@ had been given on the command line.  By default, all columns except the
 .SH REQUIRED ARGUMENTS
 .TP
 IT(operand)
-If IT(operand) can be opened as a file it will be read as an ASCII (or binary, see OPT(bi)) table data file.
+If IT(operand) can be opened as a file it will be read as an ASCII (or binary, see GMT_bi_OPT) table data file.
 If not a file, it is interpreted as a numerical constant or a special symbol (see below).  The special argument
 STDIN means that IT(stdin) will be read and placed on the stack; STDIN can appear more than once if necessary.
 .TP

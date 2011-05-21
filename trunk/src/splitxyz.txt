@@ -15,12 +15,12 @@ There are options to choose only those series which have a certain orientation, 
 minimum length for series, and to high\- or low\-pass filter the z values and/or the x,y 
 values.  BD(splitxyz) is a useful filter between data extraction and BD(pswiggle) plotting, 
 and can also be used to divide a large x,y,z dataset into segments.  The output is always
-in the ASCII format; input may be ASCII or binary (see OPT(b)).
+in the ASCII format; input may be ASCII or binary (see GMT_bi_OPT).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyz[dh]file(s))
-3 (but see OPT(Z)) [or 5] column ASCII file [or binary, see OPT(b)] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
+3 (but see OPT(Z)) [or 5] column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
 sorted so that d is non-decreasing, specify the OPT(S) option; default expects (x,y,z) only.  
 If no file is specified, BD(splitxyz) will read from standard input.
 .TP
@@ -65,13 +65,13 @@ Write each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
 C format specifier that can format an long integer argument (the running segment number across all tables);
 this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is splitxyz_segment_%ld.{txt|bin},
-depending on OPT(b)].
+depending on GMT_bo_OPT].
 Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
 number within the table to build the file name.
 .TP
 OPT(Q)IT(flags)
 Specify your desired output using any combination of IT(xyzdh), in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary, see OPT(bo)) columns of values corresponding 
+the letters.  Use lower case.  The output will be ASCII (or binary, see GMT_bo_OPT) columns of values corresponding 
 to IT(xyzdh) [Default is OPT(Q)IT(xyzdh) (OPT(Q)IT(xydh) if OPT(Z) is set)].
 .TP
 OPT(S)

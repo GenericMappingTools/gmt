@@ -25,7 +25,7 @@ effect until turned off by a second call to BD(psmask) using the OPT(C) option.
 .TP
 IT(xyzfile)
 File with (IT(x),IT(y),IT(z)) values (e.g., that was used to run BD(surface)).  If no file
-is given, standard input is read.  For binary files, see OPT(b).
+is given, standard input is read.  For binary files, see GMT_bi_OPT.
 #include "explain_-I.txt"
 #include "explain_-J.txt"
 #include "explain_-R.txt"
@@ -42,7 +42,7 @@ OPT(D)IT(dumpfile)
 Dump the (x,y) coordinates of each clipping polygon to one or more output files (or IT(stdout) if IT(template) is not given).
 No plotting will take place.  If IT(template) contains the C-format specifier %d (including modifications like %5.5d) then
 polygons will be written to different files; otherwise all polygons are written to the specified file (IT(template)).
-The files are ASCII unless OPT(bo) is used.  See OPT(Q) to exclude small polygons from consideration.
+The files are ASCII unless GMT_bo_OPT is used.  See OPT(Q) to exclude small polygons from consideration.
 #include "explain_perspective.txt"
 .TP
 OPT(G)IT(fill)

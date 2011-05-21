@@ -32,7 +32,7 @@ to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cu
 .TP
 OPT(F)IT(acdhiInNtTvxyz)
 Specify your desired output using any combination of IT(acdhiInNtTvwxyz), in any order.  Do not use space between
-the letters, and note your selection is case-sensitive.  The output will be ASCII (or binary, see OPT(bo)) columns of values.
+the letters, and note your selection is case-sensitive.  The output will be ASCII (or binary, GMT_bo_OPT) columns of values.
 Description of codes: BD(a) is the angle (< 90) defined by the crossing tracks,
 BD(c) is crossover value of chosen observation (see OPT(C)),
 BD(d) is distance along track,

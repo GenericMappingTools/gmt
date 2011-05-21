@@ -16,7 +16,7 @@ significantly reduce the variance in y.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
-ASCII [or binary, see OPT(b)] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
+ASCII [or binary, see GMT_bi_OPT] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
 will read from standard input.
 .TP
 OPT(F)BD(xymrw|p)

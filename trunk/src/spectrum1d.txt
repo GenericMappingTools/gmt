@@ -17,7 +17,7 @@ averaging of multiple overlapped windows, using standard error estimates from Be
 The output files have 3 columns: f or w, p, and e.  f or w is the frequency or wavelength, p is the 
 spectral density estimate, and e is the one standard deviation error bar size.  These files are named 
 based on IT(name_stem).  If the OPT(C) option is used, up to eight files are created; otherwise only one 
-(xpower) is written.  The files (which are ASCII unless OPT(bo) is set) are as follows:
+(xpower) is written.  The files (which are ASCII unless GMT_bo_OPT is set) are as follows:
 .TP
 IT(name_stem).xpower
 Power spectral density of X(t).  Units of X * X * IT(dt).
@@ -47,7 +47,7 @@ Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - c
 .SH REQUIRED ARGUMENTS
 .TP
 IT(x[y]file)
-ASCII (or binary, see OPT(bi)) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
+ASCII (or binary, see GMT_bi_OPT) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
 If no file is specified, BD(spectrum1d) will read from standard input.
 .TP
 OPT(S)IT(segment_size)]

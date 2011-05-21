@@ -29,7 +29,7 @@ also OPT(A) and OPT(C)), and IT(timestart) and IT(timestop) apply to events and 
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile(s))
-ASCII (or binary, see OPT(bi)) data file(s) to be operated on.  If not given, standard input will be read.
+ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input will be read.
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP

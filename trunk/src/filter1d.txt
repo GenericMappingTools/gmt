@@ -17,7 +17,7 @@ BD(filter1d) has options OPT(L), OPT(Q), and OPT(S) for unevenly sampled data wi
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile)
-Multi-column ASCII (or binary, see OPT(b)) file holding data values to be filtered.
+Multi-column ASCII (or binary, see GMT_bi_OPT) file holding data values to be filtered.
 .TP
 OPT(F)IT(type<width>)[IT(mode)]
 Sets the filter IT(type).  Choose among convolution and non-convolution filters.  Append the filter code followed

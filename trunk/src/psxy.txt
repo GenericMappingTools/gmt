@@ -100,7 +100,7 @@ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)]
 Plot symbols.  If present, IT(size) is symbol size in the unit set in BD(gmt.conf).
 (unless BD(c), BD(i), or BD(p) is appended).
 If the symbol code (see below) is not given it will be read from the last column in the input data;
-this cannot be used in conjunction with OPT(b).  Optionally, append
+this cannot be used in conjunction with GMT_bi_OPT.  Optionally, append
 BD(c), BD(i), or BD(p) to indicate that the size information in the
 input data is in units of cm, inch, or point, respectively [Default is BD(PROJ_LENGTH_UNIT)].
 Note: if you give both size and symbol via the input file you must use BD(PROJ_LENGTH_UNIT) to

@@ -69,7 +69,7 @@ IT(cx/cy) are the coordinates of a point through which the oblique zero meridian
 .SH OPTIONAL ARGUMENTS
 .TP
 IT(infile)
-name of ASCII (or binary, see OPT(bi)) file(s) with 2 or more columns holding (x,y,[z]) data values.
+name of ASCII (or binary, see GMT_bi_OPT) file(s) with 2 or more columns holding (x,y,[z]) data values.
 If no filenames are given, BD(project) will read from standard input.
 If the OPT(G) option is selected, no input data are read.
 .TP
@@ -81,7 +81,7 @@ IT(bx/by) defines the end point of the projection path (Definition 2).
 .TP
 OPT(F)IT(flags)
 Specify your desired output using any combination of IT(xyzpqrs), in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary, see OPT(bo)) columns of values corresponding 
+the letters.  Use lower case.  The output will be ASCII (or binary, see GMT_bo_OPT) columns of values corresponding 
 to IT(xyzpqrs) [Default].  If both input and output are using ASCII format then the IT(z) data are treated as
 textstring(s).
 If the OPT(G) option is selected, the output will be IT(rsp).

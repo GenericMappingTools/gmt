@@ -14,7 +14,7 @@ processed at the time.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(COE_list.d)
-Name of file with the required crossover columns as produced by BD(x2sys_list).  NOTE: If OPT(bi) is used then the
+Name of file with the required crossover columns as produced by BD(x2sys_list).  NOTE: If GMT_bi_OPT is used then the
 first two columns are expected to hold the integer track IDs; otherwise we expect
 those columns to hold the text string names of the two tracks.  If no file is given we will read from IT(stdin).
 #include "explain_tag.txt"

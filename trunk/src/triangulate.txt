@@ -25,7 +25,7 @@ This choice is made during the BD(GMT) installation.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-Data files with the point coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+Data files with the point coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(Dx)|BD(y)
@@ -57,7 +57,7 @@ OPT(R) and is only available if linked with the Shewchuk [1996] library.
 #include "explain_-V.txt"
 .TP
 OPT(Z)
-Controls whether binary data file has two or three columns [2].  Ignored if OPT(b)
+Controls whether binary data file has two or three columns [2].  Ignored if GMT_bi_OPT
 is not set.
 #include "explain_-bi.txt"
 [Default is 2 input columns].

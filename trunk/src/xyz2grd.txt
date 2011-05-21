@@ -19,7 +19,7 @@ number of formats, see OPT(Z) below.)
 .TP
 IT([xy]zfile)
 ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
-have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the OPT(Z) must be set). 
+have to be sorted (for binary triplets, see GMT_bi_OPT).  1-column z tables must be sorted and the OPT(Z) must be set). 
 .TP
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the binary output grid file.

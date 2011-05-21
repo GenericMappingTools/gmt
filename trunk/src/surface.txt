@@ -27,7 +27,7 @@ a fixed value, a grid with values, or simply be the minimum/maximum input data v
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)
-3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
+3 column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
 standard input.
 .TP
 OPT(G)IT(outputfile.nc)

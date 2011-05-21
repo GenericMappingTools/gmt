@@ -28,7 +28,7 @@ may be deactivated by running BD(psclip) a second time with the OPT(C) option on
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyfiles)
-ASCII [or binary, see OPT(b)] file(s) with (x,y) values for clip polygons.  If no files are given, the
+ASCII [or binary, see GMT_bi_OPT] file(s) with (x,y) values for clip polygons.  If no files are given, the
 standard input is read.
 .TP
 OPT(C)[BD(c)|BD(s)|[BD(a)|IT(n)]

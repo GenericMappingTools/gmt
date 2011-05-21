@@ -30,7 +30,7 @@ restored when evaluating the output.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(datafile(s))
-The name of one or more ASCII [or binary, see OPT(bi)] files holding the BD(x), IT(w)
+The name of one or more ASCII [or binary, see GMT_bi_OPT] files holding the BD(x), IT(w)
 data points.  If no file is given then we read standard input instead.
 .SH OPTIONAL ARGUMENTS
 .TP
@@ -79,7 +79,7 @@ Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(
 an equidistant output table.  This will be written to stdout unless OPT(G) is specified.  Note: for 2-D
 grids the OPT(G) option is required.  (2) If option OPT(T) is selected then OPT(G) is required and the
 output file is a 2-D binary grid file.  Applies to 2-D interpolation only.
-(3) If OPT(N) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
+(3) If OPT(N) is selected then the output is an ASCII (or binary; see GMT_bo_OPT) table;
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.
 .TP
@@ -95,7 +95,7 @@ cases with both data values and gradients, or for spherical surface data, only t
 OPT(N)IT(nodefile)
 ASCII file with coordinates of desired output locations BD(x) in the first column(s).  The resulting
 IT(w) values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
-see OPT(bo) for binary output instead.  This option eliminates the need to
+see GMT_bo_OPT for binary output instead.  This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(r).
 .TP
 OPT(Q)IT(az)|IT(x/y/z)

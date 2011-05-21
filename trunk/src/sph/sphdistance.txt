@@ -18,7 +18,7 @@ thus bypassing the memory- and time-consuming triangularization.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-Data files with the point coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+Data files with the point coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
 .TP
 OPT(G)IT(grdfile)
 Name of the output grid to hold the computed distances.
@@ -49,7 +49,7 @@ Required if binary input via OPT(Q) is used.
 .TP
 OPT(Q)IT(voronoi.d)
 Append the name of a file with pre-calculated Voronoi polygons [Default performs the Voronoi construction on input data].
-For binary data OPT(bi) you must specify the node information separately (via OPT(N)).
+For binary data GMT_bi_OPT you must specify the node information separately (via OPT(N)).
 #include "explain_-Rgeo.txt"
 #include "explain_-V.txt"
 #include "explain_-bi.txt"

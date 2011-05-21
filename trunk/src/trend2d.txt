@@ -26,7 +26,7 @@ on a regional surface.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
-ASCII [or binary, see OPT(b)] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, BD(trend2d) 
+ASCII [or binary, see GMT_bi_OPT] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, BD(trend2d) 
 will read from standard input.
 .TP
 OPT(F)BD(xyzmrw)
