@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.14 2011-03-15 02:06:31 guru Exp $
+REM             $Id: job21.bat,v 1.15 2011-05-21 17:10:27 jluis Exp $
 REM
 REM Purpose:    Plot a time-series
 REM
@@ -19,7 +19,7 @@ gmtset FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 REM Create a suitable -R string
 
-set R=-R1999-08-11T00:00:00/2006-11-01T00:00:00/0/300
+set R=-R1999-08-04T12:00:00/2008-01-29T12:00:00/0/300
 
 REM Lay down the basemap:
 
@@ -55,7 +55,8 @@ echo 01-Aug-06 23.8852 > RHAT.pw
 echo 01-Jan-08 23.8852 >> RHAT.pw
 psxy -R -J RHAT.pw -Wthick,- -O -K >> %ps%
 gmtset FORMAT_DATE_IN yyyy-mm-dd
-echo "2007-06-25T00:00:00 23.8852 PW sell" | pstext -R -J -O -K -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB >> %ps%
+rem echo "2007-06-25T00:00:00 23.8852 PW sell" | pstext -R -J -O -K -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB >> %ps%
+echo 2008-01-29T12:00:00 23.8852 PW sell | pstext -R -J -O -K -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB >> %ps%
 gmtset FORMAT_DATE_IN dd-o-yy
 
 REM Set smaller region for insert for trend since 2004
@@ -77,8 +78,8 @@ psxy -R -J RHAT.pw -Wthick,- -O -K >> %ps%
 
 REM Mark sales date
 
-echo 25-Jun-07 0" > RHAT.pw
-echo 25-Jun-07 300" >> RHAT.pw
+echo 25-Jun-07 0 > RHAT.pw
+echo 25-Jun-07 300 >> RHAT.pw
 psxy -R -J RHAT.pw -Wthinner,- -O >> %ps%
 
 REM Clean up after ourselves:
