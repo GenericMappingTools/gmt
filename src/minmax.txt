@@ -19,13 +19,14 @@ column form for as many columns as there are increments provided.
 A similar option (OPT(T)) will provide a OPT(T)IT(zmin/zmax/dz) string for makecpt.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(xyzfile)
 ASCII [or binary, see GMT_bi_OPT] file(s) holding a fixed number of data columns. 
-.SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)BD(a)|BD(f)|BD(s)
-Specify how the range should be reported.  Choose OPT(Aa) for the range of all files,
+Specify how the range should be reported.  Choose OPT(Aa) for the range of all files combined,
 OPT(Af) to report the range for each file separately, and OPT(As) to report the range
 for each segment (in multisegment files) separately.  [Default is OPT(Aa)].
 .TP
