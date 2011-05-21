@@ -3,7 +3,7 @@
 .SH NAME
 gmtdp \- Line reduction using the Douglas-Peucker algorithm
 .SH SYNOPSIS
-BD(gmtdp) IT(infiles) OPT(T)IT(tolerance)[IT(unit)] 
+BD(gmtdp) [ IT(infiles) ] OPT(T)IT(tolerance)[IT(unit)] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ]  [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(gmtdp) reads one or more data files
@@ -15,13 +15,14 @@ Have a look at this site to get a visual insight on how the algorithm works
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(file(s))
-One of more data files. If none are supplied then we read standard input.
-.TP
 OPT(T)IT(tolerance)[IT(unit)]
 Specifies the maximum mismatch tolerance in the user units.  If the data is
 not Cartesian then append the distance unit (see UNITS).
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(file(s))
+ASCII (or binary, see GMT_bi_OPT) file(s) with at least two columns. If none are given
+then we read standard input.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].

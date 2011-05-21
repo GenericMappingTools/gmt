@@ -19,7 +19,6 @@ IT(grdfile)
 Name of the 2-D grid file to modify.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 If necessary, adjust the file's \fIx_inc\fP, \fIy_inc\fP to be compatible with\"'

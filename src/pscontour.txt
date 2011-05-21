@@ -5,7 +5,7 @@
 .SH NAME
 pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
-BD(pscontour) IT(xyzfile) OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pscontour) [ IT(xyzfile) ] OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A)[BD(-)][IT(labelinfo)] ] [ GMT_B_OPT ] [ OPT(D)[IT(template)] ]
 [ GMT_CONTG ] [ OPT(I) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ OPT(L)IT(pen) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(indexfile) ] 
@@ -25,9 +25,6 @@ one or more output files (or stdout) and no plot is produced.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyzfile)
-Raw ASCII (or binary, see GMT_bi_OPT) xyz data to be contoured.
-.TP
 OPT(C)IT(cptfile)
 name of the color palette file.  Must have discrete colors if you want to paint the
 surface (OPT(I)).  Only contours that have annotation flags set will be annotated.
@@ -35,7 +32,10 @@ surface (OPT(I)).  Only contours that have annotation flags set will be annotate
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
+.TP
+IT(xyzfile)
+One or more ASCII (or binary, see GMT_bi_OPT) xyz data to be contoured.  If none are given
+then we will read standard input.
 .TP
 OPT(A)[BD(-)][IT(labelinfo)]
 Give - to disable all annotations.

@@ -15,10 +15,6 @@ significantly reduce the variance in y.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(file)
-ASCII [or binary, see GMT_bi_OPT] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
-will read from standard input.
-.TP
 OPT(F)BD(xymrw|p)
 Specify up to five letters from the set {BD(x y m r w)} in any order to create columns of 
 ASCII [or binary] output.  BD(x) = x, BD(y) = y, BD(m) = model f(x), BD(r) = residual y - BD(m), BD(w) = weight used in fitting.
@@ -29,6 +25,10 @@ Specify the number of terms in the model, IT(n_model), whether to fit
 a Fourier (OPT(Nf)) or polynomial [Default] model, and append BD(r) to do a robust fit.  E.g., a robust 
 quadratic model is OPT(N)IT(3)BD(r).
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(file)
+ASCII [or binary, see GMT_bi_OPT] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
+will read from standard input.
 .TP
 OPT(C)IT(condition_number)
 Set the maximum allowed condition number for the matrix solution.  BD(trend1d) 

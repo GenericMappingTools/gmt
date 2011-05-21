@@ -41,7 +41,6 @@ If IT(width) is negative we use the absolute value and interpolate image to the
 device resolution using the IT(PostScript) image operator.
 Alternatively, use OPT(E).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)IT(xpos)/IT(ypos)[/IT(justify)]
 Sets position of the image in plot coordinates (inches, cm, etc.) from the current origin

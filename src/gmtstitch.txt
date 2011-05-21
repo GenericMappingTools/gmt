@@ -19,10 +19,11 @@ be then use OPT(L) to get a list of all separation distances and analyze them to
 a suitable cutoff.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(file(s))
 One of more data files.  If none are supplied then we read standard input.
-.SH OPTIONAL ARGUMENTS
 .TP
 OPT(C)[IT(closed)]
 Write all the closed polygons to IT(closed) [gmtstitch_closed.d] and all other segments as they

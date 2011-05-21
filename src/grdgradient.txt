@@ -27,7 +27,6 @@ OPT(G)IT(out_grdfile)
 Name of the output grid file for the directional derivative.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)IT(azim)[/IT(azim2)]
 Azimuthal direction for a directional derivative; IT(azim) is the  

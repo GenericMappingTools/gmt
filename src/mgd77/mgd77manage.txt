@@ -21,7 +21,6 @@ section below.
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments
 .TP
 OPT(A)[BD(+)]BD(a)|BD(c)|BD(d)|BD(D)|BD(e)|BD(E)|BD(g)|BD(i)|BD(n)|BD(t)|BD(T)IT(fileinfo)
 Add a new data column.  If an existing column with the same abbreviation already exists in the file

@@ -8,7 +8,7 @@ BD(gmtconvert) [ IT(datafiles) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD
 [ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_a_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-BD(gmtconvert) reads its standard input [or inputfiles] and writes out
+BD(gmtconvert) reads its standard input [or input files] and writes out
 the desired information to standard output.  It can do a combination of
 six tasks: (1) convert between binary and ASCII data tables, (2) paste
 corresponding records from multiple files horizontally into a single file, (3)
@@ -19,10 +19,12 @@ Input (and hence output) may have multiple sub-headers,
 and ASCII tables may have regular headers as well.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(datafile(s))
-ASCII (or binary, see GMT_bi_OPT) file(s) holding a number of data columns. 
-.SH OPTIONAL ARGUMENTS
+ASCII (or binary, see GMT_bi_OPT) file(s) holding a number of data columns. If none are given
+then we read standard input.
 .TP
 OPT(A)
 The records from the input files should be pasted horizontally, not appended vertically [Default].

@@ -25,7 +25,6 @@ map using the specified projection.  The IT(PostScript) code is written to stand
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(c)][IT(size)][,IT(spacing)]
 Append BD(c) to annotate using the MGD77 cruise ID [Default uses the filename prefix].

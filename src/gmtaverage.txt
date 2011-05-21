@@ -18,11 +18,6 @@ format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file, 
 you may choose binary input and/or output using single or double precision storage.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(xyz[w]file(s))
-3 [or 4] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
-data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
-BD(gmtaverage) will read from standard input.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .TP
@@ -31,6 +26,11 @@ Specify the operator to use when computing output values.  Choose among BD(e) (m
 BD(n) (number of points), BD(o) (mode), BD(s) (sum), BD(w) (weight sum), or the IT(quantile) of the distribution to be returned.
 Here, 0 < IT(quantile) < 1.
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(xyz[w]file(s))
+3 [or 4] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
+data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
+BD(gmtaverage) will read from standard input.
 .TP
 OPT(C)
 Use the center of the block as the output location [Default uses the mean, median, or mode x and y

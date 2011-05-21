@@ -31,7 +31,6 @@ IT(relief_file)
 #include "explain_-J.txt"
 #include "explain_-Jz.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 #include "explain_-B.txt"
 .TP
 OPT(C)IT(cptfile)

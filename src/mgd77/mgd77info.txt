@@ -19,7 +19,6 @@ a tracks index data base (see BD(x2sys_init) for more information).
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)[BD(m)|BD(e)]
 List abbreviations for all columns present in the MGD77[+] files.

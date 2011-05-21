@@ -23,7 +23,6 @@ to initialize the tag before you can run the indexing.
 #include "explain_track.txt"
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(D)
 Calculate the length of trackline segments per bin [Default skips this step].

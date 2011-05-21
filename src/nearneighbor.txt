@@ -17,10 +17,6 @@ distance from the node.  This weight is modulated by the observation points' wei
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyzfile(s))
-3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
-will read from standard input.
-.TP
 OPT(G)IT(out_grdfile)
 Give the name of the output grid file.
 #include "explain_-I.txt"
@@ -39,6 +35,10 @@ OPT(S)IT(search_radius)[IT(unit)]
 Sets the IT(search_radius) that determines which data points are considered close to a node.
 Append the distance unit (see UNITS).
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(xyzfile(s))
+3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
+will read from standard input.
 .TP
 OPT(E)IT(empty)
 Set the value assigned to empty nodes [NaN].

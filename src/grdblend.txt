@@ -19,6 +19,14 @@ netCDF and native binary grid formats for both input and output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
+(See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are can be written directly.
+Other output format choices will be handled by reformatting the output once blending is complete.
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
 IT(blendfile)
 ASCII file with one record per grid file to include in the blend.  Each record must contain three items, separated by spaces or tabs:
 the gridfile name, the OPT(R)-setting for the interior region, and the relative weight IT(wr).
@@ -34,14 +42,6 @@ the grids on the command line instead of providing a IT(blendfile).  You must sp
 for this mechanism to work.  Any grid that is not coregistered with the desired output layout implied by
 OPT(R), OPT(I) (and OPT(r)) will first be resampled via BD(grdsample).  Also, grids that are not in
 netCDF or native binary format will first be reformatted via BD(grdreformat).
-.TP
-OPT(G)IT(grdfile)
-IT(grdfile) is the name of the binary output grid file.
-(See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are can be written directly.
-Other output format choices will be handled by reformatting the output once blending is complete.
-#include "explain_-I.txt"
-#include "explain_-R.txt"
-.SH OPTIONAL ARGUMENTS
 .TP
 OPT(C)
 Clobber mode: Instead of blending, simply pick the value of one of the grids that covers a node.

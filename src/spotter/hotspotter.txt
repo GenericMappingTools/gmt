@@ -14,9 +14,6 @@ specified stage or total reconstruction rotations.  These flowlines are convolve
 the shape of the seamount (using a Gaussian shape given amplitude and radius
 = 6 sigma) and added up to give a Cumulative Volcano Amplitude grid (CVA).
 See option OPT(:) on how to read (latitude,longitude,...) files.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP

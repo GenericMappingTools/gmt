@@ -16,9 +16,6 @@ BD(filter1d) has options OPT(L), OPT(Q), and OPT(S) for unevenly sampled data wi
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(infile)
-Multi-column ASCII (or binary, see GMT_bi_OPT) file holding data values to be filtered.
-.TP
 OPT(F)IT(type<width>)[IT(mode)]
 Sets the filter IT(type).  Choose among convolution and non-convolution filters.  Append the filter code followed
 by the full filter IT(<width>) in same units as time column. Available convolution filters are:
@@ -54,6 +51,10 @@ i.e., replace outliers (2.5 L1 scale off median) with median during filtering.
 In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(infile)
+Multi-column ASCII (or binary, see GMT_bi_OPT) file holding data values to be filtered.  If no file
+is given then we read from standard input.
 .TP
 OPT(D)IT(increment)
 IT(increment) is used when series is NOT equidistantly sampled.

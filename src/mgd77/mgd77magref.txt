@@ -10,6 +10,8 @@ BD(mgd77magref) [ IT(inputfile) ] [ OPT(A)[BD(+a)IT(alt)BD(+t)IT(date)BD(+y)] ] 
 BD(mgd77magref) will evaluate the IGRF or the CM4 geomagnetic models at the specified locations and times.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(inputfile)
 Contains the moments in space-time where we want to evaluate the magnetic reference field.  The first two columns must contain
@@ -26,8 +28,6 @@ ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The IT(F10.7) index fi
 NOTE: since the IT(Dst) files in the .../DST/ directory are still only up to 2006, for GMT4.5.3 we extended the IT(Dst)
 until August 2009 by reformatting the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
 ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(+a)IT(alt)BD(+t)IT(date)BD(+y)]
 Adjusts how the input record is interpreted.  Append BD(+a) to set a fixed IT(altitude) (in km) that should

@@ -5,7 +5,7 @@
 .SH NAME
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
-BD(pswiggle) IT(xyz_files) GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pswiggle) [ IT(xyz_files) ] GMT_J_OPT GMT_Rgeoz_OPT 
 OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 
 [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
 [ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
@@ -23,9 +23,6 @@ direction.  Either the positive or the negative wiggle may be shaded.  The resul
 code is written to standard output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(files)
-List one or more file-names. If no files are given, BD(pswiggle) will read standard input.
 #include "explain_-J.txt"
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
@@ -33,7 +30,9 @@ List one or more file-names. If no files are given, BD(pswiggle) will read stand
 OPT(Z)IT(scale)
 Gives anomaly scale in data-units/distance-unit.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
+.TP
+IT(files)
+List one or more file-names. If no files are given, BD(pswiggle) will read standard input.
 .TP
 OPT(A)IT(azimuth)
 Sets the preferred positive azimuth.  Positive wiggles will "gravitate" towards that

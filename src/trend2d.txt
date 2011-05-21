@@ -25,10 +25,6 @@ on a regional surface.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(file)
-ASCII [or binary, see GMT_bi_OPT] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, BD(trend2d) 
-will read from standard input.
-.TP
 OPT(F)BD(xyzmrw)
 Specify up to six letters from the set {BD(x y z m r w)} in any order to create columns of 
 ASCII [or binary] output.  BD(x) = x, BD(y) = y, BD(z) = z, BD(m) = model f(x,y), BD(r) = residual z - BD(m), BD(w) = weight used in fitting.
@@ -37,6 +33,10 @@ OPT(N)IT(n_model)[BD(r)]
 Specify the number of terms in the model, IT(n_model), and append BD(r) 
 to do a robust fit.  E.g., a robust bilinear model is OPT(N)IT(4)BD(r).
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(file)
+ASCII [or binary, see GMT_bi_OPT] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, BD(trend2d) 
+will read from standard input.
 .TP
 OPT(C)IT(condition_number)
 Set the maximum allowed condition number for the matrix solution.  BD(trend2d) 

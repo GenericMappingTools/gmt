@@ -32,13 +32,13 @@ not easily estimated by either method.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyfile)
-ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon] values in the first 2 columns.  If no file is specified, BD(fitcircle) 
-will read from standard input.
-.TP
 OPT(L)IT(norm)
 Specify the desired IT(norm) as 1 or 2, or use OPT(L) or  OPT(L3) to see both solutions.
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(xyfile)
+ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon] values in the first 2 columns.
+If no file is specified, BD(fitcircle) will read from standard input.
 .TP
 OPT(S)[IT(lat)]
 Attempt to fit a small circle instead of a great circle.  The pole will be

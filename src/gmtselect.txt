@@ -19,11 +19,11 @@ The sense of the tests can be reversed for each of these 6 criteria by using the
 See option OPT(:) on how to read (latitude,longitude) files.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(infiles)
 ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input is read.
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 #include "explain_-A.txt"
 Ignored unless OPT(N) is set.
 .TP

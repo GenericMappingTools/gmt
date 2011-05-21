@@ -16,7 +16,7 @@ or BD(blockmode) should be used as a pre-processor before running BD(surface) to
 avoid aliasing short wavelengths.  These routines are also generally useful for
 decimating or averaging (IT(x),IT(y),IT(z)) data.  You can modify the precision of the output
 format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file, or you may
-choose binary input and/or output using single or double precision storage.
+choose binary input and/or output to avoid loss of precision.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -24,7 +24,6 @@ IT(xyz[w]file(s))
 3 [or 4] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
 data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
 BD(blockmean) will read from standard input.
-For details on the GMT common options, see GMT man page.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
@@ -39,7 +38,8 @@ becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y
 See OPT(W) for IT(w) output.
 .TP
 OPT(S)[BD(m)|BD(n)|BD(s)|BD(w)]
-Use OPT(Sn) to report the number of points inside each block, OPT(Ss) to report the sum of all IT(z)-values inside a block, OPT(Sw) to report the
+Use OPT(Sn) to report the number of points inside each block, OPT(Ss) to report the sum of all
+IT(z)-values inside a block, OPT(Sw) to report the
 sum of weights [Default (or OPT(Sm) reports mean value].
 #include "explain_-V.txt"
 .TP

@@ -3,7 +3,7 @@
 .SH NAME
 pstext \- To plot text strings on maps
 .SH SYNOPSIS
-BD(pstext) IT(textfile) GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pstext) [ IT(textfile) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
 [ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
 [ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
@@ -32,6 +32,10 @@ be plotted  (Does not work for strings with sub/super scripts, symbols, or compo
 characters, except in paragraph mode (OPT(m))).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+#include "explain_-J.txt"
+#include "explain_-R.txt"
+#include "explain_-Rz.txt"
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(textfile)
 This file contains 1 or more records with (IT(x), IT(y)[, IT(font), IT(angle), IT(justify)], IT(text)).
@@ -44,11 +48,6 @@ If IT(font) is not an integer, then it is taken to be a text string with the des
 OPT(L) for available fonts).  The alignment refers to the
 part of the text string that will be mapped onto the (IT(x),IT(y)) point.  Choose a 2 character combination
 of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
-#include "explain_-J.txt"
-#include "explain_-R.txt"
-#include "explain_-Rz.txt"
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Angles are given as azimuths; convert them to directions using the current projection.

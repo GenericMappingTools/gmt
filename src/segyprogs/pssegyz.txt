@@ -56,7 +56,6 @@ Draw wiggle trace.
 .TP
 You IT(must) specify at least one of OPT(W) and OPT(F).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Flip the default byte-swap state (default assumes data have a bigendian byte-order).

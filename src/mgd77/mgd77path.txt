@@ -11,7 +11,6 @@ cruise may change with time due to reshuffling of disks/subdirectories.
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(-)]
 Display the full path to each cruise [Default].  Optionally, append BD(-) which will list

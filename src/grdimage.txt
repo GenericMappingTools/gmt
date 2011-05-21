@@ -45,7 +45,6 @@ OPT(C)IT(cptfile)
 name of the color palette table (for IT(grd_z) only).
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 #include "explain_-B.txt"
 .TP
 OPT(D)[BD(r)]

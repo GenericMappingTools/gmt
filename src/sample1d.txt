@@ -3,7 +3,7 @@
 .SH NAME
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
-BD(sample1d) IT(infile) [ OPT(A)BD(m)|BD(p) ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
+BD(sample1d) [ IT(infiles) ] [ OPT(A)BD(m)|BD(p) ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
 [ OPT(N)IT(knotfile) ] [ OPT(S)IT(start)[/IT(stop)] ] [ OPT(T)IT(col) ] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
 .SH DESCRIPTION
@@ -14,13 +14,13 @@ be selected.  All columns are resampled based on the new sampling interval.
 Several interpolation schemes are available.  Extrapolation outside the range of the input data is not supported.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(infile)
 This is a multi-column ASCII [of binary, see GMT_bi_OPT] file with one column containing the independent variable (which must
 be monotonically in/de-creasing) and the remaining columns holding misc. data values.
 If no file is provided, BD(sample1d) reads from standard input.
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)BD(m)|BD(p)
 For spherical surface resampling (see OPT(I)) we resample along great circle arcs.

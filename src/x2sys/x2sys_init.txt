@@ -34,7 +34,6 @@ OPT(D)IT(deffile)
 Definition file prefix for this data set [See DEFINITION FILES below for more information].
 Specify full path if the file is not in the current directory.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(Cc)|BD(f)|BD(g)|BD(e)
 Select procedure for along-track distance calculation when needed by other programs:

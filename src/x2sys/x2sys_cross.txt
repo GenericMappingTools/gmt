@@ -20,7 +20,6 @@ you may choose to project all data using one of the map-projections prior to cal
 #include "explain_track.txt"
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)IT(combi.lis)
 Only process the pair-combinations found in the file IT(combi.lis)

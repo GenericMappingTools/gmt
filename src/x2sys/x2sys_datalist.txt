@@ -16,7 +16,6 @@ Only the named data fields will be output [Default selects all columns].
 #include "explain_track.txt"
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight.

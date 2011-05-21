@@ -43,7 +43,6 @@ IT(in_grdfile)
 2-D binary grid file to be equalized.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)IT(n_cells)
 Sets how many cells (or divisions) of data range to make.

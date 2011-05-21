@@ -19,15 +19,15 @@ in the ASCII format; input may be ASCII or binary (see GMT_bi_OPT).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyz[dh]file(s))
-3 (but see OPT(Z)) [or 5] column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
-sorted so that d is non-decreasing, specify the OPT(S) option; default expects (x,y,z) only.  
-If no file is specified, BD(splitxyz) will read from standard input.
-.TP
 OPT(C)IT(course_change)
 Terminate a segment when a course change exceeding IT(course_change) degrees of heading 
 is detected.
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(xyz[dh]file(s))
+3 (but see OPT(Z)) [or 5] column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
+sorted so that d is non-decreasing, specify the OPT(S) option; default expects (x,y,z) only.  
+If no file is specified, BD(splitxyz) will read from standard input.
 .TP
 OPT(A)IT(azimuth)/IT(tolerance)
 Write out only those segments which are within +/- IT(tolerance) degrees of IT(azimuth) 
