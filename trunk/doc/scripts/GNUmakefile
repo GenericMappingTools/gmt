@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.1 2011-04-26 00:15:18 remko Exp $
+#	$Id: GNUmakefile,v 1.2 2011-05-21 02:32:49 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ failed:	$(PS)
 	bash run_doc_tests.sh `cut -d: -f1 fail_count.d`
 
 # Cleanup, before or after
-clean:
+clean spotless:
 	\rm -f *% .gmt* gmt.conf
 	\rm -f *.{tex,eps,pdf,csh,ps,png} sqrt.d*
 

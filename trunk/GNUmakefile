@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.90 2011-05-19 15:18:56 remko Exp $
+#  $Id: GNUmakefile,v 1.91 2011-05-21 02:32:49 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,20 +125,21 @@ all:		$(FILES)
 #-------------------------------------------------------------------------------
 # Tests
 #-------------------------------------------------------------------------------
-alltests:	extests tests doctests
+alltests:	extests doctests tests
 
 extests:
 		@cd doc/examples ; $(MAKE) $@
 
-tests:
-		@cd test ; sh run_gmt_tests.sh
-
 doctests:
 		@cd doc/scripts ; $(MAKE) $@
 
+tests:
+		@cd test ; $(MAKE) $@
+
 cleantests:
-		@cd doc/scripts ; $(MAKE) clean
-		@cd doc/examples ; $(MAKE) clean
+		cd doc/examples ; $(MAKE) clean
+		cd doc/scripts ; $(MAKE) clean
+		cd test ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
 # Cleaning
@@ -148,6 +149,9 @@ cvsclean:
 
 clean spotless::
 		cd doc ; $(MAKE) $@
+		cd doc/examples ; $(MAKE) $@
+		cd doc/scripts ; $(MAKE) $@
+		cd test ; $(MAKE) $@
 
 #-------------------------------------------------------------------------------
 # For compatibility with previous versions
