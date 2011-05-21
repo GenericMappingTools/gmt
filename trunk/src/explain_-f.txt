@@ -1,3 +1,3 @@
 .TP
-GMT_f_OPT   *
+GMT_f_OPT (*)
 Specify data types of input and/or output columns.

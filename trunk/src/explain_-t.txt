@@ -1,3 +1,3 @@
 .TP
-GMT_t_OPT   *
+GMT_t_OPT (*)
 Set PDF transparency level.
