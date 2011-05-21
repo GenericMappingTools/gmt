@@ -1,3 +1,3 @@
 .TP
-OPT(P)   *
+OPT(P) (*)
 Select "Portrait" plot orientation.
