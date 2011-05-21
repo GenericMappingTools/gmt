@@ -26,7 +26,6 @@ MGD77 ASCII table (with extension .mgd77), BD(c) for the new MGD77+ netCDF forma
 (with extension .dat).  We will refuse to create the file(s) if they already
 exist in the current directory.  Prepend BD(+) to override this policy.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(D)
 By default, the storage types used in a MGD77+ netCDF file greatly exceed the precision

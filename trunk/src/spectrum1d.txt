@@ -46,10 +46,6 @@ Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - c
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(x[y]file)
-ASCII (or binary, see GMT_bi_OPT) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
-If no file is specified, BD(spectrum1d) will read from standard input.
-.TP
 OPT(S)IT(segment_size)]
 IT(segment_size) is a radix-2 number of samples per window for ensemble averaging.  The smallest frequency 
 estimated is 1.0/(IT(segment_size) * IT(dt)), while the largest is 1.0/(2 * IT(dt)).  One standard error 
@@ -57,7 +53,10 @@ in power spectral density is approximately 1.0 / sqrt(IT(n_data) / IT(segment_si
 = 256, you need 25,600 data to get a one standard error bar of 10%.  Cross-spectral error bars are larger and more 
 complicated, being a function also of the coherency. 
 .SH OPTIONAL ARGUMENTS
-.sp
+.TP
+IT(x[y]file)
+ASCII (or binary, see GMT_bi_OPT) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
+If no file is specified, BD(spectrum1d) will read from standard input.
 .TP
 OPT(C)[BD(xycnpago)]
 Read the first two columns of input as samples of two time-series, X(t) and Y(t).

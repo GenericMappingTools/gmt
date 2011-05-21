@@ -12,9 +12,6 @@ a total reconstruction rotation.  Optionally, the user may supply a clipping pol
 in multiple-segment format; then, only the part of the grid inside the polygon is used
 to determine the return grid region.  The outline of the projected region is returned
 on stdout provided the rotated region is not the entire globe.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP

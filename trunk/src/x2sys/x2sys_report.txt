@@ -22,7 +22,6 @@ Specify which data column you want to process.  Crossovers related to this colum
 present in the crossover data base.
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and producing

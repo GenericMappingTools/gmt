@@ -14,11 +14,11 @@ GMT data file.  For a more complete reformatting, consider using BD(ogr2ogr \-f)
 "GMT" somefile.gmt somefile.kml.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(infile)
 Name of the KML file to work on.  If not given, standard input is read.
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(Z)
 Output the altitude coordinates as GMT z coordinates [Default will output just

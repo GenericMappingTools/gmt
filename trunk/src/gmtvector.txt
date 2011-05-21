@@ -17,11 +17,12 @@ some require a single second vector, provided via OPT(S).  The output vectors wi
 (r, theta) unless OPT(Co) requests (x, y[, z]) Cartesian coordinates.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(infiles)
 One or more ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
 (if OPT(fg) is given) or (r, theta), or perhaps (x, y[, z]) if OPT(Ci) is given).  If no file is specified, BD(gmtvector), will read from standard input.
-.SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)[IT(vector)]
 Specify a single, primary vector instead of reading IT(infiles); see IT(infiles) for possible vector formats.

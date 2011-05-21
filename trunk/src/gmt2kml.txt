@@ -10,7 +10,8 @@ BD(gmt2kml) [ IT(infile(s)) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] 
 [ OPT(L)IT(col1:name1),IT(col2:name2),... ] 
 [ OPT(N)[+|IT(name_template)|IT(name)] ] [ GMT_O_OPT] [ OPT(Ra)|IT(w/e/s/n) ] 
 [ OPT(S)BD(c)|BD(n)IT(scale)] ] [ OPT(T)IT(title)[/IT(foldername)] ] [ GMT_V_OPT ] 
-[ OPT(W)-|IT(pen) ] [ OPT(Z)IT(args) ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] [ > IT(output.kml) ]
+[ OPT(W)-|IT(pen) ] [ OPT(Z)IT(args) ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_f_OPT ] 
+[ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] [ > IT(output.kml) ]
 .SH DESCRIPTION
 BD(gmt2kml) reads one or more GMT table file and converts them to a single output file
 using Google Earth's KML format.
@@ -27,11 +28,11 @@ where IT(lon) and IT(lat) are required for all features, IT(alt) is optional for
 also OPT(A) and OPT(C)), and IT(timestart) and IT(timestop) apply to events and timespan features.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(infile(s))
 ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input will be read.
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)]
 Select one of three altitude modes recognized by Google Earth that determines the altitude (in m) of the

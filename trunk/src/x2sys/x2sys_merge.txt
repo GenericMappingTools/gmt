@@ -21,7 +21,6 @@ Specify the file IT(main_COElist.d) with the main crossover error data base.
 OPT(M)IT(new_COElist.d)
 Specify the file IT(new_COElist.d) with the newly computed crossover error data base.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 .SH EXAMPLES
 To update the main COE_data.txt with the new COEs estimations saved in the smaller COE_fresh.txt, try

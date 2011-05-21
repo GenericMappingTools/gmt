@@ -12,9 +12,6 @@ given files.  If more than one plate motion model is given we will add or subtra
 them in the order they were listed.  The minus sign means we should first transpose the
 rotation and then add it to the previous rotation.  If a file cannot be opened we will attempt to decode the file name
 as a single rotation whose parameters are separated by slashes.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP

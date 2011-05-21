@@ -17,9 +17,6 @@ computes map coordinates using the specified map projection.  The program is int
 and will take you through the setup procedure and how you will digitize points.
 The program will determine the actual map scale as well as rotation of the paper that
 is taped to the digitizer table.  By default the output will go to stdout.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-J.txt"

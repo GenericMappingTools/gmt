@@ -22,7 +22,6 @@ IT(grdfile)
 The name of the input 2-D binary grid file.
 (See GRID FILE FORMAT below.)
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)IT(cval) or OPT(C)IT(low/high/delta)
 find area and volume inside the IT(cval) contour.  Alternatively, search using

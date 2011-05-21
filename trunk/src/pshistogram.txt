@@ -5,7 +5,7 @@
 .SH NAME
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
-BD(pshistogram) IT(file) GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
+BD(pshistogram) [ IT(file) ] GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C)IT(cptfile) ] [ OPT(F) ] [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
 [ OPT(I)[BD(o)|BD(O)] ] [ GMT_K_OPT ] [ OPT(L)IT(pen) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
@@ -19,16 +19,15 @@ A cumulative histogram may also be specified.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(file)
-ASCII [or binary, see GMT_bi_OPT] datafile. If no file is given, BD(pshistogram) will read standard input.
-.TP
 OPT(Jx)
 IT(xscale[/yscale]) (Linear scale(s) in distance unit/data unit).
 .TP
 OPT(W)IT(bin_width)
 Sets the bin width used for histogram calculations.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
+.TP
+IT(file)
+ASCII [or binary, see GMT_bi_OPT] datafile. If no file is given, BD(pshistogram) will read standard input.
 .TP
 OPT(A)
 Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].

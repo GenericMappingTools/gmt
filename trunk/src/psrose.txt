@@ -8,7 +8,7 @@
 .SH NAME
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
-BD(psrose) IT(file) [ OPT(A)IT(sector_width)[BD(r)] ] 
+BD(psrose) [ IT(file) ] [ OPT(A)IT(sector_width)[BD(r)] ] 
 [ GMT_B_OPT ] [ OPT(C)[IT(mode_file)] ] [ OPT(D) ] [ OPT(I) ] [ OPT(G)IT(fill) ] 
 [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[IT(wlabel)/IT(elabel)/IT(slabel)/IT(nlabel)] ] 
 [ OPT(M)[IT(parameters) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
@@ -24,11 +24,11 @@ The IT(PostScript) code is written to standard output.
 The outline of the windrose is drawn with the same color as BD(MAP_DEFAULT_PEN).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(file)
 Name of ASCII [or binary, see GMT_bi_OPT] data file.  If no file is given, psrose will read standard input.
-.SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)IT(sector_width)[BD(r)]
 Gives the sector width in degrees for sector and rose diagram.  [Default 0 means windrose diagram].  Append BD(r) to draw

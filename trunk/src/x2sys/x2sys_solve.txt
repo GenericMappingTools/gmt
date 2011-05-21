@@ -45,7 +45,6 @@ BD(s) will fit IT(f)(IT(p)) = IT(a) * z (a unit scale correction); records must 
 BD(t) will fit IT(f)(IT(p)) = IT(a) + IT(b) * (IT(t - t0)) (linear drift; IT(t0) is the start time of the track);
 records must contain cruise ID1, ID2, t1-t0, t2-t0, COE.
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 #include "explain_-V.txt"
 .TP
 OPT(W)

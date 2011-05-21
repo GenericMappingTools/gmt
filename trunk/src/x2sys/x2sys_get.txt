@@ -15,7 +15,6 @@ select an option to list all possible pairs that might generate crossovers.
 .SH REQUIRED ARGUMENTS
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)
 Instead of reporting the track names, just output the coordinates of the

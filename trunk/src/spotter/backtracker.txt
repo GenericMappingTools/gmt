@@ -3,7 +3,7 @@
 .SH NAME
 backtracker \- Reconstruct points, flowlines and hotspot tracks 
 .SH SYNOPSIS
-BD(backtracker) [IT(infile(s))] OPT(E)IT(rot_file) | OPT(e)IT(lon)/IT(lat)/IT(angle)
+BD(backtracker) [ IT(infile(s)) ] OPT(E)IT(rot_file) | OPT(e)IT(lon)/IT(lat)/IT(angle)
 [ OPT(A)[IT(young)/IT(old)] ] [ OPT(Df)|BD(b) ] [ OPT(F)IT(drift.txt) ] 
 [ OPT(Lf)|BD(b)IT(step) ] [ OPT(N)IT(upper_age) ] 
 [ OPT(Q)IT(fixed_age) ] [ OPT(S)IT(filestem) ] [ OPT(T)IT(zero_age) ] [ GMT_V_OPT ] 
@@ -16,14 +16,8 @@ positions [Default] or create a sampled track (flowline or hotspot track) betwee
 positions.  The former mode allows additional data fields after the first 3
 columns which must have (longitude,latitude,age).
 See option OPT(:) on how to read (latitude,longitude,age) files.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(infile(s))
-Data file(s) to be projected.  If not given, standard input is read.
 #include "euler.txt"
 .TP
 OPT(e)IT(lon)/IT(lat)/IT(angle)
@@ -31,6 +25,9 @@ Alternatively, specify the longitude, latitude, and opening angle (all in degree
 and separated by /) for a single total reconstruction
 rotation that should be applied to all input points (input ages, if present, are ignored).
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(infile(s))
+Data file(s) to be projected.  If not given, standard input is read.
 .TP
 OPT(A)[IT(young)/IT(old)]
 Used in conjunction with OPT(Lb)|BD(f) to limit the track output to those sections

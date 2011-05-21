@@ -32,7 +32,6 @@ vertical scale) and the dimensions of the scale.
 Give a negative length to reverse the scalebar.
 Append IT(h) to get a horizontal scale [Default is vertical].
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(a)|BD(l)|BD(c)]
 Place annotations and labels above (instead of below) horizontal scalebars and to the left

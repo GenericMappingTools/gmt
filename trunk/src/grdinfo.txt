@@ -20,7 +20,6 @@ IT(grdfile)
 The name of one or several 2-D grid files.
 (See GRID FILE FORMATS below.)
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(C)
 Formats the report using tab-separated fields on a single line.  The output is

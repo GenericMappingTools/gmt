@@ -26,7 +26,6 @@ OPT(G)IT(out_grdfile)
 Specify the name of the output grid file or the 1-D spectrum file (see OPT(E)).
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)IT(azimuth)
 Take the directional derivative in the IT(azimuth) direction measured in degrees CW from north.

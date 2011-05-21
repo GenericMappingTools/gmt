@@ -3,8 +3,7 @@ No plotting will take place.  If IT(template) contains one or more of the C-form
 line segments will be written to different files; otherwise all lines are written to the specified file (IT(template)).
 The use of the C-format specifiers controls how many files are created and how the contours are organized.
 If the float format %f is present (standard modifications to width and precision are allowed, e.g., %f7.3f), then
-the filenames will contain the contour value and lines are thus separated into files based on a common contour value.  If
-there are IT(N) contours then you will obtain IT(N) files.
+the filenames will contain the contour value and lines are thus separated into files based on a common contour value.
 If the integer format %d is present (including modifications like %5.5d), then all contours are written to individual
 segment files; if any of the other specifiers are present they just affect the file names.  Finally, if the
 character format %c is present it is replaced with the letters C (for closed) or O (for open), reflecting the nature

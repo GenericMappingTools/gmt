@@ -18,7 +18,6 @@ Specify which data column you want to process.  Crossovers related to this colum
 present in the crossover data base.
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 .I coedbase.txt
 The name of the input ASCII crossover error data base as produced by BD(x2sys_cross).

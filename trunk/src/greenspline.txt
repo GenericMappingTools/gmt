@@ -28,11 +28,12 @@ smallest eigenvalues; this approach yields an approximate solution.  Trends and 
 restored when evaluating the output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+None.
+.SH OPTIONAL ARGUMENTS
 .TP
 IT(datafile(s))
 The name of one or more ASCII [or binary, see GMT_bi_OPT] files holding the BD(x), IT(w)
 data points.  If no file is given then we read standard input instead.
-.SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)[BD(1)|BD(2)|BD(3)|BD(4)|BD(5),]IT(gradfile)
 The solution will partly be constrained by surface gradients BD(v) = IT(v)*BD(n), where IT(v) is the

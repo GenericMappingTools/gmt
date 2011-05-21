@@ -3,7 +3,7 @@
 .SH NAME
 grdtrack \- Sampling of 2-D grided data set(s) along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-BD(grdtrack) IT(xyfile) OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
+BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
 [ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
@@ -20,10 +20,6 @@ of the region (see OPT(L)).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyfile)
-This is an ASCII (or binary, see GMT_bi_OPT) file where the first 2 columns hold the (x,y) positions where the user wants to sample
-the 2-D data set.
-.TP
 OPT(G)IT(gridfile)
 IT(grdfile) is a 2-D binary grid file with the function f(x,y).
 If the specified grid is in Sandwell/Smith Mercator format you must append a comma-separated list of
@@ -35,7 +31,10 @@ and optionally the max latitude in the IMG file [80.738].  You may repeat OPT(G)
 have grids you wish to sample.  The grids are sampled and results are output in the order given.
 (See GRID FILE FORMAT below.)
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
+.TP
+IT(xyfile)
+This is an ASCII (or binary, see GMT_bi_OPT) file where the first 2 columns hold the (x,y) positions where the user wants to sample
+the 2-D data set.
 .TP
 OPT(A)BD(m)|BD(p)
 For spherical surface resampling we resample along great circle arcs.

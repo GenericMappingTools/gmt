@@ -11,9 +11,6 @@ BD(grdpmodeler) reads a geographical age grid and a plate motion model
 and evaluates one of several model predictions.  Optionally, the user may supply a clipping polygon
 in multiple-segment format; then, only the part of the grid inside the polygon is used
 to determine the model prediction.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP

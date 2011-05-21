@@ -26,15 +26,15 @@ a fixed value, a grid with values, or simply be the minimum/maximum input data v
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(xyzfile)
-3 column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
-standard input.
-.TP
 OPT(G)IT(outputfile.nc)
 Output file name.  Output is a binary 2-D IT(.nc) file.  Note that the smallest grid dimension must be at least 4.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
+.TP
+IT(xyzfile)
+3 column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
+standard input.
 .TP
 OPT(A)IT(aspect_ratio)
 Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter IT(aspect_ratio),

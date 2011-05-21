@@ -34,7 +34,6 @@ Specify the name of the output grid file.
 (See GRID FILE FORMATS below.)
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(c|i|p|e|f|k|M|n)]
 Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters [BD(e)].  To specify other units,

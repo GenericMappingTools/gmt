@@ -195,7 +195,6 @@ files that have the special BD(MGD77_flags) column present will use those flags,
 ON-bits (meaning they are flagged as bad) will be set to NaN; append : with no trailing information
 to turn this behavior off (i.e., no bit flags will be consulted).
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(+)]BD(c)|BD(d)|BD(f)|BD(m)|BD(t)IT(code)
 By default, corrected depth (BD(depth)),

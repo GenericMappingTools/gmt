@@ -4,7 +4,7 @@
 BD(pspolar)\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS
 .br
-pspolar IT(files) GMT_J_OPT GMT_Rgeo_OPT
+pspolar [ IT(files) ] GMT_J_OPT GMT_Rgeo_OPT
 OPT(D)IT(lon)/IT(lat) OPT(M)IT(size) OPT(S)IT(<symbol><size>)
 [ GMT_B_OPT ] [ OPT(C)IT(lon)/IT(lat)[/IT(dash_width)/IT(pointsize)] ] 
 [ OPT(F)IT(color) ] [ OPT(G)IT(fill) ] [ OPT(g)IT(fill) ] 
@@ -14,7 +14,6 @@ OPT(D)IT(lon)/IT(lat) OPT(M)IT(size) OPT(S)IT(<symbol><size>)
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)IT(pen) ]
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ]
 .SH DESCRIPTION
-.br
 BD(pspolar) reads data values from IT(files) [or standard input]
 and generates IT(PostScript) code that will plot stations on focal mechanisms
 on a map.
@@ -38,6 +37,7 @@ polarity:
 .sp
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+.TP
 IT(files)
 List one or more file-names. If no files are given, pspolar will read standard input.
 #include "explain_-J.txt"
@@ -62,7 +62,6 @@ st(IT(a))r, (IT(c))ircle, (IT(d))iamond, (IT(h))exagon,
 .br
 .LP
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 #include "explain_-B.txt"
 .TP
 OPT(C)

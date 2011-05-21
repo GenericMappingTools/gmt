@@ -46,7 +46,6 @@ then only contours marked with upper case C or A will have tickmarks.  In all ca
 values have the same units as the grid.
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
-No space between the option flag and the associated arguments.
 .TP
 OPT(A)[BD(-)|IT(annot_int)][IT(labelinfo)]
 IT(annot_int) is annotation interval in data units; it is ignored if contour levels are given in a file.
