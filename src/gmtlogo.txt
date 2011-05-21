@@ -7,6 +7,7 @@ BD(gmtlogo) IT(dx) IT(dy) [ OPT(G)IT(fill) ] [ OPT(W)[IT(pen)] ] >> IT(plot.ps)
 .SH DESCRIPTION
 This scrips appends the BD(GMT) logo as an overlay to an "open" PostScript file.
 The logo is 2 inches wide and 1 inch high and will be positioned relative to the current plot origin.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(dx),IT(dy)
@@ -15,14 +16,9 @@ Sets the lower-left corner of the logo relative to current plot origin.
 .TP 
 OPT(G)IT(fill)
 Select color or pattern for filling the underlying box [Default is no fill].
-(See SPECIFYING FILL below).
 .TP
 OPT(W)[IT(pen)]
 Set pen attributes for the outline of the box [Default is no outline].
-(See SPECIFYING PENS below).
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtcolors (5),

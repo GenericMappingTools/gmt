@@ -25,6 +25,7 @@ one of the other resolutions.  If the user selects to paint the land-areas and d
 water-areas then the latter will be transparent (i.e., earlier graphics drawn in those areas will not
 be overwritten).  Likewise, if the water-areas are painted and no land fill is set then the land-areas
 will be transparent.  A map projection must be supplied.  The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
@@ -38,7 +39,6 @@ OPT(C)[BD(l)|BD(r)/]IT(fill)
 Set the shade, color, or pattern for lakes and river-lakes  [Default is the fill chosen for "wet" areas (OPT(S))].
 Optionally, specify separate fills by prepending BD(l)/ for lakes and BD(r)/ for river-lakes, repeating
 the OPT(C) option as needed.
-(See SPECIFYING FILL below).
 .TP
 OPT(D)IT(resolution)[BD(+)]
 Selects the resolution of the data set to use ((BD(f))ull, (BD(h))igh, (BD(i))ntermediate, (BD(l))ow, and (BD(c))rude).  The
@@ -46,13 +46,12 @@ resolution drops off by 80% between data sets  [Default is BD(l)].  Append )+) t
 the one requested not be available [abort if not found].
 .TP
 OPT(G)IT(fill)|BD(c)
-Select filling or clipping of "dry" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
+Select filling or clipping of "dry" areas.  Append the shade, color, or pattern;
 or use OPT(Gc) for clipping [Default is no fill].
 .TP
 OPT(I)IT(river)[/IT(pen)]
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, style = solid].
-(See SPECIFYING PENS below).
 .br
 Choose from the list of river types below.
 Repeat option OPT(I) as often as necessary.
@@ -95,8 +94,7 @@ Specify any combination of OPT(W), OPT(I), OPT(N).
 .TP
 OPT(N)IT(border)[/IT(pen)]
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
-width = 1, color = black, style = solid]. (See SPECIFYING PENS below).
-(See SPECIFYING PENS below).
+width = 1, color = black, style = solid].
 .br
 Choose from the list of boundaries below.
 Repeat option OPT(N) as often as necessary.
@@ -117,7 +115,7 @@ Mark end of existing clip path.  No projection information is needed.
 Also supply OPT(X) and OPT(Y) settings if you have moved since the clip started.
 .TP
 OPT(S)IT(fill)|BD(c)
-Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
+Select filling or clipping of "wet" areas.  Append the shade, color, or pattern;
 or use OPT(Sc) for clipping [Default is no fill].
 #include "explain_-T_rose.txt"
 #include "explain_-U.txt"
@@ -130,16 +128,12 @@ the pen for each level differently, prepend IT(level)/, where IT(level) is 1-4
 and represent coastline, lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
 Repeat OPT(W) as needed.  When specific level pens are set, those not listed will not
 be drawn [Default draws all levels; but see OPT(A)].
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-bo.txt"
 #include "explain_-c.txt"
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
 on a Mercator map at scale LEN_1 inch/degree, use

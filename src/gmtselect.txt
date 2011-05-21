@@ -17,6 +17,7 @@ any line in IT(linefile), 4) inside one of the polygons in the IT(polygonfile), 
 geographical features (based on coastlines), or 6) has z-values within a given range.
 The sense of the tests can be reversed for each of these 6 criteria by using the OPT(I) option.
 See option OPT(:) on how to read (latitude,longitude) files.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)

@@ -15,6 +15,7 @@ section or its individual members.
 If you need to know which tracks are crossing through a given region and what kinds
 of geophysical observations are available, consider using the x2sys tools to set up
 a tracks index data base (see BD(x2sys_init) for more information).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS

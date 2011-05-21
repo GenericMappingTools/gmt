@@ -17,6 +17,7 @@ at each data point or with an equidistant separation and sample the grid(s) alon
 A bicubic 
 [Default], bilinear, B-spline or nearest-neighbor (see OPT(n)) interpolation is used, requiring boundary conditions at the limits 
 of the region (see OPT(L)).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyfile)

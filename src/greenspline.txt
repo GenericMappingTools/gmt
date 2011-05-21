@@ -26,6 +26,7 @@ solution yields an exact interpolation of the supplied data points.  Alternative
 choose to perform a singular value decomposition (SVD) and eliminate the contribution from the
 smallest eigenvalues; this approach yields an approximate solution.  Trends and scales are
 restored when evaluating the output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(datafile(s))

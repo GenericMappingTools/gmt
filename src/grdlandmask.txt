@@ -13,6 +13,7 @@ the selected region and lattice spacing will be set according to one of two crit
 (1) land vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
 resulting mask may be used in subsequent operations involving BD(grdmath) to mask out
 data from land [or water] areas.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 OPT(G)IT(mask_grd_file)]

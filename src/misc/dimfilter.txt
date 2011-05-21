@@ -19,6 +19,7 @@ file, which contains the filtered depths.  Finally, one should know that BD(dimf
 a smooth output as other spatial filters do because it returns a minimum median out of IT(N) medians of
 IT(N) sectors.  The output can be rought unless the input data is noise-free.  Thus, an additional
 filtering (e.g., Gaussian via BD(grdfilter)) of the DiM-filtered data is generally recommended.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(input_file.nc)

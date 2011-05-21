@@ -14,6 +14,7 @@ corresponding records from multiple files horizontally into a single file, (3)
 extract a subset of the available columns, (4) do mathematics on the columns.
 Input (and hence output) may have multiple sub-headers,
 and ASCII tables may have regular headers as well.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(datafile(s))

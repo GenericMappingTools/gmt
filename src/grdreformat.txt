@@ -9,6 +9,8 @@ IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]]
 .SH DESCRIPTION
 BD(grdreformat) reads a grid file in one format and writes it out using another format.  As an option the
 user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
+#include "explain_commonitems.txt"
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(ingrdfile)

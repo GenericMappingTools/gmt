@@ -19,6 +19,7 @@ output. The previous version (BD(psvelomeca)) is now obsolete. It has
 been replaced by BD(psvelo) and BD(psmeca).
 .br
 .sp
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 IT(files)
 List one or more file-names. If no files are given, BD(psvelo) will read standard input.

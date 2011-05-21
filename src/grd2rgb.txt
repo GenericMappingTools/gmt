@@ -22,6 +22,7 @@ The (1) Sun raster file, (2) 2-D binary grid file, or (3) raw raster file to be 
 OPT(G)IT(template)
 Provide an output name template for the three output grids.  The template should be a regular grid file name
 except it must contain the string %c which on output will be replaced by r, g, or b.
+#include "explain_commonitems.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(C)IT(cptfile)

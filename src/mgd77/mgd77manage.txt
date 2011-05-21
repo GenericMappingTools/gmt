@@ -17,6 +17,7 @@ theoretical expressions, or they may be obtained by sampling a grid
 will be appended to the MGD77+ file in the form of an extra data column of specified type.
 The data file will be modified; no new file will be created.  For the big issues, see the DISCUSSION
 section below.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS

@@ -12,6 +12,7 @@ The OPT(M) option dictates whether or not the Spherical Mercator
 projection of the img file is preserved or if a Geographic grid should be written by
 undoing the Mercator projection.  If geographic grid is selected you can also request
 a resampling onto the exact OPT(R) given.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(imgfile)

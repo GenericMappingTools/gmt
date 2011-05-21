@@ -1,6 +1,6 @@
 .TP
 GMT_V_OPT
-Selects verbose mode, which will send progress reports to IT(stderr).
+Select verbose mode, which will send progress reports to IT(stderr).
 Choose among 5 levels of verbosity; each level adds mode messages:
 .br
 BD(0) - Complete silence, not even fatal error messages are produced.

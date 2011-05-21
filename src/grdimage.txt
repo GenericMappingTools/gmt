@@ -34,6 +34,7 @@ The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid.
 .br
 A (color) IT(PostScript) file is output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grd_z) | IT(grd_r grd_g grd_b)
@@ -70,7 +71,6 @@ This option only applies when the resulting image otherwise would consist
 of only two colors: black (0) and white (255).  If so, this option will
 instead use the image as a transparent mask and paint the mask (or its
 inverse, with OPT(Gb)) with the given color combination.
-(See SPECIFYING COLOR below).
 .TP
 OPT(I)IT(intensfile)
 Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].

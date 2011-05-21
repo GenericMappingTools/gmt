@@ -20,6 +20,7 @@ is taped to the digitizer table.  By default the output will go to stdout.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-J.txt"
 For geographic projections you can give 1 as the scale will be solved for anyway.

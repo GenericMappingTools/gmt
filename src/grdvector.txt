@@ -21,6 +21,7 @@ drawing vectors with orientation and length according to the information in the 
 polar coordinate components may be used (r, theta).
 BD(grdvector) is basically a short-hand for using 2 calls to BD(grd2xyz) and pasting the output through
 BD(psxy) OPT(SV).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(compx.nc)
@@ -45,7 +46,6 @@ Center vectors on grid nodes [Default draws from grid node].
 .TP
 OPT(G)IT(fill)
 Sets color or shade for vector interiors [Default is no fill].
-(See SPECIFYING FILL below).
 .TP
 OPT(I)
 Only plot vectors at nodes every IT(x_inc), IT(y_inc) apart (must be multiples of
@@ -76,7 +76,6 @@ Means azimuth should be converted to angles based on the selected map projection
 .TP
 OPT(W)IT(pen)
 Set pen attributes used for vector outlines [Default: width = 1, color = black, style = solid].
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 OPT(Z)
@@ -86,9 +85,6 @@ Means the angles provided are azimuths rather than direction (requires OPT(A)).
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
 To draw the vector field given by the files r.nc and theta.nc on a linear plot

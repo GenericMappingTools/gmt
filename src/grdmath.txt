@@ -15,6 +15,7 @@ When two grids are on the stack, each element in file A is modified by the corre
 However, some operators only require one operand (see below).  If no grid files are used in the
 expression then options OPT(R), OPT(I) must be set (and optionally GMT_r_OPT).  The expression
 BD(=) IT(outgrdfile) can occur as many times as the depth of the stack allows.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(operand)

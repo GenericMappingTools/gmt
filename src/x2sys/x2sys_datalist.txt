@@ -11,6 +11,7 @@ The files can be of any format, which must be described and passed with the
 OPT(T) option.  You may limit the output to a geographic region, and insist
 that the output from several files be separated by a multiple segment header.
 Only the named data fields will be output [Default selects all columns].
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"

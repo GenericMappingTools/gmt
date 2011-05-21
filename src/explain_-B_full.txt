@@ -1,6 +1,6 @@
 .TP
 GMT_B_OPT
-Sets map boundary annotation and tickmark intervals. The format of IT(tickinfo) is
+Set map boundary annotation and tickmark intervals. The format of IT(tickinfo) is
 [BD(p)|BD(s)]IT(xinfo)[/IT(yinfo)[/IT(zinfo)]][BD(:.)"Title"BD(:)][BD(W)|BD(w)][BD(E)|BD(e)][BD(S)|BD(s)][BD(N)|BD(n)][BD(Z)|BD(z)[BD(+)]].
 The leading BD(p) [Default] or BD(s) selects the primary or secondary annotation information.
 Each of the IT(?info) segments are textstrings of the form

@@ -15,6 +15,7 @@ the volume and area inside the contour for all contour values.  Using OPT(T), th
 that produced the maximum mean height (or maximum curvature of heights vs contour value)
 is reported as well.  This feature may be used with
 BD(grdfilter) in designing an Optimal Robust Separator [IT(Wessel), 1998].
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)

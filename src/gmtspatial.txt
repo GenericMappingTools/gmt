@@ -11,6 +11,7 @@ BD(gmtspatial) IT(infiles) [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][B
 BD(gmtspatial) reads one or more data files (which may be multisegment files)
 that contains closed polygons and operates of these polygons in the specified way.
 Operations include area calculation, handedness reversals, and polygon intersections.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file(s))

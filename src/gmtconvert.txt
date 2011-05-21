@@ -17,6 +17,7 @@ record matches a text pattern search, (5) only list segment headers and no data
 records, and (6) extract first and/or last data record for each segment.
 Input (and hence output) may have multiple sub-headers,
 and ASCII tables may have regular headers as well.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(datafile(s))

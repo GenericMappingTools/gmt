@@ -10,6 +10,7 @@ We look for the file in (1) the current directory, (2) in $GMT_USERDIR (if defin
 (3) in $GMT_DATADIR (if defined).  If found we print the full path name to the file,
 or a confirmation (see OPT(C)).  The $GMT_DATADIR environment variable can be a colon-
 separated list of directories, and we search recursively down the directory tree.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(files)

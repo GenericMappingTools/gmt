@@ -12,6 +12,7 @@ BD(trend1d) reads x,y [and w] values from the first two [three] columns on stand
 functional form of f(x) may be chosen as polynomial or Fourier, and the fit may be made robust by 
 iterative reweighting of the data.  The user may also search for the number of terms in f(x) which 
 significantly reduce the variance in y.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)

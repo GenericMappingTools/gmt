@@ -22,6 +22,7 @@ this case, the program will iteratively reweight the data based on a robust scal
 in order to converge to a solution insensitive to outliers.  This may be handy when separating 
 a "regional" field from a "residual" which should have non-zero mean, such as a local mountain 
 on a regional surface.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)

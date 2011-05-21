@@ -1,0 +1,3 @@
+.SH COMMON ARGUMENTS AND SPECIFICATIONS
+All options marked with an asterisk (*) are common GMT command-line options.  Their full syntax as well as
+how to specify pens, pattern fills, colors, and fonts can be found in the BD(gmt) man page.

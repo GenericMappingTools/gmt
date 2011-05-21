@@ -21,6 +21,7 @@ expression then options OPT(T), OPT(N) can be set (and optionally OPT(b) to indi
 If STDIN is given, <stdin> will be read and placed on the stack as if a file with that content
 had been given on the command line.  By default, all columns except the
 "time" column are operated on, but this can be changed (see OPT(C)).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(operand)

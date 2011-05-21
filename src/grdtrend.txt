@@ -25,6 +25,7 @@ If data file has values set to NaN, these will be ignored during fitting; if out
 files are written, these will also have NaN in the same locations.
 .sp
 No space between the option flag and the associated arguments.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)

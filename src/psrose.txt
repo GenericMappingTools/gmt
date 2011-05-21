@@ -22,6 +22,7 @@ generates IT(PostScript) code that will plot a windrose diagram.  Optionally (wi
 may be drawn (sector diagram or rose diagram).  Options include full circle and half circle plots.
 The IT(PostScript) code is written to standard output. 
 The outline of the windrose is drawn with the same color as BD(MAP_DEFAULT_PEN).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
@@ -48,7 +49,6 @@ Do not draw the scale length bar [Default plots scale in lower right corner]
 .TP
 OPT(G)IT(fill)
 Selects shade, color or pattern for filling the sectors [Default is no fill].
-(See SPECIFYING FILL below).
 .TP
 OPT(I)
 Inquire.  Computes statistics needed to specify useful OPT(R).  No plot is generated.
@@ -80,7 +80,6 @@ Specifies that the input data is orientation data (has a 180 degree ambiguity) i
 .TP
 OPT(W)IT(pen)
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 OPT(Z)IT(scale)
@@ -96,9 +95,6 @@ Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot a half circle rose diagram of the data in the file fault_segments.az_r (containing
 pairs of (azimuth, length in meters), using a 10 degree bin sector width,

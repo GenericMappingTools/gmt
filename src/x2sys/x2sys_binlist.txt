@@ -18,6 +18,7 @@ the track goes and is used by the data archivist to build an x2sys track data ba
 miscellaneous track queries, such as when needing to determine which tracks
 should be compared in a crossover analysis.  You must run BD(x2ys_init)
 to initialize the tag before you can run the indexing.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"

@@ -22,6 +22,7 @@ number of nodes, or resolution.  Nodes not constrained by input data are set to 
 .br
 The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid file.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(in_grdfile)

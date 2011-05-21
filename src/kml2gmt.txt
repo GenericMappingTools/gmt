@@ -12,6 +12,7 @@ name and description tags of each feature.  The main use intended is to capture 
 in Google Earth and then reinsert the modified data into the original
 GMT data file.  For a more complete reformatting, consider using BD(ogr2ogr \-f)
 "GMT" somefile.gmt somefile.kml.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile)

@@ -36,6 +36,7 @@ with zero mean and unit variance.  The locations of these values will
 correspond to the locations of the input; that is, the most negative
 output value will be in the (x,y) location of the most negative input
 value, and so on.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(in_grdfile)

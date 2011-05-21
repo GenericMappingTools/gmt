@@ -14,6 +14,7 @@ averaging where a particular grid cell includes values from more than one sample
 BD(segy2grd) will report if some of the nodes are not filled in with
 data. Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the average value.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(segyfile)

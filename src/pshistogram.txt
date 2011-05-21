@@ -16,6 +16,7 @@ BD(pshistogram) reads IT(file) [or standard input] and examines the first data c
 calculate histogram parameters based on the bin-width provided.  Using these parameters,
 scaling, and optional range parameters it will generate IT(PostScript) code that plots a histogram.
 A cumulative histogram may also be specified.  
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
@@ -41,7 +42,6 @@ Center bin on each value. [Default is left edge].
 .TP
 OPT(G)IT(fill)
 Select filling of bars [Default is no fill].
-(See SPECIFYING FILL below).
 .TP
 OPT(I)[BD(o)|BD(O)]
 Inquire about min/max x and y after binning.  No plotting is done.  Append BD(o)
@@ -52,7 +52,6 @@ BD(O) to output all x,y bin data even when y == 0.
 .TP
 OPT(L)IT(pen)
 Draw bar outline using the specified pen thickness.  [Default is no outline].
-(See SPECIFYING PENS below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -81,9 +80,6 @@ Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percen
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
 bin width, center bars, and draw bar outline, use:

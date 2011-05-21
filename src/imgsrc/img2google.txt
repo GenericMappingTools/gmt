@@ -10,6 +10,7 @@ BD(img2google) GMT_Rgeo_OPT [ IT(imgfile) ] [ OPT(A)IT(mode)[IT(altitude)] ] [ O
 BD(img2google) reads a 1x1 minute Mercator surface relief img file and creates a
 Google Earth overlay KML file and associated PNG tile for the specified region.  If no input file is given we
 use topo.11.1.img.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-Rgeo.txt"
 .SH OPTIONAL ARGUMENTS

@@ -8,6 +8,7 @@ BD(mgd77magref) [ IT(inputfile) ] [ OPT(A)[BD(+a)IT(alt)BD(+t)IT(date)BD(+y)] ] 
 [ OPT(Sc)|BD(l)IT(low/high) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ]  [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(mgd77magref) will evaluate the IGRF or the CM4 geomagnetic models at the specified locations and times.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(inputfile)

@@ -14,6 +14,7 @@ performs the construction of Voronoi polygons.  These polygons are then processe
 distance to each node of the lattice and written to the specified grid.  The Voronoi algorithm used is STRIPACK.
 As an option, you may provide pre-calculated Voronoi polygon file in the format written by BD(sphtriangulate),
 thus bypassing the memory- and time-consuming triangularization.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)

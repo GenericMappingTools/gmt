@@ -10,6 +10,7 @@ BD(x2sys_report) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A) ]
 BD(x2sys_report) will read the input crossover ASCII data base IT(coedbase.txt) (or IT(stdin))
 and report on the statistics of crossovers (IT(n), IT(mean), IT(stdev), IT(rms), IT(weight)) for each track.  Options are
 available to let you exclude tracks and limit the output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 .I coedbase.txt

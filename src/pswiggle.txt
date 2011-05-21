@@ -21,6 +21,7 @@ positive anomaly plot direction, and if the positive normal is outside
 the plus/minus 90 degree window around the preferred direction, then 180 degrees are added to the
 direction.  Either the positive or the negative wiggle may be shaded.  The resulting IT(PostScript)
 code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(files)
@@ -44,7 +45,6 @@ Subtract IT(center) from the data set before plotting [0].
 .TP
 OPT(G)IT(fill)
 Set fill shade, color or pattern of positive wiggles [Default is black]
-(See SPECIFYING FILL below).
 .TP
 OPT(I)IT(fix_az)
 Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
@@ -62,14 +62,12 @@ IT(length) is in z units, append unit name for labeling.  BD(FONT_ANNOT_PRIMARY)
 .TP
 OPT(T)IT(pen)
 Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 0.25p, color = black, style = solid].
-(See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 OPT(W)IT(pen)
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Defaults: width = 0.25p, color = black, style = solid].
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
@@ -82,9 +80,6 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 #include "explain_-t.txt"
 #include "explain_colon.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 nTesla),
 using a LEN-cm-wide Polar Stereographic map ticked

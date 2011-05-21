@@ -10,6 +10,7 @@ solve for systematic corrections that can then be applied per track
 to improve data quality. Several systematic corrections can be solved
 for using a least-squares approach.  Note: Only one data column can be
 processed at the time.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(COE_list.d)

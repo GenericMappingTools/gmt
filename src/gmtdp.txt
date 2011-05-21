@@ -12,6 +12,7 @@ subdivides a polygon until a run of points can be replaced by a straight line se
 with no point in that run deviating from the straight line by more than the tolerance. 
 Have a look at this site to get a visual insight on how the algorithm works
 (http://geometryalgorithms.com/Archive/algorithm_0205/algorithm_0205.htm)
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file(s))

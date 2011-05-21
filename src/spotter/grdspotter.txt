@@ -17,6 +17,7 @@ each grid node and added up to give a Cumulative Volcano Amplitude grid (CVA).
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)

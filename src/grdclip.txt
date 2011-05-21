@@ -10,6 +10,7 @@ BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to I
 when you want all of a continent or an ocean to fall into one color or grayshade in image processing,
 or clipping of the range of data values is required.  IT(above/below) can be any number or NaN (Not a Number).
 You must choose at least one of OPT(Sa) or OPT(Sb).  Use OPT(R) to only extract a subset of the IT(input_file.nc) file.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(input_file.nc)

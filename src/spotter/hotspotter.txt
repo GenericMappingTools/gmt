@@ -17,6 +17,7 @@ See option OPT(:) on how to read (latitude,longitude,...) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile(s))

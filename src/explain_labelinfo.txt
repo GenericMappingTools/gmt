@@ -20,11 +20,9 @@ plots the original text.
 .TP
 BD(+f)IT(font)
 Sets the desired font [Default BD(FONT_ANNOT_PRIMARY) with its size changed to 9p].
-(See SPECIFYING FONTS below).
 .TP
 BD(+g)[IT(color)]
 Selects opaque text boxes [Default is transparent]; optionally specify the color [Default is BD(PS_PAGE_COLOR)].
-(See SPECIFYING COLOR below).
 .TP
 BD(+j)IT(just)
 Sets label justification [Default is MC].  Ignored when OPT(SqN)|BD(n)+|-1 is used.
@@ -72,7 +70,6 @@ only makes sense for opaque text boxes.
 BD(+p)[IT(pen)]
 Draws the outline of text boxes [Default is no outline]; optionally specify pen for outline [Default is width = 0.25p,
 color = black, style = solid].
-(See SPECIFYING PENS below).
 .TP
 BD(+r)IT(min_rad)
 Will not place labels where the line's radius of curvature is less than \fImin_rad\fP [Default is 0].\"'

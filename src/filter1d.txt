@@ -13,6 +13,7 @@ The user specifies which column is the time (i.e., the independent variable).
 (See OPT(N) option below).  The fastest operation occurs when the input time series are
 equally spaced and have no gaps or outliers and the special options are not needed.
 BD(filter1d) has options OPT(L), OPT(Q), and OPT(S) for unevenly sampled data with gaps.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile)
