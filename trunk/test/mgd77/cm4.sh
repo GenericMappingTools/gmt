@@ -1,11 +1,12 @@
 #! /bin/bash
-#	$Id: cm4.sh,v 1.3 2011-05-19 22:33:54 guru Exp $
+#	$Id: cm4.sh,v 1.4 2011-05-21 02:09:27 remko Exp $
 #
 
 . ../functions.sh
-header "Test mgd77magref by comparing to one day data at a magnetic observatory"
 
-ps=CM4.ps
+header "Test mgd77magref with 1 day data at a magnetic observatory"
+
+ps=cm4.ps
 
 gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
 dia=clf20010501d.min
@@ -37,19 +38,19 @@ mean=`gmtmath dif_T.dat MEAN -S = `
 
 # Write Date, MEAN & STD
 t=(`echo ${m2[2]} | awk '{print $1 + 4, $1 + 7, $1+12}'`)
-echo ${m1[0]} ${t[1]} 11 0 17 LB Mean = $mean | pstext -R -J -N -X0.5 -O -K >> $ps
-echo ${m1[0]} ${t[0]} 11 0 17 LB STD = $std | pstext -R -J -N -O -K >> $ps
-echo ${m1[0]} ${t[2]} 12 0 17 LB $data  | pstext -R -J -N -O -K >> $ps
+echo ${m1[0]} ${t[1]} Mean = $mean | pstext -F+f11p,Bookman-Demi+jLB -R -J -N -X0.5 -O -K >> $ps
+echo ${m1[0]} ${t[0]} STD = $std | pstext -F+f11p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
+echo ${m1[0]} ${t[2]} data | pstext -F+f12p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
 station=`tail -n +4 $dia | head -1 | awk '{print $3}'`
-echo ${m1[0]} ${t[0]} 14 0 17 CT Station -- $station | pstext -R -J -N -Xa7.5c -Ya4.7c -O -K >> $ps
+echo ${m1[0]} ${t[0]} Station -- $station | pstext -F+f14p,Bookman-Demi+jLB -R -J -N -Xa7.5c -Ya4.7c -O -K >> $ps
 
 # Compute and write the IGRF for this day
 IGRF=`echo $lon $lat $alt $data | mgd77magref -Ft/0`
-echo ${m1[0]} ${t[0]} 10 0 17 CT IGRF = $IGRF | pstext -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
+echo ${m1[0]} ${t[0]} IGRF = $IGRF | pstext -F+f17p,Bookman-Demi+jCT -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
 
 # Plot histogram of differences with mean removed
 gmtmath dif_T.dat $mean SUB = | pshistogram -F -W2 -G0 -JX4c/3c -BWN -Xa11.5c -O >> $ps
 
 rm -f zz1.dat zz2.dat dif_T.dat
 
-#pscmp
+pscmp
