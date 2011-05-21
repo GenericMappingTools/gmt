@@ -17,7 +17,7 @@ estimation or optimize the tension selection to satisfy one of four criteria.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-Data files with the (lon, lat, f) coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+Data files with the (lon, lat, f) coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
 .TP
 OPT(G)IT(grdfile)
 Name of the output grid to hold the interpolation.

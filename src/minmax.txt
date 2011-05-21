@@ -21,7 +21,7 @@ A similar option (OPT(T)) will provide a OPT(T)IT(zmin/zmax/dz) string for makec
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)
-ASCII [or binary, see OPT(b)] file(s) holding a fixed number of data columns. 
+ASCII [or binary, see GMT_bi_OPT] file(s) holding a fixed number of data columns. 
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)BD(a)|BD(f)|BD(s)

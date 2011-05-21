@@ -18,14 +18,14 @@ and ASCII tables may have regular headers as well.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(datafile(s))
-ASCII (or binary, see OPT(bi)) file(s) holding a number of data columns. 
+ASCII (or binary, see GMT_bi_OPT) file(s) holding a number of data columns. 
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)
 The records from the input files should be pasted horizontally, not appended vertically [Default].
 All files must have the same number of segments and number of
 rows per segment.  Note for binary input, all the files you want to paste must
-have the same number of columns (as set with OPT(bi)); ascii tables can have different number
+have the same number of columns (as set with GMT_bi_OPT); ascii tables can have different number
 of columns.
 .TP
 OPT(N)

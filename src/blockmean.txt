@@ -21,7 +21,7 @@ choose binary input and/or output using single or double precision storage.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyz[w]file(s))
-3 [or 4] column ASCII file(s) [or binary, see OPT(b)] holding (IT(x),IT(y),IT(z)[,IT(w)])
+3 [or 4] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
 data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
 BD(blockmean) will read from standard input.
 For details on the GMT common options, see GMT man page.

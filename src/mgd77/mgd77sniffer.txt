@@ -226,9 +226,8 @@ range, (BD(x)) warning summaries. By default ALL warning messages are printed.No
 OPT(D) options.
 #include "explain_-V.txt"
 .TP
-OPT(b)
-output binary data for OPT(D)d|f|s|v option.  Append BD(s) for single and BD(d) for double
-precision [Default is double].
+GMT_bo_OPT
+Output binary data for OPT(D)d|f|s|v option.
 #include "explain_-n.txt"
 #include "explain_help.txt"
 

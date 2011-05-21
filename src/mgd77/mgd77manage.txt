@@ -11,7 +11,7 @@ BD(mgd77manage) IT(NGDC-ids) [ OPT(A)[BD(+)]BD(a)|BD(c)|BD(d)|BD(D)|BD(e)|BD(E)|
 BD(mgd77manage) deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
 column with new data, or supply error correction information (*.e77 files).  New data may come
-from a table (ASCII unless OPT(b) is used), be based on existing columns and certain
+from a table (ASCII unless GMT_bi_OPT is used), be based on existing columns and certain
 theoretical expressions, or they may be obtained by sampling a grid
 (choose between GMT grid or a Sandwell/Smith Mercator *.img grid) along track.  The new data
 will be appended to the MGD77+ file in the form of an extra data column of specified type.

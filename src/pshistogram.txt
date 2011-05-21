@@ -20,7 +20,7 @@ A cumulative histogram may also be specified.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
-ASCII [or binary, see OPT(b)] datafile. If no file is given, BD(pshistogram) will read standard input.
+ASCII [or binary, see GMT_bi_OPT] datafile. If no file is given, BD(pshistogram) will read standard input.
 .TP
 OPT(Jx)
 IT(xscale[/yscale]) (Linear scale(s) in distance unit/data unit).

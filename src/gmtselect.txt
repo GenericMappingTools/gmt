@@ -21,7 +21,7 @@ See option OPT(:) on how to read (latitude,longitude) files.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-ASCII (or binary, see OPT(b)) data file(s) to be operated on.  If not given, standard input is read.
+ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input is read.
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 #include "explain_-A.txt"
@@ -51,7 +51,7 @@ OPT(F)IT(polygonfile)
 Pass all records whose location is within one of the closed polygons in the multiple-segment
 file IT(polygonfile).  For spherical polygons (lon, lat), make sure no consecutive points
 are separated by 180 degrees or more in longitude.  Note that IT(polygonfile) must be in ASCII regardless
-of whether OPT(b) is used.
+of whether GMT_bi_OPT is used.
 .TP
 OPT(I)[BD(cflrsz)]
 Reverses the sense of the test for each of the criteria specified:

@@ -18,7 +18,7 @@ distance from the node.  This weight is modulated by the observation points' wei
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile(s))
-3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see OPT(b)] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
+3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
 will read from standard input.
 .TP
 OPT(G)IT(out_grdfile)

@@ -17,9 +17,7 @@ Nodes with more than one value will be set to the average value.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(segyfile)
-ASCII [or binary] file holding z or (x,y,z) values. xyz triplets do not
-have to be sorted (for binary triplets, see OPT(b)). 1-column z tables must be sorted and the OPT(Z) must be set).
+IT(segyfile) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
 .TP
 OPT(G)IT(grdfile)
 IT(grdfile) is the name of the binary output grid file.

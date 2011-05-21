@@ -33,7 +33,7 @@ not easily estimated by either method.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyfile)
-ASCII [or binary, see OPT(b)] file containing lon,lat [lat,lon] values in the first 2 columns.  If no file is specified, BD(fitcircle) 
+ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon] values in the first 2 columns.  If no file is specified, BD(fitcircle) 
 will read from standard input.
 .TP
 OPT(L)IT(norm)

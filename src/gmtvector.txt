@@ -19,7 +19,7 @@ some require a single second vector, provided via OPT(S).  The output vectors wi
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-One or more ASCII [or binary, see OPT(b)] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
+One or more ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
 (if OPT(fg) is given) or (r, theta), or perhaps (x, y[, z]) if OPT(Ci) is given).  If no file is specified, BD(gmtvector), will read from standard input.
 .SH OPTIONAL ARGUMENTS
 .TP

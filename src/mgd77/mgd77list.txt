@@ -366,11 +366,8 @@ BD(blockmean), BD(blockmedian), and BD(blockmode) [1].
 OPT(Z)IT(+)|BD(-)
 Append the sign you want for BD(depth), BD(carter), and BD(msd) values below sea level
 (OPT(Z-) gives negative bathymetry) [Default is positive down].
-.TP
-OPT(bo)
-Selects binary output mode (single precision; append BD(d) for double precision, or use BD(S)|BD(D)
-to swap bytes on output) [Default is ASCII].
-OPT(h) is ignored if OPT(bo) is selected.  Likewise, string-fields cannot be selected.
+#include "explain_bo_full.txt"
+OPT(h) is ignored if GMT_bo_OPT is selected.  Likewise, string-fields cannot be selected.
 Note that if time is one of the binary output columns it will be stored as Unix-time (seconds
 since 1970).  To read this information in GMT to obtain absolute calendar time will require you
 to use --TIME_SYSTEM=unix.

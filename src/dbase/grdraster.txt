@@ -42,7 +42,7 @@ in both dimensions.
 .TP
 OPT(G)IT(grdfile)
 Name of output grid file.  If not set, the grid will be written as ASCII
-(or binary; see OPT(bo) xyz-triplets to stdout instead.
+(or binary; see GMT_bo_OPT) xyz-triplets to stdout instead.
 #include "explain_-I.txt"
 #include "explain_-J.txt"
 #include "explain_-V.txt"
@@ -73,7 +73,7 @@ To extract data from the 2 min Geoware relief blend and write it as binary doubl
 standard output:
 .br
 .sp
-BD(grdraster) "2 min Geoware" OPT(R)20/25/-10/5  OPT(bo) >! triplets.b
+BD(grdraster) "2 min Geoware" OPT(R)20/25/-10/5 OPT(bo) >! triplets.b
 .br
 .sp
 .SH "SEE ALSO"

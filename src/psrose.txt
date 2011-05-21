@@ -26,7 +26,7 @@ The outline of the windrose is drawn with the same color as BD(MAP_DEFAULT_PEN).
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file)
-Name of ASCII [or binary, see OPT(b)] data file.  If no file is given, psrose will read standard input.
+Name of ASCII [or binary, see GMT_bi_OPT] data file.  If no file is given, psrose will read standard input.
 .SH OPTIONAL ARGUMENTS
 No space between the option flag and the associated arguments.
 .TP

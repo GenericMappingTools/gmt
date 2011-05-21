@@ -21,7 +21,7 @@ of the region (see OPT(L)).
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyfile)
-This is an ASCII (or binary, see OPT(b)) file where the first 2 columns hold the (x,y) positions where the user wants to sample
+This is an ASCII (or binary, see GMT_bi_OPT) file where the first 2 columns hold the (x,y) positions where the user wants to sample
 the 2-D data set.
 .TP
 OPT(G)IT(gridfile)

@@ -3,7 +3,7 @@
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
 .SH SYNOPSIS
-BD(gshhs) IT(binaryfile.b) [ OPT(I)IT(id) ] [ OPT(L) ] [ OPT(bo) ] [ GMT_o_OPT ] > IT(asciifile.txt)
+BD(gshhs) IT(binaryfile.b) [ OPT(I)IT(id) ] [ OPT(L) ] [ GMT_bo_OPT ] [ GMT_o_OPT ] > IT(asciifile.txt)
 .SH DESCRIPTION
 BD(gshhs) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
 extracts an ASCII listing.  It automatically handles byte-swabbing between different

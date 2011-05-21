@@ -26,7 +26,7 @@ one or more output files (or stdout) and no plot is produced.
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)
-Raw ASCII (or binary, see OPT(b)) xyz data to be contoured.
+Raw ASCII (or binary, see GMT_bi_OPT) xyz data to be contoured.
 .TP
 OPT(C)IT(cptfile)
 name of the color palette file.  Must have discrete colors if you want to paint the

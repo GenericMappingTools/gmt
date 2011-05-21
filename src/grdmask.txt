@@ -20,7 +20,7 @@ If the distance specified is zero then only the nodes nearest each data point ar
 .SH REQUIRED ARGUMENTS
 .TP
 IT(pathfiles)
-The name of 1 or more ASCII [or binary, see OPT(b)] files holding the polygon(s) or data points.
+The name of 1 or more ASCII [or binary, see GMT_bi_OPT] files holding the polygon(s) or data points.
 .TP
 OPT(G)IT(mask_grd_file)]
 Name of resulting output mask grid file.

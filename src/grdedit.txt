@@ -38,7 +38,7 @@ OPT(E)
 Transpose the grid and exchange the IT(x) and IT(y) information.  Incompatible with the other options.
 .TP
 OPT(N)IT(xyzfile)
-Read the ASCII (or binary; see OPT(bi)) file IT(xyzfile) and replace the corresponding
+Read the ASCII (or binary; see GMT_bi_OPT) file IT(xyzfile) and replace the corresponding
 nodal values in the grid with these IT(z) values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the IT(x_inc), IT(y_inc)

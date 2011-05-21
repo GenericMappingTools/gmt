@@ -89,7 +89,7 @@ Repeat option OPT(I) as often as necessary.
 #include "explain_-L_scale.txt"
 .TP
 OPT(M)
-Dumps a single multisegment ASCII (or binary, see OPT(bo)) file to standard output.  No plotting occurs.
+Dumps a single multisegment ASCII (or binary, see GMT_bo_OPT) file to standard output.  No plotting occurs.
 Specify any combination of OPT(W), OPT(I), OPT(N).
 .TP
 OPT(N)IT(border)[/IT(pen)]

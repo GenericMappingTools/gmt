@@ -19,7 +19,7 @@ As an option, compute the area of each triangle or polygon.  The algorithm used 
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)
-Data files with the point coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
+Data files with the point coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(A)
