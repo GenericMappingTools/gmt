@@ -17,6 +17,7 @@ remaining endpoints no longer pass the tolerance test; the resulting segments ar
 written out to standard output or specified output file.  It it is not clear what the separation tolerance should
 be then use OPT(L) to get a list of all separation distances and analyze them to determine
 a suitable cutoff.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file(s))

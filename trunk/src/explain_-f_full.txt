@@ -1,6 +1,6 @@
 .TP
 GMT_f_OPT
-Special formatting of input and/or output columns (time or geographical data).
+Specify the data types of input and/or output columns (time or geographical data).
 Specify BD(i) or BD(o) to make this apply only to input or output [Default applies to both].
 Give one or more columns (or column ranges) separated by commas, or use OPT(f) multiple times.
 Append BD(T) (absolute calendar time), BD(t) (relative time in chosen BD(TIME_UNIT) since BD(TIME_EPOCH)),

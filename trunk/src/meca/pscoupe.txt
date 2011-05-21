@@ -22,6 +22,7 @@ BD(pscoupe) reads data values from IT(files) [or standard input] and
 generates IT(PostScript) code that will plot symbols, lines or polygons on a cross-section.
 Focal mechanisms  may be specified and require additional columns of data.
 The IT(PostScript) code is written to standard output. 
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 IT(files) list one or more file-names. If no files are given, BD(pscoupe)
 will read standard input.

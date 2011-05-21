@@ -22,6 +22,7 @@ the OPT(L) option.
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along with the supplemental GMT
 packages x2sys and mgd77. See http://gmt.soest.hawaii.edu for GMT details. Grids for comparison with
 cruise data may be downloaded via the web.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS

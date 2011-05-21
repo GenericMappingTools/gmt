@@ -19,13 +19,15 @@ The idea is that a large area may be decomposed in small size windows where both
 and the magnetization vector change by a very small amount. Inside each of those windows, or bins,
 a set of filter coefficients are calculate and reconstruct for each individual point the component
 filter using a first order Taylor series expansion. 
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
 .TP
 IT(anom_grd)
 The anomaly grid to be converted.
 .TP
 .B OPT(G)
 IT(rtp_grd) is the filename for output grdfile with the RTP solution 
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 .TP
 .B OPT(C)
 IT(dec/dip) Use this (constant) declination and inclination angles for both field and magnetization.

@@ -30,6 +30,7 @@ To explicitly close polygons, use OPT(L).  Select a fill with OPT(G).
 If OPT(G) is set, OPT(W) will control whether the polygon outline is drawn or not.
 If a symbol is selected, OPT(G) and OPT(W) determines the fill and outline/no outline, respectively.
 The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(files)
@@ -64,7 +65,7 @@ OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)]
 Draw error bars.  Append BD(x) and/or BD(y) to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
 IT(cap) parameter indicates the length of the end-cap on the error bars [CAP].  Pen
-attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 1, color = black, style = solid].
+attributes for error bars may also be set [Defaults: width = 1, color = black, style = solid].
 A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
 BD(-) will set error pen color and turn off symbol fill.
 If upper case BD(X) and/or BD(Y) is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
@@ -75,7 +76,6 @@ the uncertainty in the median.  Then a 5th extra data column is expected to cont
 .TP
 OPT(G)IT(fill)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
-(See SPECIFYING FILL below).
 .br
 Note that BD(psxy) will search for OPT(G) and OPT(W)
 strings in all the segment headers and let any values thus found over-ride the command line settings.
@@ -265,7 +265,6 @@ OPT(W)[BD(-)|BD(+)][IT(pen)]
 Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, style = solid].
 A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 BD(-) will set outline pen color and turn off symbol fill.
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-bi.txt"
 [Default is the required number of columns given the chosen settings].
@@ -280,10 +279,6 @@ The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
@@ -339,11 +334,7 @@ The definition file can contain any number of plot code records, as well as blan
 BD(psxy) will look for the definition files in (1) the current directory, (2) the ~/.gmt
 directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
-painted and filled with a pattern.  Other standard geometric symbols can also be used.
-.SH BUGS
-The OPT(N) option does not adjust the BoundingBox information so you may
-have to post-process the IT(PostScript) output with BD(ps2raster -A) to obtain
-the correct BoundingBox.
+painted and filled with a pattern.  Other standard geometric symbols can also be used.  See Appendix N for macro definitions.
 .br
 BD(psxy) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
 make a copy and split it into two and make each explicitly contain the polar point.  The two polygons

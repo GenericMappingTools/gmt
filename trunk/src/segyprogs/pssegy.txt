@@ -33,6 +33,7 @@ The SEGY file should be a disk image of the tape format (ie 3200 byte
 text header, which is ignored, 400 byte binary reel header, and
 240 byte header for each trace) with samples as native real*4 (IEEE real
 on all the platforms to which I have access)
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(SEGYfile)

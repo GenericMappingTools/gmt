@@ -21,6 +21,8 @@ Several parameters take only BD(true) or BD(false).
 Finally, most of these parameters can be changed on-the-fly via the PAR(PARAMETER,VALUE) option to any
 BD(GMT) program.  However, a few are static and are only read via the BD(gmt.conf) file; these
 are labeled (static).
+.SH COMMON SPECIFICATIONS
+The full explanation for how to specify pens, pattern fills, colors, and fonts can be found in the BD(gmt) man page.
 .TP
 .B COLOR_BACKGROUND
 Color used for the background of images (i.e., when z < lowest colortable entry)  [black].
@@ -55,27 +57,21 @@ Color used for the non-defined areas of images (i.e., where z == NaN)  [127.5].
 .TP
 .B FONT
 Sets the default for all fonts, except FONT_LOGO. This setting is not included in the BD(gmt.conf) file.
-(See SPECIFYING FONTS below).
 .TP
 .B FONT_ANNOT_PRIMARY
 Font used for upper annotations, etc. [14p,Helvetica,black]. 
-(See SPECIFYING FONTS below).
 .TP
 .B FONT_ANNOT_SECONDARY
 Font to use for time axis secondary annotations [16p,Helvetica,black].
-(See SPECIFYING FONTS below).
 .TP
 .B FONT_LABEL
 Font to use when plotting labels below axes [24p,Helvetica,black].
-(See SPECIFYING FONTS below).
 .TP
 .B FONT_LOGO
 Font to use for text plotted as part of the GMT time logo [8p,Helvetica,black].
-(See SPECIFYING FONTS below).
 .TP
 .B FONT_TITLE
 Font to use when plotting titles over graphs [36p,Helvetica,black].
-(See SPECIFYING FONTS below).
 .TP
 .B FORMAT_CLOCK_IN
 Formatting template that indicates how an input clock string is formatted.  This template
@@ -684,10 +680,6 @@ gives the first year in a 100-year sequence.  For example, if BD(TIME_Y2K_OFFSET
 .B TIME_LEAP_SECONDS
 Set to true if your time coordinate values require the increased complexity of keeping track of leap seconds [false].
 */
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtdefaults (1),

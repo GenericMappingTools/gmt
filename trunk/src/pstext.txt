@@ -30,6 +30,7 @@ set to an extended character set in your BD(gmt.conf) file in order to use the a
 Using the OPT(W) option, a colored rectangle underlying the text may
 be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (OPT(m))).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(textfile)
@@ -39,8 +40,8 @@ If no file is given, BD(pstext) will read standard input.
 IT(font) is a font specification with format [IT(size),][IT(font),][IT(color)] where IT(size) is
 text size in points, IT(font) is the font to use, IT(color) sets the font color, IT(angle)
 is measured in degrees counter-clockwise from horizontal, and IT(justify) sets the alignment. 
-If IT(font) is not an integer, then it is taken to be a text string with the desired fontname.  See SPECIFYING FONTS
-below for names and numbers of available fonts (or run BD(pstext) OPT(L)).  The alignment refers to the
+If IT(font) is not an integer, then it is taken to be a text string with the desired fontname (see
+OPT(L) for available fonts).  The alignment refers to the
 part of the text string that will be mapped onto the (IT(x),IT(y)) point.  Choose a 2 character combination
 of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
 #include "explain_-J.txt"
@@ -64,13 +65,12 @@ specified then it is set equal to IT(dx).
 Use BD(-Dj) to offset the text away from the point instead (i.e. the text justification
 will determine the direction of the shift).  Optionally, append BD(v) which will draw a line
 from the original point to the shifted point; append a IT(pen) to change the attributes for this line.
-(See SPECIFYING PENS below).
 .TP
 OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]]
 By default, text will be placed horizontally, using the primary annotation font attributes (BD(FONT_ANNOT_PRIMARY)), and
 centered on the data point.  Use this option to override these defaults by
 specifying up to three text attributes (font, angle, and justification) directly on the command line.
-Use BD(+f) to set the font (size,fontname,color) (See SPECIFYING FONTS below); if no font info is given then the input file must
+Use BD(+f) to set the font (size,fontname,color); if no font info is given then the input file must
 have this information in one of its columns.
 Use BD(+a) to set the angle; if no angle is given then the input file must have this as a column.
 Use BD(+j) to set the justification; if no justification is given then the input file must have this as a column.
@@ -79,8 +79,7 @@ Example: OPT(F)BD(+f)12p,Helvetica-Bold,red\fB+j+a\fP selects a 12p red Helvetic
 the justification and angle from the file, in that order, after IT(x), IT(y) and before IT(text).
 .TP
 OPT(G)IT(color)
-Sets the shade or color used for filling the text box [Default is no fill]
-(See SPECIFYING COLOR below).
+Sets the shade or color used for filling the text box [Default is no fill].
 Alternatively, use OPT(Gc) to use text (and OPT(C)) to build clip paths and turn
 clipping on.  This clipping can then be turned off later and the text may be finally plotted using
 psclip OPT(Ct) (provided only one pstext call was issued).
@@ -122,7 +121,6 @@ Choose upper case BD(C) to get a convex rectangle (only in paragraph mode).
 .TP
 OPT(W)[IT(color),][BD(o)|BD(O)|BD(c)|BD(C)[IT(pen)]]
 Draw a rectangle around the text string.  Set pen [Default is width = default, color = black, style = solid].
-(See also SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 OPT(Z)
@@ -138,9 +136,6 @@ to have its own level given in the 3rd column, and OPT(N) is implicitly set.
 (Not implemented for paragraph mode).
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot the outlines of the text strings stored in the file text.d on a Mercator plot with
 the given specifications, use

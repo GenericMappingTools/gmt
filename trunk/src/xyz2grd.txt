@@ -14,6 +14,7 @@ data.  Such unconstrained nodes are set to a value specified by the user [Defaul
 Nodes with more than one value will be set to the average value.  As an option (using OPT(Z)),
 a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
 number of formats, see OPT(Z) below.)
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT([xy]zfile)

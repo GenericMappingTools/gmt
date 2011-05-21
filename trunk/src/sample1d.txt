@@ -12,6 +12,7 @@ timeseries/profile at locations where the user needs the values.  The user must 
 the column number of the independent (monotonically increasing BD(or) decreasing) variable.  Equidistant or arbitrary sampling can
 be selected.  All columns are resampled based on the new sampling interval.
 Several interpolation schemes are available.  Extrapolation outside the range of the input data is not supported.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile)

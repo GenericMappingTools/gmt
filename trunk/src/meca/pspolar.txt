@@ -36,6 +36,7 @@ polarity:
 - not defined is anything else
 .br
 .sp
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 IT(files)
 List one or more file-names. If no files are given, pspolar will read standard input.

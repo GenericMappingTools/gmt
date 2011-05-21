@@ -20,6 +20,7 @@ BD(psmeca) reads data values from IT(files) [or standard input]
 and generates IT(PostScript) code that will plot focal mechanisms
 on a map.  Most options are the same as for BD(psxy).
 The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 IT(files)
 List one or more file-names. If no files are given, BD(psmeca) will read standard input.
@@ -282,7 +283,6 @@ Draws the T axis outline using default pen (see OPT(W)), or sets
 pen attributes.
 #include "explain_-icols.txt"
 #include "explain_colon.txt"
-#include "explain_pen.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
 .sp

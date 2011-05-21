@@ -43,6 +43,7 @@ Admittance spectrum, or real part of the transfer function.  Units of (Y / X).
 IT(name_stem).coh
 (Squared) coherency spectrum, or linear correlation coefficient as a function of frequency.  
 Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - coh).  SNR = 1 when coh = 0.5.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(x[y]file)

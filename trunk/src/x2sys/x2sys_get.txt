@@ -11,6 +11,7 @@ base for this TAG that match the given
 requirements.  You may choose a specific region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_tag.txt"
 .SH OPTIONAL ARGUMENTS

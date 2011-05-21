@@ -15,6 +15,7 @@ horizontal dimensions of the grid are assumed to be in meters.  Geographical gri
 may be used by specifying the OPT(f) option that scales degrees to meters.  If you
 have grids with dimensions in km, you could change this to meters using BD(grdedit)
 or scale the output with BD(grdmath).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(in_grdfile)

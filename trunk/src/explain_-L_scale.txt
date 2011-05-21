@@ -8,4 +8,3 @@ select the default label which equals the distance unit (meter, feet, km, miles,
 Change this by giving your own label (append BD(+l)IT(label)).  Change label justification with BD(+j)IT(justification)
 (choose among l(eft), r(ight), t(op), and b(ottom)).  Apply BD(+u) to append the unit to all distance annotations along the scale. 
 If you want to place a rectangle behind the scale, specify suitable BD(+p)IT(pen) and/or BD(+f)IT(fill) parameters.
-(See SPECIFYING PENS and SPECIFYING FILL below).

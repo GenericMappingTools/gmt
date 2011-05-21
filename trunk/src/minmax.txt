@@ -17,6 +17,7 @@ will be in the form OPT(R)IT(w/e/s/n) which can be used directly in the command 
 for other programs (hence only IT(dx) and IT(dy) are needed), or the output will be in
 column form for as many columns as there are increments provided.
 A similar option (OPT(T)) will provide a OPT(T)IT(zmin/zmax/dz) string for makecpt.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)

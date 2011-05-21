@@ -14,6 +14,7 @@ using GhostScript. Input file names are read from the command line or from a fil
 The size of the resulting images is determined by the BoundingBox (or HiResBoundingBox, if present).
 As an option, a tight (HiRes)BoundingBox may be computed first. As another option, it can compute 
 ESRI type world files used to reference, for instance, tif files and make them be recognized as geotiff.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(psfiles)

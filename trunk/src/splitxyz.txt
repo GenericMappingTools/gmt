@@ -16,6 +16,7 @@ minimum length for series, and to high\- or low\-pass filter the z values and/or
 values.  BD(splitxyz) is a useful filter between data extraction and BD(pswiggle) plotting, 
 and can also be used to divide a large x,y,z dataset into segments.  The output is always
 in the ASCII format; input may be ASCII or binary (see OPT(b)).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyz[dh]file(s))

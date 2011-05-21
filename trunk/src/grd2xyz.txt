@@ -13,6 +13,7 @@ output format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf)
 use PAR(D_FORMAT,format) on the command line, or choose binary output
 using single or double precision storage.  As an option you may output z-values
 without the (x,y) coordinates; see OPT(Z) below.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfiles)

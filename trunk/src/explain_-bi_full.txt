@@ -1,6 +1,6 @@
 .TP
 GMT_bi_OPT
-Selects binary input.  Append one or more comma-separated combinations of
+Select binary input.  Append one or more comma-separated combinations of
 IT(n)IT(type), where IT(type) is one of BD(c) (signed byte),
 BD(u) (unsigned byte), BD(h) (signed 2-byte int), BD(H) (unsigned
 2-byte int), BD(i) (signed 4-byte int), BD(I) (unsigned 4-byte int),

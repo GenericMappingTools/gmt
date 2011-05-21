@@ -13,6 +13,7 @@ minimum/maximum values for IT(x), IT(y), and IT(z), where the min/max of IT(z) o
 IT(x)- and IT(y)-increments, and the number of IT(x) and IT(y) nodes, and [optionally] the
 mean, standard deviation, and/or the median, L1 scale of IT(z), and number of
 nodes set to NaN.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)

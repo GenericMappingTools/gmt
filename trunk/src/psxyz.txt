@@ -25,6 +25,7 @@ To explicitly close polygons, use OPT(L).  Select a fill with OPT(G).
 If OPT(G) is set, OPT(W) will control whether the polygon outline is drawn or not.
 If a symbol is selected, OPT(G) and OPT(W) determines the fill and outline/no outline, respectively.
 The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(files)
@@ -50,7 +51,6 @@ Offset the plot symbol or line locations by the given amounts IT(dx/dy)[IT(dz)] 
 .TP
 OPT(G)IT(fill)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
-(See SPECIFYING FILL below).
 .br
 Note that BD(psxyz) will search for OPT(G) and OPT(W)
 strings in all the segment headers and let any values thus found over-ride the command line settings.
@@ -251,7 +251,6 @@ OPT(W)[BD(-)|BD(+)][IT(pen)]
 Set pen attributes for lines or the outline of symbols [Defaults: width = default, color = black, style = solid].
 A leading BD(+) will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 BD(-) will set outline pen color and turn off symbol fill.
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-aspatial.txt"
 #include "explain_-bi.txt"
@@ -267,10 +266,6 @@ The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_-t.txt"
 #include "explain_colon.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot blue columns (width = LEN_1 cm) at the positions listed in the file heights.xyz on a
 3-D projection of the space (0\-10), (0\-10), (0\-100),  with tickmarks every 2, 2, and 10,
@@ -306,7 +301,7 @@ The definition file can contain any number of plot code records, as well as blan
 BD(psxyz) will look for the definition files in (1) the current directory, (2) the ~/.gmt
 directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
-painted and filled with a pattern.  Other standard geometric symbols can also be used.
+painted and filled with a pattern.  Other standard geometric symbols can also be used.  See Appendix N for macro definitions.
 .SH BUGS
 No hidden line removal is employed for polygons and lines.  Symbols, however, are first sorted
 according to their distance from the viewpoint so that nearby symbols will overprint more distant
@@ -317,7 +312,7 @@ make a copy and split it into two and make each explicitly contain the polar poi
 will combine to give the desired effect when filled; to draw outline use the original polygon.
 .br
 The OPT(N) option does not adjust the BoundingBox information so you may
-have to post-process the IT(PostScript) output with BD(ps2raster -A) to obtain
+have to post-process the IT(PostScript) output with BD(ps2raster) OPT(A) to obtain
 the correct BoundingBox.
 .SH "SEE ALSO"
 .IR gmt (1),

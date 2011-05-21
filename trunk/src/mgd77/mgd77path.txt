@@ -7,6 +7,7 @@ BD(mgd77path) IT(NGDC-ids) [ OPT(A)[BD(-)] ] [ OPT(D) ] [ OPT(I)IT(ignore) ] [ G
 .SH DESCRIPTION
 BD(mgd77path) returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .SH OPTIONAL ARGUMENTS

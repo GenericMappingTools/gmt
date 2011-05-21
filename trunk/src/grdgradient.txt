@@ -16,6 +16,7 @@ vector gradient of the data.
 .br
 Estimated values in the first/last row/column of output depend on  
 boundary conditions (see OPT(L)).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(in_grdfile)

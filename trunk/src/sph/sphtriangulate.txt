@@ -15,6 +15,7 @@ the most equilateral triangulation possible on the sphere.  Optionally, you may 
 will do further processing to obtain the Voronoi polygons.  Normally, either set of polygons will
 be written as fillable segment output; use OPT(T) to write unique arcs instead.
 As an option, compute the area of each triangle or polygon.  The algorithm used is STRIPACK.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)

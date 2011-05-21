@@ -24,6 +24,7 @@ BD(x2sys_list) to pull out selected crossover information
 that BD(x2sys_solve) can use to determine track-specific systematic corrections.  These
 corrections may be used with BD(x2sys_datalist) to extract corrected
 data values for use in subsequent work.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(TAG)

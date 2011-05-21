@@ -20,6 +20,7 @@ calculate distances along track, to a fixed point, or closest approach to a line
 Finally, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
 See option OPT(:) on how to read (latitude,longitude) files.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)

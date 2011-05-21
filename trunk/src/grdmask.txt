@@ -16,6 +16,7 @@ resulting mask may be used in subsequent operations involving BD(grdmath) to mas
 data from polygonal areas. 2. The xy-files simply represent data point locations and the mask is set to the
 inside or outside value depending on whether a node is within a maximum distance from the nearest data point.
 If the distance specified is zero then only the nodes nearest each data point are considered "inside".
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(pathfiles)

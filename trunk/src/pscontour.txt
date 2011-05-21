@@ -22,6 +22,7 @@ network information, such as a triangular mesh used for finite element modeling.
 the area between contours may be painted according to
 the color palette file.  Alternatively, the x/y/z positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)
@@ -58,7 +59,6 @@ Color the triangles using the color palette table.
 .TP
 OPT(L)IT(pen)
 Draw the underlying triangular mesh using the specified pen attributes [Default is no mesh].
-(See SPECIFYING PENS below).
 .TP
 OPT(N)
 Do NOT clip contours or image at the boundaries [Default will clip to fit inside region OPT(R)].
@@ -87,7 +87,6 @@ then only contours marked with upper case C or A will have tickmarks [and annota
 .TP
 OPT(W)[BD(+)]IT(pen)
 Select contouring and set contour pen attributes.
-(See SPECIFYING PENS below).
 If the BD(+) flag is prepended then the color of the contour lines are taken from the cpt file (see OPT(C)).
 If the BD(-) flag is prepended then the color from the cpt file is applied both to the contours and the contour annotations.
 #include "explain_-XY.txt"
@@ -103,9 +102,6 @@ Use 4-byte integer triplets for node ids (OPT(Q)).
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
 given in the color palette file topo.cpt on a Lambert map

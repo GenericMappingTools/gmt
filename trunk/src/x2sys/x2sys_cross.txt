@@ -15,6 +15,7 @@ heading and speed along each track segment, and the crossover error (COE) and me
 The names of the tracks are passed on the command line.
 By default, BD(x2sys_cross) will look for both external and internal COEs.  As an option,
 you may choose to project all data using one of the map-projections prior to calculating the COE.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_track.txt"
 #include "explain_tag.txt"

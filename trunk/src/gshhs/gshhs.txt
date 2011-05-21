@@ -18,6 +18,7 @@ and ancestor is the ID of the polygon in the full resolution set that was reduce
 polygon (-1 if full resolution).
 For line data the header is simply
 IT(ID npoints  hierarchical-level source west east south north)
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(binaryfile.b)

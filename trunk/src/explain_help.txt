@@ -1,6 +1,6 @@
 .TP
-OPT(^)
-Prints just a short message about the syntax of the command, then exits.
+OPT(^)   *
+Print a short message about the syntax of the command, then exits.
 .TP
-OPT(?)
-Prints a full usage (help) message, including the explanation of options, then exits.
+OPT(?)   *
+Print a full usage (help) message, including the explanation of options, then exits.

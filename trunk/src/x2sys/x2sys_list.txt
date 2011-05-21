@@ -10,6 +10,7 @@ BD(x2sys_list) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A)IT(as
 BD(x2sys_list) will read the crossover ASCII data base IT(coedbase.txt) (or IT(stdin))
 and extract a subset of the crossovers based on the other arguments.  The output may be
 ASCII or binary.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 OPT(C)IT(column)

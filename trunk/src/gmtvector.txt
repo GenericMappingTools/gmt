@@ -15,6 +15,7 @@ can be interpreted as an x/y[/z], lon/lat, or r/theta vector then we decode it a
 operations (angle between vectors, cross products, vector sums, and vector rotations) can be selected;
 some require a single second vector, provided via OPT(S).  The output vectors will be converted back to (lon, lat) or
 (r, theta) unless OPT(Co) requests (x, y[, z]) Cartesian coordinates.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infiles)

@@ -23,6 +23,7 @@ possible except at control data points).  It is recommended that the user pre-pr
 BD(blockmean), BD(blockmedian), or BD(blockmode) to avoid spatial aliasing and eliminate redundant data.
 You may impose lower and/or upper bounds on the solution.  These may be entered in the form of
 a fixed value, a grid with values, or simply be the minimum/maximum input data values.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)

@@ -12,6 +12,8 @@ specified range must not exceed the range of IT(input_file.nc).  If in doubt, ru
 to check range.  Alternatively, define the subregion indirectly via a range check on the node values.
 Complementary to BD(grdcut) there is BD(grdpaste), which will join together two
 grid files along a common edge.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
 .TP
 IT(input_file.nc)
 this is the input IT(.nc) format file.
@@ -20,7 +22,7 @@ OPT(G)IT(output_file.nc)
 this is the output IT(.nc) format file.
 #include "explain_-R.txt"
 This defines the subregion to be cut out.
-.SH OPTIONS
+.SH OPTIONAL ARGUMENTS
 #include "explain_-V.txt"
 .TP
 OPT(Z)

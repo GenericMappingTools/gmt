@@ -25,6 +25,7 @@ IT(lon) IT(lat) [ IT(alt) ] [ IT(timestart) [ IT(timestop) ] ]
 .br
 where IT(lon) and IT(lat) are required for all features, IT(alt) is optional for all features (see
 also OPT(A) and OPT(C)), and IT(timestart) and IT(timestop) apply to events and timespan features.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(infile(s))
@@ -68,7 +69,6 @@ If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relat
 OPT(G)BD(f|n)IT(fill)
 Set fill color for symbols, extrusions and polygons (OPT(Gf)) [Default is light orange at 75% transparency] or text labels (OPT(Gn)) [Default is white].
 Optionally, use OPT(Gf-) to turn off polygon fill, and OPT(Gn-) to disable labels.
-(See SPECIFYING FILL below).
 .TP
 OPT(I)IT(icon)
 Specify the URL to an alternative icon that should be used for the symbol [Default is a Google Earth circle].
@@ -118,7 +118,6 @@ Set pen attributes for lines or polygon outlines.  Append pen attributes to use
 [Defaults: width = 1, color = black, style = solid].  Optionally, use OPT(W-) to
 turn off polygon outline.  Note that for KML the pen width is given as integer pixel
 widths so you must specify pen width as IT(n)BD(p), where IT(n) is an integer.
-(See SPECIFYING PENS below).
 .TP
 OPT(Z)IT(args)
 Set one or more attributes of the Document and Region tags.
@@ -136,8 +135,6 @@ Append BD(+o) to open a folder or document in the sidebar when loaded [closed].
 #include "explain_-icols.txt"
 #include "explain_colon.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_color.txt"
 .SH "EXAMPLES"
 To convert a file with point locations (lon, lat) into a KML file with red circle symbols, try
 .br

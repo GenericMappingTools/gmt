@@ -24,6 +24,7 @@ preset weight (see OPT(W)).  A sub-section can be specified by passing time- or
 distance-intervals along track or by selecting a geographical region.  Finally, each output
 record may be required to pass any number of logical tests involving data values or bit flags.
 #include "mgd77_IGF_coeffs.h"
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 .TP

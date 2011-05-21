@@ -54,6 +54,7 @@ BD(psbasemap) GMT_B_OPT GMT_J_OPT GMT_Rgeoz_OPT
 BD(psbasemap) creates IT(PostScript) code that will produce a basemap.  Several map projections
 are available, and the user may specify separate tickmark intervals for boundary annotation,
 ticking, and [optionally] gridlines.  A simple map scale or directional rose may also be plotted.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_-B.txt"
 #include "explain_-J.txt"
@@ -64,7 +65,6 @@ No space between the option flag and the associated arguments.
 .TP
 OPT(G)IT(fill)
 Select fill shade, color or pattern for the inside of the basemap [Default is no fill color].
-(See SPECIFYING FILL below).
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 #include "explain_-L_scale.txt"
@@ -80,9 +80,6 @@ This applies only to the coordinates specified in the OPT(R) option.
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 The following section illustrates the use of the options by giving some examples for the
 available map projections.  Note how scales may be given in several different ways

@@ -15,6 +15,7 @@ as a single rotation whose parameters are separated by slashes.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(rotX)

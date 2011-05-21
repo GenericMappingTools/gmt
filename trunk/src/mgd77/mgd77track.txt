@@ -19,6 +19,7 @@ BD(mgd77track) IT(NGDC-ids) GMT_Rgeo_OPT GMT_J_OPT
 .SH DESCRIPTION
 BD(mgd77track) reads NGDC MGD77 cruises and creates IT(PostScript) code that will plot one or more ship tracks on a
 map using the specified projection.  The IT(PostScript) code is written to standard output.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "explain_ncid.txt"
 #include "explain_-J.txt"

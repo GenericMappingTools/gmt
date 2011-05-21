@@ -11,6 +11,7 @@ chose to overwrite existing data with new information for older tracks (OPT(F)) 
 even completely remove information for certain tracks (OPT(D)).
 The x2sys IT(TAG) must match the tag encoded in the IT(info.tbf) file.  To
 inquire about tracks in the data base, use BD(x2sys_get).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(info.tbf)

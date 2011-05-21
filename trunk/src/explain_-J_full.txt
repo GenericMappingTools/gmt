@@ -1,6 +1,6 @@
 .TP
 GMT_J_OPT
-Selects the map projection. The following character determines the projection. If the
+Select map projection. The following character determines the projection. If the
 character is upper case then the argument(s) supplied as scale(s) is interpreted to be
 the map width (or axis lengths), else the scale argument(s) is the map scale (see its
 definition for each projection). UNIT is cm, inch, or point, depending on the BD(PROJ_LENGTH_UNIT)

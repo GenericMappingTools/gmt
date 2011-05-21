@@ -22,6 +22,7 @@ BD(grdview) reads a 2-D grid file and produces a 3-D perspective plot by
 drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
 to a raster image.  Options include draping a data set on top of a surface, plotting of contours on top of the
 surface, and apply artificial illumination based on intensities provided in a separate grid file.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(relief_file)
@@ -59,7 +60,6 @@ If no IT(flags) are set, use bilinear rather than the default bicubic resampling
 OPT(N)IT(level)[/IT(color)]
 Draws a plane at this z-level.  If the optional IT(color) is provided, the frontal facade between
 the plane and the data perimeter is colored.  See OPT(Wf) for setting the pen used for the outline.
-(See SPECIFYING COLOR below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -88,7 +88,6 @@ nodes with z = NaN.  This option is useful for categorical data where
 interpolating between values is meaningless.  Optionally, append BD(o) to
 draw the tile outlines, and specify a custom pen if the default pen is not to
 your liking.  As this option produces a flat surface it cannot be combined with OPT(JZ) or OPT(Jz).
-(See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
@@ -97,7 +96,6 @@ OPT(W)BD(type)IT(pen)
 OPT(Wc)
 Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
 [Default: width = 0.75p, color = black, style = solid].
-(See SPECIFYING PENS below).
 .TP
 OPT(Wm)
 Sets the pen attributes used for the mesh. [Default: width = 0.25p, color = black, style = solid].
@@ -106,15 +104,12 @@ You must also select OPT(Qm) or OPT(Qsm) for meshlines to be drawn.
 OPT(Wf)
 Sets the pen attributes used for the facade. [Default: width = 0.25p, color = black, style = solid].
 You must also select OPT(N) for the facade outline to be drawn.
-(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-n.txt"
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_color.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
 To make a mesh plot from the file hawaii_grav.nc and drawing the contours

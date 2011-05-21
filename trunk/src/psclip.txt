@@ -24,6 +24,7 @@ The OPT(N) option, reverses the sense of what is the inside and outside of the p
 path along the map boundary.
 After subsequent plotting, which will be clipped against these paths, the clipping
 may be deactivated by running BD(psclip) a second time with the OPT(C) option only.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyfiles)

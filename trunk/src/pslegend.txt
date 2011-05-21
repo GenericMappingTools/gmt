@@ -14,6 +14,7 @@ BD(pslegend) will make legends that can be overlaid on maps.  It reads specific
 legend-related information from an input file [or stdin].  Unless otherwise noted,
 annotations will be made using the primary annotation font and size in effect
 (i.e., FONT_ANNOT_PRIMARY)
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(textfile)
@@ -39,7 +40,6 @@ BD(D) IT(offset pen)
 The BD(D) record results in a horizontal line with specified IT(pen) across the legend with one quarter of
 the line spacing left blank above and below the line.  Two gaps of IT(offset) units are left blank between
 the horizontal line and the left and right frame sides.  If no pen is given we use MAP_GRID_PEN_PRIMARY
-(See SPECIFYING PENS below).
 .TP
 BD(G) IT(gap)
 The BD(G) record specifies a vertical gap of the given length. 
@@ -71,7 +71,6 @@ Change this by giving your own label (append BD(+l)IT(label)).  Change label jus
 (choose among l(eft), r(ight), t(op), and b(ottom)).  Apply BD(+u) to append the unit to all distance annotations along the scale. 
 If you want to place a rectangle behind the scale, specify suitable BD(+p)IT(pen) and/or BD(+f)IT(fill) parameters.
 All these )+)IT(modifiers) are appended to IT(length) to make a single string.
-(See SPECIFYING PENS and SPECIFYING FILL below).
 .TP
 BD(N) IT(ncolumns)
 Change the number of columns in the legend [1]. This only affects the printing of symbols (BD(S)) and 
@@ -94,7 +93,6 @@ optional BD(P) record.
 .TP
 BD(V) IT(offset pen)
 The BD(V) record draws a vertical line between columns (if more than one) using the selected IT(pen)
-(See SPECIFYING PENS below).
 IT(offset) is analogous to the offset for the BD(D) records but in the vertical direction.
 .TP
 BD(P) IT(paragraph-mode-header-for-pstext)
@@ -123,7 +121,6 @@ Draws a border around the legend using BD(MAP_FRAME_PEN).
 .TP
 OPT(G)IT(fill)
 Select fill shade, color or pattern of the legend box [Default is no fill].
-(See SPECIFYING FILL below).
 #include "explain_-J.txt"
 #include "explain_-K.txt"
 .TP
@@ -139,10 +136,6 @@ Sets the linespacing factor in units of the current annotation font size [1.1].
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_font.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br

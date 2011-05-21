@@ -19,6 +19,7 @@ When OPT(R) is omitted, the output grid will cover the same region as the input 
 When OPT(I) is omitted, the grid spacing of the output grid will be the same as the input grid.
 Either OPT(r) or OPT(T) can be used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(in_grdfile)

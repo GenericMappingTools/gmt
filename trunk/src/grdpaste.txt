@@ -9,6 +9,7 @@ BD(grdpaste) will combine IT(file_a.nc) and IT(file_b.nc) into IT(outfile.nc) by
 them together along their common edge.  Files IT(file_a.nc) and IT(file_b.nc) must have the same dx, dy and have one edge
 in common.  If in doubt, check with BD(grdinfo) and use BD(grdcut) and/or BD(grdsample)
 if necessary to prepare the edge joint.  For geographical grids, use OPT(f) to handle periodic longitudes.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(file_a.nc)
@@ -31,6 +32,7 @@ make outfile.nc which will be 150 - 180 and -30S - 30N by:
 grdpaste file_a.nc file_b.nc -Goutfile.nc -V -fg
 .SH "SEE ALSO"
 .IR gmt (1),
+.IR grdblend (1),
 .IR grdcut (1),
 .IR grdinfo (1),
 .IR grdsample (1)

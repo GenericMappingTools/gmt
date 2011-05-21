@@ -1,3 +1,3 @@
 .TP
-GMT_bi_OPT
-Selects binary input.
+GMT_bi_OPT   *
+Select binary input.

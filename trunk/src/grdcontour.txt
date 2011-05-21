@@ -17,6 +17,7 @@ BD(grdcontour) reads a 2-D grid file and produces a contour map by tracing
 each contour through the grid.  IT(PostScript) code is generated and sent to standard output.  Various options
 that affect the plotting are available.  Alternatively, the x/y/z positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)
@@ -101,7 +102,6 @@ OPT(W)[BD(+)][IT(type)]IT(pen)
 IT(type), if present, can be BD(a) for annotated contours or BD(c) for regular contours [Default].
 IT(pen) sets the attributes for the particular line.  Default pen for annotated contours:
 0.75p,black.  Regular contours use pen 0.25p,black.
-(See SPECIFYING PENS below).
 If the BD(+) flag is prepended then the color of the contour lines are taken from the cpt file (see OPT(C)).
 If the BD(-) flag is prepended then the color from the cpt file is applied both to the contours and the contour annotations.
 #include "explain_-XY.txt"
@@ -120,9 +120,6 @@ special precautions must be taken when determining 0-contours.
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_font.txt"
-#include "explain_color.txt"
 #include "explain_precision.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES

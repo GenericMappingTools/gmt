@@ -20,6 +20,7 @@ reverse the sense of the test.  Having found the reliable/not reliable points, B
 either paint tiles to mask these nodes (with the OPT(T) switch), or use contouring to create
 polygons that will clip out regions of no interest.  When clipping is initiated, it will stay in
 effect until turned off by a second call to BD(psmask) using the OPT(C) option.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyzfile)
@@ -46,7 +47,6 @@ The files are ASCII unless OPT(bo) is used.  See OPT(Q) to exclude small polygon
 .TP
 OPT(G)IT(fill)
 Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
-(See SPECIFYING FILL below).
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
@@ -81,8 +81,6 @@ Not used with binary data.
 #include "explain_colon.txt"
 #include "explain_help.txt"
 #include "explain_distunits.txt"
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To make an overlay IT(PostScript) file that will mask out the regions of a contour map
 where there is no control data using clip polygons, use:

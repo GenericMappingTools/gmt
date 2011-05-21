@@ -60,6 +60,7 @@ Calculations of specific great-circle and geodesic distances or for back-azimuth
 .br
 BD(project) is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
 lower case for the xyzpqrs letters in OPT(flags). 
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 OPT(C)IT(cx)/IT(cy)

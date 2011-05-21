@@ -17,6 +17,7 @@ avoid aliasing short wavelengths.  These routines are also generally useful for
 decimating or averaging (IT(x),IT(y),IT(z)) data.  You can modify the precision of the output
 format by editing the BD(FORMAT_FLOAT_OUT) parameter in your BD(gmt.conf) file, or you may
 choose binary input and/or output using single or double precision storage.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(xyz[w]file(s))

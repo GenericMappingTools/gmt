@@ -12,6 +12,7 @@ the information with values provided on the command line [if any].  As an option
 global, geographical grids (with 360 degrees longitude range) can be rotated in
 the east-west direction, and individual nodal values can be replaced from a
 table of IT(x), IT(y), IT(z) values.  BD(grdedit) only operates on files containing a grdheader.
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grdfile)

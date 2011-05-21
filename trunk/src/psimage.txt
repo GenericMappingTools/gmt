@@ -21,6 +21,7 @@ For raster files, the user can select which color to be made transparent.
 The user may also choose to replicate the image which, when preceded by appropriate clip
 paths, may allow larger custom-designed fill patterns to be implemented (the OPT(Gp)
 mechanism offered in most BD(GMT) programs is limited to rasters smaller than 146 by 146).
+#include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(imagefile)
@@ -50,7 +51,6 @@ of the image, but this can be changed by specifying justification [0/0/BL].
 .TP
 OPT(F)IT(pen)
 Draws a rectangular frame around the image with the given pen [no frame].
-(See SPECIFYING PENS below).
 #include "explain_-J.txt"
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
@@ -79,12 +79,10 @@ OPT(G)[BD(b)|BD(f)|BD(t)]IT(color)
 OPT(Gb)
 Sets background color (replace white pixel) of 1-bit images.
 Use - for transparency (and set OPT(Gf) to the desired color).
-(See SPECIFYING COLOR below).
 .TP
 OPT(Gf)
 Sets foreground color (replace black pixel) of 1-bit images.
 Use - for transparency (and set OPT(Gb) to the desired color).
-(See SPECIFYING COLOR below).
 .TP
 OPT(I)
 Invert 1-bit image before plotting. This is what is done
@@ -97,13 +95,10 @@ OPT(Gt)
 Assigns the color that is to be made transparent.
 Sun Raster files do not support transparency, so indicate here which color to be made
 transparent.
-(See SPECIFYING COLOR below).
 #include "explain_perspective.txt"
 (Requires OPT(R) and OPT(J) for proper functioning).
 #include "explain_-t.txt"
 #include "explain_help.txt"
-#include "explain_pen.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To plot the image contained in the 8-bit raster file scanned_face.ras, scaling
 it to 8 by 10 cm (thereby possibly changing the aspect ratio), and making the white color transparent,
