@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.18 2011-03-15 02:06:31 guru Exp $
+#		$Id: job18.sh,v 1.19 2011-05-21 01:53:31 guru Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -53,7 +53,7 @@ done
 
 # Only plot the ones within 200 km
 
-gmtselect -C200/pratt.d centers.d -fg | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> $ps
+gmtselect -C200k/pratt.d centers.d -fg | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> $ps
 psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> $ps
 
 # Then report the volume and area of these seamounts only
