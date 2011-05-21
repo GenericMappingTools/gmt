@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id: job18.bat,v 1.18 2011-03-15 02:06:31 guru Exp $
+REM		$Id: job18.bat,v 1.19 2011-05-21 01:53:31 guru Exp $
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
@@ -50,7 +50,7 @@ for %%f in (sm_*_C.txt) do gawk "BEGIN{x=0;y=0;n=0};{if (NR > 1) {x+=$1;y+=$2;n+
 
 REM Only plot the ones within 200 km
 
-gmtselect -C200/pratt.d centers.d -fg | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> %ps%
+gmtselect -C200k/pratt.d centers.d -fg | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> %ps%
 psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> %ps%
 
 REM Then report the volume and area of these seamounts only
