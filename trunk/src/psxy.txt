@@ -11,7 +11,7 @@
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
-BD(psxy) [ IT(files) ] GMT_J_OPT GMT_Rgeoz_OPT
+BD(psxy) [ IT(datatables) ] GMT_J_OPT GMT_Rgeoz_OPT
 [ OPT(A)[BD(m)|BD(p)] ] [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy) ]
 [ OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)] ]
 [ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ]
@@ -36,9 +36,7 @@ The IT(PostScript) code is written to standard output.
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(files)
-List one or more file-names. If no files are given, BD(psxy) will read standard input.
+#include "explain_intables.txt"
 Use OPT(T) to ignore all input files, including standard input (see below).
 .TP
  OPT(A)[BD(m)|BD(p)]

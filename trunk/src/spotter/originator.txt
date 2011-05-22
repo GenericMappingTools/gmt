@@ -3,7 +3,7 @@
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
 .SH SYNOPSIS
-BD(originator) [ IT(infile(s)) ] OPT(E)IT(rotfile) 
+BD(originator) [ IT(datatables) ] OPT(E)IT(rotfile) 
 OPT(F)IT(hs_file) 
 [ OPT(D)IT(d_km) ] [ OPT(L)[IT(flag)] ] [ OPT(N)IT(upper_age) ] [ OPT(Q)IT(r/t) ] 
 [ OPT(S)[IT(n_hs)] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)IT(maxdist) ] [ OPT(Z) ]
@@ -23,9 +23,7 @@ See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_ag
 #include "euler.txt"
 #include "hotspot.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infile(s))
-Seamount data file(s) to be analyzed.  If not given, standard input is read.
+#include "explain_intables.txt"
 .TP
 OPT(D)IT(d_km)
 Sets the flowline sampling interval in km.  [Default is 5].

@@ -4,7 +4,7 @@
 psvelo \- Plot velocity vectors, crosses, and wedges on maps
 .SH SYNOPSIS
 .br
-BD(psvelo) [ IT(files) ] GMT_J_OPT GMT_Rgeo_OPT [ GMT_B_OPT ] 
+BD(psvelo) [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT [ GMT_B_OPT ] 
 [ OPT(D)IT(sigma_scale) ] [ OPT(F)IT(color) ] 
 [ OPT(E)IT(color) ] [ OPT(G)IT(fill) ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)IT(symbol)/IT(scale)/IT(conf)/IT(font_size) ] [ GMT_U_OPT ] 
@@ -21,9 +21,7 @@ been replaced by BD(psvelo) and BD(psmeca).
 .sp
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(files)
-List one or more file-names. If no files are given, BD(psvelo) will read standard input.
+#include "explain_intables.txt"
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
 .br

@@ -3,12 +3,12 @@
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS
-BD(surface) [ IT(xyzfile) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
+BD(surface) [ IT(datatables) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
 [ OPT(C)IT(convergence_limit) ] [ OPT(Ll)IT(lower) ] [ OPT(Lu)IT(upper) ] [ OPT(N)IT(max_iterations) ] [ OPT(Q) ] 
 [ OPT(S)IT(search_radius)[BD(m)|BD(s)] ] [ OPT(T)IT(tension_factor)[BD(i)|BD(b)] ] [ GMT_V_OPT ] 
 [ OPT(Z)IT(over-relaxation_factor) ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(xyzfile)] and produces
+BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(datatables)] and produces
 a binary grid file of gridded values z(x,y) by solving:
 .sp
 	(1 - T) * L (L (z)) + T * L (z) = 0
@@ -31,10 +31,7 @@ Output file name.  Output is a binary 2-D IT(.nc) file.  Note that the smallest 
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(xyzfile)
-3 column ASCII file [or binary, see GMT_bi_OPT] holding (x,y,z) data values.  If no file is specified, BD(surface) will read from
-standard input.
+#include "explain_intables.txt"
 .TP
 OPT(A)IT(aspect_ratio)
 Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter IT(aspect_ratio),

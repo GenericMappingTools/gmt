@@ -5,7 +5,7 @@
 .SH NAME
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
-BD(mapproject) [ IT(infiles) ] GMT_J_OPT GMT_Rgeo_OPT 
+BD(mapproject) [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)] ] [ OPT(C)[IT(dx)/IT(dy)] ] [ OPT(Dc)|BD(i)|BD(p) ] [ OPT(E)[IT(datum)] ] 
 [ OPT(F)[IT(unit)] ] [ OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)] ] [ OPT(I) ] 
 [ OPT(L)IT(line.xy)[/IT(unit)][BD(+)] ] [ OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)] ] [ OPT(Q)[BD(d)|BD(e) ] [ OPT(S) ] [ OPT(T)[BD(h)]IT(from)[/IT(to)] ] 
@@ -27,12 +27,7 @@ See option OPT(:) on how to read (latitude,longitude) files.
 Special case for the UTM projection: If OPT(C) is used and OPT(R) is not given then the region is set to coincide with
 the given UTM zone so as to preserve the full ellipsoidal solution (See RESTRICTIONS for more information).
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infiles)
-Data file(s) to be transformed.  If not given, standard input is read.
-.TP
-IT(infile(s))
-input file(s) with 2 or more columns. If no file(s) is given, BD(mapproject) will read the standard input.
+#include "explain_intables.txt"
 .TP
 OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)]
 OPT(Af) calculates the (forward) azimuth from fixed point IT(lon/lat) to each data point.  Use OPT(Ab) to get

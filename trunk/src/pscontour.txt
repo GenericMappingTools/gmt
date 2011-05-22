@@ -5,7 +5,7 @@
 .SH NAME
 pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
-BD(pscontour) [ IT(xyzfile) ] OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pscontour) [ IT(datatables) ] OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A)[BD(-)][IT(labelinfo)] ] [ GMT_B_OPT ] [ OPT(D)[IT(template)] ]
 [ GMT_CONTG ] [ OPT(I) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ OPT(L)IT(pen) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(indexfile) ] 
@@ -32,10 +32,7 @@ surface (OPT(I)).  Only contours that have annotation flags set will be annotate
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(xyzfile)
-One or more ASCII (or binary, see GMT_bi_OPT) xyz data to be contoured.  If none are given
-then we will read standard input.
+#include "explain_intables.txt"
 .TP
 OPT(A)[BD(-)][IT(labelinfo)]
 Give - to disable all annotations.

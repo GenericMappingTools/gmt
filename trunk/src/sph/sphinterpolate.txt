@@ -5,7 +5,7 @@
 .SH NAME
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
-BD(sphinterpolate) [ IT(infiles) ] OPT(G)IT(grdfile) [ GMT_I_OPT ] 
+BD(sphinterpolate) [ IT(datatables) ] OPT(G)IT(grdfile) [ GMT_I_OPT ] 
 [ OPT(Q)IT(mode)[/IT(options)] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] 
 [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -19,9 +19,7 @@ estimation or optimize the tension selection to satisfy one of four criteria.
 OPT(G)IT(grdfile)
 Name of the output grid to hold the interpolation.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infiles)
-Data files with the (lon, lat, f) coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
+#include "explain_intables.txt"
 #include "explain_-I.txt"
 .TP
 OPT(Q)IT(mode)[/IT(options)]

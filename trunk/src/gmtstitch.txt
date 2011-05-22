@@ -3,7 +3,7 @@
 .SH NAME
 gmtstitch \- Join line segments whose end points match within tolerance
 .SH SYNOPSIS
-BD(gmtstitch) [ IT(infiles) ] [ OPT(C)[IT(closed)] ] [ OPT(D)[IT(template)] ]
+BD(gmtstitch) [ IT(datatables) ] [ OPT(C)[IT(closed)] ] [ OPT(D)[IT(template)] ]
 [ OPT(L)[IT(linkfile)] ] [ OPT(Q)[IT(template)] ] 
 [ OPT(T)IT(cutoff)[IT(unit)][/IT(nn_dist)] ] [ GMT_V_OPT ] 
 [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] 
@@ -21,9 +21,7 @@ a suitable cutoff.
 .SH REQUIRED ARGUMENTS
 None.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(file(s))
-One of more data files.  If none are supplied then we read standard input.
+#include "explain_intables.txt"
 .TP
 OPT(C)[IT(closed)]
 Write all the closed polygons to IT(closed) [gmtstitch_closed.d] and all other segments as they

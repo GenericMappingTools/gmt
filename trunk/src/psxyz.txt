@@ -6,7 +6,7 @@
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
-BD(psxyz) [ IT(files) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
+BD(psxyz) [ IT(datatables) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
 [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy)[IT(dz)] ]
 [ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)] ] [ GMT_U_OPT ]
@@ -32,9 +32,7 @@ The IT(PostScript) code is written to standard output.
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(files)
-List one or more file-names. If no files are given, BD(psxyz) will read standard input.
+#include "explain_intables.txt"
 #include "explain_-B.txt"
 .TP
 OPT(C)IT(cptfile)

@@ -3,7 +3,7 @@
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS
-BD(filter1d) [ IT(infile) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
+BD(filter1d) [ IT(datatables) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
 [ OPT(E) ] [ OPT(I)IT(ignore_val) ] [ OPT(L)IT(lack_width) ] 
 [ OPT(N)IT(t_col) ] [ OPT(Q)IT(q_factor) ] [ OPT(S)IT(symmetry_factor) ] 
 [ OPT(T)IT(start/stop/int) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
@@ -51,10 +51,7 @@ i.e., replace outliers (2.5 L1 scale off median) with median during filtering.
 In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infile)
-Multi-column ASCII (or binary, see GMT_bi_OPT) file holding data values to be filtered.  If no file
-is given then we read from standard input.
+#include "explain_intables.txt"
 .TP
 OPT(D)IT(increment)
 IT(increment) is used when series is NOT equidistantly sampled.

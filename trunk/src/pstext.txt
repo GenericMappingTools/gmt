@@ -3,7 +3,7 @@
 .SH NAME
 pstext \- To plot text strings on maps
 .SH SYNOPSIS
-BD(pstext) [ IT(textfile) ] GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pstext) [ IT(textfiles) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  
 [ OPT(D)[BD(j)]IT(dx)[/IT(dy)][BD(v)[IT(pen)] ] [ OPT(F)[BD(+a)[IT(angle)]][BD(+f)[IT(font)]][BD(+j)[IT(justify)]] ] 
 [ OPT(G)IT(color) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)BD(l)|BD(u) ] 
@@ -37,10 +37,10 @@ characters, except in paragraph mode (OPT(m))).
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(textfile)
-This file contains 1 or more records with (IT(x), IT(y)[, IT(font), IT(angle), IT(justify)], IT(text)).
+IT(textfiles)
+This is one or more files containing 1 or more records with (IT(x), IT(y)[, IT(font), IT(angle), IT(justify)], IT(text)).
 The attributes in brackets can alternatively be set directly via OPT(F).
-If no file is given, BD(pstext) will read standard input.
+If no files are given, BD(pstext) will read standard input.
 IT(font) is a font specification with format [IT(size),][IT(font),][IT(color)] where IT(size) is
 text size in points, IT(font) is the font to use, IT(color) sets the font color, IT(angle)
 is measured in degrees counter-clockwise from horizontal, and IT(justify) sets the alignment. 

@@ -3,13 +3,13 @@
 .SH NAME
 nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS
-BD(nearneighbor) [ IT(xyzfile(s)) ] OPT(G)IT(out_grdfile) GMT_I_OPT  
+BD(nearneighbor) [ IT(datatables) ] OPT(G)IT(out_grdfile) GMT_I_OPT  
 OPT(N)IT(sectors)[/IT(min_sectors)] GMT_Rgeo_OPT OPT(S)IT(search_radius)[IT(unit)] 
 [ OPT(E)IT(empty) ] [ OPT(L)IT(flag) ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
 BD(nearneighbor) reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
-from standard input [or IT(xyzfile(s))] and uses a nearest neighbor algorithm to assign 
+from standard input [or IT(datatables)] and uses a nearest neighbor algorithm to assign 
 an average value to each node that have one or more points within a radius centered on the node.
 The average value is computed as a weighted mean of the nearest point from each sector inside the search radius.  The
 weighting function used is w(r) = 1 / (1 + d ^ 2), where d = 3 * r / search_radius and r is
@@ -36,7 +36,7 @@ Sets the IT(search_radius) that determines which data points are considered clos
 Append the distance unit (see UNITS).
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(xyzfile(s))
+IT(datatables)
 3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see GMT_bi_OPT] holding (x,y,z[,w]) data values.  If no file is specified, BD(nearneighbor)
 will read from standard input.
 .TP

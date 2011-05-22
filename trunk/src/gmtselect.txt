@@ -3,7 +3,7 @@
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 
 .SH SYNOPSIS
-BD(gmtselect) [ IT(infiles) ] [ GMT_A_OPT ] 
+BD(gmtselect) [ IT(datatables) ] [ GMT_A_OPT ] 
 [ OPT(C)IT(dist)[IT(unit)]/IT(ptfile) ] [ OPT(D)IT(resolution)[BD(+)] ] [ OPT(E)[BD(fn)] ] [ OPT(F)IT(polygonfile) ] 
 [ OPT(I)[BD(cflrsz)] ] [ GMT_J_OPT ] [ OPT(L)[BD(p)]IT(dist)[IT(unit)]/IT(linefile) ] 
 [ OPT(N)IT(maskvalues) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)IT(min/max)] ] 
@@ -21,9 +21,7 @@ See option OPT(:) on how to read (latitude,longitude) files.
 .SH REQUIRED ARGUMENTS
 None
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infiles)
-ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input is read.
+#include "explain_intables.txt"
 #include "explain_-A.txt"
 Ignored unless OPT(N) is set.
 .TP

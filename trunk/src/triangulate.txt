@@ -5,7 +5,7 @@
 .SH NAME
 triangulate \- Perform optimal Delaunay triangulation and gridding of Cartesian data [method]
 .SH SYNOPSIS
-BD(triangulate) [ IT(infiles) ] [ OPT(Dx)|BD(y) ] [ OPT(E)IT(empty) ] 
+BD(triangulate) [ IT(datatables) ] [ OPT(Dx)|BD(y) ] [ OPT(E)IT(empty) ] 
 [ OPT(G)IT(grdfile) ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ OPT(M) ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
 [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -25,9 +25,7 @@ This choice is made during the BD(GMT) installation.
 .SH REQUIRED ARGUMENTS
 None.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infiles)
-Data files with the point coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
+#include "explain_intables.txt"
 .TP
 OPT(Dx)|BD(y)
 Take either the IT(x)- or IT(y)-derivatives of surface represented
