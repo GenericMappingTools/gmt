@@ -5,7 +5,7 @@
 .SH NAME
 sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
 .SH SYNOPSIS
-BD(sphdistance) [ IT(infiles) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
+BD(sphdistance) [ IT(datatables) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
 [ OPT(E) ] [ GMT_I_OPT ] [ OPT(L)IT(unit) ] [ OPT(Q)IT(voronoi.d) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -20,9 +20,7 @@ thus bypassing the memory- and time-consuming triangularization.
 OPT(G)IT(grdfile)
 Name of the output grid to hold the computed distances.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infiles)
-Data files with the point coordinates in ASCII (or binary; see GMT_bi_OPT).  If no files are given the standard input is read.
+#include "explain_intables.txt"
 .TP
 OPT(C)
 For large data set you can save some memory (at the expense of more processing) by only storing one form of

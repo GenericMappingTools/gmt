@@ -3,7 +3,7 @@
 .SH NAME
 gmtvector \- Basic manipulation of 2-D and 3-D vectors.
 .SH SYNOPSIS
-BD(gmtvector) [ IT(infiles) ] [ OPT(A)IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
+BD(gmtvector) [ IT(datatables) ] [ OPT(A)IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
 [ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)] ] [ GMT_V_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
@@ -20,7 +20,7 @@ some require a single second vector, provided via OPT(S).  The output vectors wi
 None.
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(infiles)
+IT(datatables)
 One or more ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
 (if OPT(fg) is given) or (r, theta), or perhaps (x, y[, z]) if OPT(Ci) is given).  If no file is specified, BD(gmtvector), will read from standard input.
 .TP

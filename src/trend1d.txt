@@ -3,7 +3,7 @@
 .SH NAME
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS
-BD(trend1d) [ IT(file) ] OPT(F)BD(xymrw|p) OPT(N)[BD(f)]IT(n_model)[BD(r)] [ IT(xy[w]file) ] 
+BD(trend1d) [ IT(datatables) ] OPT(F)BD(xymrw|p) OPT(N)[BD(f)]IT(n_model)[BD(r)] [ IT(xy[w]file) ] 
 [ OPT(C)IT(condition_number) ] [ OPT(I)[IT(confidence_level)] ] [ GMT_V_OPT ] 
 [ OPT(W) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -26,9 +26,9 @@ a Fourier (OPT(Nf)) or polynomial [Default] model, and append BD(r) to do a robu
 quadratic model is OPT(N)IT(3)BD(r).
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(file)
-ASCII [or binary, see GMT_bi_OPT] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, BD(trend1d) 
-will read from standard input.
+IT(datatables)
+One or more ASCII [or binary, see GMT_bi_OPT] files containing x,y [w] values in the first 2 [3] columns.  
+If no files are specified, BD(trend1d) will read from standard input.
 .TP
 OPT(C)IT(condition_number)
 Set the maximum allowed condition number for the matrix solution.  BD(trend1d) 

@@ -3,7 +3,7 @@
 .SH NAME
 psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
-BD(psclip) [ IT(xyfiles) ] GMT_J_OPT GMT_Rgeoz_OPT 
+BD(psclip) [ IT(datatables) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ GMT_B_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(T) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_bi_OPT ] 
@@ -42,10 +42,7 @@ Also supply OPT(X) and OPT(Y) settings if you have moved since the clip started.
 #include "explain_-R.txt"
 #include "explain_-Rz.txt"
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(xyfiles)
-ASCII [or binary, see GMT_bi_OPT] file(s) with (x,y) values for clip polygons.  If no files are given, the
-standard input is read.
+#include "explain_intables.txt"
 .sp
 #include "explain_-B.txt"
 #include "explain_-Jz.txt"

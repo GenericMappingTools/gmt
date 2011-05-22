@@ -3,7 +3,7 @@
 .SH NAME
 kml2gmt \- Extract GMT table data from Google Earth KML files 
 .SH SYNOPSIS
-BD(kml2gmt) [ IT(infile) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_bo_OPT ] [ GMT_colon_OPT ]
+BD(kml2gmt) [ IT(kmlfiles) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_bo_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(kml2gmt) reads a  Google Earth KML file and outputs a GMT table file.
 Only KML files that contain points, lines, or polygons can be processed.
@@ -17,8 +17,8 @@ GMT data file.  For a more complete reformatting, consider using BD(ogr2ogr \-f)
 None.
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(infile)
-Name of the KML file to work on.  If not given, standard input is read.
+IT(kmlfiles)
+Name of one or more KML files to work on.  If not are given, then standard input is read.
 .TP
 OPT(Z)
 Output the altitude coordinates as GMT z coordinates [Default will output just

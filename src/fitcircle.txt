@@ -3,7 +3,7 @@
 .SH NAME
 fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
 .SH SYNOPSIS
-BD(fitcircle) [ IT(xyfile) ] OPT(L)IT(norm) [ OPT(S)[IT(lat)] ] [ GMT_V_OPT ]
+BD(fitcircle) [ IT(datatables) ] OPT(L)IT(norm) [ OPT(S)[IT(lat)] ] [ GMT_V_OPT ]
 [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
 BD(fitcircle) reads lon,lat [or lat,lon] values from the first two columns on standard input 
@@ -36,8 +36,9 @@ OPT(L)IT(norm)
 Specify the desired IT(norm) as 1 or 2, or use OPT(L) or  OPT(L3) to see both solutions.
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(xyfile)
-ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon] values in the first 2 columns.
+IT(datatables)
+One or more ASCII [or binary, see GMT_bi_OPT] files containing lon,lat [or lat,lon; see GMT_colon_OPT]
+values in the first 2 columns.
 If no file is specified, BD(fitcircle) will read from standard input.
 .TP
 OPT(S)[IT(lat)]

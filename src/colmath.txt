@@ -3,7 +3,7 @@
 .SH NAME
 colmath \- Does mathematics on columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-BD(colmath) [ IT(datafiles) ] [ OPT(A) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
+BD(colmath) [ IT(datatables) ] [ OPT(A) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
 [ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -16,10 +16,8 @@ Input (and hence output) may have multiple sub-headers,
 and ASCII tables may have regular headers as well.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(datafile(s))
-ASCII (or binary, see GMT_bi_OPT) file(s) holding a number of data columns. 
 .SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
 .TP
 OPT(A)
 The records from the input files should be pasted horizontally, not appended vertically [Default].

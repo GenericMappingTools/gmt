@@ -3,7 +3,7 @@
 .SH NAME
 gmt2kml \- Convert GMT data tables to KML files for Google Earth 
 .SH SYNOPSIS
-BD(gmt2kml) [ IT(infile(s)) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
+BD(gmt2kml) [ IT(datatables) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
 [ OPT(C)IT(cpt) ]
 [ OPT(D)IT(descriptfile) ] [ OPT(E)[IT(altitude)] ] [ OPT(F)BD(e)|BD(s)|BD(t)|BD(l)|BD(p) ] 
 [ OPT(G)BD(f|n)IT(fill) ] [ OPT(I)IT(icon) ] [ GMT_K_OPT]
@@ -20,7 +20,7 @@ attributes such as title, altitude mode, colors, pen widths, transparency, regio
 You may also extend the feature down to ground level (assuming it is above it) and use
 custom icons for point symbols.
 .br
-The input file should contain the following columns:
+The input files should contain the following columns:
 .br
 IT(lon) IT(lat) [ IT(alt) ] [ IT(timestart) [ IT(timestop) ] ]
 .br
@@ -30,9 +30,7 @@ also OPT(A) and OPT(C)), and IT(timestart) and IT(timestop) apply to events and 
 .SH REQUIRED ARGUMENTS
 None.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infile(s))
-ASCII (or binary, see GMT_bi_OPT) data file(s) to be operated on.  If not given, standard input will be read.
+#include "explain_intables.txt"
 .TP
 OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)]
 Select one of three altitude modes recognized by Google Earth that determines the altitude (in m) of the

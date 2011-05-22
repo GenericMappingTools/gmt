@@ -3,7 +3,7 @@
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
 .SH SYNOPSIS
-BD(project) [ IT(infile) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
+BD(project) [ IT(datatables) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
 [ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(lat)] ]
 [ OPT(L)[BD(w)][IT(l_min)/IT(l_max)] ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
 [ OPT(T)IT(px)/IT(py) ] [ GMT_V_OPT ] [ OPT(W)IT(w_min)/IT(w_max) ]
@@ -67,11 +67,7 @@ OPT(C)IT(cx)/IT(cy)
 IT(cx/cy) sets the origin of the projection, in Definition 1 or 2.  If Definition 3 is used (OPT(T)), then
 IT(cx/cy) are the coordinates of a point through which the oblique zero meridian (IT(p) = 0) should pass.
 .SH OPTIONAL ARGUMENTS
-.TP
-IT(infile)
-name of ASCII (or binary, see GMT_bi_OPT) file(s) with 2 or more columns holding (x,y,[z]) data values.
-If no filenames are given, BD(project) will read from standard input.
-If the OPT(G) option is selected, no input data are read.
+#include "explain_intables.txt"
 .TP
 OPT(A)IT(azimuth)
 IT(azimuth) defines the azimuth of the projection (Definition 1).

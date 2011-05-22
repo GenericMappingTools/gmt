@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.523 2011-05-20 15:13:57 remko Exp $
+ *	$Id: gmt_init.c,v 1.524 2011-05-22 21:37:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -586,9 +586,9 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t-t Sets the overlay PDF transparency from 0-100 [Default is 0; opaque].\n");
 			break;
 
-		case ':':	/* lon/lat or lat/lon */
+		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
 
-			GMT_message (C, "\t-: Expect lat/lon input/output rather than lon/lat [%s/%s].\n", GMT_choice[C->current.setting.io_lonlat_toggle[GMT_IN]], GMT_choice[C->current.setting.io_lonlat_toggle[GMT_OUT]]);
+			GMT_message (C, "\t-: Swap 1st and 2nd column on input and/or output [%s/%s].\n", GMT_choice[C->current.setting.io_lonlat_toggle[GMT_IN]], GMT_choice[C->current.setting.io_lonlat_toggle[GMT_OUT]]);
 			break;
 
 		case '.':	/* Trailer message */

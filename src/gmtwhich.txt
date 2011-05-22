@@ -14,7 +14,7 @@ separated list of directories, and we search recursively down the directory tree
 .SH REQUIRED ARGUMENTS
 .TP
 IT(files)
-One or more data file names. 
+One or more file names of any data type (grids, tables, etc.). 
 .SH OPTIONAL ARGUMENTS
 .TP
 .B -C

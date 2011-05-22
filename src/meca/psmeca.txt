@@ -4,7 +4,7 @@
 psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS
 .br
-psmeca [ IT(files) ] GMT_J_OPT GMT_Rgeo_OPT
+psmeca [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT
 [ GMT_B_OPT ] [ OPT(C)[IT(pen)][BD(P)IT(pointsize)] ] [ OPT(D)IT(depmin)/IT(depmax) ]
 [ OPT(E)IT(fill)] [ OPT(G)IT(fill)]
 [ GMT_K_OPT ] [ OPT(L)[IT(pen)] ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ]
@@ -22,9 +22,7 @@ on a map.  Most options are the same as for BD(psxy).
 The IT(PostScript) code is written to standard output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(files)
-List one or more file-names. If no files are given, BD(psmeca) will read standard input.
+#include "explain_intables.txt"
 #include "explain_-J.txt"
 #include "explain_-Rgeo.txt"
 .TP

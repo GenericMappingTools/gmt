@@ -3,7 +3,7 @@
 .SH NAME
 hotspotter \- Create CVA image from seamount flowlines 
 .SH SYNOPSIS
-BD(hotspotter) [IT(infile(s))] OPT(E)IT(rotfile) 
+BD(hotspotter) [IT(datatables)] OPT(E)IT(rotfile) 
 OPT(G)IT(CVAgrid) GMT_I_OPT GMT_Rgeo_OPT [ OPT(D)IT(factor) ] 
 [ OPT(N)IT(upper_age) ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
 [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
@@ -16,9 +16,7 @@ the shape of the seamount (using a Gaussian shape given amplitude and radius
 See option OPT(:) on how to read (latitude,longitude,...) files.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
-.TP
-IT(infile(s))
-Data file(s) to be processed.  If not given, standard input is read.
+#include "explain_intables.txt"
 #include "euler.txt"
 .TP
 OPT(G)IT(CVAgrid)
