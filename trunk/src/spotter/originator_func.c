@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.12 2011-05-16 22:22:31 guru Exp $
+ *	$Id: originator_func.c,v 1.13 2011-05-23 00:31:44 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -205,17 +205,18 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "%s %s - Associate seamounts with hotspot point sources\n\n", GMT->init.progname, GMT_VERSION);
-	GMT_message (GMT, "usage: %s [<xyfiles>] -E[+]<euler.d> -F<hotspot_file> [-D<d_km>]\n", GMT->init.progname);
+	GMT_message (GMT, "usage: %s [<datatables>] -E[+]<euler.d> -F<hotspot_file> [-D<d_km>]\n", GMT->init.progname);
 	GMT_message (GMT, "\t[-H] [-L[flag]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\txyfiles is one or more seamount (x,y,z,r,t) files\n");
 	GMT_message (GMT, "\t-E specifies the rotations to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use\n\n");
 	GMT_message (GMT, "\t-F Specify file name for hotspot locations.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, standard input is read.\n");
+	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma\n");
 	GMT_message (GMT, "\t-D set sampling interval in km along tracks [5].\n");
 	GMT_message (GMT, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
 	GMT_message (GMT, "\t   -Lt gives (time, dist, z) [Default].\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.11 2011-05-14 00:04:07 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.12 2011-05-23 00:31:44 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,7 +91,7 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "sphinterpolate %s - Spherical gridding in tension of data on a sphere\n", GMT_VERSION);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_message (GMT, "usage: sphinterpolate [<infiles>] -G<grdfile> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: sphinterpolate [<datatables>] -G<grdfile> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q<mode>][/args] [-T] [-V] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -100,7 +100,8 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\tinfiles (in ASCII) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
+	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-Q Select tension factors to achive the following [Default is no tension]:\n");
 	GMT_message (GMT, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_message (GMT, "\t   1: Smooth interpolation with local gradient estimates.\n");

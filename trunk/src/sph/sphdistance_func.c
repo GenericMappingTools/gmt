@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.13 2011-05-23 00:31:44 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -161,7 +161,7 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "sphdistance %s - Make grid of distances to nearest points on a sphere\n\n", GMT_VERSION);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_message (GMT, "usage: sphdistance [<infiles>] -G<grdfile> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: sphdistance [<datatables>] -G<grdfile> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-C] [-D] [-E] [-L<unit>] [-N<nodefile>] [-Q<voronoifile>]\n");
 	GMT_message (GMT, "\t[-V] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_colon_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
         
@@ -171,7 +171,8 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
         
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\tinfiles (in ASCII) has 2 or more columns.  If no file(s) is given, standard input is read (but see -Q).\n");
+	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read (but see -Q).\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
 	GMT_message (GMT, "\t-D Used to skip repeated input vertex at the end of a closed segment\n");
 	GMT_message (GMT, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances]\n");
