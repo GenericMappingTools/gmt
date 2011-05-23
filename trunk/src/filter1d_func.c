@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.9 2011-05-14 00:04:06 guru Exp $
+ *	$Id: filter1d_func.c,v 1.10 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -168,7 +168,7 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "filter1d %s [API] - Time domain filtering of 1-D time series\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: filter1d [infile] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
+	GMT_message (GMT, "usage: filter1d [<datatables>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<start>/<stop>/<int>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
@@ -196,6 +196,8 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-D used when series is NOT equidistantly sampled.\n");
 	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e. all abscissae\n");
 	GMT_message (GMT, "\t   will be rounded off to a multiple of <increment>.\n");

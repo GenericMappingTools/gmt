@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.18 2011-05-18 02:22:17 guru Exp $
+ *	$Id: psxyz_func.c,v 1.19 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,7 +108,7 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psxyz synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psxyz %s [API] - Plot lines, polygons, and symbols in 3-D\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psxyz <xyzfiles> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: psxyz [<datatables>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-K] [-L] [-N] [-O] [-P] [-Q] [-S<symbol><size>|+s<scaling>[/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
@@ -116,9 +116,10 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<xyzfiles> is one or more files.  If none, read standard input.\n");
 	GMT_explain_options (GMT, "jZr");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Use cpt-file to assign symbol colors based on t-value in 4th column\n");
 	GMT_message (GMT, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");

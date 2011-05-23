@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.17 2011-05-16 22:22:31 guru Exp $
+ *	$Id: greenspline_func.c,v 1.18 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -166,14 +166,13 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "greenspline %s [API] - Interpolation using a Green's function for splines in 1-3 dimensions\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: greenspline [xyzfile] [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-I<dx>[/<dy>[/<dz>]] -Goutfile\n");
+	GMT_message (GMT, "usage: greenspline [<datatables>] [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-I<dx>[/<dy>[/<dz>]] -Goutfile\n");
 	GMT_message (GMT, "\t[-C<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskfile>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\tgreenspline will read from standard input or specified ASCII xyz-file(s) (see -bi if binary).\n\n");
 	GMT_message (GMT, "\tChoose one of three ways to specify where to evaluate the spline:\n");
 	GMT_message (GMT, "\t1. Specify a rectangular grid domain with options -R, -I [and optionally -r].\n");
 	GMT_message (GMT, "\t2. Supply a mask file via -T whose values are NaN or 0.  The spline will then\n");
@@ -183,6 +182,8 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A ASCII file with surface gradients V to use in the modeling.  Specify format:\n");
 	GMT_message (GMT, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
 	GMT_message (GMT, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");

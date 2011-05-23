@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.19 2011-05-16 22:22:31 guru Exp $
+ *    $Id: minmax_func.c,v 1.20 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,12 +93,15 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "minmax %s [API] - Find extreme values in ASCII tables\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: minmax [files] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
+	GMT_message (GMT, "usage: minmax [<datatables>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
 	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
+	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Selects reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
 	GMT_message (GMT, "\t-C Formats the min and max into separate columns.\n");
 	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");

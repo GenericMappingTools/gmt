@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1043 2011-05-21 02:32:49 remko Exp $
+	$Id: ChangeLog,v 1.1044 2011-05-23 00:08:40 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-22	pwessel
+	* *_func.c:		Made sure usage message matches the man pages.
 
 2011-05-21	remko
 	* test/grdimage/gdal:	Moved images in here to avoid deleting needle.png on "make spotless"

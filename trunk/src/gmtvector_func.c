@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.15 2011-05-14 00:04:06 guru Exp $
+*    $Id: gmtvector_func.c,v 1.16 2011-05-23 00:08:40 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,16 +97,16 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtvector %s - Basic vector manipulation in 2-D and 3-D\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtvector [<infiles>] [-A<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
+	GMT_message (GMT, "usage: gmtvector [<datatables>] [-A<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfiles (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in first 2-3 columns.\n");
-	GMT_message (GMT, "\t  If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
-	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in first 2-3 columns.\n");
+	GMT_message (GMT, "\t   If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
+	GMT_message (GMT, "\t   If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
 	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta.\n");
 	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates.\n");
