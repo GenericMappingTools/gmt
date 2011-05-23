@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.14 2011-05-23 00:31:44 guru Exp $
+ *	$Id: backtracker_func.c,v 1.15 2011-05-23 21:11:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -393,6 +393,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (fabs (Ctrl->L.d_km) > GMT_SMALL) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = TRUE;
+			GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
 			(Ctrl->L.mode) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
 			(Ctrl->D.mode) ? sprintf (dir, "from") : sprintf (dir, "to");
 		}
