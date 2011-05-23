@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.11 2011-05-20 19:17:59 remko Exp $
+ *    $Id: pscoupe_func.c,v 1.12 2011-05-23 00:31:43 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -155,7 +155,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
 	GMT_message (GMT,"pscoupe %s - Plot seismological symbols on cross-sections\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: pscoupe <infiles> -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT,"usage: pscoupe [<datatables>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-E<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-S<format><scale>[/fontsize[/justify/offset/angle/form]]]\n");
@@ -168,14 +168,17 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infiles> is one or more files. If nofiles are given, read standard input\n");
 	GMT_message (GMT, "\t-A Specify cross-section parameters. Choose between\n");
 	GMT_message (GMT, "\t   -Aa<lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax>[f]\n");
 	GMT_message (GMT, "\t   -Ab<lon1/lat1/strike/p_length/dip/p_width/dmin/dmax>[f]\n");
 	GMT_message (GMT, "\t   -Ac<x1/y1/x2/y2/dip/p_width/dmin/dmax>[f]\n");
 	GMT_message (GMT, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[f]\n");
 	GMT_message (GMT, "\t   Add f to get the frame from the cross-section parameters.\n");
-	GMT_explain_options (GMT, "jRb");
+	GMT_explain_options (GMT, "jR");
+	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "b");
 	GMT_fill_syntax (GMT, 'E', "Set color used for extensive parts. [default is white]\n");
 	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_explain_options (GMT, "K");

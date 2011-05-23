@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.13 2011-05-14 00:04:07 guru Exp $
+ *	$Id: backtracker_func.c,v 1.14 2011-05-23 00:31:44 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -148,14 +148,14 @@ GMT_LONG GMT_backtracker_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "backtracker %s - Forward and backward flowlines and hotspot tracks\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: backtracker [infile(s)] -E[+]<euler.d> OR -eplon/plat/prot [-A[young/old]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
+	GMT_message (GMT, "usage: backtracker [<datatables>] -E[+]<euler.d> OR -eplon/plat/prot [-A[young/old]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
 	GMT_message (GMT, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfiles (in ASCII or binary) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\tFirst 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma)\n");
+	GMT_message (GMT, "\t<datatables> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
+	GMT_message (GMT, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma)\n");
 	GMT_message (GMT, "\t-E specifies the rotations to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use\n\n");
 	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points\n");
