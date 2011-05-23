@@ -1,5 +1,5 @@
 #!/bin/bash
-#		$Id: snyder.sh,v 1.2 2011-03-15 02:06:45 guru Exp $
+#		$Id: snyder.sh,v 1.3 2011-05-23 00:43:58 guru Exp $
 #
 #	Testing GMT mapproject on examples in Snyder.
 #
@@ -317,4 +317,3 @@ if [ $blabber -eq 0 ]; then
 else
 	cat fail
 fi
-\rm -f fail
