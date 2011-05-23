@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.16 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,7 +125,7 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "nearneighbor %s [API] - A \"Nearest neighbor\" gridding algorithm\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: nearneighbor [xyzfile(s)] -G<out_grdfile> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: nearneighbor [<datatables>] -G<out_grdfile> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_message (GMT, "\t[-E<empty>] [-L<flags>] [%s] [-W] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
@@ -139,6 +139,8 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_dist_syntax (GMT, 'S', "Only consider points inside this search radius.");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-L Sets boundary conditions.  <flags> can be either\n");
 	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");

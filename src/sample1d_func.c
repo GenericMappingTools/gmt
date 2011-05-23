@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.10 2011-05-15 12:02:06 jluis Exp $
+ *	$Id: sample1d_func.c,v 1.11 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,15 +91,16 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "sample1d %s [API] - Resampling of 1-D data sets\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: sample1d <infile(s)> [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knotfile>]\n");
+	GMT_message (GMT, "usage: sample1d [<datatables>] [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knotfile>]\n");
 	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infile> is one or more multicolumn ASCII (or binary, see -b) tables. [Default is standard input].\n");
-	GMT_message (GMT, "\tThe independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_message (GMT, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");
 	GMT_message (GMT, "\t   Append m or p to first follow meridian then parallel, or vice versa.\n");
 	GMT_message (GMT, "\t-F Sets the interpolation mode.  Choose from:\n");

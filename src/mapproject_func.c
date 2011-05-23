@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.23 2011-05-16 21:23:10 guru Exp $
+*	$Id: mapproject_func.c,v 1.24 2011-05-23 00:08:40 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -139,7 +139,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "mapproject %s [API] - Forward and Inverse map transformations and geodesy\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: mapproject <infiles> %s %s [-C[<dx/dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: mapproject <datatables> %s %s [-C[<dx/dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0/lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[<lon0/lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_message (GMT, "\t[-I] [-L<line.xy>[/<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
@@ -147,10 +147,11 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfiles (in ASCII or binary) has 2 or more columns.  If no file(s) is given, standard input is read.\n");
 	GMT_explain_options (GMT, "JR");
 	GMT_message (GMT, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Calculate azimuths from previous point in the input data with -Af. If a specified\n");
 	GMT_message (GMT, "\t   point is provided, all azimuths are computed with respect to that point.\n");
 	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");

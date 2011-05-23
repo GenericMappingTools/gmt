@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.11 2011-05-14 00:04:06 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.12 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -146,7 +146,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
 	GMT_message (GMT, "splitxyz %s [API] - Split xyz[dh] files into segments\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: splitxyz [<xyz[dh]file>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
+	GMT_message (GMT, "usage: splitxyz [<datatables>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
 	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-G<gap>]\n");
 	GMT_message (GMT, "\t[-N<template>] [-Q<flags>] [-S] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
@@ -156,6 +156,8 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tGive xyz[dh]file name or read stdin.\n");
 	GMT_message (GMT, "\t-C Profile ends when change of heading exceeds <course_change>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
 	GMT_message (GMT, "\t   of <azimuth>. [Default = All].\n");
 	GMT_message (GMT, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");

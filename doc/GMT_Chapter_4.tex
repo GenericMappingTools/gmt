@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.146 2011-05-22 22:14:05 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.147 2011-05-23 00:08:40 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1424,7 +1424,8 @@ Table~\ref{tbl:penex} contains additional examples of pen specifications suitabl
 In addition to these pen settings there are several \PS\ settings that can affect the appearance of lines.
 These are controlled via the \GMT\ defaults settings \textbf{PS\_LINE\_CAP}, \textbf{PS\_LINE\_JOIN},
 and \textbf{PS\_MITER\_LIMIT}. They determine how a line segment ending is rendered, be it at the
-termination of a solid line or at the end of all dashed line segments making up a line.
+termination of a solid line or at the end of all dashed line segments making up a line, and how a
+straight lines of finite thickness should behave when joined at a common point.
 See the \GMTprog{gmt.conf} man page for more information.
 \begin{table}[h]
 \centering

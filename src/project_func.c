@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.13 2011-05-17 00:23:50 guru Exp $
+ *	$Id: project_func.c,v 1.14 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -324,7 +324,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "project %s [API] - Project data onto line or great circle, generate track, or translate coordinates\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: project [files] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
+	GMT_message (GMT, "usage: project [<datatables>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
 	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<lat>]] [-L[w][<l_min>/<l_max>]]\n");
 	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -345,6 +345,8 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_message (GMT, "\t-C Sets the location of the center to be <ox>/<oy>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Sets the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
 	GMT_message (GMT, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
 	GMT_message (GMT, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");

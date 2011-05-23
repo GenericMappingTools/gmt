@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.10 2011-05-16 22:22:31 guru Exp $
+ *	$Id: triangulate_func.c,v 1.11 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -104,7 +104,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "triangulate %s [API] - Optimal (Delaunay) triangulation of Cartesian xyz-data [%s]\n\n", GMT_VERSION, ALGORITHM);
-	GMT_message (GMT, "usage: triangulate <infiles> [-Dx|y] [-E<empty>] [-G<grdfile>]\n");
+	GMT_message (GMT, "usage: triangulate [<datatables>] [-Dx|y] [-E<empty>] [-G<grdfile>]\n");
 	GMT_message (GMT, "\t[%s] [%s]", GMT_I_OPT, GMT_J_OPT);
 #ifdef TRIANGLE_D
 	GMT_message (GMT, " [-Q]");
@@ -114,8 +114,9 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfiles (in ASCII) has 2 or more columns.  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-D Takes derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.18 2011-05-17 12:50:14 jluis Exp $
+ *	$Id: surface_func.c,v 1.19 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1582,7 +1582,7 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "surface %s [API] - Adjustable tension continuous curvature surface gridding\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: surface [xyz-file] -G<output_grdfile_name> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: surface [<datatables>] -G<output_grdfile_name> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>] [-D<breakline>]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T<tension>[i][b]]\n");
 	GMT_message (GMT, "\t[-Q] [%s] [-Z<over_relaxation_parameter>] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
@@ -1590,13 +1590,12 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tsurface will read from standard input or a single <xyz-file>.\n\n");
-	GMT_message (GMT, "\tRequired arguments to surface:\n");
 	GMT_message (GMT, "\t-G sets output grid file name.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t\tNote that only gridline registration can be used.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF) with (x,y,z) data\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Set aspect-ratio> [Default = 1 gives an isotropic solution],\n");
 	GMT_message (GMT, "\t   i.e. xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
 	GMT_message (GMT, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");

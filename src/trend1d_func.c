@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.12 2011-05-16 21:23:11 guru Exp $
+ *	$Id: trend1d_func.c,v 1.13 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -471,7 +471,7 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to ascii xy[w]\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: trend1d -F<xymrw|p> -N[f]<n_model>[r] [<xy[w]file>] [-C<condition_#>]\n");
+	GMT_message (GMT, "usage: trend1d [<datatables>] -F<xymrw|p> -N[f]<n_model>[r] [-C<condition_#>]\n");
 	GMT_message (GMT, "\t[-I[<confidence>]] [%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -482,7 +482,8 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N fit a Polynomial [Default] or Fourier (-Nf) model with <n_model> terms.\n");
 	GMT_message (GMT, "\t   Append r for robust model. E.g., robust quadratic = -N3r.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t[<xy[w]file>] name of ascii file, first 2 cols = x y [3 cols = x y w].  [Default reads stdin].\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF) with (x,y[,w]) data.\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#>.  [Default = 1.0e06].\n");
 	GMT_message (GMT, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");
 	GMT_message (GMT, "\t   reduction in variance is significant at the <confidence> level.\n");

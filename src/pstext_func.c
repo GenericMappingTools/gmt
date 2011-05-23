@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.24 2011-05-16 22:22:31 guru Exp $
+ *	$Id: pstext_func.c,v 1.25 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,14 +247,14 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	/* This displays the pstext synopsis and optionally full usage information */
 
 	GMT_message (GMT, "pstext %s [API] - To plot text on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pstext <txtfile> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: pstext [<texttables>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<fill>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[<fill>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_message (GMT, "\t[-Z[<zlevel>|+]] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
-	GMT_message (GMT, "\tReads (x,y[,fontinfo,angle,justify],text) from <txtfile> [or stdin].\n");
+	GMT_message (GMT, "\tReads (x,y[,fontinfo,angle,justify],text) from <texttables> [or stdin].\n");
 	GMT_message (GMT, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
 	GMT_message (GMT, "\tBuilt-in escape sequences:\n");
 	GMT_message (GMT, "\t   @~ toggles between current font and Symbol font.\n");
@@ -283,6 +283,8 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 
 	GMT_explain_options (GMT, "jZR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<texttables> is one or more ASCII files with text to be plotted.\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Sets the clearance between characters and surrounding box.  Only used\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.10 2011-05-16 22:22:31 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.11 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,7 +204,7 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
 	GMT_message (GMT, "pswiggle %s [API] - Plot xyz-series along tracks\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pswiggle <xyz-files> %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: pswiggle [<datatables>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A<azimuth>] [%s] [-C<center>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-I<az>] [%s] [-K] [-N] [-O] [-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
@@ -213,9 +213,10 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<xyz_files> is one or more files.  If none, read standard input.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Sets center value to be removed from z before plotting [0].\n");

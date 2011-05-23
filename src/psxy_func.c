@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.27 2011-05-19 01:14:21 remko Exp $
+ *	$Id: psxy_func.c,v 1.28 2011-05-23 00:08:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psxy synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psxy %s [API] - Plot lines, polygons, and symbols on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psxy <infiles> %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: psxy [<datatables>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][n][cap][/[+|-]<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [%s] [-I<intens>] [-K] [-L] [-N] [-O] [-P]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-S[<symbol>][<size>|+s<scaling>]] [-T] [%s]\n", GMT_U_OPT);
@@ -249,9 +249,10 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infiles> is one or more files.  If no, read standard input.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
+	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Suppress drawing line segments as great circle arcs, i.e. draw\n");
 	GMT_message (GMT, "\t   straight lines unless m or p is appended to first follow meridian\n");
 	GMT_message (GMT, "\t   then parallel, or vice versa.\n");
