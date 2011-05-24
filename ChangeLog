@@ -1,8 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1045 2011-05-24 21:08:22 guru Exp $
+	$Id: ChangeLog,v 1.1046 2011-05-24 21:14:13 remko Exp $
 -----------------------------------------------------------------------------------------
 
-2011-05-25	pwessel
+2011-05-24	remko
+	* psscale_func.c:	Overrule MAP_FRAME_AXES default; make it WESN.
+				Do not double plot the frame line along the annotate axis.
+				Let WESN setting on -B work properly with -A.
+
+2011-05-24	pwessel
 	* nearneighbor_func.c:	The -N1 selection did not reset the minimum sector setting to 1.
 
 2011-05-22	pwessel
