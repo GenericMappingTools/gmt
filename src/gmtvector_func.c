@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.16 2011-05-23 00:08:40 guru Exp $
+*    $Id: gmtvector_func.c,v 1.17 2011-05-24 21:08:22 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -444,7 +444,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					case DO_AVERAGE:	/* Get sum of 2-D or 3-D vectors and compute average */
 						for (k = 0; k < n; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);
 						break;
-					case DO_BISECTOR:	/* Get sum of 2-D or 3-D vectors and compute average */
+					case DO_BISECTOR:	/* Compute pole or bisector of vector 1 and 2 */
 						get_bisector (GMT, vector_1, vector_2, vector_3);
 						break;
 					case DO_DOT2D:	/* Get angle between 2-D vectors */

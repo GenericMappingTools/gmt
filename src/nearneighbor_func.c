@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.16 2011-05-23 00:08:40 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.17 2011-05-24 21:08:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,6 +214,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
 				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;
 				if (n < 2) Ctrl->N.min_sectors = NN_MIN_SECTORS;
+				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
 				break;
 			case 'S':	/* Search radius */
 				Ctrl->S.active = TRUE;

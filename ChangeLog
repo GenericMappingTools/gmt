@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1044 2011-05-23 00:08:40 guru Exp $
+	$Id: ChangeLog,v 1.1045 2011-05-24 21:08:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-25	pwessel
+	* nearneighbor_func.c:	The -N1 selection did not reset the minimum sector setting to 1.
 
 2011-05-22	pwessel
 	* *_func.c:		Made sure usage message matches the man pages.
