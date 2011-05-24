@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.13 2011-05-16 22:22:31 guru Exp $
+ *	$Id: psscale_func.c,v 1.14 2011-05-24 21:12:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -629,14 +629,16 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		if (gap == 0.0) {
-			PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
-			PSL_plotsegment (PSL, xleft, width, xleft + length, width);
+			if (flip & 1)
+				PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
+			else
+				PSL_plotsegment (PSL, xleft, width, xleft + length, width);
 			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
 
 		if (B_set) {	/* Used -B */
-			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_X], !(flip & 1), GMT->current.map.frame.side[S_SIDE] & 2);
+			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_X], !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
 			if ((dx = GMT_get_map_interval (GMT, 0, GMT_GRID_UPPER)) > 0.0) {
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
@@ -812,8 +814,10 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			PSL_plotpolygon (PSL, xp, yp, 3);
 		}
 		if (gap == 0.0) {
-			PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
-			PSL_plotsegment (PSL, xleft, width, xleft + length, width);
+			if (flip & 1)
+				PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
+			else
+				PSL_plotsegment (PSL, xleft, width, xleft + length, width);
 			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
@@ -832,7 +836,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[1].item[i].parent = GMT_Y;
-			GMT_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], (flip & 1), GMT->current.map.frame.side[E_SIDE] & 2);
+			GMT_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & 1, GMT->current.map.frame.side[flip & 1 ? W_SIDE : E_SIDE] & 2);
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 		}
 		else {
@@ -961,6 +965,8 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, "GMT_psscale", &GMT_cpy);	/* Save current state */
+	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
+	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if ((error = GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options))) Return (error);
 	Ctrl = (struct PSSCALE_CTRL *)New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
@@ -1060,11 +1066,11 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.horizontal) {
 		Ctrl->D.x -= 0.5 * fabs (Ctrl->D.length);
 		Ctrl->D.y -= Ctrl->D.width;
-		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
 	}
 	else {
 		Ctrl->D.y -= 0.5 * fabs (Ctrl->D.length);
-		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
 		d_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		d_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
