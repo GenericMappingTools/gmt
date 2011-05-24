@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.16 2011-05-23 00:08:40 guru Exp $
+ *	$Id: psmask_func.c,v 1.17 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -494,15 +494,15 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG ij, n, i, j, n_edges, di, dj, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_fields, n_read, n_alloc, closed, io_mode = 0;
+	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row, ii, jj, make_plot, n_seg = 0;
+	GMT_LONG section, n_fields, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
 	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 
 	char *grd = NULL;
 
-	double *in = NULL, distance, x0, y0, x1, y1, shrink = 1.0;
-	double inc2[2], *x = NULL, *y = NULL;
+	double *in = NULL, distance, x0, y0;
+	double inc2[2], *x = NULL, *y = NULL, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -542,12 +542,12 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_DATASET;
 		else {	/* Must determine the kind of output organization */
-			i = 0;
-			while (Ctrl->D.file[i]) {
-				if (Ctrl->D.file[i++] == '%') {	/* Start of format */
-					while (Ctrl->D.file[i] && !strchr ("d", Ctrl->D.file[i])) i++;	/* Scan past any format modifiers, like in %4.4d */
-					if (Ctrl->D.file[i] == 'd') fmt[1] = i;
-					i++;
+			k = 0;
+			while (Ctrl->D.file[k]) {
+				if (Ctrl->D.file[k++] == '%') {	/* Start of format */
+					while (Ctrl->D.file[k] && !strchr ("d", Ctrl->D.file[k])) k++;	/* Scan past any format modifiers, like in %4.4d */
+					if (Ctrl->D.file[k] == 'd') fmt[1] = k;
+					k++;
 				}
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENTS;	/* d: Want individual files with running numbers */
@@ -574,25 +574,22 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = TRUE;
 
-		if (Ctrl->S.active) GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-
 		Grid = GMT_create_grid (GMT);
 		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
 		GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, Ctrl->F.active);
 		
+		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
+			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
+		}
+		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
+		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
+		for (col = 0; col < Grid->header->nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+		for (row = 0; row < Grid->header->ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
 		
-		if (Ctrl->S.mode) {
-			shrink = cosd (0.5 * (Grid->header->wesn[YLO] + Grid->header->wesn[YHI]));
-			di = (GMT_LONG)ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_X] * shrink) + GMT_CONV_LIMIT);
-			dj = (GMT_LONG)ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y]) + GMT_CONV_LIMIT);
-		}
-		else {
-			di = irint (0.5 * Ctrl->S.radius * Grid->header->r_inc[GMT_X] + GMT_CONV_LIMIT);
-			dj = irint (0.5 * Ctrl->S.radius * Grid->header->r_inc[GMT_Y] + GMT_CONV_LIMIT);
-		}
-
 		if (make_plot) GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory, read and process data file\n");
@@ -607,7 +604,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Add GMT_CONV_LIMIT to ensure that special case radius = inc --> irint(0.5) actually rounds to 1 */
 		
-		node_only = (di == 0 && dj == 0);
+		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
@@ -629,31 +626,29 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			/* Determine the node closest to the data point */
 
-			i = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-			if (i < 0 || i >= Grid->header->nx) continue;
-			j = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-			if (j < 0 || j >= Grid->header->ny) continue;
+			col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+			if (col < 0 || col >= Grid->header->nx) continue;
+			row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+			if (row < 0 || row >= Grid->header->ny) continue;
 
 			if (node_only) {
-				ij = GMT_IJP (Grid->header, j, i);
+				ij = GMT_IJP (Grid->header, row, col);
 				grd[ij] = 1;
 			}
 			else {
 
 				/* Set coordinate of this node */
 
-				x0 = GMT_grd_col_to_x (GMT, i, Grid->header);
-				y0 = GMT_grd_row_to_y (GMT, j, Grid->header);
+				x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
+				y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
 
 				/* Set this and all nodes within radius distance to 1 */
 
-				for (ii = i - di; ii <= i + di; ii++) {
-					if (ii < 0 || ii >= Grid->header->nx) continue;
-					x1 = GMT_grd_col_to_x (GMT, ii, Grid->header);
-					for (jj = j - dj; jj <= j + dj; jj++) {
-						if (jj < 0 || jj >= Grid->header->ny) continue;
-						y1 = GMT_grd_row_to_y (GMT, jj, Grid->header);
-						distance = GMT_distance (GMT, x1, y1, x0, y0);
+				for (jj = row - d_row; jj <= row + d_row; jj++) {
+					if (jj < 0 || jj >= Grid->header->ny) continue;
+					for (ii = col - d_col[jj]; ii <= col + d_col[jj]; ii++) {
+						if (ii < 0 || ii >= Grid->header->nx) continue;
+						distance = GMT_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
 						ij = GMT_IJP (Grid->header, jj, ii);
 						grd[ij] = 1;
@@ -665,17 +660,17 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
 
-		if (Ctrl->N.active) for (i = 0; i < Grid->header->nm; i++) grd[i] = 1 - grd[i];	/* Reverse sense of test */
+		if (Ctrl->N.active) for (k = 0; k < Grid->header->nm; k++) grd[k] = 1 - grd[k];	/* Reverse sense of test */
 
 		/* Force perimeter nodes to be FALSE; thus all contours will be closed */
 
-		for (i = 0, ij = (Grid->header->ny-1) * Grid->header->nx; i < Grid->header->nx; i++) grd[i] = grd[i+ij] = FALSE;
-		for (j = 0; j < Grid->header->ny; j++) grd[j*Grid->header->nx] = grd[(j+1)*Grid->header->nx-1] = FALSE;
+		for (col = 0, ij = (Grid->header->ny-1) * Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = FALSE;
+		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = FALSE;
 
 #ifdef DEBUG
 		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
 			float *z = GMT_memory (GMT, NULL, Grid->header->nm, float);
-			for (i = 0; i < Grid->header->nm; i++) z[i] = (float)grd[i];
+			for (k = 0; k < Grid->header->nm; k++) z[k] = (float)grd[k];
 			GMT_write_grd (GMT, "psmask.nc", Grid->header, z, NULL, GMT->current.io.pad, FALSE);
 			GMT_free (GMT, z);
 		}
@@ -696,7 +691,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			section = 0;
 			first = TRUE;
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_alloc)) > 0) {
-					closed = FALSE;
+				closed = FALSE;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
 				if (Ctrl->D.active && n > Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, GMT->session.d_NaN);
@@ -729,20 +724,17 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		else {	/* Just paint tiles */
 			GMT_LONG start, n_use, np, plot_n;
-			double *grd_x = NULL, grd_y, y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
+			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tiling...\n");
-			grd_x = GMT_memory (GMT, NULL, Grid->header->nx, double);
-			for (i = 0; i < Grid->header->nx; i++) grd_x[i] = GMT_grd_col_to_x (GMT, i, Grid->header);
 
-			for (j = 0; j < Grid->header->ny; j++) {
-				grd_y = GMT_grd_row_to_y (GMT, j, Grid->header);
-				y_bot = grd_y - inc2[GMT_Y];
-				y_top = grd_y + inc2[GMT_Y];
-				ij = GMT_IJP (Grid->header, j, 1);
-				for (i = 0; i < Grid->header->nx; i++, ij++) {
+			for (row = 0; row < Grid->header->ny; row++) {
+				y_bot = grd_y0[row] - inc2[GMT_Y];
+				y_top = grd_y0[row] + inc2[GMT_Y];
+				ij = GMT_IJP (Grid->header, row, 1);
+				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
-					np = GMT_graticule_path (GMT, &xx, &yy, 1, grd_x[i] - inc2[GMT_X], grd_x[i] + inc2[GMT_X], y_bot, y_top);
+					np = GMT_graticule_path (GMT, &xx, &yy, 1, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
 					plot_n = GMT_clip_to_map (GMT, xx, yy, np, &xp, &yp);
 					GMT_free (GMT, xx);
 					GMT_free (GMT, yy);
@@ -770,8 +762,6 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 
-			GMT_free (GMT, grd_x);
-
 			GMT_map_basemap (GMT);
 		}
 
@@ -779,6 +769,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		GMT_free (GMT, grd);
 		GMT_free_grid (GMT, &Grid, FALSE);
+		if (Ctrl->S.active) GMT_free (GMT, d_col);
+		GMT_free (GMT, grd_x0);
+		GMT_free (GMT, grd_y0);
 		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_NORMAL, "clipping on!\n");
 	}
 

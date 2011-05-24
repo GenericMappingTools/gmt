@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.521 2011-05-22 23:54:50 jluis Exp $
+ *	$Id: gmt_support.c,v 1.522 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -9143,6 +9143,45 @@ GMT_LONG GMT_polygon_centroid (struct GMT_CTRL *C, double *x, double *y, GMT_LON
 	*Cx /= (6.0 * A);
 	*Cy /= (6.0 * A);
 	return ((A < 0.0) ? -1 : +1);	/* -1 means CCW, +1 means CW */
+}
+
+GMT_LONG * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, GMT_LONG mode, GMT_LONG *d_row, GMT_LONG *actual_max_d_col)
+{
+	/* When we search all nodes within a radius R on a grid, we first rule out nodes that are
+	 * outside the circumscribing rectangle.  However, for geographic data the circle becomes
+	 * elliptical in lon/lat space due to the cos(lat) shrinking of the length of delta_lon.
+	 * Thus, while the +- width of nodes in y is fixed (d_row), the +-width of nodes in x
+	 * is a function of latitude.  This is the array d_col (which is constant for Cartesian data).
+	 * We expect GMT_init_distaz has been called so the GMT_distance function returns distances
+	 * in the same units as the radius.  We also return the widest value in the d_col array via
+	 * the actual_max_d_col value.
+	 */
+	GMT_LONG max_d_col, row, *d_col = GMT_memory (GMT, NULL, G->header->ny, GMT_LONG);
+	double dist_x, dist_y, lon, lat;
+	
+	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
+
+	dist_y = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
+	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
+		max_d_col = (GMT_LONG) (ceil (G->header->nx / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
+		*actual_max_d_col = 0;
+		for (row = 0; row < G->header->ny; row++) {
+			lat = GMT_grd_row_to_y (GMT, row, G->header);
+			/* Determine longitudinal width of one grid ell at this latitude */
+			dist_x = GMT_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
+			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : (GMT_LONG)(ceil (radius / dist_x) + 0.1);
+			if (d_col[row] > max_d_col) d_col[row] = max_d_col;	/* Safety valve */
+			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
+		}
+	}
+	else {	/* Plain Cartesian data with rectangular box */
+		dist_x = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
+		*actual_max_d_col = max_d_col = (GMT_LONG) (ceil (radius / dist_x) + 0.1);
+		for (row = 0; row < G->header->ny; row++) d_col[row] = max_d_col;
+	}
+	*d_row = (GMT_LONG) (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Max node-search half-widths are: half_x = %ld, half_y = %ld\n", *d_row, *actual_max_d_col);
+	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
 
 /* THese three functions are used by grdmath and gmtmath only */

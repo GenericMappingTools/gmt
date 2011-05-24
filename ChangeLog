@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1046 2011-05-24 21:14:13 remko Exp $
+	$Id: ChangeLog,v 1.1047 2011-05-24 23:28:10 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-24	remko
@@ -9,6 +9,11 @@
 
 2011-05-24	pwessel
 	* nearneighbor_func.c:	The -N1 selection did not reset the minimum sector setting to 1.
+				Improved node-search using common machinery in gmt_support.c
+	* grdmask_func.c:	Improved node-search using common machinery in gmt_support.c
+	* psmask_func.c:	---"---
+	* gmt_support.c:	Determine half-widths/heights for node search used in several modules
+	* gmt_map.c:		Give -V3 warning if a radius unit turns geographic mode (-fg) on.
 
 2011-05-22	pwessel
 	* *_func.c:		Made sure usage message matches the man pages.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.41 2011-05-19 15:18:55 remko Exp $
+ *	$Id: gmt_prototypes.h,v 1.42 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,7 +81,7 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 #endif
 
 #ifdef _PSLIB_H
-/* gmt_plot.c prototyopes only included if pslib has been included */
+/* gmt_plot.c prototypes only included if pslib has been included */
 
 EXTERN_MSC char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut);
 EXTERN_MSC void GMT_textpath_init (struct GMT_CTRL *C, struct GMT_PEN *LP, double Brgb[], struct GMT_PEN *BP, double Frgb[]);
@@ -203,6 +203,7 @@ EXTERN_MSC GMT_LONG GMT_malloc_func (struct GMT_CTRL *C, void **ptr, GMT_LONG n,
 EXTERN_MSC char *GMT_make_filename (struct GMT_CTRL *C, char *template, GMT_LONG fmt[], double z, GMT_LONG closed, GMT_LONG count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode);
 EXTERN_MSC char *GMT_putusername (struct GMT_CTRL *C);
+EXTERN_MSC GMT_LONG * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, GMT_LONG mode, GMT_LONG *d_row, GMT_LONG *actual_max_d_col);
 
 /* gmt_calclock.c: */
 

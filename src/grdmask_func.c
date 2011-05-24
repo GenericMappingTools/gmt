@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.17 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdmask_func.c,v 1.18 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -205,14 +205,14 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE;
-	GMT_LONG row, col, side, d_col = 0, d_row = 0, col_0, row_0;
-	GMT_LONG tbl, seg, mode, n_pol = 0, k, ij;
+	GMT_LONG row, col, side, *d_col = NULL, d_row = 0, col_0, row_0;
+	GMT_LONG tbl, seg, mode, n_pol = 0, k, ij, max_d_col = 0;
 	
 	char seg_label[GMT_TEXT_LEN64];
 
 	float mask_val[3];
 	
-	double distance, xx, yy, x0, y0, ID, xtmp;
+	double distance, xx, yy, ID, xtmp, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -265,20 +265,15 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
-	if (Ctrl->S.active) {	/* Need distance calculations */
+	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-		if (Ctrl->S.mode) {	/* Flat Earth max width calculation */
-			double width, shrink;
-			shrink = cosd (MAX (fabs (Grid->header->wesn[YLO]), fabs (Grid->header->wesn[YHI])));
-			width = (shrink < GMT_CONV_LIMIT) ? DBL_MAX : ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_X] * shrink));
-			d_col = (width < (double)Grid->header->nx) ? (GMT_LONG) width : Grid->header->nx;
-			d_row = (GMT_LONG)ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y]));
-		}
-		else {	/* Cartesian */
-			d_col = (GMT_LONG)ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_X]);
-			d_row = (GMT_LONG)ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_Y]);
-		}
+		d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
+		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
+		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
+		for (col = 0; col < Grid->header->nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+		for (row = 0; row < Grid->header->ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 	}
+	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
 	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
 
@@ -330,12 +325,10 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					/* Here we also include all the nodes within the search radius */
 					for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
 						if (row < 0 || row >= Grid->header->ny) continue;
-						for (col = col_0 - d_col; col <= (col_0 + d_col); col++) {
+						for (col = col_0 - d_col[row]; col <= (col_0 + d_col[row]); col++) {
 							if (col < 0 || col >= Grid->header->nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
-							x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
-							y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
-							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], x0, y0);
+							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
 							if (distance > Ctrl->S.radius) continue;
 							Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
 						}
@@ -388,6 +381,12 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Grid);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+
+	if (Ctrl->S.active) {
+		GMT_free (GMT, d_col);
+		GMT_free (GMT, grd_x0);
+		GMT_free (GMT, grd_y0);
+	}
 
 	Return (GMT_OK);
 }
