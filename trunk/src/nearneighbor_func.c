@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.17 2011-05-24 21:08:22 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.18 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -252,7 +252,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG row, col, k, col_0, row_0, ij, n, n_alloc = GMT_CHUNK, n_set;
 	GMT_LONG d_row, sector, n_fields, ii, jj, ij0, n_read, *d_col = NULL;
-	GMT_LONG max_d_col, actual_max_d_col, x_wrap, y_wrap, n_almost, n_none;
+	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
 	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
@@ -299,31 +299,16 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
 
-	d_col = GMT_memory (GMT, NULL, Grid->header->ny, GMT_LONG);
 	x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
 	for (col = 0; col < Grid->header->nx; col++) x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
 	for (row = 0; row < Grid->header->ny; row++) y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
-	if (Ctrl->S.mode) {	/* Input data is geographical */
-		max_d_col = (GMT_LONG) (ceil (Grid->header->nx / 2.0) + 0.1);
-		actual_max_d_col = 0;
-		for (row = 0; row < Grid->header->ny; row++) {
-			d_col[row] = (fabs (y0[row]) == 90.0) ? max_d_col : (GMT_LONG)(ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_X] * cosd (y0[row]))) + 0.1);
-			if (d_col[row] > max_d_col) d_col[row] = max_d_col;
-			if (d_col[row] > actual_max_d_col) actual_max_d_col = d_col[row];
-		}
-		d_row = (GMT_LONG) (ceil (Ctrl->S.radius / (GMT->current.proj.DIST_KM_PR_DEG * Grid->header->inc[GMT_Y])) + 0.1);
-	}
-	else {	/* Plain Cartesian data */
-		max_d_col = (GMT_LONG) (ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_X]) + 0.1);
-		for (row = 0; row < Grid->header->ny; row++) d_col[row] = max_d_col;
-		d_row = (GMT_LONG) (ceil (Ctrl->S.radius * Grid->header->r_inc[GMT_Y]) + 0.1);
-		actual_max_d_col = max_d_col;
-	}
+
+	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 
 	factor = Ctrl->N.sectors / (2.0 * M_PI);
 
-	x_left = Grid->header->wesn[XLO] - actual_max_d_col * Grid->header->inc[GMT_X];	x_right = Grid->header->wesn[XHI] + actual_max_d_col * Grid->header->inc[GMT_X];
+	x_left = Grid->header->wesn[XLO] - max_d_col * Grid->header->inc[GMT_X];	x_right = Grid->header->wesn[XHI] + max_d_col * Grid->header->inc[GMT_X];
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
 	x_width = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];		y_width = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
 	half_x_width = 0.5 * x_width;			half_y_width = 0.5 * y_width;

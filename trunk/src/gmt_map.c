@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.300 2011-05-17 00:23:50 guru Exp $
+ *	$Id: gmt_map.c,v 1.301 2011-05-24 23:28:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7393,6 +7393,11 @@ GMT_LONG GMT_init_distaz (struct GMT_CTRL *C, char c, GMT_LONG mode, GMT_LONG ty
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
 	 */
+
+	if (strchr (GMT_LEN_UNITS, c) && !GMT_is_geographic (C, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
+		GMT_parse_common_options (C, "f", 'f', "g");
+		GMT_report (C, GMT_MSG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", c);
+	}
 
 	GMT_LONG proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
 
