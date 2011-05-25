@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1050 2011-05-25 20:44:05 remko Exp $
+	$Id: ChangeLog,v 1.1051 2011-05-25 20:59:03 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-25	remko
@@ -9,6 +9,8 @@
 2011-05-25	pwessel
 	* grdblend_func.c:	Fixed read error in info file, and the phase check.
 				Added blend.sh script to test suite.
+	* grdinfo_func.c:	Needed to free grid between files to reset header.
+	* spotter/grdrotator_func.c:	Ensure output has same grid spacing.
 
 2011-05-24	remko
 	* psscale_func.c:	Overrule MAP_FRAME_AXES default; make it WESN.
