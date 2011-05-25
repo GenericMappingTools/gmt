@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.15 2011-05-16 22:22:31 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.16 2011-05-25 00:42:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -363,7 +363,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[5], pole_weight;
 	double x_out, y_out, wt_sum, value, last_median = 0.0, this_median = 0.;
 	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat, lat_out;
-	double merc_range, wesn[4], inc[2], *weight = NULL, *work_array = NULL, *x_shift = NULL;
+	double merc_range, *weight = NULL, *work_array = NULL, *x_shift = NULL;
 
 	char filter_code[GRDFILTER_N_FILTERS] = {'b', 'c', 'g', 'm', 'p', 'l', 'L', 'u', 'U'};
 	char *filter_name[GRDFILTER_N_FILTERS] = {"Boxcar", "Cosine Arch", "Gaussian", "Median", "Mode", "Lower", "Lower+", "Upper", "Upper-"};
@@ -405,11 +405,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	Gout = GMT_create_grid (GMT);
 	GMT_grd_init (GMT, Gout->header, options, TRUE);	/* Update command history only */
 	/* Use the -R region for output if set; otherwise match grid domain */
-	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
-	if (Ctrl->I.active)
-		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
-	else
-		GMT_memcpy (inc, Gin->header->inc, 2, double);
+	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	GMT_memcpy (Gout->header->inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 	if (!full_360) {
 		if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO]) error = TRUE;
 		if (Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) error = TRUE;
@@ -423,7 +420,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc, !one_or_zero), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, Gout->header->wesn, Gout->header->inc, !one_or_zero), Ctrl->G.file);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if new grid spacing is a multiple of old spacing */
