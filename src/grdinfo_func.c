@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.17 2011-05-25 20:36:19 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.18 2011-05-25 20:59:03 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -476,6 +476,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
+		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&G);
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 

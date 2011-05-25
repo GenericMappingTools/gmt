@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.23 2011-05-25 03:40:37 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.24 2011-05-25 20:59:03 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -433,8 +433,10 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (global)
 		GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 	else {
-		GMT->common.R.wesn[XLO] = S->min[GMT_X];	GMT->common.R.wesn[XHI] = S->max[GMT_X];
-		GMT->common.R.wesn[YLO] = S->min[GMT_Y];	GMT->common.R.wesn[YHI] = S->max[GMT_Y];
+		GMT->common.R.wesn[XLO] = floor (S->min[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
+		GMT->common.R.wesn[XHI] = ceil  (S->max[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
+		GMT->common.R.wesn[YLO] = floor (S->min[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
+		GMT->common.R.wesn[YHI] = ceil  (S->max[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
 		/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
