@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.11 2011-05-23 00:08:40 guru Exp $
+ *	$Id: pslegend_func.c,v 1.12 2011-05-25 20:43:00 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -417,7 +417,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_getfont (GMT, tmp, &ifont);
 				d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 				y0 -= Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
-				sprintf (buffer, "%g %g %s BC %s", Ctrl->D.lon + 0.5 * Ctrl->D.width, y0 + d_off, tmp, text);
+				sprintf (buffer, "%g %g %s BC %s", Ctrl->D.lon + 0.5 * Ctrl->D.width, y0 + d_off, GMT_putfont (GMT, ifont), text);
 				S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 				S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 				if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
@@ -441,7 +441,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			case 'L':	/* Label record */
 				sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
-				ifont = GMT->current.setting.font_title;
+				ifont = GMT->current.setting.font_label;
 				if (size[0] == '-') sprintf (size, "%g", ifont.size);	/* Select default font size */
 				if (font[0] == '-') sprintf (font, "%ld", ifont.id);	/* Select default font ID */
 				sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
@@ -451,7 +451,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				justify = GMT_just_decode (GMT, key, 0);
 				x_off = Ctrl->D.lon + (Ctrl->D.width / n_columns) * (column_number%n_columns);
 				x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width / n_columns - Ctrl->C.dx : 0.5 * Ctrl->D.width / n_columns);
-				sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, tmp, key, text);
+				sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
 				S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 				S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 				if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
