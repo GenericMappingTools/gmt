@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.19 2011-05-25 00:42:45 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.20 2011-05-25 08:56:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -317,7 +317,9 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
+#ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
+#endif
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
 
@@ -407,11 +409,14 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\n", n);
 
+#ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
+#endif
 	point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
+#ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
-
+#endif
 	/* Compute weighted averages based on the nearest neighbors */
 
 	n_set = n_almost = n_none = 0;
@@ -455,8 +460,9 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\r", row);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\n", row);
+#ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
-
+#endif
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)Grid)) Return (GMT_DATA_WRITE_ERROR);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
