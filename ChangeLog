@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1049 2011-05-25 20:36:18 guru Exp $
+	$Id: ChangeLog,v 1.1050 2011-05-25 20:44:05 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-25	remko
+	* pslegend_func.c:	Label (L) should have default font FONT_LABEL, not FONT_TITLE.
+				Default font color was not maintained in output of L or H.
 
 2011-05-25	pwessel
 	* grdblend_func.c:	Fixed read error in info file, and the phase check.
