@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.22 2011-05-16 21:23:11 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.23 2011-05-25 03:40:37 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -99,22 +99,22 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grdfile> is a gridded data file in geographic coordinates to be rotated\n");
+	GMT_message (GMT, "\t<grdfile> is a gridded data file in geographic coordinates to be rotated.\n");
 	GMT_message (GMT, "\t-G is the output filename of the new, rotated grid.  The boundary of the\n");
 	GMT_message (GMT, "\t   original grid (or a subset; see -F) after rotation is written to stdout\n");
 	GMT_message (GMT, "\t   unless the grid is global.\n");
-	GMT_message (GMT, "\t-E specifies the rotations to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to used\n\n");
-	GMT_message (GMT, "\t   This option requires you to specify the age of the reconstruction with -T\n\n");
-	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points\n");
+	GMT_message (GMT, "\t-E Specifies the rotations to be used (see man page for format).n");
+	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n\n");
+	GMT_message (GMT, "\t   This option requires you to specify the age of the reconstruction with -T.\n");
+	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D Destination file for rotated polygon or grid outline [stdout]\n");
-	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area of the grid\n");
-	GMT_message (GMT, "\t   that should be projected [Default projects entire grid]\n");
+	GMT_message (GMT, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
+	GMT_message (GMT, "\t-F Specifies a multi-segment closed polygon file that describes the area of the grid\n");
+	GMT_message (GMT, "\t   that should be projected [Default projects entire grid].\n");
 	GMT_message (GMT, "\t-N Do not output the rotated polygon or grid outline\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline\n");
-	GMT_message (GMT, "\t-T sets the time of reconstruction, if -E is used.\n");
+	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline (requires -D).\n");
+	GMT_message (GMT, "\t-T Sets the time of reconstruction, if -E is used.\n");
 	GMT_explain_options (GMT, "VC2D0ghin:.");
 	
 	return (EXIT_FAILURE);
@@ -205,6 +205,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
@@ -226,79 +227,74 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 
 	GMT_LONG np = 0, add, i, j;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TABLE *pol = NULL;
+	struct GMT_LINE_SEGMENT *S = NULL;
 	
 	D = GMT_create_dataset (GMT, 1, 1, 2, 0);	/* An empty table with one segment, two cols */
 
-	pol = D->table[0];
-	pol->segment = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT *);
-	pol->segment[0] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
-	pol->segment[0]->coord = GMT_memory (GMT, NULL, 2, double *);
-	pol->segment[0]->min = GMT_memory (GMT, NULL, 2, double);
-	pol->segment[0]->max = GMT_memory (GMT, NULL, 2, double);
+	S = D->table[0]->segment[0];	/* Short hand */
 		
 	/* Add south border w->e */
 	if (h->wesn[YLO] == -90.0) {	/* If at the S pole we just add it twice for end longitudes */
 		add = 2;
-		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
-		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
-		pol->segment[0]->coord[GMT_X][0] = h->wesn[XLO];	pol->segment[0]->coord[GMT_X][1] = h->wesn[XHI];
-		pol->segment[0]->coord[GMT_Y][0] = pol->segment[0]->coord[GMT_Y][1] = h->wesn[YLO];
+		S->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
+		S->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
+		S->coord[GMT_X][0] = h->wesn[XLO];	S->coord[GMT_X][1] = h->wesn[XHI];
+		S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = h->wesn[YLO];
 	}
 	else {				/* Loop along south border from west to east */
 		add = h->nx - !h->registration;
-		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
-		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
+		S->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
+		S->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
 		for (i = 0; i < add; i++) {
-			pol->segment[0]->coord[GMT_X][i] = GMT_col_to_x (GMT, i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			pol->segment[0]->coord[GMT_Y][i] = h->wesn[YLO];
+			S->coord[GMT_X][i] = GMT_col_to_x (GMT, i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][i] = h->wesn[YLO];
 		}
 	}
 	np += add;
 	/* Add east border s->n */
 	add = h->ny - !h->registration;
-	pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, pol->segment[0]->coord[GMT_X], add + np, double);
-	pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np, double);
+	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
+	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
 	for (j = 0; j < add; j++) {	/* Loop along east border from south to north */
-		pol->segment[0]->coord[GMT_X][np+j] = h->wesn[XHI];
-		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->coord[GMT_X][np+j] = h->wesn[XHI];
+		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	/* Add north border e->w */
 	if (h->wesn[YHI] == 90.0) {	/* If at the N pole we just add it twice for end longitudes */
 		add = 2;
-		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, pol->segment[0]->coord[GMT_X], add + np, double);
-		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np, double);
-		pol->segment[0]->coord[GMT_X][np] = h->wesn[XHI];	pol->segment[0]->coord[GMT_X][np+1] = h->wesn[XLO];
-		pol->segment[0]->coord[GMT_Y][np] = pol->segment[0]->coord[GMT_Y][np+1] = h->wesn[YHI];
+		S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
+		S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
+		S->coord[GMT_X][np] = h->wesn[XHI];	S->coord[GMT_X][np+1] = h->wesn[XLO];
+		S->coord[GMT_Y][np] = S->coord[GMT_Y][np+1] = h->wesn[YHI];
 	}
 	else {			/* Loop along north border from east to west */
 		add = h->nx - !h->registration;
-		pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, pol->segment[0]->coord[GMT_X], add + np, double);
-		pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np, double);
+		S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
+		S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
 		for (i = 0; i < add; i++) {
-			pol->segment[0]->coord[GMT_X][np+i] = GMT_col_to_x (GMT, h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			pol->segment[0]->coord[GMT_Y][np+i] = h->wesn[YHI];
+			S->coord[GMT_X][np+i] = GMT_col_to_x (GMT, h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][np+i] = h->wesn[YHI];
 		}
 	}
 	np += add;
 	/* Add west border n->s */
 	add = h->ny - !h->registration;
-	pol->segment[0]->coord[GMT_X] = GMT_memory (GMT, pol->segment[0]->coord[GMT_X], add + np + 1, double);
-	pol->segment[0]->coord[GMT_Y] = GMT_memory (GMT, pol->segment[0]->coord[GMT_Y], add + np + 1, double);
+	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np + 1, double);
+	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
 	for (j = 0; j < add; j++) {	/* Loop along west border from north to south */
-		pol->segment[0]->coord[GMT_X][np+j] = h->wesn[XLO];
-		pol->segment[0]->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->coord[GMT_X][np+j] = h->wesn[XLO];
+		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
-	pol->segment[0]->coord[GMT_X][np] = pol->segment[0]->coord[GMT_X][0];	/* Close polygon explicitly */
-	pol->segment[0]->coord[GMT_Y][np] = pol->segment[0]->coord[GMT_Y][0];
+	S->coord[GMT_X][np] = S->coord[GMT_X][0];	/* Close polygon explicitly */
+	S->coord[GMT_Y][np] = S->coord[GMT_Y][0];
 	np++;
-	pol->segment[0]->n_rows = np;
-	pol->segment[0]->min[GMT_X] = h->wesn[XLO];	pol->segment[0]->max[GMT_X] = h->wesn[XHI];
-	pol->segment[0]->min[GMT_Y] = h->wesn[YLO];	pol->segment[0]->max[GMT_Y] = h->wesn[YHI];
-	pol->segment[0]->pole = 0;
-	pol->n_segments = 1;
+	S->n_rows = np;
+	S->n_columns = 2;
+	S->min[GMT_X] = h->wesn[XLO];	S->max[GMT_X] = h->wesn[XHI];
+	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
+	S->pole = 0;
 	
 	*Dout = D;
 }
@@ -372,6 +368,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->F.file, (void **)&D)) Return ((error = GMT_DATA_READ_ERROR));
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+		pol = D->table[0];	/* Since it is a single file */
 	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		get_grid_path (GMT, G->header, &D);
@@ -403,10 +400,9 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* First reconstruct the polygon outline */
 	
-	for (seg = 0; not_global && seg < pol->n_segments; seg++) {
-		if (!Ctrl->N.active) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], 2);
+	for (seg = 0; pol && seg < pol->n_segments; seg++) {
+		S = pol->segment[seg];	/* Shorthand for current segment */
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
-			S = pol->segment[seg];	/* Shorthand for current segment */
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, S->coord[GMT_Y][rec], S->coord[GMT_X][rec], P_original, TRUE);	/* Convert to a Cartesian x,y,z vector; TRUE since we have degrees */
 			spotter_matrix_vect_mult (GMT, R, P_original, P_rotated);				/* Rotate the vector */

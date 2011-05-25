@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1047 2011-05-24 23:28:10 guru Exp $
+	$Id: ChangeLog,v 1.1048 2011-05-25 03:40:37 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-24	remko
@@ -14,6 +14,7 @@
 	* psmask_func.c:	---"---
 	* gmt_support.c:	Determine half-widths/heights for node search used in several modules
 	* gmt_map.c:		Give -V3 warning if a radius unit turns geographic mode (-fg) on.
+	* spotter/grdspotter_func.c:		Fixed porting errors.
 
 2011-05-22	pwessel
 	* *_func.c:		Made sure usage message matches the man pages.
