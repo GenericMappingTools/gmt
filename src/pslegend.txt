@@ -58,7 +58,7 @@ image IT(width) determines the size of the image on the page.
 BD(L) IT(fontsize)|BD(-) IT(font)|BD(-) justification label)
 The BD(L) record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using
 the specified font parameters.
-Use BD(-) to default to te size and type of BD(FONT_LABEL).
+Use BD(-) to default to the size and type of BD(FONT_LABEL).
 .TP
 BD(M) IT(slon)|BD(-) IT(slat length) BD(f)|BD(p) [ OPT(R)IT(w/e/s/n) OPT(J)IT(param) ]
 Place a map scale in the legend.  Specify IT(slon slat), the point on the map where the scale applies (IT(slon)
