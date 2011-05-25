@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1048 2011-05-25 03:40:37 guru Exp $
+	$Id: ChangeLog,v 1.1049 2011-05-25 20:36:18 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-25	pwessel
+	* grdblend_func.c:	Fixed read error in info file, and the phase check.
+				Added blend.sh script to test suite.
 
 2011-05-24	remko
 	* psscale_func.c:	Overrule MAP_FRAME_AXES default; make it WESN.

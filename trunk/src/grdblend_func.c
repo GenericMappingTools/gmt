@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.27 2011-05-16 22:22:31 guru Exp $
+ *    $Id: grdblend_func.c,v 1.28 2011-05-25 20:36:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,6 +131,20 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
+GMT_LONG out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
+{	/* Look for phase shifts in w/e/s/n between the two grids */
+	GMT_LONG way, side;
+	double a;
+	for (side = 0; side < 4; side++) {
+		way = side / 2;
+		a = fabs (fmod (g->wesn[side] - h->wesn[side], h->inc[way]));
+		if (a < GMT_CONV_LIMIT) continue;
+		if (fabs (a - h->inc[way]) < GMT_CONV_LIMIT) continue;
+		return TRUE;
+	}
+	return FALSE;
+}
+
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status, not_supported;
 	struct GRDBLEND_INFO *B = NULL;
@@ -209,8 +223,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}
-		if (!(GMT_IS_ZERO (fmod (B[n].G.header.wesn[XLO] - h->wesn[XLO], h->inc[GMT_X])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[XHI] - h->wesn[XLO], h->inc[GMT_X]))
-			&& GMT_IS_ZERO (fmod (B[n].G.header.wesn[YLO] - h->wesn[YLO], h->inc[GMT_Y])) && GMT_IS_ZERO (fmod (B[n].G.header.wesn[YHI] - h->wesn[YHI], h->inc[GMT_Y])))) {
+		if (out_of_phase (&(B[n].G.header), h)) {
 			double wesn[4];
 			wesn[XLO] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G.header.wesn[XLO], h), h);
 			while (wesn[XLO] < h->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
@@ -539,8 +552,8 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+		if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
+		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
 	}
 
 	n_blend = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &S.header, &blend);
