@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.115 2011-05-16 23:47:04 remko Exp $
+ *	$Id: gmt_nc.c,v 1.116 2011-05-25 16:41:22 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -303,7 +303,7 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (j || fabs (dummy[0] - xy[0]) + fabs (dummy[1] - xy[header->nx-1]) < GMT_CONV_LIMIT) ? GMT_GRIDLINE_REG : GMT_PIXEL_REG;
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_PIXEL_REG : GMT_GRIDLINE_REG;
 		}
 		else if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
