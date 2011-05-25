@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.28 2011-05-25 20:36:18 guru Exp $
+ *    $Id: grdblend_func.c,v 1.29 2011-05-25 21:59:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,6 +148,7 @@ GMT_LONG out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status, not_supported;
 	struct GRDBLEND_INFO *B = NULL;
+	double w, e, shift;
 	char *sense[2] = {"normal", "inverse"};
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
 	struct BLEND_LIST {
@@ -198,8 +199,27 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		else
 			decode_R (GMT, &L[n].region[2], B[n].wesn);	/* Must decode the -R string */
 		/* Skip the file if its outer region does not lie within the final grid region */
-		if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside final grid region (skipped)\n", B[n].file);
+		if (h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside y-range of final grid region (skipped)\n", B[n].file);
+			B[n].ignore = TRUE;
+			continue;
+		}
+		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+			shift = 720.0;
+			w = B[n].wesn[XLO] - shift;	e = B[n].wesn[XHI] - shift;
+			while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
+			if (w > h->wesn[XHI]) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of final grid region (skipped)\n", B[n].file);
+				B[n].ignore = TRUE;
+				continue;
+			}
+			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
+				B[n].wesn[XLO] = w;	B[n].wesn[XHI] = e;
+				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s needed longitude adjustment to fit final grid region\n", B[n].file);
+			}
+		}
+		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = TRUE;
 			continue;
 		}
@@ -613,6 +633,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			w = 0.0;	/* Reset weight */
 			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid; m will be the number of contributing grids to this node  */
+				if (blend[k].ignore) continue;					/* This grid is entirely outside the s/n range */
 				if (blend[k].outside) continue;					/* This grid is currently outside the s/n range */
 				if (wrap_x) {	/* Special testing for periodic x coordinates */
 					pcol = col + nx_360;
