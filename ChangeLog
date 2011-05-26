@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1053 2011-05-25 21:59:49 guru Exp $
+	$Id: ChangeLog,v 1.1054 2011-05-26 19:18:54 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-26	pwessel
+	* grdsample_func.c:	Must handle any +-360 offsets between header and -R for geo grids.
+	* spotter/grdrotater_func.c:	Incorrectly used last segment min/max and not table min/max
+				to determine rotated grid extent. Do not sample outside polygon.
+	* psxy[z]_func.c:	For -Sm, if -G not set, copy color from -W since this symbol needs
+				both fill and pen to work.
 
 2011-05-25	remko
 	* pslegend_func.c:	Label (L) should have default font FONT_LABEL, not FONT_TITLE.

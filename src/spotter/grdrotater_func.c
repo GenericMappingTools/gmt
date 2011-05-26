@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.24 2011-05-25 20:59:03 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.25 2011-05-26 19:18:54 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -299,11 +299,21 @@ void get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h, struct GMT_DATAS
 	*Dout = D;
 }
 
+GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
+{	/* Returns TRUE if the selected point is outside the polygon */
+	GMT_LONG seg, inside = FALSE;
+	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
+		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
+		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
+	}
+	return ((inside) ? FALSE : TRUE);	/* TRUE if outside */
+}
+
 #define Return(code) {Free_grdrotater_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG ij, col, row, ij_rot, inside, seg, rec, not_global;
+	GMT_LONG ij, col, row, ij_rot, seg, rec, not_global;
 	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
 	
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
@@ -409,9 +419,9 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_cart_to_geo (GMT, &S->coord[GMT_Y][rec], &S->coord[GMT_X][rec], P_rotated, TRUE);	/* Recover lon lat representation; TRUE to get degrees */
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 		}
-		GMT_set_seg_minmax (GMT, S);	/* Determine min/max extent of polygon */
 		GMT_set_seg_polar (GMT, S);	/* Determine if it is a polar cap */
 	}
+	GMT_set_tbl_minmax (GMT, pol);	/* Update table domain */
 	if (!Ctrl->N.active && not_global) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 		if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->D.file, (void *)D)) Return (GMT_DATA_WRITE_ERROR);
@@ -433,10 +443,10 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (global)
 		GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 	else {
-		GMT->common.R.wesn[XLO] = floor (S->min[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
-		GMT->common.R.wesn[XHI] = ceil  (S->max[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
-		GMT->common.R.wesn[YLO] = floor (S->min[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
-		GMT->common.R.wesn[YHI] = ceil  (S->max[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
+		GMT->common.R.wesn[XLO] = floor (pol->min[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
+		GMT->common.R.wesn[XHI] = ceil  (pol->max[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
+		GMT->common.R.wesn[YLO] = floor (pol->min[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
+		GMT->common.R.wesn[YHI] = ceil  (pol->max[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
 		/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
@@ -466,13 +476,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
-		if (not_global) {
-			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
-				inside = (GMT_inonout (GMT, grd_x[col], grd_y[row], pol->segment[seg]) > 0);
-			}
-			if (!inside) continue;	/* Outside the polygon(s) */
-		}
+		if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_y[row])) continue;	/* Outside polygon */
 		
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 		
@@ -500,6 +504,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (col2 < 0 || col2 >= G_rot->header->nx) continue;
 					ij_rot = GMT_IJP (G_rot->header, row2, col2);
 					if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
+					if (not_global && skip_if_outside (GMT, pol, grd_x[col2], grd_yc[row2])) continue;	/* Outside polygon */
 					GMT_geo_to_cart (GMT, grd_yc[row2], grd_x[col2], P_rotated, TRUE);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 					spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, TRUE);	/* Recover degree lon lat representation */
@@ -522,7 +527,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G_rot)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);
