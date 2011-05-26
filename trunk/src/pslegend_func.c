@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.12 2011-05-25 20:43:00 remko Exp $
+ *	$Id: pslegend_func.c,v 1.13 2011-05-26 00:54:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -409,11 +409,11 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 
 			case 'H':	/* Header record */
-				ifont = GMT->current.setting.font_title;
 				sscanf (&line[2], "%s %s %[^\n]", size, font, text);
-				if (size[0] == '-') sprintf (size, "%g", ifont.size);	/* Select default font size */
-				if (font[0] == '-') sprintf (font, "%ld", ifont.id);	/* Select default font ID */
+				if (size[0] == '-') size[0] = 0;
+				if (font[0] == '-') font[0] = 0;
 				sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
+				ifont = GMT->current.setting.font_title;	/* Set default font */
 				GMT_getfont (GMT, tmp, &ifont);
 				d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 				y0 -= Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
@@ -441,10 +441,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			case 'L':	/* Label record */
 				sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
-				ifont = GMT->current.setting.font_label;
-				if (size[0] == '-') sprintf (size, "%g", ifont.size);	/* Select default font size */
-				if (font[0] == '-') sprintf (font, "%ld", ifont.id);	/* Select default font ID */
+				if (size[0] == '-') size[0] = 0;
+				if (font[0] == '-') font[0] = 0;
 				sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
+				ifont = GMT->current.setting.font_label;	/* Set default font */
 				GMT_getfont (GMT, tmp, &ifont);
 				d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 				if (column_number%n_columns == 0) y0 -= Ctrl->L.spacing * ifont.size / PSL_POINTS_PER_INCH;
