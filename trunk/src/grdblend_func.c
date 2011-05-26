@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.29 2011-05-25 21:59:49 guru Exp $
+ *    $Id: grdblend_func.c,v 1.30 2011-05-26 02:01:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			do_sample |= 1;
 		}
 		if (!(GMT_IS_ZERO (B[n].G.header.inc[GMT_X] - h->inc[GMT_X]) && GMT_IS_ZERO (B[n].G.header.inc[GMT_Y] - h->inc[GMT_Y]))) {
-			sprintf (Iargs, "%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
+			sprintf (Iargs, "-I%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
 				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
@@ -258,9 +258,10 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			do_sample |= 1;
 		}
 		if (do_sample) {
-			char *template = "/tmp/grdblend.tmp.XXXXXX";
+			char *template = "/tmp/grdblend.tmp.XXXXXX", buffer[BUFSIZ];
+			strcpy (buffer, template);
 			if (do_sample & 1) {	/* Resampling of the grid */
-				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, mktemp (template), GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, mktemp (buffer), GMT->current.setting.verbose);
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
@@ -275,7 +276,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 					GMT_exit (EXIT_FAILURE);
 				}
 			}
-			strcpy (B[n].file, template);
+			strcpy (B[n].file, buffer);
 			B[n].delete = TRUE;
 			GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Re-read header structure */
 		}
