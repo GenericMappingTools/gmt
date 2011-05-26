@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1054 2011-05-26 19:18:54 guru Exp $
+	$Id: ChangeLog,v 1.1055 2011-05-26 19:49:29 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-26	pwessel
+	* grdblend_func.c:	Must carefully set region passed to GMT_grdsample.
 	* grdsample_func.c:	Must handle any +-360 offsets between header and -R for geo grids.
 	* spotter/grdrotater_func.c:	Incorrectly used last segment min/max and not table min/max
 				to determine rotated grid extent. Do not sample outside polygon.
