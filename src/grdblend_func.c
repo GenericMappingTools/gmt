@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.31 2011-05-26 19:18:54 guru Exp $
+ *    $Id: grdblend_func.c,v 1.32 2011-05-26 19:49:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -145,10 +145,32 @@ GMT_LONG out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 	return FALSE;
 }
 
+GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
+{
+	double w, e, shift = 720.0;
+	char *type[2] = {"grid", "inner grid"};
+	w = ((mode) ? B->wesn[XLO] : B->G.header.wesn[XLO]) - shift;	e = ((mode) ? B->wesn[XHI] : B->G.header.wesn[XHI]) - shift;
+	while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
+	if (w > h->wesn[XHI]) {
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of final grid region (skipped)\n", B->file);
+		B->ignore = TRUE;
+		return TRUE;
+	}
+	if (! (GMT_IS_ZERO (shift))) {	/* Must modify region */
+		if (mode) {
+			B->wesn[XLO] = w;	B->wesn[XHI] = e;
+		}
+		else {
+			B->G.header.wesn[XLO] = w;	B->G.header.wesn[XHI] = e;
+		}
+		GMT_report (GMT, GMT_MSG_VERBOSE, "File %s %s region needed longitude adjustment to fit final grid region\n", B->file, type[mode]);
+	}
+	return FALSE;
+}
+
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status, not_supported;
 	struct GRDBLEND_INFO *B = NULL;
-	double w, e, shift;
 	char *sense[2] = {"normal", "inverse"};
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
 	struct BLEND_LIST {
@@ -205,31 +227,8 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			continue;
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
-			shift = 720.0;
-			w = B[n].G.header.wesn[XLO] - shift;	e = B[n].G.header.wesn[XHI] - shift;
-			while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
-			if (w > h->wesn[XHI]) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of final grid region (skipped)\n", B[n].file);
-				B[n].ignore = TRUE;
-				continue;
-			}
-			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
-				B[n].G.header.wesn[XLO] = w;	B[n].G.header.wesn[XHI] = e;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", B[n].file);
-			}
-			/* Do same for inner region */
-			shift = 720.0;
-			w = B[n].wesn[XLO] - shift;	e = B[n].wesn[XHI] - shift;
-			while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
-			if (w > h->wesn[XHI]) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of final grid region (skipped)\n", B[n].file);
-				B[n].ignore = TRUE;
-				continue;
-			}
-			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
-				B[n].wesn[XLO] = w;	B[n].wesn[XHI] = e;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s inner region needed longitude adjustment to fit final grid region\n", B[n].file);
-			}
+			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
+			if (overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
 		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
@@ -256,21 +255,21 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				B[n].file, B[n].G.header.inc[GMT_X], B[n].G.header.inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}
-		if (out_of_phase (&(B[n].G.header), h)) {
+		if (out_of_phase (&(B[n].G.header), h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
 			double wesn[4];
 			wesn[XLO] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G.header.wesn[XLO], h), h);
-			while (wesn[XLO] < h->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
+			while ((wesn[XLO] + GMT_CONV_LIMIT) < MAX (h->wesn[XLO], B[n].G.header.wesn[XLO])) wesn[XLO] += h->inc[GMT_X];
 			wesn[XHI] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G.header.wesn[XHI], h), h);
-			while (wesn[XHI] > h->wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
+			while ((wesn[XHI] - GMT_CONV_LIMIT) > MIN (h->wesn[XHI], B[n].G.header.wesn[XHI])) wesn[XHI] -= h->inc[GMT_X];
 			wesn[YLO] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G.header.wesn[YLO], h), h);
-			while (wesn[YLO] < h->wesn[YLO]) wesn[YLO] += h->inc[GMT_Y];
+			while ((wesn[YLO] + GMT_CONV_LIMIT) < MAX (h->wesn[YLO], B[n].G.header.wesn[YLO])) wesn[YLO] += h->inc[GMT_Y];
 			wesn[YHI] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G.header.wesn[YHI], h), h);
-			while (wesn[YHI] > h->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];
+			while ((wesn[YHI] - GMT_CONV_LIMIT) > MIN (h->wesn[YHI], B[n].G.header.wesn[YHI])) wesn[YHI] -= h->inc[GMT_Y];
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_report (GMT, GMT_MSG_NORMAL, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
-		if (do_sample) {
+		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			char *template = "/tmp/grdblend.tmp.XXXXXX", buffer[BUFSIZ];
 			strcpy (buffer, template);
 			if (do_sample & 1) {	/* Resampling of the grid */
@@ -282,7 +281,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 					GMT_exit (EXIT_FAILURE);
 				}
 			}
-			else {	/* Just reformat to netCDF */
+			else {	/* Just reformat to netCDF so this grid may be used as well */
 				sprintf (cmd, "%s %s -V%ld", B[n].file, mktemp (template), GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
@@ -291,9 +290,10 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 					GMT_exit (EXIT_FAILURE);
 				}
 			}
-			strcpy (B[n].file, buffer);
-			B[n].delete = TRUE;
+			strcpy (B[n].file, buffer);	/* Use the temporary file instead */
+			B[n].delete = TRUE;		/* Flag to delete this temporary file when done */
 			GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Re-read header structure */
+			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdreformat changed the region */
 		}
 		if (B[n].weight < 0.0) {	/* Negative weight means invert sense of taper */
 			B[n].weight = fabs (B[n].weight);
