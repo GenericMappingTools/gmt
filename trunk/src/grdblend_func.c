@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.30 2011-05-26 02:01:45 guru Exp $
+ *    $Id: grdblend_func.c,v 1.31 2011-05-26 19:18:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -206,6 +206,19 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			shift = 720.0;
+			w = B[n].G.header.wesn[XLO] - shift;	e = B[n].G.header.wesn[XHI] - shift;
+			while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
+			if (w > h->wesn[XHI]) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of final grid region (skipped)\n", B[n].file);
+				B[n].ignore = TRUE;
+				continue;
+			}
+			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
+				B[n].G.header.wesn[XLO] = w;	B[n].G.header.wesn[XHI] = e;
+				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", B[n].file);
+			}
+			/* Do same for inner region */
+			shift = 720.0;
 			w = B[n].wesn[XLO] - shift;	e = B[n].wesn[XHI] - shift;
 			while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
 			if (w > h->wesn[XHI]) {
@@ -215,7 +228,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			}
 			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
 				B[n].wesn[XLO] = w;	B[n].wesn[XHI] = e;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s needed longitude adjustment to fit final grid region\n", B[n].file);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s inner region needed longitude adjustment to fit final grid region\n", B[n].file);
 			}
 		}
 		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
@@ -254,7 +267,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			wesn[YHI] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G.header.wesn[YHI], h), h);
 			while (wesn[YHI] > h->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "File %s is phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
 		if (do_sample) {
@@ -262,6 +275,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			strcpy (buffer, template);
 			if (do_sample & 1) {	/* Resampling of the grid */
 				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, mktemp (buffer), GMT->current.setting.verbose);
+				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
@@ -270,6 +284,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			}
 			else {	/* Just reformat to netCDF */
 				sprintf (cmd, "%s %s -V%ld", B[n].file, mktemp (template), GMT->current.setting.verbose);
+				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample file %s - exiting\n", B[n].file);

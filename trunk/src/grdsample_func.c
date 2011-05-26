@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdsample_func.c,v 1.22 2011-05-26 19:18:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,13 +217,26 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_set_grddim (GMT, Gout->header);
 
-	if (GMT->common.R.active) {
-		if (!Gout->header->nxp && (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
-			return (EXIT_FAILURE);
-		}
-		else if (!Gout->header->nyp && (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL)) {
+	if (GMT->common.R.active) {	/* Make sure input grid and output -R has an overlap */
+		if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
+			Return (EXIT_FAILURE);
+		}
+		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+			double shift = 720.0, w, e;
+			w = Gin->header->wesn[XLO] - shift;	e = Gin->header->wesn[XHI] - shift;
+			while (e < Gout->header->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
+			if (w > Gout->header->wesn[XHI]) {
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of output region!\n", Ctrl->In.file);
+				Return (EXIT_FAILURE);
+			}
+			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
+				Gin->header->wesn[XLO] = w;	Gin->header->wesn[XHI] = e;
+				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
+			}
+		}
+		else if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
@@ -249,8 +262,8 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval in x may lead to aliasing.\n");
-	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A coarser sampling interval in y may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
 
 	/* Precalculate longitudes */
 

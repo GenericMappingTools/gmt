@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.28 2011-05-23 00:08:40 guru Exp $
+ *	$Id: psxy_func.c,v 1.29 2011-05-26 19:18:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -687,6 +687,12 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	}
+	if (S.symbol == GMT_SYMBOL_MARC) {	/* Special treatment since it needs fill to draw heads */
+		if (!Ctrl->G.active) {
+			Ctrl->G.active = TRUE;
+			GMT_rgb_copy (current_fill.rgb, Ctrl->W.pen.rgb);
+		}
 	}
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;

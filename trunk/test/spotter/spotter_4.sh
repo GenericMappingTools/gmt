@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_4.sh,v 1.1 2011-05-26 18:50:39 guru Exp $
+#       $Id: spotter_4.sh,v 1.2 2011-05-26 19:18:54 guru Exp $
 
 . ../functions.sh
 header "Test spotter:grdrotater for grid rotation"
@@ -8,7 +8,7 @@ header "Test spotter:grdrotater for grid rotation"
 ps=grdrot.ps
 
 # Build a grid
-grdmath -R0/30/0/30 -I0.1 X Y MUL = t.nc
+grdmath -R0/30/0/30 -I0.25 X Y MUL = t.nc
 # Design a multi-polygon area of interest
 cat << EOF > P.txt
 >
@@ -38,8 +38,9 @@ grdcontour -R-10/80/-5/56 -JM5i -P -B10WSne t.nc -A100 -C25 -K -Xc > $ps
 grdcontour -R -J rot.nc -A100 -C25 -O -K -Wa0.75p,red, -Wc0.25p,red >> $ps
 psxy -R -J -O -K G.txt -W1p,blue -A >> $ps
 psxy -R -J -O -K box.txt -W1p,red >> $ps
-echo 0 53 | psxy -R -J -O -K -Sc0.15i -Gred -N -W0.25p >> $ps
-echo 0 53 -90 -30 | psxy -R -J -O -K -Sml0.4i -N -W2p >> $ps
+echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
+echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
+echo 0 53 -90 -30 | psxy -R -J -O -K -Sml1i -N -W1p >> $ps
 # Rotating with constraining polygons
 grdrotater t.nc -FP.txt -e0/53/60 -Grot.nc > R.txt
 grdcontour -R-10/80/-5/56 -JM5i -B10WSne t.nc -A100 -C25 -O -K -Y5i >> $ps
@@ -48,8 +49,9 @@ psxy -R -J -O -K G.txt -W1p,blue -A >> $ps
 psxy -R -J -O -K box.txt -W1p,red >> $ps
 psxy -R -J -O -K P.txt -W1p >> $ps
 psxy -R -J -O -K R.txt -W1p >> $ps
-echo 0 53 | psxy -R -J -O -K -Sc0.15i -Gred -N -W0.25p >> $ps
-echo 0 53 -90 -30 | psxy -R -J -O -K -Sml0.4i -N -W2p >> $ps
+echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
+echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
+echo 0 53 -90 -30 | psxy -R -J -O -K -Sml1i -N -W1p >> $ps
 psxy -R -J -O -T >> $ps
 rm -f *.txt t.nc rot.nc 
 
