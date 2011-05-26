@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.1 2011-05-20 01:30:48 jluis Exp $
+#	$Id: test_cm4.sh,v 1.2 2011-05-26 19:35:43 jluis Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
@@ -37,4 +37,8 @@ echo    -5.1975837E+00	-4.5903891E+00	2.9385937E+00	>> cm4_f.dat
 echo     7.9738793E-01	-2.2101940E+00	-3.7272951E+00	>> cm4_f.dat
 echo    -3.4804584E+00	-6.0774586E+00	1.1689001E-02	>> cm4_f.dat
 
-gmtmath -Ca cm4_c.dat cm4_f.dat SUB = $log
+gmtmath -Ca cm4_c.dat cm4_f.dat SUB = | awk '{print $1+$2+$3}' | gmtmath -S -T STDIN MEAN = | awk '($1 == 0)' > $log
+
+rm -f cm4_c.dat cm4_f.dat
+
+passfail test_cm4
