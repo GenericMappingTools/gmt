@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.24 2011-05-19 15:16:21 remko Exp $
+ *	$Id: grdcontour_func.c,v 1.25 2011-05-27 04:03:33 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,9 +97,11 @@ struct GRDCONTOUR_CTRL {
 struct SAVE {
 	double *x, *y;
 	double cval;
+	double xlabel, ylabel;
 	GMT_LONG n;
 	struct GMT_PEN pen;
-	GMT_LONG do_it, high;
+	GMT_LONG do_it, high, kind;
+	char label[GMT_TEXT_LEN64];
 };
 
 void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -408,9 +410,9 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, GMT_LONG n, struct GMT_GRID *G, double tick_gap, double tick_length, GMT_LONG tick_low, GMT_LONG tick_high, GMT_LONG tick_label, char *lbl[])
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones. */
-	GMT_LONG np, i, j, ij, inside, col, row, stop, done, n_ticks, way, form;
+	GMT_LONG np, i, j, k, ij, inside, col, row, stop, done, n_ticks, way, form;
 	double x0, y0, add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
-	double xmin, xmax, ymin, ymax, x_mean = 0.0, y_mean = 0.0, inc, dist, a, L;
+	double xmin, xmax, ymin, ymax, inc, dist, a, L;
 	double small, this_lon, this_lat, sa, ca, *s = NULL;
 
 	/* The x/y coordinates in SAVE are now all projected to map inches */
@@ -429,12 +431,18 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		np = save[i].n;
 		for (j = 0; save[i].do_it && j < n; j++) {
 			if (!save[j].do_it) continue;	/* No point checking contours that either have others inside or are invalid */
-			inside = GMT_non_zero_winding (GMT, save[j].x[0], save[j].y[0], save[i].x, save[i].y, np);
+			col = save[j].n / 2;
+			inside = GMT_non_zero_winding (GMT, save[j].x[col], save[j].y[col], save[i].x, save[i].y, np);
 			if (inside == 2) save[i].do_it = FALSE;
+			if (GMT_abs (save[j].kind) == 3) {	/* Polar caps are different */
+				if (GMT_abs (save[i].kind) == 3) {	/* Both are caps */
+					if (save[i].kind != save[j].kind) continue;
+					if ((save[j].kind == 3 && save[j].y[0] > save[i].y[0]) || (save[j].kind == -3 && save[j].y[0] < save[i].y[0])) save[i].do_it = FALSE;
+				}
+			}
 		}
 	}
-
-	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+	for (i = 0; i < n; i++) if (GMT_abs (save[i].kind) > 1) save[i].n--;	/* Chop off the extra duplicate point for split periodic contours */
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
@@ -442,36 +450,52 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		if (!save[i].do_it) continue;
 		np = save[i].n;
 
-		/* Loop around the contour and get min/max original x,y (longitude, latitude) coordinates */
-
-		GMT_xy_to_geo (GMT, &xmax, &ymax, save[i].x[0], save[i].y[0]);
-		xmin = xmax;	ymin = ymax;
-		for (j = 1; j < np; j++) {
-			GMT_xy_to_geo (GMT, &this_lon, &this_lat, save[i].x[j], save[i].y[j]);
-			xmin = MIN (xmin, this_lon);
-			xmax = MAX (xmax, this_lon);
-			ymin = MIN (ymin, this_lat);
-			ymax = MAX (ymax, this_lat);
+		/* Need to determine if this is a local high or low */
+		
+		if (GMT_abs (save[i].kind) == 2) {	/* Closed contour split at periodic boundary */
+			col = (save[i].kind == -2) ? 0 : G->header->nx - 1;
+			GMT_xy_to_geo (GMT, &this_lon, &this_lat, save[i].x[0], save[i].y[0]);
+			row = GMT_grd_y_to_row (GMT, this_lat, G->header);	/* Get start j-row */
+			GMT_xy_to_geo (GMT, &this_lon, &this_lat, save[i].x[np-1], save[i].y[np-1]);
+			row += GMT_grd_y_to_row (GMT, this_lat, G->header);	/* Get stop j-row */
+			row /= 2;	/* Middle row is OK */
 		}
-
-		/* Pick the mid-latitude and march along that line from east to west */
-
-		this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
-		row = MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
-		this_lat = GMT_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
-		col = GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
-		stop = GMT_grd_x_to_col (GMT, xmax, G->header);	/* Eastermost point */
-		done = FALSE;
-		while (!done && col <= stop) {
-			this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
-			GMT_geo_to_xy (GMT, this_lon, this_lat, &x0, &y0);
-			inside = GMT_non_zero_winding (GMT, x0, y0, save[i].x, save[i].y, np);
-			if (inside == 2)	/* OK, this point is inside */
-				done = TRUE;
-			else
-				col++;
+		else if (GMT_abs (save[i].kind) == 3) {	/* Polar cap */
+			col = G->header->nx / 2;
+			row = (save[i].kind == -3) ? G->header->ny - 1 : 0;
 		}
-		if (!done) continue;	/* Failed to find an inside point */
+		else {
+			/* Loop around the contour and get min/max original x,y (longitude, latitude) coordinates */
+
+			GMT_xy_to_geo (GMT, &xmax, &ymax, save[i].x[0], save[i].y[0]);
+			xmin = xmax;	ymin = ymax;
+			for (j = 1; j < np; j++) {
+				GMT_xy_to_geo (GMT, &this_lon, &this_lat, save[i].x[j], save[i].y[j]);
+				xmin = MIN (xmin, this_lon);
+				xmax = MAX (xmax, this_lon);
+				ymin = MIN (ymin, this_lat);
+				ymax = MAX (ymax, this_lat);
+			}
+
+			/* Pick the mid-latitude and march along that line from east to west */
+
+			this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
+			row = MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
+			this_lat = GMT_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
+			col = GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
+			stop = GMT_grd_x_to_col (GMT, xmax, G->header);	/* Eastermost point */
+			done = FALSE;
+			while (!done && col <= stop) {
+				this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
+				GMT_geo_to_xy (GMT, this_lon, this_lat, &x0, &y0);
+				inside = GMT_non_zero_winding (GMT, x0, y0, save[i].x, save[i].y, np);
+				if (inside == 2)	/* OK, this point is inside */
+					done = TRUE;
+				else
+					col++;
+			}
+			if (!done) continue;	/* Failed to find an inside point */
+		}
 		ij = GMT_IJP (G->header, row, col);
 		save[i].high = (G->data[ij] > save[i].cval);
 
@@ -491,12 +515,12 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		n_ticks = (GMT_LONG)(s[np-1] / tick_gap);
 		if (n_ticks == 0) {	/* Too short to be ticked or labeled */
 			GMT_free (GMT, s);
+			save[i].do_it = FALSE;
 			continue;
 		}
 		GMT_setpen (GMT, &save[i].pen);
-		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
-		if (tick_label)	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
-			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
+		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &save[i].xlabel, &save[i].ylabel);	/* -1 is CCW, +1 is CW */
+		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 
 		x_back = save[i].x[np-1];	/* Last point along contour */
 		y_back = save[i].y[np-1];
@@ -522,6 +546,31 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			j++;
 		}
 		GMT_free (GMT, s);
+	}
+
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+
+	/* Still not finished with labeling polar caps when the pole point plots as a line (e.g., -JN).
+	 * One idea would be to add help points to include the pole and used this polygon to compute where to
+	 * plot the label but then skip those points when drawing the line. */
+	
+	for (i = 0; tick_label && i < n; i++) {	/* Finally, do labels */
+		if (!save[i].do_it) continue;
+		if (GMT_abs (save[i].kind) == 2 && GMT_IS_AZIMUTHAL (GMT)) {	/* Only plot once at mean location */
+			for (j = 0, k = -1; j < n && k == -1; j++) {	/* Finally, do labels */
+				if (save[j].kind != -save[i].kind) continue;
+				if (save[j].cval != save[i].cval) continue;
+				k = j;	/* Found its counterpart */
+			}
+			if (k == -1) continue;
+			GMT_setpen (GMT, &save[i].pen);
+			PSL_plottext (PSL, 0.5 * (save[i].xlabel+save[k].xlabel), 0.5 * (save[i].ylabel+save[k].ylabel), GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
+			save[k].do_it = FALSE;
+		}
+		else {
+			GMT_setpen (GMT, &save[i].pen);
+			PSL_plottext (PSL, save[i].xlabel, save[i].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
+		}
 	}
 }
 
@@ -588,13 +637,38 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 	}
 }
 
+GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, GMT_LONG n)
+{	/* Determine if this is a closed contour */
+	GMT_LONG closed = 0;
+	double small_x = 0.01 * G->header->inc[GMT_X], small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
+	if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
+		closed = 1;
+		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
+	}
+	else if (GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI])) {
+		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
+			closed = -2;	/* Left periodic */
+			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */
+		}
+		else if (fabs (x[0] - G->header->wesn[XHI]) < small_x && fabs (x[n-1] - G->header->wesn[XHI]) < small_x) {	/* Split periodic boundary contour */
+			closed = +2;	/* Right periodic */
+			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
+		}
+		else if (GMT_360_RANGE (x[0], x[n-1])) {	/* Must be a polar cap */
+			closed = (y[0] > 0.0) ? +3 : -3;	/* N or S polar cap */
+			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
+		}
+	}
+	return (closed);
+}
+
 #define Return(code) {Free_grdcontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
 	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0;
-	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl;
+	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
 	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
 
 	char *cont_type = NULL, *cont_do_tick = NULL;
@@ -882,12 +956,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		while ((n = GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
 
-			if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
-				closed = TRUE;
-				x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
-			}
-			else	/* Contour exits the region */
-				closed = FALSE;
+			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 
 			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
@@ -914,13 +983,16 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						cont_label[0] = '\0';
 					if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 						if (n_save == n_alloc) n_alloc = GMT_malloc (GMT, save, n_save, n_alloc, struct SAVE);
-						(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, nn, 0, double);
+						extra = (GMT_abs (closed) > 1);	/* Need extra slot to temporarily close half-polygons */
+						(void)GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, nn + extra, 0, double);
 						GMT_memcpy (save[n_save].x, xp, nn, double);
 						GMT_memcpy (save[n_save].y, yp, nn, double);
-						save[n_save].n = nn;
 						GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
 						save[n_save].do_it = TRUE;
 						save[n_save].cval = cval;
+						save[n_save].kind = closed;
+						if (extra) { save[n_save].x[nn] = save[n_save].x[0];	save[n_save].y[nn] = save[n_save].y[0];}
+						save[n_save].n = nn + extra;
 						n_save++;
 					}
 					GMT_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed, &Ctrl->contour);

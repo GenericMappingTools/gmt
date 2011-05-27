@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.5 2011-05-27 03:47:26 jluis Exp $
+#	$Id: test_cm4.sh,v 1.6 2011-05-27 04:03:34 guru Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
@@ -43,4 +43,4 @@ if [ "X$X" = "X0" ]; then
 else
 	echo "Fortran and C CM4 results differ. Check log"
 fi
-rm -f cm4_f.dat cm4_c.dat
+#rm -f cm4_f.dat cm4_c.dat
