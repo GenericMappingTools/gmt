@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.4 2011-05-27 03:46:51 jluis Exp $
+#	$Id: test_cm4.sh,v 1.5 2011-05-27 03:47:26 jluis Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
@@ -26,7 +26,7 @@ echo -30 45 0 $data | mgd77magref -A+y -Fxyz/7 -Sc1/15 | gmtconvert --FORMAT_FLO
 #Ion_ind B_xyz     7.9738793E-01 -2.2101940E+00 -3.7272951E+00
 #Tor     B_xyz    -3.4804584E+00 -6.0774586E+00  1.1689001E-02
 
-#echo    -1.2747567E+01	-9.8955432E+00 -1.1668323E+01	>> cm4_f.dat
+#-1.2747567E+01	-9.8955432E+00	-1.1668323E+01
 cat << EOF > cm4_f.dat
 2.1577205E+04	-5.4288317E+03	4.1624773E+04
 -1.5506497E+01	4.4450796E+00	1.9214288E+01
@@ -35,7 +35,6 @@ cat << EOF > cm4_f.dat
 7.9738793E-01	-2.2101940E+00	-3.7272951E+00
 -3.4804584E+00	-6.0774586E+00	1.1689001E-02
 EOF
-#-1.2747567E+01	-9.8955432E+00	-1.1668323E+01
 
 X=`gmtmath -Ca cm4_c.dat cm4_f.dat SUB = | awk '{print $1+$2+$3}' | gmtmath -S -T STDIN MEAN =`
 
