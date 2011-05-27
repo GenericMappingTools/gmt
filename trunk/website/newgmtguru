@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.15 2008-01-30 20:12:27 guru Exp $
+#		$Id: newgmtguru,v 1.16 2011-05-27 01:48:17 guru Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -129,7 +129,7 @@ EOF
 echo -n "==> Get the coastline files via ftp? (y/n) [y]: "
 set yn = $<
 if ($yn == "y" || $yn == "Y" || $yn == "") then
-	make -f GNUmakefile get_coast
+	make -f GNUmakefile get_gshhs
 endif
 
 cat << EOF
