@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.302 2011-05-24 23:53:05 jluis Exp $
+ *	$Id: gmt_map.c,v 1.303 2011-05-27 01:01:44 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1149,7 +1149,7 @@ GMT_LONG gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, GMT_LO
  * P.Wessel, March 2008
  */
 
-/* THis macro calculates the x-coordinates where the line segment crosses the border x = border.
+/* This macro calculates the x-coordinates where the line segment crosses the border x = border.
  * By swapping x and y in the call we can use it for finding the y intersection. This macro is
  * never called when (y_prev - y_curr) = 0 so we don't divide by zero.
  */
@@ -1453,7 +1453,7 @@ GMT_LONG gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, GMT_LO
 
 GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n_orig, double **x, double **y, GMT_LONG *total_nx)
 {
-	GMT_LONG i, n, m, new_n, *x_index = NULL, *x_type = NULL;
+	GMT_LONG i, n, m, new_n, range, *x_index = NULL, *x_type = NULL;
 	GMT_LONG n_alloc, n_x_alloc, side, j, np, in = 1, n_cross = 0, out = 0, cross = 0;
 	GMT_LONG polygon, jump = FALSE, curved, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
@@ -1490,6 +1490,10 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	inside[1] = inside[2] = gmt_inside_upper_boundary;	outside[1] = outside[2] = gmt_outside_upper_boundary;
 	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = C->common.R.wesn[YLO]; border[3] = C->common.R.wesn[XLO];	border[1] = C->common.R.wesn[XHI];	border[2] = C->common.R.wesn[YHI];
+
+	/* Make sure longitudes are compatible with w-e borders */
+	range = (C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : ((C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] < 0.0) ? GMT_IS_M360_TO_0_RANGE : GMT_IS_0_TO_P360_RANGE);
+	for (i = 0; i < n; i++) GMT_lon_range_adjust (range, &lon[i]);
 
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
