@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.3 2011-05-27 01:10:56 guru Exp $
+#	$Id: test_cm4.sh,v 1.4 2011-05-27 03:46:51 jluis Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
@@ -35,11 +35,13 @@ cat << EOF > cm4_f.dat
 7.9738793E-01	-2.2101940E+00	-3.7272951E+00
 -3.4804584E+00	-6.0774586E+00	1.1689001E-02
 EOF
+#-1.2747567E+01	-9.8955432E+00	-1.1668323E+01
 
-diff cm4_f.dat cm4_c.dat > fail
-if [ ! -s fail ]; then
+X=`gmtmath -Ca cm4_c.dat cm4_f.dat SUB = | awk '{print $1+$2+$3}' | gmtmath -S -T STDIN MEAN =`
+
+if [ "X$X" = "X0" ]; then
 	passfail test_cm4
 else
-	cat fail
+	echo "Fortran and C CM4 results differ. Check log"
 fi
 rm -f cm4_f.dat cm4_c.dat
