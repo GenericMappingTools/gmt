@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.61 2011-05-08 03:45:26 guru Exp $
+ *	$Id: gmt_proj.c,v 1.62 2011-05-27 04:03:33 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2420,7 +2420,7 @@ void GMT_irobinson (struct GMT_CTRL *C, double *lon, double *lat, double x, doub
 	*lat = gmt_robinson_spline (C, Y, C->current.proj.n_Y, C->current.proj.n_phi, C->current.proj.n_iy_coeff);
 	X = gmt_robinson_spline (C, *lat, C->current.proj.n_phi, C->current.proj.n_X, C->current.proj.n_x_coeff);
 	*lon = x / (C->current.proj.n_cx * X);
-	if (fabs (*lon) > 180.0) {	/* Horizon */
+	if ((fabs (*lon) - GMT_CONV_LIMIT) > 180.0) {	/* Horizon */
 		*lat = *lon = C->session.d_NaN;
 		return;
 	}
