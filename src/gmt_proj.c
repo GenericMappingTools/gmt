@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.62 2011-05-27 04:03:33 guru Exp $
+ *	$Id: gmt_proj.c,v 1.63 2011-05-27 21:00:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1958,7 +1958,7 @@ void GMT_ihammer (struct GMT_CTRL *C, double *lon, double *lat, double x, double
 	a = 0.5 * rho * C->current.proj.i_EQ_RAD;			/* a = sin(c/2)		*/
 	a *= a;							/* a = sin(c/2)**2	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
-	if (cos_c < 0.0) {					/* Horizon		*/
+	if (cos_c < -GMT_CONV_LIMIT) {					/* Horizon		*/
 		*lat = *lon = C->session.d_NaN;
 		return;
 	}
