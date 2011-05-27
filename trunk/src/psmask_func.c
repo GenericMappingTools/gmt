@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.17 2011-05-24 23:28:10 guru Exp $
+ *	$Id: psmask_func.c,v 1.18 2011-05-27 21:38:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row, ii, jj, make_plot, n_seg = 0;
+	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
 	GMT_LONG section, n_fields, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
 	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
 	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
