@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.16 2011-05-25 00:42:45 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.17 2011-05-27 17:32:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,7 +217,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D4 grid x,y in degrees, <filter_width> in km, spherical distances.\n");
 	GMT_message (GMT, "\t     -D5 grid x,y in Mercator units (-Jm1), <filter_width> in km, spherical distances.\n");
-	GMT_message (GMT, "\t-F Sets the low-pass filter type and full diameter (6 sigma) filter-widtGin->header->  Choose between\n");
+	GMT_message (GMT, "\t-F Sets the low-pass filter type and full diameter (6 sigma) filter-width.  Choose between\n");
 	GMT_message (GMT, "\t   convolution-type filters which differ in how weights are assigned and geospatial\n");
 	GMT_message (GMT, "\t   filters that seek to return a representative value.\n");
 	GMT_message (GMT, "\t   Give negative filter width to select highpass filtering [lowpass].\n");
