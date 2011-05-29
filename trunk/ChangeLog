@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1057 2011-05-29 03:32:50 guru Exp $
+	$Id: ChangeLog,v 1.1058 2011-05-29 20:39:13 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-29	pwessel
+	* grdblend_func.c:	Use different temp names to avoid non-POSIX mktemp.
 
 2011-05-28	pwessel
 	* gmt_support.c:	Due to different argument order for qsort_r in BSD vs glibc
