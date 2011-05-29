@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.33 2011-05-29 20:39:13 guru Exp $
+ *    $Id: grdblend_func.c,v 1.34 2011-05-29 23:04:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,6 +39,11 @@
  */
 
 #include "gmt.h"
+
+#ifdef WIN32	/* Special for Windows */
+#include <process.h>
+#define getpid _getpid
+#endif
 
 EXTERN_MSC GMT_LONG GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
@@ -271,7 +276,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
-				sprintf (buffer, "/tmp/%s_resampled.nc", B[n].file);
+				sprintf (buffer, "/tmp/grdblend_resampled_%ld_%ld.nc", (GMT_LONG)getpid(), n);
 				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
@@ -281,7 +286,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
-				sprintf (buffer, "/tmp/%s_reformatted.nc", B[n].file);
+				sprintf (buffer, "/tmp/grdblend_reformatted_%ld_%ld.nc", (GMT_LONG)getpid(), n);
 				sprintf (cmd, "%s %s -V%ld", B[n].file, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
@@ -625,7 +630,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	else {
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			sprintf (outtemp, "/tmp/%s_temp.nc", Ctrl->G.file);	/* Get temporary file name */
+			sprintf (outtemp, "/tmp/grdblend_temp_%ld.nc", (GMT_LONG)getpid());	/* Get temporary file name */
 			outfile = outtemp;
 		}
 		else
