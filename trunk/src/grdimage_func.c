@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.62 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdimage_func.c,v 1.63 2011-05-29 17:41:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -173,15 +173,7 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* CPT file */
-				Ctrl->C.active = TRUE;
-				Ctrl->C.file = strdup (opt->arg);
-				break;
 #ifdef USE_GDAL
-			case 'D':	/* Get via GDAL */
-				Ctrl->D.active = TRUE;
-				Ctrl->D.mode = (opt->arg[0] == 'r');
-				break;
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				Ctrl->A.active = TRUE;
 				Ctrl->A.file = strdup (opt->arg);
@@ -195,6 +187,16 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 					Ctrl->A.file[n] = '\0';		/* Strip =driver from file name */
 					Ctrl->A.driver = strdup(&Ctrl->A.file[n+1]);
 				}
+				break;
+#endif
+			case 'C':	/* CPT file */
+				Ctrl->C.active = TRUE;
+				Ctrl->C.file = strdup (opt->arg);
+				break;
+#ifdef USE_GDAL
+			case 'D':	/* Get via GDAL */
+				Ctrl->D.active = TRUE;
+				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
 #endif
 			case 'E':	/* Sets dpi */
@@ -850,8 +852,6 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	x_side = dx * header_work->nx;
 	y_side = dy * header_work->ny;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Creating image ");
-
 	if (P && gray_only) 
 		for (kk = 0, P->is_bw = TRUE; P->is_bw && kk < nm; kk++) 
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = FALSE;
@@ -860,7 +860,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_LONG nx8, shift, b_or_w, nx_pixels, k8;
 		unsigned char *bit = NULL;
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "[1-bit B/W image]\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Creating 1-bit B/W image\n");
 
 		nx8 = (GMT_LONG)ceil (nx / 8.0);	/* Image width must equal a multiple of 8 bits */
 		nx_pixels = nx8 * 8;
@@ -890,37 +890,35 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				bit[k8++] = (unsigned char) byte;
 			}
 		}
-		GMT_free (GMT, bitimage_8);
 
 		x_side = nx_pixels * dx;
 		PSL_plotbitimage (PSL, x0, y0, x_side, y_side, PSL_BL, bit, nx_pixels, ny, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
 		GMT_free (GMT, bit);
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "[8-bit grayshade image]\n");
 #ifdef USE_GDAL
 		if (Ctrl->A.active) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Creating 8-bit grayshade image via GDAL\n");
 			to_GDALW->data = (void *)bitimage_8;
 			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 		}
-		else
+		else {
 #endif
-		PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, nx, ny, (Ctrl->E.device_dpi ? -8 : 8));
-		GMT_free (GMT, bitimage_8);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Creating 8-bit grayshade image\n");
+			PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, nx, ny, (Ctrl->E.device_dpi ? -8 : 8));
 	}
-	else {
 #ifdef USE_GDAL
-		GMT_report (GMT, GMT_MSG_NORMAL, "via GDAL\n");
-		if (Ctrl->A.active) {
-			to_GDALW->data = (void *)bitimage_24;
-			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
-		}
-		else
+	}
+	else if (Ctrl->A.active) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Creating 24-bit color image via GDAL\n");
+		to_GDALW->data = (void *)bitimage_24;
+		GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
+	}
 #endif
+	else {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Creating 24-bit color image\n");
 		PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_24, (Ctrl->Q.active ? -1 : 1) * 
-				    nx, ny, (Ctrl->E.device_dpi ? -24 : 24));
-
-		GMT_free (GMT, bitimage_24);
+		    nx, ny, (Ctrl->E.device_dpi ? -24 : 24));
 	}
 
 	if (!Ctrl->A.active) {
@@ -930,6 +928,10 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
 	}
+
+	/* Free bitimage arrays. GMT_free will not complain if they have not been used (NULL) */
+	GMT_free (GMT, bitimage_8);
+	GMT_free (GMT, bitimage_24);
 
 	if (need_to_project && n_grids)
 		GMT_free_grid (GMT, &Grid_proj[0], TRUE);
