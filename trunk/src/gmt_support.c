@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.522 2011-05-24 23:28:10 guru Exp $
+ *	$Id: gmt_support.c,v 1.523 2011-05-29 03:32:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,7 +142,12 @@ GMT_LONG gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *
 #endif
 
 #ifdef HAVE_QSORT_R
+/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
+#if defined(__APPLE__) || defined(__FreeBSD__)
 void qsort_r(void *base, size_t nel, size_t width, void *thunk, int (*compar)(void *, const void *, const void *));
+#else
+void qsort_r(void *base, size_t nel, size_t width, int (*compar)(void *, const void *, const void *), void *thunk);
+#endif
 #else
 double *GMT_x2sys_Y;	/* Must use global variable if there is no qsort_r on this system */
 #endif
@@ -7521,7 +7526,12 @@ GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], GMT_LONG n, struct GMT_
 	/* Sort on minimum y-coordinate, if tie then on 2nd coordinate */
 
 #ifdef HAVE_QSORT_R
+/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
+#if defined(__APPLE__) || defined(__FreeBSD__)
 	qsort_r ((void *)L, (size_t)nl, sizeof (struct GMT_XSEGMENT), (void *)y, GMT_ysort);
+#else
+	qsort_r ((void *)L, (size_t)nl, sizeof (struct GMT_XSEGMENT), GMT_ysort, (void *)y);
+#endif
 #else
 	GMT_x2sys_Y = y;	/* Sort routine needs this global variable pointer */
 	qsort ((void *)L, (size_t)nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);

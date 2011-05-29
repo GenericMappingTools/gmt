@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.49 2011-05-20 14:33:52 jluis Exp $
+ *	$Id: gmt_notunix.h,v 1.50 2011-05-29 03:32:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -94,7 +94,7 @@
 #undef HAVE_SINCOS
 #undef HAVE_ALPHASINCOS
 #undef HAVE_GETPWUID
-#undef HAVE_QSORT_R
+#define HAVE_QSORT_R
 #define HAVE_STRDUP 1
 #define HAVE_STRTOD 1
 #undef HAVE_STRTOK_R
@@ -113,8 +113,9 @@
 #define yn(n,x) _yn(n,x)
 #define strdup(s) _strdup(s)
 #define GMT_STAT _stat
-#if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in unix */
+#if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in unix, and same for qsort */
 #define strtok_r strtok_s
+#define qsort_r qsort_s
 #define HAVE_STRTOK_R 1
 #endif
 

@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1056 2011-05-27 01:01:44 guru Exp $
+	$Id: ChangeLog,v 1.1057 2011-05-29 03:32:50 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-28	pwessel
+	* gmt_support.c:	Due to different argument order for qsort_r in BSD vs glibc
+				we needed to add wasteful $ifdefs to deal with this stupidity
+				as *contour crashed under non-BSD system in qsort_r.
 
 2011-05-26	pwessel
 	* gmt_map.c:		GMT_wesn_clip needed to adjust longitudes to fit the given domain.
