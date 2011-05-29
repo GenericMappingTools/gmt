@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.32 2011-05-26 19:49:29 guru Exp $
+ *    $Id: grdblend_func.c,v 1.33 2011-05-29 20:39:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,7 +171,7 @@ GMT_LONG overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GR
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG n = 0, nr, one_or_zero = !h->registration, type, n_fields, do_sample, status, not_supported;
 	struct GRDBLEND_INFO *B = NULL;
-	char *sense[2] = {"normal", "inverse"};
+	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
 	struct BLEND_LIST {
 		char *file;
@@ -270,10 +270,9 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 			do_sample |= 1;
 		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
-			char *template = "/tmp/grdblend.tmp.XXXXXX", buffer[BUFSIZ];
-			strcpy (buffer, template);
 			if (do_sample & 1) {	/* Resampling of the grid */
-				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, mktemp (buffer), GMT->current.setting.verbose);
+				sprintf (buffer, "/tmp/%s_resampled.nc", B[n].file);
+				sprintf (cmd, "%s %s %s %s -G%s -V%ld", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
@@ -282,7 +281,8 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, GMT_LONG n_files, s
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
-				sprintf (cmd, "%s %s -V%ld", B[n].file, mktemp (template), GMT->current.setting.verbose);
+				sprintf (buffer, "/tmp/%s_reformatted.nc", B[n].file);
+				sprintf (cmd, "%s %s -V%ld", B[n].file, buffer, GMT->current.setting.verbose);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
@@ -544,7 +544,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	float *z = NULL, no_data_f;
 	
 	char mode[2] = {'w', 'W'}, type;
-	char *outfile = NULL, *outtemplate = "/tmp/grdblend.tmp.XXXXXX";
+	char *outfile = NULL, outtemp[GMT_BUFSIZ];
 	
 	struct GRDBLEND_INFO *blend = NULL;
 	struct GMT_GRDFILE S;
@@ -624,8 +624,10 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);	/* Memory for the entire padded grid */
 	}
 	else {
-		if (reformat)	/* Must use a temporary netCDF file then reformat it at the end */
-			outfile = mktemp (outtemplate);	/* Get temporary file name */
+		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
+			sprintf (outtemp, "/tmp/%s_temp.nc", Ctrl->G.file);	/* Get temporary file name */
+			outfile = outtemp;
+		}
 		else
 			outfile = Ctrl->G.file;
 		if (!Ctrl->Q.active) GMT_err_fail (GMT, GMT_write_grd_info (GMT, Ctrl->G.file, &S.header), Ctrl->G.file);
