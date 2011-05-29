@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.18 2011-05-29 17:36:27 remko Exp $
+ *	$Id: grdfilter_func.c,v 1.19 2011-05-29 22:11:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -663,15 +663,15 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					else if (spherical) {	/* Periodic data may involve wrapping over the pole */
 						col_in = i_orig;
 						new_col = FALSE;	/* TRUE if we must jump 180 degrees as we pass over a pole */
-						if (row_in < 0) {	/* Possible wrap over S pole and up the other side */
-							if (row_in > sp_wrap_row) continue;	/* No, we are in a data gap over S pole [grid does not extend to -90]  */
-							row_in = sp_wrap_row - row_in;		/* Row of the point on the far side */
+						if (row_in < 0) {	/* Possible wrap over N pole and up the other side */
+							if (row_in > np_wrap_row) continue;	/* No, we are in a data gap over S pole [grid does not extend to -90]  */
+							row_in = np_wrap_row - row_in;		/* Row of the point on the far side */
 							col_in += half_nx;			/* Column on the far side is 180 degrees off in longitude */
 							new_col = TRUE;
 						}
-						else if (row_in >= Gin->header->ny) {	/* Possible wrap over N pole */
-							if (row_in < np_wrap_row) continue;	/* Data gap over N pole [grid does not extend to +90] */
-							row_in = Gin->header->ny - (row_in - np_wrap_row) - 1;	/* Row of the point on the far side */
+						else if (row_in >= Gin->header->ny) {	/* Possible wrap over S pole */
+							if (row_in < sp_wrap_row) continue;	/* Data gap over N pole [grid does not extend to +90] */
+							row_in = Gin->header->ny - (row_in - sp_wrap_row) - 1;	/* Row of the point on the far side */
 							col_in += half_nx;			/* Column on the far side is 180 degrees off in longitude */
 							new_col = TRUE;
 							if (row_in < 0) continue;
