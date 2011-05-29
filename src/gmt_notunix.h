@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.50 2011-05-29 03:32:50 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.51 2011-05-29 17:29:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,7 +97,7 @@
 #define HAVE_QSORT_R
 #define HAVE_STRDUP 1
 #define HAVE_STRTOD 1
-#undef HAVE_STRTOK_R
+#define HAVE_STRTOK_R 1
 #undef WORDS_BIGENDIAN
 
 /* Several math functions exist but the names have a leading underscore */
@@ -116,7 +116,6 @@
 #if defined( _MSC_VER) && (_MSC_VER >= 1400)	/* MSDN says strtok_s is equivalent to strtok_r in unix, and same for qsort */
 #define strtok_r strtok_s
 #define qsort_r qsort_s
-#define HAVE_STRTOK_R 1
 #endif
 
 typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
