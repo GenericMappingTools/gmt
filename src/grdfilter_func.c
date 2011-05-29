@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.17 2011-05-27 17:32:45 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.18 2011-05-29 17:36:27 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -779,10 +779,6 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, i_origin);
-	/*GMT_free (GMT, weight);
-	GMT_free (GMT, F.x);
-	GMT_free (GMT, F.y);
-	if (slow) GMT_free (GMT, work_array);*/
 	if (!fast_way) GMT_free (GMT, x_shift);
 
 	Return (EXIT_SUCCESS);
