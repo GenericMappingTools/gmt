@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1059 2011-05-31 09:10:03 guru Exp $
+	$Id: ChangeLog,v 1.1060 2011-05-31 15:09:49 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-31	remko
+	* psscale_func.c:	Bring frame line back when annotation is not done with -B.
 
 2011-05-30	pwessel
 	* gmt_stat.c:		Added functions GMT_median_weighted and GMT_mode_weighted
@@ -38,7 +41,7 @@
 
 2011-05-24	remko
 	* psscale_func.c:	Overrule MAP_FRAME_AXES default; make it WESN.
-				Do not double plot the frame line along the annotate axis.
+				Do not double plot the frame line along the annotated axis.
 				Let WESN setting on -B work properly with -A.
 
 2011-05-24	pwessel
