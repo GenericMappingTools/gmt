@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.114 2011-05-17 00:23:50 guru Exp $
+ *	$Id: gmt_io.h,v 1.115 2011-05-31 17:55:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,23 +169,23 @@ enum GMT_geometries {GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS
 
 /* Error return codes */
 
-#define GMT_IO_TABLE_HEADER	1	/* Return codes for GMT_ascii_input */
-#define GMT_IO_SEGMENT_HEADER	2
+#define GMT_IO_TBL_HEADER	1	/* Return codes for GMT_ascii_input */
+#define GMT_IO_SEG_HEADER	2
 #define GMT_IO_MISMATCH		4
 #define GMT_IO_EOF		8
 #define GMT_IO_NAN		16
 #define GMT_IO_GAP		32
 #define GMT_IO_NEXT_FILE	64	/* Like EOF except for an individual file (with more files to follow) */
 
-#define GMT_REC_IS_TBL_HEADER(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
-#define GMT_REC_IS_SEG_HEADER(C)	(C->current.io.status & GMT_IO_SEGMENT_HEADER)
-#define GMT_REC_IS_ANY_HEADER(C)	(GMT_REC_IS_TBL_HEADER(C) || GMT_REC_IS_SEG_HEADER(C))
+#define GMT_REC_IS_TBL_HEADER(C)	(C->current.io.status & GMT_IO_TBL_HEADER)
+#define GMT_REC_IS_SEG_HEADER(C)	(C->current.io.status & GMT_IO_SEG_HEADER)
+#define GMT_REC_IS_ANY_HEADER(C)	(C->current.io.status & (GMT_IO_TBL_HEADER | GMT_IO_SEG_HEADER))
 #define GMT_REC_IS_ERROR(C)		(C->current.io.status & GMT_IO_MISMATCH)
 #define GMT_REC_IS_EOF(C)		(C->current.io.status & GMT_IO_EOF)
 #define GMT_REC_IS_NAN(C)		(C->current.io.status & GMT_IO_NAN)
 #define GMT_REC_IS_GAP(C)		(C->current.io.status & GMT_IO_GAP)
-#define GMT_REC_IS_NEW_SEGMENT(C)	(C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_NAN))
-#define GMT_REC_IS_LINE_BREAK(C)	(C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF | GMT_IO_NAN | GMT_IO_GAP))
+#define GMT_REC_IS_NEW_SEGMENT(C)	(C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_NAN))
+#define GMT_REC_IS_LINE_BREAK(C)	(C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_EOF | GMT_IO_NAN | GMT_IO_GAP))
 #define GMT_REC_IS_FILE_BREAK(C)	(C->current.io.status & GMT_IO_NEXT_FILE)
 #define GMT_REC_IS_DATA(C)		(!C->current.io.status)
 

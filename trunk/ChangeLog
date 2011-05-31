@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1060 2011-05-31 15:09:49 remko Exp $
+	$Id: ChangeLog,v 1.1061 2011-05-31 17:55:32 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-31	remko
 	* psscale_func.c:	Bring frame line back when annotation is not done with -B.
+	* gmt_io.h:		Consistent naming of GMT_IO_SEG_HEADER and GMT_REC_IS_SEG_HEADER.
+				Consistent naming of GMT_IO_TBL_HEADER and GMT_REC_IS_TBL_HEADER.
 
 2011-05-30	pwessel
 	* gmt_stat.c:		Added functions GMT_median_weighted and GMT_mode_weighted

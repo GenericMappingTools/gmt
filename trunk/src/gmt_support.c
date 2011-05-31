@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.524 2011-05-29 17:28:59 remko Exp $
+ *	$Id: gmt_support.c,v 1.525 2011-05-31 17:55:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4565,11 +4565,11 @@ GMT_LONG gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_la
 			break;
 
 		case 7:
-			sprintf (this_label, "%ld", (C->current.io.status & GMT_IO_SEGMENT_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
+			sprintf (this_label, "%ld", (C->current.io.status & GMT_IO_SEG_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
 			break;
 
 		case 8:
-			sprintf (this_label, "%ld/%ld", C->current.io.file_no, (C->current.io.status & GMT_IO_SEGMENT_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
+			sprintf (this_label, "%ld/%ld", C->current.io.file_no, (C->current.io.status & GMT_IO_SEG_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
 			break;
 
 		default:	/* Should not happen... */
