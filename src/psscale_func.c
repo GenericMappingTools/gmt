@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.14 2011-05-24 21:12:28 remko Exp $
+ *	$Id: psscale_func.c,v 1.15 2011-05-31 15:09:49 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -629,10 +629,8 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		if (gap == 0.0) {
-			if (flip & 1)
-				PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
-			else
-				PSL_plotsegment (PSL, xleft, width, xleft + length, width);
+			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
+			if (!(flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, width, xleft + length, width);
 			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
@@ -814,10 +812,8 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			PSL_plotpolygon (PSL, xp, yp, 3);
 		}
 		if (gap == 0.0) {
-			if (flip & 1)
-				PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
-			else
-				PSL_plotsegment (PSL, xleft, width, xleft + length, width);
+			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
+			if (!(flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, width, xleft + length, width);
 			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
