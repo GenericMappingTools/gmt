@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1058 2011-05-29 20:39:13 guru Exp $
+	$Id: ChangeLog,v 1.1059 2011-05-31 09:10:03 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-05-30	pwessel
+	* gmt_stat.c:		Added functions GMT_median_weighted and GMT_mode_weighted
+				based on algorithms from blockmedian/mode.  These will be
+				used in grdfilter for spherical operations.
 
 2011-05-29	pwessel
 	* grdblend_func.c:	Use different temp names to avoid non-POSIX mktemp.
