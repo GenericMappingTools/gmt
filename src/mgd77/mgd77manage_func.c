@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.21 2011-05-16 22:22:31 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.22 2011-05-31 17:55:32 remko Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -684,9 +684,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		if (ok_to_read) n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
 
-		while (ok_to_read && ! (GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+		while (ok_to_read && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 
-			while ((GMT->current.io.status & GMT_IO_SEGMENT_HEADER) && !(GMT->current.io.status & GMT_IO_EOF)) {
+			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
 				n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in);
 			}
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */

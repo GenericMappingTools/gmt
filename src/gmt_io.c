@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.282 2011-05-20 01:49:05 remko Exp $
+ *	$Id: gmt_io.c,v 1.283 2011-05-31 17:55:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -240,7 +240,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	if (!C->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
 		if (n_NaN == n_read) {
 			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %ld\n", C->current.io.rec_no);
-			C->current.io.status = GMT_IO_SEGMENT_HEADER;
+			C->current.io.status = GMT_IO_SEG_HEADER;
 			strcpy (C->current.io.segment_header, "Binary segment header");
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 			C->current.io.seg_no++;
@@ -1084,7 +1084,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strcpy (C->current.io.current_record, line);
-			C->current.io.status = GMT_IO_TABLE_HEADER;
+			C->current.io.status = GMT_IO_TBL_HEADER;
 			return (0);
 		}
 		/* Here we are passed any header records implied by -h */
@@ -1092,7 +1092,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up and get the next record */
 		if (line[0] == '#') {	/* Got a file header, take action and return */
 			strcpy (C->current.io.current_record, line);
-			C->current.io.status = GMT_IO_TABLE_HEADER;
+			C->current.io.status = GMT_IO_TBL_HEADER;
 			return (0);
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
@@ -1106,7 +1106,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		}
 
 		if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
-			C->current.io.status = GMT_IO_SEGMENT_HEADER;
+			C->current.io.status = GMT_IO_SEG_HEADER;
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
 			i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
@@ -1205,7 +1205,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
 	if (C->current.io.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.io.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 		strcpy (C->current.io.current_record, line);
-		C->current.io.status = GMT_IO_TABLE_HEADER;
+		C->current.io.status = GMT_IO_TBL_HEADER;
 		return (0);
 	}
 	if (!p) {	/* Ran out of records */
@@ -1215,13 +1215,13 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 	}
 	if (line[0] == '#') {	/* Got a file header, take action and return */
 		strcpy (C->current.io.current_record, line);
-		C->current.io.status = GMT_IO_TABLE_HEADER;
+		C->current.io.status = GMT_IO_TBL_HEADER;
 		*n = 1;
 		return (0);
 	}
 
 	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
-		C->current.io.status = GMT_IO_SEGMENT_HEADER;
+		C->current.io.status = GMT_IO_SEG_HEADER;
 		C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 		C->current.io.seg_no++;
 		i = GMT_trim_segheader (C, line);	/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
@@ -3899,7 +3899,7 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 
 		T->segment[seg]->record = GMT_memory (C, NULL, n_row_alloc, char *);
 
-		while (! (C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
+		while (!(C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 
 			T->segment[seg]->record[row++] = strdup (in);
 
@@ -5191,7 +5191,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		}
 		GMT_alloc_segment (C, T->segment[seg], GMT_CHUNK, T->segment[seg]->n_columns, TRUE);
 
-		while (! (C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
+		while (! (C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {
 				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", n_fields, n_expected_fields, n_read);
 				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */

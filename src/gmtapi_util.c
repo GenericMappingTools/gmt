@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.69 2011-05-20 03:29:47 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.70 2011-05-31 17:55:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2712,7 +2712,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (M->data, ij, M->type);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
-				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
+				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 				retval = S->n_columns;
 				break;
 
@@ -2730,7 +2730,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (V->data[col], API->current_rec[GMT_IN], V->type[col]);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
-				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
+				if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 				retval = S->n_columns;
 				break;
 
@@ -2742,7 +2742,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 					status = 0;
 					if (p[2] == DS->table[p[0]]->segment[p[1]]->n_rows) {	/* Reached end of current segment */
 						p[1]++, p[2] = 0;				/* Advance to next segments 1st row */
-						status = GMT_IO_SEGMENT_HEADER;			/* Indicates a segment boundary */
+						status = GMT_IO_SEG_HEADER;			/* Indicates a segment boundary */
 					}
 					if (p[1] == DS->table[p[0]]->n_segments) {		/* Also the end of a table ("file") */
 						p[0]++, p[1] = 0;
@@ -2762,7 +2762,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 							if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 						}
 						p[2]++;
-						if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
+						if (n_nan == S->n_columns) API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 						retval = API->GMT->common.b.ncol[GMT_IN] = DS->n_columns;
 					}
 					API->GMT->current.io.status = status;
@@ -2783,7 +2783,7 @@ GMT_LONG GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void **record)
 						if (t_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Segment header */
 							i = GMT_trim_segheader (API->GMT, t_record);
 							strcpy (API->GMT->current.io.segment_header, &t_record[i]);
-							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
+							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
 						}
 						retval = 1;
 					}
