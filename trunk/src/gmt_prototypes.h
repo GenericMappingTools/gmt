@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.42 2011-05-24 23:28:10 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.43 2011-05-31 06:30:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -350,6 +350,8 @@ EXTERN_MSC GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, do
 EXTERN_MSC GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med);
 EXTERN_MSC GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est);
 EXTERN_MSC GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est);
+EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n, double quantile);
+EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n);
 EXTERN_MSC GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob);
 EXTERN_MSC GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob);
 EXTERN_MSC void GMT_chi2 (struct GMT_CTRL *C, double chi2, double nu, double *prob);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.87 2011-05-19 20:51:24 remko Exp $
+ *	$Id: gmt_stat.c,v 1.88 2011-05-31 06:30:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1530,6 +1530,77 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 
 	/* That's all, folks!  */
 	return (iteration);
+}
+
+int compare_fpair (const void *point_1, const void *point_2)
+{
+	/* Sorts sugs into DESCENDING order!  */
+	if (((fpair *)point_1)->x[0] < ((fpair *)point_2)->x[0]) return (+1);
+	if (((fpair *)point_1)->x[0] > ((fpair *)point_2)->x[0]) return (-1);
+	return (0);
+}
+
+double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n, double quantile)
+{
+	GMT_LONG k;
+	double weight_half = 0.0, weight_count;
+
+	/* First sort data on z */
+
+	qsort ((void *)data, (size_t)n, sizeof (fpair), compare_fpair);
+	
+	/* Find weight sum, then get half-value */
+	
+	for (k = 0; k < n; k++) weight_half += data[k].x[1];
+	weight_half *= quantile;	/* Normally quantile = 0.5 hence the name "half" */
+	
+	/* Determine the point where we hit the desired quantile */
+
+	k = 0;	weight_count = data[k].x[1];
+	while (weight_count < weight_half) weight_count += data[++k].x[1];	/* Wind up until weight_count hits the mark */
+
+	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].x[0] + data[k+1].x[0]) : data[k].x[0]));
+}
+
+double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n)
+{
+	/* Based on mode_output in blockmode_func.c */
+
+	double top, topj, topi, bottomj, bottomi, pj, pi, wsum = 0.0;
+	GMT_LONG k, i = 0, j = n - 1, nh = n / 2;
+
+	/* First sort data on z */
+
+	qsort ((void *)data, (size_t)n, sizeof (fpair), compare_fpair);
+	
+	/* Find weight sum, then get half-value */
+	
+	for (k = 0; k < n; k++) wsum += data[k].x[1];
+
+	top = wsum;
+
+	while ((j-i) > nh) {
+		topi = top - data[i].x[1];
+		topj = top - data[j].x[1];
+		bottomi = data[j].x[0] - data[i+1].x[0];
+		bottomj = data[j-1].x[0] - data[i].x[0];
+
+		if (bottomj == 0.0) return (data[j-1].x[0]);
+		if (bottomi == 0.0) return (data[i+1].x[0]);
+		pi = topi / bottomi;
+		pj = topj / bottomj;
+		if (pi > pj) {
+			i++;	top = topi;
+		}
+		else if (pi < pj) {
+			j--;	top = topj;
+		}
+		else {
+			top -= (data[i].x[1] + data[j].x[1]);
+			i++;	j--;
+		}
+	}
+	return ((double)(0.5 * (data[j].x[0] + data[i].x[0])));
 }
 
 GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
