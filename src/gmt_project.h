@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.85 2011-05-18 15:39:29 remko Exp $
+ *	$Id: gmt_project.h,v 1.86 2011-05-31 06:30:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -110,6 +110,7 @@
 
 #define GMT_360_RANGE(w,e) (fabs (fabs((e) - (w)) - 360.0) < GMT_CONV_LIMIT)
 #define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
+#define GMT_IS_POLE(y) (fabs (fabs(y) - 90.0) < GMT_CONV_LIMIT)
 #define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
 
 #ifndef D2R
