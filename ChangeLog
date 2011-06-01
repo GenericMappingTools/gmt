@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1065 2011-06-01 20:31:55 guru Exp $
+	$Id: ChangeLog,v 1.1066 2011-06-01 20:37:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-01	pwessel
@@ -29,6 +29,9 @@
 
 2011-05-29	pwessel
 	* grdblend_func.c:	Use different temp names to avoid non-POSIX mktemp.
+	* grdcontour_func.c	Improving detection of closed contours that should be ticked
+				and marked (via -T) when such contours cross periodic boundaries
+				or are polar caps.
 
 2011-05-28	pwessel
 	* gmt_support.c:	Due to different argument order for qsort_r in BSD vs glibc
