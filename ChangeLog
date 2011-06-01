@@ -1,12 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1062 2011-06-01 01:12:21 guru Exp $
+	$Id: ChangeLog,v 1.1063 2011-06-01 03:28:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-05-31	pwessel
 	*grdfilter_func.c:	Added some test/debug options under DEBUG mode.
-				Fixed convolution weights which where upside-down
-				Eliminated unneeded complexity when dealing with poles
-				and periodic data sets.  Added test script.
+				Convolution weights were y-transposed so gave wrong results
+				at/near the poles for spherical filtering.  Also, some nodes
+				were duplicated in the convolution, resulting in inconsistent
+				values at the S or N pole.  Added test script.
+	* grdlandmask_func.c:	Did not correctly truncate nodes for GSHHS bins with no data.
 
 2011-05-31	remko
 	* psscale_func.c:	Bring frame line back when annotation is not done with -B.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.17 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.18 2011-06-01 03:28:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -381,10 +381,10 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			k = INT_MAX;	/* Initialize to outside range of levels (4 is highest) */
 			/* Visit each of the 4 nodes, test if it is inside -R, and if so update lowest level found so far */
 
-			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw)) k = MIN (k, c.node_level[0]);			/* SW */
-			if (!GMT_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw)) k = MIN (k, c.node_level[1]);		/* SE */
+			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw)) k = MIN (k, c.node_level[0]);				/* SW */
+			if (!GMT_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw)) k = MIN (k, c.node_level[1]);			/* SE */
 			if (!GMT_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[2]);	/* NE */
-			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[3]);		/* NW */
+			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[3]);			/* NW */
 
 			/* If k is still INT_MAX we must assume this patch should have the min level of the bin */
 
@@ -394,9 +394,15 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			row_min = (GMT_LONG)MAX (0, ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
 			row_max = (GMT_LONG)MIN (ny1, floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off));
-			col_min = (GMT_LONG)ceil (fmod (c.lon_sw - Grid->header->wesn[XLO] + 360.0, 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
-			col_max = (GMT_LONG)floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO] + 360.0, 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
-			if (wrap && col_max < col_min) col_max += Grid->header->nx;
+			col_min = (GMT_LONG)ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
+			col_max = (GMT_LONG)floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off);
+			if (wrap) {	/* Handle jumps */
+				if (col_max < col_min) col_max += Grid->header->nx;
+			}
+			else {	/* Make sure we are inside our grid */
+				if (col_min < 0) col_min = 0;
+				if (col_max > nx1) col_max = nx1;
+			}
 			for (row = row_min; row <= row_max; row++) {
 				for (col = col_min; col <= col_max; col++) {
 					ii = (wrap) ? col % Grid->header->nx : col;
