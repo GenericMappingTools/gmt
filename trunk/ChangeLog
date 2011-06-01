@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1067 2011-06-01 21:02:13 guru Exp $
+	$Id: ChangeLog,v 1.1068 2011-06-01 21:53:39 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-01	pwessel
@@ -11,6 +11,8 @@
 
 2011-06-01	remko
 	* gmt_init.c:		Default scale in -i option should be 1, not 0.
+	* pswiggle_func.c:	Added [-|=|+] to prepend to -G option to select fill for
+				positive AND/or negative wiggles. Made -N option obsolete.
 
 2011-05-31	pwessel
 	* grdfilter_func.c:	Added some test/debug options under DEBUG mode.
@@ -32,7 +34,7 @@
 
 2011-05-29	pwessel
 	* grdblend_func.c:	Use different temp names to avoid non-POSIX mktemp.
-	* grdcontour_func.c	Improving detection of closed contours that should be ticked
+	* grdcontour_func.c:	Improving detection of closed contours that should be ticked
 				and marked (via -T) when such contours cross periodic boundaries
 				or are polar caps.
 
