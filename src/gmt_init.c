@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.524 2011-05-22 21:37:09 guru Exp $
+ *	$Id: gmt_init.c,v 1.525 2011-06-01 20:11:03 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1536,7 +1536,7 @@ GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 	for (i = 0; i < GMT_BUFSIZ; i++) C->current.io.col_skip[i] = TRUE;	/* Initially, no input column is requested */
 
 	while ((GMT_strtok (C, copy, ",", &pos, p))) {	/* While it is not empty, process it */
-		convert = 0, scale = 0.0, offset = 0.0;
+		convert = 0, scale = 1.0, offset = 0.0;
 
 		if ((c = strchr (p, 'o'))) {	/* Look for offset */
 			c[0] = '\0';	/* Wipe out the 'o' so that next scan terminates there */
