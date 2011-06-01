@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.12 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdedit_func.c,v 1.13 2011-06-01 20:31:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -283,6 +283,11 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			if (col < 0 || col >= G->header->nx) continue;
 			k = GMT_IJP (G->header, row, col);
 			G->data[k] = (float)in[GMT_Z];
+			if (G->header->registration == GMT_GRIDLINE_REG && GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI])) {
+				/* Possibly need to replicate e/w value */
+				if (col == 0) {k = GMT_IJP (G->header, row, G->header->nx-1); G->data[k] = (float)in[GMT_Z]; }
+				if (col == (G->header->nx-1)) {k = GMT_IJP (G->header, row, 0); G->data[k] = (float)in[GMT_Z]; }
+			}
 		}
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 

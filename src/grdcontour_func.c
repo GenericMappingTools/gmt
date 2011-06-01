@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.25 2011-05-27 04:03:33 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.26 2011-06-01 20:31:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -430,6 +430,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	for (i = 0; i < n; i++) {	/* Mark polygons that have other polygons inside them */
 		np = save[i].n;
 		for (j = 0; save[i].do_it && j < n; j++) {
+			if (i == j) continue;	/* Cannot be inside itself */
 			if (!save[j].do_it) continue;	/* No point checking contours that either have others inside or are invalid */
 			col = save[j].n / 2;
 			inside = GMT_non_zero_winding (GMT, save[j].x[col], save[j].y[col], save[i].x, save[i].y, np);
@@ -655,8 +656,7 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
 		}
 		else if (GMT_360_RANGE (x[0], x[n-1])) {	/* Must be a polar cap */
-			closed = (y[0] > 0.0) ? +3 : -3;	/* N or S polar cap */
-			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
+			closed = (y[0] > 0.0) ? +3 : -3;	/* N or S polar cap; do not force closure though */
 		}
 	}
 	return (closed);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.22 2011-06-01 04:12:10 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.23 2011-06-01 20:31:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -924,6 +924,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 #ifdef DEBUG
 	if (Ctrl->A.active) {	/* Save the debug output instead */
+		FILE *fp = fopen ("n_conv.txt", "w");
+		fprintf (fp, "%ld\n", n_conv);
+		fclose (fp);
 		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gin))) Return (error);
 		GMT_free_grid (GMT, &Gout, TRUE);	/* Was never used due to testing */
 	}
