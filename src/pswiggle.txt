@@ -40,16 +40,16 @@ direction.
 OPT(C)IT(center)
 Subtract IT(center) from the data set before plotting [0].
 .TP
-OPT(G)IT(fill)
-Set fill shade, color or pattern of positive wiggles [Default is black]
+OPT(G)[+|-|=]IT(fill)
+Set fill shade, color or pattern of positive and/or negative wiggles [Default is black]
+Prepend BD(+) for positive areas only (default).
+Prepend BD(-) for negative areas only.
+Prepend BD(=) to fill both positive and negative areas with the same fill.
 .TP
 OPT(I)IT(fix_az)
 Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
-.TP
-OPT(N)
-Paint negative wiggles instead of positive [Default].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
