@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.525 2011-05-31 17:55:32 remko Exp $
+ *	$Id: gmt_support.c,v 1.526 2011-06-01 21:02:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5939,7 +5939,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: Inconsistent grid values at North pole.\n");
+			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld (of %d) inconsistent grid values at North pole.\n", bok, G->header->nx);
 		}
 
 		if (G->header->gs) {	/* South pole case */
@@ -5950,7 +5950,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: Inconsistent grid values at South pole.\n");
+			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld (of %d) inconsistent grid values at South pole.\n", bok, G->header->nx);
 		}
 	}
 
@@ -5960,7 +5960,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 
 		if (G->header->nyp > 0) {	/* y is periodic  */
 
-			for (i = iw; i <= ie; i++) {
+			for (i = iw, bok = 0; i <= ie; i++) {
+				if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jn+i] - G->data[js+i])) bok++;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
 					G->data[jno2 + i] = G->data[jno2k + i];
@@ -5970,6 +5971,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
+			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 
 			/* periodic Y rows copied.  Now do X naturals.
 				This is easy since y's are done; no corner problems.
@@ -6082,8 +6084,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
 		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
 		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
-
-		for (jmx = jn; jmx <= js; jmx += mx) {
+		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
+			if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jmx+iw] - G->data[jmx+ie])) bok++;
 			if (set[XLO]) {
 				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
 				G->data[iwo2 + jmx] = G->data[iwo2k + jmx];
@@ -6093,9 +6095,11 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
+		if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
-			for (i = iwo2; i <= ieo2; i++) {
+			for (i = iwo2, bok = 0; i <= ieo2; i++) {
+				if (G->header->registration == GMT_GRIDLINE_REG && !GMT_IS_ZERO (G->data[jn+i] - G->data[js+i])) bok++;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
 					G->data[jno2 + i] = G->data[jno2k + i];
@@ -6105,6 +6109,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
+			if (bok > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO]) {

@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1066 2011-06-01 20:37:30 guru Exp $
+	$Id: ChangeLog,v 1.1067 2011-06-01 21:02:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-01	pwessel
 	* grdedit_func.c:	The -N option did not consider replicate w/e points for
 				gridline-registered grids.
+	* gmt_support.c:	Added check to report if repeating east/west duplicate
+				nodes in global gridline-registered grids are in fact
+				not identical.
 
 2011-06-01	remko
 	* gmt_init.c:		Default scale in -i option should be 1, not 0.
