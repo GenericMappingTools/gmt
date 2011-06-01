@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.21 2011-06-01 03:28:13 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.22 2011-06-01 04:12:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,11 +47,12 @@ struct GRDFILTER_CTRL {
 		GMT_LONG active;
 		GMT_LONG mode;
 	} D;
-	struct F {	/* <type>[-]<filter_width>[<mode>] */
+	struct F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
 		GMT_LONG active;
 		GMT_LONG highpass;
 		char filter;	/* Character codes for the filter */
-		double width;
+		double width, width2;
+		GMT_LONG rect;
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G<file> */
@@ -83,11 +84,14 @@ struct GRDFILTER_CTRL {
 /* Local ij calculation for weight matrix */
 #define WT_IJ(F,jj,ii) ((jj) + F.y_half_width) * F.nx + (ii) + F.x_half_width
 
+#define GRDFILTER_N_PARS	7
 #define GRDFILTER_WIDTH		0
 #define GRDFILTER_HALF_WIDTH	1
 #define GRDFILTER_X_SCALE	2
 #define GRDFILTER_Y_SCALE	3
 #define GRDFILTER_INV_R_SCALE	4
+#define GRDFILTER_X_DIST	5
+#define GRDFILTER_Y_DIST	6
 
 #define GRDFILTER_N_FILTERS	9
 
@@ -101,6 +105,7 @@ struct FILTER_INFO {
 	GMT_LONG x_half_width;	/* Number of filter nodes to either side needed at this latitude */
 	GMT_LONG y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
 	GMT_LONG d_flag;
+	GMT_LONG rect;		/* For 2-D rectangular filtering */
 	GMT_LONG debug;		/* Normally unused except under DEBUG */
 	double dx, dy;		/* Grid spacing in original units */
 	double y_min, y_max;	/* Grid limits in y(lat) */
@@ -155,10 +160,15 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 			x = (i < 0) ? -F->x[-i] : F->x[i];
 			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
 			r = F->radius_func (GMT, x_off, yc, x, y, par);
-			weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (r, par);
+			if (F->rect) {	/* Two-dim rectangular filtering */
+				weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (par[GRDFILTER_X_DIST], par) * F->weight_func (par[GRDFILTER_Y_DIST], par);
+			}
+			else {
+				weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (r, par);
 #ifdef DEBUG
-			if (F->debug) weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : r;
+				if (F->debug) weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : r;
 #endif
+			}
 		}
 	}
 }
@@ -172,6 +182,15 @@ double CartRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double
 double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Plain scaled Cartesian distance (xscale = yscale) */
 	return (par[GRDFILTER_X_SCALE] * hypot (x0 - x1, y0 - y1));
+}
+
+double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
+{	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
+	double r;
+	par[GRDFILTER_X_DIST] = par[GRDFILTER_X_SCALE] * (x0 - x1);
+	par[GRDFILTER_Y_DIST] = par[GRDFILTER_Y_SCALE] * (y0 - y1);
+	r = (fabs (par[GRDFILTER_X_DIST]) > par[GRDFILTER_HALF_WIDTH] || fabs (par[GRDFILTER_Y_DIST]) > par[GRDFILTER_HALF_WIDTH]) ? 2.0 : 0.0;
+	return (r);
 }
 
 double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
@@ -339,10 +358,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0;
-	char c;
-#ifdef DEBUG
-	char a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64];
-#endif
+	char c, a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -373,10 +389,17 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 				if (strchr ("bcgmpLlUu", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = TRUE;
 					Ctrl->F.filter = opt->arg[0];
-					Ctrl->F.width = atof (&opt->arg[1]);
+					if (strchr (opt->arg, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
+						sscanf (&opt->arg[1], "%[^/]/%s", a, b);
+						Ctrl->F.width = atof (a);
+						Ctrl->F.width2 = atof (b);
+						Ctrl->F.rect = TRUE;
+					}
+					else
+						Ctrl->F.width = atof (&opt->arg[1]);
 					if (Ctrl->F.width < 0.0) Ctrl->F.highpass = TRUE;
 					Ctrl->F.width = fabs (Ctrl->F.width);
-					if (Ctrl->F.filter == 'p') {	/* Check for some futher info in case of mode filtering */
+					if (Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
 						c = opt->arg[strlen(opt->arg)-1];
 						if (c == '-') Ctrl->F.mode = -1;
 						if (c == '+') Ctrl->F.mode = +1;
@@ -436,8 +459,10 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 5, "Syntax error -D option: Choose from the range 0-5\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.mode && Ctrl->F.rect, "Syntax error -F option: Rectangular Cartesian filtering requires -D0\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F option is required:\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "Syntax error -F option: filter fullwidth must be nonzero:\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "Syntax error -F option: filter fullwidth must be nonzero.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.rect && Ctrl->F.width2 <= 0.0, "Syntax error -F option: Rectangular y-width filter must be nonzero.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass, "Syntax error -F option: Highpass filtering requires original -R -I\n");
 	
@@ -456,7 +481,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #ifdef DEBUG
 	GMT_LONG n_conv;
 #endif
-	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[5];
+	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, y, par[GRDFILTER_N_PARS];
 	double x_out, y_out, wt_sum, value, last_median = 0.0, this_median = 0.;
 	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat, lat_out, w;
 	double merc_range, *weight = NULL, *work_array = NULL, *x_shift = NULL;
@@ -567,9 +592,16 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 
 	switch (Ctrl->D.mode) {
-		case 0:	/* Plain, unscaled isotropic Cartesian distances */
-			x_scale = y_scale = 1.0;
-			F.radius_func = CartRadius;
+		case 0:
+			if (Ctrl->F.rect) {	/* Rectangular rather than isotropic Cartesian filtering */
+				x_scale = Ctrl->F.width;
+				y_scale = Ctrl->F.width2;
+				F.radius_func = CartScaledRect;
+			}
+			else {	/* Plain, unscaled isotropic Cartesian distances */
+				x_scale = y_scale = 1.0;
+				F.radius_func = CartRadius;
+			}
 			break;
 		case 1:	/* Plain, scaled (degree to km) isotropic Cartesian distances */
 			x_scale = y_scale = GMT->current.proj.DIST_KM_PR_DEG;
@@ -624,6 +656,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	par[GRDFILTER_X_SCALE] = x_scale;
 	par[GRDFILTER_Y_SCALE] = (Ctrl->D.mode == 5) ? GMT->current.proj.DIST_KM_PR_DEG : y_scale;
 	F.d_flag = Ctrl->D.mode;
+	F.rect = Ctrl->F.rect;
 	F.dx = Gin->header->inc[GMT_X];
 	F.dy = Gin->header->inc[GMT_Y];
 	F.y_min = Gin->header->wesn[YLO];
