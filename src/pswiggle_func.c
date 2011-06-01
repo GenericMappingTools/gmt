@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.12 2011-06-01 21:52:24 remko Exp $
+ *	$Id: pswiggle_func.c,v 1.13 2011-06-01 22:08:41 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -218,9 +218,9 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Sets center value to be removed from z before plotting [0].\n");
 	GMT_fill_syntax (GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
-	GMT_message (GMT, "\t   Prepend + for positive areas only (default).\n");
-	GMT_message (GMT, "\t   Prepend - for negative areas only.\n");
-	gmt_message (gmt, "\t   Prepend = for positive and negative areas.\n");
+	GMT_message (GMT, "\t   Prepend + to fill positive areas (default).\n");
+	GMT_message (GMT, "\t   Prepend - to fill negative areas.\n");
+	gmt_message (GMT, "\t   Prepend = to fill positive and negative areas.\n");
 	GMT_message (GMT, "\t-I Set fixed projection azimuths for wiggles.\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-N Fill negative wiggles instead [Default is positive].\n");
