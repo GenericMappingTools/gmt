@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_types.h,v 1.5 2011-05-31 06:30:09 guru Exp $
+ *	$Id: gmt_types.h,v 1.6 2011-06-01 03:30:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,7 +49,7 @@ typedef int (*PFI) (const void *, const void *);	/* PFI declares a pointer to a 
 typedef GMT_LONG (*PFB) ();	/* PFB declares a pointer to a function returning a GMT_LONG */
 typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a double */
 
-typedef struct {float x[2];} fpair;
-typedef struct {double x[2];} dpair;
+typedef struct {float x[2];} fpair;	/* Can be used to hold pairs of data, e.g. real, imag or x, weight */
+typedef struct {double x[2];} dpair;	/* Same, at double precision */
 
 #endif  /* _GMT_TYPES_H */
