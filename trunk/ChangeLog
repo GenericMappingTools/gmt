@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1063 2011-06-01 03:28:13 guru Exp $
+	$Id: ChangeLog,v 1.1064 2011-06-01 20:11:03 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2011-06-01	remko
+	* gmt_init.c:		Default scale in -i option should be 1, not 0.
+
 2011-05-31	pwessel
-	*grdfilter_func.c:	Added some test/debug options under DEBUG mode.
+	* grdfilter_func.c:	Added some test/debug options under DEBUG mode.
 				Convolution weights were y-transposed so gave wrong results
 				at/near the poles for spherical filtering.  Also, some nodes
 				were duplicated in the convolution, resulting in inconsistent
