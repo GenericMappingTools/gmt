@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.88 2011-05-31 06:30:09 guru Exp $
+ *	$Id: gmt_stat.c,v 1.89 2011-06-01 03:28:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1534,9 +1534,9 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 
 int compare_fpair (const void *point_1, const void *point_2)
 {
-	/* Sorts sugs into DESCENDING order!  */
-	if (((fpair *)point_1)->x[0] < ((fpair *)point_2)->x[0]) return (+1);
-	if (((fpair *)point_1)->x[0] > ((fpair *)point_2)->x[0]) return (-1);
+	/* Sorts pairs into ascending order based on x[0]  */
+	if (((fpair *)point_1)->x[0] < ((fpair *)point_2)->x[0]) return (-1);
+	if (((fpair *)point_1)->x[0] > ((fpair *)point_2)->x[0]) return (+1);
 	return (0);
 }
 

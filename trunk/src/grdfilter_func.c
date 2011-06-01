@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.20 2011-06-01 01:12:21 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.21 2011-06-01 03:28:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -235,7 +235,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	GMT_row_loop (GMT, A, row) {
 		if (mode == 5) {		/* Adjust lat if IMG grid.  Note: these grids do not reach a pole. */
 			y = GMT_grd_row_to_y (GMT, row, A->header);	/* Current input Merc y */
-			lat = IMG2LAT (y);
+			lat = IMG2LAT (y);			 /* Get actual latitude */
 			lat_s = IMG2LAT (y - dy_half);		/* Bottom grid cell latitude */
 			lat_n = IMG2LAT (y + dy_half);		/* Top grid cell latitude */
 			row_weight = sind (lat_n) - sind (lat_s);
@@ -860,6 +860,11 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
+#ifdef _OPENMP
+	GMT_report (GMT, GMT_MSG_NORMAL, " Thread %ld Processing output line %ld\n", tid, row_out);
+#else
+	GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %ld\n", row_out);
+#endif
 	GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
 	GMT_free (GMT, F.y);
