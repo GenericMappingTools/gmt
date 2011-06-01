@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1064 2011-06-01 20:11:03 remko Exp $
+	$Id: ChangeLog,v 1.1065 2011-06-01 20:31:55 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-01	pwessel
+	* grdedit_func.c:	The -N option did not consider replicate w/e points for
+				gridline-registered grids.
 
 2011-06-01	remko
 	* gmt_init.c:		Default scale in -i option should be 1, not 0.

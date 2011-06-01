@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.25 2011-05-26 19:18:54 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.26 2011-06-01 20:31:55 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -450,7 +450,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
 		GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
-		if (GMT->common.R.wesn[XLO] > GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
+		if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	
 	G_rot = GMT_create_grid (GMT);

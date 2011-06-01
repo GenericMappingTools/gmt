@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.19 2011-05-25 21:12:00 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.20 2011-06-01 20:31:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -293,7 +293,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		if (GMT_is_geographic (GMT, GMT_IN)) {
 			if (GMT_360_RANGE (G->header->wesn[XHI], G->header->wesn[XLO]))
-				GMT->current.io.geo.range = (G->header->wesn[XHI] < 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
+				GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 			else
