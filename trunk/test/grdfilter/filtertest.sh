@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: filtertest.sh,v 1.2 2011-06-01 20:31:55 guru Exp $
+#	$Id: filtertest.sh,v 1.3 2011-06-02 18:59:09 guru Exp $
 # Testing grdfilter's weights at a given point for a given
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
@@ -65,5 +65,5 @@ if [ $# -eq 4 ]; then
 	ps2raster $ps -Tf
 	open $pdf
 fi
-rm -f t.nc r.nc t.cpt
+rm -f t.nc r.nc t.cpt n_conv.txt
 pscmp

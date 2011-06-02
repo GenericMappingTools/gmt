@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1072 2011-06-02 18:16:50 remko Exp $
+	$Id: ChangeLog,v 1.1073 2011-06-02 18:59:09 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-02	pwessel
+	* grdfilter_func.c:	Added rectangular filtering and automatic resampling to
+				input resolution for high-pass filters.  Added impulse
+				response script to test suite.
 
 2011-06-02	remko
 	* pslib.c:		Smarter version of psl_shorten_path produces more straight
