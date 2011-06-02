@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1068 2011-06-01 21:53:39 remko Exp $
+	$Id: ChangeLog,v 1.1069 2011-06-02 00:10:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-01	pwessel
@@ -8,6 +8,9 @@
 	* gmt_support.c:	Added check to report if repeating east/west duplicate
 				nodes in global gridline-registered grids are in fact
 				not identical.
+	* grdcontour_func.c	Improving detection of closed contours that should be ticked
+				and marked (via -T) when such contours cross periodic boundaries
+				or are polar caps.
 
 2011-06-01	remko
 	* gmt_init.c:		Default scale in -i option should be 1, not 0.
@@ -34,9 +37,6 @@
 
 2011-05-29	pwessel
 	* grdblend_func.c:	Use different temp names to avoid non-POSIX mktemp.
-	* grdcontour_func.c:	Improving detection of closed contours that should be ticked
-				and marked (via -T) when such contours cross periodic boundaries
-				or are polar caps.
 
 2011-05-28	pwessel
 	* gmt_support.c:	Due to different argument order for qsort_r in BSD vs glibc
