@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.24 2011-06-02 01:07:20 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.25 2011-06-02 18:57:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -51,7 +51,7 @@ struct GRDFILTER_CTRL {
 		GMT_LONG active;
 		GMT_LONG highpass;
 		char filter;	/* Character codes for the filter */
-		double width, width2;
+		double width, width2, quantile;
 		GMT_LONG rect;
 		GMT_LONG mode;
 	} F;
@@ -62,6 +62,7 @@ struct GRDFILTER_CTRL {
 	struct I {	/* -Idx[/dy] */
 		GMT_LONG active;
 		double inc[2];
+		char string[GMT_TEXT_LEN256];
 	} I;
 	struct N {	/* -Np|i|r */
 		GMT_LONG active;
@@ -123,6 +124,7 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->D.mode = -1;	
+	C->F.quantile = 0.5;	/* Default is median */	
 	return ((void *)C);
 }
 
@@ -145,7 +147,7 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	 */
 
 	GMT_LONG i, j, ij;
-	double x, y, yc, y0, r;
+	double x, y, yc, y0, r, ry;
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point (i,j) = (0,0) */
 	if (F->d_flag == 5) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
@@ -156,14 +158,15 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 			continue;	/* Done with this row */
 		}
 		if (F->d_flag == 5) y = IMG2LAT (y);	/* Recover actual latitudes */
+		if (F->rect) ry = (double)j / (double)F->y_half_width;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];
 			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
-			r = F->radius_func (GMT, x_off, yc, x, y, par);
-			if (F->rect) {	/* Two-dim rectangular filtering */
-				weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (par[GRDFILTER_X_DIST], par) * F->weight_func (par[GRDFILTER_Y_DIST], par);
+			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/F->x_half_width and ry instead */
+				weight[ij] = F->weight_func ((double)i/(double)F->x_half_width, par) * F->weight_func (ry, par);
 			}
 			else {
+				r = F->radius_func (GMT, x_off, yc, x, y, par);
 				weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : F->weight_func (r, par);
 #ifdef DEBUG
 				if (F->debug) weight[ij] = (r > par[GRDFILTER_HALF_WIDTH]) ? -1.0 : r;
@@ -265,7 +268,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 				row_weight = 1.0 - cosd (0.5 * A->header->inc[GMT_Y]);
 			else {	/* All other points */
 				row_weight = 2.0 * cosd (lat) * s2;
-				if (A->header->registration == GMT_GRIDLINE_REG && (row == 0 || row == (A->header->ny-1))) row_weight *= 0.5;	/* Share weight with repeat point */
+				/* Note: No need for special weight-sharing between w/e gridline-reg grids since we explicitly only use the west node */
 			}
 		}
 		else {	/* If not geographic then row_weight is a constant 1 except for gridline-registered grids at the ends */
@@ -294,13 +297,14 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdfilter %s [API%s] - Filter a 2-D grid file in the space (or time) domain\n\n", GMT_VERSION, GMT_MP);
-	GMT_message (GMT, "usage: grdfilter input_file -D<distance_flag> -F<type>[-]<filter_width>[<mode>] -G<output_file>\n");
+	GMT_message (GMT, "usage: grdfilter input_file -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<output_file>\n");
 	GMT_message (GMT, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-D Distance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
 	GMT_message (GMT, "\t   Cartesian (x, y) Data:\n");
+	GMT_message (GMT, "\t     -Dp grid x,y with <filter_width> in pixels (must be an odd number), Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D0 grid x,y same units as <filter_width>, Cartesian distances.\n");
 	GMT_message (GMT, "\t   Geographic (lon,lat) Data:\n");
 	GMT_message (GMT, "\t     -D1 grid x,y in degrees, <filter_width> in km, Cartesian distances.\n");
@@ -310,24 +314,26 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D4 grid x,y in degrees, <filter_width> in km, spherical distances.\n");
 	GMT_message (GMT, "\t     -D5 grid x,y in Mercator units (-Jm1), <filter_width> in km, spherical distances.\n");
-	GMT_message (GMT, "\t-F Sets the low-pass filter type and full diameter (6 sigma) filter-width.  Choose between\n");
-	GMT_message (GMT, "\t   convolution-type filters which differ in how weights are assigned and geospatial\n");
-	GMT_message (GMT, "\t   filters that seek to return a representative value.\n");
-	GMT_message (GMT, "\t   Give negative filter width to select highpass filtering [lowpass].\n");
+	GMT_message (GMT, "\t-F Sets the low-pass filter type and full diameter (6 sigma) filter-width.\n");
+	GMT_message (GMT, "\t   Choose between convolution-type filters which differ in how weights are assigned\n");
+	GMT_message (GMT, "\t   and geospatial filters that seek to return a representative value.\n");
+	GMT_message (GMT, "\t   Give a negative filter width to select highpass filtering [lowpass].\n");
+	GMT_message (GMT, "\t   Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0).\n");
 	GMT_message (GMT, "\t   Convolution filters:\n");
-	GMT_message (GMT, "\t     b: Boxcar : a simple averaging of all points inside filter radius.\n");
+	GMT_message (GMT, "\t     b: Boxcar : a simple averaging of all points inside filter domain.\n");
 	GMT_message (GMT, "\t     c: Cosine arch : a weighted averaging with cosine arc weights.\n");
 	GMT_message (GMT, "\t     g: Gaussian : weighted averaging with Gaussian weights.\n");
 	GMT_message (GMT, "\t   Geospatial filters:\n");
 	GMT_message (GMT, "\t     l: Lower : return minimum of all points.\n");
 	GMT_message (GMT, "\t     L: Lower+ : return minimum of all +ve points.\n");
-	GMT_message (GMT, "\t     m: Median : return the median value of all points.\n");
+	GMT_message (GMT, "\t     m: Median : return the median (50%% quantile) value of all points.\n");
+	GMT_message (GMT, "\t        Append +q<quantile> to select another quantile (in 0-1 range) [0.5].\n");
 	GMT_message (GMT, "\t     p: Maximum likelihood probability estimator : return mode of all points.\n");
 	GMT_message (GMT, "\t        By default, we return the average if more than one mode is found.\n");
 	GMT_message (GMT, "\t        Append - or + to the width to instead return the smallest or largest mode.\n");
 	GMT_message (GMT, "\t     u: Upper : return maximum of all points.\n");
 	GMT_message (GMT, "\t     U: Upper- : return maximum of all -ve points.\n");
-	GMT_message (GMT, "\t-G Gets output filename for filtered grid.\n");
+	GMT_message (GMT, "\t-G Sets output filename for filtered grid.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 #ifdef DEBUG
 	GMT_message (GMT, "\t-A DEBUG: Use -A<mode><lon/<lat> to instead save filter specifics at that point. Choose:\n");
@@ -343,6 +349,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      (only possible if the input and output grids are coregistered).\n");
 	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
+	GMT_message (GMT, "\t   [Default uses the same region as the input grid].\n");
 	GMT_explain_options (GMT, "Vf.");
 	
 	return (EXIT_FAILURE);
@@ -358,7 +365,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0;
-	char c, a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64];
+	char c, a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -383,24 +390,31 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 #endif
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = TRUE;
-				Ctrl->D.mode = atoi (opt->arg);
+				Ctrl->D.mode = (opt->arg[0] == 'p') ? -1 : atoi (opt->arg);
 				break;
 			case 'F':	/* Filter */
 				if (strchr ("bcgmpLlUu", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = TRUE;
 					Ctrl->F.filter = opt->arg[0];
-					if (strchr (opt->arg, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
-						sscanf (&opt->arg[1], "%[^/]/%s", a, b);
+					strcpy (txt, opt->arg);	/* Work on a copy */
+					if (Ctrl->F.filter == 'm') {
+						if ((p = strchr (txt, 'q'))) {	/* Requested another quantile */
+							*(--p) = 0;	/* Chop off the +q modifier */
+							Ctrl->F.quantile = atof (p+2);
+						}
+					}
+					if (strchr (txt, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
+						sscanf (&txt[1], "%[^/]/%s", a, b);
 						Ctrl->F.width = atof (a);
 						Ctrl->F.width2 = atof (b);
 						Ctrl->F.rect = TRUE;
 					}
 					else
-						Ctrl->F.width = atof (&opt->arg[1]);
+						Ctrl->F.width = atof (&txt[1]);
 					if (Ctrl->F.width < 0.0) Ctrl->F.highpass = TRUE;
 					Ctrl->F.width = fabs (Ctrl->F.width);
 					if (Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
-						c = opt->arg[strlen(opt->arg)-1];
+						c = opt->arg[strlen(txt)-1];
 						if (c == '-') Ctrl->F.mode = -1;
 						if (c == '+') Ctrl->F.mode = +1;
 					}
@@ -416,6 +430,7 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 				break;
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = TRUE;
+				strcpy (Ctrl->I.string, opt->arg);	/* Verbatim copy */
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -458,9 +473,10 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 5, "Syntax error -D option: Choose from the range 0-5\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.mode && Ctrl->F.rect, "Syntax error -F option: Rectangular Cartesian filtering requires -D0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < -1 || Ctrl->D.mode > 5, "Syntax error -D option: Choose from p or 0-5\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.mode > 0 && Ctrl->F.rect, "Syntax error -F option: Rectangular Cartesian filtering requires -Dp|0\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F option is required:\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.quantile < 0.0 || Ctrl->F.quantile > 1.0 , "Syntax error: The quantile must be in the 0-1 range.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && Ctrl->F.width == 0.0, "Syntax error -F option: filter fullwidth must be nonzero.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.rect && Ctrl->F.width2 <= 0.0, "Syntax error -F option: Rectangular y-width filter must be nonzero.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
@@ -492,7 +508,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	fpair *work_data = NULL;
 	
-	struct GMT_GRID *Gin = NULL, *Gout = NULL, *A = NULL;
+	struct GMT_GRID *Gin = NULL, *Gout = NULL, *A = NULL, *L = NULL;
 	struct FILTER_INFO F;
 	struct GRDFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -523,6 +539,22 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 
 	full_360 = (Ctrl->D.mode && GMT_360_RANGE (Gin->header->wesn[XHI], Gin->header->wesn[XLO]));	/* Periodic geographic grid */
+
+	if (Ctrl->D.mode == -1) {	/* Special case where widths are given in pixels */
+		if (!GMT_IS_ZERO (fmod (Ctrl->F.width, 2.0) - 1.0)) {
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+			Return (EXIT_FAILURE);
+		}
+		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
+		if (Ctrl->F.rect) {
+			if (!GMT_IS_ZERO (fmod (Ctrl->F.width2, 2.0) - 1.0)) {
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+				Return (EXIT_FAILURE);
+			}
+			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
+		}
+		Ctrl->D.mode = 0;	/* From now on they are the same */	
+	}
 
 	/* Check range of output area and set i,j offsets, etc.  */
 
@@ -574,7 +606,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->D.mode) {	/* Data on a sphere so must check for both periodic and polar wrap-arounds */
 		spherical = TRUE;
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
-		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], Gin->header->registration);
+		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
 	A = GMT_create_grid (GMT);
 #ifdef DEBUG
@@ -592,16 +624,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 #endif
 
 	switch (Ctrl->D.mode) {
-		case 0:
-			if (Ctrl->F.rect) {	/* Rectangular rather than isotropic Cartesian filtering */
-				x_scale = Ctrl->F.width;
-				y_scale = Ctrl->F.width2;
-				F.radius_func = CartScaledRect;
-			}
-			else {	/* Plain, unscaled isotropic Cartesian distances */
-				x_scale = y_scale = 1.0;
-				F.radius_func = CartRadius;
-			}
+		case 0:	/* Plain, unscaled isotropic Cartesian distances */
+			x_scale = y_scale = 1.0;
+			F.radius_func = CartRadius;
 			break;
 		case 1:	/* Plain, scaled (degree to km) isotropic Cartesian distances */
 			x_scale = y_scale = GMT->current.proj.DIST_KM_PR_DEG;
@@ -637,11 +662,11 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	switch (filter_type) {
 		case 1:	/*  Cosine-bell filter weights */
-			par[GRDFILTER_INV_R_SCALE] = 2.0 / Ctrl->F.width;
+			par[GRDFILTER_INV_R_SCALE] = (Ctrl->F.rect) ? 1.0 : 2.0 / Ctrl->F.width;
 			F.weight_func = CosBellWeight;
 			break;
 		case 2:	/*  Gaussian filter weights */
-			par[GRDFILTER_INV_R_SCALE] = -18.0 / (Ctrl->F.width * Ctrl->F.width);
+			par[GRDFILTER_INV_R_SCALE] = (Ctrl->F.rect) ? -4.5 : -18.0 / (Ctrl->F.width * Ctrl->F.width);
 			F.weight_func = GaussianWeight;
 			break;
 		default:	/* Everything else uses unit weights */
@@ -662,16 +687,16 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	F.y_min = Gin->header->wesn[YLO];
 	F.y_max = Gin->header->wesn[YHI];
 	x_width = Ctrl->F.width / (Gin->header->inc[GMT_X] * x_scale);
-	y_width = Ctrl->F.width / (Gin->header->inc[GMT_Y] * y_scale);
-	F.y_half_width = (GMT_LONG) (ceil(y_width) / 2.0);
+	y_width = ((F.rect) ? Ctrl->F.width2 : Ctrl->F.width) / (Gin->header->inc[GMT_Y] * y_scale);
 	F.x_half_width = (GMT_LONG) (ceil(x_width) / 2.0);
+	F.y_half_width = (GMT_LONG) (ceil(y_width) / 2.0);
 	F.nx = 2 * F.x_half_width + 1;
 	F.ny = 2 * F.y_half_width + 1;
 	if (x_scale == 0.0 || F.nx < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
 		F.nx = Gin->header->nx;
 		F.x_half_width = (F.nx - 1) / 2;
 		if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
-		visit_check = ((2 * F.x_half_width + 1) > Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+		visit_check = ((2 * F.x_half_width + 1) >= Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 	}
 	if (F.ny < 0 || F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
 		F.ny = Gin->header->ny;
@@ -764,7 +789,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			if (Ctrl->D.mode == 4) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
 			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, irint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)))) : (F.nx - 1) / 2;
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
-			visit_check = ((2 * F.x_half_width + 1) > Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+			visit_check = ((2 * F.x_half_width + 1) >= Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 		}
 			
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights for this latitude */
@@ -782,6 +807,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				continue;	/* Done with this node */
 			}
 
+			if (col_out == 0 || col_out == (Gout->header->nx-1)) {
+				ii = 4;
+			}
 			if (effort_level == 3) set_weight_matrix (GMT, &F, weight, y_out, par, x_shift[col_out], y_shift);	/* Update weights for this location */
 			wt_sum = value = 0.0;	n_in_median = 0;	go_on = TRUE;	/* Reset all counters */
 #ifdef DEBUG
@@ -797,7 +825,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					col_in = i_origin[col_out] + ii;	/* Input column to consider */
 					if (spherical) {			/* Must handle wrapping around the globe */
 						if (col_in < 0) col_in += nx_wrap;	/* "Left" of west means we might reappear in the east */
-						else if (col_in >= Gin->header->nx) col_in -= nx_wrap;	/* Likewise if we are "right" of east */
+						else if (col_in >= nx_wrap) col_in -= nx_wrap;	/* Likewise if we are "right" of east */
 					}
 					if (col_in < 0 || (col_in >= Gin->header->nx)) continue;	/* Still outside range of original input grid */
 					if (visit_check) {	/* Make sure we never include the same node twice along a given row */
@@ -869,7 +897,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 							this_median = GMT_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
 							break;
 						case 9:	/* Spherical Median */
-							this_median = GMT_median_weighted (GMT, work_data, n_in_median, 0.5);
+							this_median = GMT_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
 							break;
 						case 10: /* Spherical Mode */
 							this_median = GMT_mode_weighted (GMT, work_data, n_in_median);
@@ -910,16 +938,40 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 }  /* end of parallel region */
 #endif
 
+	GMT_free (GMT, i_origin);
+	if (!fast_way) GMT_free (GMT, x_shift);
 	GMT_free_grid (GMT, &A, TRUE);	/* Explicitly free the area-weight array since only used internally */
-	if (Ctrl->F.highpass) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
-		GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
-	}
-	
-	/* At last, that's it!  Output: */
 
 	if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %ld nodes, set to NaN\n", n_nan);
 	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found by the mode filter\n", GMT_n_multiples);
+
+	if (Ctrl->F.highpass) {
+		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result */
+			GMT_LONG object_ID, status = 0;			/* Status code from GMT API */
+			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
+			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, (void **)&Gout, NULL, (void *)Gout, &object_ID)) Return (EXIT_FAILURE);
+			GMT_Encode_ID (API, in_string, object_ID);	/* Make filename with embedded object ID for grid Gout */
+			if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&L, NULL, (void *)L, &object_ID)) Return (EXIT_FAILURE);
+			GMT_Encode_ID (GMT->parent, out_string, object_ID);	/* Make filename with embedded object ID for result grid L */
+			sprintf (cmd, "%s -G%s -R%s -V%ld", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
+			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
+			if ((status = GMT_grdsample_cmd (GMT->parent, 0, (void *)cmd))) {	/* Resample the file */
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
+				GMT_exit (EXIT_FAILURE);
+			}
+			Gout->alloc_mode = L->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Gout);
+			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] -L->data[ij_out];
+			GMT_grd_init (GMT, L->header, options, TRUE);	/* Update command history only */
+		}
+		else	/* No need to resample */
+			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_in] -Gout->data[ij_in];
+		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
+	}
+	
+	/* At last, that's it!  Output: */
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 #ifdef DEBUG
@@ -930,16 +982,21 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gin))) Return (error);
 		GMT_free_grid (GMT, &Gout, TRUE);	/* Was never used due to testing */
 	}
+	else if (Ctrl->F.highpass && L) {
+		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)L))) Return (error);
+	}
 	else {
 		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout))) Return (error);
 	}
 #else
-	if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout))) Return (error);
+	if (Ctrl->F.highpass && L) {
+		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)L))) Return (error);
+	}
+	else {
+		if ((error = GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)Gout))) Return (error);
+	}
 #endif
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-
-	GMT_free (GMT, i_origin);
-	if (!fast_way) GMT_free (GMT, x_shift);
 
 	Return (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.31 2011-05-02 02:29:50 remko Exp $
+ *	$Id: gmt_common.h,v 1.32 2011-06-02 18:57:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,6 +70,7 @@ struct GMT_COMMON {
 		GMT_LONG active;
 		GMT_LONG oblique;	/* TRUE when -R...r was given (oblique map, probably), else FALSE (map borders are meridians/parallels) */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
+		char string[GMT_TEXT_LEN256];
 	} R;
 	struct U {	/* -U */
 		GMT_LONG active;
