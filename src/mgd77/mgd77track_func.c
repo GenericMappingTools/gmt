@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.9 2011-05-16 21:23:11 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.10 2011-06-02 20:18:33 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -283,6 +283,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+			case '#':	/* Skip input files confused as numbers (e.g. 123456) */
 				break;
 
 			/* Processes program-specific parameters */

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.24 2011-05-19 01:38:15 jluis Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.25 2011-06-02 20:18:33 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -334,6 +334,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		sprintf (arguments,"%s %s", arguments, opt->arg);
 		switch (opt->option) {
 			case '<':	/* Skip input files */
+			case '#':	/* Skip input files confused as numbers (e.g. 123456) */
 				n_cruises++;
 				break;
 			case 'A':	/* adjust slope and intercept */
