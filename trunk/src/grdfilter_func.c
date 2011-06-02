@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.23 2011-06-01 20:31:55 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.24 2011-06-02 01:07:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -151,7 +151,7 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	if (F->d_flag == 5) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
 	for (j = -F->y_half_width; j <= F->y_half_width; j++) {
 		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row */
-		if (y < F->y_min || y > F->y_max) {		/* This filter row is outside input grid domain */
+		if (F->d_flag > 2 && (y < F->y_min || y > F->y_max)) {		/* This filter row is outside input grid domain */
 			for (i = -F->x_half_width, ij = (j + F->y_half_width) * F->nx; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
 			continue;	/* Done with this row */
 		}
