@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.11 2011-05-11 04:01:54 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.12 2011-06-02 20:18:33 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -318,6 +318,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
+			case '#':	/* Skip input files confused as numbers (e.g. 123456) */
 				break;
 
 			/* Processes program-specific parameters */
