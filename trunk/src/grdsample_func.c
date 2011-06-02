@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.22 2011-05-26 19:18:54 guru Exp $
+ *	$Id: grdsample_func.c,v 1.23 2011-06-02 18:15:54 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -223,15 +223,11 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
-			double shift = 720.0, w, e;
-			w = Gin->header->wesn[XLO] - shift;	e = Gin->header->wesn[XHI] - shift;
-			while (e < Gout->header->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
-			if (w > Gout->header->wesn[XHI]) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: File %s entirely outside longitude range of output region!\n", Ctrl->In.file);
-				Return (EXIT_FAILURE);
-			}
-			if (! (GMT_IS_ZERO (shift))) {	/* Must modify header */
-				Gin->header->wesn[XLO] = w;	Gin->header->wesn[XHI] = e;
+			GMT_LONG shift = 0;
+			if (Gin->header->wesn[XHI] < Gout->header->wesn[XLO]) shift += 360;
+			if (Gin->header->wesn[XLO] > Gout->header->wesn[XHI]) shift -= 360;
+			if (shift) {	/* Must modify header */
+				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
 				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 			}
 		}
@@ -252,12 +248,19 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
-	sprintf (format, "New grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
+	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
+	GMT_report (GMT, GMT_MSG_NORMAL, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
+		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->nx, Gin->header->ny,
+		Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
+
+	memcpy (&format, "Output", 6);
+
 	GMT_report (GMT, GMT_MSG_NORMAL, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
-		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny, Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
+		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny,
+		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
 	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Gin)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
@@ -270,24 +273,24 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	lon = GMT_memory (GMT, NULL, Gout->header->nx, double);
 	for (col = 0; col < Gout->header->nx; col++) {
 		lon[col] = GMT_grd_col_to_x (GMT, col, Gout->header);
-		if (!Gout->header->nxp)
+		if (!Gin->header->nxp)
 			/* Nothing */;
 		else if (lon[col] > Gin->header->wesn[XHI])
-			lon[col] -= Gin->header->inc[GMT_X] * Gout->header->nxp;
+			lon[col] -= Gin->header->inc[GMT_X] * Gin->header->nxp;
 		else if (lon[col] < Gin->header->wesn[XLO])
-			lon[col] += Gin->header->inc[GMT_X] * Gout->header->nxp;
+			lon[col] += Gin->header->inc[GMT_X] * Gin->header->nxp;
 	}
 
 	/* Loop over input point and estinate output values */
 	
 	GMT_row_loop (GMT, Gout, row) {
 		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
-		if (!Gout->header->nyp)
+		if (!Gin->header->nyp)
 			/* Nothing */;
 		else if (lat > Gin->header->wesn[YHI])
-			lat -= Gin->header->inc[GMT_Y] * Gout->header->nyp;
+			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
-			lat += Gin->header->inc[GMT_Y] * Gout->header->nyp;
+			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		GMT_col_loop (GMT, Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 	}
 
