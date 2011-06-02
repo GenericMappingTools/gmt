@@ -3,7 +3,7 @@
 .SH NAME
 grdfilter \- Filter a 2-D grid file in the space (or time) domain
 .SH SYNOPSIS
-BD(grdfilter) IT(input_file) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)] 
+BD(grdfilter) IT(input_file) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
 OPT(G)IT(output_file) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfilter) will filter a IT(.nc) file in the time domain using one
