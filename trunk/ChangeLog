@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1071 2011-06-02 13:07:02 remko Exp $
+	$Id: ChangeLog,v 1.1072 2011-06-02 18:16:50 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-02	remko
@@ -7,6 +7,7 @@
 				line segments.
 	* test/*/orig/*.ps, doc/fig/*.ps:	Updates as result of psl_shorten_path change.
 	* psxy[z]_func.c:	Corrected inadvertent scaling of angles when PROJ_LENGTH_UNIT=cm
+	* grdsample_func.c:	Fixed several bugs related to wrapping of periodical grids.
 
 2011-06-01	pwessel
 	* grdedit_func.c:	The -N option did not consider replicate w/e points for
