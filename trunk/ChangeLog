@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1070 2011-06-02 02:38:41 remko Exp $
+	$Id: ChangeLog,v 1.1071 2011-06-02 13:07:02 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-02	remko
 	* pslib.c:		Smarter version of psl_shorten_path produces more straight
 				line segments.
 	* test/*/orig/*.ps, doc/fig/*.ps:	Updates as result of psl_shorten_path change.
+	* psxy[z]_func.c:	Corrected inadvertent scaling of angles when PROJ_LENGTH_UNIT=cm
 
 2011-06-01	pwessel
 	* grdedit_func.c:	The -N option did not consider replicate w/e points for

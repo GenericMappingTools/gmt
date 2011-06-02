@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.29 2011-05-26 19:18:54 guru Exp $
+ *	$Id: psxy_func.c,v 1.30 2011-06-02 13:05:52 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -641,7 +641,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		xy_errors[GMT_Y] += (S.read_size + get_rgb);
 	}
 	else	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 10; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
+		for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 
 	error += GMT_check_binary_io (GMT, n_cols_start + S.n_required);
@@ -743,7 +743,9 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				i = strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" ,\t", (int)text_rec[i])) i--;
 				GMT_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, FALSE);
-				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated by GMT_parse_symbol_option */
+				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
+				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
+				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
 				if (GMT_conv_intext2dbl (GMT, text_rec, 6)) {	/* Max 6 columns needs to be parsed */
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
