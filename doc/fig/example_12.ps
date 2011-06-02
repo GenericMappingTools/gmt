@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Apr 25 2011 17:37:15) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0a (CVS Jun  1 2011 20:54:00) [64-bit] [C4] Document from GMT_psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr 25 19:12:53 2011
+%%CreationDate: Wed Jun  1 21:36:44 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -296,7 +298,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -486,22 +488,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -524,12 +527,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -542,9 +544,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def
-/PSL_nclip_txt 0 def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -555,13 +558,15 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.24 0.24 scale
+V 0.24 0.24 scale
 %%EndPageSetup
 
+/PSL_page_xsize 2550 def
+/PSL_page_ysize 3300 def
 0 A
 FQ
 O0
-270 1395 T
+270 1395 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe net.xy -Wthinner -P -K -X0.9i -Y4.65i
@@ -1136,9 +1141,9 @@ def
 (6) bc Z
 0 -945 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy table_5.11 -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -O -K -Sc0.12i -Gwhite -Wthinnest
@@ -1148,8 +1153,7 @@ clipsave
 918 0 D
 0 945 D
 -918 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 1 W
 {1 A} FS
 O1
@@ -1205,11 +1209,11 @@ O1
 18 847 42 Sc
 18 805 451 Sc
 18 508 874 Sc
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -F+f6p -O -K
@@ -1219,8 +1223,7 @@ clipsave
 918 0 D
 0 945 D
 -918 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 42 889 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 25 F0
 (0) mc Z
@@ -1275,12 +1278,11 @@ eoclip N
 847 42 M (49) mc Z
 805 451 M (50) mc Z
 508 874 M (51) mc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
-975 0 T
+975 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1eSNw net.xy -Wthinner -O -K -X3.25i
@@ -1824,9 +1826,9 @@ def
 (6) bc Z
 0 -945 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -O -K table_5.11 -Sc0.03i -Gblack
@@ -1836,8 +1838,7 @@ clipsave
 918 0 D
 0 945 D
 -918 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 1 W
 {0 A} FS
 4 42 889 Sc
@@ -1892,11 +1893,11 @@ eoclip N
 4 847 42 Sc
 4 805 451 Sc
 4 508 874 Sc
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext table_5.11 -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -F+f6p+jLM -O -K -Gwhite -W -C0.01i -D0.08i/0i -N
@@ -2323,10 +2324,9 @@ PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul 
 U
 532 874 M (705) ml Z
 0 A
-0 A
 FQ
 O0
--975 -1095 T
+-975 -1095 TM
 
 % PostScript produced by:
 %%GMT:  pscontour -R0/6.5/-0.2/6.5 -JX3.06i/3.15i table_5.11 -B2f1WSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i -O -K -UExample 12 in Cookbook
@@ -2373,8 +2373,7 @@ clipsave
 918 0 D
 0 945 D
 -918 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 1 W
 [8 4] 0 B
 56 99 M
@@ -2867,7 +2866,6 @@ P S
 /PSL_gap_x 6 def
 /PSL_gap_y 6 def
 (725) sH /PSL_height edef
-/PSL_nclip_txt PSL_nclip_txt 1 add def
 0 PSL_straight_text_labels
 3 W
 [] 0 B
@@ -2883,8 +2881,7 @@ S
 -20 -11 D
 -74 -74 D
 -53 -16 D
-5 73 D
-1 9 D
+6 82 D
 -16 44 D
 -14 8 D
 S
@@ -2901,8 +2898,7 @@ S
 -3 30 D
 -18 36 D
 -20 22 D
--2 65 D
--2 74 D
+-4 139 D
 2 22 D
 -3 8 D
 -25 13 D
@@ -2913,44 +2909,36 @@ S
 2 -107 D
 12 -56 D
 26 -27 D
-1 -15 D
-4 -63 D
+5 -78 D
 3 -6 D
 11 4 D
 124 32 D
 28 39 D
-42 -1 D
-21 0 D
+63 -1 D
 73 17 D
 1 47 D
-16 87 D
-6 31 D
-9 9 D
-17 18 D
+22 118 D
+26 27 D
 53 62 D
 S
 184 901 M
 42 -139 D
-32 -151 D
-2 -13 D
+34 -164 D
 9 -9 D
 2 -25 D
 36 -89 D
-143 54 D
-16 6 D
+159 60 D
 40 10 D
 9 13 D
 21 0 D
 79 18 D
 62 6 D
-38 -49 D
-5 -6 D
+43 -55 D
 38 98 D
 -26 76 D
 1 27 D
 4 20 D
-23 53 D
-45 102 D
+68 155 D
 S
 226 762 M
 0 0 D
@@ -2959,24 +2947,19 @@ P S
 -67 -107 D
 -32 -39 D
 -38 -71 D
--41 10 D
--17 5 D
+-58 15 D
 -50 79 D
 -6 7 D
 -19 -2 D
 -94 1 D
--62 -23 D
--158 -59 D
+-220 -82 D
 -20 -25 D
--11 16 D
--15 24 D
--21 47 D
--33 73 D
+-26 40 D
+-54 120 D
 -79 41 D
 -70 51 D
 4 25 D
-11 16 D
-88 135 D
+99 151 D
 -27 90 D
 S
 837 839 M
@@ -2986,25 +2969,21 @@ S
 890 459 M
 -47 -58 D
 -66 -133 D
--74 19 D
--58 15 D
+-132 34 D
 -9 15 D
 -50 99 D
 -55 0 D
--53 -20 D
--52 -19 D
+-105 -39 D
 -62 -75 D
 -48 -33 D
 -19 -29 D
--32 42 D
--1 1 D
+-33 43 D
 -29 41 D
 -86 145 D
 -9 20 D
 -13 7 D
 -20 15 D
--18 8 D
--56 26 D
+-74 34 D
 S
 83 892 M
 12 -40 D
@@ -3020,33 +2999,27 @@ S
 -64 -36 D
 4 -17 D
 6 -2 D
-39 -4 D
-80 -9 D
+119 -13 D
 63 -82 D
 25 -23 D
 39 40 D
-14 22 D
-18 27 D
+32 49 D
 163 111 D
-21 -67 D
-9 -31 D
+30 -98 D
 64 10 D
 136 -56 D
 38 -8 D
-8 15 D
-11 21 D
+19 36 D
 72 112 D
 S
 540 32 M
 265 31 D
-7 33 D
-6 33 D
+13 66 D
 38 -49 D
 S
 340 85 M
 41 -36 D
--19 4 D
--69 10 D
+-88 14 D
 18 36 D
 P S
 169 54 M
@@ -3056,8 +3029,7 @@ P S
 -24 31 D
 -45 4 D
 -84 32 D
--2 9 D
--26 104 D
+-28 113 D
 S
 870 144 M
 -20 25 D
@@ -3067,15 +3039,12 @@ S
 397 167 M
 16 16 D
 8 12 D
-32 22 D
-7 5 D
+39 27 D
 8 -24 D
 143 24 D
-111 -47 D
-31 -12 D
+142 -59 D
 -17 -70 D
--193 -27 D
--70 -10 D
+-263 -37 D
 -35 83 D
 -24 21 D
 P S
@@ -3086,22 +3055,19 @@ P S
 S
 680 154 M
 -9 -41 D
--33 -5 D
--121 -16 D
+-154 -21 D
 -33 78 D
-92 15 D
-22 3 D
+114 18 D
 P S
 605 133 M
 -44 -6 D
 -9 22 D
-6 1 D
-26 4 D
+32 5 D
 24 -9 D
 P S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
+PSL_cliprestore
 9 PSL_straight_text_labels
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
 /PSL_sign -1 def
 /PSL_far false def
 /PSL_TL1 21 def
@@ -3225,10 +3191,9 @@ def
 847 0 M 0 10 D S
 0 -945 T
 0 A
-0 A
 FQ
 O0
-975 0 T
+975 0 TM
 
 % PostScript produced by:
 %%GMT:  pscontour -R0/6.5/-0.2/6.5 -JX3.06i/3.15i table_5.11 -B2f1eSnw -Ctopo.cpt -I -X3.25i -O -K
@@ -3238,8 +3203,7 @@ clipsave
 918 0 D
 0 945 D
 -918 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 {1 0.667 0 C} FS
 29 17 -29 12 2 198 42 SP
 {1 0.333 0 C} FS
@@ -3735,7 +3699,7 @@ eoclip N
 -105 -39 5 -70 220 82 3 306 404 SP
 {1 1 0 C} FS
 105 39 -111 24 2 537 353 SP
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
 6 W
 0 945 M 0 -945 D S
 2 W
@@ -3829,10 +3793,9 @@ def
 847 0 M 0 10 D S
 0 -945 T
 0 A
-0 A
 FQ
 O0
--975 0 T
+-975 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/8/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -X-3.25i
@@ -3842,14 +3805,13 @@ clipsave
 2400 0 D
 0 3300 D
 -2400 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 948 2400 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 125 F1
 (Delaunay Triangulation) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
 %%PageTrailer
-975 0 T 300 300 scale 0 A
+U
 showpage
 
 %%Trailer

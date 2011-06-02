@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Apr 25 2011 17:37:15) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.0a (CVS Jun  1 2011 20:54:00) [64-bit] [C4] Document from GMT_psbasemap
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr 25 19:58:52 2011
+%%CreationDate: Wed Jun  1 20:59:13 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -296,7 +298,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -486,22 +488,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -524,12 +527,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -542,9 +544,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def
-/PSL_nclip_txt 0 def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -555,95 +558,35 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.24 0.24 scale
+V 0.24 0.24 scale
 %%EndPageSetup
 
+/PSL_page_xsize 2550 def
+/PSL_page_ysize 3300 def
 0 A
 FQ
 O0
-300 300 T
+300 300 TM
 
 % PostScript produced by:
 %%GMT:  psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B0
 %%PROJ: xy 0.00000000 6.10000000 0.00000000 6.90000000 0.000 6.100 0.000 6.900 +xy +a=6378137.000 +b=6356752.314245
-/PSL_sign -1 def
-/PSL_far false def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 2 W
 0 2070 M 0 -2070 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 1830 0 T
-/PSL_sign 1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
 0 2070 M 0 -2070 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -1830 0 T
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
 0 0 M 1830 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 2070 T
-/PSL_sign 1 def
-/PSL_far false def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
 0 0 M 1830 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 -2070 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/0.475/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/0.475/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy -7000.00000000 7000.00000000 0.00000000 0.12500000 -7000.000 7000.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 105 T
 2 W
@@ -679,36 +622,18 @@ Kb2S8XJ9g,Lg+i#fkHE8r[lN5le7*TN*.Nq(1Ta+37nj5>2n4H#=W2FAO2.jbdcQ]n^m:Wcg1.V0$jPK
 d+V\gC2Fu_5;nPS+.I%`D4SAKpAWn'"8?VL63"L)5lKL8W.+0Zh7E?8mG9q>H#I!F5IXJg+2e,,DpA$kGR"3+>Pj"k*XfdXk
 l9UH08=H&*Q!U<~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -105 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/0.475/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/0.475/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 20.00000000 0.00000000 0.12500000 0.000 20.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 105 T
 2 W
@@ -725,36 +650,18 @@ J,g]g3$]7K#D>AC0XtXO*=mro@DF:e<\5,H7Uo;'*-OIeO@Wn[3<0[d-^757;Rp>2$SRl@AlC^cemnuT
 UCU=M/6)*KS0m10H`:="Tc_AHFm)k'&t\ctIL:/LHfYVpoI(>%!^o-l!*n_Vp$dBJ^Y<#=G3CpjbUQ&I?<a5q&*o-PQmk,,&
 ,?==k<sL#W2m"9~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -105 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/0.35/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/0.35/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 68 T
 2 W
@@ -764,7 +671,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 PD\L_o&.a_L#SeaWm#GShnf?fp&Fsf~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -780,12 +686,12 @@ U
 810 0 M 0 -15 D S
 -60 -68 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/0.35/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/0.35/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 68 T
 2 W
@@ -795,7 +701,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 5QJS"JH%mms$6V"_#H\"i'@;b5l[MW~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -811,9 +716,9 @@ U
 810 0 M 0 -15 D S
 -945 -68 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -823,20 +728,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 158 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (topo) bc Z
 1350 158 M (wysiwyg) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/0.995/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/0.995/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 261 T
 2 W
@@ -872,36 +776,18 @@ fW@9D!46W=bZE)8GY4P9kt@5S#ff)Ph*ec`<]&rf^Z2*iA6KQBm#N@77Q@2.+B6UD@/#XU?+"OD`'3Y0
 +YLQ\\cMc0>_)?b"/WdC(>q)TJC/08-*RdnTJ*j65SbpO<3h'A`WXI%&hG.nY^lkj]mp(n/"el)JC:k.$HNT*+=O:@P-+inY
 6Y+.*3"HtV?';F"=`7;Vgot[!(po))5IB~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -261 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/0.995/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/0.995/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 261 T
 2 W
@@ -942,36 +828,18 @@ kBe7`Iqga%&Y?84^fn8]aOqa\#1J92!H$9?U"&bY1^T9hil-:<lU0c;.6^:f,M8:s`':d8Elj;GtqA;q
 eAnL1<BBNrAk@ePmBkcgHC?]JJl>(2$CMW6PD!Z"UltpV,DJnl\DshO^mr378EH1JfEUe'inoAdAF*$qpFRsTroQ><LG'<P%
 G4p-(pNLiUG^0"/H2)Z1q0IA`H[GU9Hi&2<r-a"kI=;'CIf4_ErdTFtJ:I~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -261 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/0.87/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/0.87/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 224 T
 2 W
@@ -981,7 +849,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 g&M-Q3WT2K!<;lqp&>(br%.o_S,b/*~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -997,12 +864,12 @@ U
 810 0 M 0 -15 D S
 -60 -224 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/0.87/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/0.87/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 224 T
 2 W
@@ -1012,7 +879,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J/A\(nGn,*!!!iZ&6M=K!2+qQi(ss~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1028,9 +894,9 @@ U
 810 0 M 0 -15 D S
 -945 -224 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -1040,20 +906,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 314 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (seis) bc Z
 1350 314 M (split) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/1.515/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/1.515/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy -8000.00000000 8000.00000000 0.00000000 0.12500000 -8000.000 8000.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 417 T
 2 W
@@ -1094,36 +959,18 @@ Ohk\bu*1r:ISuot1.p]_qH8r:Rc$otL@s^\mc>r:Rl'otgS"_Yj,Fr:\&+p;Hq'`VoMMrV"80p;d.+aS
 MqV_>KiViW3rqk^Sqr@\QjSo&;rqkgVqr[nTkPkABrqu!Zr9=4YlMg_Irqu*]r9XF\mJd%Orqu3`rU9aanG`CVrr)EerUTsd
 oD\^\rr)Nirq6<jpAb-ds8MfnrqQNmq>^Hjs8Moqrqufrr;Zfqs8W)us8N~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -417 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/1.515/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/1.515/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -6000.00000000 3000.00000000 0.00000000 0.12500000 -6000.000 3000.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 417 T
 2 W
@@ -1156,36 +1003,18 @@ P6Cu#b+\cCH1#s%hQrDYTcmd:;W'-lJpXqk3.M%?75%:>aftmY;O1;2S<f54q_,c&>=obrTr)Op`=Fk=
 h,cr*Ui[>Dj.+_8[pc@,jZ!0X83'(eLN3VS%4>`Yr^8,Q)!td>4:_5"&-j(F>tFMOar0:ennI.Aq`XQ'9S8:I??YVnnL^POQ
 ]<3JB_WXNI3U<bP<>/OJU9s-naPLX%.J~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -417 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/1.39/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/1.39/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 379 T
 2 W
@@ -1195,7 +1024,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 !!O5?:jlB`\C:<'P(#Oik%+DXR/Qj5~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1211,12 +1039,12 @@ U
 810 0 M 0 -15 D S
 -60 -379 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/1.39/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/1.39/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 379 T
 2 W
@@ -1226,7 +1054,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 Ao%EY_>e-Ik@XaVOoK%noVVYnVZ4Bc~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1242,9 +1069,9 @@ U
 810 0 M 0 -15 D S
 -945 -379 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -1254,20 +1081,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 470 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (relief) bc Z
 1350 470 M (sealand) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/2.035/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/2.035/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 573 T
 2 W
@@ -1298,36 +1124,18 @@ bD(J!=sP;FgOU+6>>/Pk"`P8,6(*j]$_pEW0!/q-+s&FFTSGr`D\d@isfsJ!P*R>"AC(+6BkZQLXrZ8,
 +6U"\T(2f-8,;`ukL>!REW1DWq>28soREM'rd[N8"!?_@J"Uf\Jk,YF+6YP2T^i#78,<l@kZ!&*EW1\_qAUO?FFU"SreO)@,
 9Q-6J"gr^MF[Ln+6^(]U@J5A8,>"`kgY*WEW1tgqE#e_oREY+rfBYH6QbP,J:I~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -573 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/2.035/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/2.035/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 573 T
 2 W
@@ -1364,36 +1172,18 @@ _DinC)&oo.$r+:@2Q"h;Rfcu4NG'n$#,i:U6UkaK#V%X-E6XfD:h>TbPVQX6`u+kL@Z3m70]7o+Qm2Z?
 Sg)A\@-t*dTR#=Ah9d?Y^qtK<smVa!p*OaPsV>O8o[Z/Kd`a]JrTtk)+#_t!!j7DH3;:"2C>6H#*T*p98R<i,p].IP$enn8J
 h^XUi;<UTF=8FW>$Oa&;Lht#"",;#U&%.JcGiR~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -573 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/1.91/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/1.91/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 536 T
 2 W
@@ -1403,7 +1193,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J1JDGn:V2MO+4sun1fL2'*!0kaoD\Q~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1419,12 +1208,12 @@ U
 810 0 M 0 -15 D S
 -60 -536 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/1.91/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/1.91/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 536 T
 2 W
@@ -1434,7 +1223,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J3UsR#Pincs%fQMmJ(3E'VC#F+G'k)~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1450,9 +1238,9 @@ U
 810 0 M 0 -15 D S
 -945 -536 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -1462,20 +1250,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 626 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (rainbow) bc Z
 1350 626 M (red2green) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/2.555/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/2.555/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 16.00000000 0.00000000 0.12500000 0.000 16.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 729 T
 2 W
@@ -1485,36 +1272,18 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 ":j',;#`hIs)#UPL=uTsmf0K`s3CZEs8GOglN$t'!<8,\s%!.i!!(OL!1j/j~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -729 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/2.555/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/2.555/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 729 T
 2 W
@@ -1548,36 +1317,18 @@ Pm3/;:p575`6U#.!l(0\3DElg<0X=BSPhB).aB8Th@r-7:Z%aiCfS^5JX?D4jU&Ml1*N<Dhm<pY,lFk7
 gR7UXDO;^,_1BoatQ."@U_#Fip,HS7hW\sIF9>`4>^/S1hD(.-#D9+bAYU\q2.D%'B9ED7nD+JfV>MGWqr4ssn)SeG">5KT$
 AdmU:%l-`*n8HC"[A9<<`Jh<tCM%1])4G49?#XO7Y!<<~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -729 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/2.43/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/2.43/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 692 T
 2 W
@@ -1587,7 +1338,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 +Ai)T_>g%ns3CZEs6B[bO9#:\!1j/j~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1603,12 +1353,12 @@ U
 810 0 M 0 -15 D S
 -60 -692 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/2.43/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/2.43/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 692 T
 2 W
@@ -1618,7 +1368,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J-Z8go)XFAT235VmJ$N.)$kg[TMQ1~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1634,9 +1383,9 @@ U
 810 0 M 0 -15 D S
 -945 -692 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -1646,20 +1395,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 782 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (panoply) bc Z
 1350 782 M (polar) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/3.075/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/3.075/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy -8000.00000000 0.00000000 0.00000000 0.12500000 -8000.000 0.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 885 T
 2 W
@@ -1699,36 +1447,18 @@ Blc_5\Q4](d<\8%2pH^I17eW1kqV;j!.?ZNC!1o3;4O;6W@gk5"[\%Ykf9nVj3=:Xu6#of,nL1Ci_dT2
 lYP'3^GE;3+5DPl=*b3+CHbno.8,'b?_q3fW;<0rs\&\:hpj8&dRIc3DoH2!2l$Ykq5"Dg.q]k<O&+@('LTpe#A)Hg*62C>3
 _#GLkUjeAsebd(js80_3Iuk3~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -885 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/3.075/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/3.075/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 0.12500000 0.000 12.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 885 T
 2 W
@@ -1738,36 +1468,18 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 VU"3DGdOd6MDLnVqjNr5)BA^jDuY:eb-KT54duENRB]mC~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -885 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/2.95/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/2.95/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 848 T
 2 W
@@ -1777,7 +1489,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 !!3Q/#UTO'=9*E:/$?[=h6=]i^?5@X~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1793,12 +1504,12 @@ U
 810 0 M 0 -15 D S
 -60 -848 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/2.95/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/2.95/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 848 T
 2 W
@@ -1808,7 +1519,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 VU"5-hhj4_/E7WgrP*9nZIWbRR^$!D~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1824,9 +1534,9 @@ U
 810 0 M 0 -15 D S
 -945 -848 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -1836,20 +1546,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 938 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (ocean) bc Z
 1350 938 M (paired) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/3.595/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/3.595/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1041 T
 2 W
@@ -1887,36 +1596,18 @@ Rk>P`+Y+T(c)DYd2A_#BlPl'1Us+'*b.lVn\.%A#(Z@,*/J9h6*&*sW6u`^>EoY+Vom#Hp);siR<(Zu2
 a1&j(N4hJ[@<?^t\)UCi#/p[Pio^h!+u\D3'gj2TO2#)h[?mFg8S<8)IYq@si3<50>hhq#'L]n8OBtfJj-"iZ(,%\W.iO5=Z
 RN+5Q"-%RJ4o7j.gOUR/e,;??~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1041 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/3.595/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/3.595/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -32.00000000 32.00000000 0.00000000 0.12500000 -32.000 32.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1041 T
 2 W
@@ -1926,36 +1617,18 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J-ZPonH+.F^OLbOn*s?Tr`+^qiQA*@32lk%!$CP%d\8RUN>s02f['U!!<<~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1041 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/3.47/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/3.47/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1004 T
 2 W
@@ -1965,7 +1638,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 $3DUa&4INo@5;5>S!QmZTlJSfS+4kK~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -1981,12 +1653,12 @@ U
 810 0 M 0 -15 D S
 -60 -1004 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/3.47/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/3.47/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1004 T
 2 W
@@ -1996,7 +1668,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 +J8Z6ci7#Fs/Q,!s6p$gVuZj:!<3$!~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2012,9 +1683,9 @@ U
 810 0 M 0 -15 D S
 -945 -1004 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -2024,20 +1695,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1094 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (nighttime) bc Z
 1350 1094 M (no_green) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/4.115/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/4.115/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1197 T
 2 W
@@ -2072,36 +1742,18 @@ O(if^L&>.uGcpnt1PVQYlW^+/FCXfLHmYDW1j/1UG#X5_F.Mb:]8CA>9=io7/"R_CDSpq3Zep90D>^+\
 <X5b8)N/G>)CA>uQj"dfsg:fB.ps?)%7^%e$^,7D8eZ7_6YDmkB2JW$@X5e*$NQSsoWqbJPj+=Ip)SS2rpuJL9QEQ<`^,db=
 l)WjEYE$3.4)4QYX5gptNuG_pWqc1dj3k,lC;)jrq"UoMk-'iW^-=+BrN"uRJ:I~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1197 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/4.115/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/4.115/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1197 T
 2 W
@@ -2137,36 +1789,18 @@ QV4_.\JSJ?l.;0BkTLtN$)Hm7-BF^l32O8m9=ot[:$)O:=Q@O9b!GQ3MV4\<aJ1=`Cc:Q&9V[VLQo6P<
 V_k90d$aJdB$AA`18[adR.D5*bXmRDV@:8,o(l\9a`fA6bd`u0g02ZkB.Tm<Ya+dj<m&Nc.]#h;Pk(8@b"5)OV$s#\np4'Qa
 YtQBba=Ra>"Zn.-R>LHOHK)p7``[f,,@ngORa;Va@QUZU^2PP!Wi~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1197 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/3.99/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/3.99/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1160 T
 2 W
@@ -2176,7 +1810,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J-pf,"9]15"+S+Yn5oN.rr4*.fC0=~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2192,12 +1825,12 @@ U
 810 0 M 0 -15 D S
 -60 -1160 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/3.99/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/3.99/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1160 T
 2 W
@@ -2207,7 +1840,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J,fQWn,WRi"+S.RlhF-P#ml0uTHF~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2223,9 +1855,9 @@ U
 810 0 M 0 -15 D S
 -945 -1160 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -2235,20 +1867,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1250 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (hot) bc Z
 1350 1250 M (jet) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/4.635/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/4.635/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1353 T
 2 W
@@ -2266,36 +1897,18 @@ S^b\V6q:IdKRT8>ge>V/7$^.fm-;Y[-<!7Qh:Z9;4'3iJmhX`*E6KJL+QY?<X(:>=d^#(P?XGTad6;$Q
 glKQ'>u$G%mpgR^S'TBq"apY&%;Hc*V=lL>BL[>R'T6DO]6,^N5n]8],\@=)#^!S7a//Eo)R/luV%h7J([B2sJkBSTkIoJXs
 ;"h1M9=IM@$8LQ3@"@L&JMH=DZ'l\h@eamY4])!UXQT-r2XIH61G9Rc(.p/HO6kQh~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1353 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/4.635/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/4.635/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 32.00000000 0.00000000 0.12500000 0.000 32.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1353 T
 2 W
@@ -2306,36 +1919,18 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 $35?"!1"<&Y5epN!#a8d.,Z"Un-ssD)6a&q^AgUDs'amUC?si+lc=tMY,q;pc2XNqoo8J-H2#p(s1MM6TLJKq9C>VOs&rV+I
 !kscT(TFms2;kUf@U&gli7"b~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1353 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/4.51/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/4.51/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1316 T
 2 W
@@ -2345,7 +1940,6 @@ V N 0 0 T 810 38 scale /DeviceGray setcolorspace
 >> image
 &26q"O0?mu~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2361,12 +1955,12 @@ U
 810 0 M 0 -15 D S
 -60 -1316 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/4.51/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/4.51/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1316 T
 2 W
@@ -2376,7 +1970,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 'EtZYB(/42s,-0GnEbGmF\Db+T)\-B~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2392,9 +1985,9 @@ U
 810 0 M 0 -15 D S
 -945 -1316 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -2404,20 +1997,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1405 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (gray) bc Z
 1350 1405 M (haxby) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/5.155/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/5.155/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy -7000.00000000 -0.00000000 0.00000000 0.12500000 -7000.000 0.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1509 T
 2 W
@@ -2439,36 +2031,18 @@ O0
 38 35 752 0 Sb
 {0.922 1 1 C} FS
 38 23 787 0 Sb
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1509 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/5.155/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/5.155/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -10000.00000000 10000.00000000 0.00000000 0.12500000 -10000.000 10000.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1509 T
 2 W
@@ -2499,36 +2073,18 @@ EedQ3D;57R>Q&-E&/8A;7X^fAaOW,'0CtV[pA]Ei")n'R$=jaus`sn^^<fD%P;9<Om/ZB`@XE3+M>WOH
 [oVj=gX4hqmJu^c6c.hf;<)Z:Q-$R(cK8BZl#XnIdCM^!l486DFiVJS+#e**&$*?,mfhYlQ]CVIgWVmc7HkogY4c2Vh0\UEn
 \/)MqHmIoIIG/A+<U~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1509 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/5.03/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/5.03/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1472 T
 2 W
@@ -2539,7 +2095,6 @@ V N 0 0 T 810 38 scale [/Indexed /DeviceRGB 6 <
 >> image
 !@'F%~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2555,12 +2110,12 @@ U
 810 0 M 0 -15 D S
 -60 -1472 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/5.03/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/5.03/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1472 T
 2 W
@@ -2570,7 +2125,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 R/m7T<W=#6s.S3Im(mY6J.T)@K_Y?;~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2586,9 +2140,9 @@ U
 810 0 M 0 -15 D S
 -945 -1472 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -2598,20 +2152,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1562 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (gebco) bc Z
 1350 1562 M (globe) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/5.675/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/5.675/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 12.00000000 0.00000000 0.12500000 0.000 12.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1665 T
 2 W
@@ -2652,36 +2205,18 @@ WPSY7%(E8PR)j1sUOqo%"(*&GO*KV!VO;/ds'crDN*f^pUNYERp'H`;K+H-sVN"[=l'-W8I+c6pVM@q+
 &L<,D,_cmVKb5Vb&1)u@-%lgVK+KA^%jur>-\;jVJIa/[%k)r<."DdVIh!oW%Ouo:.XhgVI17]T%4cf8.sqaVHOMHP$nZc6/
 U@dVGmc6M$SHZ3/p@[VG7$!H$86Q00Qd^VFU9dE#r-N.0lmXVEsXUB#VpE+1N<~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1665 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/5.675/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/5.675/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy -11000.00000000 8500.00000000 0.00000000 0.12500000 -11000.000 8500.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1665 T
 2 W
@@ -2722,36 +2257,18 @@ IICVdj58A7VZOAu]KVX(c:KC20hcCTVGjY&8-[E,`"#ENjJ(Z#k)mF`k!5G-Z@;Z[$i&H[E)HI'\6L["
 bfn;Uc-=PZcHsqbdF$@idaHUne'umsf%/F(f@S[-f\+s2g=k99gt^`Ah;7#Fhr!>MiSieUioB(ZjQ,C`jlP[gkNM-nl07Htl
 K[a&m-X3-mdBN3n*ff:nac8AoCMSGo^qkNp@n=Uq"XX[q>'pbqu$BirVc]orr)~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1665 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/5.55/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/5.55/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1628 T
 2 W
@@ -2761,7 +2278,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 XbT1)b\4WQK4F>h,f8mYC$-]P^(VWI~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2777,12 +2293,12 @@ U
 810 0 M 0 -15 D S
 -60 -1628 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/5.55/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/5.55/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1628 T
 2 W
@@ -2792,7 +2308,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 +T\/7(t91Cof0ef\`WpsS0487!m&0m~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2808,9 +2323,9 @@ U
 810 0 M 0 -15 D S
 -945 -1628 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -2820,20 +2335,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1718 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (drywet) bc Z
 1350 1718 M (etopo1) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/6.195/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/6.195/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1821 T
 2 W
@@ -2869,36 +2383,18 @@ ldULNsLGAcZo_+q"imU\<9h20MT`5e=VcE#a=fOp!YR[H+>AHB:5K1@Cf/hqtCGBcKL]5'@3s/n!SUn&
 c6)'44Dd6^[5P8h(RnKCmB*l>8,0dQ)iJ\'4hr_[3-l\+qfQemr\+"HnD3u[4cf,a]m%3ah]('Qn'1VL#Pc-n!t0\L;?+H;p
 qmWT-\_&m(dH"f$fX965B0!g0mKl=ir!GHN,CZua8![8*/K*'IR2)d0..;5r+'i^>!P=~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1821 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/6.195/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/6.195/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 360.00000000 0.00000000 0.12500000 0.000 360.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1821 T
 2 W
@@ -2930,36 +2426,18 @@ Y#rDW-n,P0ap]*pZ!@r['Z2bNi!)&sc07X2B!$=H+9V;DBJ-=:#'3G6/TE.!%"QBCpQiIgra8dTL!1pt
 *A(Z@"8E8!#?s_=Ps3jJ-D5=(2*\NhuRMA"f;88VuU#Z!Gm8i[K%*,!*e@^E.A,3!#I$`>i5X)J-FL((MEeShuS(Q#\3oOVu
 U/^!ITD$p&Gom!+4XbJ:Ih.!!(5*!":+Q0X(Pp5Q_Ms$q((M0EB'W"@W;!A,n?g!67>)!?`K~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1821 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/6.07/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/6.07/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1784 T
 2 W
@@ -2969,7 +2447,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 'FY70,oC/V.#_4eZuARkM-0ePB`G\h~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -2985,12 +2462,12 @@ U
 810 0 M 0 -15 D S
 -60 -1784 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/6.07/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/6.07/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1784 T
 2 W
@@ -3000,7 +2477,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 s'Piarr=2A!!*%k!2'96!<:pVs8N(,~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -3016,9 +2492,9 @@ U
 810 0 M 0 -15 D S
 -945 -1784 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -3028,20 +2504,19 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 1874 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (copper) bc Z
 1350 1874 M (cyclic) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/6.715/2.70/0.125h -C7128.left.cpt -B0 -O -K
+%%GMT:  psscale -D1.55/6.715/2.70/0.125h -C67367.left.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 256.00000000 0.00000000 0.12500000 0.000 256.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1977 T
 2 W
@@ -3058,36 +2533,18 @@ J)2ubih]er`(kF$uEAF)QJ-.-]Ytl"^TY0L"7[C2e\c+B*bod"(XcZM=^oKlG<#NYGEh:d^8J2:7`sjg
 L.0*9!f_!2[koV,!l^,<o(`)1Y*GcP*A"jbMen'4.E?<&F\,P)D:GHLpAGuY&j4*O<b22E.K.\KCGJOCPi&Lbc9+&O=.FIbi
 7:>=K9IE16QQN7gX-&LGpEXBFutV1EB!-W+4tn[HIk~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -60 -1977 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/6.715/2.70/0.125h -C7128.right.cpt -B0 -O -K
+%%GMT:  psscale -D4.50/6.715/2.70/0.125h -C67367.right.cpt -B0 -O -K
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 0.12500000 0.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1977 T
 2 W
@@ -3122,36 +2579,18 @@ S^b\V6q:IdKRT8>ge>V/7$^.fm-;Y[-<!7Qh:Z9;4'3iJmhX`*E6KJL+QY?<X(:>=d^#(P?XGTad6;$Q
 glKQ'>u$G%mpgR^S'TBq"apY&%;Hc*V=lL>BL[>R'T6DO]6,^N5n]8],\@=)#^!S7a//Eo)R/luV%h7J([B2sJkBSTkIoJXs
 ;"h1M9=IM@$8LQ3@"@L&JMH=DZ'l\h@eamY4])!UXQT-r2XIH61G9Rc(.p/HO6kQh~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 30 def
-/PSL_AO0 12 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 33 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
 0 0 M 810 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 -945 -1977 T
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D1.55/6.59/2.70/0.125h -C7128.left2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D1.55/6.59/2.70/0.125h -C67367.left2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.75000000 0.00000000 0.12500000 -1.000 1.750 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 60 1940 T
 2 W
@@ -3161,7 +2600,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 J,g\L#UB<R"bS.-ch?Uj!=j]!THF~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -3180,12 +2618,12 @@ U
 810 0 M 0 -15 D S
 -60 -1940 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D4.50/6.59/2.70/0.125h -C7128.right2.cpt -Bf0.25 -O -K
+%%GMT:  psscale -D4.50/6.59/2.70/0.125h -C67367.right2.cpt -Bf0.25 -O -K
 %%PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy +a=6378137.000 +b=6356752.314245
 945 1940 T
 2 W
@@ -3195,7 +2633,6 @@ V N 0 0 T 810 38 scale /DeviceRGB setcolorspace
 >> image
 &F]WQci6hFs)=&!O)Y-&;#eiqs6gO!~>
 U
-0 0 M 810 0 D S
 0 38 M 810 0 D S
 0 0 M 0 38 D S
 810 0 M 0 38 D S
@@ -3211,9 +2648,9 @@ U
 810 0 M 0 -15 D S
 -945 -1940 T
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/6.1/0/6.9 -Jx1i -O -K -D0/0.05 -F+f9p,Helvetica-Bold+jBC
@@ -3223,24 +2660,22 @@ clipsave
 1830 0 D
 0 2070 D
 -1830 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
+PSL_eoclip N
 465 2030 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 38 F1
 (categorical) bc Z
 1350 2030 M (cool) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/6.1/0/6.9 -Jx1i -O /dev/null
+%%GMT:  psxy -R0/6.1/0/6.9 -Jx1i -O -T
 %%PROJ: xy 0.00000000 6.10000000 0.00000000 6.90000000 0.000 6.100 0.000 6.900 +xy +a=6378137.000 +b=6356752.314245
-1 W
 %%PageTrailer
-0 0 T 300 300 scale 0 A
+U
 showpage
 
 %%Trailer
