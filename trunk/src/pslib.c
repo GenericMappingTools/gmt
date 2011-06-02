@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.269 2011-05-22 23:56:12 jluis Exp $
+ *	$Id: pslib.c,v 1.270 2011-06-02 02:36:00 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -2949,10 +2949,14 @@ PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG 
 	 * line segments.  The result is the fewest points needed to draw the path
 	 * and still look exactly like the original path. */
 
-	double old_slope = 1.0e200, new_slope;
 	PSL_LONG i, k, dx, dy;
+#ifdef OLD_shorten_path
 	PSL_LONG old_dir = 0, new_dir;
+	double old_slope = 1.0e200, new_slope;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
+#else
+	PSL_LONG d, db, bx, by, j, ij;
+#endif
 
 	if (n < 2) return (n);	/* Not a path to start with */
 
@@ -2961,11 +2965,12 @@ PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG 
 		iy[i] = psl_iy (PSL, y[i]);
 	}
 
+#ifdef OLD_shorten_path
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */
 
 	/* First point is the anchor. We will find at least one point, unless all points are the same */
-	for (i = k = 0; i < n-1; i++) {
+	for (i = k = 0; i < n - 1; i++) {
 		dx = ix[i+1] - ix[i];
 		dy = iy[i+1] - iy[i];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
@@ -2984,11 +2989,55 @@ PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG 
 	if (k < 1) return (1);
 
 	/* Last point (k cannot be < 1 so k-1 >= 0) */
-	if (x[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
+	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
 		ix[k] = ix[n-1];
 		iy[k] = iy[n-1];
 		k++;
 	}
+#else
+	/* Skip intermediate points that are "close" to the line between point i and point j, where
+	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
+	   A point is always close when it coincides with one of the end points (i or j).
+	   An intermediate point is also considered "far" when it is beyond i or j.
+	   Algorithm requires that |dx by - bx dy| < max(|dx|,dy|).
+	*/
+	for (i = k = 0, j = 2; j < n; j++) {
+		dx = ix[j] - ix[i];
+		dy = iy[j] - iy[i];
+		d = MAX(abs(dx),abs(dy));
+		/* We know that d can be zero. That is OK, since it will only happen when (dx,dy) = (0,0).
+		   And in that cases all intermediate points will always be "far" */
+		for (ij = j - 1; ij > i; ij--) {
+			bx = ix[ij] - ix[i];
+			/* Check if the intermediate point is outside the x-range between points i and j.
+			   In case of a vertical line, any point with a different x-coordinate is "far" */
+			if (dx > 0) {
+				if (bx < 0 || bx > dx) break;
+			}
+			else {
+				if (bx > 0 || bx < dx) break;
+			}
+			by = iy[ij] - iy[i];
+			db = abs(dx * by - bx * dy);
+			if (db >= d) break; /* Point ij is "far" from line connecting i and j */
+		}
+		if (ij > i) {	/* Some intermediate point failed test */
+			i = j - 1;
+			k++;
+			ix[k] = ix[i];
+			iy[k] = iy[i];
+		}
+	}
+
+	/* We have gotten to the last point. If this is a duplicate, skip it */
+	if (ix[k] != ix[n-1] || iy[k] != iy[n-1]) {
+		k++;
+		ix[k] = ix[n-1];
+		iy[k] = iy[n-1];
+	}
+	k++;
+#endif
+
 	return (k);
 }
 
