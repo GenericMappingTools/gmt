@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.303 2011-05-27 01:01:44 guru Exp $
+ *	$Id: gmt_map.c,v 1.304 2011-06-02 19:54:02 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1455,10 +1455,11 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 {
 	GMT_LONG i, n, m, new_n, range, *x_index = NULL, *x_type = NULL;
 	GMT_LONG n_alloc, n_x_alloc, side, j, np, in = 1, n_cross = 0, out = 0, cross = 0;
-	GMT_LONG polygon, jump = FALSE, curved, periodic = FALSE;
+	GMT_LONG polygon, jump = FALSE, curved, way, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
 	PFL clipper[4], inside[4], outside[4];
+	struct GMT_QUAD *Q = NULL;
 #ifdef DEBUG
 	FILE *fp = NULL;
 	GMT_LONG dump = 0;
@@ -1491,8 +1492,14 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = C->common.R.wesn[YLO]; border[3] = C->common.R.wesn[XLO];	border[1] = C->common.R.wesn[XHI];	border[2] = C->common.R.wesn[YHI];
 
-	/* Make sure longitudes are compatible with w-e borders */
-	range = (C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : ((C->common.R.wesn[XLO] < 0.0 && C->common.R.wesn[XHI] < 0.0) ? GMT_IS_M360_TO_0_RANGE : GMT_IS_0_TO_P360_RANGE);
+	/* Make data longitudes have no jumps */
+	Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
+	/* We must keep separate min/max for both Dateline and Greenwich conventions */
+	for (i = 0; i < n; i++) GMT_quad_add (C, Q, lon[i]);
+	/* Finalize longitude range settings */
+	way = GMT_quad_finalize (C, Q);
+	GMT_free (C, Q);
+	range = (way) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	for (i = 0; i < n; i++) GMT_lon_range_adjust (range, &lon[i]);
 
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
