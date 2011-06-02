@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.525 2011-06-01 20:11:03 remko Exp $
+ *	$Id: gmt_init.c,v 1.526 2011-06-02 18:57:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1141,6 +1141,7 @@ GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 
+	strcpy (C->common.R.string, item);	/* Verbatim copy */
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
 		if (item[0] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
 			C->common.R.wesn[XLO] = 0.0, C->common.R.wesn[XHI] = 360.0;
