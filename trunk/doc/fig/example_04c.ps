@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Apr 29 2011 15:40:40) [64-bit] [C4] Document from GMT_grdimage
+%%Title: GMT v5.0.0a (CVS Jun  1 2011 20:54:00) [64-bit] [C4] Document from GMT_grdimage
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Apr 29 16:04:32 2011
+%%CreationDate: Wed Jun  1 21:36:38 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -556,13 +558,15 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.24 0.24 scale
+V 0.24 0.24 scale
 %%EndPageSetup
 
+/PSL_page_xsize 2550 def
+/PSL_page_ysize 3300 def
 0 A
 FQ
 O0
-375 375 T
+375 375 TM
 
 % PostScript produced by:
 %%GMT:  grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -P -X1.25i -Y1.25i -U/-0.5i/-1i/Example 4c in Cookbook
@@ -5454,9 +5458,9 @@ U
 PSL_cliprestore
 PSL_GPP setmatrix
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pscoast -R195/210/18/25 -JM6.75i -p60/30 -B2/2NEsw -Gblack -O -K
@@ -5488,8 +5492,7 @@ FO
 -18 -19 D
 -22 -1 D
 23 -40 D
-14 2 D
-1 0 D
+15 2 D
 FO
 1215 384 M
 0 14 D
@@ -5524,8 +5527,7 @@ FO
 21 11 D
 -18 17 D
 -16 -2 D
-8 -10 D
-0 -1 D
+8 -11 D
 FO
 1132 368 M
 -9 -11 D
@@ -5638,9 +5640,9 @@ V 180 R (-164Ê) tc Z U
 -21 1031 M 0 -1052 D S
 PSL_GPP setmatrix
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psbasemap -R195/210/18/25 -JM6.75i -p60/30 -O -K -T209/19.5/1i --COLOR_BACKGROUND=red --MAP_TICK_PEN=thinner,red --FONT=red
@@ -5661,9 +5663,9 @@ V -0.176 R (N) bc Z U
 3.32551 setmiterlimit
 PSL_GPP setmatrix
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psscale -R195/210/18/25 -JM6.75i -p240/30 -D3.375i/-0.5i/5i/0.3ih -Cgeoid.cpt -I -O -K -B2:Geoid (m):
@@ -5733,7 +5735,6 @@ gA%L?JL$"77N('%85"BYX8=o^0[!^L#n;Hj9.571X"8R)F(8-<-M!a>d0>m(:8$jKuB#@1V@('%23"B>
 '`^u/"A]"-:]Mn?!&maU85K=`2[*"Y5YqJX564V0!)N^t;#p\o#6@['!`;fl'ECf,"AAe*9E6D5!&R@L6qdSS1^$JP4A5`K3
 rhr#!)*Cn9E5&d"TV3r!)-'[~>
 U
-0 0 M 1500 0 D S
 0 90 M 1500 0 D S
 0 0 M 0 90 D S
 1500 0 M 0 90 D S
@@ -5804,10 +5805,9 @@ def
 -262 240 T
 PSL_GPP setmatrix
 0 A
-0 A
 FQ
 O0
-0 660 T
+0 660 TM
 
 % PostScript produced by:
 %%GMT:  grdview HI_topo4.nc -It_intens.nc -R195/210/18/25/-6/4 -JM6.75i -JZ3.4i -p60/30 -Ctopo.cpt -O -K -N-6/lightgray -Qc100 -B2/2/2:Topo (km):neswZ \
@@ -5888,216 +5888,41 @@ O0
 PSL_GPP setmatrix
 3 W
 1888 877 M
--12 -10 D
--5 -5 D
--6 -5 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--5 -4 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--5 -4 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--5 -4 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--5 -4 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -4 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -4 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -4 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--12 -10 D
--5 -4 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--6 -4 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--6 -4 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--6 -4 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--6 -4 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -5 D
--6 -4 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -5 D
--6 -5 D
--5 -5 D
--12 -10 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -5 D
--6 -5 D
+-28 -25 D
+-29 -24 D
+-185 -161 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-191 -166 D
+-17 -14 D
+-28 -25 D
+-17 -14 D
+-28 -25 D
+-17 -14 D
+-28 -25 D
+-17 -14 D
+-28 -25 D
+-17 -14 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
+-22 -20 D
+-23 -19 D
 P S
 875 0 M
--10 3 D
--22 6 D
--10 3 D
--22 6 D
--10 4 D
--22 6 D
--10 3 D
--22 6 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--22 6 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 4 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--20 6 D
--11 3 D
--10 3 D
--11 3 D
--10 3 D
--11 3 D
--20 6 D
--11 3 D
--20 6 D
--11 3 D
--10 3 D
--11 3 D
--20 6 D
--11 3 D
--20 6 D
--11 3 D
--30 9 D
--11 3 D
--20 6 D
--11 3 D
--10 3 D
--10 2 D
--10 3 D
--11 3 D
--30 9 D
--11 3 D
--30 9 D
--11 3 D
--40 12 D
--11 3 D
--20 6 D
+-64 18 D
+-53 16 D
+-758 219 D
 P S
 1888 965 M 0 -88 D S
 875 65 M 0 -65 D S
@@ -11170,25 +10995,12 @@ O1
 -10 8 D
 -11 20 D
 -11 0 D
--10 -6 D
--11 -7 D
--11 3 D
--10 4 D
--22 4 D
--10 2 D
--11 3 D
+-21 -13 D
+-21 7 D
+-43 9 D
 -11 11 D
--10 -2 D
--11 -1 D
--10 3 D
--11 3 D
--10 3 D
--11 4 D
--11 3 D
--10 3 D
--11 3 D
--10 4 D
--11 3 D
+-21 -3 D
+-95 29 D
 -10 9 D
 -11 5 D
 -10 2 D
@@ -11196,8 +11008,7 @@ O1
 -10 -16 D
 -11 13 D
 -10 8 D
--11 3 D
--10 3 D
+-21 6 D
 -11 -24 D
 -10 14 D
 -11 19 D
@@ -11205,127 +11016,37 @@ O1
 -11 -4 D
 -10 3 D
 -10 11 D
--11 3 D
--10 3 D
--11 3 D
+-32 9 D
 -10 8 D
 -11 6 D
--10 -5 D
--10 -6 D
--11 -5 D
+-31 -16 D
 -10 3 D
 -10 19 D
 -11 9 D
--10 6 D
--11 6 D
+-21 12 D
 -10 1 D
--10 5 D
--11 4 D
+-21 9 D
 -10 3 D
 -10 7 D
 -11 -7 D
 -10 5 D
--10 1 D
--21 0 D
+-31 1 D
 -10 -3 D
 -10 -7 D
--11 2 D
--20 4 D
--10 3 D
--11 2 D
--30 9 D
--11 3 D
--30 9 D
--11 3 D
--40 12 D
--11 3 D
--10 4 D
--10 3 D
+-52 11 D
+-153 46 D
 0 -35 D
-20 -6 D
-11 -3 D
-40 -12 D
-11 -3 D
-30 -9 D
-11 -3 D
-30 -9 D
-11 -3 D
-10 -3 D
-10 -2 D
-10 -3 D
-11 -3 D
-20 -6 D
-11 -3 D
-30 -9 D
-11 -3 D
-20 -6 D
-11 -3 D
-20 -6 D
-11 -3 D
-10 -3 D
-11 -3 D
-20 -6 D
-11 -3 D
-20 -6 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-20 -6 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -4 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-22 -6 D
-10 -3 D
-11 -3 D
-10 -3 D
-11 -3 D
-10 -3 D
-22 -6 D
-10 -3 D
-22 -6 D
-10 -4 D
-22 -6 D
-10 -3 D
-22 -6 D
-10 -3 D
+621 -180 D
+180 -51 D
+53 -16 D
+21 -6 D
 FO
 1888 965 M
--12 -8 D
--5 -4 D
--6 -3 D
--5 -2 D
--6 -3 D
--6 -4 D
--5 -5 D
--6 -4 D
--6 -5 D
--5 -4 D
--6 -4 D
--5 -4 D
--12 -8 D
--5 -4 D
--12 -8 D
--5 -4 D
--6 -5 D
--11 -11 D
--6 -5 D
+-23 -15 D
+-17 -9 D
+-22 -18 D
+-45 -32 D
+-23 -21 D
 -5 -10 D
 -6 -7 D
 -6 -4 D
@@ -11339,32 +11060,23 @@ FO
 -6 44 D
 -5 6 D
 -6 -65 D
--5 -7 D
--6 -7 D
--6 -6 D
--5 -11 D
--6 -15 D
+-17 -20 D
+-11 -26 D
 -6 11 D
--5 -4 D
--6 -5 D
+-11 -9 D
 -5 7 D
 -6 -17 D
 -6 -4 D
 -5 5 D
 -6 -15 D
--6 19 D
--5 17 D
--6 -19 D
--5 -14 D
+-11 36 D
+-11 -33 D
 -6 -27 D
--6 -15 D
--5 -10 D
+-11 -25 D
 -6 -10 D
 -6 -7 D
--5 -1 D
--6 -1 D
--5 -5 D
--6 -5 D
+-11 -2 D
+-11 -10 D
 -6 1 D
 -5 -3 D
 -6 22 D
@@ -11373,16 +11085,12 @@ FO
 -6 -12 D
 -5 -5 D
 -6 10 D
--6 -5 D
--5 -5 D
--6 -14 D
--6 -12 D
--5 -5 D
--6 -5 D
+-11 -10 D
+-12 -26 D
+-11 -10 D
 -5 -1 D
 -6 -6 D
--6 -4 D
--5 -3 D
+-11 -7 D
 -6 -1 D
 -6 2 D
 -5 -5 D
@@ -11398,8 +11106,7 @@ FO
 -5 -1 D
 -6 -8 D
 -6 19 D
--5 -13 D
--6 -21 D
+-11 -34 D
 -6 -5 D
 -5 -10 D
 -6 -4 D
@@ -11407,18 +11114,11 @@ FO
 -6 -10 D
 -6 -4 D
 -5 5 D
--12 -22 D
--5 -7 D
--6 -4 D
--5 -2 D
--6 -4 D
+-17 -29 D
+-17 -10 D
 -6 -5 D
 -5 -20 D
--6 -6 D
--6 -5 D
--5 -5 D
--6 -5 D
--5 -5 D
+-28 -26 D
 -6 -3 D
 -6 -5 D
 -5 -7 D
@@ -11431,194 +11131,61 @@ FO
 -5 27 D
 -6 1 D
 -6 -43 D
+-11 -16 D
+-17 -27 D
 -5 -6 D
--6 -10 D
--5 -9 D
--12 -18 D
--5 -6 D
--12 -10 D
--5 -4 D
--6 -3 D
--5 -2 D
--6 -4 D
--6 -5 D
--5 -5 D
+-17 -14 D
+-17 -9 D
+-11 -10 D
 -6 -8 D
 -11 0 D
--6 -3 D
--5 -3 D
--6 -3 D
--6 -9 D
--5 -9 D
+-17 -9 D
+-11 -18 D
 -6 30 D
 -6 -28 D
 -5 -15 D
--6 -10 D
--5 -7 D
--6 -9 D
--6 -7 D
--5 -7 D
--6 -8 D
+-17 -26 D
+-17 -22 D
 -6 -4 D
 -5 3 D
 -6 -1 D
 -5 -3 D
 -6 -9 D
--6 -4 D
--5 -4 D
--6 -4 D
--6 -5 D
+-23 -17 D
 -11 -11 D
--5 -7 D
--29 -29 D
+-11 -13 D
+-23 -23 D
 -5 -7 D
 -6 -5 D
 0 -65 D
-6 5 D
-5 5 D
-6 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 5 D
-6 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 4 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 4 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 4 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-5 4 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 5 D
-6 4 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-12 10 D
-5 4 D
-6 5 D
-5 5 D
-12 10 D
-5 5 D
-6 5 D
-6 4 D
-5 5 D
-6 5 D
-5 5 D
-12 10 D
+51 44 D
+56 49 D
+23 19 D
+22 20 D
+23 19 D
+16 15 D
+29 24 D
+16 15 D
+29 24 D
+16 15 D
+29 24 D
+16 15 D
+29 24 D
+16 15 D
+29 24 D
+185 161 D
+23 19 D
+22 20 D
+23 19 D
+22 20 D
+23 19 D
+22 20 D
+23 19 D
+22 20 D
+23 19 D
+191 166 D
+17 14 D
+17 15 D
 FO
 /PSL_GPP matrix currentmatrix def [0.866025 -0.25 0 0.866025 0 -1306.19] concat
 0 1800 T
@@ -11681,9 +11248,9 @@ V 90 R (Topo \(km\)) bc Z U
 0 -1800 T
 PSL_GPP setmatrix
 0 A
-0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/10/0/10 -Jx1i -F+f60p,ZapfChancery-MediumItalic+jCB -O
@@ -11703,7 +11270,7 @@ V MU 0 0 M (H) FP 213 F33 (AWAIIAN) FP 250 F33 ( R) FP 213 F33 (IDGE) FP pathbbo
 213 F33 (IDGE) Z
 PSL_cliprestore
 %%PageTrailer
-0 0 T 300 300 scale 0 A
+U
 showpage
 
 %%Trailer

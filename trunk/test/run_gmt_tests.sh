@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: run_gmt_tests.sh,v 1.16 2011-05-21 02:32:49 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.17 2011-06-02 02:38:32 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -18,7 +18,7 @@ olddir=
 
 for o in $* ; do
 	dir=`dirname $o`
-	script=`basename $o`
+	script=`basename $o .sh`.sh
 	if test "$dir" != "$olddir"; then
 		cd $here/$dir
 		echo "------------------------------------------------------------------------------"

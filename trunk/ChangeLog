@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1069 2011-06-02 00:10:22 guru Exp $
+	$Id: ChangeLog,v 1.1070 2011-06-02 02:38:41 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-02	remko
+	* pslib.c:		Smarter version of psl_shorten_path produces more straight
+				line segments.
+	* test/*/orig/*.ps, doc/fig/*.ps:	Updates as result of psl_shorten_path change.
 
 2011-06-01	pwessel
 	* grdedit_func.c:	The -N option did not consider replicate w/e points for
@@ -8,7 +13,7 @@
 	* gmt_support.c:	Added check to report if repeating east/west duplicate
 				nodes in global gridline-registered grids are in fact
 				not identical.
-	* grdcontour_func.c	Improving detection of closed contours that should be ticked
+	* grdcontour_func.c:	Improving detection of closed contours that should be ticked
 				and marked (via -T) when such contours cross periodic boundaries
 				or are polar caps.
 
