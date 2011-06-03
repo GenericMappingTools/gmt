@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.15 2011-05-23 00:08:40 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.16 2011-06-03 00:34:04 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -316,7 +316,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Allocated D[GMT_OUT] and possibly C, both with nrows = ncolumns so just segment structs are allocated */
 	
-	n_columns = D[GMT_IN]->n_columns;	/* Set the required columns for output */
+	n_columns = dim[2] = D[GMT_IN]->n_columns;	/* Set the required columns for output */
 	
 	n_seg_alloc[0] = dim[1] = GMT_CHUNK;
 	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D[GMT_OUT], -1, &ID))) {
@@ -363,6 +363,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				/* Allocate space for this segment */
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;
+				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, TRUE);
 				
 				T[CLOSED][out_seg]->header = strdup (D[GMT_IN]->table[k]->segment[j]->header);
@@ -400,6 +401,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 	}
+	T[CLOSED] = GMT_memory (GMT, T[CLOSED], out_seg, struct GMT_LINE_SEGMENT *);
 	
 	if ((error = GMT_Begin_IO (API, 0, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (Ctrl->C.active) {	/* With -C we only separate closed from open and then we are done */
@@ -587,6 +589,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 		
+		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_pol_pts, n_columns, TRUE);
 		
 		sprintf (buffer, "%c Possibly a composite segment; see comments for individual segment headers\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
@@ -689,7 +692,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Write out the new multisegment file with polygons and segments */
 	
-	if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
+	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->Out.file, (void *)D[GMT_OUT]))) Return (error);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Segments in: %ld Segments out: %ld\n", ns + n_islands, chain + n_islands);
