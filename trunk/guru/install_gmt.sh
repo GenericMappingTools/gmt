@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.172 2011-03-25 01:50:41 remko Exp $
+#	$Id: install_gmt.sh,v 1.173 2011-06-03 02:13:17 guru Exp $
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
@@ -1134,11 +1134,6 @@ if [ "$GMT_si" = "y" ]; then
 else
 	enable_us=--enable-US
 fi
-if [ "$GMT_ps" = "y" ]; then
-	enable_eps=
-else
-	enable_eps=--enable-eps
-fi
 if [ "$GMT_flock" = "y" ]; then
 	disable_flock=
 else
@@ -1240,13 +1235,13 @@ fi
 
 cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
+  --enable-netcdf=$netcdf_path $enable_matlab $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
+  --enable-netcdf=$netcdf_path $enable_matlab $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
 
