@@ -1,6 +1,6 @@
 #	Information for installing GMT 5.x
 #
-#		$Id: README,v 1.67 2011-04-23 02:14:11 guru Exp $
+#		$Id: README,v 1.68 2011-06-03 02:13:17 guru Exp $
 #
 #	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
 #
@@ -229,7 +229,6 @@ There are a few GMT-specific options in configure.  They are
 	--enable-shared		To make shared (dynamic) libraries
 	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
-	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
 	--enable-flock		Use file locking on .gmtcommands4 files
 	--disable-mex           Disable compilation of mex supplement which requires Matlab or Octave
 	--disable-xgrid         Disable compilation of xgrid supplement which requires X11
@@ -270,22 +269,11 @@ other UNIX systems we suspect this is a [temporary] limitation of GNU
 NSF.  If you want to activate file locking you may enable it by
 supplying the --enable-flock flag to configure.
 
-GMT can produce either Freeform PostScript (suitable to be sent to
-various printers) or Encapsulated PostScript (suitable to be included
-in another document).  True PS files will use the setpagedevice
-PostScript command to manipulate paper trays and manual feeds
-on selected printers.  Some PostScript previewers (such as Sun's
-old pageview) do not understand these commands and will abort; this
-is also true of some PS to raster conversion utilities.  On the other
-hand, EPS files are intended to be included in another document and
-are not allowed to use setpagedevice.  To simplify printing, EPS files
-are allowed to contain a showpage operator which means EPS files will
-print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults4
-can be set to one or the other format (see man gmtdefaults).  By
-default GMT will produce PS files.  If you do not need to take
-advantage of paper tray manipulations or expect to make mostly EPS
-files you may want to use --enable-eps to make EPS the default.  Note
-that this can be changed at any time via the PAPER_MEDIA parameter.
+GMT produces Freeform PostScript files.  If you need EPS files for
+inclusion in other documents or you need the PostScript rasterized
+into common raster formats like JPG, PNG, TIFF etc., please see our
+tool ps2raster.  It can do these conversions and determine the exact
+bounding box.
 
 	In the main GMT directory, type
 
