@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.9 2011-05-23 00:08:40 guru Exp $
+ *	$Id: gmtdp_func.c,v 1.10 2011-06-03 19:50:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -288,7 +288,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the gmtdp main code ----------------------------*/
 
 	if (Ctrl->T.mode > 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	
