@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.335 2011-05-18 21:32:36 remko Exp $
+ *	$Id: gmt_plot.c,v 1.336 2011-06-04 21:51:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -306,11 +306,14 @@ void gmt_define_PS_items (struct GMT_CTRL *C, struct PSL_CTRL *P, GMT_LONG axis,
 
 void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	GMT_LONG form;
+	GMT_LONG form, cap = P->internal.line_cap;
 	double x_length, y_length;
 
 	x_length = C->current.proj.rect[XHI] - C->current.proj.rect[XLO];
 	y_length = C->current.proj.rect[YHI] - C->current.proj.rect[YLO];
+
+	/* Temporarily change to square cap so rectangular frames have neat corners */
+	PSL_setlinecap (P, PSL_SQUARE_CAP);
 
 	if (C->current.map.frame.side[W_SIDE]) GMT_xy_axis (C, C->current.proj.rect[XLO], C->current.proj.rect[YLO], y_length, s, n,
 		&C->current.map.frame.axis[GMT_Y], TRUE,  C->current.map.frame.side[W_SIDE] & 2);	/* West or left y-axis */
@@ -321,6 +324,7 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 	if (C->current.map.frame.side[N_SIDE]) GMT_xy_axis (C, C->current.proj.rect[XLO], C->current.proj.rect[YHI], x_length, w, e,
 		&C->current.map.frame.axis[GMT_X], FALSE, C->current.map.frame.side[N_SIDE] & 2);	/* North or upper x-axis */
 
+	PSL_setlinecap (P, cap);	/* Reset back to default */
 	if (!C->current.map.frame.header[0] || C->current.map.frame.plotted_header) return;	/* No header today */
 
 	PSL_comment (P, "Placing plot title\n");

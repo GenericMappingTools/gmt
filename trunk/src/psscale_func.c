@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.16 2011-06-04 01:11:53 guru Exp $
+ *	$Id: psscale_func.c,v 1.17 2011-06-04 21:51:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -394,7 +394,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	GMT_LONG B_set, GMT_LONG equi, GMT_LONG horizontal, GMT_LONG logscl, GMT_LONG intens, double *max_intens, GMT_LONG skip_lines, GMT_LONG extend, \
 	double e_length, char *nan_text, double gap, GMT_LONG interval_annot, GMT_LONG monochrome, struct T Ctrl_T)
 {
-	GMT_LONG i, ii, id, j, nb, ndec = -1, dec, p_val, depth, Label_justify, form;
+	GMT_LONG i, ii, id, j, nb, ndec = -1, dec, p_val, depth, Label_justify, form, cap = PSL->internal.line_cap;
 	GMT_LONG nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, use_labels = 0;
 	GMT_LONG reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
@@ -404,6 +404,8 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	struct GMT_FILL *f = NULL;
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
+	/* Temporarily change to square cap so rectangular frames have neat corners */
+	PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
 	/* Find max decimals needed */
 
@@ -985,6 +987,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
 	if (use_image || intens) GMT_free (GMT, bar);
+	PSL_setlinecap (PSL, cap);	/* Reset back to default */
 }
 
 #define Return(code) {Free_psscale_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
