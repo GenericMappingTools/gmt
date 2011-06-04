@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1073 2011-06-02 18:59:09 guru Exp $
+	$Id: ChangeLog,v 1.1074 2011-06-04 01:11:53 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-02	pwessel
+	* psscale_func.c:	Enhanced -E to accept optional +n[<label>] which will
+				plot a NaN-color rectangle at the start of the bar, and
+				label it with <label> [NaN].
 
 2011-06-02	pwessel
 	* grdfilter_func.c:	Added rectangular filtering and automatic resampling to

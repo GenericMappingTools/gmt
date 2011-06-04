@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.15 2011-05-31 15:09:49 remko Exp $
+ *	$Id: psscale_func.c,v 1.16 2011-06-04 01:11:53 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,10 +50,11 @@ struct PSSCALE_CTRL {
 		GMT_LONG horizontal;
 		double x, y, width, length;
 	} D;
-	struct E {	/* -E[b|f][<length>] */
+	struct E {	/* -E[b|f][<length>][+n[<text>] */
 		GMT_LONG active;
 		GMT_LONG mode;
 		double length;
+		char *text;
 	} E;
 	struct I {	/* -I[<intens>|<min_i>/<max_i>] */
 		GMT_LONG active;
@@ -109,6 +110,7 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->C.file) free ((void *)C->C.file);
+	if (C->E.text) free ((void *)C->E.text);
 	if (C->Z.file) free ((void *)C->Z.file);
 	GMT_free (GMT, C);	
 }
@@ -120,7 +122,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psscale synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psscale %s [API] - To create grayscale or colorscale for maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psscale -D<xpos/ypos/length/width>[h] [-A[a|l|c]] [-C<cpt_file>] [-E[b|f][<length>]] [%s] [-I[<max_intens>|<low_i>/<high_i>]\n", GMT_B_OPT);
+	GMT_message (GMT, "usage: psscale -D<xpos/ypos/length/width>[h] [-A[a|l|c]] [-C<cpt_file>] [-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N<dpi>] [-O] [-P]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-Q] [-S] [-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-Z<zfile>] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -144,6 +146,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Add sidebar triangles for back- and foreground colors.\n");
 	GMT_message (GMT, "\t   Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
 	GMT_message (GMT, "\t   Optionally, append triangle height [Default is half the barwidth].\n");
+	GMT_message (GMT, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
 	GMT_message (GMT, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");
 	GMT_message (GMT, "\t   Alternatively, specify <lower>/<upper> intensity values.\n");
 	GMT_explain_options (GMT, "jZK");
@@ -183,7 +186,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG j, n, pos, n_errors = 0, n_files = 0;
-	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *c = NULL;
 	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -230,18 +233,32 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 				break;
 			case 'E':
 				Ctrl->E.active = TRUE;
+				if ((c = strchr (opt->arg, 'n'))) {	/* Got +n[<text>] */
+					c--;	*c = 0; c += 2;
+					Ctrl->E.text = (*c) ? strdup (c) : strdup ("NaN");
+					Ctrl->E.mode = 4;
+					c -= 2;
+				}
 				j = 0;
 				if (opt->arg[0] == 'b') {
-					Ctrl->E.mode = 1;
+					Ctrl->E.mode |= 1;
 					j = 1;
 				}
-				else if (opt->arg[0] == 'f') {
-					Ctrl->E.mode = 2;
+				else if (opt->arg[j] == 'f') {
+					Ctrl->E.mode |= 2;
 					j = 1;
 				}
-				else
-					Ctrl->E.mode = 3;
+				if (opt->arg[j] == 'b') {
+					Ctrl->E.mode |= 1;
+					j++;
+				}
+				else if (opt->arg[j] == 'f') {
+					Ctrl->E.mode |= 2;
+					j++;
+				}
+				if (j == 0) Ctrl->E.mode |= 3;	/* No b|f added */
 				if (opt->arg[j]) Ctrl->E.length = GMT_to_inch (GMT, &opt->arg[j]);
+				if (c) *c = '+';	/* Put back the + sign */
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
@@ -375,7 +392,7 @@ void fix_format (char *unit, char *format)
 
 void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, GMT_LONG bit_dpi, GMT_LONG flip, \
 	GMT_LONG B_set, GMT_LONG equi, GMT_LONG horizontal, GMT_LONG logscl, GMT_LONG intens, double *max_intens, GMT_LONG skip_lines, GMT_LONG extend, \
-	double e_length, double gap, GMT_LONG interval_annot, GMT_LONG monochrome, struct T Ctrl_T)
+	double e_length, char *nan_text, double gap, GMT_LONG interval_annot, GMT_LONG monochrome, struct T Ctrl_T)
 {
 	GMT_LONG i, ii, id, j, nb, ndec = -1, dec, p_val, depth, Label_justify, form;
 	GMT_LONG nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, use_labels = 0;
@@ -383,7 +400,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label;
-	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, rgb[4], rrggbb[4], xp[4], yp[4];
+	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off, rgb[4], rrggbb[4], xp[4], yp[4];
 	struct GMT_FILL *f = NULL;
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
@@ -601,6 +618,8 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		y_annot = y_base + dir * annot_off;
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
+		if (extend & 3) PSL_setlinejoin (PSL, PSL_BEVEL_JOIN);
+		
 		if (extend & (reverse + 1)) {	/* Add color triangle on left side */
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[0] - e_length;
 			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
@@ -613,6 +632,22 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, TRUE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
+			nan_off = e_length;	/* Must make space for the triangle */
+		}
+		if (extend & 4) {	/* Add NaN rectangle on left side */
+			nan_off += e_length;
+			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, e_length);
+			for (i = 0; i < 4; i++) xp[i] -= nan_off;
+			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
+			if ((f = P->patch[GMT_NAN].fill))
+				GMT_setfill (GMT, f, TRUE);
+			else {
+				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				PSL_setfill (PSL, rgb, TRUE);
+			}
+			PSL_plotpolygon (PSL, xp, yp, 4);
+			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, 7, form);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[1] = xright + gap;	xp[2] = xp[0] + e_length;
@@ -627,6 +662,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 		}
+		if (extend & 3) PSL_setlinejoin (PSL, PSL_MITER_JOIN);
 
 		if (gap == 0.0) {
 			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
@@ -785,6 +821,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		y_annot = y_base + dir * annot_off;
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
+		if (extend & 3) PSL_setlinejoin (PSL, PSL_BEVEL_JOIN);
 		if (extend & (reverse + 1)) {	/* Add color triangle at bottom */
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[0] - e_length;
 			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
@@ -797,6 +834,22 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_setfill (PSL, rgb, TRUE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
+			nan_off = e_length;	/* Must make space for the triangle */
+		}
+		if (extend & 4) {	/* Add NaN rectangle on left side */
+			nan_off += e_length;
+			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, e_length);
+			for (i = 0; i < 4; i++) xp[i] -= nan_off;
+			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
+			if ((f = P->patch[GMT_NAN].fill))
+				GMT_setfill (GMT, f, TRUE);
+			else {
+				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				PSL_setfill (PSL, rgb, TRUE);
+			}
+			PSL_plotpolygon (PSL, xp, yp, 4);
+			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, 10, form);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[1] = xright + gap;	xp[2] = xp[0] + e_length;
@@ -811,6 +864,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 		}
+		if (extend & 3) PSL_setlinejoin (PSL, PSL_MITER_JOIN);
 		if (gap == 0.0) {
 			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
 			if (!(flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, width, xleft + length, width);
@@ -1074,7 +1128,10 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
 	
-	GMT_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, GMT->common.B.set, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active, max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->L.spacing, Ctrl->L.interval, Ctrl->M.active, Ctrl->T);
+	GMT_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, 
+		GMT->common.B.set, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
+		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
+		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);
 	PSL_setorigin (PSL, -Ctrl->D.x, -Ctrl->D.y, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, -1, 0.0);
 
