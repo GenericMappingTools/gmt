@@ -9,7 +9,7 @@
 psscale \- Plot gray scale or color scale on maps
 .SH SYNOPSIS
 BD(psscale) OPT(D)IT(xpos)/IT(ypos)/IT(length)/IT(width)[BD(h)] [ OPT(A)[BD(a)|BD(l)|BD(c)] ] [ GMT_B_OPT ] 
-[ OPT(C)IT(cpt_file) ] [ OPT(E)[BD(b)|BD(f)][IT(length)] ] [ OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)] ] 
+[ OPT(C)IT(cpt_file) ] [ OPT(E)[BD(b)|BD(f)][IT(length)][BD(+n)[IT(text)]] ] [ OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)] ] 
 [ GMT_J_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)[BD(i)][IT(gap)] ] [ OPT(M) ] 
 [ OPT(N)IT(dpi) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] [ OPT(S) ] 
 [ OPT(T)[BD(+p)IT(pen)][BD(+g)IT(fill)][BD(+l)|BD(r)|BD(b)|BD(t)IT(off)] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
@@ -59,7 +59,8 @@ pattern specifications in the cpt file.
 OPT(E)[BD(b)|BD(f)][IT(length)]
 Add sidebar triangles for BD(b)ack- and/or BD(f)oreground colors.  Add BD(f) or BD(b) for
 only one sidebar triangle [Default gives both].  Optionally, append
-triangle height [Default is half the barwidth].
+triangle height [Default is half the barwidth].  Finally, you can plot a rectangle with
+the NaN color at the start of the bar, labeled with IT(text) [NaN].
 .TP
 OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)]
 Add illumination effects.  Optionally, set the range of intensities from
