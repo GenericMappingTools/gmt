@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1075 2011-06-04 21:51:11 guru Exp $
+	$Id: ChangeLog,v 1.1076 2011-06-05 03:21:00 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-04	pwessel
 	* gmt_plot.c:		Eliminated notch in corners of linear map frames and color bars.
+	* psscale_func.c:	Make triangular extension be seamless with the rest of bar outline.
 
 2011-06-02	pwessel
 	* psscale_func.c:	Enhanced -E to accept optional +n[<label>] which will

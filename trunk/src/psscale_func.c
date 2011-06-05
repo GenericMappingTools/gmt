@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.17 2011-06-04 21:51:11 guru Exp $
+ *	$Id: psscale_func.c,v 1.18 2011-06-05 03:21:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -399,7 +399,7 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	GMT_LONG reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
-	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label;
+	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd, yd, xt;
 	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off, rgb[4], rrggbb[4], xp[4], yp[4];
 	struct GMT_FILL *f = NULL;
 
@@ -577,6 +577,15 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		y_label = -GMT->current.setting.map_label_offset;
 	}
 
+	if (extend) {	/* Adjustment to triangle base coordinates so pen abuts perfectly with bar */
+		double theta, s, c, w = GMT->current.setting.map_frame_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH];
+		theta = atan (2.0 * e_length / width);	/* triangle base angle in radians */
+		sincos (theta, &s, &c);
+		xd = 0.5 * w * (c - 1.0);
+		yd = 0.5 * w * (s - 1.0);
+		xt = yd * 2.0 * e_length / width;	/* Shift of triangle peak x-pos to maintain original angle theta */
+	}
+
 	/* Current point (0,0) is now at lower left location of bar */
 
 	depth = (monochrome || P->is_gray) ? 8 : 24;
@@ -620,21 +629,24 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		y_annot = y_base + dir * annot_off;
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
-		if (extend & 3) PSL_setlinejoin (PSL, PSL_BEVEL_JOIN);
+		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Reset back to default */
 		
 		if (extend & (reverse + 1)) {	/* Add color triangle on left side */
-			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[0] - e_length;
-			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
+			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - e_length;
+			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->patch[id].fill))
-				GMT_setfill (GMT, f, TRUE);
+				GMT_setfill (GMT, f, FALSE);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
-				PSL_setfill (PSL, rgb, TRUE);
+				PSL_setfill (PSL, rgb, FALSE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			nan_off = e_length;	/* Must make space for the triangle */
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			nan_off = e_length - xd;	/* Must make space for the triangle */
 		}
 		if (extend & 4) {	/* Add NaN rectangle on left side */
 			nan_off += e_length;
@@ -652,19 +664,22 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, 0.0, 7, form);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle on right side */
-			xp[0] = xp[1] = xright + gap;	xp[2] = xp[0] + e_length;
-			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
+			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;
+			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->patch[id].fill))
-				GMT_setfill (GMT, f, TRUE);
+				GMT_setfill (GMT, f, FALSE);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
-				PSL_setfill (PSL, rgb, TRUE);
+				PSL_setfill (PSL, rgb, FALSE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
 		}
-		if (extend & 3) PSL_setlinejoin (PSL, PSL_MITER_JOIN);
+		PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
 		if (gap == 0.0) {
 			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
@@ -823,20 +838,24 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		y_annot = y_base + dir * annot_off;
 		if ((flip & 1) == (flip & 2) / 2) y_label = y_base + dir * label_off;
 
-		if (extend & 3) PSL_setlinejoin (PSL, PSL_BEVEL_JOIN);
+		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Reset back to default */
+
 		if (extend & (reverse + 1)) {	/* Add color triangle at bottom */
-			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[0] - e_length;
-			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
+			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - e_length;
+			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->patch[id].fill))
-				GMT_setfill (GMT, f, TRUE);
+				GMT_setfill (GMT, f, FALSE);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
-				PSL_setfill (PSL, rgb, TRUE);
+				PSL_setfill (PSL, rgb, FALSE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
-			nan_off = e_length;	/* Must make space for the triangle */
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
+			nan_off = e_length - xd;	/* Must make space for the triangle */
 		}
 		if (extend & 4) {	/* Add NaN rectangle on left side */
 			nan_off += e_length;
@@ -854,19 +873,22 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, nan_text, -90.0, 10, form);
 		}
 		if (extend & (2 - reverse)) {	/* Add color triangle at top */
-			xp[0] = xp[1] = xright + gap;	xp[2] = xp[0] + e_length;
-			yp[0] = width;	yp[1] = 0.0;	yp[2] = 0.5 * width;
+			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + e_length;
+			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->patch[id].fill))
-				GMT_setfill (GMT, f, TRUE);
+				GMT_setfill (GMT, f, FALSE);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
-				PSL_setfill (PSL, rgb, TRUE);
+				PSL_setfill (PSL, rgb, FALSE);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
+			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE + PSL_STROKE);
 		}
-		if (extend & 3) PSL_setlinejoin (PSL, PSL_MITER_JOIN);
+		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Reset back to default */
 		if (gap == 0.0) {
 			if ((flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
 			if (!(flip & 1) || !B_set) PSL_plotsegment (PSL, xleft, width, xleft + length, width);
