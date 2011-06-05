@@ -56,7 +56,7 @@ cpt-file with a L, U, or B to annotate Lower, Upper, or Both color segment bound
 If not given, BD(psscale) will read stdin.  Like BD(grdview), BD(psscale) can understand
 pattern specifications in the cpt file.
 .TP
-OPT(E)[BD(b)|BD(f)][IT(length)]
+OPT(E)[BD(b)|BD(f)][IT(length)][BD(+n)[IT(text)]]
 Add sidebar triangles for BD(b)ack- and/or BD(f)oreground colors.  Add BD(f) or BD(b) for
 only one sidebar triangle [Default gives both].  Optionally, append
 triangle height [Default is half the barwidth].  Finally, you can plot a rectangle with
