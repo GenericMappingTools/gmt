@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.270 2011-06-02 02:36:00 remko Exp $
+ *	$Id: pslib.c,v 1.271 2011-06-05 17:20:14 jluis Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -3004,7 +3004,7 @@ PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG 
 	for (i = k = 0, j = 2; j < n; j++) {
 		dx = ix[j] - ix[i];
 		dy = iy[j] - iy[i];
-		d = MAX(abs(dx),abs(dy));
+		d = MAX(abs((int)dx),abs((int)dy));
 		/* We know that d can be zero. That is OK, since it will only happen when (dx,dy) = (0,0).
 		   And in that cases all intermediate points will always be "far" */
 		for (ij = j - 1; ij > i; ij--) {
@@ -3018,7 +3018,7 @@ PSL_LONG psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, PSL_LONG 
 				if (bx > 0 || bx < dx) break;
 			}
 			by = iy[ij] - iy[i];
-			db = abs(dx * by - bx * dy);
+			db = abs((int)(dx * by) - (int)(bx * dy));
 			if (db >= d) break; /* Point ij is "far" from line connecting i and j */
 		}
 		if (ij > i) {	/* Some intermediate point failed test */
