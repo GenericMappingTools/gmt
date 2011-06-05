@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.20 2011-05-19 23:12:49 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.21 2011-06-05 18:35:41 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -940,6 +940,21 @@ void table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 
 	if (constant[last]) a = GMT_dilog (GMT, factor[last]);
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = (constant[last]) ? a : GMT_dilog (GMT, T->segment[s]->coord[col][i]);
+}
+
+void table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
+/*OPERATOR: DIFF 1 1 Difference as in Matlab operator with same name.  */
+{
+	GMT_LONG s, i;
+	struct GMT_TABLE *T = S[last]->table[0];
+
+	/* Central 1st difference in t */
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (i = 0; i < info->T->segment[s]->n_rows - 1; i++) 
+			T->segment[s]->coord[col][i] = T->segment[s]->coord[col][i+1] - T->segment[s]->coord[col][i];
+
+		T->segment[s]->coord[col][info->T->segment[s]->n_rows - 1] = 0;
+	}
 }
 
 void table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
