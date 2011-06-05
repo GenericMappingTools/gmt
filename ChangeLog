@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1076 2011-06-05 03:21:00 guru Exp $
+	$Id: ChangeLog,v 1.1077 2011-06-05 18:46:03 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-05	jluis
+	* gmtmath.c:		New operator DIFF that works similar to the function with the ´
+				same name in Matlab.
 
 2011-06-04	pwessel
 	* gmt_plot.c:		Eliminated notch in corners of linear map frames and color bars.
