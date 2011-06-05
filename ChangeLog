@@ -1,9 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1077 2011-06-05 18:46:03 jluis Exp $
+	$Id: ChangeLog,v 1.1078 2011-06-05 20:04:46 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-06-05	pwessel
+	* nearneighbor_func.c:	For global region in longitudes, cannot extend w/e limits
+				as we do for Cartesian and region-limited areas.
+
 2011-06-05	jluis
-	* gmtmath.c:		New operator DIFF that works similar to the function with the ´
+	* gmtmath.c:		New operator DIFF that works similar to the function with the
 				same name in Matlab.
 
 2011-06-04	pwessel
