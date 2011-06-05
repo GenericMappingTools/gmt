@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.20 2011-05-25 08:56:42 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.21 2011-06-05 20:04:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -289,6 +289,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
+	GMT_BC_init (GMT, Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active))) Return (error);
@@ -308,8 +309,16 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	factor = Ctrl->N.sectors / (2.0 * M_PI);
 
-	x_left = Grid->header->wesn[XLO] - max_d_col * Grid->header->inc[GMT_X];	x_right = Grid->header->wesn[XHI] + max_d_col * Grid->header->inc[GMT_X];
+	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];
+	if (!GMT_is_geographic (GMT, GMT_IN) || !GMT_360_RANGE (x_left, x_right)) {
+		x_left  -= max_d_col * Grid->header->inc[GMT_X];
+		x_right += max_d_col * Grid->header->inc[GMT_X];
+	}
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
+	if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (y_bottom < -90.0) y_bottom = -90.0;
+		if (y_top > 90.0) y_top = 90.0;
+	}
 	x_width = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];		y_width = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
 	half_x_width = 0.5 * x_width;			half_y_width = 0.5 * y_width;
 	n = n_read = 0;
