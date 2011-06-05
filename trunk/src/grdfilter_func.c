@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.26 2011-06-05 17:23:27 jluis Exp $
+ *	$Id: grdfilter_func.c,v 1.27 2011-06-05 19:29:34 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -967,7 +967,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_grd_init (GMT, L->header, options, TRUE);	/* Update command history only */
 		}
 		else	/* No need to resample */
-			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_in] -Gout->data[ij_in];
+			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] -Gout->data[ij_out];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
 	}
 	
