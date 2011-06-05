@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.21 2011-06-05 18:35:41 jluis Exp $
+ *	$Id: gmtmath_func.c,v 1.22 2011-06-05 19:28:11 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3090,6 +3090,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->A.active) {
 		load_column (stack[0], n_columns-1, rhs, 1);	/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
+		GMT_set_tbl_minmax (GMT, stack[0]->table[0]);
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&A_in);
 		nstack = 1;
 	}
@@ -3158,6 +3159,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "T ");
 				for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, info.T, COL_T);
+				GMT_set_tbl_minmax (GMT, stack[nstack]->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
 				if (Ctrl->T.notime) {
@@ -3170,6 +3172,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Tn ");
 				for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, info.T, COL_TN);
+				GMT_set_tbl_minmax (GMT, stack[nstack]->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
@@ -3179,6 +3182,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						alloc_mode[nstack] = 1;
 					}
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack], j, I, j);
+					GMT_set_tbl_minmax (GMT, stack[nstack]->table[0]);
 				}
 				else {
 					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "%s ", opt->arg);
@@ -3270,6 +3274,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			else
 				load_const_column (stack[0], j, factor[0]);
 		}
+		GMT_set_tbl_minmax (GMT, stack[0]->table[0]);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
@@ -3291,7 +3296,10 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			R = stack[0];
 		else {		/* Can happen if only -T [-N] was specified with no operators */
 			R = Template;
-			if (Ctrl->N.tcol < R->n_columns) load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
+			if (Ctrl->N.tcol < R->n_columns) {
+				load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
+				GMT_set_tbl_minmax (GMT, R->table[0]);
+			}
 		}
 		if (Ctrl->S.active) {	/* Only get one record */
 			GMT_LONG nr, r, c, row;
