@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.336 2011-06-04 21:51:11 guru Exp $
+ *	$Id: gmt_plot.c,v 1.337 2011-06-06 04:30:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3447,6 +3447,17 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	if (!P) {
 		GMT_report (C, GMT_MSG_FATAL, "PSL pointer not initialized!\n");
 		GMT_exit (GMT_RUNTIME_ERROR);
+	}
+
+	if (!C->common.O.active) {	/* First time initialize PSL session */
+		P->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+		P->internal.verbose = C->current.setting.verbose;		/* Inherit verbosity level from GMT */
+		PSL_beginsession (P);					/* Initializes the session and sets a few defaults */
+		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+#ifdef GMT_COMPAT
+		if (C->current.setting.ps_copies > 1) P->init.copies = C->current.setting.ps_copies;
+#endif
+		PSL_setdefaults (P, C->current.setting.ps_dpi, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
 	}
 
 	if (!GMT_Find_Option (C->parent, '>', options, &Out)) {	/* Want to use a specific output file */
