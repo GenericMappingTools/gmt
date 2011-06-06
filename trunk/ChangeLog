@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1078 2011-06-05 20:04:46 guru Exp $
+	$Id: ChangeLog,v 1.1079 2011-06-06 04:30:15 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-05	pwessel
 	* nearneighbor_func.c:	For global region in longitudes, cannot extend w/e limits
 				as we do for Cartesian and region-limited areas.
+	* gmt_init.c:		Moved the PSL_beginsession call to GMT_plotinit so that the
+				any --PS_* defaults have been parsed.
 
 2011-06-05	jluis
 	* gmtmath.c:		New operator DIFF that works similar to the function with the
