@@ -422,7 +422,7 @@ Resolution of the plotting device (dpi).  Note that in order to be as compact as
 BD(GMT) IT(PostScript) output uses integer formats only so the resolution should be
 set depending on what output device you are using.  E.g, using 300 and sending the output to
 a Linotype 300 phototypesetter (2470 dpi) will not take advantage of the extra resolution (i.e.,
-positioning on the page and line thicknesses are still only done in steps of 1/300 inch; of course, text will look smoother)  [300].
+positioning on the page and line thicknesses are still only done in steps of 1/300 inch; of course, text will look smoother)  [1200].
 .TP
 .B PS_IMAGE_COMPRESS
 (static) Determines if IT(PostScript) images are compressed using the Run-Length Encoding scheme (rle),

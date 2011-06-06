@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.30 2011-06-02 13:05:52 remko Exp $
+ *	$Id: psxy_func.c,v 1.31 2011-06-06 18:27:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -342,9 +342,9 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_pen_syntax (GMT, 'W', "Sets pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
-	GMT_explain_options (GMT, "XaC0c");
+	GMT_explain_options (GMT, "XaC0");
 	GMT_message (GMT, "\t   Default is the required number of columns.\n");
-	GMT_explain_options (GMT, "fghipt:.");
+	GMT_explain_options (GMT, "cfghipt:.");
 
 	return (EXIT_FAILURE);
 }
