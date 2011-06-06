@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.527 2011-06-06 04:30:15 guru Exp $
+ *	$Id: gmt_init.c,v 1.528 2011-06-06 17:34:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7689,6 +7689,10 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 			GMT_report (C, -GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
 			return (NULL);
 		}
+		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
+		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+		PSL_setdefaults (C->PSL, C->current.setting.ps_dpi, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
 	}
 
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
