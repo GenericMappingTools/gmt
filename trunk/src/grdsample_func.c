@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.23 2011-06-02 18:15:54 remko Exp $
+ *	$Id: grdsample_func.c,v 1.24 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,7 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdsample %s [API] - Resample a grid file onto a new grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdsample <old_grdfile> -G<new_grdfile> [%s]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[%s] [-T] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

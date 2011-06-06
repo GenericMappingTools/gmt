@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.27 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdview_func.c,v 1.28 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -323,8 +323,8 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: grdview <topofile> %s [-B<tickinfo>] [-C<cpt_file>]\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-G<drapefile> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensfile>] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]] [%s]\n", GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-S<smooth>] [-T[s][o[<pen>]]] [%s] [%s] [-W<type><pen>]\n\t[%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[-S<smooth>] [-T[s][o[<pen>]]] [%s] [%s]\n\t[-W<type><pen>] [%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
