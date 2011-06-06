@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.15 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.16 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -112,8 +112,8 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdgradient %s [API] - Compute directional gradients from grid files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdgradient <infile> -G<outfile> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
-	GMT_message (GMT, "[-E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]>]\n");
-	GMT_message (GMT, "[-N[t_or_e][<amp>[/<sigma>[/<offset>]]]] [%s] [-S<slopefile>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]>]\n");
+	GMT_message (GMT, "\t[-N[t_or_e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopefile>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

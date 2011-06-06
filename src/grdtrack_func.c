@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.18 2011-05-14 00:04:06 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.19 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sampling of 2-D gridded data set(s) along 1-D trackline\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <xyfile> -G<grd1> -G<grd2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_message (GMT, "\t[-D<dfile>] [%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.11 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.12 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -82,7 +82,7 @@ GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdhisteq %s [API] - Histogram equalization for grid files\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdhisteq <infile> [-G<outfile>] [-C<n_cells>] [-D] [-N[<norm>]] [-Q] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdhisteq <infile> [-G<outfile>] [-C<n_cells>] [-D] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.18 2011-05-24 23:28:10 guru Exp $
+ *	$Id: grdmask_func.c,v 1.19 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -80,7 +80,7 @@ GMT_LONG GMT_grdmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "grdmask %s [API] - Create mask grid file from polygons or point coverage\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdmask [<xyfiles>] -G<mask_grd_file> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A[m|p]] [-N[i|I|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_RADIUS_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

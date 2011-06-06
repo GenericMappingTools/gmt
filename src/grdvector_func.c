@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvector_func.c,v 1.14 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdvector_func.c,v 1.15 2011-06-06 04:58:12 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -106,8 +106,8 @@ GMT_LONG GMT_grdvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdvector %s [API] - Plot vector fields from grid files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdvector compx.grd compy.grd %s %s [-A]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-C<cpt>] [-E] [-G<fill>] [-I<dx/dy>] [-K] [-N] [-O] [-P] [-Q<params>] [-S[l]<scale>[<unit>]]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [-C<cpt>] [-E] [-G<fill>] [-I<dx/dy>] [-K] [-N] [-O] [-P] [-Q<params>]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-S[l]<scale>[<unit>]] [-T] [%s] [%s] [-W<pen>]\n\t[%s] [%s] [-Z] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
