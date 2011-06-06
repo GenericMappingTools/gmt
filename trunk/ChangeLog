@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1079 2011-06-06 04:30:15 guru Exp $
+	$Id: ChangeLog,v 1.1080 2011-06-06 18:27:19 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-06	pwessel
+	* gmt.conf:		From now on we let PS_DPI be 1200 to avoid minor round-off
+				issues in plotting when positions based on line-thicknesses
+				must be computed.  This increases the PS file by just a few
+				percent but avoid many side-effects of the old 300 dpi setting.
 
 2011-06-05	pwessel
 	* nearneighbor_func.c:	For global region in longitudes, cannot extend w/e limits

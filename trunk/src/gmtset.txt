@@ -8,7 +8,7 @@ BD(gmtset) [ OPT(C) | OPT(D)[BD(s)|BD(u)] | OPT(G)IT(defaultsfile) ] PARAMETER1 
 BD(gmtset) will adjust individual BD(GMT) defaults settings in the current directory's BD(gmt.conf)\"'
 file.  If no such file exists one will be created.  The main purpose of BD(gmtset) is
 temporarily to change certain parameters inside a shell script, e.g., set the dots-per-inch
-to 600, run the script, and reset to 300 dpi.  Optionally, you can specify one or more temporary changes
+to 72, run the script, and reset to 1200 dpi.  Optionally, you can specify one or more temporary changes
 directly on any BD(GMT) command line with the syntax PAR(PARAMETER,VALUE); such changes are
 only in effect for that command and do not permanently change the default settings on disk.
 .SH REQUIRED ARGUMENTS

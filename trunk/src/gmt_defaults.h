@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_defaults.h,v 1.41 2011-05-18 21:22:30 remko Exp $
+ *	$Id: gmt_defaults.h,v 1.42 2011-06-06 18:27:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double ps_page_size[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
-	double ps_dpi;				/* Dots pr. inch plotter resolution [300] */
+	double ps_dpi;				/* Dots pr. inch plotter resolution [1200] */
 	double ps_transparency;			/* Later transparency [0] */
 	GMT_LONG ps_color_mode;			/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 #ifdef GMT_COMPAT

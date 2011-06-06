@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.528 2011-06-06 17:34:08 guru Exp $
+ *	$Id: gmt_init.c,v 1.529 2011-06-06 18:27:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -498,7 +498,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'c':	/* -c option to set number of plot copies option */
 
-			GMT_message (C, "\t-c specifies the number of copies [%ld].\n", C->PSL->init.copies);
+			GMT_message (C, "\t-c Specify the number of copies [%ld].\n", C->PSL->init.copies);
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
