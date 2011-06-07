@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.11 2011-06-07 01:14:21 guru Exp $
+ *    $Id: psmeca_func.c,v 1.12 2011-06-07 21:38:29 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -166,13 +166,13 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "psmeca %s - Plot seismological symbols on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t-S<format><scale>[/fontsize[/justify/offset/angle/form]]\n");
+	GMT_message (GMT, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
 	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-Ddepmin/depmax] [-E<fill>] [-G<fill>]\n");
+	GMT_message (GMT, "\t[-D<depmin>/<depmax>] [-E<fill>] [-G<fill>]\n");
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P] [-r]\n");
-	GMT_message (GMT, "\t[-Tnplane[/<pen>]] [%s]\n", GMT_U_OPT);
+	GMT_message (GMT, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z<cpt>] [-z] [-a[size[/Psymbol[Tsymbol]]]\n\n");
+	GMT_message (GMT, "\t[-Z<cpt>] [-z] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n\n");
 	GMT_message (GMT, "\t[-p<pen>] [-t<pen>] [-e<fill>] -g<fill>]\n\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 

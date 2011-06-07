@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.24 2011-06-07 01:14:19 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.25 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -171,8 +171,8 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "gmt2kml %s - Convert GMT data tables to KML files for Google Earth\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
-	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n-|[+]<fill>] [-I<icon>] [-K] [-L<col:name>,col:name>,...]\n");
-	GMT_message (GMT, "\t[-N+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w/e/s/n>] [-Sc|n<scale>]\n");
+	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n-|[+]<fill>] [-I<icon>] [-K] [-L<col:name>,<col:name>,...]\n");
+	GMT_message (GMT, "\t[-N+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_message (GMT, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 

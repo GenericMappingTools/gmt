@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.13 2011-06-07 01:14:21 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.14 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,10 +50,6 @@ struct SPLITXYZ_CTRL {
 		GMT_LONG active;
 		double xy_filter, z_filter;
 	} F;
-	struct G {	/* -D<gap> */
-		GMT_LONG active;
-		double value;
-	} G;
 	struct N {	/* -N<namestem> */
 		GMT_LONG active;
 		char *name;
@@ -128,7 +124,6 @@ void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
         C->A.azimuth = 90.0;
 	C->A.tolerance = 360.0;
-	C->G.value = DBL_MAX;	/* No gaps */
 	return ((void *)C);
 }
 
@@ -147,8 +142,8 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "splitxyz %s [API] - Split xyz[dh] files into segments\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
-	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-G<gap>]\n");
-	GMT_message (GMT, "\t[-N<template>] [-Q<flags>] [-S] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
+	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -164,7 +159,6 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
 	GMT_message (GMT, "\t   Defaults are both widths = 0, giving no filtering.\n");
 	GMT_message (GMT, "\t   Use negative width to highpass.\n");
-	GMT_message (GMT, "\t-G Do not let profiles have gaps exceeding <gap>. [Default = 10 dist units].\n");
 	GMT_message (GMT, "\t-N Writes individual segments to separate files [Default writes one\n");
 	GMT_message (GMT, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_message (GMT, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
@@ -196,6 +190,9 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG j, n_errors = 0, n_outputs = 0, n_files = 0, z_selected = FALSE;
+#ifdef GMT_COMPAT
+	char txt_a[GMT_TEXT_LEN256];
+#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -227,10 +224,17 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 				Ctrl->F.active = TRUE;
 				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2, "Syntax error -F option: Can't decipher values\n");
 				break;
+#ifdef GMT_COMPAT
 			case 'G':
-				Ctrl->G.active = TRUE;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->G.value)) != 1, "Syntax error -G option: Can't decipher value\n");
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
+				GMT->common.g.active = TRUE;
+				if (GMT_is_geographic (GMT, GMT_IN))	
+					sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
+				else
+					sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
+				n_errors += gmt_parse_g_option (GMT, txt_a);
 				break;
+#endif
 #ifdef GMT_COMPAT
 			case 'M':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
@@ -275,7 +279,6 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.value < 0.0, "Syntax error -G option: Data gap distance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->S.active, "Syntax error -Z option: Cannot be used with -S option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->F.z_filter != 0.0, "Syntax error -F option: Cannot specify z-filter while using -Z option\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name, "Syntax error: Binary output requires a namestem in -N\n");
@@ -296,7 +299,7 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, ok, io_mode = 0, nprofiles = 0, *rec = NULL, first = TRUE;
 	GMT_LONG n_total = 0, n_out = 0, seg2 = 0, n_alloc_seg = 0, n_alloc = 0;
 
-	double dy, dx, last_d, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
+	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
 	
 	char header[GMT_TEXT_LEN64];
@@ -446,16 +449,11 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 			begin = end = 0;
 			while (end < S->n_rows-1) {
-				last_d = S->coord[d_col][begin];
 				sincos (S->coord[h_col][begin], &last_s, &last_c);
 				csum = last_c;	ssum = last_s;
 				ok = TRUE;
 				while (ok && end < S->n_rows-1) {
 					end++;
-					if (S->coord[d_col][end] - last_d > Ctrl->G.value) {	/* Fails due to too much distance gap  */
-						ok = FALSE;
-						continue;
-					}
 					sincos (S->coord[h_col][end], &this_s, &this_c);
 					dotprod = this_c * last_c + this_s * last_s;
 					if (fabs (dotprod) > 1.0) dotprod = copysign (1.0, dotprod);
@@ -468,7 +466,6 @@ GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					ssum += this_s;
 					last_c = this_c;
 					last_s = this_s;
-					last_d = S->coord[d_col][end];
 				}
 
 				/* Get here when we have found a beginning and end  */

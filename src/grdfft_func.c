@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.24 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdfft_func.c,v 1.25 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -929,8 +929,8 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdfft %s [API] - Perform mathematical operations on grid files in the wavenumber (or frequency) domain\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdfft <ingrid> [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w]] [-F[x_or_y]<parameters>] [-I[<scale>|g]] [-L]\n");
-	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te/rl/rm/rw/ri>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
+	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	

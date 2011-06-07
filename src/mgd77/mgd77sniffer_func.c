@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.25 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.26 2011-06-07 21:38:29 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -51,9 +51,9 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	fprintf(stderr,"mgd77sniffer %s - Along-track quality control of MGD77 cruises\n\n", MGD77_VERSION);
-	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-Afieldabbrev,scale,offset] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
-	GMT_message (GMT, "\t[-gfieldabbrev,imggrid,scale,mode[,latmax]] [-Gfieldabbrev,grid] [-H] [-Ifieldabbrev,rec1,recN] [-K]\n");
-	GMT_message (GMT, "\t[-Lcustom_limits_file ] [-N] [%s] [-Sd|s|t] [-Tgap]\n",GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
+	GMT_message (GMT, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H] [-I<fieldabbrev>,<rec1>,<recN>] [-K]\n");
+	GMT_message (GMT, "\t[-L<custom_limits_file> ] [-N] [%s] [-Sd|s|t] [-T<gap>]\n",GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [-V] [%s] [%s]\n\n", GMT_bo_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

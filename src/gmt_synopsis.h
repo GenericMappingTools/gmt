@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.26 2011-05-03 00:21:15 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.27 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -37,7 +37,7 @@
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
 #define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
-#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin/zmax>][r]"
+#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][r]"
 #define GMT_Rx_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[r]"
 #define GMT_U_OPT	"-U[<just>/<dx>/<dy>/][c|<label>]"
 #define GMT_V_OPT	"-V[<level>]"
@@ -60,7 +60,7 @@
 #define GMT_i_OPT	"-i<cols>[l][s<scale>][o<offset>][,...]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...]"
-#define GMT_p_OPT	"-p[x|y|z]<azim>/<elev>[/zlevel][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
+#define GMT_p_OPT	"-p[x|y|z]<azim>/<elev>[/<zlevel>][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r"
 #define GMT_s_OPT	"-s[<cols>][a|r]"
 #define GMT_t_OPT	"-t<transp>"

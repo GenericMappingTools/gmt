@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.13 2011-06-07 01:14:21 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.14 2011-06-07 21:38:30 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "sphinterpolate %s - Spherical gridding in tension of data on a sphere\n", GMT_VERSION);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q<mode>][/args] [-T] [-V] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-Q<mode>][/<args>] [-T] [-V] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -109,10 +109,10 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3]\n");
 	GMT_message (GMT, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10]\n");
 	GMT_message (GMT, "\t      U = Maximum change in a gradient at the last iteration [0.01]\n");
-	GMT_message (GMT, "\t   3: Smoothing.  Optionally append /E/U/N, where\n");
-	GMT_message (GMT, "\t      E = Expected squared error in a typical (scaled) data value [0.01]\n");
-	GMT_message (GMT, "\t      U = Upper bound on  weighted sum of squares of deviations from data [npoints]\n");
-	GMT_message (GMT, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3]\n");
+	GMT_message (GMT, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
+	GMT_message (GMT, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01]\n");
+	GMT_message (GMT, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints]\n");
+	GMT_message (GMT, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg]\n");
 	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant]\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.14 2011-05-16 21:23:11 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.15 2011-06-07 21:38:30 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -210,17 +210,17 @@ GMT_LONG GMT_grdspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdspotter %s - Create CVA image from surface grids\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdspotter zgrdfile -E[+]<euler.d> -G<CVAgrid> -I<dx[m|c]>[/<dy>[m|c]]\n");
-	GMT_message (GMT, "\t-R<west/east/south/north> [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n");
+	GMT_message (GMT, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try] [-Z<z_min>[/<z_max>[/<z_inc>]]] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t<zgrdfile> is the grid with topo or gravity\n");
-	GMT_message (GMT, "\t-E specifies the rotations to be used (see man page for format)\n\n");
+	GMT_message (GMT, "\t<ingrid> is the grid with topo or gravity\n");
+	GMT_message (GMT, "\t-E specifies the rotations table to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use\n\n");
 	GMT_message (GMT, "\t-G Specify file name for output CVA convolution grid.\n");
-	GMT_message (GMT, "\t-I specifies grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
+	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A co-registered grid with upper ages to use [Default is flowlines for all ages]\n");

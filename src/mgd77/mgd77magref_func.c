@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.15 2011-05-19 22:09:37 jluis Exp $
+ *	$Id: mgd77magref_func.c,v 1.16 2011-06-07 21:38:29 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -84,14 +84,14 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "mgd77magref %s - Evaluating the IGRF or CM4 magnetic field models\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: mgd77magref [<inputfile>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
-	GMT_message (GMT, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low/high>]\n");
+	GMT_message (GMT, "usage: mgd77magref [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
+	GMT_message (GMT, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>]\n");
 	GMT_message (GMT, "\t[-V] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<inputfile> contains records that must contain lon, lat, alt, time[, other cols]\n");
+	GMT_message (GMT, "\t<table> contains records that must contain lon, lat, alt, time[, other cols]\n");
 	GMT_message (GMT, "\t   longitude and latitude is the geocentric position on the ellipsoid [but see -G].\n");
 	GMT_message (GMT, "\t   alt is the altitude in km positive above the ellipsoid.\n");
 	GMT_message (GMT, "\t   time is the time of data aquisition, in <date>T<clock> format (but see -A+y).\n");
