@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.14 2011-05-16 21:23:11 guru Exp $
+ *	$Id: redpol_func.c,v 1.15 2011-06-07 01:14:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -987,14 +987,14 @@ GMT_LONG GMT_redpol_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "redpol %s - Compute the\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: redpol <anom_grd> -G<rtp_grdfile> [-C<dec/dip>]\n");
+	GMT_message (GMT, "usage: redpol <anomgrid> -G<rtp_grdfile> [-C<dec/dip>]\n");
 	GMT_message (GMT, "       [-E<dip_grd>/<dec_grd>] [-F<m/n>] [-M<m|r>] [-N] [-W<win_width>]\n");
 	GMT_message (GMT, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                 
-	GMT_message (GMT, "\tanom_grd is the input grdfile with the magnetic anomaly\n");
-	GMT_message (GMT, "\t-G filename for output netCDF grdfile with the RTP solution\n");
+	GMT_message (GMT, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
+	GMT_message (GMT, "\t-G filename for output grid with the RTP solution\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C<dec/dip> uses this constant values in the RTP procedure.\n");
 	GMT_message (GMT, "\t-E<dip_grd/dec_grd> Get magnetization DIP & DEC from these grids [default: use IGRF].\n");

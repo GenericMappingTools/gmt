@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdsample_func.c,v 1.24 2011-06-06 04:58:12 guru Exp $
+ *	$Id: grdsample_func.c,v 1.25 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -70,18 +70,18 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdsample %s [API] - Resample a grid file onto a new grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdsample <old_grdfile> -G<new_grdfile> [%s]\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<old_grdfile> is data set to be resampled.\n");
-	GMT_message (GMT, "\t-G Sets the name of the interpolated output grid file.\n");
+	GMT_message (GMT, "\t<ingrid> is data set to be resampled.\n");
+	GMT_message (GMT, "\t-G Set the name of the interpolated output grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t   When omitted: grid spacing is copied from input grid.\n");
-	GMT_message (GMT, "\t-R Specifies a subregion [Default is old region].\n");
-	GMT_message (GMT, "\t-T Toggles between grid registration and pixel registration.\n");
+	GMT_message (GMT, "\t-R Specify a subregion [Default is old region].\n");
+	GMT_message (GMT, "\t-T Toggle between grid registration and pixel registration.\n");
 	GMT_explain_options (GMT, "VfnF.");
 
 	return (EXIT_FAILURE);

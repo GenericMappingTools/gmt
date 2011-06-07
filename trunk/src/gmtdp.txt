@@ -3,7 +3,7 @@
 .SH NAME
 gmtdp \- Line reduction using the Douglas-Peucker algorithm
 .SH SYNOPSIS
-BD(gmtdp) [ IT(datatables) ] OPT(T)IT(tolerance)[IT(unit)] 
+BD(gmtdp) [ IT(table) ] OPT(T)IT(tolerance)[IT(unit)] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ]  [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(gmtdp) reads one or more data files

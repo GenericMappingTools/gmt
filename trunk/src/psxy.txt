@@ -11,7 +11,7 @@
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
-BD(psxy) [ IT(datatables) ] GMT_J_OPT GMT_Rgeoz_OPT
+BD(psxy) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT
 [ OPT(A)[BD(m)|BD(p)] ] [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy) ]
 [ OPT(E)[BD(x)|BD(y)|BD(X)|BD(Y)][BD(n)][IT(cap)][/[BD(-)|BD(+)]IT(pen)] ]
 [ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ]

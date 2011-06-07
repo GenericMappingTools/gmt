@@ -5,7 +5,7 @@
 .SH NAME
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
-BD(mapproject) [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT 
+BD(mapproject) [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)] ] [ OPT(C)[IT(dx)/IT(dy)] ] [ OPT(Dc)|BD(i)|BD(p) ] [ OPT(E)[IT(datum)] ] 
 [ OPT(F)[IT(unit)] ] [ OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)] ] [ OPT(I) ] 
 [ OPT(L)IT(line.xy)[/IT(unit)][BD(+)] ] [ OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)] ] [ OPT(Q)[BD(d)|BD(e) ] [ OPT(S) ] [ OPT(T)[BD(h)]IT(from)[/IT(to)] ] 

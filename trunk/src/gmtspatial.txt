@@ -3,7 +3,7 @@
 .SH NAME
 gmtspatial \- Geospatial operations on polygons
 .SH SYNOPSIS
-BD(gmtspatial) [ IT(datatables) ] [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
+BD(gmtspatial) [ IT(table) ] [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
 [ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)BD(i)|BD(u)|BD(s)|BD(j) ] [ OPT(T)[IT(clippolygon)] ] [[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]

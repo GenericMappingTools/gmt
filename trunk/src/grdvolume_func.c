@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.9 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.10 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -295,11 +295,11 @@ GMT_LONG GMT_grdvolume_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdvolume %s [API] - Calculating volume under a surface within a contour\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdvolume <grdfile> [-C<cval> or -C<low/high/delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdvolume <ingrid> [-C<cval> or -C<low/high/delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grdfile> is the name of the 2-D binary data set.\n");
+	GMT_message (GMT, "\t<ingrid> is the name of the grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Find area and volume inside the given <cval> contour,\n");
 	GMT_message (GMT, "\t   OR search using all contours from low to high in steps of delta.\n");

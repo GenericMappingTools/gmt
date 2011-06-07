@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.12 2011-06-06 04:58:12 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.13 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -82,15 +82,15 @@ GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdhisteq %s [API] - Histogram equalization for grid files\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdhisteq <infile> [-G<outfile>] [-C<n_cells>] [-D] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t<infile> is name of input grid file.\n");
+	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Sets how many cells (divisions) of data range to make.\n");
 	GMT_message (GMT, "\t-D Dump level information to stdout.\n");
-	GMT_message (GMT, "\t-G Create an equalized output grid file called <outfile>.\n");
+	GMT_message (GMT, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_message (GMT, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
 	GMT_message (GMT, "\t-Q Use quadratic intensity scaling [Default is linear].\n");

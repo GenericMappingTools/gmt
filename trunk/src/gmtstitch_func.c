@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.16 2011-06-03 00:34:04 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.17 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -109,15 +109,14 @@ GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtstitch %s [API] - Join individual lines whose end points match within tolerance\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtstitch [<datatables>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<list>]\n");
+	GMT_message (GMT, "usage: gmtstitch [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<list>]\n");
 	GMT_message (GMT, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-C will write the already-closed polygons to a separate <closedfile> [gmtstitch_closed.d]\n");
 	GMT_message (GMT, "\t   than all the other segments [All segments to to same output file; see -G].\n");
 	GMT_message (GMT, "\t-D writes individual segments to separate files [Default writes one multisegment file].\n");

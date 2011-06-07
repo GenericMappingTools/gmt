@@ -3,7 +3,7 @@
 .SH NAME
 psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
-BD(psclip) [ IT(datatables) ] GMT_J_OPT GMT_Rgeoz_OPT 
+BD(psclip) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ GMT_B_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(T) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_bi_OPT ] 

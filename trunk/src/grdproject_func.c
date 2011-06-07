@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdproject_func.c,v 1.22 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,15 +84,15 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdproject %s [API] - Project geographical grid to/from rectangular grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdproject <in_grdfile> -G<out_grdfile> %s\n", GMT_J_OPT);
+	GMT_message (GMT, "usage: grdproject <ingrid> -G<outgrid> %s\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx/dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
 	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<in_grdfile> is data set to be transformed\n");
-	GMT_message (GMT, "\t-G name of output grid\n");
+	GMT_message (GMT, "\t<ingrid> is data set to be projected.\n");
+	GMT_message (GMT, "\t-G Set name of output grid\n");
 	GMT_explain_options (GMT, "J");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Force projected values to be in actual meters [Default uses the given map scale].\n");

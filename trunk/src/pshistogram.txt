@@ -5,7 +5,7 @@
 .SH NAME
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
-BD(pshistogram) [ IT(datatables) ] GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
+BD(pshistogram) [ IT(table) ] GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C)IT(cptfile) ] [ OPT(F) ] [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
 [ OPT(I)[BD(o)|BD(O)] ] [ GMT_K_OPT ] [ OPT(L)IT(pen) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ GMT_U_OPT ] [ GMT_V_OPT ]  

@@ -5,7 +5,7 @@
 .SH NAME
 sphtriangulate \- Perform optimal Delaunay triangulation or Voronoi construction of spherical data
 .SH SYNOPSIS
-BD(sphtriangulate) [ IT(datatables) ] [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ OPT(L)IT(unit) ] 
+BD(sphtriangulate) [ IT(table) ] [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ OPT(L)IT(unit) ] 
 [ OPT(N)IT(nfile) ] [ OPT(Q)BD(d)|BD(v) ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
 [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION

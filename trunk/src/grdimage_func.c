@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.63 2011-05-29 17:41:51 remko Exp $
+ *	$Id: grdimage_func.c,v 1.64 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,12 +101,12 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdimage %s [API] - Plot grid files in 2-D\n\n", GMT_VERSION);
 #ifdef USE_GDAL
-	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt_file>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
+	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
 			GMT_J_OPT, GMT_B_OPT);
 #else
-	GMT_message (GMT, "usage: grdimage <grd_z|grd_r grd_g grd_b> %s [%s] [-C<cpt_file>] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
+	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
 #endif
-	GMT_message (GMT, "\t[-I<intensity_file>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-T]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[-I<intensgrid>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-T]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", 
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -130,7 +130,7 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #ifdef USE_GDAL
 	GMT_message (GMT, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif
-	GMT_message (GMT, "\t-E Sets dpi for the projected grid which must be constructed\n");
+	GMT_message (GMT, "\t-E Sets dpi for the projected grid which must be constructed [100]\n");
 	GMT_message (GMT, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
 	GMT_message (GMT, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
 	GMT_rgb_syntax (GMT, 'G', "Sets transparency color for images that otherwise would result in 1-bit images\n\t  ");
@@ -203,7 +203,9 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 				Ctrl->E.active = TRUE;
 				if (opt->arg[0] == 'i')	/* Interpolate image to device resolution */
 					Ctrl->E.device_dpi = TRUE;
-				else
+				else if (opt->arg[0] == '\0')	
+					Ctrl->E.dpi = 100;	/* Default grid dpi */
+				else if 
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'G':	/* 1-bit fore or background color for transparent masks */

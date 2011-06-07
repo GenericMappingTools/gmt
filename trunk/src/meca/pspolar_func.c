@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.8 2011-05-23 00:31:44 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.9 2011-06-07 01:14:21 guru Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -125,7 +125,7 @@ GMT_LONG GMT_pspolar_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pspolar synopsis and optionally full usage information */
 
 	GMT_message (GMT,"pspolar %s - Plot polarities on the inferior focal half-sphere on maps\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: pspolar [<datatables>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT,"usage: pspolar [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t-Dlongitude/latitude -Msize[i/c] -S<symbol><size>[i/c]\n");
 	GMT_message (GMT, "\t[-A] [%s] [-Clongitude/latitude[W<pen>][Ppointsize]] [-E<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-e[<pen>]] [-F<fill>] [-f[<pen>]] [-G<fill>] [-g[<pen>]] [-K] [-N] [-O] [-P]\n");
@@ -142,9 +142,7 @@ GMT_LONG GMT_pspolar_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
 	GMT_message (GMT, "\t   (p)oint, (s)quare, (t)riangle, (x)cross\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_explain_options (GMT, "<b");
 	GMT_message (GMT, "\t-C Set new_longitude/new_latitude[W<pen>][Ppointsize]\n");
 	GMT_message (GMT, "\t   A line will be plotted between both positions\n");
 	GMT_message (GMT, "\t   Default is width = 3, color = current pen and pointsize = 0.015\n");

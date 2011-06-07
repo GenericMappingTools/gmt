@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.19 2011-06-06 04:58:12 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.20 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,7 +91,7 @@ GMT_LONG GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdlandmask %s [API] - Create \"wet-dry\" mask grid file from shoreline data base\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdlandmask -G<mask_grd_file> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

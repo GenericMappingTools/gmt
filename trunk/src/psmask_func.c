@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.18 2011-05-27 21:38:49 jluis Exp $
+ *	$Id: psmask_func.c,v 1.19 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -340,7 +340,7 @@ GMT_LONG GMT_psmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "psmask %s [API] - Masking or clipping of 2-D data sets\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psmask <datatables> %s %s %s\n", GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: psmask <table> %s %s %s\n", GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [-C] [-D<template>] [-G<fill>] [%s] [-K]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-N] [-O] [-P] [-Q<min>] [-S%s] [-T] [%s] [%s] [%s]\n", GMT_RADIUS_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
@@ -351,9 +351,7 @@ GMT_LONG GMT_psmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_explain_options (GMT, "<b");
 	GMT_message (GMT, "\t-C Means stop existing clip-path.  No other options required.\n");
 	GMT_message (GMT, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
 	GMT_message (GMT, "\t   Append filename template which may contain a C-format specifier.\n");

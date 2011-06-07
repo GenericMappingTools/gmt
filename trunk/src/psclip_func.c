@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.22 2011-05-23 00:08:40 guru Exp $
+ *	$Id: psclip_func.c,v 1.23 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "psclip %s [API] - To set up polygonal clip paths\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psclip -C[s|c|a|<n>] [-K] [-O]  OR\n");
-	GMT_message (GMT, "\tpsclip <datatables> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
+	GMT_message (GMT, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -81,9 +81,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "bZK");
+	GMT_explain_options (GMT, "<bZK");
 	GMT_message (GMT, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-T Set clip path for the entire map frame.  No input file is required.\n");

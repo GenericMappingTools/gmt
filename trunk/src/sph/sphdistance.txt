@@ -5,7 +5,7 @@
 .SH NAME
 sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
 .SH SYNOPSIS
-BD(sphdistance) [ IT(datatables) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
+BD(sphdistance) [ IT(table) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
 [ OPT(E) ] [ GMT_I_OPT ] [ OPT(L)IT(unit) ] [ OPT(Q)IT(voronoi.d) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION

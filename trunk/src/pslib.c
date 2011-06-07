@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.271 2011-06-05 17:20:14 jluis Exp $
+ *	$Id: pslib.c,v 1.272 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -196,7 +196,7 @@
 #define irint(x) ((int)rint(x))
 #endif
 
-#define PSL_DEFAULT_DPI	7200.0
+#define PSL_DEFAULT_DPI	1200.0
 
 /*--------------------------------------------------------------------
  *			PSL CONSTANTS MACRO DEFINITIONS
@@ -1437,7 +1437,7 @@ PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double dpi, double xyscales[], double page_rgb[])
 {
 	/* Changes the standard PSL defaults for:
-	 * dpi:		Dots-per-inch [600]
+	 * dpi:		Dots-per-inch [1200]
 	 * xyscales:	Global x- and y-scale magnifier [1.0, 1.0]
 	 * page_rgb:	Page color [white = 1/1/1]; give NULL to leave unchanged.
 	 *

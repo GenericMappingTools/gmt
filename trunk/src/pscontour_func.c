@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.24 2011-05-23 00:08:40 guru Exp $
+ *	$Id: pscontour_func.c,v 1.25 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -358,10 +358,10 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_PEN P;
 
 	GMT_message (GMT, "pscontour %s [API] - Contour xyz-data by triangulation [%s]\n\n", GMT_VERSION, ALGORITHM);
-	GMT_message (GMT, "usage: pscontour <datatables> -C<cpt_file> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A[-|<annot_int>][<labelinfo>] [%s] [-D<dumpfile>]\n", GMT_B_OPT);
+	GMT_message (GMT, "usage: pscontour <table> -C<cpt> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "\t[-A[-|<annot_int>][<labelinfo>] [%s] [-D<template>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N] [-O]\n", GMT_CONTG, GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-P] [-Q<indexfile>] [-S] [%s]\n", GMT_CONTT);
+	GMT_message (GMT, "\t[-P] [-Q<indextable>] [-S] [%s]\n", GMT_CONTT);
 	GMT_message (GMT, "\t[%s] [-W[+]<pen>] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
@@ -370,8 +370,7 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Specify color palette table.\n");
 	GMT_explain_options (GMT, "jZR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-A Annotation label information.\n");
 	GMT_message (GMT, "\t   Give A- to disable all contour annotations implied in -C.\n");
 	GMT_message (GMT, "\t   <labelinfo> controls the specifics of the labels.  Append what you need:\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.12 2011-05-23 00:08:40 guru Exp $
+ *	$Id: psrose_func.c,v 1.13 2011-06-07 01:14:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,7 +131,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psrose %s [API] - Polar histogram (rose diagram) plotter\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psrose [<datatables>] [-A<sector_angle>[r]] [%s]\n", GMT_B_OPT);
+	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-C[<modes>]] [-D] [-G<fill>] [-I] [-K] [-L[<wlab/elab/slab/nlab>]]\n");
 	GMT_message (GMT, "\t[-M<parameters>] [-N] [-O] [-P] [-R<r0/r1/theta0/theta1>] [-S<scale>[n]] [-T] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[-W<pen>] [%s] [%s] [-Z<scale>]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -139,8 +139,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
 	GMT_message (GMT, "\t   append r to get rose diagram.\n");
 	GMT_explain_options (GMT, "B");

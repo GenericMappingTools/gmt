@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.12 2011-05-23 00:31:43 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.13 2011-06-07 01:14:21 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -155,7 +155,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
 	GMT_message (GMT,"pscoupe %s - Plot seismological symbols on cross-sections\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: pscoupe [<datatables>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT,"usage: pscoupe [<table>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-E<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-S<format><scale>[/fontsize[/justify/offset/angle/form]]]\n");
@@ -176,9 +176,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Add f to get the frame from the cross-section parameters.\n");
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_explain_options (GMT, "<b");
 	GMT_fill_syntax (GMT, 'E', "Set color used for extensive parts. [default is white]\n");
 	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_explain_options (GMT, "K");

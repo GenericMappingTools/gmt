@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: grdblend_func.c,v 1.34 2011-05-29 23:04:55 guru Exp $
+ *    $Id: grdblend_func.c,v 1.35 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -415,7 +415,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdblend %s [API] - Blend several partially over-lapping grid files onto one grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdblend [<blendfile> | <grd1> <grd2> ...] -G<grdfile> %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W]\n\t[-Z<scale>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -431,7 +431,7 @@ GMT_LONG GMT_grdblend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\tAlternatively, if all grids have the same weight (1) and inner region should equal the outer,\n");
 	GMT_message (GMT, "\tthen you can instead list all the grid files on the command line (e.g., patches_*.nc).\n");
 	GMT_message (GMT, "\tYou must have at least 2 input grids for this mechanism to work.\n");
-	GMT_message (GMT, "\t-G <grdfile> is the name of the final 2-D grid.\n");
+	GMT_message (GMT, "\t-G <outgrid> is the name of the final 2-D grid.\n");
 	GMT_message (GMT, "\t   Only netCDF and native binary grid formats are directly supported;\n");
 	GMT_message (GMT, "\t   other formats will be converted via grdreformat when blending is complete.\n");
 	GMT_inc_syntax (GMT, 'I', 0);

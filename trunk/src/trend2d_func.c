@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.13 2011-05-23 00:08:40 guru Exp $
+ *	$Id: trend2d_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -409,7 +409,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "trend2d %s [API] - Fit a [weighted] [robust] polynomial for z = f(x,y) to ascii xyz[w]\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: trend2d [<datatables>] -F<xyzmrw> -N<n_model>[r] [-C<condition_#>] [-I[<confidence>]]\n");
+	GMT_message (GMT, "usage: trend2d [<table>] -F<xyzmrw> -N<n_model>[r] [-C<condition_#>] [-I[<confidence>]]\n");
 	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -418,7 +418,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   x=x, y=y, z=z, m=model, r=residual=z-m, w=weight (determined iteratively if robust fit used).\n");
 	GMT_message (GMT, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust quadratic = -N3r.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF) with (x,y,z[,w]) data.\n");
+	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y,z[,w]) data.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#>.  [Default = 1.0e06].\n");
 	GMT_message (GMT, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");

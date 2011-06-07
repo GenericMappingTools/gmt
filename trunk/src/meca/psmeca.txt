@@ -4,7 +4,7 @@
 psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS
 .br
-psmeca [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT
+psmeca [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT
 [ GMT_B_OPT ] [ OPT(C)[IT(pen)][BD(P)IT(pointsize)] ] [ OPT(D)IT(depmin)/IT(depmax) ]
 [ OPT(E)IT(fill)] [ OPT(G)IT(fill)]
 [ GMT_K_OPT ] [ OPT(L)[IT(pen)] ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ]

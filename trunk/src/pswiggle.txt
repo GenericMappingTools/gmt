@@ -5,7 +5,7 @@
 .SH NAME
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
-BD(pswiggle) [ IT(datatables) ] GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pswiggle) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
 OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 
 [ OPT(G)[BD(+)|BD(-)|BD(=)]IT(fill) ] [ GMT_Jz_OPT ] 
 [ OPT(I)IT(fix_az) ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 

@@ -11,7 +11,7 @@ psscale \- Plot gray scale or color scale on maps
 BD(psscale) OPT(D)IT(xpos)/IT(ypos)/IT(length)/IT(width)[BD(h)] [ OPT(A)[BD(a)|BD(l)|BD(c)] ] [ GMT_B_OPT ] 
 [ OPT(C)IT(cpt_file) ] [ OPT(E)[BD(b)|BD(f)][IT(length)][BD(+n)[IT(text)]] ] [ OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)] ] 
 [ GMT_J_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)[BD(i)][IT(gap)] ] [ OPT(M) ] 
-[ OPT(N)IT(dpi) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] [ OPT(S) ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeoz_OPT ] [ OPT(S) ] 
 [ OPT(T)[BD(+p)IT(pen)][BD(+g)IT(fill)][BD(+l)|BD(r)|BD(b)|BD(t)IT(off)] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z)IT(zfile) ] [ GMT_c_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
@@ -80,9 +80,6 @@ If OPT(I) is used then each rectangle will have its constant color modified by t
 .TP
 OPT(M)
 Force a monochrome graybar using the (television) YIQ transformation.
-.TP
-OPT(N)IT(dpi)
-Effective dots-per-inch for the rectangular image making up the color scale [300].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP

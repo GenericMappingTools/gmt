@@ -8,7 +8,7 @@
 .SH NAME
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
-BD(psrose) [ IT(datatables) ] [ OPT(A)IT(sector_width)[BD(r)] ] 
+BD(psrose) [ IT(table) ] [ OPT(A)IT(sector_width)[BD(r)] ] 
 [ GMT_B_OPT ] [ OPT(C)[IT(mode_file)] ] [ OPT(D) ] [ OPT(I) ] [ OPT(G)IT(fill) ] 
 [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[IT(wlabel)/IT(elabel)/IT(slabel)/IT(nlabel)] ] 
 [ OPT(M)[IT(parameters) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpaste_func.c,v 1.10 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdpaste_func.c,v 1.11 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,12 +60,12 @@ GMT_LONG GMT_grdpaste_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdpaste %s [API] - Join two grid files along common edge\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdpaste <file_a> <file_b> -G<outfile> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\twhere file_a and file_b are to be combined into outfile.\n");
-	GMT_message (GMT, "\tfile_a and file_b must have same dx,dy and one edge in common.\n");
+	GMT_message (GMT, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
+	GMT_message (GMT, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
 	GMT_message (GMT, "\tIf in doubt, run grdinfo first and check your files.\n");
 	GMT_message (GMT, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
 	GMT_message (GMT, "\t-G Specify file name for output grid file.\n");

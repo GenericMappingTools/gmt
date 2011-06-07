@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.13 2011-06-01 20:31:55 guru Exp $
+ *	$Id: grdedit_func.c,v 1.14 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -84,18 +84,18 @@ GMT_LONG GMT_grdedit_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdedit %s [API] - Modifying the header or content of a 2-D grid file\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdedit grdfile [-A] [%s]\n", GMT_GRDEDIT);
-	GMT_message (GMT, "\t[-E] [%s] [-N<xyzfile>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
+	GMT_message (GMT, "\t[-E] [%s] [-N<table>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tgrdfile is file to be modified\n");
+	GMT_message (GMT, "\t<grid> is file to be modified.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
 	GMT_message (GMT, "\t-D Enter grid information.  Specify '=' to get default value.\n");
 	GMT_message (GMT, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
-	GMT_message (GMT, "\t-N <file> has new xyz values to replace existing grid nodes.\n");
+	GMT_message (GMT, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S For global grids of 360 degree longitude range.\n");
 	GMT_message (GMT, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
