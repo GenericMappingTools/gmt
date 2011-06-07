@@ -3,24 +3,24 @@
 .SH NAME
 grdclip \- Clipping of range in grid files.
 .SH SYNOPSIS
-BD(grdclip) IT(input_file.nc) OPT(G)IT(output_file.nc) [ GMT_Rgeo_OPT ] 
+BD(grdclip) IT(ingrid) OPT(G)IT(outgrid) [ GMT_Rgeo_OPT ] 
 [ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ GMT_V_OPT ] 
 .SH DESCRIPTION
 BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to IT(above).  Useful
-when you want all of a continent or an ocean to fall into one color or grayshade in image processing,
+when you want all of a continent or an ocean to fall into one color or gray shade in image processing,
 or clipping of the range of data values is required.  IT(above/below) can be any number or NaN (Not a Number).
-You must choose at least one of OPT(Sa) or OPT(Sb).  Use OPT(R) to only extract a subset of the IT(input_file.nc) file.
+You must choose at least one of OPT(Sa) or OPT(Sb).  Use OPT(R) to only extract a subset of the IT(ingrid) file.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(input_file.nc)
+IT(ingrid)
 The input 2-D binary grid file.
 .TP
-OPT(G)IT(output_file.nc)
-IT(output_file.nc) is the modified output grid file.
+OPT(G)IT(outgrid)
+IT(outgrid) is the modified output grid file.
 .SH OPTIONAL ARGUMENTS
 #include "explain_-R.txt" 
-Using the OPT(R) option will select a subsection of IT(input_file.nc) grid. If this subsection exceeds the
+Using the OPT(R) option will select a subsection of IT(ingrid) grid. If this subsection exceeds the
 boundaries of the grid, only the common region will be extracted.
 .TP
 OPT(Sa)IT(high/above)

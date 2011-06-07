@@ -3,8 +3,8 @@
 .SH NAME
 grdedit \- Modifying the header or content of a 2-D grid file
 .SH SYNOPSIS
-BD(grdedit) IT(grdfile) [ OPT(A) ] [ GMT_GRDEDIT ] [ OPT(E) ] 
-[ OPT(N)IT(xyzfile) ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
+BD(grdedit) IT(grid) [ OPT(A) ] [ GMT_GRDEDIT ] [ OPT(E) ] 
+[ OPT(N)IT(table) ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(grdedit) reads the header information in a binary 2-D grid file and replaces
@@ -15,7 +15,7 @@ table of IT(x), IT(y), IT(z) values.  BD(grdedit) only operates on files contain
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(grdfile)
+IT(grid)
 Name of the 2-D grid file to modify.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
@@ -36,9 +36,9 @@ OPT(D):IT(xname):IT(yname):IT(zname):IT(scale):IT(offset):IT(title):IT(remark):
 OPT(E)
 Transpose the grid and exchange the IT(x) and IT(y) information.  Incompatible with the other options.
 .TP
-OPT(N)IT(xyzfile)
-Read the ASCII (or binary; see GMT_bi_OPT) file IT(xyzfile) and replace the corresponding
-nodal values in the grid with these IT(z) values.
+OPT(N)IT(table)
+Read the ASCII (or binary; see GMT_bi_OPT) file IT(table) and replace the corresponding
+nodal values in the grid with these IT(x,y,z) values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the IT(x_inc), IT(y_inc)
 values are adjusted, if necessary.

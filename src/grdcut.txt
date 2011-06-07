@@ -3,23 +3,23 @@
 .SH NAME
 grdcut \- Extract a subregion out of a grid file
 .SH SYNOPSIS
-BD(grdcut) IT(input_file.nc) OPT(G)IT(output_file.nc) GMT_Rgeo_OPT 
+BD(grdcut) IT(ingrid) OPT(G)IT(outgrid) GMT_Rgeo_OPT 
 [ GMT_V_OPT ] [ OPT(Z)[BD(n)]IT(min/max)] ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-BD(grdcut) will produce a new IT(output_file.nc) file which is a subregion of IT(input_file.nc).
+BD(grdcut) will produce a new IT(outgrid) file which is a subregion of IT(ingrid).
 The subregion is specified with OPT(R) as in other programs; the
-specified range must not exceed the range of IT(input_file.nc).  If in doubt, run BD(grdinfo)
+specified range must not exceed the range of IT(ingrid).  If in doubt, run BD(grdinfo)
 to check range.  Alternatively, define the subregion indirectly via a range check on the node values.
 Complementary to BD(grdcut) there is BD(grdpaste), which will join together two
 grid files along a common edge.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(input_file.nc)
-this is the input IT(.nc) format file.
+IT(ingrid)
+This is the input grid file.
 .TP
-OPT(G)IT(output_file.nc)
-this is the output IT(.nc) format file.
+OPT(G)IT(outgrid)
+This is the output grid file.
 #include "explain_-R.txt"
 This defines the subregion to be cut out.
 .SH OPTIONAL ARGUMENTS

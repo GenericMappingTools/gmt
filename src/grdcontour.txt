@@ -3,7 +3,7 @@
 .SH NAME
 grdcontour \- Contouring of 2-D gridded data sets
 .SH SYNOPSIS
-BD(grdcontour) IT(grdfile) OPT(C)IT(cont_int) GMT_J_OPT 
+BD(grdcontour) IT(grid) OPT(C)IT(cont_int)|IT(cpt) GMT_J_OPT 
 [ OPT(A)[BD(-)|IT(annot_int)][IT(labelinfo)] ] 
 [ GMT_B_OPT ] [ OPT(D)IT(template) ] [ OPT(F)[BD(l)|BD(r)] ] 
 [ GMT_CONTG ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L)IT(low/high) ] 
@@ -20,7 +20,7 @@ one or more output files (or stdout) and no plot is produced.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(grdfile)
+IT(grid)
 2-D gridded data set to be contoured.
 (See GRID FILE FORMATS below).
 .TP

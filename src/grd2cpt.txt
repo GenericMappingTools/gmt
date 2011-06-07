@@ -3,7 +3,7 @@
 .SH NAME
 grd2cpt \- Make a color palette table from grid files
 .SH SYNOPSIS
-BD(grd2cpt) IT(grdfiles) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(cptmaster) ] 
+BD(grd2cpt) IT(grid) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(cptmaster) ] 
 [ OPT(D)[BD(i)|BD(o)] ] [ OPT(E)IT(nlevels) ]
 [ OPT(F)[BD(R)|BD(r)|BD(h)|BD(c) ] [ OPT(I) ] 
 [ OPT(L)IT(minlimit/maxlimit) ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[BD(i)|BD(o)] ] [ GMT_Rgeo_OPT ] 
@@ -38,8 +38,8 @@ will be used.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(grdfiles)
-Names of one or more 2-D binary grid files used to derive the color palette table.
+IT(grid)
+Names of one or more grid files used to derive the color palette table.
 All grids need to have the same size and dimensions.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS

@@ -3,7 +3,7 @@
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS
-BD(grdblend) [ IT(blendfile) | IT(grd1) IT(grd2) ... ] OPT(G)IT(grdfile) GMT_I_OPT GMT_Rgeo_OPT 
+BD(grdblend) [ IT(blendfile) | IT(grid1) IT(grid2) ... ] OPT(G)IT(outgrid) GMT_I_OPT GMT_Rgeo_OPT 
 [ OPT(C)BD(f)|BD(l)|BD(o)|BD(u) ] [ OPT(N)IT(nodata) ] [ OPT(Q) ] [ OPT(Z)IT(scale) ] 
 [ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
@@ -19,8 +19,8 @@ netCDF and native binary grid formats for both input and output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-OPT(G)IT(grdfile)
-IT(grdfile) is the name of the binary output grid file.
+OPT(G)IT(outgrid)
+IT(outgrid) is the name of the binary output grid file.
 (See GRID FILE FORMATS below).  Only netCDF and native binary grid formats are can be written directly.
 Other output format choices will be handled by reformatting the output once blending is complete.
 #include "explain_-I.txt"
