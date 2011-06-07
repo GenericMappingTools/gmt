@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.17 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.18 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -112,8 +112,8 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdgradient %s [API] - Compute directional gradients from grid files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
-	GMT_message (GMT, "\t[-E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]>]\n");
-	GMT_message (GMT, "\t[-N[t_or_e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-E[s|p]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
+	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -127,7 +127,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o.\n");
 	GMT_message (GMT, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
 	GMT_message (GMT, "\t   -E<azim/elev> sets azimuth and elevation of light vector.\n");
-	GMT_message (GMT, "\t   -E<azim/elev/ambient/diffuse/specular/shine> sets azim, elev and\n");
+	GMT_message (GMT, "\t   -E<azim>/<elev>/<ambient>/<diffuse>/<specular>/<shine> sets azim, elev and\n");
 	GMT_message (GMT, "\t    other parameters that control the reflectance properties of the surface.\n");
 	GMT_message (GMT, "\t    Default values are: 0.55/0.6/0.4/10.\n");
 	GMT_message (GMT, "\t    Specify '=' to get the default value (e.g. -E60/30/=/0.5).\n");

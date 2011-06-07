@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.22 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdproject_func.c,v 1.23 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,7 +85,7 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdproject %s [API] - Project geographical grid to/from rectangular grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdproject <ingrid> -G<outgrid> %s\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx/dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
+	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx>/<dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
 	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
 

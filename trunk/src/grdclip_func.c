@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdclip_func.c,v 1.15 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdclip_func.c,v 1.16 2011-06-07 21:38:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,7 +71,7 @@ GMT_LONG GMT_grdclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdclip %s [API] - Clipping of range in grid files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdclip <ingrid> -G<outgrid> [%s]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Sa<high/above>] [-Sb<low/below>] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[-Sa<high>/<above>] [-Sb<low>/<below>] [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -81,8 +81,8 @@ GMT_LONG GMT_grdclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-Sa will set all data > high to the <above> value.\n");
 	GMT_message (GMT, "\t-Sb will set all data < low to the <below> value.\n");
-	GMT_message (GMT, "\t    above/below can be any number including NaN.\n");
-	GMT_message (GMT, "\t    You must choose at least one -S option.\n");
+	GMT_message (GMT, "\t    <above> and <below> can be any number including NaN.\n");
+	GMT_message (GMT, "\t    You must choose at least one -S option setting.\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);

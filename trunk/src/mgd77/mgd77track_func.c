@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.10 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.11 2011-06-07 21:38:29 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -146,9 +146,9 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "mgd77track %s - Plot track-line map of MGD77 cruises\n\n", MGD77_VERSION);
-	GMT_message (GMT, "usage: mgd77track cruise(s) %s %s [-A[c][size]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[unit]]\n");
-	GMT_message (GMT, "\t[-Sb<stopdist>[unit]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
+	GMT_message (GMT, "usage: mgd77track cruise(s) %s %s [-A[c][<size>]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
+	GMT_message (GMT, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
+	GMT_message (GMT, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

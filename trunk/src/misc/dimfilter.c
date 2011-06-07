@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.21 2011-05-16 21:23:11 guru Exp $
+ * $Id: dimfilter.c,v 1.22 2011-06-07 21:38:29 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -107,12 +107,13 @@ GMT_LONG GMT_dimfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "dimfilter %s - Directional filtering of 2-D grdfiles in the Space domain\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: dimfilter input_file -D<distance_flag> -F<type><filter_width>\n");
-	GMT_message (GMT, "\t-G<output_file> -N<type><n_sectors> [%s]\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width>\n");
+	GMT_message (GMT, "\t-G<outgrid> -N<type><n_sectors> [%s]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q<cols>] [%s] [-T] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
+	GMT_message (GMT, "\t<ingrid> is grid to be filtered.\n");
 	GMT_message (GMT, "\tDistance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
 	GMT_message (GMT, "\t   -D0 grid x,y same units as <filter_width>, cartesian Distances.\n");
 	GMT_message (GMT, "\t   -D1 grid x,y in degrees, <filter_width> in km, cartesian Distances.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
+ *	$Id: originator_func.c,v 1.15 2011-06-07 21:38:30 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -204,9 +204,9 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "%s %s - Associate seamounts with hotspot point sources\n\n", GMT->init.progname, GMT_VERSION);
-	GMT_message (GMT, "usage: %s [<table>] -E[+]<rottable> -F<hotspottable> [-D<d_km>]\n", GMT->init.progname);
-	GMT_message (GMT, "\t[-H] [-L[flag]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
+	GMT_message (GMT, "originator %s [API] -  Associate seamounts with hotspot point sources\n\n", GMT_VERSION);
+	GMT_message (GMT, "usage: originator [<table>] -E[+]<rottable> -F<hotspottable> [-D<d_km>]\n");
+	GMT_message (GMT, "\t[-H] [-L[<flag>]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

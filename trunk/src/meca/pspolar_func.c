@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.9 2011-06-07 01:14:21 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.10 2011-06-07 21:38:29 guru Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -126,10 +126,10 @@ GMT_LONG GMT_pspolar_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT,"pspolar %s - Plot polarities on the inferior focal half-sphere on maps\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: pspolar [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t-Dlongitude/latitude -Msize[i/c] -S<symbol><size>[i/c]\n");
-	GMT_message (GMT, "\t[-A] [%s] [-Clongitude/latitude[W<pen>][Ppointsize]] [-E<fill>]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t-D<longitude>/<latitude> -M<size>[i/c] -S<symbol><size>[i/c]\n");
+	GMT_message (GMT, "\t[-A] [%s] [-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-e[<pen>]] [-F<fill>] [-f[<pen>]] [-G<fill>] [-g[<pen>]] [-K] [-N] [-O] [-P]\n");
-	GMT_message (GMT, "\t[-s<half-size>/[V[<v_width/h_length/h_width/shape]][G<r/g/b>][L]\n");
+	GMT_message (GMT, "\t[-s<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L]\n");
 	GMT_message (GMT, "\t[-T[<labelinfo>]] [-t<pen>] [%s] [-V] [-W<pen>]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
 
@@ -173,7 +173,7 @@ GMT_LONG GMT_pspolar_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Azimuth of S polarity is in last column.\n");
 	GMT_message (GMT, "\t   It may be a vector (V option) or a segment. Give half-size in cm.\n");
 	GMT_message (GMT, "\t   L option is for outline\n");
-	GMT_message (GMT, "\t   -s<half-size>/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L]\n");
+	GMT_message (GMT, "\t   -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
 	GMT_message (GMT, "\t   Default definition of v is 0.075/0.3/0.25/1\n");
 	GMT_message (GMT, "\t   Outline is current pen\n");
 	GMT_message (GMT, "\t-T[<info about labal printing>] to write station code.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.16 2011-06-07 01:14:21 guru Exp $
+ *	$Id: backtracker_func.c,v 1.17 2011-06-07 21:38:30 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -148,7 +148,7 @@ GMT_LONG GMT_backtracker_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "backtracker %s - Forward and backward flowlines and hotspot tracks\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[young/old]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
+	GMT_message (GMT, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
 	GMT_message (GMT, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 

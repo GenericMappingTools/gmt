@@ -4,7 +4,7 @@
 splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
 .SH SYNOPSIS
 BD(splitxyz) [ IT(table) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
-[ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] [ OPT(G)IT(gap_distance) ] 
+[ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] 
 [ OPT(N)IT(template) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
 [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -52,10 +52,6 @@ segments and then the x,y values of each segment are filtered separately.  This 
 edge effects at the ends of each segment, but prevents a low\-pass x,y filter from rounding 
 off the corners of track segments.  [Default = no filtering].
 .TP
-OPT(G)IT(gap_distance)
-Do not let a segment  have a gap exceeding IT(gap_distance); instead, split it into two 
-segments.  [Default ignores gaps].
-.TP
 OPT(M)
 Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
 in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
@@ -93,7 +89,10 @@ Data have x,y only (no z-column).
 #include "explain_-bo.txt"
 [Default is 1-5 output columns as set by OPT(Q)].
 #include "explain_-f.txt"
-#include "explain_-g.txt"
+.TP
+GMT_g_OPT
+Do not let a segment have a gap exceeding IT(gap); instead, split it into two 
+segments.  [Default ignores gaps].
 #include "explain_-h.txt"
 Not used with binary data.
 #include "explain_-icols.txt"
@@ -119,7 +118,7 @@ have BD(splitxyz) compute them separately.
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named IT(survey)_\fI###.txt\fP (when gap exceeds 100 km).  Try this:
 .sp
-splitxyz survey.bin -Nsurvey_%3.3d.txt -V -G100 -D100 -: -fg -bi3d
+splitxyz survey.bin -Nsurvey_%3.3d.txt -V -gd100k -D100 -: -fg -bi3d
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mgd77list (1),
