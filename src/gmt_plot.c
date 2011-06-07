@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.338 2011-06-06 17:34:08 guru Exp $
+ *	$Id: gmt_plot.c,v 1.339 2011-06-07 02:00:56 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3456,9 +3456,9 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		if (C->current.setting.ps_copies > 1) P->init.copies = C->current.setting.ps_copies;
 #endif
 		PSL_setdefaults (P, C->current.setting.ps_dpi, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
-		if (P->init.encoding) free ((void *)P->init.encoding);
-		P->init.encoding = strdup (C->current.setting.ps_encoding.name);
 	}
+	if (P->init.encoding) free ((void *)P->init.encoding);
+	P->init.encoding = strdup (C->current.setting.ps_encoding.name);
 
 	if (!GMT_Find_Option (C->parent, '>', options, &Out)) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
