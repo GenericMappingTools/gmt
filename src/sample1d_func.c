@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.11 2011-05-23 00:08:40 guru Exp $
+ *	$Id: sample1d_func.c,v 1.12 2011-06-07 01:14:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,15 +91,14 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "sample1d %s [API] - Resampling of 1-D data sets\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: sample1d [<datatables>] [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knotfile>]\n");
+	GMT_message (GMT, "usage: sample1d [<table>] [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");
 	GMT_message (GMT, "\t   Append m or p to first follow meridian then parallel, or vice versa.\n");
@@ -114,7 +113,7 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   longitude, latitude and you wish to resample this path using spherical\n");
 	GMT_message (GMT, "\t   segments with a nominal spacing of <inc> in the chosen units.\n");
 	GMT_message (GMT, "\t   See -Am|p to only sample along meridians and parallels.\n");
-	GMT_message (GMT, "\t-N The <knotfile> is an ASCII table with the desired time positions in column 0.\n");
+	GMT_message (GMT, "\t-N The <knottable> is an ASCII table with the desired time positions in column 0.\n");
 	GMT_message (GMT, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
 	GMT_message (GMT, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0]).\n");
 	GMT_message (GMT, "\t-S Sets the first output point to be <start> [first multiple of inc in range].\n");

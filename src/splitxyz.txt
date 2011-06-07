@@ -3,7 +3,7 @@
 .SH NAME
 splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
 .SH SYNOPSIS
-BD(splitxyz) [ IT(datatables) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
+BD(splitxyz) [ IT(table) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
 [ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] [ OPT(G)IT(gap_distance) ] 
 [ OPT(N)IT(template) ] [ OPT(Q)IT(flags) ] [ OPT(S) ] [ GMT_V_OPT ] 
 [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
@@ -24,7 +24,7 @@ Terminate a segment when a course change exceeding IT(course_change) degrees of 
 is detected.
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(datatables)
+IT(table)
 One or more ASCII [or binary, see GMT_bi_OPT] files with 3 (or 2, see OPT(Z)) [or 5]
 columns holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
 sorted so that d is non-decreasing, specify the OPT(S) option; default expects (x,y,z) only.  

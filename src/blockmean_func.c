@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.13 2011-05-23 00:08:40 guru Exp $
+ *	$Id: blockmean_func.c,v 1.14 2011-06-07 01:14:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -37,7 +37,7 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "blockmean %s [API] - Block averaging by L2 norm\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: blockmean [<datatables>] %s\n", GMT_I_OPT);
+	GMT_message (GMT, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-C] [-E] [-S[m|n|s|w]]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
@@ -47,8 +47,7 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-C Output center of block and mean z-value.  [Default outputs the\n");
 	GMT_message (GMT, "\t   (mean x, mean y) location].\n");
 	GMT_message (GMT, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");

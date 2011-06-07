@@ -3,7 +3,7 @@
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grid file format
 .SH SYNOPSIS
-BD(xyz2grd) [ IT(datatables) ] OPT(G)IT(grdfile) GMT_I_OPT 
+BD(xyz2grd) [ IT(table) ] OPT(G)IT(grdfile) GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)[BD(f|l|n|s|u|z)] ] [ GMT_GRDEDIT ] 
 [ OPT(N)IT(nodata) ] [ OPT(S)[IT(zfile)] ] [ GMT_V_OPT ] [ OPT(Z)[IT(flags)] ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
@@ -24,7 +24,7 @@ IT(grdfile) is the name of the binary output grid file.
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(datatables)
+IT(table)
 One or more ASCII [or binary, see GMT_bi_OPT] files holding z or (x,y,z) values.  The xyz triplets do not
 have to be sorted.  One-column z tables must be sorted and the OPT(Z) must be set. 
 .TP

@@ -3,7 +3,7 @@
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
 .SH SYNOPSIS
-BD(originator) [ IT(datatables) ] OPT(E)IT(rotfile) 
+BD(originator) [ IT(table) ] OPT(E)IT(rotfile) 
 OPT(F)IT(hs_file) 
 [ OPT(D)IT(d_km) ] [ OPT(L)[IT(flag)] ] [ OPT(N)IT(upper_age) ] [ OPT(Q)IT(r/t) ] 
 [ OPT(S)[IT(n_hs)] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)IT(maxdist) ] [ OPT(Z) ]

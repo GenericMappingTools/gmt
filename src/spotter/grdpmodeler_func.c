@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.13 2011-05-17 00:23:50 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -89,19 +89,19 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT,"grdpmodeler %s - Plate model evaluation on a geographic grid\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<euler.d> -G<results.nc> [-F<polygonfile>]\n");
+	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
 	GMT_message (GMT, "\t[%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grdfile> is a gridded data file in geographic coordinates to be rotated\n");
+	GMT_message (GMT, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
+	GMT_message (GMT, "\t-E specifies the rotation file to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\t-G is the output filename of the new, rotated grid.  The boundary of the\n");
 	GMT_message (GMT, "\t   original grid (or a subset; see -F) after rotation is written to stdout\n");
-	GMT_message (GMT, "\t-E specifies the rotations to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Destination file for rotated polygon or grid outline [stdout]\n");
 	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area of the grid\n");
-	GMT_message (GMT, "\t   that should be projected [Default projects entire grid]\n");
+	GMT_message (GMT, "\t   to work on [Default works on the entire grid]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
 	GMT_message (GMT, "\t   a : Plate spreading azimuth.\n");

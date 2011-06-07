@@ -3,13 +3,13 @@
 .SH NAME
 blockmode \- filter to block average (IT(x),IT(y),IT(z)) data by mode estimation.
 .SH SYNOPSIS
-BD(blockmode) [ IT(datatables) ] GMT_I_OPT GMT_Rx_OPT 
+BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
 [ OPT(C) ] [ OPT(E) ] [ OPT(Q) ] [ GMT_V_OPT ] 
 [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(blockmode) reads arbitrarily located (IT(x),IT(y),IT(z)) triples [or optionally weighted
-quadruples (IT(x),IT(y),IT(z),IT(w))] from standard input [or IT(datatables)] and writes to
+quadruples (IT(x),IT(y),IT(z),IT(w))] from standard input [or IT(table)] and writes to
 standard output mode estimates of position and value for every non-empty block in a grid
 region defined by the OPT(R) and OPT(I) arguments.  Either BD(blockmean), BD(blockmedian),
 or BD(blockmode) should be used as a pre-processor before running BD(surface) to avoid
@@ -23,7 +23,7 @@ and/or output to avoid loss of precision.
 #include "explain_-R.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(datatables)
+IT(table)
 3 [or 4, see OPT(W)] column ASCII data table file(s) [or binary, see GMT_bi_OPT] holding (IT(x),IT(y),IT(z)[,IT(w)])
 data values.  [IT(w)] is an optional weight for the data.  If no file is specified,
 BD(blockmode) will read from standard input.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.24 2011-05-23 00:08:40 guru Exp $
+*	$Id: mapproject_func.c,v 1.25 2011-06-07 01:14:20 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -139,9 +139,9 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "mapproject %s [API] - Forward and Inverse map transformations and geodesy\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: mapproject <datatables> %s %s [-C[<dx/dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: mapproject <table> %s %s [-C[<dx/dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0/lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[<lon0/lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "\t[-I] [-L<line.xy>[/<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
+	GMT_message (GMT, "\t[-I] [-L<ltable>[/<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -150,8 +150,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "JR");
 	GMT_message (GMT, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-A Calculate azimuths from previous point in the input data with -Af. If a specified\n");
 	GMT_message (GMT, "\t   point is provided, all azimuths are computed with respect to that point.\n");
 	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
@@ -174,7 +173,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_message (GMT, "\t-I Means Inverse, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
-	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <line.xy>.\n");
+	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");

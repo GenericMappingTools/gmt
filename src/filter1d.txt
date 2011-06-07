@@ -3,7 +3,7 @@
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS
-BD(filter1d) [ IT(datatables) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
+BD(filter1d) [ IT(table) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
 [ OPT(E) ] [ OPT(I)IT(ignore_val) ] [ OPT(L)IT(lack_width) ] 
 [ OPT(N)IT(t_col) ] [ OPT(Q)IT(q_factor) ] [ OPT(S)IT(symmetry_factor) ] 
 [ OPT(T)IT(start/stop/int) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]

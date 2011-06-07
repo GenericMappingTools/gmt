@@ -8,7 +8,7 @@
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
 BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(Ei)|IT(dpi) ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 
+[ GMT_B_OPT ] [ OPT(Ei)[|IT(dpi)] ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 
 [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rgeoz_OPT ] [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
 [ GMT_c_OPT ] [ GMT_f_OPT ] [ GMT_n_OPT ] [ GMT_p_OPT ] [ OPT(tr) ]
@@ -58,9 +58,9 @@ For example, if you have used OPT(Rd) then the image will be assigned the limits
 domain. The interest of this mode is that you can project a raw image (an image without 
 referencing coordinates).
 .TP
-OPT(Ei)|IT(dpi)
+OPT(Ei)[|IT(dpi)]
 Sets the resolution of the projected grid that will be created if
-a map projection other than Linear or Mercator was selected.  By default,
+a map projection other than Linear or Mercator was selected [100].  By default,
 the projected grid will be of the same size (rows and columns) as the
 input file.  Specify BD(i) to use the IT(PostScript)
 image operator to interpolate the image at the device resolution.

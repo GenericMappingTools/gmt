@@ -3,7 +3,7 @@
 .SH NAME
 trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data.
 .SH SYNOPSIS
-BD(trend2d) [ IT(datatables) ] OPT(F)BD(xyzmrw) OPT(N)IT(n_model)[BD(r)] [ IT(xyz[w]file) ] 
+BD(trend2d) [ IT(table) ] OPT(F)BD(xyzmrw) OPT(N)IT(n_model)[BD(r)] [ IT(xyz[w]file) ] 
 [ OPT(C)IT(condition_number) ] [ OPT(I)[IT(confidence_level)] ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -34,7 +34,7 @@ Specify the number of terms in the model, IT(n_model), and append BD(r)
 to do a robust fit.  E.g., a robust bilinear model is OPT(N)IT(4)BD(r).
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(datatables)
+IT(table)
 One or more ASCII [or binary, see GMT_bi_OPT] files containing x,y,z [w] values in the first 3 [4] columns.
 If no files are specified, BD(trend2d) will read from standard input.
 .TP

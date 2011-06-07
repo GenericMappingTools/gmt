@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.10 2011-05-23 00:31:44 guru Exp $
+ *    $Id: psmeca_func.c,v 1.11 2011-06-07 01:14:21 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -165,7 +165,7 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psmeca synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psmeca %s - Plot seismological symbols on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psmeca [<datatables>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t-S<format><scale>[/fontsize[/justify/offset/angle/form]]\n");
 	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-Ddepmin/depmax] [-E<fill>] [-G<fill>]\n");
@@ -180,9 +180,7 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_explain_options (GMT, "<b");
 	GMT_message (GMT, "\t-C<pen attributes>\n");
 	GMT_message (GMT, "\t  offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
 	GMT_message (GMT, "\t  Default pen attributes is default pen.\n");

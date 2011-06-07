@@ -5,7 +5,7 @@
 .SH NAME
 pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
-BD(pscontour) [ IT(datatables) ] OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
+BD(pscontour) [ IT(table) ] OPT(C)IT(cptfile) GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A)[BD(-)][IT(labelinfo)] ] [ GMT_B_OPT ] [ OPT(D)[IT(template)] ]
 [ GMT_CONTG ] [ OPT(I) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ OPT(L)IT(pen) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)IT(indexfile) ] 

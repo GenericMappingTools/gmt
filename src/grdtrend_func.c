@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.10 2011-05-16 21:23:10 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.11 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,12 +131,12 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdtrend %s [API] - Fit trend surface to gridded data\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdtrend <input.grd> -N<n_model>[r] [-D<diff.grd>]\n");
-	GMT_message (GMT, "\t[%s] [-T<trend.grd>] [%s] [-W<weight.grd>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>]\n");
+	GMT_message (GMT, "\t[%s] [-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<input.grd> is name of grid file to fit trend to.\n");
+	GMT_message (GMT, "\t<ingrid> is name of grid file to fit trend to.\n");
 	GMT_message (GMT, "\t-N Number of model parameters to fit; integer in [1,10].  Append r for robust fit.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Supply filename to write grid file of differences (input - trend).\n");
@@ -144,8 +144,8 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-T Supply filename to write grid file of trend.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
-	GMT_message (GMT, "\t   If <weight.grd> can be read at run, and if robust = FALSE, weighted problem will be solved.\n");
-	GMT_message (GMT, "\t   If robust = TRUE, weights used for robust fit will be written to <weight.grd>.\n");
+	GMT_message (GMT, "\t   If <weightgrid> can be read at run, and if robust = FALSE, weighted problem will be solved.\n");
+	GMT_message (GMT, "\t   If robust = TRUE, weights used for robust fit will be written to <weightgrid>.\n");
 	GMT_explain_options (GMT, ".");
 	
 	return (EXIT_FAILURE);

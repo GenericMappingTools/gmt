@@ -5,7 +5,7 @@
 .SH NAME
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
-BD(sphinterpolate) [ IT(datatables) ] OPT(G)IT(grdfile) [ GMT_I_OPT ] 
+BD(sphinterpolate) [ IT(table) ] OPT(G)IT(grdfile) [ GMT_I_OPT ] 
 [ OPT(Q)IT(mode)[/IT(options)] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] 
 [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION

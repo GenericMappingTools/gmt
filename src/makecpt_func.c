@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.11 2011-05-16 22:22:31 guru Exp $
+ *	$Id: makecpt_func.c,v 1.12 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -105,8 +105,8 @@ GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "makecpt %s [API] - Make GMT color palette tables\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<colortable>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
-	GMT_message (GMT, "	[-T<z0/z1/dz> | -T<file>] [%s] [-Z]\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
+	GMT_message (GMT, "	[-T<z0/z1/dz> | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

@@ -3,7 +3,7 @@
 .SH NAME
 spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] time-series.
 .SH SYNOPSIS
-BD(spectrum1d) [ IT(datatables) ] OPT(S)IT(segment_size)] 
+BD(spectrum1d) [ IT(table) ] OPT(S)IT(segment_size)] 
 [ OPT(C)[BD(xycnpago)] ] [ OPT(D)IT(dt) ] 
 [ OPT(N)[BD(+)]IT(name_stem) ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ]
@@ -54,7 +54,7 @@ in power spectral density is approximately 1.0 / sqrt(IT(n_data) / IT(segment_si
 complicated, being a function also of the coherency. 
 .SH OPTIONAL ARGUMENTS
 .TP
-IT(datatables)
+IT(table)
 One or more ASCII (or binary, see GMT_bi_OPT) files holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
 If no files are specified, BD(spectrum1d) will read from standard input.
 .TP

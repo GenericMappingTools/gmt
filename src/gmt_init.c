@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.529 2011-06-06 18:27:19 guru Exp $
+ *	$Id: gmt_init.c,v 1.530 2011-06-07 01:14:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -596,6 +596,12 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t-^ Print short synopsis message.\n");
 			GMT_message (C, "\t-? Print this usage message\n");
 			GMT_message (C, "\t(See gmt.conf man page for GMT default parameters).\n");
+			break;
+
+		case '<':	/* Table input */
+
+			GMT_message (C, "\t<table> is one or more data files (in ASCII, binary, netCDF).\n");
+			GMT_message (C, "\t   If no files are given, standard input is read.\n");
 			break;
 
 		default:

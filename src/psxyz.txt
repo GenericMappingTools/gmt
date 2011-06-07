@@ -6,7 +6,7 @@
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
-BD(psxyz) [ IT(datatables) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
+BD(psxyz) [ IT(table) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
 [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy)[IT(dz)] ]
 [ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)] ] [ GMT_U_OPT ]

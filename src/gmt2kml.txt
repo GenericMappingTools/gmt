@@ -3,7 +3,7 @@
 .SH NAME
 gmt2kml \- Convert GMT data tables to KML files for Google Earth 
 .SH SYNOPSIS
-BD(gmt2kml) [ IT(datatables) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
+BD(gmt2kml) [ IT(table) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
 [ OPT(C)IT(cpt) ]
 [ OPT(D)IT(descriptfile) ] [ OPT(E)[IT(altitude)] ] [ OPT(F)BD(e)|BD(s)|BD(t)|BD(l)|BD(p) ] 
 [ OPT(G)BD(f|n)IT(fill) ] [ OPT(I)IT(icon) ] [ GMT_K_OPT]

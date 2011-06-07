@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.27 2011-06-02 00:10:22 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.28 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -145,7 +145,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
 	GMT_message (GMT, "grdcontour %s [API] - Contour plots of gridded data sets\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdcontour <grdfile> -C<cont_int> %s [-A[-|<annot_int>][<labelinfo>] [%s]\n", GMT_B_OPT, GMT_J_OPT);
+	GMT_message (GMT, "usage: grdcontour <grid> -C<cont_int>|<cpt> [-A[-|<annot_int>][<labelinfo>] [%s ] [%s]\n", GMT_B_OPT, GMT_J_OPT);
 	GMT_message (GMT, "\t[-D<template>] [-F[l|r]] [%s] [%s] [-K] [-L<Low/high>]\n", GMT_Jz_OPT, GMT_CONTG);
 	GMT_message (GMT, "\t[-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [%s]\n", GMT_CONTT, GMT_U_OPT);
@@ -155,7 +155,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grdfile> is 2-D netCDF grid file to be contoured\n");
+	GMT_message (GMT, "\t<grid> is the grid file to be contoured.\n");
 	GMT_message (GMT, "\t-C Contours to be drawn can be specified in one of three ways:\n");
 	GMT_message (GMT, "\t   1. Fixed contour interval.\n");
 	GMT_message (GMT, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");

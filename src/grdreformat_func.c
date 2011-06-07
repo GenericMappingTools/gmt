@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdreformat_func.c,v 1.11 2011-05-16 22:22:31 guru Exp $
+ *	$Id: grdreformat_func.c,v 1.12 2011-06-07 01:14:20 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,12 +59,12 @@ GMT_LONG GMT_grdreformat_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdreformat %s [API] - Converting between different grid file formats\n\n", GMT_VERSION);
-	fprintf( GMT->session.std[GMT_ERR], "usage: grdreformat ingrdfile[=id[/scale/offset]] outgrdfile[=id[/scale/offset]] [-N]\n\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	fprintf( GMT->session.std[GMT_ERR], "usage: grdreformat <ingrid>[=id[/scale/offset]] <outgrid>[=id[/scale/offset]] [-N]\n\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tingrdfile is the grid file to convert.\n");
-	GMT_message (GMT, "\toutgrdfile is the new converted grid file.\n");
+	GMT_message (GMT, "\t<ingrid> is the grid file to convert.\n");
+	GMT_message (GMT, "\t<outgrid> is the new converted grid file.\n");
 	fprintf( GMT->session.std[GMT_ERR], "\tscale and offset, if given, will multiply data by scale and add offset.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-N  Do NOT write the header (native grids only - ignored otherwise).\n");

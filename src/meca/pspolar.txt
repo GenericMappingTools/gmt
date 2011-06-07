@@ -4,7 +4,7 @@
 BD(pspolar)\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS
 .br
-pspolar [ IT(datatables) ] GMT_J_OPT GMT_Rgeo_OPT
+pspolar [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT
 OPT(D)IT(lon)/IT(lat) OPT(M)IT(size) OPT(S)IT(<symbol><size>)
 [ GMT_B_OPT ] [ OPT(C)IT(lon)/IT(lat)[/IT(dash_width)/IT(pointsize)] ] 
 [ OPT(F)IT(color) ] [ OPT(G)IT(fill) ] [ OPT(g)IT(fill) ] 

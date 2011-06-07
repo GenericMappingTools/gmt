@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.25 2011-05-23 00:08:40 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.26 2011-06-07 01:14:20 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -528,9 +528,9 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "gmtspatial %s - Geospatial operations on lines and polygons\n\n", GMT_VERSION);
 #ifdef PW_TESTING
-	GMT_message (GMT, "usage: gmtspatial [<datatables>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_message (GMT, "usage: gmtspatial [<datatables>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [%s] [-M[<unit>][+]] [-N<pfile>[+a][+p<ID>][+z]]\n", GMT_DIST_OPT);
+	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [%s] [-M[<unit>][+]] [-N<pfile>[+a][+p<ID>][+z]]\n", GMT_DIST_OPT);
 #endif
 	GMT_message (GMT, "\t[%s] [-Su|i] [-T[<cpol>]] [-V[l]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -538,8 +538,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data files (in ASCII, binary, netCDF).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
+	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-C Clips polygons to the given region box (requires -R), yielding a closed polygon.\n");
 	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e. lines), see -T.\n");
 	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> (if given).\n");

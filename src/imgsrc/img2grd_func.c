@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.19 2011-05-19 15:18:56 remko Exp $
+/* $Id: img2grd_func.c,v 1.20 2011-06-07 01:14:21 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "img2grd %s [API] - Extract a subset from an img file in Mercator or Geographic projection.\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: img2grd <world_image_filename> %s -G<grdfile> -T<type> [-C]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [-V] [-W<maxlon>] [%s]\n\n", GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

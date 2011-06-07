@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.7 2011-05-23 00:31:44 guru Exp $
+ *    $Id: psvelo_func.c,v 1.8 2011-06-07 01:14:21 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -119,7 +119,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psvelo synopsis and optionally full usage information */
 
 	GMT_message (GMT,"psvelo %s - Plot symbols on maps\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: psvelo [<datatables>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_message (GMT,"usage: psvelo [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
 	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
@@ -128,9 +128,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_explain_options (GMT, "<b");
 	GMT_message (GMT, "\t-A Change the size of arrow head; specify arrow_width, head_length, head_width;");
 	GMT_message (GMT, "\t   default is 0.01/0.12/0.03;");
 	GMT_message (GMT, "\t-D Multiply uncertainties by sigscale. (Se and Sw only) \n");

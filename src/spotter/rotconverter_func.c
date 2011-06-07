@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.8 2011-05-11 09:48:21 guru Exp $
+ *	$Id: rotconverter_func.c,v 1.9 2011-06-07 01:14:21 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -117,12 +117,12 @@ GMT_LONG GMT_rotconverter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "rotconverter %s - Manipulate total reconstruction and stage rotations\n\n", SPOTTER_VERSION);
-	GMT_message (GMT, "usage: rotconverter [+][-] rotA [[+][-] rotB] [[+][-] rotC] ... [-A] [-D] [-E[<factor>]] [-F<out>]\n");
+	GMT_message (GMT, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]] [-F<out>]\n");
 	GMT_message (GMT, "\t[-G] [-N] [-S] [-T] [%s] [%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\trotA, rotB, etc. are total reconstruction or stage rotation pole files.\n");
+	GMT_message (GMT, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
 	GMT_message (GMT, "\t   Alternatively, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
 	GMT_message (GMT, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
 	GMT_message (GMT, "\t   Rotations will be added/subtracted in the order given.\n");

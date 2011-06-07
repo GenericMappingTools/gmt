@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.14 2011-05-23 00:31:44 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.15 2011-06-07 01:14:21 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -354,14 +354,14 @@ GMT_LONG GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	GMT_message (GMT, "sphtriangulate %s - Delaunay or Voronoi construction of spherical lon,lat data\n\n", GMT_VERSION);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_message (GMT, "usage: sphtriangulate [<datatables>] [-A] [-C] [-D] [-L<unit>] [-N<nodefile>]\n");
+	GMT_message (GMT, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
 	GMT_message (GMT, "\t[-Qd|v] [-T] [-V] [%s] [%s] [%s]\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_message (GMT, "\t[%s]\n\n", GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<datatables> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Compute and print triangle or polygon areas in header records (see -L for units)\n");
 	GMT_message (GMT, "\t   If -T is selected we print arc lengths instead.\n");
@@ -371,7 +371,7 @@ GMT_LONG GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-L Specify distance unit as (f)eet, m(e)ter, (k)m, (M)ile, (n)autical mile, or (d)egree.\n");
 	GMT_message (GMT, "\t   Calculations uses spherical approximations.  Default unit is meters.\n");
 	GMT_message (GMT, "\t   Set PROJ_ELLIPSOID to WGS-84 to get geodesic distances.\n");
-	GMT_message (GMT, "\t-N Output file for Delaunay or Voronoi polygon information [Store in output segment headers]\n");
+	GMT_message (GMT, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers]\n");
 	GMT_message (GMT, "\t   Delaunay: output is the node triplets and area (i, j, k, area)\n");
 	GMT_message (GMT, "\t   Voronoi: output is the node coordinates and polygon area (lon, lat, area).\n");
 	GMT_message (GMT, "\t   Cannot be used with -T.\n");
