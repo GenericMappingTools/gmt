@@ -3,7 +3,7 @@
 .SH NAME
 grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
-BD(grdfft) IT(in_grdfile) OPT(G)IT(out_grdfile) [ OPT(A)IT(azimuth) ] 
+BD(grdfft) IT(ingrid) OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
 [ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)] ] 
 [ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L) ] 
 [ OPT(N)IT(stuff) ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
@@ -18,11 +18,11 @@ or scale the output with BD(grdmath).
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(in_grdfile)
+IT(ingrid)
 2-D binary grid file to be operated on.
 (See GRID FILE FORMATS below).
 .TP
-OPT(G)IT(out_grdfile)
+OPT(G)IT(outgrid)
 Specify the name of the output grid file or the 1-D spectrum file (see OPT(E)).
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS

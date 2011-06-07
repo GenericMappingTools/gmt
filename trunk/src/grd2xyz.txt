@@ -3,7 +3,7 @@
 .SH NAME
 grd2xyz \- Converting grid file(s) to ASCII or binary data
 .SH SYNOPSIS
-BD(grd2xyz) IT(grdfiles) [ GMT_Rgeo_OPT ] 
+BD(grd2xyz) IT(grid) [ GMT_Rgeo_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)[IT(weight)] ] [ OPT(Z)[IT(flags)] ] 
 [ GMT_bo_OPT ] [ GMT_fo_OPT ] [ GMT_ho_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ]
 .SH DESCRIPTION
@@ -16,7 +16,7 @@ without the (x,y) coordinates; see OPT(Z) below.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(grdfiles)
+IT(grid)
 Names of 2-D binary grid files to be converted.
 (See GRID FILE FORMATS below.)
 .SH OPTIONAL ARGUMENTS

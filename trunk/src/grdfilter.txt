@@ -3,8 +3,8 @@
 .SH NAME
 grdfilter \- Filter a 2-D grid file in the space (or time) domain
 .SH SYNOPSIS
-BD(grdfilter) IT(input_file) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
-OPT(G)IT(output_file) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+BD(grdfilter) IT(ingrid) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
+OPT(G)IT(outgrid) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfilter) will filter a IT(.nc) file in the time domain using one
 of the selected convolution or non-convolution isotropic or rectangular filters and
@@ -19,7 +19,7 @@ output may be less frequently sampled than the input.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-IT(input_file)
+IT(ingrid)
 The grid file of points to be filtered.
 (See GRID FILE FORMATS below).
 .TP
@@ -78,8 +78,8 @@ values.
 In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .TP
-OPT(G)IT(output_file)
-IT(output_file) is the output grid file of the filter.
+OPT(G)IT(outgrid)
+IT(outgrid) is the output grid file of the filter.
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
 .TP
