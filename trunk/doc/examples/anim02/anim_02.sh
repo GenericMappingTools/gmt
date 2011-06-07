@@ -1,10 +1,11 @@
 #!/bin/bash
 #               GMT ANIMATION 02
-#               $Id: anim_02.sh,v 1.5 2011-03-15 02:06:31 guru Exp $
+#               $Id: anim_02.sh,v 1.6 2011-06-07 20:12:06 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
 # GMT progs:    gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, ps2raster
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
+# Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
 # 1. Initialization
 # 1a) Assign movie parameters
