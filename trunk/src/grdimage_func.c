@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.64 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdimage_func.c,v 1.65 2011-06-07 01:14:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -205,7 +205,7 @@ GMT_LONG GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, 
 					Ctrl->E.device_dpi = TRUE;
 				else if (opt->arg[0] == '\0')	
 					Ctrl->E.dpi = 100;	/* Default grid dpi */
-				else if 
+				else
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'G':	/* 1-bit fore or background color for transparent masks */
