@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.8 2011-06-07 01:14:21 guru Exp $
+ *    $Id: psvelo_func.c,v 1.9 2011-06-08 01:33:14 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -417,7 +417,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						hl = hypot (plot_x-plot_vx,plot_y-plot_vy) * 0.6;
 						hw = hl * Ctrl->A.head/Ctrl->A.length;
 						vw = hl * Ctrl->A.width/Ctrl->A.length;
-						if (vw < 2.0/(double)PSL->init.dpi) vw = 2./(double)PSL->init.dpi;
+						if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2./PSL_DOTS_PER_INCH;
 					}
 					else {
 						hw = Ctrl->A.head;

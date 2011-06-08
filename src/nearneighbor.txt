@@ -5,8 +5,8 @@ nearneighbor \- A "Nearest neighbor" gridding algorithm
 .SH SYNOPSIS
 BD(nearneighbor) [ IT(table) ] OPT(G)IT(out_grdfile) GMT_I_OPT  
 OPT(N)IT(sectors)[/IT(min_sectors)] GMT_Rgeo_OPT OPT(S)IT(search_radius)[IT(unit)] 
-[ OPT(E)IT(empty) ] [ OPT(L)IT(flag) ] [ GMT_V_OPT ] [ OPT(W) ] 
-[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ] 
+[ OPT(E)IT(empty) ] [ GMT_V_OPT ] [ OPT(W) ] 
+[ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ OPT(n)[BD(+b)IT(BC)] ] [ GMT_r_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
 BD(nearneighbor) reads arbitrarily located (x,y,z[,w]) triples [quadruplets]
 from standard input [or IT(table)] and uses a nearest neighbor algorithm to assign 
@@ -42,11 +42,6 @@ will read from standard input.
 .TP
 OPT(E)IT(empty)
 Set the value assigned to empty nodes [NaN].
-.TP
-OPT(L)IT(flag)
-Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of 
-x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
-lon and lat).  [Default is no boundary conditions].
 #include "explain_-V.txt"
 .TP
 OPT(W)
@@ -57,6 +52,12 @@ with the geometrical weight factor to determine the actual weights used in the c
 #include "explain_-f.txt"
 #include "explain_-h.txt"
 #include "explain_-icols.txt"
+.TP
+GMT_n_OPT
+Append BD(+b)IT(BC) to set any boundary conditions to be used, adding
+BD(g) for geographic, BD(p) for periodic, or BD(n) for natural boundary conditions.
+For the latter two you may append BD(x) or BD(y) to specify just one direction,
+otherwise both are assumed.  [Default is geographic if grid is geographic].
 #include "explain_nodereg.txt"
 Not used with binary data.
 #include "explain_colon.txt"

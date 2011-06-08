@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.9 2011-05-20 15:13:57 remko Exp $
+ *	$Id: pssegy_func.c,v 1.10 2011-06-08 01:33:14 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -326,10 +326,10 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	GMT_geo_to_xy (GMT, x0+ (double)data1, y1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = (GMT_LONG) (xp0 * GMT->current.setting.ps_dpi);
-	px1 = (GMT_LONG) (xp1 * GMT->current.setting.ps_dpi);
-	py0 = (GMT_LONG) (yp0 * GMT->current.setting.ps_dpi);
-	py1 = (GMT_LONG) (yp1 * GMT->current.setting.ps_dpi);
+	px0 = (GMT_LONG) (xp0 * PSL_DOTS_PER_INCH);
+	px1 = (GMT_LONG) (xp1 * PSL_DOTS_PER_INCH);
+	py0 = (GMT_LONG) (yp0 * PSL_DOTS_PER_INCH);
+	py1 = (GMT_LONG) (yp1 * PSL_DOTS_PER_INCH);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
@@ -389,10 +389,10 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0  = (GMT_LONG) (0.49 + xp0  * GMT->current.setting.ps_dpi);
-	px00 = (GMT_LONG) (0.49 + xp00 * GMT->current.setting.ps_dpi);
-	py0  = (GMT_LONG) (0.49 + yp0  * GMT->current.setting.ps_dpi);
-	py1  = (GMT_LONG) (0.49 + yp1  * GMT->current.setting.ps_dpi);
+	px0  = (GMT_LONG) (0.49 + xp0  * PSL_DOTS_PER_INCH);
+	px00 = (GMT_LONG) (0.49 + xp00 * PSL_DOTS_PER_INCH);
+	py0  = (GMT_LONG) (0.49 + yp0  * PSL_DOTS_PER_INCH);
+	py1  = (GMT_LONG) (0.49 + yp1  * PSL_DOTS_PER_INCH);
 
 
 	/*  can rasterize simply by looping over values of y */
@@ -521,13 +521,13 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
-	xpix = xlen * GMT->current.setting.ps_dpi;	/* pixels in x direction */
+	xpix = xlen * PSL_DOTS_PER_INCH;	/* pixels in x direction */
 	/* xpix /= 8.0;
 	bm_nx = 1 +(int) xpix;*/
 	bm_nx = (int) ceil (xpix / 8.0); /* store 8 pixels per byte in x direction but must have
 		whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
-	ypix = ylen * GMT->current.setting.ps_dpi;	/* pixels in y direction */
+	ypix = ylen * PSL_DOTS_PER_INCH;	/* pixels in y direction */
 	bm_ny = (int) ypix;
 	nm = bm_nx * bm_ny;
 

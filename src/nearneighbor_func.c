@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.22 2011-06-07 01:14:20 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.23 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -127,8 +127,8 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "nearneighbor %s [API] - A \"Nearest neighbor\" gridding algorithm\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_message (GMT, "\t[-E<empty>] [-L<flags>] [%s] [-W] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-E<empty>] [%s] [-W] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -141,15 +141,17 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_message (GMT, "\t-L Sets boundary conditions.  <flags> can be either\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x.\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Input file has observation weights in 4th column.\n");
 	GMT_explain_options (GMT, "C0");
 	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
-	GMT_explain_options (GMT, "fhiF:.");
+	GMT_explain_options (GMT, "fhi");
+	GMT_message (GMT, "\t-n+b<BC> Sets boundary conditions.  <BC> can be either:\n");
+	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
+	GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
+	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
+	GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+	GMT_explain_options (GMT, "F:.");
 
 	return (EXIT_FAILURE);
 }

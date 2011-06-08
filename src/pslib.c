@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.272 2011-06-07 01:14:20 guru Exp $
+ *	$Id: pslib.c,v 1.273 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -195,8 +195,6 @@
 #ifndef irint
 #define irint(x) ((int)rint(x))
 #endif
-
-#define PSL_DEFAULT_DPI	1200.0
 
 /*--------------------------------------------------------------------
  *			PSL CONSTANTS MACRO DEFINITIONS
@@ -425,7 +423,6 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 		PSL_message (PSL, PSL_MSG_FATAL, "Measure unit %ld is not in valid range (0-3)! Using 0 (cm)\n", PSL->init.unit);
 		PSL->init.unit = PSL_CM;
 	}
-	if (PSL->init.dpi == 0) PSL->init.dpi= PSL_DEFAULT_DPI;		/* Default dpi */
 	if (PSL->init.copies == 0) PSL->init.copies = 1;		/* Once copy of each plot */
 	if (PSL->init.magnify[0] == 0.0) PSL->init.magnify[0] = 1.0;	/* Default magnification global scales */
 	if (PSL->init.magnify[1] == 0.0) PSL->init.magnify[1] = 1.0;	/* Default magnification global scales */
@@ -1183,8 +1180,8 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 	PSL->current.outline = -1;				/* Will be changed by PSL_setfill */
 	PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], dummy_rgb);	/* Will be changed by PSL_setfill */
 
-	PSL->internal.dpu = PSL->init.dpi / units_per_inch[PSL->init.unit];	/* Dots pr. unit resolution of output device */
-	PSL->internal.dpp = PSL->init.dpi / units_per_inch[PSL_PT];		/* Dots pr. point resolution of output device */
+	PSL->internal.dpu = PSL_DOTS_PER_INCH / units_per_inch[PSL->init.unit];	/* Dots pr. unit resolution of output device */
+	PSL->internal.dpp = PSL_DOTS_PER_INCH / units_per_inch[PSL_PT];		/* Dots pr. point resolution of output device */
 	PSL->internal.x2ix = PSL->internal.dpu;					/* Scales x coordinates to dots */
 	PSL->internal.y2iy = PSL->internal.dpu;					/* Scales y coordinates to dots */
 	PSL->internal.x0 = PSL->internal.y0 = 0;				/* Offsets for x and y when mapping user x,y to PS ix,iy */
@@ -1434,16 +1431,14 @@ PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 	return (PSL_NO_ERROR);
 }
 
-PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double dpi, double xyscales[], double page_rgb[])
+PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[])
 {
 	/* Changes the standard PSL defaults for:
-	 * dpi:		Dots-per-inch [1200]
 	 * xyscales:	Global x- and y-scale magnifier [1.0, 1.0]
 	 * page_rgb:	Page color [white = 1/1/1]; give NULL to leave unchanged.
 	 *
 	 * Only non-zero values will result in a change */
 
-	if (dpi > 0.0) PSL->init.dpi = dpi;				/* Change plot dpi */
 	if (xyscales[0] != 0.0) PSL->init.magnify[0] = xyscales[0];	/* Change plot x magnifier */
 	if (xyscales[1] != 0.0) PSL->init.magnify[1] = xyscales[1];	/* Change plot y magnifier */
 	if (page_rgb) PSL_rgb_copy (PSL->init.page_rgb, page_rgb);	/* Change media color */

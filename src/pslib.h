@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.74 2011-05-18 21:28:52 remko Exp $
+ *	$Id: pslib.h,v 1.75 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -64,6 +64,8 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 /* Number of PostScript points in one inch */
 
 #define PSL_POINTS_PER_INCH	72.0
+
+#define PSL_DOTS_PER_INCH	7200.0		/* Effective dots per inch resolution */
 
 #define PSL_BUFSIZ	4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
 
@@ -216,7 +218,6 @@ struct PSL_CTRL {
 		PSL_LONG copies;		/* Number of copies for this plot		*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/
 		double page_size[2];		/* Width and height of paper used in points	*/
-		double dpi;			/* Selected dots per inch			*/
 		double magnify[2];		/* Global scale values [1/1]			*/
 	} init;
 	struct CURRENT {	/* Variables and settings that changes via PSL_* calls */
@@ -336,7 +337,7 @@ EXTERN_MSC PSL_LONG PSL_plottextclip (struct PSL_CTRL *P, double x[], double y[]
 EXTERN_MSC PSL_LONG PSL_plottextpath (struct PSL_CTRL *P, double x[], double y[], PSL_LONG n, PSL_LONG node[], double fontsize, char *label[], PSL_LONG m, double angle[], PSL_LONG justify, double offset[], PSL_LONG mode);
 EXTERN_MSC PSL_LONG PSL_loadimage (struct PSL_CTRL *P, char *file, struct imageinfo *header, unsigned char **image);
 EXTERN_MSC PSL_LONG PSL_setcolor (struct PSL_CTRL *P, double rgb[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_setdefaults (struct PSL_CTRL *P, double dpi, double xyscales[], double page_rgb[]);
+EXTERN_MSC PSL_LONG PSL_setdefaults (struct PSL_CTRL *P, double xyscales[], double page_rgb[]);
 EXTERN_MSC PSL_LONG PSL_setdash (struct PSL_CTRL *P, char *pattern, double offset);
 EXTERN_MSC PSL_LONG PSL_setfill (struct PSL_CTRL *P, double rgb[], PSL_LONG outline);
 EXTERN_MSC PSL_LONG PSL_setfont (struct PSL_CTRL *P, PSL_LONG font_no);

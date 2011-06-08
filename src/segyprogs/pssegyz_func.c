@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.9 2011-05-20 15:13:57 remko Exp $
+ *	$Id: pssegyz_func.c,v 1.10 2011-06-08 01:33:14 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -351,10 +351,10 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	GMT_geoz_to_xy (GMT, x0+(double)data1*dev_x, y0+(double)data1*dev_y, z1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = (GMT_LONG) ((xp0 - GMT->current.proj.z_project.xmin) * GMT->current.setting.ps_dpi);
-	px1 = (GMT_LONG) ((xp1 - GMT->current.proj.z_project.xmin) * GMT->current.setting.ps_dpi);
-	py0 = (GMT_LONG) ((yp0 - GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi);
-	py1 = (GMT_LONG) ((yp1 - GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi);
+	px0 = (GMT_LONG) ((xp0 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	px1 = (GMT_LONG) ((xp1 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	py0 = (GMT_LONG) ((yp0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	py1 = (GMT_LONG) ((yp1 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
@@ -396,12 +396,12 @@ with lines with gradients slope0 and slope1 respectively */
 
 	if (y0 == y_edge) return;
 
-	pedge_y = irint ((y_edge-GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi);
-	py0 = irint ((y0 - GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi);
+	pedge_y = irint ((y_edge-GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	py0 = irint ((y0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 	if (y0 < y_edge) {
 		for (iy = py0; iy < pedge_y; iy++) {
-			ix1 = irint ((x0-GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) + GMT->current.proj.z_project.ymin - y0) * slope0) * GMT->current.setting.ps_dpi);
-			ix2 = irint ((x1-GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) + GMT->current.proj.z_project.ymin - y0) * slope1) * GMT->current.setting.ps_dpi);
+			ix1 = irint ((x0-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
+			ix2 = irint ((x1-GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
 			if (ix1 < ix2) {
 				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
@@ -410,8 +410,8 @@ with lines with gradients slope0 and slope1 respectively */
 		}
 	} else {
 		for (iy = pedge_y; iy < py0; iy++) {
-			ix1 = irint ((x0 - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) +  GMT->current.proj.z_project.ymin - y0) * slope0) * GMT->current.setting.ps_dpi);
-			ix2 = irint ((x1 - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) +GMT->current.proj.z_project.ymin - y0) * slope1) * GMT->current.setting.ps_dpi);
+			ix1 = irint ((x0 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +  GMT->current.proj.z_project.ymin - y0) * slope0) * PSL_DOTS_PER_INCH);
+			ix2 = irint ((x1 - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) +GMT->current.proj.z_project.ymin - y0) * slope1) * PSL_DOTS_PER_INCH);
 			if (ix1 < ix2) {
 				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
@@ -433,12 +433,12 @@ and slopes of the two other sides */
 
 	if (apex_y == edge_y) return;
 
-	papex_y = irint ((apex_y - GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi); /* location in pixels in y of apex and edge */
-	pedge_y = irint ((edge_y - GMT->current.proj.z_project.ymin) * GMT->current.setting.ps_dpi);
+	papex_y = irint ((apex_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH); /* location in pixels in y of apex and edge */
+	pedge_y = irint ((edge_y - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 	if (apex_y < edge_y) {
 		for (iy = papex_y; iy < pedge_y; iy++) {
-			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) + GMT->current.proj.z_project.ymin - apex_y) * slope) * GMT->current.setting.ps_dpi);
-			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) + GMT->current.proj.z_project.ymin - apex_y) * slope0) * GMT->current.setting.ps_dpi);
+			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
+			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
 			GMT_report (GMT, GMT_MSG_DEBUG, "apex_y<edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
 #endif
@@ -451,8 +451,8 @@ and slopes of the two other sides */
 		}
 	} else {
 		for (iy = pedge_y; iy < papex_y; iy++) {
-			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi) + GMT->current.proj.z_project.ymin - apex_y) * slope) * GMT->current.setting.ps_dpi);
-			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / GMT->current.setting.ps_dpi )+ GMT->current.proj.z_project.ymin - apex_y) * slope0) * GMT->current.setting.ps_dpi);
+			x1 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
+			x2 = irint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH )+ GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
 				GMT_report (GMT, GMT_MSG_DEBUG, "apex_y>edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
 #endif
@@ -627,11 +627,11 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
-	xpix = xlen * GMT->current.setting.ps_dpi; /* pixels in x direction */
+	xpix = xlen * PSL_DOTS_PER_INCH; /* pixels in x direction */
 	bm_nx = (GMT_LONG) ceil (xpix / 8.0); /* store 8 pixels per byte in x direction but must have
 				whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
-	ypix = ylen * GMT->current.setting.ps_dpi; /* pixels in y direction */
+	ypix = ylen * PSL_DOTS_PER_INCH; /* pixels in y direction */
 	bm_ny = (GMT_LONG) ypix;
 	nm = bm_nx * bm_ny;
 

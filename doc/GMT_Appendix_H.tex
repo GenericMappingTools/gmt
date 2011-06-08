@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_H.tex,v 1.24 2011-06-06 18:27:19 guru Exp $
+%	$Id: GMT_Appendix_H.tex,v 1.25 2011-06-08 01:33:12 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -163,35 +163,6 @@ a different film.
 \index{PostScript@\PS!CMYK and RGB|)}
 
 \end{enumerate}
-
-\section{Resolution and dots per inch}
-\index{PostScript@\PS!resolution and dpi}
-
-The parameter \textbf{PS\_DPI} can be set by the user through
-the \filename{gmt.conf} file or \GMTprog{gmtset}.  By default
-it is equal to the value in the \filename{gmt\_defaults.h}
-file, which is supplied with 1200 when you get \GMT\ from us.
-This seems a good size for most applications and should ideally
-exceed the resolution of your hardcopy device (most laserwriters
-have at least 600 dpi, hence our default value).  \GMT\ computes what the
-plot should look like in double precision floating point
-coordinates, and then converts these to integer coordinates at
-\textbf{PS\_DPI} resolution.  This helps us find out that certain
-points in a path lie on top of other points, and we can remove
-these, making smaller paths.  Small paths are important for the
-laserwriter bugs above, and also to make fill operations compute
-faster.  Some users have set their \textbf{PS\_DPI} to very large
-numbers.  This only makes the \PS\ output bigger
-without affecting the appearance of the plot.  However, if you
-want to make a plot which fits on a page at first, and then
-later magnify this same \PS\ file to a huge size,
-the higher DPI is important.  Your data may not have the higher
-resolution but on certain devices the edges of fonts will not
-look crisp if they are not drawn with an effective resolution
-of 1200 dpi or so.  Beware of making an excessively large path.
-Note that if you change dpi the line widths produced by your
-\Opt{W} options will change, unless you have appended \textbf{p}
-for line width in points.
 
 \section{European characters}
 \index{Text!European}

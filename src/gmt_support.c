@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.527 2011-06-02 01:15:53 guru Exp $
+ *	$Id: gmt_support.c,v 1.528 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1324,7 +1324,7 @@ GMT_LONG gmt_penunit (struct GMT_CTRL *C, char c, double *pen_scale)
 		unit = GMT_CM;
 	else {	/* For pens, the default unit is dpi; must apply scaling to get inch first */
 		unit = GMT_INCH;
-		(*pen_scale) = 1.0 / C->current.setting.ps_dpi;
+		(*pen_scale) = 1.0 / C->PSL->init.dpi;
 	}
 	return (unit);
 }

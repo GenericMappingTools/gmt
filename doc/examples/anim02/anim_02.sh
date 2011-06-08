@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 02
-#               $Id: anim_02.sh,v 1.6 2011-06-07 20:12:06 guru Exp $
+#               $Id: anim_02.sh,v 1.7 2011-06-08 01:33:12 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
 # GMT progs:    gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, ps2raster
@@ -20,7 +20,6 @@ name=`basename $0 '.sh'`
 # 1b) setup
 del_angle=`gmtmath -Q 360 $n_frames DIV =`
 makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
-gmtset PS_DPI $dpi
 # 2. Main loop
 mkdir -p $$
 frame=0

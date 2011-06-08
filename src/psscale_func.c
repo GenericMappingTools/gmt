@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.21 2011-06-07 21:38:29 guru Exp $
+ *	$Id: psscale_func.c,v 1.22 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -65,7 +65,7 @@ struct PSSCALE_CTRL {
 	} M;
 	struct N {	/* -N<dpi> */
 		GMT_LONG active;
-		GMT_LONG dpi;
+		double dpi;
 	} N;
 	struct L {	/* -L[i][<gap>] */
 		GMT_LONG active;
@@ -97,7 +97,7 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->N.dpi = 300;
+	C->N.dpi = 600.0;
 	C->I.min = -1.0;
 	C->I.max = +1.0;
 	C->L.spacing = -1.0;
@@ -156,6 +156,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete cpt table.\n");
 	GMT_message (GMT, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
 	GMT_message (GMT, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
+	GMT_message (GMT, "\t-N effective dots-per-inch for color scale [600].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_explain_options (GMT, "R");
@@ -282,11 +283,10 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 			case 'M':
 				Ctrl->M.active = TRUE;
 				break;
-#ifdef GMT_COMPAT
 			case 'N':
-				GMT_report (GMT, GMT_MSG_NORMAL, "-N<dpi> is obsolete in GMT 5 and is ignored\n");
+				Ctrl->N.active = TRUE;
+				Ctrl->N.dpi = atof (opt->arg);
 				break;
-#endif
 			case 'Q':
 				Ctrl->Q.active = TRUE;
 				break;
@@ -344,6 +344,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	}
 	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->common.B.set, "Syntax error -L option: Cannot be used with -B option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.do_pen || Ctrl->T.do_fill), "Syntax error -T option: Must set pen or fill.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && GMT_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
@@ -389,7 +390,7 @@ void fix_format (char *unit, char *format)
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
-void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, GMT_LONG flip, \
+void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, GMT_LONG flip, \
 	GMT_LONG B_set, GMT_LONG equi, GMT_LONG horizontal, GMT_LONG logscl, GMT_LONG intens, double *max_intens, GMT_LONG skip_lines, GMT_LONG extend, \
 	double e_length, char *nan_text, double gap, GMT_LONG interval_annot, GMT_LONG monochrome, struct T Ctrl_T)
 {
@@ -471,9 +472,9 @@ void GMT_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	}
 	if (gap < 0.0) gap = 0.0;
 
-	if (use_image || intens) {	/* Make bitimage for colorbar using PSL->init.dpi */
-		nx = (P->is_continuous) ? irint (length * PSL->init.dpi) : P->n_colors;
-		ny = (intens) ? irint (width * PSL->init.dpi) : 1;
+	if (use_image || intens) {	/* Make bitimage for colorbar using bit_dpi */
+		nx = (P->is_continuous) ? irint (length * bit_dpi) : P->n_colors;
+		ny = (intens) ? irint (width * bit_dpi) : 1;
 		nm = nx * ny;
 		inc_i = length / nx;
 		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
@@ -1159,7 +1160,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
 	
-	GMT_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->A.mode, 
+	GMT_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, 
 		GMT->common.B.set, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);
