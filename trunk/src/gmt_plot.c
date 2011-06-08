@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.342 2011-06-08 19:41:28 remko Exp $
+ *	$Id: gmt_plot.c,v 1.343 2011-06-08 22:09:23 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3555,6 +3555,10 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	}
 	if (C->current.setting.map_logo) gmt_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
 	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
+	/* Enforce chosen line parameters */
+	k = C->PSL->internal.line_cap;	C->PSL->internal.line_cap = -1; PSL_setlinecap (P, k);
+	k = C->PSL->internal.line_join;	C->PSL->internal.line_join = -1; PSL_setlinejoin (P, k);
+	k = C->PSL->internal.miter_limit;	C->PSL->internal.miter_limit = -1; PSL_setmiterlimit (P, k);
 }
 
 void GMT_plotcanvas (struct GMT_CTRL *C)

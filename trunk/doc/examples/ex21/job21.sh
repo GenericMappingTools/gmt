@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 21
-#		$Id: job21.sh,v 1.15 2011-03-15 02:06:31 guru Exp $
+#		$Id: job21.sh,v 1.16 2011-06-08 22:09:23 guru Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -25,8 +25,8 @@ R="-R$w/$e/$s/$n"
 
 # Lay down the basemap:
 
-psbasemap $R -JX9i/6i -Glightgreen -K -U"Example 21 in Cookbook" -Bs1Y/WSen \
-   -Bpa3Of1o/50:=\$::."RedHat (RHT) Stock Price Trend since IPO":WSen > $ps
+psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bs1Y/WSen \
+   -Bpa3Of1o/50:=\$::."RedHat (RHT) Stock Price Trend since IPO":WSen+glightgreen > $ps
 
 # Plot main window with open price as red line over yellow envelope of low/highs
 
@@ -67,7 +67,7 @@ R="-R2004T/$e/$s/40"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right
 
-psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpa3Of3o/10:=\$:ESw -Bs1Y/ -Glightblue \
+psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpa3Of3o/10:=\$:ESw+glightblue -Bs1Y/ \
 	-O -K -X3i -Y3i >> $ps
 
 # Again, plot close price as red line over yellow envelope of low/highs
