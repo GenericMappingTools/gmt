@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.43 2011-05-31 06:30:08 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.44 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,6 +103,7 @@ EXTERN_MSC void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double le
 EXTERN_MSC void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG outline);
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_plane_perspective (struct GMT_CTRL *C, GMT_LONG plane, double level);
+EXTERN_MSC void GMT_plotcanvas (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
 EXTERN_MSC GMT_LONG GMT_setfont (struct GMT_CTRL *C, struct GMT_FONT *F);
 EXTERN_MSC GMT_LONG GMT_plotend (struct GMT_CTRL *C);

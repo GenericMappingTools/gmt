@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.9 2011-06-08 01:33:14 guru Exp $
+ *    $Id: psvelo_func.c,v 1.10 2011-06-08 18:31:29 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -308,6 +308,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plotinit (GMT, options);
+	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);

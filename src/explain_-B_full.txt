@@ -1,7 +1,7 @@
 .TP
 GMT_B_OPT
 Set map boundary annotation and tickmark intervals. The format of IT(tickinfo) is
-[BD(p)|BD(s)]IT(xinfo)[/IT(yinfo)[/IT(zinfo)]][BD(:.)"Title"BD(:)][BD(W)|BD(w)][BD(E)|BD(e)][BD(S)|BD(s)][BD(N)|BD(n)][BD(Z)|BD(z)[BD(+)]].
+[BD(p)|BD(s)]IT(xinfo)[/IT(yinfo)[/IT(zinfo)]][BD(:.)"Title"BD(:)][BD(W)|BD(w)][BD(E)|BD(e)][BD(S)|BD(s)][BD(N)|BD(n)][BD(Z)|BD(z)[BD(+)]][BD(+g)IT(fill)].
 The leading BD(p) [Default] or BD(s) selects the primary or secondary annotation information.
 Each of the IT(?info) segments are textstrings of the form
 IT(info)[BD(:)"Axis label"BD(:)][BD(:=)"prefix"BD(:)][\fB:,\fP"unit label"BD(:)].
@@ -41,7 +41,8 @@ Upper case (e.g., BD(W)) means draw axis/tickmarks AND annotate it, whereas lowe
 its interpretation as the unit of second.  If a 3-D basemap is selected with OPT(p) and
 OPT(Jz), append BD(Z) or BD(z) to control the appearance
 of the vertical axis.  Append BD(+) to draw the outline of the cube defined by OPT(R).  Note
-that for 3-D views the title, if given, will be suppressed.
+that for 3-D views the title, if given, will be suppressed.  Finally, to paint the inside of the
+map region, append BD(+g)IT(fill) [no fill].
 .br
 For non-geographical projections:
 Give negative scale (in OPT(Jx)) or axis length (in OPT(JX)) to change the direction

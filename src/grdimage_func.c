@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.65 2011-06-07 01:14:59 guru Exp $
+ *	$Id: grdimage_func.c,v 1.66 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -525,6 +525,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
@@ -546,6 +547,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 

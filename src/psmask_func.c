@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.19 2011-06-07 01:14:20 guru Exp $
+ *	$Id: psmask_func.c,v 1.20 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -588,7 +588,10 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
 		
-		if (make_plot) GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (make_plot) {
+			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+		}
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory, read and process data file\n");
 

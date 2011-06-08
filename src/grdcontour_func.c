@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.29 2011-06-07 21:38:29 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.30 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -737,6 +737,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
+			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
 			GMT_plotend (GMT);
 		}
@@ -858,6 +859,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours found\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
+			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
 			GMT_plotend (GMT);
 		}
@@ -930,6 +932,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 

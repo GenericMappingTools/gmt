@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.19 2011-05-16 21:23:10 guru Exp $
+ *	$Id: pscoast_func.c,v 1.20 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -631,6 +631,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			PSL_endclipping (PSL, 1);
 
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT); /* Basemap needed */
 			GMT_plane_perspective (GMT, -1, 0.0);
 	
@@ -641,6 +642,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (GMT_OK);
 		}
 
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 
