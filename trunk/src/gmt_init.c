@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.532 2011-06-08 18:31:28 guru Exp $
+ *	$Id: gmt_init.c,v 1.533 2011-06-08 23:58:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3107,7 +3107,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = TRUE;
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_N_COPIES: GMT_COMPAT_WARN;
+		case GMTCASE_N_COPIES:
 		case GMTCASE_PS_COPIES: GMT_COMPAT_WARN;
 			ival = atoi (value);
 			if (ival > 0)
@@ -3115,12 +3115,9 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
-#endif
-#ifdef GMT_COMPAT
-		case GMTCASE_DOTS_PR_INCH: GMT_COMPAT_WARN;
+		case GMTCASE_DOTS_PR_INCH:
+		case GMTCASE_PS_DPI: GMT_COMPAT_WARN;
 			break;
-#endif
-#ifdef GMT_COMPAT
 		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
 #endif
@@ -3951,19 +3948,13 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "undefined");
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_N_COPIES: GMT_COMPAT_WARN;
+		case GMTCASE_N_COPIES:
 		case GMTCASE_PS_COPIES: GMT_COMPAT_WARN;
 			sprintf (value, "%ld", C->current.setting.ps_copies);
 			break;
-#endif
-#ifdef GMT_COMPAT
-		case GMTCASE_DOTS_PR_INCH: GMT_COMPAT_WARN;
-#endif
-#ifdef GMT_COMPAT
-		case GMTCASE_PS_DPI:GMT_COMPAT_WARN;
+		case GMTCASE_DOTS_PR_INCH:
+		case GMTCASE_PS_DPI: GMT_COMPAT_WARN;
 			break;
-#endif
-#ifdef GMT_COMPAT
 		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
 #endif
