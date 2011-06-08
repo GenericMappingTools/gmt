@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.9 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.10 2011-06-08 03:43:39 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -72,15 +72,17 @@ void Free_mgd77info_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD77INFO_CTRL *Ctrl, struct MGD77_CONTROL *M)
+GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD77INFO_CTRL *Ctrl)
 {
 	struct GMT_CTRL *GMT = C->GMT;
+	struct MGD77_CONTROL M;
 
 	GMT_message (GMT, "mgd77info %s - Extract information about MGD77 files\n\n", MGD77_VERSION);
 	GMT_message (GMT, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
+	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (GMT);
 	GMT_message (GMT, "\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-C List abbreviations of all columns present for each cruise\n");
@@ -96,13 +98,14 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	GMT_message (GMT, "\t     r: Display raw original MGD77 header records.\n");
 	GMT_message (GMT, "\t     e: Display the MGD77+ file's E77 status.\n");
 	GMT_message (GMT, "\t     h: Display the MGD77+ file's history.\n");
-	if (Ctrl->M.flag == 1) MGD77_List_Header_Items (GMT, M);
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none]\n");
 	GMT_message (GMT, "\t-L Just list all the institutions and their 2-character GEODAS codes.  Append v to also\n");
 	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution\n");
 	GMT_explain_options (GMT, "V");
 	
+	MGD77_end (GMT, &M);	/* Close machinery */
+
 	return (EXIT_FAILURE);
 }
 
@@ -254,18 +257,24 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 
-	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
-	if (options && options->option == '?') return (GMT_mgd77info_usage (API, GMTAPI_USAGE, Ctrl, &M));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77info_usage (API, GMTAPI_SYNOPSIS, Ctrl, &M));	/* Return the synopsis */
+	if (!options || options->option == '?') return (GMT_mgd77info_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_mgd77info_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77info", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
 	Ctrl = (struct MGD77INFO_CTRL *) New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
 	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return ((int)error);
 
 	/*---------------------------- This is the mgd77info main code ----------------------------*/
+
+	if (Ctrl->M.flag == 1) {
+		MGD77_List_Header_Items (GMT, &M);
+		MGD77_end (GMT, &M);
+		Return (GMT_OK);
+	}
 
 	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
