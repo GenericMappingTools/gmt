@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 30
-#		$Id: job30.sh,v 1.4 2011-03-15 02:06:31 guru Exp $
+#		$Id: job30.sh,v 1.5 2011-06-08 22:09:23 guru Exp $
 #
 # Purpose:	Show graph mode and math angles
 # GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -16,7 +16,7 @@ psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric 
 # Draw sine an cosine curves
 
 gmtmath -T0/360/0.1 T COSD = | psxy -R -J -O -K -W2p >> $ps
-gmtmath -T0/360/0.1 T SIND = | psxy -R -J -O -K -W2p,. --PS_LINE_CAP=round >> $ps
+gmtmath -T0/360/0.1 T SIND = | psxy -R -J -O -K -W2p,0_5:0 --PS_LINE_CAP=round >> $ps
 
 # Indicate the x-angle = 120 degrees
 psxy -R -J -O -K -W0.5p,- << EOF >> $ps
