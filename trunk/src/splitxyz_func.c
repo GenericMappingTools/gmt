@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.14 2011-06-07 21:38:29 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.15 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,7 +143,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "splitxyz %s [API] - Split xyz[dh] files into segments\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
 	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
-	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

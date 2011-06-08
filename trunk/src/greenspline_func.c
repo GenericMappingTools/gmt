@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.19 2011-06-07 01:14:20 guru Exp $
+ *	$Id: greenspline_func.c,v 1.20 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -166,9 +166,9 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "greenspline %s [API] - Interpolation using a Green's function for splines in 1-3 dimensions\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: greenspline [<table>] [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-I<dx>[/<dy>[/<dz>]] -G<outfile>\n");
-	GMT_message (GMT, "\t[-C<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]\n");
+	GMT_message (GMT, "\t[-I<dx>[/<dy>[/<dz>]] [-C<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
+	GMT_message (GMT, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

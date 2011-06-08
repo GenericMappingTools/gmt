@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.12 2011-06-07 01:14:21 guru Exp $
+ *	$Id: sample1d_func.c,v 1.13 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "sample1d %s [API] - Resampling of 1-D data sets\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: sample1d [<table>] [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
-	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

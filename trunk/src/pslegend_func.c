@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.13 2011-05-26 00:54:51 remko Exp $
+ *	$Id: pslegend_func.c,v 1.14 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/w/h/just [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
 

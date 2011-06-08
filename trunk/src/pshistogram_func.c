@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.16 2011-06-08 18:31:29 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.17 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -312,10 +312,10 @@ GMT_LONG GMT_pshistogram_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "pshistogram %s [API] - Calculate and plot histograms\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>]\n", GMT_Jx_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[-I[o|O]] [%s] [-K] [-L<pen>] [-O] [-P] [-Q] [%s]\n", GMT_Jz_OPT, GMT_Rx_OPT);
-	GMT_message (GMT, "\t[-S] [%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
+	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

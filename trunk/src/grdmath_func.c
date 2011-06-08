@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmath_func.c,v 1.23 2011-05-16 22:22:31 guru Exp $
+ *	$Id: grdmath_func.c,v 1.24 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,7 +107,7 @@ GMT_LONG GMT_grdmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdmath %s [API] - Reverse Polish Notation (RPN) calculator for grid files (element by element)\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdmath [%s] [%s] [-M] [-N] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_message (GMT, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
 	GMT_message (GMT, "	A B op C op D op ... = outfile\n\n");
 

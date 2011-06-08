@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spectrum1d_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
+ *	$Id: spectrum1d_func.c,v 1.15 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -506,7 +506,7 @@ GMT_LONG GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "spectrum1d %s [API] - Compute auto- [and cross- ] spectra from one [or two] timeseries\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-N[+]<name_stem>]\n");
-	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_message (GMT, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

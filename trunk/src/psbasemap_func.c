@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.22 2011-06-08 18:31:29 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.23 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -65,10 +65,10 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psbasemap %s [API] - To plot PostScript basemaps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psbasemap %s %s %s \n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-K] [%s] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
-	GMT_message (GMT, "\t[-O] [-P] [%s] [%s] [%s]\n", GMT_TROSE, GMT_U_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
+	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
+	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
