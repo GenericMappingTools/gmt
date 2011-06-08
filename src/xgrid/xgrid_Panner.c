@@ -7,6 +7,7 @@
 #define Max(a,b) ((a)>(b)?(a):(b))
 
 #include "xgrid_PannerP.h"
+#include <stddef.h>
 
 static XtResource resources[] = {
 #define offset(field) XtOffset(PannerWidget, panner.field)
@@ -249,8 +250,13 @@ static void jumpProc (bar, data, fraction)
   data->position = (int)(scaleFrac * (data->range - data->shown));
   recalculateBar(data);
   /* Notify client */
+/* With 64-bit we started to get these messages when compiling xgrid:
+ * xgrid_Panner.c:259: warning: cast to pointer from integer of different size.
+ * Per Lloyd Parkes, fixed by casting the argument via (ptrdiff_t).
+ */
+
   if (data->position != previous)
-    XtCallCallbackList(XtParent(bar), data->callback, (XtPointer)data->position);
+    XtCallCallbackList(XtParent(bar), data->callback, (XtPointer)(ptrdiff_t)data->position);
 }
 
 /****	Scrolling by clicking the up or down arrows.
@@ -284,8 +290,13 @@ static void scrollProc (bar, data, position)
     data->position += distance;
   recalculateBar(data);
   /* Notify client */
+/* With 64-bit we started to get these messages when compiling xgrid:
+ * xgrid_Panner.c:299: warning: cast to pointer from integer of different size.
+ * Per Lloyd Parkes, fixed by casting the argument via (ptrdiff_t).
+ */
+
   if (data->position != previous)
-    XtCallCallbackList(XtParent(bar), data->callback, (XtPointer)data->position);
+    XtCallCallbackList(XtParent(bar), data->callback, (XtPointer)(ptrdiff_t)data->position);
 }
 
 /****	Convenience functions	****/
