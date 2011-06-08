@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.15 2011-06-08 19:21:49 guru Exp $
+ *	$Id: splitxyz_func.c,v 1.16 2011-06-08 19:42:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,6 +28,8 @@
 
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
+
+EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 
 struct SPLITXYZ_CTRL {
 	struct Out {	/* -> */
