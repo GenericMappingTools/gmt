@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.23 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.24 2011-06-08 19:36:53 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -105,8 +105,8 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 #ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
-				C->current.map.frame.paint = TRUE;
-				if (GMT_getfill (GMT, opt->arg, &C->current.map.frame.fill)) {
+				GMT->current.map.frame.paint = TRUE;
+				if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
