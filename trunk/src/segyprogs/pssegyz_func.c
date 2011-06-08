@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegyz_func.c,v 1.11 2011-06-08 18:31:29 guru Exp $
+ *	$Id: pssegyz_func.c,v 1.12 2011-06-08 19:49:17 remko Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -624,6 +624,7 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* set up map projection and PS plotting */
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
 	GMT_plotinit (GMT, options);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	/* define area for plotting and size of array for bitmap */
@@ -773,15 +774,12 @@ use a few of these*/
 		ix++;
 	}
 
-	/* map_clip_on (-1, -1, -1, 3); */
 	/* set a clip at the map boundary since the image space overlaps a little */
 	PSL_plotbitimage (PSL, 0.0, 0.0, xlen, ylen, 1, bitmap, 8*bm_nx, bm_ny, trans, Ctrl->F.rgb);
 
-	/* map_clip_off ();*/
-
 	if (fpi != stdin) fclose (fpi);
 
-	/*ps_rotatetrans (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, 0.0);*/
+	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
 	GMT_free (GMT, bitmap);
