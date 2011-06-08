@@ -16,7 +16,6 @@ lengths below are given in both cm or inch; the chosen default depends on your c
 unit (see BD(PROJ_LENGTH_UNIT)).  You can explicitly specify the unit used for distances and
 lengths by appending BD(c) (cm), BD(i) (inch), or BD(p) (points).
 When no unit is indicated the value will be assumed to be in the unit set by BD(PROJ_LENGTH_UNIT).
-Note that the printer resolution BD(PS_DPI) is always the number of dots or pixels per inch.
 Several parameters take only BD(true) or BD(false).
 Finally, most of these parameters can be changed on-the-fly via the PAR(PARAMETER,VALUE) option to any
 BD(GMT) program.  However, a few are static and are only read via the BD(gmt.conf) file; these
@@ -416,13 +415,6 @@ false which yields a somewhat slimmer IT(PostScript) file [false].
 .TP
 .B PS_COPIES
 (BD(* \-c)) Number of plot copies to make  [1].
-.TP
-.B PS_DPI
-Resolution of the plotting device (dpi).  Note that in order to be as compact as possible,
-BD(GMT) IT(PostScript) output uses integer formats only so the resolution should be
-set depending on what output device you are using.  E.g, using 300 and sending the output to
-a Linotype 300 phototypesetter (2470 dpi) will not take advantage of the extra resolution (i.e.,
-positioning on the page and line thicknesses are still only done in steps of 1/300 inch; of course, text will look smoother)  [1200].
 .TP
 .B PS_IMAGE_COMPRESS
 (static) Determines if IT(PostScript) images are compressed using the Run-Length Encoding scheme (rle),

@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.32 2011-05-16 21:23:11 guru Exp $
+/*	$Id: utilmeca.c,v 1.33 2011-06-08 01:33:14 guru Exp $
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -1475,7 +1475,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 		hl = hypot (x1-x2, y1-y2) * 0.6;
 		hw = hl * h_width / h_length;
 		vw = hl * v_width / h_length;
-		if (vw < 2.0/GMT->PSL->init.dpi) vw = 2.0/GMT->PSL->init.dpi;
+		if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;
 	}
 	else {
 		hw = h_width;
@@ -1502,7 +1502,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 		hl = hypot (x1-x2,y1-y2) * 0.6;
 		hw = hl * h_width / h_length;
 		vw = hl * v_width / h_length;
-		if (vw < 2.0/GMT->PSL->init.dpi) vw = 2.0/GMT->PSL->init.dpi;
+		if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;
 	}
 	else {
 		hw = h_width;
@@ -1532,7 +1532,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 		hl = hypot (x1-x2,y1-y2) * 0.6;
 		hw = hl * h_width / h_length;
 		vw = hl * v_width / h_length;
-		if (vw < 2.0/GMT->PSL->init.dpi) vw = 2.0/GMT->PSL->init.dpi;
+		if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;
 	}
 	else {
 		hw = h_width;
@@ -1561,7 +1561,7 @@ GMT_LONG trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 		hl = hypot (x1-x2,y1-y2) * 0.6;
 		hw = hl * h_width / h_length;
 		vw = hl * v_width / h_length;
-		if (vw < 2.0/GMT->PSL->init.dpi) vw = 2.0/GMT->PSL->init.dpi;
+		if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;
 	}
 	else {
 		hw = h_width;

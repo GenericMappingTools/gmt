@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 03
-#               $Id: anim_03.sh,v 1.7 2011-06-07 20:12:06 guru Exp $
+#               $Id: anim_03.sh,v 1.8 2011-06-08 01:33:12 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT progs:    gmtset, gmtmath, psbasemap, psxy, ps2raster
@@ -22,7 +22,6 @@ el=35
 az=0
 name=`basename $0 '.sh'`
 mkdir -p $$
-gmtset PS_DPI $dpi
 frame=0
 grdclip -Sb0/-1 -G$$_above.nc Iceland.nc
 grdgradient -fg -A45 -Nt1 $$_above.nc -G$$.nc

@@ -342,10 +342,9 @@ This option is only used by Adobe Distiller when converting PS to PDF.
 .RE
 .br
 .sp
-BD(long PSL_setdefaults) (ARG(struct PSL_CTRL,*P), ARG(double,dpi), ARG(double,xyscales)[], ARG(double,pagergb)[])
+BD(long PSL_setdefaults) (ARG(struct PSL_CTRL,*P), ARG(double,xyscales)[], ARG(double,pagergb)[])
 .RS 5
 Allows changes to the PSL session settings and should be called immediately after BD(PSL_beginsession).
-Specify IT(dpi) to change the dots-per-inch resolution used internally to general integer coordinates [1200].
 The IT(xyscales) array affect an overall magnification of your plot [1,1].  This can be useful if you
 design a page-sized plot but would then like to magnify (or shrink) it by a given factor.
 Finally, change the default paper media color [white; 1/1/1] by

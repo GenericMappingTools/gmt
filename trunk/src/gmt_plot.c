@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.339 2011-06-07 02:00:56 guru Exp $
+ *	$Id: gmt_plot.c,v 1.340 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -432,7 +432,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		double vector_width, dim[7];
 		GMT_init_fill (C, &arrow, C->current.setting.map_frame_pen.rgb[0], C->current.setting.map_frame_pen.rgb[1], C->current.setting.map_frame_pen.rgb[2]);
 		GMT_setfill (C, &arrow, FALSE);
-		vector_width = rint (C->current.setting.ps_dpi * C->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / C->current.setting.ps_dpi;	/* Round off vector width same way as pen width */
+		vector_width = rint (PSL_DOTS_PER_INCH * C->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / PSL_DOTS_PER_INCH;	/* Round off vector width same way as pen width */
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
 		dim[5] = C->current.setting.map_vector_shape; dim[6] = 0.0;
 		if (axis == GMT_X) {
@@ -3449,14 +3449,11 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		GMT_exit (GMT_RUNTIME_ERROR);
 	}
 
-	if (!C->common.O.active) {	/* First time initialize PSL session */
-		P->internal.verbose = C->current.setting.verbose;		/* Inherit verbosity level from GMT */
-		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+	P->internal.verbose = C->current.setting.verbose;		/* Inherit verbosity level from GMT */
 #ifdef GMT_COMPAT
-		if (C->current.setting.ps_copies > 1) P->init.copies = C->current.setting.ps_copies;
+	if (C->current.setting.ps_copies > 1) P->init.copies = C->current.setting.ps_copies;
 #endif
-		PSL_setdefaults (P, C->current.setting.ps_dpi, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
-	}
+	PSL_setdefaults (P, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
 	if (P->init.encoding) free ((void *)P->init.encoding);
 	P->init.encoding = strdup (C->current.setting.ps_encoding.name);
 

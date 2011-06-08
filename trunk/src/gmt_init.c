@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.530 2011-06-07 01:14:19 guru Exp $
+ *	$Id: gmt_init.c,v 1.531 2011-06-08 01:33:13 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3116,15 +3116,9 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 #endif
 #ifdef GMT_COMPAT
-		case GMTCASE_DOTS_PR_INCH: GMT_COMPAT_CHANGE ("PS_DPI");
-#endif
-		case GMTCASE_PS_DPI:
-			dval = atof (value);
-			if (dval > 0.0)
-				C->current.setting.ps_dpi = dval;
-			else
-				error = TRUE;
+		case GMTCASE_DOTS_PR_INCH: GMT_COMPAT_WARN;
 			break;
+#endif
 #ifdef GMT_COMPAT
 		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
@@ -3964,9 +3958,10 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 #ifdef GMT_COMPAT
 		case GMTCASE_DOTS_PR_INCH: GMT_COMPAT_WARN;
 #endif
-		case GMTCASE_PS_DPI:
-			sprintf (value, "%g", C->current.setting.ps_dpi);
+#ifdef GMT_COMPAT
+		case GMTCASE_PS_DPI:GMT_COMPAT_WARN;
 			break;
+#endif
 #ifdef GMT_COMPAT
 		case GMTCASE_PS_EPS: GMT_COMPAT_WARN;
 			break;
@@ -7698,7 +7693,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
 		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
-		PSL_setdefaults (C->PSL, C->current.setting.ps_dpi, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
+		PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb);
 	}
 
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
