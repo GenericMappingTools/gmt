@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.341 2011-06-08 18:31:28 guru Exp $
+ *	$Id: gmt_plot.c,v 1.342 2011-06-08 19:41:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3432,7 +3432,7 @@ char *GMT_export2proj4 (struct GMT_CTRL *C, char *pStrOut) {
 	return (pStrOut);
 }
 
-GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
+void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
@@ -3555,7 +3555,6 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	}
 	if (C->current.setting.map_logo) gmt_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
 	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
-	
 }
 
 void GMT_plotcanvas (struct GMT_CTRL *C)

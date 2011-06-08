@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.44 2011-06-08 18:31:29 guru Exp $
+ *	$Id: gmt_prototypes.h,v 1.45 2011-06-08 19:41:28 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,7 +107,7 @@ EXTERN_MSC void GMT_plotcanvas (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
 EXTERN_MSC GMT_LONG GMT_setfont (struct GMT_CTRL *C, struct GMT_FONT *F);
 EXTERN_MSC GMT_LONG GMT_plotend (struct GMT_CTRL *C);
-EXTERN_MSC GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options);
+EXTERN_MSC void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options);
 EXTERN_MSC GMT_LONG GMT_PSL_Create_Session (struct GMT_CTRL *C, struct PSL_CTRL **P);
 EXTERN_MSC GMT_LONG GMT_PSL_Destroy_Session (struct GMT_CTRL *C, struct PSL_CTRL *P);
 #endif
