@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.12 2011-06-08 03:43:39 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.13 2011-06-08 19:49:17 remko Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -592,6 +592,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	
 	GMT_plotinit (GMT, options);
+	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 	
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -799,6 +800,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, cruise_id);
 	}
 
+	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Plotted %ld cruises\n", n_cruises);
