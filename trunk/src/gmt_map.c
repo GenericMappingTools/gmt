@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.304 2011-06-02 19:54:02 guru Exp $
+ *	$Id: gmt_map.c,v 1.305 2011-06-08 21:43:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1496,11 +1496,13 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
 	/* We must keep separate min/max for both Dateline and Greenwich conventions */
 	for (i = 0; i < n; i++) GMT_quad_add (C, Q, lon[i]);
+	GMT_quad_add (C, Q, border[1]);	GMT_quad_add (C, Q, border[3]);
 	/* Finalize longitude range settings */
 	way = GMT_quad_finalize (C, Q);
 	GMT_free (C, Q);
 	range = (way) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	for (i = 0; i < n; i++) GMT_lon_range_adjust (range, &lon[i]);
+	GMT_lon_range_adjust (range, &border[1]);	GMT_lon_range_adjust (range, &border[3]);
 
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
