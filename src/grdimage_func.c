@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.66 2011-06-08 18:31:29 guru Exp $
+ *	$Id: grdimage_func.c,v 1.67 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -107,7 +107,7 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]] [-G[f|b]<rgb>]\n", GMT_J_OPT, GMT_B_OPT);
 #endif
 	GMT_message (GMT, "\t[-I<intensgrid>] [-K] [-M] [-N] [-O] [-P] [-Q] [%s] [-T]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", 
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", 
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

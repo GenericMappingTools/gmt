@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.15 2011-06-08 18:31:29 guru Exp $
+ *	$Id: psrose_func.c,v 1.16 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,10 +131,10 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psrose %s [API] - Polar histogram (rose diagram) plotter\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-C[<modes>]] [-D] [-G<fill>] [-I] [-K] [-L[<wlab>/<elab>/<slab>/<nlab>]]\n");
-	GMT_message (GMT, "\t[-M<parameters>] [-N] [-O] [-P] [-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t[-W<pen>] [%s] [%s] [-Z<scale>]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M<parameters>] [-N] [-O] [-P]\n");
+	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s]\n", GMT_U_OPT);
+	GMT_message (GMT, "\t[%s] [-W<pen>] [%s] [%s] [-Z<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.19 2011-06-07 01:14:21 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.20 2011-06-08 19:21:50 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "xyz2grd %s [API] - Converting [xy]z data to a GMT grid file\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: xyz2grd [<table>] -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A[f|l|n|s|u|z]] [%s]\n", GMT_GRDEDIT);
-	GMT_message (GMT, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_message (GMT, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.24 2011-05-18 00:34:30 jluis Exp $
+ *	$Id: psimage_func.c,v 1.25 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,9 +97,9 @@ GMT_LONG GMT_psimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "psimage %s [API] - To plot image file on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [-C<xpos>/<ypos>[/<justify>]]\n");
-	GMT_message (GMT, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s]\n", GMT_J_OPT, GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-K] [-M] [-N<nx>[/<ny>]] [-O] [-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O] [-P]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

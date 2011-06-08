@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.15 2011-06-07 01:14:20 guru Exp $
+ *	$Id: project_func.c,v 1.16 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -327,7 +327,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
 	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<lat>]] [-L[w][<l_min>/<l_max>]]\n");
 	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

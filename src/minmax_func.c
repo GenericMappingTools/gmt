@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.21 2011-06-07 01:14:20 guru Exp $
+ *    $Id: minmax_func.c,v 1.22 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "minmax %s [API] - Find extreme values in ASCII tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
+	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

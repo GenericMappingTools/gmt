@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.30 2011-06-08 18:31:29 guru Exp $
+ *	$Id: grdview_func.c,v 1.31 2011-06-08 19:21:49 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -320,11 +320,11 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_PEN P;
 
 	GMT_message (GMT, "grdview %s [API] - Plot topofiles in 3-D\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>]\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>] [-I<intensgrid>] [%s] [-K]\n", GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]] [%s]\n", GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-S<smooth>] [-T[s][o[<pen>]]] [%s] [%s]\n\t[-W<type><pen>] [%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT);
+	GMT_message (GMT, "\t[-I<intensgrid>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
+	GMT_message (GMT, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]] [%s] \n", GMT_Rgeoz_OPT, GMT_c_OPT);
+	GMT_message (GMT, "\t[%s] [-W<type><pen>] [%s] [%s]\n\t[%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
