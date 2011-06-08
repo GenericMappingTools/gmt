@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.10 2011-06-08 01:33:14 guru Exp $
+ *	$Id: pssegy_func.c,v 1.11 2011-06-08 18:31:29 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -518,6 +518,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* set up map projection and PS plotting */
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
 	GMT_plotinit (GMT, options);
+	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];

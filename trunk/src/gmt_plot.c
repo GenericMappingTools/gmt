@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.340 2011-06-08 01:33:13 guru Exp $
+ *	$Id: gmt_plot.c,v 1.341 2011-06-08 18:31:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3555,7 +3555,20 @@ GMT_LONG GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	}
 	if (C->current.setting.map_logo) gmt_timestamp (C, P, C->current.setting.map_logo_pos[GMT_X], C->current.setting.map_logo_pos[GMT_Y], C->current.setting.map_logo_justify, C->current.ps.map_logo_label);
 	PSL_settransparencymode (P, C->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
-	return (0);
+	
+}
+
+void GMT_plotcanvas (struct GMT_CTRL *C)
+{
+	if (C->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
+		double *x = NULL, *y = NULL;
+		GMT_LONG np, donut;
+		np = GMT_map_clip_path (C, &x, &y, &donut);
+		GMT_setfill (C, &C->current.map.frame.fill, FALSE);
+		PSL_plotpolygon (C->PSL, x, y, (1 + donut) * np);
+		GMT_free (C, x);
+		GMT_free (C, y);
+	}
 }
 
 GMT_LONG GMT_plotend (struct GMT_CTRL *C) {

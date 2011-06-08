@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.21 2011-05-16 21:23:10 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.22 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,10 +32,6 @@
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
-	struct G {	/* -G<fill> */
-		GMT_LONG active;
-		struct GMT_FILL fill;
-	} G;
 	struct L {	/* -L */
 		GMT_LONG active;
 		struct GMT_MAP_SCALE item;
@@ -52,7 +48,6 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
@@ -70,7 +65,7 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
 	GMT_message (GMT, "psbasemap %s [API] - To plot PostScript basemaps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psbasemap %s %s %s [-G<fill>]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_message (GMT, "usage: psbasemap %s %s %s \n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-K] [%s] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_message (GMT, "\t[-O] [-P] [%s] [%s] [%s]\n", GMT_TROSE, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -79,7 +74,6 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_explain_options (GMT, "BJZR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_fill_syntax (GMT, 'G', "Select fill for the map interior.");
 	GMT_explain_options (GMT, "K");
 	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>.");
 	GMT_explain_options (GMT, "OP");
@@ -108,13 +102,16 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 
 			/* Processes program-specific parameters */
 
+#ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
-				Ctrl->G.active = TRUE;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
+				C->current.map.frame.paint = TRUE;
+				if (GMT_getfill (GMT, opt->arg, &C->current.map.frame.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
+#endif
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = TRUE;
 				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);
@@ -132,7 +129,7 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.plot || Ctrl->L.active || Ctrl->T.active || Ctrl->G.active), "Syntax error: Must specify at least one of -B, -G, -L, -T\n");
+	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.plot || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -L, -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -175,17 +172,9 @@ GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-	if (Ctrl->G.active) {	/* Paint the inside of the map with specified fill */
-		double *x = NULL, *y = NULL;
-		GMT_LONG np, donut;
-		np = GMT_map_clip_path (GMT, &x, &y, &donut);
-		GMT_setfill (GMT, &Ctrl->G.fill, FALSE);
-		PSL_plotpolygon (PSL, x, y, (1 + donut) * np);
-		GMT_free (GMT, x);
-		GMT_free (GMT, y);
-	}
+	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	GMT_map_basemap (GMT);
+	GMT_map_basemap (GMT);	/* Plot base map */
 
 	if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
 	if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);

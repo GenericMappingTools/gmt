@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.531 2011-06-08 01:33:13 guru Exp $
+ *	$Id: gmt_init.c,v 1.532 2011-06-08 18:31:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -174,7 +174,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t     of the label is used as the title (e.g. :\".My Plot Title\":).\n");
 			GMT_message (C, "\t   Append any combination of W, E, S, N, Z to annotate those axes only [Default is WESNZ (all)].\n");
 			GMT_message (C, "\t     Use lower case w, e, s, n, z to draw & tick but not to annotate those axes.\n");
-			GMT_message (C, "\t     Z+ will also draw a 3-D box .\n");
+			GMT_message (C, "\t     Z+ will also draw a 3-D box.\n");
+			GMT_message (C, "\t   Append +g<fill> to pain the inside of the map region before plotting [no fill].\n");
 			GMT_message (C, "\t   Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].\n");
 			GMT_message (C, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
 			GMT_message (C, "\t   See psbasemap man pages for more details and examples of all settings.\n");
@@ -183,7 +184,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'b':	/* Condensed tickmark option */
 
 			GMT_message (C, "\t-B Basemap boundary annotation attributes.\n");
-			GMT_message (C, "\t   Specify -B[p|s]<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+]\n");
+			GMT_message (C, "\t   Specify -B[p|s]<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+][+g<fill>]\n");
 			GMT_message (C, "\t   <?info> is [<type>]<stride>[<unit>][l|p][:\"label\":][:,[-]\"unit\":]\n");
 			GMT_message (C, "\t   See psbasemap man page for more details and examples of all settings.\n");
 			break;
@@ -194,130 +195,130 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash\n");
 			GMT_message (C, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either as 1:<xxxx>\n");
 			GMT_message (C, "\t   or in %s/degree along the standard parallel. Alternatively, when the projection ID is\n", C->session.unit_name[C->current.setting.proj_length_unit]);
-			GMT_message (C, "\t   Capitalized, <scale|width> denotes the width of the plot in %s\n", C->session.unit_name[C->current.setting.proj_length_unit]);
+			GMT_message (C, "\t   Capitalized, <scale>|<width> denotes the width of the plot in %s\n", C->session.unit_name[C->current.setting.proj_length_unit]);
 			GMT_message (C, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
 			GMT_message (C, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
 			GMT_message (C, "\t   longitude range specified by -R is used. The default standard parallel is the equator\n");
 			GMT_message (C, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n");
 
-			GMT_message (C, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale|width> (Lambert Azimuthal Equal Area)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center of the projection.\n");
-			GMT_message (C, "\t     horizon is max distance from center of the projection (<= 180, default 90).\n");
-			GMT_message (C, "\t     Scale can also be given as <radius>/<lat>, where <radius> is the distance\n");
+			GMT_message (C, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center of the projection.\n");
+			GMT_message (C, "\t     <horizon> is max distance from center of the projection (<= 180, default 90).\n");
+			GMT_message (C, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is the distance\n");
 			GMT_message (C, "\t     in %s to the oblique parallel <lat>.\n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
+			GMT_message (C, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic)\n");
 			GMT_message (C, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			GMT_message (C, "\t   -Jc|C<lon0>/<lat0><scale|width> (Cassini)\n\t     Give central point and scale\n");
+			GMT_message (C, "\t   -Jc|C<lon0>/<lat0><scale>|<width> (Cassini)\n\t     Give central point and scale\n");
 
-			GMT_message (C, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Stereographic)\n");
+			GMT_message (C, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic)\n");
 			GMT_message (C, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
 			GMT_message (C, "\t     <lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First),\n");
 			GMT_message (C, "\t     45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), 0 (Braun)\n");
 
-			GMT_message (C, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Equidistant Conic)\n");
+			GMT_message (C, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Equidistant Conic)\n");
 			GMT_message (C, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			GMT_message (C, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scale|width> (Azimuthal Equidistant)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center of the projection.\n");
-			GMT_message (C, "\t     horizon is max distance from center of the projection (<= 180, default 180).\n");
-			GMT_message (C, "\t     Scale can also be given as <radius>/<lat>, where <radius> is the distance\n");
+			GMT_message (C, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Azimuthal Equidistant)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center of the projection.\n");
+			GMT_message (C, "\t     <horizon> is max distance from center of the projection (<= 180, default 180).\n");
+			GMT_message (C, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is the distance\n");
 			GMT_message (C, "\t     in %s to the oblique parallel <lat>. \n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scale|width> (Gnomonic)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center of the projection.\n");
-			GMT_message (C, "\t     horizon is max distance from center of the projection (< 90, default 60).\n");
-			GMT_message (C, "\t     Scale can also be given as <radius>/<lat>, where <radius> is distance\n");
+			GMT_message (C, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Gnomonic)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center of the projection.\n");
+			GMT_message (C, "\t     <horizon> is max distance from center of the projection (< 90, default 60).\n");
+			GMT_message (C, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
 			GMT_message (C, "\t     in %s to the oblique parallel <lat>. \n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<scale|width> (Orthographic)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center of the projection.\n");
-			GMT_message (C, "\t     Scale can also be given as <radius>/<lat>, where <radius> is distance\n");
+			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<scale>|<width> (Orthographic)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center of the projection.\n");
+			GMT_message (C, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
 			GMT_message (C, "\t     in %s to the oblique parallel <lat>. \n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale|width> (General Perspective)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center of the projection.\n");
-			GMT_message (C, "\t     Altitude is the height (in km) of the viewpoint above local sea level\n");
-			GMT_message (C, "\t        - if altitude less than 10 then it is the distance \n");
+			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center of the projection.\n");
+			GMT_message (C, "\t     <altitude> is the height (in km) of the viewpoint above local sea level\n");
+			GMT_message (C, "\t        - if <altitude> less than 10 then it is the distance \n");
 			GMT_message (C, "\t        from center of earth to viewpoint in earth radii\n");
-			GMT_message (C, "\t        - if altitude has a suffix of 'r' then it is the radius \n");
+			GMT_message (C, "\t        - if <altitude> has a suffix of 'r' then it is the radius \n");
 			GMT_message (C, "\t        from the center of earth in kilometers\n");
-			GMT_message (C, "\t     Azimuth is azimuth east of North of view\n");
-			GMT_message (C, "\t     Tilt is the upward tilt of the plane of projection\n");
-			GMT_message (C, "\t       if tilt < 0 then viewpoint is centered on the horizon\n");
-			GMT_message (C, "\t     Twist is the CW twist of the viewpoint in degree\n");
-			GMT_message (C, "\t     Width is width of the viewpoint in degree\n");
-			GMT_message (C, "\t     Height is the height of the viewpoint in degrees\n");
-			GMT_message (C, "\t     Scale can also be given as <radius>/<lat>, where <radius> is distance\n");
+			GMT_message (C, "\t     <azimuth> is azimuth east of North of view\n");
+			GMT_message (C, "\t     <tilt> is the upward tilt of the plane of projection\n");
+			GMT_message (C, "\t       if <tilt> < 0 then viewpoint is centered on the horizon\n");
+			GMT_message (C, "\t     <twist> is the CW twist of the viewpoint in degree\n");
+			GMT_message (C, "\t     <width> is width of the viewpoint in degree\n");
+			GMT_message (C, "\t     <height> is the height of the viewpoint in degrees\n");
+			GMT_message (C, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
 			GMT_message (C, "\t     in %s to the oblique parallel <lat>. \n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jh|H[<lon0>/]<scale|width> (Hammer-Aitoff)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Ji|I[<lon0>/]<scale|width> (Sinusoidal)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Ji|I[<lon0>/]<scale>|<width> (Sinusoidal)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Jj|J[<lon0>/]<scale|width> (Miller)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jj|J[<lon0>/]<scale>|<width> (Miller)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Jkf|Kf[<lon0>/]<scale|width> (Eckert IV)\n\t     Give central meridian (opt) and scale\n");
-			GMT_message (C, "\t   -Jk|K[s][<lon0>/]<scale|width> (Eckert VI)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Lambert Conformal Conic)\n");
+			GMT_message (C, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic)\n");
 			GMT_message (C, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			GMT_message (C, "\t   -Jm|M[<lon0>/[<lat0>/]]<scale|width> (Mercator).\n");
+			GMT_message (C, "\t   -Jm|M[<lon0>/[<lat0>/]]<scale>|<width> (Mercator).\n");
 			GMT_message (C, "\t     Give central meridian (opt), true scale parallel (opt), and scale\n");
 
-			GMT_message (C, "\t   -Jn|N[<lon0>/]<scale|width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jn|N[<lon0>/]<scale>|<width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
 
 			GMT_message (C, "\t   -Jo|O<parameters> (Oblique Mercator).  Specify one of three definitions:\n");
-			GMT_message (C, "\t     -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scale|width>\n");
+			GMT_message (C, "\t     -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
 			GMT_message (C, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
-			GMT_message (C, "\t     -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale|width>\n");
+			GMT_message (C, "\t     -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
 			GMT_message (C, "\t       Give origin, second point on oblique equator, and scale at oblique equator\n");
-			GMT_message (C, "\t     -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
+			GMT_message (C, "\t     -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>\n");
 			GMT_message (C, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			GMT_message (C, "\t       Specify region in oblique degrees OR use -R<>r\n");
 
-			GMT_message (C, "\t   -Jp|P[a]<scale|width>[/<base>][r|z] (Polar (theta,radius))\n");
+			GMT_message (C, "\t   -Jp|P[a]<scale>|<width>[/<base>][r|z] (Polar (theta,radius))\n");
 			GMT_message (C, "\t     Linear scaling for polar coordinates.\n");
 			GMT_message (C, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
 			GMT_message (C, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n", C->session.unit_name[C->current.setting.proj_length_unit]);
 			GMT_message (C, "\t     Append r to reverse radial direction (s/n must be in 0-90 range) or z to annotate depths rather than radius [Default]\n");
 
-			GMT_message (C, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale|width> ((American) Polyconic)\n");
+			GMT_message (C, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
 			GMT_message (C, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
 
-			GMT_message (C, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
+			GMT_message (C, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale>|<width> (Equidistant Cylindrical)\n");
 			GMT_message (C, "\t     Give central meridian (opt), standard parallel (opt), and scale\n");
 			GMT_message (C, "\t     <lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular),\n");
 			GMT_message (C, "\t     45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann),\n");
 			GMT_message (C, "\t     37.5 (Min. overall distortion), 0 (Plate Carree, default)\n");
 
-			GMT_message (C, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
+			GMT_message (C, "\t   -Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
 
-			GMT_message (C, "\t   -Js|S<lon0>/<lat0>[/<horizon>]/<scale|width> (Stereographic)\n");
-			GMT_message (C, "\t     lon0/lat0 is the center or the projection.\n");
-			GMT_message (C, "\t     horizon is max distance from center of the projection (< 180, default 90).\n");
-			GMT_message (C, "\t     Scale is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
+			GMT_message (C, "\t   -Js|S<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Stereographic)\n");
+			GMT_message (C, "\t     <lon0>/<lat0> is the center or the projection.\n");
+			GMT_message (C, "\t     <horizon> is max distance from center of the projection (< 180, default 90).\n");
+			GMT_message (C, "\t     <scale> is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
 			GMT_message (C, "\t     or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.\n", C->session.unit_name[C->current.setting.proj_length_unit]);
 
-			GMT_message (C, "\t   -Jt|T<lon0>/[<lat0>/]<scale|width> (Transverse Mercator).\n\t         Give central meridian and scale\n");
+			GMT_message (C, "\t   -Jt|T<lon0>/[<lat0>/]<scale>|<width> (Transverse Mercator).\n\t         Give central meridian and scale\n");
 			GMT_message (C, "\t     Optionally, also give the central parallel (default = equator)\n");
 
-			GMT_message (C, "\t   -Ju|U<zone>/<scale|width> (UTM)\n");
+			GMT_message (C, "\t   -Ju|U<zone>/<scale>|<width> (UTM)\n");
 			GMT_message (C, "\t     Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append C-X) and scale\n");
 
-			GMT_message (C, "\t   -Jv|V[<lon0>/]<scale|width> (van der Grinten)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jv|V[<lon0>/]<scale>|<width> (van der Grinten)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Jw|W[<lon0>/]<scale|width> (Mollweide)\n\t     Give central meridian (opt) and scale\n");
+			GMT_message (C, "\t   -Jw|W[<lon0>/]<scale>|<width> (Mollweide)\n\t     Give central meridian (opt) and scale\n");
 
-			GMT_message (C, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Equal-area)\n");
+			GMT_message (C, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area)\n");
 			GMT_message (C, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
 			GMT_message (C, "\t     <lat0> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n");
 			GMT_message (C, "\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert, default)\n");
 
-			GMT_message (C, "\t   -Jx|X<x-scale|width>[/<y-scale|height>] (Linear, log, power scaling)\n");
-			GMT_message (C, "\t     Scale in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale>:\n", C->session.unit_name[C->current.setting.proj_length_unit]);
+			GMT_message (C, "\t   -Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling)\n");
+			GMT_message (C, "\t     <scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale>:\n", C->session.unit_name[C->current.setting.proj_length_unit]);
 			GMT_message (C, "\t       d         Geographic coordinate (in degrees)\n");
 			GMT_message (C, "\t       l         Log10 projection\n");
 			GMT_message (C, "\t       p<power>  x^power projection\n");
@@ -333,66 +334,66 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   Append h for map height, or +|- for max|min map dimension.\n");
 			GMT_message (C, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is set.\n\n");
 
-			GMT_message (C, "\t   -Ja|A<lon0>/<lat0>[/<hor>]/<scl (or radius/lat)|width> (Lambert Azimuthal EA)\n");
+			GMT_message (C, "\t   -Ja|A<lon0>/<lat0>[/<hor>]/<scl (or <radius>/<lat>)|<width> (Lambert Azimuthal EA)\n");
 
-			GMT_message (C, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scl|width> (Albers Conic EA)\n");
+			GMT_message (C, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Albers Conic EA)\n");
 
-			GMT_message (C, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<lat1>/<lat2>/<scl|width> (Cylindrical Stereographic)\n");
+			GMT_message (C, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<lat1>/<lat2>/<scl>|<width> (Cylindrical Stereographic)\n");
 
-			GMT_message (C, "\t   -Jc|C<lon0>/<lat0><scl|width> (Cassini)\n");
+			GMT_message (C, "\t   -Jc|C<lon0>/<lat0><scl>|<width> (Cassini)\n");
 
-			GMT_message (C, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scl|width> (Equidistant Conic)\n");
+			GMT_message (C, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Equidistant Conic)\n");
 
-			GMT_message (C, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scl (or radius/lat)|width>  (Azimuthal Equidistant)\n");
+			GMT_message (C, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scl (or <radius>/<lat>)|<width>  (Azimuthal Equidistant)\n");
 
-			GMT_message (C, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scl (or radius/lat)|width>  (Gnomonic)\n");
+			GMT_message (C, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scl (or <radius>/<lat>)|<width>  (Gnomonic)\n");
 
-			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<scl (or radius/lat)|width>  (Orthographic)\n");
+			GMT_message (C, "\t   -Jg|G<lon0>/<lat0>/<scl (or <radius>/<lat>)|<width>  (Orthographic)\n");
 
-			GMT_message (C, "\t   -Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl|width> (General Perspective)\n");
+			GMT_message (C, "\t   -Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl>|<width> (General Perspective)\n");
 
-			GMT_message (C, "\t   -Jh|H[<lon0>/]<scl|width> (Hammer-Aitoff)\n");
+			GMT_message (C, "\t   -Jh|H[<lon0>/]<scl>|<width> (Hammer-Aitoff)\n");
 
-			GMT_message (C, "\t   -Ji|I[<lon0>/]<scl|width> (Sinusoidal)\n");
+			GMT_message (C, "\t   -Ji|I[<lon0>/]<scl>|<width> (Sinusoidal)\n");
 
-			GMT_message (C, "\t   -Jj|J[<lon0>/]<scl|width> (Miller)\n");
+			GMT_message (C, "\t   -Jj|J[<lon0>/]<scl>|<width> (Miller)\n");
 
-			GMT_message (C, "\t   -Jkf|Kf[<lon0>/]<scl|width> (Eckert IV)\n");
+			GMT_message (C, "\t   -Jkf|Kf[<lon0>/]<scl>|<width> (Eckert IV)\n");
 
-			GMT_message (C, "\t   -Jks|Ks[<lon0>/]<scl|width> (Eckert VI)\n");
+			GMT_message (C, "\t   -Jks|Ks[<lon0>/]<scl>|<width> (Eckert VI)\n");
 
-			GMT_message (C, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scl|width> (Lambert Conformal Conic)\n");
+			GMT_message (C, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Lambert Conformal Conic)\n");
 
-			GMT_message (C, "\t   -Jm|M[<lon0>/[<lat0>/]]<scl|width> (Mercator)\n");
+			GMT_message (C, "\t   -Jm|M[<lon0>/[<lat0>/]]<scl>|<width> (Mercator)\n");
 
-			GMT_message (C, "\t   -Jn|N[<lon0>/]<scl|width> (Robinson projection)\n");
+			GMT_message (C, "\t   -Jn|N[<lon0>/]<scl>|<width> (Robinson projection)\n");
 
 			GMT_message (C, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			GMT_message (C, "\t      -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scl|width>\n");
-			GMT_message (C, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scl|width>\n");
-			GMT_message (C, "\t      -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scl|width>\n");
+			GMT_message (C, "\t      -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scl>|<width>\n");
+			GMT_message (C, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>\n");
+			GMT_message (C, "\t      -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>\n");
 
-			GMT_message (C, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl|width> ((American) Polyconic)\n");
+			GMT_message (C, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)\n");
 
-			GMT_message (C, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scl|width> (Equidistant Cylindrical)\n");
+			GMT_message (C, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scl>|<width> (Equidistant Cylindrical)\n");
 
-			GMT_message (C, "\t   -Jr|R[<lon0>/]<scl|width> (Winkel Tripel)\n");
+			GMT_message (C, "\t   -Jr|R[<lon0>/]<scl>|<width> (Winkel Tripel)\n");
 
-			GMT_message (C, "\t   -Js|S<lon0>/<lat0>/[<horizon>/]<scl (or slat/scl or radius/lat)|width> (Stereographic)\n");
+			GMT_message (C, "\t   -Js|S<lon0>/<lat0>/[<horizon>/]<scl> (or <slat>/<scl> or <radius>/<lat>)|<width> (Stereographic)\n");
 
-			GMT_message (C, "\t   -Jt|T<lon0>/[<lat0>/]<scl|width> (Transverse Mercator)\n");
+			GMT_message (C, "\t   -Jt|T<lon0>/[<lat0>/]<scl>|<width> (Transverse Mercator)\n");
 
-			GMT_message (C, "\t   -Ju|U<zone>/<scl|width> (UTM)\n");
+			GMT_message (C, "\t   -Ju|U<zone>/<scl>|<width> (UTM)\n");
 
-			GMT_message (C, "\t   -Jv|V<lon0>/<scl|width> (van der Grinten)\n");
+			GMT_message (C, "\t   -Jv|V<lon0>/<scl>|<width> (van der Grinten)\n");
 
-			GMT_message (C, "\t   -Jw|W<lon0>/<scl|width> (Mollweide)\n");
+			GMT_message (C, "\t   -Jw|W<lon0>/<scl>|<width> (Mollweide)\n");
 
-			GMT_message (C, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl|width> (Cylindrical Equal-area)\n");
+			GMT_message (C, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			GMT_message (C, "\t   -Jp|P[a]<scl|width>[/<origin>][r|z] (Polar [azimuth] (theta,radius))\n");
+			GMT_message (C, "\t   -Jp|P[a]<scl>|<width>[/<origin>][r|z] (Polar [azimuth] (theta,radius))\n");
 
-			GMT_message (C, "\t   -Jx|X<x-scl|width>[d|l|p<power>|t|T][/<y-scl|height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
+			GMT_message (C, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			GMT_message (C, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 
@@ -871,7 +872,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 					GMT_message (C, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_HAMMER:
-					GMT_message (C, "\t-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width\n");
+					GMT_message (C, "\t-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width>\n");
 					GMT_message (C, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_SINUSOIDAL:
@@ -952,7 +953,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 					GMT_message (C, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
 					GMT_message (C, "\t  or append r to reverse radial coordinates.\n");
 				case GMT_LINEAR:
-					GMT_message (C, "\t-Jx<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
+					GMT_message (C, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
 					GMT_message (C, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n", u);
 					GMT_message (C, "\tUse / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
 					GMT_message (C, "\tUse -JX (and/or -JZ) to give axes lengths rather than scales\n");
@@ -1011,7 +1012,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 
 		case 'f':	/* Column information option  */
 			GMT_message (C, "\t-f[i|o]<colinfo>, i for input, o for output [Default is both].\n");
-			GMT_message (C, "\t   <colinfo> is <colno|colrange>u, where column numbers start at 0\n");
+			GMT_message (C, "\t   <colinfo> is <colno>|<colrange>u, where column numbers start at 0\n");
 			GMT_message (C, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
 			GMT_message (C, "\t   t: relative time, T: absolute time, f: floating point,\n");
 			GMT_message (C, "\t   x: longitude, y: latitude, g: geographic coordinate.\n");
@@ -5623,7 +5624,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 
 	char out1[GMT_BUFSIZ], out2[GMT_BUFSIZ], out3[GMT_BUFSIZ], info[3][GMT_BUFSIZ];
 	struct GMT_PLOT_AXIS *A = NULL;
-	GMT_LONG i, j, k, error = 0;
+	GMT_LONG i, j, k, ignore, g = 0, error = 0;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -5653,6 +5654,19 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		C->current.map.frame.plot = TRUE;
 	}
 
+	for (i = strlen (in) - 1, ignore = FALSE; !C->current.map.frame.paint && !error && i > 0; i--) {	/** Look for +g<fill */
+		if (in[i] == ':') ignore = !ignore;
+		if (ignore) continue;	/* Not look inside text items */
+		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
+			error += GMT_getfill (C, &in[i+2], &C->current.map.frame.fill);
+			if (!error) {
+				C->current.map.frame.paint = TRUE;
+				g = i;
+				in[g] = '\0';	/* Chop off +g for now */
+			}
+		}
+	}
+	
 	error += gmt_strip_colonitem (C, 0, &in[k], ":.", C->current.map.frame.header, out1);	/* Extract header string, if any */
 	GMT_enforce_rgb_triplets (C, C->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
@@ -5699,7 +5713,8 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			}
 		}
 	}
-
+	if (g) in[g] = '+';	/* Restore + */
+	
 	return (error);
 }
 

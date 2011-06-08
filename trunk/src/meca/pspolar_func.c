@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.10 2011-06-07 21:38:29 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.11 2011-06-08 18:31:29 guru Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -388,7 +388,8 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plotinit (GMT, options);
-    
+ 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+   
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);

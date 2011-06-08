@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.25 2011-06-07 01:14:20 guru Exp $
+ *	$Id: pscontour_func.c,v 1.26 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -868,7 +868,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-        	if (!(Ctrl->N.active  || Ctrl->contour.delay)) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+		if (!(Ctrl->N.active  || Ctrl->contour.delay)) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[0];
 	}
 

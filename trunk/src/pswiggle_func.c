@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.15 2011-06-07 01:14:21 guru Exp $
+ *	$Id: pswiggle_func.c,v 1.16 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -411,6 +411,7 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	Ctrl->Z.scale = 1.0 / Ctrl->Z.scale;
 

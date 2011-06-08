@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.14 2011-06-07 21:38:29 guru Exp $
+ *	$Id: psrose_func.c,v 1.15 2011-06-08 18:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -297,7 +297,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, find_mean = FALSE, half_only = FALSE;
 	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	GMT_LONG n_bins, n_annot, n_alpha, n_modes, n_fields, form;
-	GMT_LONG i, bin, n = 0, n_alloc = GMT_CHUNK;
+	GMT_LONG i, bin, n = 0, do_fill, n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
 
@@ -473,12 +473,30 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
 	GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 
+	if (GMT->current.map.frame.paint) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
+		GMT->current.map.frame.paint = FALSE;	/* Turn off so GMT_plotinit wont fill */
+		do_fill = TRUE;
+	}
 	GMT_plotinit (GMT, options);
 
 	x_origin = Ctrl->S.scale;	y_origin = ((half_only) ? 0.0 : Ctrl->S.scale);
 	PSL_setorigin (PSL, x_origin, y_origin, 0.0, PSL_FWD);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	if (!Ctrl->S.normalize) Ctrl->S.scale /= max_radius;
+
+	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
+		double dim = 2.0 * Ctrl->S.scale;
+		GMT->current.map.frame.paint = TRUE;	/* Restore original setting */
+		if (half_only) {	/* Clip the circle */
+			double xc[4], yc[4];
+			xc[0] = xc[3] = -Ctrl->S.scale;	xc[1] = xc[2] = Ctrl->S.scale;
+			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = Ctrl->S.scale;
+			PSL_beginclipping (PSL, xc, yc, 4, GMT->session.no_rgb, 3);
+		}
+		GMT_setfill (GMT, &GMT->current.map.frame.fill, FALSE);
+		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, GMT_SYMBOL_CIRCLE);
+		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
+	}
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	if (windrose) {
