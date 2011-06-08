@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1083 2011-06-08 19:21:49 guru Exp $
+	$Id: ChangeLog,v 1.1084 2011-06-08 19:35:14 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-08	pwessel
+	* xgrid/xgrid_Panner.c:	Eliminate "cast to pointer from integer of different size"
+				by casting the value via (ptrdiff_t) [Thanks to L. Parkes].
 
 2011-06-07	pwessel
 	* gmt.conf:		No longer a PS_DPI setting in GMT since we use a fixed 7200.
