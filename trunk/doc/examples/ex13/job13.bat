@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 13
 REM
-REM		$Id: job13.bat,v 1.10 2011-03-15 02:06:31 guru Exp $
+REM		$Id: job13.bat,v 1.11 2011-06-09 04:12:31 guru Exp $
 REM
 REM Purpose:	Illustrate vectors and contouring
 REM GMT progs:	grdmath, grdcontour, grdvector, pstext
@@ -16,6 +16,6 @@ grdcontour dzdy.nc -J -B1/1WSne -C0.05 -A0.2 -O -K -Gd2i -S4 -T0.1i/0.03i -X3.45
 grdcontour z.nc -J -B1/1WSne -C0.05 -A0.1 -O -K -Gd2i -S4 -T0.1i/0.03i -X-3.45i -Y3.45i >> %ps%
 grdcontour z.nc -J -B1/1WSne -C0.05 -O -K -Gd2i -S4 -X3.45i >> %ps%
 grdvector dzdx.nc dzdy.nc -I0.2 -J -O -K -Q0.03i/0.1i/0.09in0.25i -G0 -S5i >> %ps%
-echo 3.2 3.6 z(x,y) = x * exp(-x@+2@+-y@+2@+) | pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i >> %ps%
+echo 3.2 3.6 z(x,y) = x@~\327@~exp(-x@+2@+-y@+2@+) | pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i >> %ps%
 del *.nc
 del .gmt*

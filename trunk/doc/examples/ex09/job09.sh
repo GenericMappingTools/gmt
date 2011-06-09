@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 09
-#		$Id: job09.sh,v 1.14 2011-03-15 02:06:31 guru Exp $
+#		$Id: job09.sh,v 1.15 2011-06-09 04:12:31 guru Exp $
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
 # GMT progs:	pswiggle, pstext, psxy
@@ -8,8 +8,8 @@
 #
 . ../functions.sh
 ps=../example_09.ps
-pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i -Ba10f5 -Gblack \
-	-Z2000 -Wthinnest -S240/-67/500/@~m@~rad > $ps
+pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i -Ba10f5WSne+g240/255/240 \
+	-G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad --FORMAT_GEO_MAP=dddF > $ps
 psxy -R -J -O -K ridge.xy -Wthicker >> $ps
 psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
 rm -f tmp
