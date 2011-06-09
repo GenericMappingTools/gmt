@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 01
-#               $Id: anim_01.sh,v 1.7 2011-06-08 01:33:12 guru Exp $
+#               $Id: anim_01.sh,v 1.8 2011-06-09 00:07:13 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -20,7 +20,7 @@ name=`basename $0 '.sh'`
 angle_step=`gmtmath -Q 360 $n_frames DIV =`
 angle_inc=`gmtmath -Q $angle_step 10 DIV =`
 psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i \
-	-Ba90g90f30:,-\\312:/a0.5f0.1g1WSne -Glightgreen \
+	-Ba90g90f30:,-\\312:/a0.5f0.1g1WSne+glightgreen \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.map.ps
 # 2. Main frame loop
 mkdir -p $$
