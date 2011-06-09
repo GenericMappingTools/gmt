@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Apr 25 2011 22:36:48) [64-bit] [C4] Document from GMT_grdimage
+%%Title: GMT v5.0.0a (CVS Jun  9 2011 13:00:40) [64-bit] [C4] Document from GMT_grdimage
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr 25 22:38:39 2011
+%%CreationDate: Thu Jun  9 13:21:07 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -296,7 +298,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -486,22 +488,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -524,12 +527,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -542,9 +544,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def
-/PSL_nclip_txt 0 def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -555,538 +558,557 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.24 0.24 scale
+V 0.01 0.01 scale
 %%EndPageSetup
 
+/PSL_page_xsize 61200 def
+/PSL_page_ysize 79200 def
 0 A
 FQ
 O0
-472 2835 T
+11339 68031 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -K -R-0.5/2.5/-0.5/2.5 -P -X4c -Y24c
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath) br Z
--90 150 M (grdimage) br Z
-0 A
+-2160 3600 M (grdimage) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N -75 -75 T 450 450 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N -1800 -1800 T 10800 10800 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 -75 T 300 450 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 -1800 T 7200 10800 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 2 /Height 3 /BitsPerComponent 8
    /ImageMatrix [2 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
 J-(63p_\,+"+d*_d"hLU!W~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 38 38 T 225 225 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 900 900 T 5400 5400 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
--1417 -472 T
+-34016 -11339 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c -nl
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 50 50 T 200 200 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1200 1200 T 4800 4800 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 33 /Height 33 /BitsPerComponent 4
    /ImageMatrix [33 0 0 -33 0 33] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1096,187 +1118,194 @@ lcl<3(QlB'M2OZNt8&1@"UK#?CmR\`9EP#c!UQUK1I3ujN;=J>*$Ya[Tbk;dk$HPCsmT#&pnW/cDGdm"
 [h0GQP!.DMV$HUUUZj,9_`E<H6CPNIN;kKhHGEfVX8@QdT/J1K\ZLGAY+NXr?,F(AB\Ul`Bi^A;ZGNa^MZbl+/U9_8G;q*,L
 m928nVHoA&XGr:/"q_0"*hAu=Hq7Pcs2m09fr!<<~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/2.5/-0.5/2.5 -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-60 50 M
--10 50 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1440 1200 M
+-240 1200 D
 S
-80 50 M
--30 150 D
+1920 1200 M
+-720 3600 D
 S
-100 50 M
--40 200 D
+2400 1200 M
+-960 4800 D
 S
-120 50 M
--40 200 D
+2880 1200 M
+-960 4800 D
 S
-140 50 M
--40 200 D
+3360 1200 M
+-960 4800 D
 S
-160 50 M
--40 200 D
+3840 1200 M
+-960 4800 D
 S
-180 50 M
--40 200 D
+4320 1200 M
+-960 4800 D
 S
-200 50 M
--40 200 D
+4800 1200 M
+-960 4800 D
 S
-220 50 M
--40 200 D
+5280 1200 M
+-960 4800 D
 S
-240 50 M
--40 200 D
+5760 1200 M
+-960 4800 D
 S
-250 100 M
--30 150 D
+6000 2400 M
+-720 3600 D
 S
-250 200 M
--10 50 D
+6000 4800 M
+-240 1200 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath) br Z
--90 150 M (grdimage -E50 -nl) br Z
-0 A
+-2160 3600 M (grdimage -E50 -nl) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1288,121 +1317,124 @@ h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)
 V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
 Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 75 0 T 300 300 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1800 0 T 7200 7200 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1414,114 +1446,117 @@ h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)
 V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
 Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 75 75 T 150 150 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1800 1800 T 3600 3600 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 25 /Height 25 /BitsPerComponent 4
    /ImageMatrix [25 0 0 -25 0 25] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1530,149 +1565,152 @@ J,hn[+dgW6<APZA#aEJ^!<[q9+U3#)+r_%)#f_uO1f>n8J]=I>F1crC&eU)^7;4#M+X`Msjf+Ym7StWZ
 `a*E6(u/X.CFg9#mQ&\WKcTt*YSpY7O1hjX_'p>Xs,CDRfmoG]9l3JZH4S6d5IBGjgOD:,'>2#g*lQN\g$`8TM?saMp4.':o
 iPiR#"WpQ\Me:cPYbtC<I=6AYrTg?+t544.m]=~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
--1417 -472 T
+-34016 -11339 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 50 50 T 200 200 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1200 1200 T 4800 4800 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 33 /Height 33 /BitsPerComponent 4
    /ImageMatrix [33 0 0 -33 0 33] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1682,187 +1720,194 @@ P2j&5aTC:!"'teN=)>Q.9+CTp+8godcYUAoHphAM8<^7G\fN$YcuA&dPT4?dpn]]OZ)HgVJA]-h!GeIV
 W',pf-)kRtIY;EOAF#?D<7tfP8t%$p-7FZ,5k;gI-58ABun#YY@:"&<#(1map]P_b3,(c1UrR'cKM<gL;m+>`'[AbK!47HsT
 #b/"D@cEgX"\j/&3k`]:WB["l$4f]fONKEMD~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/2.5/-0.5/2.5 -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-60 50 M
--10 50 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1440 1200 M
+-240 1200 D
 S
-80 50 M
--30 150 D
+1920 1200 M
+-720 3600 D
 S
-100 50 M
--40 200 D
+2400 1200 M
+-960 4800 D
 S
-120 50 M
--40 200 D
+2880 1200 M
+-960 4800 D
 S
-140 50 M
--40 200 D
+3360 1200 M
+-960 4800 D
 S
-160 50 M
--40 200 D
+3840 1200 M
+-960 4800 D
 S
-180 50 M
--40 200 D
+4320 1200 M
+-960 4800 D
 S
-200 50 M
--40 200 D
+4800 1200 M
+-960 4800 D
 S
-220 50 M
--40 200 D
+5280 1200 M
+-960 4800 D
 S
-240 50 M
--40 200 D
+5760 1200 M
+-960 4800 D
 S
-250 100 M
--30 150 D
+6000 2400 M
+-720 3600 D
 S
-250 200 M
--10 50 D
+6000 4800 M
+-240 1200 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath) br Z
--90 150 M (grdimage -E50) br Z
-0 A
+-2160 3600 M (grdimage -E50) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -1874,175 +1919,179 @@ h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)
 V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
 Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R0/2/0/2 -O -K
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-15 0 M
--15 75 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+360 0 M
+-360 1800 D
 S
-45 0 M
--45 225 D
+1080 0 M
+-1080 5400 D
 S
-75 0 M
--60 300 D
+1800 0 M
+-1440 7200 D
 S
-105 0 M
--60 300 D
+2520 0 M
+-1440 7200 D
 S
-135 0 M
--60 300 D
+3240 0 M
+-1440 7200 D
 S
-165 0 M
--60 300 D
+3960 0 M
+-1440 7200 D
 S
-195 0 M
--60 300 D
+4680 0 M
+-1440 7200 D
 S
-225 0 M
--60 300 D
+5400 0 M
+-1440 7200 D
 S
-255 0 M
--60 300 D
+6120 0 M
+-1440 7200 D
 S
-285 0 M
--60 300 D
+6840 0 M
+-1440 7200 D
 S
-300 75 M
--45 225 D
+7200 1800 M
+-1080 5400 D
 S
-300 225 M
--15 75 D
+7200 5400 M
+-360 1800 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 75 0 T 300 300 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1800 0 T 7200 7200 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -2054,162 +2103,166 @@ h]+[DRTH+8h$A"t@7j7<-WB/>V!mUj#!NWttg`*N0jhJO@6^ZjYPpNpg#a*#8U;19FuQfI:8].C9&jX)
 V\r]9*#J_rZXOIh9JpR=%cZB0[6]X>lrO-SP3j1p>ZY9'O&L2>M6>3?b(G(Z4#Xh."C'ao$0"c6-_6Jr=%7cGb#p7!B<*2O+
 Os1>Ha`;32rl"A<;Z99!bbYk>En%9*]oU;;~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/1.5/0/2 -O -K
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-90 0 M
--15 75 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+2160 0 M
+-360 1800 D
 S
-120 0 M
--45 225 D
+2880 0 M
+-1080 5400 D
 S
-150 0 M
--60 300 D
+3600 0 M
+-1440 7200 D
 S
-180 0 M
--60 300 D
+4320 0 M
+-1440 7200 D
 S
-210 0 M
--60 300 D
+5040 0 M
+-1440 7200 D
 S
-240 0 M
--60 300 D
+5760 0 M
+-1440 7200 D
 S
-270 0 M
--60 300 D
+6480 0 M
+-1440 7200 D
 S
-300 0 M
--60 300 D
+7200 0 M
+-1440 7200 D
 S
-300 150 M
--30 150 D
+7200 3600 M
+-720 3600 D
 S
-300 300 M
+7200 7200 M
 0 0 D
 P S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 75 75 T 150 150 scale [/Indexed /DeviceRGB 12 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 1800 1800 T 3600 3600 scale [/Indexed /DeviceRGB 12 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFCE00FF>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 25 /Height 25 /BitsPerComponent 4
    /ImageMatrix [25 0 0 -25 0 25] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -2218,725 +2271,735 @@ J,hn[+dgW6<APZA#aEJ^!<[q9+U3#)+r_%)#f_uO1f>n8J]=I>F1crC&eU)^7;4#M+X`Msjf+Ym7StWZ
 `a*E6(u/X.CFg9#mQ&\WKcTt*YSpY7O1hjX_'p>Xs,CDRfmoG]9l3JZH4S6d5IBGjgOD:,'>2#g*lQN\g$`8TM?saMp4.':o
 iPiR#"WpQ\Me:cPYbtC<I=6AYrTg?+t544.m]=~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-1/3/-1/3 -O -K
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-83 75 M
--8 37 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1980 1800 M
+-180 900 D
 S
-98 75 M
--16 75 D
--7 38 D
+2340 1800 M
+-540 2700 D
 S
-112 75 M
--15 75 D
--14 75 D
+2700 1800 M
+-720 3600 D
 S
-127 75 M
--15 75 D
--14 75 D
+3060 1800 M
+-720 3600 D
 S
-142 75 M
--30 150 D
+3420 1800 M
+-720 3600 D
 S
-158 75 M
--8 37 D
--8 38 D
--14 75 D
+3780 1800 M
+-720 3600 D
 S
-172 75 M
--15 75 D
--7 37 D
--8 38 D
+4140 1800 M
+-720 3600 D
 S
-188 75 M
--16 75 D
--14 75 D
+4500 1800 M
+-720 3600 D
 S
-203 75 M
--30 150 D
+4860 1800 M
+-720 3600 D
 S
-217 75 M
--30 150 D
+5220 1800 M
+-720 3600 D
 S
-225 112 M
--8 38 D
--15 75 D
+5400 2700 M
+-540 2700 D
 S
-225 187 M
--8 38 D
+5400 4500 M
+-180 900 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
--1417 -472 T
+-34016 -11339 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -K -R-0.5/2.5/-0.5/2.5 -O -X-12c -Y-4c
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath -r) br Z
--90 150 M (grdimage) br Z
-0 A
+-2160 3600 M (grdimage) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N -75 -75 T 450 450 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N -1800 -1800 T 10800 10800 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 -75 T 300 450 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 -1800 T 7200 10800 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 2 /Height 3 /BitsPerComponent 8
    /ImageMatrix [2 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
 >> image
 J-(63p_\,+"+d*_d"hLU!W~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 38 38 T 225 225 scale /DeviceRGB setcolorspace
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 900 900 T 5400 5400 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 3 /Height 3 /BitsPerComponent 8
    /ImageMatrix [3 0 0 -3 0 3] /DataSource currentfile /ASCII85Decode filter
 >> image
 $3:)+ruM+o!,MZ8!<7TLP5rl.rrE)Ys7H?~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
--1417 -472 T
+-34016 -11339 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c -nl
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale [/Indexed /DeviceRGB 14 <
 0A00FF0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31006C00FFFFFFFFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -2949,187 +3012,194 @@ g_(XQ#Ydj)5+Q]cK3o$Pll>$%n]5D,iln<,/,47M9>FrjQcW`7"ZB%CWn\0sO3uL"TF(Y9UM/uH4[SPq
 :mbkP6-DBY#r[s!TUADfX="I\0_D1T`)01@(.rR5h(cPTA8(PIbptA'4d"f7r$53m]_X&YX7#&mYT$]R[HS+rg!B-Yn4_2J>
 U]l[.=@*=b>)mkVS<V3/P*cP`&c@(e?pk^bjNG0J:I~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/2.5/-0.5/2.5 -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-60 50 M
--10 50 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1440 1200 M
+-240 1200 D
 S
-80 50 M
--30 150 D
+1920 1200 M
+-720 3600 D
 S
-100 50 M
--40 200 D
+2400 1200 M
+-960 4800 D
 S
-120 50 M
--40 200 D
+2880 1200 M
+-960 4800 D
 S
-140 50 M
--40 200 D
+3360 1200 M
+-960 4800 D
 S
-160 50 M
--40 200 D
+3840 1200 M
+-960 4800 D
 S
-180 50 M
--40 200 D
+4320 1200 M
+-960 4800 D
 S
-200 50 M
--40 200 D
+4800 1200 M
+-960 4800 D
 S
-220 50 M
--40 200 D
+5280 1200 M
+-960 4800 D
 S
-240 50 M
--40 200 D
+5760 1200 M
+-960 4800 D
 S
-250 100 M
--30 150 D
+6000 2400 M
+-720 3600 D
 S
-250 200 M
--10 50 D
+6000 4800 M
+-240 1200 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath -r) br Z
--90 150 M (grdimage -E50 -nl) br Z
-0 A
+-2160 3600 M (grdimage -E50 -nl) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N -75 -75 T 450 450 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N -1800 -1800 T 10800 10800 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3147,121 +3217,124 @@ NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did
 -`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
 RC~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 -75 T 450 450 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 -1800 T 10800 10800 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3279,114 +3352,117 @@ NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did
 -`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
 RC~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 38 38 T 225 225 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 900 900 T 5400 5400 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 38 /Height 38 /BitsPerComponent 4
    /ImageMatrix [38 0 0 -38 0 38] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3397,149 +3473,152 @@ W5cW#V)*uoD)AA].I#K!`XG&.[`T#bGnQ/.9[RE7+Nc/(b?^A?D#kaei:#T&K?J!B$7Z#YQJd&6LHckD
 A5+,QTN3>h\o7Qm9eZEkE#%:.fCmHSdkY5Xcq>OcpGRd0%T_r]J!\,2E9IsFoG>OPT'Y7GsWYUF6-q`4!FN<-T64.qS0"AB*
 I1+nH56p.Q_WiE%3EOu[sb_oAR-h--$p,36HmUehDKB2t>d/j@~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
--1417 -472 T
+-34016 -11339 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 0 T 300 300 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 0 T 7200 7200 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 50 /Height 50 /BitsPerComponent 4
    /ImageMatrix [50 0 0 -50 0 50] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3552,187 +3631,194 @@ cQ<f6\5.8LD0lY,IjomCQh>;fK,N[NZr\X1NEjWKqR]<7"D4=.LWAd8SB>2-5a]4'c-qU,%sugUh0'RF
 EWcBP8Pkmsh8.Hc!sq;S/?7UF&<&rNbA8.PZ`%Z07$c#9A3fP%o1Qt7\rLPT2a'if?L"8+F7RbmO6#mIX"k@_,.CM"2$C>V,
 FV"k&e(H;8kLj@bL2:gTe&=/D(+a,1@(gP+q.1(dEHTOgIVn;AN%"sY8c2\Np$`~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M -21 0 D S
-0 150 M -21 0 D S
-0 250 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M -500 0 D S
+0 3600 M -500 0 D S
+0 6000 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 50 M -10 0 D S
-0 150 M -10 0 D S
-0 250 M -10 0 D S
+0 1200 M -250 0 D S
+0 3600 M -250 0 D S
+0 6000 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 50 M
+PSL_A0_y 1200 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 250 M
+PSL_A0_y 6000 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 50 M 21 0 D S
-0 150 M 21 0 D S
-0 250 M 21 0 D S
-0 50 M 10 0 D S
-0 150 M 10 0 D S
-0 250 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 1200 M 500 0 D S
+0 3600 M 500 0 D S
+0 6000 M 500 0 D S
+0 1200 M 250 0 D S
+0 3600 M 250 0 D S
+0 6000 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 -21 D S
-150 0 M 0 -21 D S
-250 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+6000 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-50 0 M 0 -10 D S
-150 0 M 0 -10 D S
-250 0 M 0 -10 D S
+1200 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+6000 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-50 PSL_A0_y M
+1200 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-250 PSL_A0_y M
+6000 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-50 0 M 0 21 D S
-150 0 M 0 21 D S
-250 0 M 0 21 D S
-50 0 M 0 10 D S
-150 0 M 0 10 D S
-250 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1200 0 M 0 500 D S
+3600 0 M 0 500 D S
+6000 0 M 0 500 D S
+1200 0 M 0 250 D S
+3600 0 M 0 250 D S
+6000 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/2.5/-0.5/2.5 -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-60 50 M
--10 50 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1440 1200 M
+-240 1200 D
 S
-80 50 M
--30 150 D
+1920 1200 M
+-720 3600 D
 S
-100 50 M
--40 200 D
+2400 1200 M
+-960 4800 D
 S
-120 50 M
--40 200 D
+2880 1200 M
+-960 4800 D
 S
-140 50 M
--40 200 D
+3360 1200 M
+-960 4800 D
 S
-160 50 M
--40 200 D
+3840 1200 M
+-960 4800 D
 S
-180 50 M
--40 200 D
+4320 1200 M
+-960 4800 D
 S
-200 50 M
--40 200 D
+4800 1200 M
+-960 4800 D
 S
-220 50 M
--40 200 D
+5280 1200 M
+-960 4800 D
 S
-240 50 M
--40 200 D
+5760 1200 M
+-960 4800 D
 S
-250 100 M
--30 150 D
+6000 2400 M
+-720 3600 D
 S
-250 200 M
--10 50 D
+6000 4800 M
+-240 1200 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R-0.5/2.5/-0.5/2.5 -JX1i -N -F+f10p+jBR -O -K
 %%PROJ: xy -0.50000000 2.50000000 -0.50000000 2.50000000 -0.500 2.500 -0.500 2.500 +xy +a=6378137.000 +b=6356752.314245
--90 200 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+-2160 4800 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (grdmath -r) br Z
--90 150 M (grdimage -E50) br Z
-0 A
+-2160 3600 M (grdimage -E50) br Z
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R0/2/0/2 -X4c
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N -75 -75 T 450 450 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N -1800 -1800 T 10800 10800 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3750,175 +3836,179 @@ NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did
 -`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
 RC~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-150 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 (2) sh mx
 def
-0 0 M 0 -10 D S
-150 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (2) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-150 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-150 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+3600 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+3600 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R0/2/0/2 -O -K
 %%PROJ: xy 0.00000000 2.00000000 0.00000000 2.00000000 0.000 2.000 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-15 0 M
--15 75 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+360 0 M
+-360 1800 D
 S
-45 0 M
--45 225 D
+1080 0 M
+-1080 5400 D
 S
-75 0 M
--60 300 D
+1800 0 M
+-1440 7200 D
 S
-105 0 M
--60 300 D
+2520 0 M
+-1440 7200 D
 S
-135 0 M
--60 300 D
+3240 0 M
+-1440 7200 D
 S
-165 0 M
--60 300 D
+3960 0 M
+-1440 7200 D
 S
-195 0 M
--60 300 D
+4680 0 M
+-1440 7200 D
 S
-225 0 M
--60 300 D
+5400 0 M
+-1440 7200 D
 S
-255 0 M
--60 300 D
+6120 0 M
+-1440 7200 D
 S
-285 0 M
--60 300 D
+6840 0 M
+-1440 7200 D
 S
-300 75 M
--45 225 D
+7200 1800 M
+-1080 5400 D
 S
-300 225 M
--15 75 D
+7200 5400 M
+-360 1800 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-0.5/1.5/0/2 -X4c
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 0 -75 T 450 450 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 0 -1800 T 10800 10800 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 75 /Height 75 /BitsPerComponent 4
    /ImageMatrix [75 0 0 -75 0 75] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -3936,162 +4026,166 @@ NW`tu5L!-TcTmHu4V^R#A4I(aP%5!r9+\H/cG4CX^AZ-YbV(Q];X<j'S^F7@%*bmOKSrS<1V4Gp;:Did
 -`bhmU.2XU?Gji^)&p<X]67S8A5P,Q[./NV$WCNIP#R_;]Or7Ec`BV<MK?DqLLKa(]F'N,L1`*eig`55dIk1s9^)13KMC!W#
 RC~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 150 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 3600 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
 def
-0 0 M -10 0 D S
-0 150 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 3600 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (2) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 150 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 150 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 3600 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 3600 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 -21 D S
-225 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 -500 D S
+5400 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (0) sh mx
 (1) sh mx
 def
-75 0 M 0 -10 D S
-225 0 M 0 -10 D S
+1800 0 M 0 -250 D S
+5400 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (1) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-75 0 M 0 21 D S
-225 0 M 0 21 D S
-75 0 M 0 10 D S
-225 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+1800 0 M 0 500 D S
+5400 0 M 0 500 D S
+1800 0 M 0 250 D S
+5400 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-0.5/1.5/0/2 -O -K
 %%PROJ: xy -0.50000000 1.50000000 0.00000000 2.00000000 -0.500 1.500 0.000 2.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-90 0 M
--15 75 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+2160 0 M
+-360 1800 D
 S
-120 0 M
--45 225 D
+2880 0 M
+-1080 5400 D
 S
-150 0 M
--60 300 D
+3600 0 M
+-1440 7200 D
 S
-180 0 M
--60 300 D
+4320 0 M
+-1440 7200 D
 S
-210 0 M
--60 300 D
+5040 0 M
+-1440 7200 D
 S
-240 0 M
--60 300 D
+5760 0 M
+-1440 7200 D
 S
-270 0 M
--60 300 D
+6480 0 M
+-1440 7200 D
 S
-300 0 M
--60 300 D
+7200 0 M
+-1440 7200 D
 S
-300 150 M
--30 150 D
+7200 3600 M
+-720 3600 D
 S
-300 300 M
+7200 7200 M
 0 0 D
 P S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+PSL_cliprestore
 0 A
 FQ
 O0
-472 0 T
+11339 0 TM
 
 % PostScript produced by:
 %%GMT:  grdimage t.nc -Ct.cpt -JX1i -B1/1WeSn --FONT_ANNOT_PRIMARY=10p -E50 -O -K -R-1/3/-1/3 -X4c
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-V N 38 38 T 225 225 scale [/Indexed /DeviceRGB 14 <
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+V N 900 900 T 5400 5400 scale [/Indexed /DeviceRGB 14 <
 0058FF00BAFF00FFE200FF8000FF1D45FF00A7FF00FFF500FF9300FF31000A00FFFFFFFF6C00FFCE00FF000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 38 /Height 38 /BitsPerComponent 4
    /ImageMatrix [38 0 0 -38 0 38] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
@@ -4102,197 +4196,191 @@ W5cW#V)*uoD)AA].I#K!`XG&.[`T#bGnQ/.9[RE7+Nc/(b?^A?D#kaei:#T&K?J!B$7Z#YQJd&6LHckD
 A5+,QTN3>h\o7Qm9eZEkE#%:.fCmHSdkY5Xcq>OcpGRd0%T_r]J!\,2E9IsFoG>OPT'Y7GsWYUF6-q`4!FN<-T64.qS0"AB*
 I1+nH56p.Q_WiE%3EOu[sb_oAR-h--$p,36HmUehDKB2t>d/j@~>
 U
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-100 F0
+2400 F0
 (M) sh def
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M -21 0 D S
-0 75 M -21 0 D S
-0 150 M -21 0 D S
-0 225 M -21 0 D S
-0 300 M -21 0 D S
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M -500 0 D S
+0 1800 M -500 0 D S
+0 3600 M -500 0 D S
+0 5400 M -500 0 D S
+0 7200 M -500 0 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sw mx
 (0) sw mx
 (1) sw mx
 (2) sw mx
 (3) sw mx
 def
-0 0 M -10 0 D S
-0 75 M -10 0 D S
-0 150 M -10 0 D S
-0 225 M -10 0 D S
-0 300 M -10 0 D S
+0 0 M -250 0 D S
+0 1800 M -250 0 D S
+0 3600 M -250 0 D S
+0 5400 M -250 0 D S
+0 7200 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 PSL_A0_y 0 M
 (-1) mr Z
-PSL_A0_y 75 M
+PSL_A0_y 1800 M
 (0) mr Z
-PSL_A0_y 150 M
+PSL_A0_y 3600 M
 (1) mr Z
-PSL_A0_y 225 M
+PSL_A0_y 5400 M
 (2) mr Z
-PSL_A0_y 300 M
+PSL_A0_y 7200 M
 (3) mr Z
-300 0 T
-6 W
-0 300 M 0 -300 D S
-2 W
-0 0 M 21 0 D S
-0 75 M 21 0 D S
-0 150 M 21 0 D S
-0 225 M 21 0 D S
-0 300 M 21 0 D S
-0 0 M 10 0 D S
-0 75 M 10 0 D S
-0 150 M 10 0 D S
-0 225 M 10 0 D S
-0 300 M 10 0 D S
--300 0 T
+7200 0 T
+150 W
+0 7200 M 0 -7200 D S
+50 W
+0 0 M 500 0 D S
+0 1800 M 500 0 D S
+0 3600 M 500 0 D S
+0 5400 M 500 0 D S
+0 7200 M 500 0 D S
+0 0 M 250 0 D S
+0 1800 M 250 0 D S
+0 3600 M 250 0 D S
+0 5400 M 250 0 D S
+0 7200 M 250 0 D S
+-7200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 67 def
-/PSL_LF 100 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 1000 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 100 F0
+/PSL_LH 2400 F0
 (M) sh def
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 -21 D S
-75 0 M 0 -21 D S
-150 0 M 0 -21 D S
-225 0 M 0 -21 D S
-300 0 M 0 -21 D S
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 -500 D S
+1800 0 M 0 -500 D S
+3600 0 M 0 -500 D S
+5400 0 M 0 -500 D S
+7200 0 M 0 -500 D S
 /PSL_AH0 0
-42 F0
+1000 F0
 (-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 def
-0 0 M 0 -10 D S
-75 0 M 0 -10 D S
-150 0 M 0 -10 D S
-225 0 M 0 -10 D S
-300 0 M 0 -10 D S
+0 0 M 0 -250 D S
+1800 0 M 0 -250 D S
+3600 0 M 0 -250 D S
+5400 0 M 0 -250 D S
+7200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (-1) bc Z
-75 PSL_A0_y M
+1800 PSL_A0_y M
 (0) bc Z
-150 PSL_A0_y M
+3600 PSL_A0_y M
 (1) bc Z
-225 PSL_A0_y M
+5400 PSL_A0_y M
 (2) bc Z
-300 PSL_A0_y M
+7200 PSL_A0_y M
 (3) bc Z
-0 300 T
-6 W
-0 0 M 300 0 D S
-2 W
-0 0 M 0 21 D S
-75 0 M 0 21 D S
-150 0 M 0 21 D S
-225 0 M 0 21 D S
-300 0 M 0 21 D S
-0 0 M 0 10 D S
-75 0 M 0 10 D S
-150 0 M 0 10 D S
-225 0 M 0 10 D S
-300 0 M 0 10 D S
-0 -300 T
-0 A
+0 7200 T
+150 W
+0 0 M 7200 0 D S
+50 W
+0 0 M 0 500 D S
+1800 0 M 0 500 D S
+3600 0 M 0 500 D S
+5400 0 M 0 500 D S
+7200 0 M 0 500 D S
+0 0 M 0 250 D S
+1800 0 M 0 250 D S
+3600 0 M 0 250 D S
+5400 0 M 0 250 D S
+7200 0 M 0 250 D S
+0 -7200 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  grdcontour t.nc -Ct.cpt -JX1i -R-1/3/-1/3 -O
 %%PROJ: xy -1.00000000 3.00000000 -1.00000000 3.00000000 -1.000 3.000 -1.000 3.000 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-300 0 D
-0 300 D
--300 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-3 W
-83 75 M
--8 37 D
+7200 0 D
+0 7200 D
+-7200 0 D
+PSL_eoclip N
+75 W
+1980 1800 M
+-180 900 D
 S
-98 75 M
--16 75 D
--7 38 D
+2340 1800 M
+-540 2700 D
 S
-112 75 M
--15 75 D
--14 75 D
+2700 1800 M
+-720 3600 D
 S
-127 75 M
--15 75 D
--14 75 D
+3060 1800 M
+-720 3600 D
 S
-142 75 M
--30 150 D
+3420 1800 M
+-720 3600 D
 S
-158 75 M
--8 37 D
--8 38 D
--14 75 D
+3780 1800 M
+-720 3600 D
 S
-172 75 M
--15 75 D
--7 37 D
--8 38 D
+4140 1800 M
+-720 3600 D
 S
-188 75 M
--16 75 D
--14 75 D
+4500 1800 M
+-720 3600 D
 S
-203 75 M
--30 150 D
+4860 1800 M
+-720 3600 D
 S
-217 75 M
--30 150 D
+5220 1800 M
+-720 3600 D
 S
-225 112 M
--8 38 D
--15 75 D
+5400 2700 M
+-540 2700 D
 S
-225 187 M
--8 38 D
+5400 4500 M
+-180 900 D
 S
-1 {cliprestore} repeat /PSL_nclip_txt PSL_nclip_txt 1 sub def
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
+PSL_cliprestore
 %%PageTrailer
-0 0 T 300 300 scale 0 A
+U
 showpage
 
 %%Trailer
