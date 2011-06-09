@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Apr 25 2011 17:37:15) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0a (CVS Jun  9 2011 13:00:40) [64-bit] [C4] Document from GMT_psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr 25 19:58:50 2011
+%%CreationDate: Thu Jun  9 13:23:36 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -296,7 +298,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -486,22 +488,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -524,12 +527,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -542,9 +544,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def
-/PSL_nclip_txt 0 def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -555,603 +558,573 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.24 0.24 scale
+V 0.01 0.01 scale
 %%EndPageSetup
 
+/PSL_page_xsize 61200 def
+/PSL_page_ysize 79200 def
 0 A
 FQ
 O0
-300 300 T
+7200 7200 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -P -K -B0
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
-1 W
-90 0 M
-0 1290 D
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+25 W
+2160 0 M
+0 30960 D
 S
-810 0 M
-0 1290 D
+19440 0 M
+0 30960 D
 S
-900 0 M
-0 1290 D
+21600 0 M
+0 30960 D
 S
-/PSL_sign -1 def
-/PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-58 F0
-(M) sh def
-2 W
-0 1290 M 0 -1290 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-1620 0 T
-/PSL_sign 1 def
-/PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
-0 1290 M 0 -1290 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
--1620 0 T
-/PSL_sign -1 def
-/PSL_far true def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
-0 0 M 1620 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-0 1290 T
-/PSL_sign 1 def
-/PSL_far false def
-/PSL_TL1 21 def
-/PSL_AO0 21 def
-/PSL_AO1 21 def
-/PSL_LO 33 def
-/PSL_AF0 42 def
-/PSL_AF1 50 def
-/PSL_LF 58 def
-/PSL_AH0 0 def
-/PSL_AH1 0 def
-/PSL_LH (M) sh def
-0 0 M 1620 0 D S
-/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
-/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
-/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-0 -1290 T
-0 A
+2 setlinecap
+50 W
+0 30960 M 0 -30960 D S
+38880 0 T
+0 30960 M 0 -30960 D S
+-38880 0 T
+0 0 M 38880 0 D S
+0 30960 T
+0 0 M 38880 0 D S
+0 -30960 T
+0 setlinecap
 0 A
 FQ
 O0
-0 1290 T
+0 30960 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -O -K -Y4.3i /dev/null
+%%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -O -K -Y4.3i -T
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
-1 W
-0 A
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f10p+jBC
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 15 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 360 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (\043) bc Z
-465 15 M (Font Name) bc Z
-855 15 M (\043) bc Z
-1245 15 M (Font Name) bc Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+11160 360 M (Font Name) bc Z
+20520 360 M (\043) bc Z
+29880 360 M (Font Name) bc Z
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -O -K
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
-1 W
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+25 W
 0 0 M
-1620 0 D
+38880 0 D
 S
 0 A
-0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (0) bc Z
-120 9 M (Helvetica) Z
-855 9 M PSL_font_encode 17 get 0 eq {ISOLatin1+_Encoding /Bookman-Demi /Bookman-Demi PSL_reencode PSL_font_encode 17 1 put} if
-42 F17
+2880 216 M (Helvetica) Z
+20520 216 M PSL_font_encode 17 get 0 eq {ISOLatin1+_Encoding /Bookman-Demi /Bookman-Demi PSL_reencode PSL_font_encode 17 1 put} if
+1000 F17
 (17) bc Z
-930 9 M (Bookman-Demi) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Bookman-Demi) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-42 F1
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1000 F1
 (1) bc Z
-120 9 M (Helvetica-Bold) Z
-855 9 M PSL_font_encode 18 get 0 eq {ISOLatin1+_Encoding /Bookman-DemiItalic /Bookman-DemiItalic PSL_reencode PSL_font_encode 18 1 put} if
-42 F18
+2880 216 M (Helvetica-Bold) Z
+20520 216 M PSL_font_encode 18 get 0 eq {ISOLatin1+_Encoding /Bookman-DemiItalic /Bookman-DemiItalic PSL_reencode PSL_font_encode 18 1 put} if
+1000 F18
 (18) bc Z
-930 9 M (Bookman-DemiItalic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Bookman-DemiItalic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
-42 F2
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
+1000 F2
 (2) bc Z
-120 9 M (Helvetica-Oblique) Z
-855 9 M PSL_font_encode 19 get 0 eq {ISOLatin1+_Encoding /Bookman-Light /Bookman-Light PSL_reencode PSL_font_encode 19 1 put} if
-42 F19
+2880 216 M (Helvetica-Oblique) Z
+20520 216 M PSL_font_encode 19 get 0 eq {ISOLatin1+_Encoding /Bookman-Light /Bookman-Light PSL_reencode PSL_font_encode 19 1 put} if
+1000 F19
 (19) bc Z
-930 9 M (Bookman-Light) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Bookman-Light) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 3 get 0 eq {ISOLatin1+_Encoding /Helvetica-BoldOblique /Helvetica-BoldOblique PSL_reencode PSL_font_encode 3 1 put} if
-42 F3
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 3 get 0 eq {ISOLatin1+_Encoding /Helvetica-BoldOblique /Helvetica-BoldOblique PSL_reencode PSL_font_encode 3 1 put} if
+1000 F3
 (3) bc Z
-120 9 M (Helvetica-BoldOblique) Z
-855 9 M PSL_font_encode 20 get 0 eq {ISOLatin1+_Encoding /Bookman-LightItalic /Bookman-LightItalic PSL_reencode PSL_font_encode 20 1 put} if
-42 F20
+2880 216 M (Helvetica-BoldOblique) Z
+20520 216 M PSL_font_encode 20 get 0 eq {ISOLatin1+_Encoding /Bookman-LightItalic /Bookman-LightItalic PSL_reencode PSL_font_encode 20 1 put} if
+1000 F20
 (20) bc Z
-930 9 M (Bookman-LightItalic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Bookman-LightItalic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-42 F4
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1000 F4
 (4) bc Z
-120 9 M (Times-Roman) Z
-855 9 M PSL_font_encode 21 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow /Helvetica-Narrow PSL_reencode PSL_font_encode 21 1 put} if
-42 F21
+2880 216 M (Times-Roman) Z
+20520 216 M PSL_font_encode 21 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow /Helvetica-Narrow PSL_reencode PSL_font_encode 21 1 put} if
+1000 F21
 (21) bc Z
-930 9 M (Helvetica-Narrow) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Helvetica-Narrow) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 5 get 0 eq {ISOLatin1+_Encoding /Times-Bold /Times-Bold PSL_reencode PSL_font_encode 5 1 put} if
-42 F5
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 5 get 0 eq {ISOLatin1+_Encoding /Times-Bold /Times-Bold PSL_reencode PSL_font_encode 5 1 put} if
+1000 F5
 (5) bc Z
-120 9 M (Times-Bold) Z
-855 9 M PSL_font_encode 22 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-Bold /Helvetica-Narrow-Bold PSL_reencode PSL_font_encode 22 1 put} if
-42 F22
+2880 216 M (Times-Bold) Z
+20520 216 M PSL_font_encode 22 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-Bold /Helvetica-Narrow-Bold PSL_reencode PSL_font_encode 22 1 put} if
+1000 F22
 (22) bc Z
-930 9 M (Helvetica-Narrow-Bold) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Helvetica-Narrow-Bold) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 6 get 0 eq {ISOLatin1+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
-42 F6
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 6 get 0 eq {ISOLatin1+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
+1000 F6
 (6) bc Z
-120 9 M (Times-Italic) Z
-855 9 M PSL_font_encode 23 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-Oblique /Helvetica-Narrow-Oblique PSL_reencode PSL_font_encode 23 1 put} if
-42 F23
+2880 216 M (Times-Italic) Z
+20520 216 M PSL_font_encode 23 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-Oblique /Helvetica-Narrow-Oblique PSL_reencode PSL_font_encode 23 1 put} if
+1000 F23
 (23) bc Z
-930 9 M (Helvetica-Narrow-Oblique) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Helvetica-Narrow-Oblique) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 7 get 0 eq {ISOLatin1+_Encoding /Times-BoldItalic /Times-BoldItalic PSL_reencode PSL_font_encode 7 1 put} if
-42 F7
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 7 get 0 eq {ISOLatin1+_Encoding /Times-BoldItalic /Times-BoldItalic PSL_reencode PSL_font_encode 7 1 put} if
+1000 F7
 (7) bc Z
-120 9 M (Times-BoldItalic) Z
-855 9 M PSL_font_encode 24 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-BoldOblique /Helvetica-Narrow-BoldOblique PSL_reencode PSL_font_encode 24 1 put} if
-42 F24
+2880 216 M (Times-BoldItalic) Z
+20520 216 M PSL_font_encode 24 get 0 eq {ISOLatin1+_Encoding /Helvetica-Narrow-BoldOblique /Helvetica-Narrow-BoldOblique PSL_reencode PSL_font_encode 24 1 put} if
+1000 F24
 (24) bc Z
-930 9 M (Helvetica-Narrow-BoldOblique) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Helvetica-Narrow-BoldOblique) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 8 get 0 eq {ISOLatin1+_Encoding /Courier /Courier PSL_reencode PSL_font_encode 8 1 put} if
-42 F8
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 8 get 0 eq {ISOLatin1+_Encoding /Courier /Courier PSL_reencode PSL_font_encode 8 1 put} if
+1000 F8
 (8) bc Z
-120 9 M (Courier) Z
-855 9 M PSL_font_encode 25 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Roman /NewCenturySchlbk-Roman PSL_reencode PSL_font_encode 25 1 put} if
-42 F25
+2880 216 M (Courier) Z
+20520 216 M PSL_font_encode 25 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Roman /NewCenturySchlbk-Roman PSL_reencode PSL_font_encode 25 1 put} if
+1000 F25
 (25) bc Z
-930 9 M (NewCenturySchlbk-Roman) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (NewCenturySchlbk-Roman) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 9 get 0 eq {ISOLatin1+_Encoding /Courier-Bold /Courier-Bold PSL_reencode PSL_font_encode 9 1 put} if
-42 F9
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 9 get 0 eq {ISOLatin1+_Encoding /Courier-Bold /Courier-Bold PSL_reencode PSL_font_encode 9 1 put} if
+1000 F9
 (9) bc Z
-120 9 M (Courier-Bold) Z
-855 9 M PSL_font_encode 26 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Italic /NewCenturySchlbk-Italic PSL_reencode PSL_font_encode 26 1 put} if
-42 F26
+2880 216 M (Courier-Bold) Z
+20520 216 M PSL_font_encode 26 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Italic /NewCenturySchlbk-Italic PSL_reencode PSL_font_encode 26 1 put} if
+1000 F26
 (26) bc Z
-930 9 M (NewCenturySchlbk-Italic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (NewCenturySchlbk-Italic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 10 get 0 eq {ISOLatin1+_Encoding /Courier-Oblique /Courier-Oblique PSL_reencode PSL_font_encode 10 1 put} if
-42 F10
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 10 get 0 eq {ISOLatin1+_Encoding /Courier-Oblique /Courier-Oblique PSL_reencode PSL_font_encode 10 1 put} if
+1000 F10
 (10) bc Z
-120 9 M (Courier-Oblique) Z
-855 9 M PSL_font_encode 27 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Bold /NewCenturySchlbk-Bold PSL_reencode PSL_font_encode 27 1 put} if
-42 F27
+2880 216 M (Courier-Oblique) Z
+20520 216 M PSL_font_encode 27 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-Bold /NewCenturySchlbk-Bold PSL_reencode PSL_font_encode 27 1 put} if
+1000 F27
 (27) bc Z
-930 9 M (NewCenturySchlbk-Bold) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (NewCenturySchlbk-Bold) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 11 get 0 eq {ISOLatin1+_Encoding /Courier-BoldOblique /Courier-BoldOblique PSL_reencode PSL_font_encode 11 1 put} if
-42 F11
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 11 get 0 eq {ISOLatin1+_Encoding /Courier-BoldOblique /Courier-BoldOblique PSL_reencode PSL_font_encode 11 1 put} if
+1000 F11
 (11) bc Z
-120 9 M (Courier-BoldOblique) Z
-855 9 M PSL_font_encode 28 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-BoldItalic /NewCenturySchlbk-BoldItalic PSL_reencode PSL_font_encode 28 1 put} if
-42 F28
+2880 216 M (Courier-BoldOblique) Z
+20520 216 M PSL_font_encode 28 get 0 eq {ISOLatin1+_Encoding /NewCenturySchlbk-BoldItalic /NewCenturySchlbk-BoldItalic PSL_reencode PSL_font_encode 28 1 put} if
+1000 F28
 (28) bc Z
-930 9 M (NewCenturySchlbk-BoldItalic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (NewCenturySchlbk-BoldItalic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M 42 F12
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M 1000 F12
 (12) bc Z
-120 9 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+2880 216 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 (Symbol ) Z
-42 F0 (\(Symbol\)) Z
-855 9 M PSL_font_encode 29 get 0 eq {ISOLatin1+_Encoding /Palatino-Roman /Palatino-Roman PSL_reencode PSL_font_encode 29 1 put} if
-42 F29
+1000 F0 (\(Symbol\)) Z
+20520 216 M PSL_font_encode 29 get 0 eq {ISOLatin1+_Encoding /Palatino-Roman /Palatino-Roman PSL_reencode PSL_font_encode 29 1 put} if
+1000 F29
 (29) bc Z
-930 9 M (Palatino-Roman) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Palatino-Roman) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 13 get 0 eq {ISOLatin1+_Encoding /AvantGarde-Book /AvantGarde-Book PSL_reencode PSL_font_encode 13 1 put} if
-42 F13
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 13 get 0 eq {ISOLatin1+_Encoding /AvantGarde-Book /AvantGarde-Book PSL_reencode PSL_font_encode 13 1 put} if
+1000 F13
 (13) bc Z
-120 9 M (AvantGarde-Book) Z
-855 9 M PSL_font_encode 30 get 0 eq {ISOLatin1+_Encoding /Palatino-Italic /Palatino-Italic PSL_reencode PSL_font_encode 30 1 put} if
-42 F30
+2880 216 M (AvantGarde-Book) Z
+20520 216 M PSL_font_encode 30 get 0 eq {ISOLatin1+_Encoding /Palatino-Italic /Palatino-Italic PSL_reencode PSL_font_encode 30 1 put} if
+1000 F30
 (30) bc Z
-930 9 M (Palatino-Italic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Palatino-Italic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 14 get 0 eq {ISOLatin1+_Encoding /AvantGarde-BookOblique /AvantGarde-BookOblique PSL_reencode PSL_font_encode 14 1 put} if
-42 F14
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 14 get 0 eq {ISOLatin1+_Encoding /AvantGarde-BookOblique /AvantGarde-BookOblique PSL_reencode PSL_font_encode 14 1 put} if
+1000 F14
 (14) bc Z
-120 9 M (AvantGarde-BookOblique) Z
-855 9 M PSL_font_encode 31 get 0 eq {ISOLatin1+_Encoding /Palatino-Bold /Palatino-Bold PSL_reencode PSL_font_encode 31 1 put} if
-42 F31
+2880 216 M (AvantGarde-BookOblique) Z
+20520 216 M PSL_font_encode 31 get 0 eq {ISOLatin1+_Encoding /Palatino-Bold /Palatino-Bold PSL_reencode PSL_font_encode 31 1 put} if
+1000 F31
 (31) bc Z
-930 9 M (Palatino-Bold) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Palatino-Bold) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 15 get 0 eq {ISOLatin1+_Encoding /AvantGarde-Demi /AvantGarde-Demi PSL_reencode PSL_font_encode 15 1 put} if
-42 F15
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 15 get 0 eq {ISOLatin1+_Encoding /AvantGarde-Demi /AvantGarde-Demi PSL_reencode PSL_font_encode 15 1 put} if
+1000 F15
 (15) bc Z
-120 9 M (AvantGarde-Demi) Z
-855 9 M PSL_font_encode 32 get 0 eq {ISOLatin1+_Encoding /Palatino-BoldItalic /Palatino-BoldItalic PSL_reencode PSL_font_encode 32 1 put} if
-42 F32
+2880 216 M (AvantGarde-Demi) Z
+20520 216 M PSL_font_encode 32 get 0 eq {ISOLatin1+_Encoding /Palatino-BoldItalic /Palatino-BoldItalic PSL_reencode PSL_font_encode 32 1 put} if
+1000 F32
 (32) bc Z
-930 9 M (Palatino-BoldItalic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (Palatino-BoldItalic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-45 9 M PSL_font_encode 16 get 0 eq {ISOLatin1+_Encoding /AvantGarde-DemiOblique /AvantGarde-DemiOblique PSL_reencode PSL_font_encode 16 1 put} if
-42 F16
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+1080 216 M PSL_font_encode 16 get 0 eq {ISOLatin1+_Encoding /AvantGarde-DemiOblique /AvantGarde-DemiOblique PSL_reencode PSL_font_encode 16 1 put} if
+1000 F16
 (16) bc Z
-120 9 M (AvantGarde-DemiOblique) Z
-855 9 M PSL_font_encode 33 get 0 eq {ISOLatin1+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
-42 F33
+2880 216 M (AvantGarde-DemiOblique) Z
+20520 216 M PSL_font_encode 33 get 0 eq {ISOLatin1+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
+1000 F33
 (33) bc Z
-930 9 M (ZapfChancery-MediumItalic) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+22320 216 M (ZapfChancery-MediumItalic) Z
+PSL_cliprestore
 0 A
 FQ
 O0
-0 -67 T
+0 -1600 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/5.4/0/4.3 -Jx1i -O -K -Y-0.2222i -F+f+j
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-1620 0 D
-0 1290 D
--1620 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-855 9 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+38880 0 D
+0 30960 D
+-38880 0 D
+PSL_eoclip N
+20520 216 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1000 F0
 (34) bc Z
-930 9 M 42 F34
+22320 216 M 1000 F34
 (ZapfDingbats ) Z
-42 F0 (\(ZapfDingbats\)) Z
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+1000 F0 (\(ZapfDingbats\)) Z
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -O /dev/null
+%%GMT:  psxy -R0/5.4/0/4.3 -Jx1i -O -T
 %%PROJ: xy 0.00000000 5.40000000 0.00000000 4.30000000 0.000 5.400 0.000 4.300 +xy +a=6378137.000 +b=6356752.314245
-1 W
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 %%PageTrailer
-0 0 T 300 300 scale 0 A
+U
 showpage
 
 %%Trailer
