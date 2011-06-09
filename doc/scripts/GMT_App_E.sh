@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_E.sh,v 1.14 2011-05-18 19:54:38 remko Exp $
+#	$Id: GMT_App_E.sh,v 1.15 2011-06-09 17:15:26 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -30,9 +30,9 @@ do
 	for ix in 1 2 3 4 5 6
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
-		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp0/$p -O -K $$.App_E.d -X${x}i -Y${y}i >> $ps
+		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K $$.App_E.d -X${x}i -Y${y}i >> $ps
 		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> $ps
-		psxy -R -J -GP0/$p -O -K $$.App_E.d -X${xwidth}i >> $ps
+		psxy -R -J -GP300/$p -O -K $$.App_E.d -X${xwidth}i >> $ps
 		psxy -R -J -Wthinner -L -O -K $$.App_E.d >> $ps
 		echo "0 0.225" | psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
 		echo "0 0.225 $p" | pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
