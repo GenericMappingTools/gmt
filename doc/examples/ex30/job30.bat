@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 30
-REM             $Id: job30.bat,v 1.6 2011-03-15 02:06:31 guru Exp $
+REM             $Id: job30.bat,v 1.7 2011-06-09 04:12:31 guru Exp $
 REM
 REM Purpose:	Show graph mode and math angles
 REM GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -14,8 +14,8 @@ psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\312:/1g10:."Two Trigonometric F
 
 REM Draw sine an cosine curves
 
-gmtmath -T0/360/0.1 T COSD = | psxy -R -J -O -K -W2p >> %ps%
-gmtmath -T0/360/0.1 T SIND = | psxy -R -J -O -K -W2p,. --PS_LINE_CAP=round >> %ps%
+gmtmath -T0/360/0.1 T COSD = | psxy -R -J -O -K -W3p >> %ps%
+gmtmath -T0/360/0.1 T SIND = | psxy -R -J -O -K -W3p,0_6:0 --PS_LINE_CAP=round >> %ps%
 
 REM Indicate the x-angle = 120 degrees
 echo 120 -1.25 > tmp
@@ -27,7 +27,7 @@ echo 360 0 18p,Times-Roman RB y = sin(@%%12%%a@%%%%) >> tmp
 echo 120 -1.25 14p,Times-Roman LB 120\312 >> tmp
 echo 370 -1.35 24p,Symbol LT a >> tmp
 echo -5 1.85 24p,Times-Roman RT x,y >> tmp
-pstext -R -J -O -K -Dj0.05i -N tmp -F+f+j >> %ps%
+pstext -R -J -O -K -Dj0.2c -N tmp -F+f+j >> %ps%
 
 REM Draw a circle and indicate the 0-70 degree angle
 

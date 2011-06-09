@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 10
-#		$Id: job10.sh,v 1.13 2011-03-15 02:06:31 guru Exp $
+#		$Id: job10.sh,v 1.14 2011-06-09 04:12:31 guru Exp $
 #
 # Purpose:	Make 3-D bar graph on top of perspective map
 # GMT progs:	pscoast, pstext, psxyz
@@ -8,8 +8,8 @@
 #
 . ../functions.sh
 ps=../example_10.ps
-pscoast -Rd -JX8id/5id -Dc -Gblack -p200/40 -K -U"Example 10 in Cookbook" > $ps
-psxyz agu2008.d -R-180/180/-90/90/1/100000 -J -JZ2.5il -So0.3ib1 -Ggray -Wthinner \
+pscoast -Rd -JX8id/5id -Dc -Slightblue -Glightbrown -Wfaint -A1000 -p200/40 -K -U"Example 10 in Cookbook" > $ps
+psxyz agu2008.d -R-180/180/-90/90/1.01/100000 -J -JZ2.5il -So0.3ib1 -Gdarkgreen -Wthinner \
 	-B60g60/30g30/a1p:Memberships:WSneZ -O -K -p200/40 >> $ps
 $AWK '{print $1, $2, $3}' agu2008.d \
 	| pstext -Rd -J -O -K -p200/40 -D-0.2i/0 -F+f20p,Helvetica-Bold,white=thinner+jRM >> $ps

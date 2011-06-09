@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 09
 REM
-REM		$Id: job09.bat,v 1.9 2011-03-15 02:06:31 guru Exp $
+REM		$Id: job09.bat,v 1.10 2011-06-09 04:12:31 guru Exp $
 REM
 REM Purpose:	Make wiggle plot along track from geoid deflections
 REM GMT progs:	pswiggle, pstext, psxy
@@ -11,7 +11,7 @@ REM		See the Unix version for how computations are done.
 REM
 echo GMT EXAMPLE 09
 set ps=..\example_09.ps
-pswiggle all.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i -Ba10f5 -Gblack -Z2000 -Wthinnest -S240/-67/500/@~m@~rad > %ps%
+pswiggle all.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i -Ba10f5WEsn+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad > %ps%
 psxy -R -J -O -K ridge.xy -Wthicker >> %ps%
 psxy -R -J -O -K fz.xy -Wthinner,- >> %ps%
 REM Plot labels
