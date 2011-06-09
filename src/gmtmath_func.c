@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.23 2011-06-07 21:38:29 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.24 2011-06-09 13:22:41 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -943,7 +943,7 @@ void table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 }
 
 void table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], GMT_LONG *constant, double *factor, GMT_LONG last, GMT_LONG col)
-/*OPERATOR: DIFF 1 1 Difference as in Matlab operator with same name.  */
+/*OPERATOR: DIFF 1 1 Difference between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., 0). */
 {
 	GMT_LONG s, i;
 	struct GMT_TABLE *T = S[last]->table[0];
