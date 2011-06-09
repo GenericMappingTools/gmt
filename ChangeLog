@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1085 2011-06-09 04:12:30 guru Exp $
+	$Id: ChangeLog,v 1.1086 2011-06-09 17:07:50 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-09	remko
+	* gmt_plot.c:		Use map_title_offset also in 3-D (instead of fixed 0.5 inch)
+				Skip annotation on z-axis that coincides with z-level.
 
 2011-06-08	pwessel
 	* xgrid/xgrid_Panner.c:	Eliminate "cast to pointer from integer of different size"

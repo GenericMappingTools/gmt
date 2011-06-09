@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 288 144
 %%HiResBoundingBox: 0 0 288 144
-%%Title: GMT v5.0.0a (CVS Apr 25 2011 17:37:15) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.0a (CVS Jun  9 2011 11:55:14) [64-bit] [C4] Document from GMT_psbasemap
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Apr 25 19:13:25 2011
+%%CreationDate: Thu Jun  9 12:40:27 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -87,6 +87,8 @@
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
 /mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -296,7 +298,7 @@ end
   n 0 eq {PSL_CT_drawline} if
   PSL_lastcall
   {PSL_clippath
-    {clip /PSL_clip_on true def} if N
+    {PSL_clip} if N
   } if
 } def
 /PSL_CT_textline
@@ -486,22 +488,23 @@ end
   } for
 } def
 /PSL_ST_clippath
-{PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
   PSL_usebox
   {PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
     {PSL_setboxpen S} if N
   }
-  {clip /PSL_clip_on true def
+  {PSL_clip
   } ifelse
   N
 } def
 /PSL_ST_clippath_rect
-{N
+{
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /DelY BoxH BoxH 0 3 array astore def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -524,12 +527,11 @@ end
   } for
 } def
 /PSL_ST_clippath_round
-{N
+{
   /PSL_justy2 PSL_just 4 idiv 2 div neg def
   /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
   /BoxH PSL_height PSL_gap_y 2 mul add def
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  PSL_usebox not {clipsave clippath} if
   0 1 PSL_m1
   { /k exch def
     /xp PSL_txt_x k get def
@@ -542,9 +544,10 @@ end
     x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
   } for
 } def
-/PSL_clip_on false def
-/PSL_nclip_pol 0 def
-/PSL_nclip_txt 0 def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
@@ -555,69 +558,75 @@ PSLevel 1 gt { << /PageSize [288 144] /ImagingBBox null >> setpagedevice } if
 %%Page: 1 1
 
 %%BeginPageSetup
-0.576 0.576 scale
+V 0.01 0.01 scale
 %%EndPageSetup
 
+/PSL_page_xsize 28800 def
+/PSL_page_ysize 14400 def
 0 A
 FQ
 O0
-44 31 T
+2520 1800 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i -Ba90g90f30:,-\312:/a0.5f0.1g1WSne -Glightgreen --PS_MEDIA=4ix2i --FONT_ANNOT_PRIMARY=9p
+%%GMT:  psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i -Ba90g90f30:,-\312:/a0.5f0.1g1WSne+glightgreen --PS_MEDIA=4ix2i --FONT_ANNOT_PRIMARY=9p
 %%PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 {0.565 0.933 0.565 C} FS
--438 0 0 206 438 0 3 0 0 SP
-0 W
+-25200 0 0 11880 25200 0 3 0 0 SP
+25 W
 0 0 M
-0 206 D
+0 11880 D
 S
-109 0 M
-0 206 D
+6300 0 M
+0 11880 D
 S
-219 0 M
-0 206 D
+12600 0 M
+0 11880 D
 S
-328 0 M
-0 206 D
+18900 0 M
+0 11880 D
 S
-438 0 M
-0 206 D
+25200 0 M
+0 11880 D
 S
-0 15 M
-438 0 D
+0 849 M
+25200 0 D
 S
-0 88 M
-438 0 D
+0 5091 M
+25200 0 D
 S
-0 162 M
-438 0 D
+0 9334 M
+25200 0 D
 S
+2 setlinecap
 /PSL_sign -1 def
 /PSL_far false def
-/PSL_TL1 9 def
-/PSL_AO0 9 def
-/PSL_AO1 9 def
-/PSL_LO 14 def
-/PSL_AF0 16 def
-/PSL_AF1 28 def
-/PSL_LF 42 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 900 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
 /PSL_LH PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-42 F0
+2400 F0
 (M) sh def
-3 W
-0 206 M 0 -206 D S
-1 W
-0 15 M -9 0 D S
-0 52 M -9 0 D S
-0 88 M -9 0 D S
-0 125 M -9 0 D S
-0 162 M -9 0 D S
-0 199 M -9 0 D S
+150 W
+0 11880 M 0 -11880 D S
+50 W
+0 849 M -500 0 D S
+0 2970 M -500 0 D S
+0 5091 M -500 0 D S
+0 7213 M -500 0 D S
+0 9334 M -500 0 D S
+0 11456 M -500 0 D S
 /PSL_AH0 0
-16 F0
+900 F0
 (-1.0) sw mx
 (-0.5) sw mx
 (0.0) sw mx
@@ -625,208 +634,217 @@ S
 (1.0) sw mx
 (1.5) sw mx
 def
-0 0 M -4 0 D S
-0 7 M -4 0 D S
-0 15 M -4 0 D S
-0 22 M -4 0 D S
-0 29 M -4 0 D S
-0 37 M -4 0 D S
-0 44 M -4 0 D S
-0 52 M -4 0 D S
-0 59 M -4 0 D S
-0 66 M -4 0 D S
-0 74 M -4 0 D S
-0 81 M -4 0 D S
-0 88 M -4 0 D S
-0 96 M -4 0 D S
-0 103 M -4 0 D S
-0 110 M -4 0 D S
-0 118 M -4 0 D S
-0 125 M -4 0 D S
-0 133 M -4 0 D S
-0 140 M -4 0 D S
-0 147 M -4 0 D S
-0 155 M -4 0 D S
-0 162 M -4 0 D S
-0 169 M -4 0 D S
-0 177 M -4 0 D S
-0 184 M -4 0 D S
-0 192 M -4 0 D S
-0 199 M -4 0 D S
-0 206 M -4 0 D S
+0 0 M -250 0 D S
+0 424 M -250 0 D S
+0 849 M -250 0 D S
+0 1273 M -250 0 D S
+0 1697 M -250 0 D S
+0 2121 M -250 0 D S
+0 2546 M -250 0 D S
+0 2970 M -250 0 D S
+0 3394 M -250 0 D S
+0 3819 M -250 0 D S
+0 4243 M -250 0 D S
+0 4667 M -250 0 D S
+0 5091 M -250 0 D S
+0 5516 M -250 0 D S
+0 5940 M -250 0 D S
+0 6364 M -250 0 D S
+0 6789 M -250 0 D S
+0 7213 M -250 0 D S
+0 7637 M -250 0 D S
+0 8061 M -250 0 D S
+0 8486 M -250 0 D S
+0 8910 M -250 0 D S
+0 9334 M -250 0 D S
+0 9759 M -250 0 D S
+0 10183 M -250 0 D S
+0 10607 M -250 0 D S
+0 11031 M -250 0 D S
+0 11456 M -250 0 D S
+0 11880 M -250 0 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
-PSL_A0_y 15 M
+PSL_A0_y 849 M
 (-1.0) mr Z
-PSL_A0_y 52 M
+PSL_A0_y 2970 M
 (-0.5) mr Z
-PSL_A0_y 88 M
+PSL_A0_y 5091 M
 (0.0) mr Z
-PSL_A0_y 125 M
+PSL_A0_y 7213 M
 (0.5) mr Z
-PSL_A0_y 162 M
+PSL_A0_y 9334 M
 (1.0) mr Z
-PSL_A0_y 199 M
+PSL_A0_y 11456 M
 (1.5) mr Z
-438 0 T
-3 W
-0 206 M 0 -206 D S
-1 W
-0 15 M 9 0 D S
-0 52 M 9 0 D S
-0 88 M 9 0 D S
-0 125 M 9 0 D S
-0 162 M 9 0 D S
-0 199 M 9 0 D S
-0 0 M 4 0 D S
-0 7 M 4 0 D S
-0 15 M 4 0 D S
-0 22 M 4 0 D S
-0 29 M 4 0 D S
-0 37 M 4 0 D S
-0 44 M 4 0 D S
-0 52 M 4 0 D S
-0 59 M 4 0 D S
-0 66 M 4 0 D S
-0 74 M 4 0 D S
-0 81 M 4 0 D S
-0 88 M 4 0 D S
-0 96 M 4 0 D S
-0 103 M 4 0 D S
-0 110 M 4 0 D S
-0 118 M 4 0 D S
-0 125 M 4 0 D S
-0 133 M 4 0 D S
-0 140 M 4 0 D S
-0 147 M 4 0 D S
-0 155 M 4 0 D S
-0 162 M 4 0 D S
-0 169 M 4 0 D S
-0 177 M 4 0 D S
-0 184 M 4 0 D S
-0 192 M 4 0 D S
-0 199 M 4 0 D S
-0 206 M 4 0 D S
--438 0 T
+25200 0 T
+150 W
+0 11880 M 0 -11880 D S
+50 W
+0 849 M 500 0 D S
+0 2970 M 500 0 D S
+0 5091 M 500 0 D S
+0 7213 M 500 0 D S
+0 9334 M 500 0 D S
+0 11456 M 500 0 D S
+0 0 M 250 0 D S
+0 424 M 250 0 D S
+0 849 M 250 0 D S
+0 1273 M 250 0 D S
+0 1697 M 250 0 D S
+0 2121 M 250 0 D S
+0 2546 M 250 0 D S
+0 2970 M 250 0 D S
+0 3394 M 250 0 D S
+0 3819 M 250 0 D S
+0 4243 M 250 0 D S
+0 4667 M 250 0 D S
+0 5091 M 250 0 D S
+0 5516 M 250 0 D S
+0 5940 M 250 0 D S
+0 6364 M 250 0 D S
+0 6789 M 250 0 D S
+0 7213 M 250 0 D S
+0 7637 M 250 0 D S
+0 8061 M 250 0 D S
+0 8486 M 250 0 D S
+0 8910 M 250 0 D S
+0 9334 M 250 0 D S
+0 9759 M 250 0 D S
+0 10183 M 250 0 D S
+0 10607 M 250 0 D S
+0 11031 M 250 0 D S
+0 11456 M 250 0 D S
+0 11880 M 250 0 D S
+-25200 0 T
 /PSL_sign -1 def
 /PSL_far true def
-/PSL_TL1 9 def
-/PSL_AO0 9 def
-/PSL_AO1 9 def
-/PSL_LO 14 def
-/PSL_AF0 16 def
-/PSL_AF1 28 def
-/PSL_LF 42 def
+/PSL_TL1 500 def
+/PSL_AO0 500 def
+/PSL_AO1 500 def
+/PSL_LO 800 def
+/PSL_AF0 900 def
+/PSL_AF1 1600 def
+/PSL_LF 2400 def
 /PSL_AH0 0 def
 /PSL_AH1 0 def
-/PSL_LH 42 F0
+/PSL_LH 2400 F0
 (M) sh def
-3 W
-0 0 M 438 0 D S
-1 W
-0 0 M 0 -9 D S
-109 0 M 0 -9 D S
-219 0 M 0 -9 D S
-328 0 M 0 -9 D S
-438 0 M 0 -9 D S
+150 W
+0 0 M 25200 0 D S
+50 W
+0 0 M 0 -500 D S
+6300 0 M 0 -500 D S
+12600 0 M 0 -500 D S
+18900 0 M 0 -500 D S
+25200 0 M 0 -500 D S
 /PSL_AH0 0
-16 F0
+900 F0
 (0\312) sh mx
 (90\312) sh mx
 (180\312) sh mx
 (270\312) sh mx
 (360\312) sh mx
 def
-0 0 M 0 -4 D S
-36 0 M 0 -4 D S
-73 0 M 0 -4 D S
-109 0 M 0 -4 D S
-146 0 M 0 -4 D S
-182 0 M 0 -4 D S
-219 0 M 0 -4 D S
-255 0 M 0 -4 D S
-292 0 M 0 -4 D S
-328 0 M 0 -4 D S
-365 0 M 0 -4 D S
-401 0 M 0 -4 D S
-438 0 M 0 -4 D S
+0 0 M 0 -250 D S
+2100 0 M 0 -250 D S
+4200 0 M 0 -250 D S
+6300 0 M 0 -250 D S
+8400 0 M 0 -250 D S
+10500 0 M 0 -250 D S
+12600 0 M 0 -250 D S
+14700 0 M 0 -250 D S
+16800 0 M 0 -250 D S
+18900 0 M 0 -250 D S
+21000 0 M 0 -250 D S
+23100 0 M 0 -250 D S
+25200 0 M 0 -250 D S
 /PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def
 /PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def
 /PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def
 0 PSL_A0_y M
 (0\312) bc Z
-109 PSL_A0_y M
+6300 PSL_A0_y M
 (90\312) bc Z
-219 PSL_A0_y M
+12600 PSL_A0_y M
 (180\312) bc Z
-328 PSL_A0_y M
+18900 PSL_A0_y M
 (270\312) bc Z
-438 PSL_A0_y M
+25200 PSL_A0_y M
 (360\312) bc Z
-0 206 T
-3 W
-0 0 M 438 0 D S
-1 W
-0 0 M 0 9 D S
-109 0 M 0 9 D S
-219 0 M 0 9 D S
-328 0 M 0 9 D S
-438 0 M 0 9 D S
-0 0 M 0 4 D S
-36 0 M 0 4 D S
-73 0 M 0 4 D S
-109 0 M 0 4 D S
-146 0 M 0 4 D S
-182 0 M 0 4 D S
-219 0 M 0 4 D S
-255 0 M 0 4 D S
-292 0 M 0 4 D S
-328 0 M 0 4 D S
-365 0 M 0 4 D S
-401 0 M 0 4 D S
-438 0 M 0 4 D S
-0 -206 T
-0 A
+0 11880 T
+150 W
+0 0 M 25200 0 D S
+50 W
+0 0 M 0 500 D S
+6300 0 M 0 500 D S
+12600 0 M 0 500 D S
+18900 0 M 0 500 D S
+25200 0 M 0 500 D S
+0 0 M 0 250 D S
+2100 0 M 0 250 D S
+4200 0 M 0 250 D S
+6300 0 M 0 250 D S
+8400 0 M 0 250 D S
+10500 0 M 0 250 D S
+12600 0 M 0 250 D S
+14700 0 M 0 250 D S
+16800 0 M 0 250 D S
+18900 0 M 0 250 D S
+21000 0 M 0 250 D S
+23100 0 M 0 250 D S
+25200 0 M 0 250 D S
+0 -11880 T
+0 setlinecap
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/360/-1.2/1.6 -JX3.5i/1.65i -O -K -Sc0.1i -Gred
 %%PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 clipsave
 0 0 M
-438 0 D
-0 206 D
--438 0 D
-eoclip N
-/PSL_nclip_pol PSL_nclip_pol 1 add def
-0 W
+25200 0 D
+0 11880 D
+-25200 0 D
+PSL_eoclip N
+25 W
 {1 0 0 C} FS
-6 0 88 Sc
-1 {cliprestore} repeat /PSL_nclip_pol PSL_nclip_pol 1 sub def
-0 A
+360 0 5091 Sc
+PSL_cliprestore
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  pstext -R0/360/-1.2/1.6 -JX3.5i/1.65i -F+f14p,Helvetica-Bold+jTL -O -K -N -Dj0.1i/0.05i
 %%PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy +a=6378137.000 +b=6356752.314245
-12 200 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-24 F1
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+720 11520 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+1400 F1
 (a = 000) tl Z
-0 A
 0 A
 FQ
 O0
+0 0 TM
 
 % PostScript produced by:
 %%GMT:  psxy -R0/360/-1.2/1.6 -JX3.5i/1.65i -O -T
 %%PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
 %%PageTrailer
-0 0 T 125 125 scale 0 A
+U
 showpage
 
 %%Trailer
