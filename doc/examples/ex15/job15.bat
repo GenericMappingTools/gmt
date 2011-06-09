@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 15
 REM
-REM		$Id: job15.bat,v 1.11 2011-03-15 02:06:31 guru Exp $
+REM		$Id: job15.bat,v 1.12 2011-06-09 16:41:18 remko Exp $
 REM
 REM Purpose:	Gridding and clipping when data are missing
 REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
@@ -17,14 +17,14 @@ REM
 blockmedian %region% -I10m ship.b -bi3 -bod > ship_10m.b
 surface %region% -I10m ship_10m.b -Gship.nc -bi3
 psmask %region% -I10m ship.b -J -O -K -T -Glightgray -bi3 -X3.6i >> %ps%
-grdcontour ship.nc -J -B2WSne -C250 -A1000 -L-8000/0 -Gd2i -O -K >> %ps%
+grdcontour ship.nc -J -B -C250 -A1000 -L-8000/0 -Gd2i -O -K >> %ps%
 REM
-psmask %region% -I10m ship_10m.b -bi3 -J -B2WSne -O -K -X-3.6i -Y3.75i >> %ps%
+psmask %region% -I10m ship_10m.b -bi3 -J -B -O -K -X-3.6i -Y3.75i >> %ps%
 grdcontour ship.nc -J -C250 -A1000 -Gd2i -L-8000/0 -O -K >> %ps%
 psmask -C -O -K >> %ps%
 REM
 grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
-grdcontour ship_clipped.nc -J -B2WSne -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i >> %ps%
+grdcontour ship_clipped.nc -J -B -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i >> %ps%
 pscoast %region% -J -O -K -Ggray -Wthinnest >> %ps%
 grdinfo -C -M ship.nc | psxy -R -J -O -K -Sa0.15i -Wthick -i11,12 >> %ps%
 echo -0.3 3.6 Gridding with missing data | pstext -R0/3/0/4 -Jx1i -F+f24p,Helvetica-Bold+jCB -O -N >> %ps%
