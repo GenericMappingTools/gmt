@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 07
 REM
-REM		$Id: job07.bat,v 1.12 2011-06-09 04:12:31 guru Exp $
+REM		$Id: job07.bat,v 1.13 2011-06-09 15:31:36 remko Exp $
 REM
 REM Purpose:	Make a basemap with earthquakes and isochrons etc
 REM GMT progs:	pscoast, pstext, psxy
@@ -8,7 +8,7 @@ REM DOS calls:	del, echo
 REM
 echo GMT EXAMPLE 07
 set ps=..\example_07.ps
-pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:Fdarkbrown -Dl -Wthinnest -B10 -U"Example 7 in Cookbook" --FORMAT_GEO_MAP=dddF > %ps%
+pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest -B10 -U"Example 7 in Cookbook" --FORMAT_GEO_MAP=dddF > %ps%
 psxy -R -J -O -K fz.xy -Wthinner,- >> %ps%
 psxy quakes.xym -R -J -O -K -h1 -Sci+s0.01 -Gred -Wthinnest >> %ps%
 psxy -R -J -O -K isochron.xy -Wthin,blue >> %ps%
