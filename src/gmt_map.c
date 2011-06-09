@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.305 2011-06-08 21:43:47 guru Exp $
+ *	$Id: gmt_map.c,v 1.306 2011-06-09 19:12:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1491,7 +1491,6 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	inside[1] = inside[2] = gmt_inside_upper_boundary;	outside[1] = outside[2] = gmt_outside_upper_boundary;
 	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = C->common.R.wesn[YLO]; border[3] = C->common.R.wesn[XLO];	border[1] = C->common.R.wesn[XHI];	border[2] = C->common.R.wesn[YHI];
-
 	/* Make data longitudes have no jumps */
 	Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
 	/* We must keep separate min/max for both Dateline and Greenwich conventions */
@@ -1503,6 +1502,8 @@ GMT_LONG GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, GMT_LONG n
 	range = (way) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	for (i = 0; i < n; i++) GMT_lon_range_adjust (range, &lon[i]);
 	GMT_lon_range_adjust (range, &border[1]);	GMT_lon_range_adjust (range, &border[3]);
+	if (border[3] > border[1] && way == 0) border[3] -= 360.0;
+	else if (border[3] > border[1] && way == 1) border[1] += 360.0;
 
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
