@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.344 2011-06-09 16:07:14 remko Exp $
+ *	$Id: gmt_plot.c,v 1.345 2011-06-09 17:00:34 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -517,6 +517,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 		for (i = 0; k < 4 && i < nx - is_interval; i++) {
 			if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
+			if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 			if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 			x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
 			if (axis == GMT_X)
