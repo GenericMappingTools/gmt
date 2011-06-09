@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pspolar_func.c,v 1.11 2011-06-08 18:31:29 guru Exp $ 
+ *    $Id: pspolar_func.c,v 1.12 2011-06-09 18:04:29 remko Exp $ 
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -537,8 +537,6 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
     
-	if (Ctrl->N.active) GMT_map_clip_off (GMT);
-
 	GMT->current.map.is_world = old_is_world;
     
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
