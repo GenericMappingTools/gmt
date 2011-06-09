@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.343 2011-06-08 22:09:23 guru Exp $
+ *	$Id: gmt_plot.c,v 1.344 2011-06-09 16:07:14 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2080,7 +2080,8 @@ void GMT_vertical_axis (struct GMT_CTRL *C, GMT_LONG mode)
 	if (back && C->current.map.frame.header[0] && !C->current.map.frame.plotted_header) {	/* No header today */
 		GMT_plane_perspective (C, -1, 0.0);
 		form = GMT_setfont (C, &C->current.setting.font_title);
-		PSL_plottext (P, 0.5 * (C->current.proj.z_project.xmin + C->current.proj.z_project.xmax), C->current.proj.z_project.ymax + 0.5,
+		PSL_plottext (P, 0.5 * (C->current.proj.z_project.xmin + C->current.proj.z_project.xmax),
+			C->current.proj.z_project.ymax + C->current.setting.map_title_offset,
 			C->current.setting.font_title.size, C->current.map.frame.header, 0.0, -2, form);
 		C->current.map.frame.plotted_header = TRUE;
 	}
