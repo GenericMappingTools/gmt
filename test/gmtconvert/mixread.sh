@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: mixread.sh,v 1.1 2011-05-23 00:43:58 guru Exp $
+#	$Id: mixread.sh,v 1.2 2011-06-10 23:15:36 jluis Exp $
 # Test gmtconvert with mixed format binary input
 
 . ../functions.sh
@@ -13,7 +13,7 @@ cat << EOF >> $$.d
 EOF
 # Use +L since binary file was created on a little-endian OS X box
 gmtconvert -bi2f,3d,2h,10x,2i+L mix_binary_data.b --FORMAT_FLOAT_OUT=2-4:%.2f,7:%12.6f,%.8g > $$.txt
-diff $$.d $$.txt > fail
+diff $$.d $$.txt --strip-trailing-cr > fail
 if [ ! -s fail ]; then
 	passfail mixread
 else

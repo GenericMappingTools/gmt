@@ -1,5 +1,5 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.7 2011-05-27 12:41:35 remko Exp $
+#	$Id: test_cm4.sh,v 1.8 2011-06-10 23:17:46 jluis Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
@@ -23,7 +23,7 @@ done
 #Ion_ind B_xyz     7.9738793E-01 -2.2101940E+00 -3.7272951E+00
 #Tor     B_xyz    -3.4804584E+00 -6.0774586E+00  1.1689001E-02
 
-diff test_cm4.dat orig/test_cm4.dat > fail
+diff test_cm4.dat orig/test_cm4.dat --strip-trailing-cr > fail
 
 rm -f test_cm4.dat
 
