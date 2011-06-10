@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.147 2011-05-23 00:08:40 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.148 2011-06-10 03:49:49 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -23,11 +23,16 @@ the cook-book section where we present actual examples of their use.
 While \GMT\ has default units for both actual Earth distances and
 plot lengths (dimensions) of maps, it is recommended that you specifically indicate
 the units of your arguments by appending the unit character, as discussed below.
+This will aid you in debugging, let others understand your scripts, and remove
+any uncertainty as to what unit you thought you wanted.
 
 \subsection{Distance units}
 
-\GMT\ programs that accept actual Earth length scales like search radii or distances can
-handle a variety of units.  The choices are listed in Table~\ref{tbl:distunits};
+For Cartesian data and scaling the data units do not normally matter (they could be
+kg or Lumens for all we know) and are never entered.  Geographic data are different
+as distances can be specified in a variety of ways.  \GMT\ programs that accept actual
+Earth length scales like search radii or distances can therefore
+handle a variety of units.  These choices are listed in Table~\ref{tbl:distunits};
 simply append the desired unit to the distance value you supply.  A value without
 a unit suffix will be consider to be in meters.  For example, a distance of
 30 nautical miles should be given as 30\textbf{n}.
@@ -45,9 +50,12 @@ a unit suffix will be consider to be in meters.  For example, a distance of
 \caption{Distance units recognized by \gmt\ command line switches.}
 \label{tbl:distunits}
 \end{table} 
+
+\subsection{Distance calculations}
+
 The calculation of distances on Earth (or other planetary bodies) depends on the
 ellipsoidal parameters of the body and the method of computation.  \GMT\ offers
-three alternatives:
+three alternatives that trade off accuracy and computation time.
 
 \subsubsection{Flat Earth distances}
 Quick, but approximate ``Flat Earth'' calculations make a first-order correction
@@ -61,8 +69,8 @@ where $R$ is the mean (or spherical) radius of the planet, $\theta$ is latitude,
 is adjusted for any jumps that might occur across Greenwich or the Dateline.  This approach is suitable
 when the points you use to compute $d_f$ do not greatly differ in latitude and computation
 speed is paramount. You can specify this mode of computation by using the \textbf{-} prefix to
-the specified distance (or to the unit itself in cases where no distance is required).
-A search radius of 50 statute miles using this mode of computation might be \Opt{S-}50\textbf{M}.
+the specified distance (or to the unit itself in cases where no distance is required and only a unit is expected).
+For instance, a search radius of 50 statute miles using this mode of computation might be specified via \Opt{S-}50\textbf{M}.
 
 \subsubsection{Great circle distances}
 This is the default distance calculation, which will also approximate the planetary body by a sphere of mean
@@ -73,14 +81,14 @@ the Haversine equation
 	\label{eq:greatcircle}
 \end{equation}
 This approach is suitable for most situations unless exact calculations for an ellipsoid
-is required.  For instance, a search radius of 5000 feet using this mode of computation would be \Opt{S}5000\textbf{f}.
-
+is required (typically for a limited surface area).  For instance, a search radius of 5000 feet using this
+mode of computation would be specified as \Opt{S}5000\textbf{f}.
 
 \subsubsection{Geodesic distances}
 For the most accurate calculations we use a full ellipsoidal formulation.  Currently,
 we are using Rudoe's formula.  You select this mode of computation by using the \textbf{+} prefix to
 the specified distance (or to the unit itself in cases where no distance is required).
-For instance, a search radius of 20 km using this mode of computation would be \Opt{S+}20\textbf{k}.
+For instance, a search radius of 20 km using this mode of computation would be set by \Opt{S+}20\textbf{k}.
 
 \subsection{Length units}
 
@@ -122,9 +130,10 @@ When a program is run, it initializes all parameters to the \GMT\
 defaults\footnote{Choose between SI and US default units by modifying
 \filename{gmt.conf} in the \GMT\ share directory.},
 then tries to open the file \filename{gmt.conf}
-in the current directory\footnote{To remain backwards compatible with \GMT\ 3.4.x
-we will also look for \filename{gmt.conf} but only if \filename{gmt.conf}
-cannot be found.}.  If not found, it will look for that file in a sub-directory \filename{\~/.gmt} of your home directory, and finally in your home directory itself.  If successful, the program will read the
+in the current directory\footnote{To remain backwards compatible with \GMT\ 4.x
+we will also look for \filename{.gmtdefaults4} but only if \filename{gmt.conf}
+cannot be found.}.  If not found, it will look for that file in a sub-directory
+\filename{\~/.gmt} of your home directory, and finally in your home directory itself.  If successful, the program will read the
 contents and set the default values to those provided in the file.
 By editing this file you can affect features such as pen thicknesses
 used for maps, fonts and font sizes used for annotations and labels,
@@ -442,7 +451,7 @@ summary of projection syntax was given in Chapter~\ref{ch:3}.
 This is by far the most complicated option in \GMT, but most examples
 of its usage are actually quite simple.
 Given as \Opt{B}[\textbf{p}$|$\textbf{s}]\emph{xinfo}[/\emph{yinfo}[/\emph{zinfo}]][:."title
-string":][\textbf{W}$|$\textbf{w}][\textbf{E}$|$\textbf{e}][\textbf{S}$|$\textbf{s}][\textbf{N}$|$\textbf{n}][\textbf{Z}$|$\textbf{z}[\textbf{+}]],
+string":][\textbf{W}$|$\textbf{w}][\textbf{E}$|$\textbf{e}][\textbf{S}$|$\textbf{s}][\textbf{N}$|$\textbf{n}][\textbf{Z}$|$\textbf{z}[\textbf{+}]][\textbf{+g}\emph{fill}],
 this switch specifies map boundaries (or plot axes) to be plotted by using the
 selected information. The optional flag following \Opt{B} selects \textbf{p}(rimary) [Default] or \textbf{s}(econdary)
 axes information (mostly used for time axes annotations; see examples below).
@@ -453,15 +462,16 @@ The components \emph{xinfo}, \emph{yinfo} and \emph{zinfo} are of the form \\
 \noindent
 where \emph{info} is one or more concatenated substrings of the form
 [\textbf{t}]\emph{stride}[\emph{phase}][\textbf{u}].  The \textbf{t} flag sets the axis item of interest; the
-available items are listed in Table~\ref{tbl:inttype}.  By
-default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
+available items are listed in Table~\ref{tbl:inttype}.
+
+By default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
 \textbf{N}).  To change this selection, append the codes for those you want
 (e.g., \textbf{WSn}).  Upper case (e.g., \textbf{W}) will annotate in addition to
 draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
 it is suppressed when a 3-D view is selected.}.  Unit label or prefix may start with a
 leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
 occur at multiples of \emph{stride}; you can phase-shift this by appending \emph{phase}, which can be a
-positive or negative number.
+positive or negative number.  Finally, note you may paint the canvas by appending the \textbf{+g}\emph{fill} modifier.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|l|} \hline
@@ -932,10 +942,10 @@ to be met to signify a data gap).  Gaps can be based on excessive jumps in the \
 \emph{y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
 Append the \emph{gap} distance and optionally a unit for actual distances.
 For geographic data the optional unit may be arc \textbf{d}egree, \textbf{m}inute, and \textbf{s}econd,
-or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, \textbf{M}iles, and \textbf{n}autical miles.
+or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, \textbf{M}iles, or \textbf{n}autical miles.
 For programs that map data to map coordinates you can optionally specify these criteria to apply to
 the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or \Opt{gD}).
-In that case, choose from \textbf{c}entimeter, \textbf{i}nch or \textbf{p}oint.
+In that case, choose from \textbf{c}entimeter, \textbf{i}nch or \textbf{p}oint
 [Default unit is controlled by \textbf{PROJ\_LENGTH\_UNIT}].
 Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by \textbf{TIME\_UNIT}.
 
@@ -1098,7 +1108,7 @@ default is 0, or opaque\footnote{At the moment, the transparency extension only 
 using Adobe Distiller to convert the \PS\ to PDF.}.  Transparency may also be controlled
 on a feature by feature basis when setting color or fill (see section~\ref{sec:fill}).
 
-\subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
+\subsection{Latitude/Longitude or Longitude/Latitude?: The \Opt{:} option}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}
 \index{lat/lon input}
 
@@ -1421,12 +1431,6 @@ Just as with pen width, the default style units are points, but can also be expl
 (see \emph{width} discussion above). 
 \end{description} 
 Table~\ref{tbl:penex} contains additional examples of pen specifications suitable for, say, \GMTprog{psxy}.
-In addition to these pen settings there are several \PS\ settings that can affect the appearance of lines.
-These are controlled via the \GMT\ defaults settings \textbf{PS\_LINE\_CAP}, \textbf{PS\_LINE\_JOIN},
-and \textbf{PS\_MITER\_LIMIT}. They determine how a line segment ending is rendered, be it at the
-termination of a solid line or at the end of all dashed line segments making up a line, and how a
-straight lines of finite thickness should behave when joined at a common point.
-See the \GMTprog{gmt.conf} man page for more information.
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|l|} \hline
@@ -1441,6 +1445,17 @@ See the \GMTprog{gmt.conf} man page for more information.
 \caption{A few examples of pen specifications. The default width, color and style are determined by the \textbf{MAP\_DEFAULT\_PEN} parameter.}
 \label{tbl:penex}
 \end{table}
+In addition to these pen settings there are several \PS\ settings that can affect the appearance of lines.
+These are controlled via the \GMT\ defaults settings \textbf{PS\_LINE\_CAP}, \textbf{PS\_LINE\_JOIN},
+and \textbf{PS\_MITER\_LIMIT}. They determine how a line segment ending is rendered, be it at the
+termination of a solid line or at the end of all dashed line segments making up a line, and how a
+straight lines of finite thickness should behave when joined at a common point.  By default, line segments
+have rectangular ends, but this can change to give rounded ends.  When \textbf{PS\_LINE\_CAP} is set to
+round the a segment length of zero will appear as a circle.  This can be used to created circular dotted
+lines, and by manipulating the phase shift in the \emph{style} attribute and plotting the same line twice
+one can even alternate the color of adjacent items.  Figure~\ref{fig:GMT_linecap} shows various lines made
+in this fashion.  See the \GMTprog{gmt.conf} man page for more information.
+\GMTfig[h]{GMT_linecap}{Line appearance can be varied by using \textbf{PS\_LINE\_CAP} and the \emph{style} attribute.}
 
 \section{Specifying area fill attributes}
 
