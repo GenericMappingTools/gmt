@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.58 2011-05-17 16:37:56 remko Exp $
+#	$Id: GNUmakefile,v 1.59 2011-06-10 04:03:58 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -112,7 +112,7 @@ DOCPS1=	fig/GMT_App_K_1.ps fig/GMT_App_K_2.ps fig/GMT_App_K_3.ps fig/GMT_App_K_4
 
 # PS files for GMT_Docs created from scripts. Scripts do not need to be converted to TeX.
 DOCPS2=	fig/GMT_-B_geo_1.ps fig/GMT_-B_geo_2.ps fig/GMT_-B_linear.ps fig/GMT_-B_log.ps \
-	fig/GMT_-B_pow.ps fig/GMT_utm_zones.ps \
+	fig/GMT_-B_pow.ps fig/GMT_utm_zones.ps  fig/GMT_linecap.ps \
 	fig/GMT_-J.ps fig/GMT_-OK.ps fig/GMT_-P.ps fig/GMT_-R.ps fig/GMT_-U.ps \
 	fig/GMT_-XY.ps fig/GMT_registration.ps fig/GMT_App_E.ps \
 	fig/GMT_App_F_dingbats.ps fig/GMT_App_F_iso+.ps fig/GMT_App_F_stand+.ps \
