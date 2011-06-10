@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.33 2011-06-08 19:33:23 remko Exp $
+ *	$Id: psxy_func.c,v 1.34 2011-06-10 22:36:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -659,6 +659,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (GMT_OK);
 	}
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
