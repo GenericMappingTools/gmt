@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.534 2011-06-10 00:00:00 guru Exp $
+ *	$Id: gmt_init.c,v 1.535 2011-06-10 01:17:29 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5577,6 +5577,9 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 				break;
 		}
 	}
+	else
+		C->current.map.frame.draw = TRUE;
+	
 	return (error);
 }
 
@@ -5643,6 +5646,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		}
 		C->current.map.frame.header[0] = '\0';
 		C->current.map.frame.plot = TRUE;
+		C->current.map.frame.draw = FALSE;
 	}
 
 	for (i = strlen (in) - 1, ignore = FALSE; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
@@ -5669,7 +5673,10 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	for (i = 0; i < 3; i++) {	/* Process each axis separately */
 
 		if (!info[i][0]) continue;	 /* Skip empty format string */
-		if (info[i][0] == '0' && !info[i][1]) continue;	 /* Skip format '0' */
+		if (info[i][0] == '0' && !info[i][1]) {	 /* Skip format '0' */
+			C->current.map.frame.draw = TRUE;
+			continue;
+		}
 
 		gmt_handle_atcolon (C, info[i], 0);	/* Temporarily modify text escape @: to @^ to avoid : parsing trouble */
 		GMT_enforce_rgb_triplets (C, info[i], GMT_BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
