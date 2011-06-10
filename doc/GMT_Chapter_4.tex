@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.148 2011-06-10 03:49:49 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.149 2011-06-10 22:28:41 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -188,17 +188,10 @@ As mentioned, \GMT\ programs will attempt to open a file named
 \filename{gmt.conf}.  At times it may be desirable to override
 that default.  There are several ways in which this can be accomplished.
 \begin{enumerate}
-\item Supply another filename using the \emph{+filename} syntax, i.e.,
-on the same command line as the \GMT\ command we append the name of
-the alternate \filename{gmt.conf} file with the plus sign as a prefix.
-Because any changes only apply to that one command you would have to
-append the alternate file to every command in your script.  This is
-tedious but may be an option for situations when you cannot write in
-the current directory (e.g., some CGI scripts).
-\item A perhaps less tedious method is to start each script by making a
-copy of the current \filename{gmt.conf}, then copy the desired
+\item One method is to start each script by saving a
+copy of the current \filename{gmt.conf}, then copying the desired
 \filename{gmt.conf} file to the current directory, and finally
-undo the changes at the end of the script.  Possible side effects
+reverting the changes at the end of the script.  Possible side effects
 include premature ending of the script due to user error or bugs which
 means the final resetting does not take place (unless you write your
 script very carefully.)
@@ -215,7 +208,7 @@ passing the parameter changes on the command line via the {--}{--}\emph{PAR=valu
 mechanism.  For instance, to temporarily set the output format for floating
 points to have lots of decimals, say, for map projection coordinate output,
 append {--}{--}\textbf{FORMAT\_FLOAT\_OUT}=\%.12lg to the command in question.
-\item Finally, since version 4.2.2 \GMT\ provides to possibility to override the
+\item Finally, \GMT\ provides to possibility to override the
 settings only  during the running of a single script, reverting to the original settings
 after the script is run, as if the script was run in ``isolation''. The isolation mode
 is discussed in Section~\ref{sec:isolationmode}.
