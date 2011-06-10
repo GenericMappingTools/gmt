@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.533 2011-06-08 23:58:37 remko Exp $
+ *	$Id: gmt_init.c,v 1.534 2011-06-10 00:00:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5645,7 +5645,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		C->current.map.frame.plot = TRUE;
 	}
 
-	for (i = strlen (in) - 1, ignore = FALSE; !C->current.map.frame.paint && !error && i > 0; i--) {	/** Look for +g<fill */
+	for (i = strlen (in) - 1, ignore = FALSE; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
 		if (in[i] == ':') ignore = !ignore;
 		if (ignore) continue;	/* Not look inside text items */
 		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
@@ -7148,11 +7148,11 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 		case 'B':
 			switch (item[0]) {	/* Check for -B[p] and -Bs */
 				case 's':
-					error += GMT_check_condition (C, C->common.B.active[1], "Warning: Option -Bs given more than once\n");
+					//error += GMT_check_condition (C, C->common.B.active[1], "Warning: Option -Bs given more than once\n");
 					C->common.B.active[1] = TRUE;
 					break;
 				default:
-					error += GMT_check_condition (C, C->common.B.active[0], "Warning: Option -B[p] given more than once\n");
+					//error += GMT_check_condition (C, C->common.B.active[0], "Warning: Option -B[p] given more than once\n");
 					C->common.B.active[0] = TRUE;
 					break;
 			}
