@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.306 2011-06-09 19:12:51 guru Exp $
+ *	$Id: gmt_map.c,v 1.307 2011-06-10 23:29:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6237,7 +6237,7 @@ GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG
 	 * extent of the map.
 	 */
 
-	GMT_LONG i, j, np;
+	GMT_LONG i, j, np, do_circle = FALSE;
 	double *work_x = NULL, *work_y = NULL, da, r0, s, c, lon, lat;
 
 	*donut = FALSE;
@@ -6385,12 +6385,13 @@ GMT_LONG GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG
 			case GMT_GENPER:
 				GMT_genper_map_clip_path (C, np, work_x, work_y);
 				break;
+			case GMT_VANGRINTEN:
+				do_circle = C->current.map.is_world;
 			case GMT_LAMB_AZ_EQ:
 			case GMT_ORTHO:
 			case GMT_GNOMONIC:
-			case GMT_VANGRINTEN:
 			case GMT_STEREO:
-				if (C->current.proj.polar) {
+				if (C->current.proj.polar && !do_circle) {
 					j = 0;
 					if (C->common.R.wesn[YLO] > -90.0) {
 						for (i = 0; i <= C->current.map.n_lon_nodes; i++, j++) {

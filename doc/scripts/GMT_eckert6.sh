@@ -1,6 +1,6 @@
 #!/bin/bash
-#	$Id: GMT_eckert6.sh,v 1.7 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_eckert6.sh,v 1.8 2011-06-10 23:29:27 guru Exp $
 #
 . ./functions.sh
 
-pscoast -Rg -JKs4.5i -Bg30/g15 -Dc -A10000 -Wthinnest -Gwhite -Slightgray -P > GMT_eckert6.ps
+pscoast -Rg -JKs4.5i -Bg30/g15 -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert6.ps
