@@ -1,6 +1,6 @@
 #!/bin/bash
-#	$Id: GMT_equi_cyl.sh,v 1.7 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_equi_cyl.sh,v 1.8 2011-06-10 23:29:27 guru Exp $
 #
 . ./functions.sh
 
-pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gblack -P > GMT_equi_cyl.ps
+pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps

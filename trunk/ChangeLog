@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1086 2011-06-09 17:07:50 remko Exp $
+	$Id: ChangeLog,v 1.1087 2011-06-10 23:29:26 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-10	pwessel
+	* gmt_map.c:		Clip path for van Grinten was wrong for global maps.
 
 2011-06-09	remko
 	* gmt_plot.c:		Use map_title_offset also in 3-D (instead of fixed 0.5 inch)
