@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.283 2011-05-31 17:55:32 remko Exp $
+ *	$Id: gmt_io.c,v 1.284 2011-06-11 01:52:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4475,7 +4475,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 	FILE *fp = NULL;
 	PFL psave = NULL;
 
-	if (table->mode == 2) return (0);	/* Skip this table */
+	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
 
 	append = (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>');	/* Want to append to existing file */
 
@@ -4535,7 +4535,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 
 	out = GMT_memory (C, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
-		if (table->segment[seg]->mode == 2) continue;	/* Skip this segment */
+		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
 		if (io_mode >= GMT_WRITE_SEGMENTS) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
 				out_file = table->segment[seg]->file[GMT_OUT];
@@ -4556,7 +4556,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, st
 			GMT_write_segmentheader (C, fp, table->segment[seg]->n_columns);
 			if (table->segment[seg]->ogr && C->common.a.output) gmt_write_ogr_segheader (C, fp, table->segment[seg]);
 		}
-		if (table->segment[seg]->mode == 1) continue;	/* Skip after writing segment header */
+		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
 		if (table->segment[seg]->range) {save = C->current.io.geo.range; C->current.io.geo.range = table->segment[seg]->range; }	/* Segment-specific formatting */
 		for (row = 0; row < table->segment[seg]->n_rows; row++) {
 			for (col = 0; col < table->segment[seg]->n_columns; col++) out[col] = table->segment[seg]->coord[col][row];
@@ -4666,7 +4666,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
 
-	if (table->mode == 2) return (0);	/* Skip this table */
+	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
 
 	append = (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>');	/* Want to append to existing file */
 
@@ -4713,7 +4713,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 		}
 	}
 	for (seg = 0; seg < table->n_segments; seg++) {
-		if (table->segment[seg]->mode == 2) continue;	/* Skip this segment */
+		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
 		if (io_mode >= GMT_WRITE_SEGMENTS) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
 				out_file = table->segment[seg]->file[GMT_OUT];
@@ -4732,7 +4732,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
 			GMT_write_segmentheader (C, fp, 0);
 		}
-		if (table->segment[seg]->mode == 1) continue;	/* Skip after writing segment header */
+		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
 		for (row = 0; row < table->segment[seg]->n_rows; row++) {
 			GMT_fputs (table->segment[seg]->record[row], fp);
 			GMT_fputs ("\n", fp);
