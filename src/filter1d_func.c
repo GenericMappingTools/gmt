@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.11 2011-06-07 01:14:19 guru Exp $
+ *	$Id: filter1d_func.c,v 1.12 2011-06-11 00:43:32 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -386,7 +386,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 			F->n_work_alloc <<= 1;
 			allocate_more_work_space (GMT, F);
 		}
-		F->f_wt = GMT_memory (GMT, NULL, F->n_f_wts, double);
+		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
 		GMT_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
 		for (i = 0, w_sum = 0.0; i < F->n_f_wts; i++) w_sum += F->f_wt[i];
 		F->f_operator = (GMT_IS_ZERO (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
@@ -402,7 +402,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		F->half_n_f_wts = (GMT_LONG)floor (F->half_width / F->dt);
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
-		F->f_wt = GMT_memory (GMT, NULL, F->n_f_wts, double);
+		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
 		for (i = 0; i <= F->half_n_f_wts; i++) {
 			time = i * F->dt;
 			i1 = F->half_n_f_wts - i;
