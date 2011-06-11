@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.8 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77convert_func.c,v 1.9 2011-06-11 14:54:18 jluis Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 				Ctrl->T.active = TRUE;
 				code_pos = 0;
 				if (opt->arg[code_pos] == '+') Ctrl->T.mode = TRUE, code_pos++;	/* Force overwriting existing files */
-				switch (opt->arg[0]) {									
+				switch (opt->arg[code_pos]) {									
 					case 'a':		/* Standard ascii MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
 						break;
