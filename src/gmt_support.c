@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.528 2011-06-08 01:33:13 guru Exp $
+ *	$Id: gmt_support.c,v 1.529 2011-06-11 01:52:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -10086,6 +10086,57 @@ GMT_LONG GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT
 	*Lout = L;		/* Pass pointer to the array of segments */
 	
 	return (n_split);	/* Return how many segments was made */
+}
+
+GMT_LONG GMT_detrend (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, double increment, double *intercept, double *slope, GMT_LONG mode)
+{	/* Deals with linear trend in a dataset, depending on mode:
+	 * -1: Determine trend, and remove it from x,y. Return slope and intercept
+	 * 0 : Just determine trend. Return slope and intercept
+	 * +1: Restore trend in x,y based on given slope/intercept.
+	 * (x,y) is the data.  If x == NULL then data is equidistant with increment as the spacing.
+	 */
+	GMT_LONG i, equidistant;
+	double xx;
+	
+	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
+	if (mode < 1) {	/* Must determine trend */
+		GMT_LONG m;
+		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
+		for (i = m = 0; i < n; i++) {
+			if (GMT_is_dnan (y[i])) continue;
+			xx = (equidistant) ? increment*i : x[i];
+			sum_x  += xx;
+			sum_xx += xx*xx;
+			sum_y  += y[i];
+			sum_xy += xx*y[i];
+			m++;
+		}
+		if (m > 1) {	/* Got enough points to compute the trend */
+			*intercept = (sum_y*sum_xx - sum_x*sum_xy) / (m*sum_xx - sum_x*sum_x);
+			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
+		}
+		else {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with less than 2 points, return NaNs\n");
+			*intercept = (m) ? sum_y : C->session.d_NaN;	/* Value of single y-point or NaN */
+			*slope = C->session.d_NaN;
+		}
+	}
+	
+	if (mode) {	/* Either remove or restore trend from/to the data */
+		if (GMT_is_dnan (*slope)) {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with slope = NaN - skipped\n");
+			return (-1);
+		}
+		if (GMT_is_dnan (*intercept)) {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with intercept = NaN - skipped\n");
+			return (-1);
+		}
+		for (i = 0; i < n; i++) {
+			xx = (equidistant) ? increment*i : x[i];
+			y[i] += (mode * (*intercept + (*slope) * xx));
+		}
+	}
+	return (GMT_NOERROR);
 }
 
 char *GMT_putusername (struct GMT_CTRL *C)
