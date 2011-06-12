@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.285 2011-06-12 14:20:38 remko Exp $
+ *	$Id: gmt_io.c,v 1.286 2011-06-12 20:32:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -569,12 +569,13 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 
 	if (C->session.DATADIR) {	/* Examine all directories given in that order */
 		char dir[GMT_BUFSIZ];
-		GMT_LONG pos = 0, L, found = FALSE;
+		GMT_LONG pos = 0, L, found = FALSE, N = 0;
 		while (!found && (GMT_strtok (C, C->session.DATADIR, PATH_SEPARATOR, &pos, dir))) {
 			L = strlen (dir);
 #ifndef WIN32
-			if (dir[L-1] == '*') {	/* Must search recursively from this dir */
-				strncpy (path, dir, L-2);	path[strlen(dir)-1] = 0;
+			if (dir[L-1] == '*' || dir[L-1] == '/') {	/* Must search recursively from this dir */
+				N = (dir[L-1] == '/') ? L : L - 1;
+				strncpy (path, dir, N-1);	path[N-1] = 0;
 				found = gmt_traverse_dir (stem, path);
 			}
 			else {

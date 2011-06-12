@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.149 2011-06-10 22:28:41 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.150 2011-06-12 20:32:47 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1219,7 +1219,8 @@ is to make available large grids accessible via the supplemental programs \GMTpr
 or \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
 about these supplemental programs.  The second directory may hold miscellaneous
 data sets more specific to the user; this directory also stores \GMT\ defaults and other
-configuration files.  Data sets that the user finds are often needed
+configuration files.  Any directory that ends in a trailing slash (/) will be searched
+recursively.  Data sets that the user finds are often needed
 may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
 current directory unless a full path has been specified.
