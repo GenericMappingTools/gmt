@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdlandmask_func.c,v 1.20 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdlandmask_func.c,v 1.21 2011-06-12 14:34:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,10 +29,6 @@
 #include "gmt.h"
 
 #define GRDLANDMASK_N_CLASSES	(GMT_MAX_GSHHS_LEVEL + 1)	/* Number of bands separated by the levels */
-
-#define P_IS_OUTSIDE	0
-#define P_IS_ONSIDE	1
-#define P_IS_INSIDE	2
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is TRUE if the option has been activated */
@@ -73,7 +69,7 @@ void *New_grdlandmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C->A.info.high = GMT_MAX_GSHHS_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
-	C->E.inside = P_IS_ONSIDE;					/* Default is that points on a boundary are inside */
+	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
 	GMT_memset (C->N.mask, GRDLANDMASK_N_CLASSES, double);		/* Default "wet" value = 0 */
 	C->N.mask[1] = C->N.mask[3] = 1.0;				/* Default for "dry" areas = 1 (inside) */
 	
@@ -152,7 +148,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 				break;
 			case 'E':	/* On-boundary setting */
 				Ctrl->E.active = TRUE;
-				Ctrl->E.inside = P_IS_INSIDE;
+				Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* OUtput filename */
 				Ctrl->G.active = TRUE;
@@ -172,7 +168,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = TRUE;
-					Ctrl->E.inside = P_IS_INSIDE;
+					Ctrl->E.inside = GMT_INSIDE;
 					line[strlen(line)-1] = 0;
 				}
 #endif
