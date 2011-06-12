@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.19 2011-06-07 01:14:19 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.20 2011-06-12 14:34:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,10 +48,6 @@
 
 #define F_ITEM	0
 #define N_ITEM	1
-
-#define P_IS_OUTSIDE	0
-#define P_IS_ONSIDE	1
-#define P_IS_INSIDE	2
 
 struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
 	double x, y, d;
@@ -121,7 +117,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C->A.info.high = GMT_MAX_GSHHS_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
-	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = P_IS_ONSIDE;	/* Default is that points on a boundary are inside */
+	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;	/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
 	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_LONG);		/* Default for "wet" areas = 0 (outside) */
 	C->N.mask[1] = C->N.mask[3] = 1;				/* Default for "dry" areas = 1 (inside) */
@@ -270,10 +266,10 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'f':
-							Ctrl->E.inside[F_ITEM] = P_IS_INSIDE;
+							Ctrl->E.inside[F_ITEM] = GMT_INSIDE;
 							break;
 						case 'n':
-							Ctrl->E.inside[N_ITEM] = P_IS_INSIDE;
+							Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
@@ -343,7 +339,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = TRUE;
-					Ctrl->E.inside[N_ITEM] = P_IS_INSIDE;
+					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
 				}
 #endif
