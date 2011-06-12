@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.529 2011-06-11 01:52:36 guru Exp $
+ *	$Id: gmt_support.c,v 1.530 2011-06-12 14:14:52 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -89,10 +89,6 @@
 EXTERN_MSC GMT_LONG GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, GMT_LONG id);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
-
-#define GMT_INSIDE_POLYGON	2
-#define GMT_OUTSIDE_POLYGON	0
-#define GMT_ONSIDE_POLYGON	1
 
 /** @brief XYZ color of the D65 white point */
 #define WHITEPOINT_X	0.950456
@@ -5025,7 +5021,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	GMT_LONG i, j, k, jend, crossing_count, above;
 	double y_sect;
 
-	if (n_path < 2) return (GMT_OUTSIDE_POLYGON);	/* Cannot be inside a null set or a point so default to outside */
+	if (n_path < 2) return (GMT_OUTSIDE);	/* Cannot be inside a null set or a point so default to outside */
 
 	if (GMT_polygon_is_open (C, x, y, n_path)) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_non_zero_winding given non-closed polygon\n");
@@ -5039,13 +5035,13 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 	j = jend = n_path - 1;
 	if (x[j] == xp) {
 		/* Trouble already.  We might get lucky:  */
-		if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
+		if (y[j] == yp) return (GMT_ONEDGE);
 
 		/* Go backward down the polygon until x[i] != xp:  */
 		if (y[j] > yp) above = TRUE;
 		i = j - 1;
 		while (x[i] == xp && i > 0) {
-			if (y[i] == yp) return (GMT_ONSIDE_POLYGON);
+			if (y[i] == yp) return (GMT_ONEDGE);
 			if (!(above) && y[i] > yp) above = TRUE;
 			i--;
 		}
@@ -5053,14 +5049,14 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 		/* Now if i == 0 polygon is degenerate line x=xp;
 		   since we know xp,yp is inside bounding box,
 		   it must be on edge:  */
-		if (i == 0) return (GMT_ONSIDE_POLYGON);
+		if (i == 0) return (GMT_ONEDGE);
 
 		/* Now we want to mark this as the end, for later:  */
 		jend = i;
 
 		/* Now if (j-i)>1 there are some segments the point could be exactly on:  */
 		for (k = i+1; k < j; k++) {
-			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONSIDE_POLYGON);
+			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONEDGE);
 		}
 
 
@@ -5069,7 +5065,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 			from the origin:  */
 		j = 1;
 		while (x[j] == xp) {
-			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
+			if (y[j] == yp) return (GMT_ONEDGE);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
@@ -5078,7 +5074,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 			not at x = xp.  But now it doesn't matter, that would end us at
 			the main while below.  Again, if j>=2 there are some segments to check:  */
 		for (k = 0; k < j-1; k++) {
-			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONSIDE_POLYGON);
+			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONEDGE);
 		}
 
 
@@ -5096,7 +5092,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 		i = 0;
 		j = 1;
 		while (x[j] == xp && j < jend) {
-			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
+			if (y[j] == yp) return (GMT_ONEDGE);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
@@ -5105,7 +5101,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 
 		/* if ((j-i)>2) the point could be on intermediate segments:  */
 		for (k = i+1; k < j-1; k++) {
-			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONSIDE_POLYGON);
+			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONEDGE);
 		}
 
 		/* Now we have x[i] != xp and x[j] != xp.
@@ -5118,7 +5114,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 				crossing_count++;
 			else if ((j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ((xp - x[i]) / (x[j] - x[i]));
-				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
+				if (y_sect == yp) return (GMT_ONEDGE);
 				if (y_sect > yp) crossing_count++;
 			}
 		}
@@ -5127,7 +5123,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 				crossing_count--;
 			else if ((j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ((xp - x[i]) / (x[j] - x[i]));
-				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
+				if (y_sect == yp) return (GMT_ONEDGE);
 				if (y_sect > yp) crossing_count--;
 			}
 		}
@@ -5143,13 +5139,13 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 		above = FALSE;
 		j = i+1;
 		while (x[j] == xp) {
-			if (y[j] == yp) return (GMT_ONSIDE_POLYGON);
+			if (y[j] == yp) return (GMT_ONEDGE);
 			if (!(above) && y[j] > yp) above = TRUE;
 			j++;
 		}
 		/* if ((j-i)>2) the point could be on intermediate segments:  */
 		for (k = i+1; k < j-1; k++) {
-			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONSIDE_POLYGON);
+			if ((y[k] <= yp && y[k+1] >= yp) || (y[k] >= yp && y[k+1] <= yp)) return (GMT_ONEDGE);
 		}
 
 		/* Now we have x[i] != xp and x[j] != xp.
@@ -5162,7 +5158,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 				crossing_count++;
 			else if ((j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ((xp - x[i]) / (x[j] - x[i]));
-				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
+				if (y_sect == yp) return (GMT_ONEDGE);
 				if (y_sect > yp) crossing_count++;
 			}
 		}
@@ -5171,7 +5167,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 				crossing_count--;
 			else if ((j-i) == 1) {
 				y_sect = y[i] + (y[j] - y[i]) * ((xp - x[i]) / (x[j] - x[i]));
-				if (y_sect == yp) return (GMT_ONSIDE_POLYGON);
+				if (y_sect == yp) return (GMT_ONEDGE);
 				if (y_sect > yp) crossing_count--;
 			}
 		}
@@ -5183,7 +5179,7 @@ GMT_LONG GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, double 
 
 	/* End of MAIN WHILE.  Get here when we have gone all around without landing on edge.  */
 
-	return ((crossing_count) ? GMT_INSIDE_POLYGON : GMT_OUTSIDE_POLYGON);
+	return ((crossing_count) ? GMT_INSIDE: GMT_OUTSIDE);
 }
 
 GMT_LONG gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
@@ -5286,35 +5282,35 @@ GMT_LONG GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const
 
 	if (P->pole) {	/* Case 1 of an enclosed polar cap */
 		if (P->pole == +1) {	/* N polar cap */
-			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE_POLYGON);	/* South of a N polar cap */
-			if (plat > P->max[GMT_Y]) return (GMT_INSIDE_POLYGON);	/* Clearly inside of a N polar cap */
+			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE);	/* South of a N polar cap */
+			if (plat > P->max[GMT_Y]) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
 		}
 		if (P->pole == -1) {	/* S polar cap */
-			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE_POLYGON);	/* North of a S polar cap */
-			if (plat < P->min[GMT_Y]) return (GMT_INSIDE_POLYGON);	/* North of a S polar cap */
+			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE);	/* North of a S polar cap */
+			if (plat < P->min[GMT_Y]) return (GMT_INSIDE);	/* North of a S polar cap */
 		}
 
 		/* Tally up number of intersections between polygon and meridian through P */
 
-		if (gmt_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONSIDE_POLYGON);	/* Found P is on S */
+		if (gmt_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONEDGE);	/* Found P is on S */
 
-		if (P->pole == +1 && count[0] % 2 == 0) return (GMT_INSIDE_POLYGON);
-		if (P->pole == -1 && count[1] % 2 == 0) return (GMT_INSIDE_POLYGON);
+		if (P->pole == +1 && count[0] % 2 == 0) return (GMT_INSIDE);
+		if (P->pole == -1 && count[1] % 2 == 0) return (GMT_INSIDE);
 
-		return (GMT_OUTSIDE_POLYGON);
+		return (GMT_OUTSIDE);
 	}
 
 	/* Here is Case 2.  First check latitude range */
 
-	if (plat < P->min[GMT_Y] || plat > P->max[GMT_Y]) return (GMT_OUTSIDE_POLYGON);
+	if (plat < P->min[GMT_Y] || plat > P->max[GMT_Y]) return (GMT_OUTSIDE);
 
 	/* Longitudes are tricker and are tested with the tallying of intersections */
 
-	if (gmt_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONSIDE_POLYGON);	/* Found P is on S */
+	if (gmt_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONEDGE);	/* Found P is on S */
 
-	if (count[0] % 2) return (GMT_INSIDE_POLYGON);
+	if (count[0] % 2) return (GMT_INSIDE);
 
-	return (GMT_OUTSIDE_POLYGON);	/* Nothing triggered the tests; we are outside */
+	return (GMT_OUTSIDE);	/* Nothing triggered the tests; we are outside */
 }
 
 GMT_LONG gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
@@ -5327,12 +5323,12 @@ GMT_LONG gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct G
 		else {	/* See if we are outside range of longitudes for polygon */
 			while (x > S->min[GMT_X]) x -= 360.0;	/* Wind clear of west */
 			while (x < S->min[GMT_X]) x += 360.0;	/* Wind east until inside or beyond east */
-			if (x > S->max[GMT_X]) return (GMT_OUTSIDE_POLYGON);	/* Point outside, no need to assign value */
+			if (x > S->max[GMT_X]) return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
 			side = GMT_inonout_sphpol (C, x, y, S);
 		}
 	}
 	else {	/* Cartesian case */
-		if (x < S->min[GMT_X] || x > S->max[GMT_X]) return (GMT_OUTSIDE_POLYGON);	/* Point outside, no need to assign value */
+		if (x < S->min[GMT_X] || x > S->max[GMT_X]) return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
 		side = GMT_non_zero_winding (C, x, y, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
 	}
 	return (side);
