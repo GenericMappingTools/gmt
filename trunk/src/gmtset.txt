@@ -31,11 +31,11 @@ Name of specific BD(gmt.conf) file to read and modify [Default looks first in cu
 home directory, then in ~/.gmt and finally in the system defaults].
 #include "explain_help.txt"
 .SH EXAMPLES
-To change the dpi to 600, set annotation font to Helvetica, and select grid-crosses of size 0.1 inch,
+To change annotation font to 12-point Helvetica, select grid-crosses of size 0.1 inch,
 and set annotation offset to 0.2 cm:
 .br
 .sp
-gmtset PS_DPI 600 FONT_ANNOT_PRIMARY Helvetica MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.2c
+gmtset FONT_ANNOT_PRIMARY 12p,Helvetica MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.2c
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),
