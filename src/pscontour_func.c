@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.26 2011-06-08 18:31:29 guru Exp $
+ *	$Id: pscontour_func.c,v 1.27 2011-06-12 20:51:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1019,7 +1019,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 
-		if (Ctrl->W.active && nx > 0) {	/* Save contour lines for later */
+		if (Ctrl->W.active && nx > 0) {	/* Save contour line segments L for later */
 			for (k = k2 = 0; k < nx; k++) {
 				c = cind[k];
 				n = cont[c].nl;
@@ -1054,9 +1054,9 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				
 		if (Ctrl->contour.half_width == 5) Ctrl->contour.half_width = 0;	/* Since contours are straight line segments we override the default */
 
-		for (c = 0; c < n_contours; c++) {
+		for (c = 0; c < n_contours; c++) {	/* For all selected contour levels */
 
-			if (cont[c].nl == 0) {
+			if (cont[c].nl == 0) {	/* No contours at this level */
 				GMT_free (GMT, cont[c].L);
 				continue;
 			}
@@ -1076,7 +1076,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			
 			head_c = last_c = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
-			while (cont[c].nl) {
+			while (cont[c].nl) {	/* Still more line segments at this contour level */
+				/* Must hook all the segments into continuous contours. Start with first segment L */
 				this_c = last_c->next = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 				k = 0;
 				this_c->begin = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
@@ -1086,39 +1087,39 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				this_c->end->x = cont[c].L[k].x1;
 				this_c->end->y = cont[c].L[k].y1;
 				this_c->begin->next = this_c->end;
-				cont[c].nl--;
+				cont[c].nl--;	/* Used one segment now */
 				cont[c].L[k] = cont[c].L[cont[c].nl];
-				while (k < cont[c].nl) {
+				while (k < cont[c].nl) {	/* As long as there are more */
 					add = 0;
-					if (fabs(cont[c].L[k].x0 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->begin->y) < GMT_SMALL) {
+					if (fabs(cont[c].L[k].x0 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->begin->y) < GMT_SMALL) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						p->next = this_c->begin;
 						add = -1;
 					}
-					else if (fabs(cont[c].L[k].x1 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->begin->y) < GMT_SMALL) {
+					else if (fabs(cont[c].L[k].x1 - this_c->begin->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->begin->y) < GMT_SMALL) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;
 						p->next = this_c->begin;
 						add = -1;
 					}
-					else if (fabs(cont[c].L[k].x0 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->end->y) < GMT_SMALL) {
+					else if (fabs(cont[c].L[k].x0 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y0 - this_c->end->y) < GMT_SMALL) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						this_c->end->next = p;
 						add = 1;
 					}
-					else if (fabs(cont[c].L[k].x1 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->end->y) < GMT_SMALL) {
+					else if (fabs(cont[c].L[k].x1 - this_c->end->x) < GMT_SMALL && fabs(cont[c].L[k].y1 - this_c->end->y) < GMT_SMALL) {	/* L matches previous */
 						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;
 						this_c->end->next = p;
 						add = 1;
 					}
-					if (add) {	/* Got one */
+					if (add) {	/* Got one, check if we must reverse it */
 						if (add == -1)
 							this_c->begin = p;
 						else if (add == 1)
@@ -1127,13 +1128,15 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						cont[c].L[k] = cont[c].L[cont[c].nl];
 						k = 0;
 					}
-					else
+					else	/* No match, go to next */
 						k++;
 				}
 				last_c = this_c;
 			}
-			GMT_free (GMT, cont[c].L);
+			GMT_free (GMT, cont[c].L);	/* Done with temporary contour segment array for this level */
 
+			/* Now, turn this linked list of segment pointers into x,y arrays */
+			
 			this_c = head_c->next;
 			while (this_c) {
 				xp = GMT_memory (GMT, NULL, GMT_SMALL_CHUNK, double);
@@ -1141,12 +1144,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				n_alloc = GMT_SMALL_CHUNK;
 				p = this_c->begin;
 				n = 0;
-				while (p) {
-					xp[n] = p->x;
-					yp[n++] = p->y;
-					q = p;
-					p = p->next;
-					GMT_free (GMT, q);
+				while (p) {	/* More points to add */
+					xp[n] = p->x;	yp[n++] = p->y;
+					q = p;		p = p->next;
+					GMT_free (GMT, q);	/* Free linked list as we go along */
 					if (n == n_alloc) {
 						n_alloc <<= 1;
 						xp = GMT_memory (GMT, xp, n_alloc, double);
@@ -1155,7 +1156,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 				last_c = this_c;
 				this_c = this_c->next;
-				GMT_free (GMT, last_c);
+				GMT_free (GMT, last_c);	/* Free last item */
 
 				closed = !GMT_polygon_is_open (GMT, xp, yp, n);
 
