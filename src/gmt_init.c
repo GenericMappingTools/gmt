@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.535 2011-06-10 01:17:29 guru Exp $
+ *	$Id: gmt_init.c,v 1.536 2011-06-12 12:57:10 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3688,13 +3688,13 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_ANNOT_OFFSET_PRIMARY: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
-			sprintf (value, "%g%c", C->current.setting.map_annot_offset[0] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
+			sprintf (value, "%g%c", fabs (C->current.setting.map_annot_offset[0]) GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_ANNOT_OFFSET_SECONDARY: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
-			sprintf (value, "%g%c", C->current.setting.map_annot_offset[1] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
+			sprintf (value, "%g%c", fabs (C->current.setting.map_annot_offset[1]) GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_OBLIQUE_ANNOTATION: GMT_COMPAT_WARN;
@@ -3805,7 +3805,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_LABEL_OFFSET: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_LABEL_OFFSET:
-			sprintf (value, "%g%c", C->current.setting.map_label_offset GMT_def(GMTCASE_MAP_LABEL_OFFSET));
+			sprintf (value, "%g%c", fabs (C->current.setting.map_label_offset) GMT_def(GMTCASE_MAP_LABEL_OFFSET));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_LINE_STEP: GMT_COMPAT_WARN;
@@ -3855,7 +3855,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_TICK_LENGTH: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_TICK_LENGTH:
-			sprintf (value, "%g%c", C->current.setting.map_tick_length GMT_def(GMTCASE_MAP_TICK_LENGTH));
+			sprintf (value, "%g%c", fabs (C->current.setting.map_tick_length) GMT_def(GMTCASE_MAP_TICK_LENGTH));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_TICK_PEN: GMT_COMPAT_WARN;
@@ -3867,7 +3867,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_HEADER_OFFSET: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_TITLE_OFFSET:
-			sprintf (value, "%g%c", C->current.setting.map_title_offset GMT_def(GMTCASE_MAP_TITLE_OFFSET));
+			sprintf (value, "%g%c", fabs (C->current.setting.map_title_offset) GMT_def(GMTCASE_MAP_TITLE_OFFSET));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_VECTOR_SHAPE: GMT_COMPAT_WARN;
