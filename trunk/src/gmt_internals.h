@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_internals.h,v 1.10 2011-05-19 01:35:32 jluis Exp $
+ *	$Id: gmt_internals.h,v 1.11 2011-06-13 17:27:06 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,7 +59,6 @@ EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
 EXTERN_MSC double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level);
 EXTERN_MSC GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
-EXTERN_MSC void GMT_get_primary_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT_LONG *primary, GMT_LONG *secondary);
 EXTERN_MSC void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC GMT_LONG GMT_getrgb_index (struct GMT_CTRL *C, double *rgb);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */

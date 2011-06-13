@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.531 2011-06-13 04:07:25 guru Exp $
+ *	$Id: gmt_support.c,v 1.532 2011-06-13 17:27:06 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8132,6 +8132,8 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 {
 	GMT_LONG n;
 
+	if (!T->active) return (0);	/* Nothing to do */
+
 	if (C->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
 		char *items = "aaiiffgg";
 		n = gmt_load_custom_annot (C, &C->current.map.frame.axis[T->parent], items[T->id], array, labels);
@@ -8157,61 +8159,6 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 			break;
 	}
 	return (n);
-}
-
-void GMT_get_primary_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT_LONG *primary, GMT_LONG *secondary)
-{	/* Return the primary and secondary annotation item numbers [== 1 if there are no unit set ]*/
-
-	GMT_LONG i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
-	double val[2], s;
-
-	for (i = 0; i < 2; i++) {
-		switch (A->item[no[i]].unit) {
-			case 'Y':
-			case 'y':
-				s = GMT_DAY2SEC_F * 365.25;
-				break;
-			case 'O':
-			case 'o':
-				s = GMT_DAY2SEC_F * 30.5;
-				break;
-			case 'U':
-			case 'u':
-				s = GMT_DAY2SEC_F * 7.0;
-				break;
-			case 'K':
-			case 'k':
-			case 'D':
-			case 'd':
-				s = GMT_DAY2SEC_F;
-				break;
-			case 'H':
-			case 'h':
-				s = GMT_HR2SEC_F;
-				break;
-			case 'M':
-			case 'm':
-				s = GMT_MIN2SEC_F;
-				break;
-			case 'C':
-			case 'c':
-				s = 1.0;
-				break;
-			default:
-				/* No unit specified - probably not a time axis */
-				s = 1.0;
-				break;
-		}
-		val[i] = A->item[no[i]].interval * s;
-	}
-	if (val[0] > val[1]) {
-		*primary = GMT_ANNOT_UPPER;
-		*secondary = GMT_ANNOT_LOWER;
-	}
-	else {
-		*primary = GMT_ANNOT_LOWER;
-		*secondary = GMT_ANNOT_UPPER;
-	}
 }
 
 GMT_LONG GMT_annot_pos (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos)
@@ -8289,164 +8236,6 @@ GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_
 	}
 	return (GMT_NOERROR);
 }
-
-#if 0
-double GMT_set_map_label_offsets (struct GMT_CTRL *C, GMT_LONG axis, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_LONG below, double annot_off[], double *label_off, GMT_LONG *annot_justify, GMT_LONG *label_justify, char *format)
-{
-	/* Determines what the offsets will be for annotations and labels */
-
-	GMT_LONG ndec, as_is, flip, both;
-	double v0, v1, tmp_offset, off, angle, sign, len;
-	char text_l[GMT_TEXT_LEN256], text_u[GMT_TEXT_LEN256];
-	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
-
-	both = GMT_upper_and_lower_items (C,axis);							/* Two levels of annotations? */
-	sign = ((below && axis == 0) || (!below && axis == 1)) ? -1.0 : 1.0;			/* since annotations go either below or above */
-	len = (C->current.setting.map_tick_length > 0.0) ? C->current.setting.map_tick_length : 0.0;
-	if (axis == 0) {
-		if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
-		annot_off[0] = GMT_get_annot_offset (C, &flip, 0);										/* Set upper annotation offset and flip depending on annot_offset */
-		annot_off[1] = annot_off[0] + (C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH]) + 0.5 * fabs (C->current.setting.map_annot_offset[0]);	/* Lower annotation offset */
-		if (both)	/* Must move label farther from axis given both annotation levels */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (C->current.setting.font_annot[1].size * C->session.u2u[GMT_PT][GMT_INCH]) * C->session.font[C->current.setting.font_annot[1].id].height) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-		else		/* Just one level of annotation to clear */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH]) * C->session.font[C->current.setting.font_annot[0].id].height) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-		annot_off[0] *= sign;		/* Change sign according to which axis we are doing */
-		annot_off[1] *= sign;
-		annot_justify[0] = annot_justify[1] = *label_justify = (below) ? 10 : 2;				/* Justification of annotation and label strings */
-		if (flip) annot_justify[0] = GMT_flip_justify (C, annot_justify[0]);					/* flip is TRUE so flip the justification */
-		angle = 0.0;
-	}
-	else {
-		ndec = GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);
-		as_is = (ndec == 0 && !strchr (format, 'g'));	/* Use the d_format as is */
-
-		switch (C->current.proj.xyz_projection[axis]) {
-			case GMT_POW:
-				if (as_is) {
-					sprintf (text_l, format, val0);
-					sprintf (text_u, format, val1);
-				}
-				else {
-					sprintf (text_l, "%ld", (GMT_LONG)floor (val0));
-					sprintf (text_u, "%ld", (GMT_LONG)ceil (val1));
-				}
-				break;
-			case GMT_LOG10:
-				v0 = d_log10 (C, val0);
-				v1 = d_log10 (C, val1);
-				if (A->type == 2) {	/* 10 ^ pow annotations */
-					sprintf (text_l, "10%ld", (GMT_LONG)floor (v0));
-					sprintf (text_u, "10%ld", (GMT_LONG)ceil (v1));
-				}
-				else {
-					if (as_is) {
-						sprintf (text_l, format, val0);
-						sprintf (text_u, format, val1);
-					}
-					else if (A->type == 1) {
-						sprintf (text_l, "%ld", (GMT_LONG)floor (v0));
-						sprintf (text_u, "%ld", (GMT_LONG)ceil (v1));
-					}
-					else {
-						sprintf (text_l, format, val0);
-						sprintf (text_u, format, val1);
-					}
-				}
-				break;
-			case GMT_LINEAR:
-				if (as_is) {
-					sprintf (text_l, format, val0);
-					sprintf (text_u, format, val1);
-				}
-				else {
-					sprintf (text_l, "%ld", (GMT_LONG)floor (val0));
-					sprintf (text_u, "%ld", (GMT_LONG)ceil (val1));
-				}
-				break;
-			case GMT_TIME:
-				T = (A->item[GMT_ANNOT_UPPER].active) ? &A->item[GMT_ANNOT_UPPER] : &A->item[GMT_INTV_UPPER];
-				GMT_get_coordinate_label (C, text_l, &C->current.plot.calclock, format, T, val0);		/* Get time annotation string */
-				GMT_get_coordinate_label (C, text_u, &C->current.plot.calclock, format, T, val1);		/* Get time annotation string */
-				break;
-		}
-
-		/* Find offset based on no of digits before and after a period, if any */
-
-		off = ((MAX ((GMT_LONG)strlen (text_l), (GMT_LONG)strlen (text_u)) + ndec) * GMT_DEC_SIZE + ((ndec > 0) ? GMT_PER_SIZE : 0.0))
-			* C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH];
-
-		tmp_offset = GMT_get_annot_offset (C, &flip, 0);
-		if (A->unit && A->unit[0] && C->current.setting.y_axis_type == 0) {	/* Accommodate extra width of annotation */
-			GMT_LONG i, u_len, n_comp, len;
-			i = u_len = n_comp = 0;
-			len = strlen (A->unit);
-			if (A->unit[0] == '-') i++;	/* Leading - to mean no-space */
-			while (i < len) {
-				if (A->unit[i] == '@' &&  A->unit[i+1]) {	/* escape sequences */
-					i++;
-					switch (A->unit[i]) {
-						case '@':	/* Print the @ sign */
-							u_len++;
-							break;
-						case '~':	/* Toggle symbol */
-						case '+':	/* Toggle superscript */
-						case '-':	/* Toggle subscript */
-						case '#':	/* Toggle small caps */
-							break;
-						case '%':	/* Set font */
-							i++;
-							while (A->unit[i] && A->unit[i] != '%') i++;	/* Skip font number and trailing % */
-						case '!':	/* Composite character */
-							n_comp++;
-							break;
-						default:
-							break;
-					}
-				}
-				else if (A->unit[i] == '\\' && (len - i) > 3 && isdigit ((int)(A->unit[i+1])) && isdigit ((int)(A->unit[i+2])) && isdigit ((int)(A->unit[i+3]))) {	/* Octal code */
-					i += 3;
-					u_len++;
-				}
-				else if (A->unit[i] == '\\') {	/* Escaped character */
-					i++;
-					u_len++;
-				}
-				else	/* Regular char */
-					u_len++;
-				i++;
-			}
-			off += (u_len - n_comp) * 0.49 * C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH];
-		}
-		*label_justify = (below) ? 2 : 10;
-		if (C->current.setting.y_axis_type == 0) {	/* Horizontal annotations */
-			annot_justify[0] = 7;
-			annot_off[0] = sign * tmp_offset;
-			if (A->item[GMT_ANNOT_LOWER].active)
-				annot_off[1] = sign * (((flip) ? len : fabs (tmp_offset)) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-			else
-				annot_off[1] = sign * (((flip) ? len : fabs (tmp_offset + off)) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-			if ((below + flip) != 1) annot_off[0] -= off;
-			angle = -90.0;
-		}
-		else {
-			annot_off[0] = sign * tmp_offset;
-			annot_off[1] = sign * (((flip) ? len : fabs (tmp_offset) + (C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH]) * C->session.font[C->current.setting.font_annot[0].id].height) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-			annot_justify[0] = (below) ? 2 : 10;
-			angle = 0.0;
-			if (flip) annot_justify[0] = GMT_flip_justify (C, annot_justify[0]);
-		}
-		if (both)	/* Must move label farther from axis given both annotation levels */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[1]) + (C->current.setting.font_annot[1].size * C->session.u2u[GMT_PT][GMT_INCH]) * C->session.font[C->current.setting.font_annot[1].id].height) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-		else		/* Just one level of annotation to clear */
-			*label_off = sign * (((flip) ? len : fabs (annot_off[0]) + (C->current.setting.font_annot[0].size * C->session.u2u[GMT_PT][GMT_INCH]) * C->session.font[C->current.setting.font_annot[0].id].height) + 1.5 * fabs (C->current.setting.map_annot_offset[0]));
-		if (A->item[GMT_ANNOT_LOWER].active && C->current.setting.y_axis_type == 0) *label_off += off;
-		annot_justify[1] = (below) ? 2 : 10;
-		if (A->item[GMT_ANNOT_LOWER].active) annot_justify[1] = annot_justify[0];
-	}
-	return (angle);
-}
-#endif
 
 GMT_LONG gmt_polar_adjust (struct GMT_CTRL *C, GMT_LONG side, double angle, double x, double y)
 {
@@ -8779,7 +8568,7 @@ double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level)
 	if (a >= 0.0) {	/* Outside annotation */
 		double dist = C->current.setting.map_tick_length;	/* Length of tickmark (could be negative) */
 		/* For fancy frame we must consider that the frame width might exceed the ticklength */
-		if (C->current.setting.map_frame_type == GMT_IS_FANCY && C->current.setting.map_frame_width > dist) dist = C->current.setting.map_frame_width;
+		if (C->current.setting.map_frame_type & GMT_IS_FANCY && C->current.setting.map_frame_width > dist) dist = C->current.setting.map_frame_width;
 		if (dist > 0.0) a += dist;
 		*flip = FALSE;
 	}
