@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.307 2011-06-10 23:29:27 guru Exp $
+ *	$Id: gmt_map.c,v 1.308 2011-06-13 17:28:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2887,7 +2887,7 @@ GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
 			C->current.map.clip = (PFL) gmt_radial_clip;
-			if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
@@ -3123,7 +3123,7 @@ GMT_LONG gmt_map_init_oblique (struct GMT_CTRL *C) {
 	C->current.map.right_edge = (PFD) gmt_right_rect;
 
 	C->current.map.is_world = GMT_360_RANGE (w, e);
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.frame.check_side = !(C->current.setting.map_annot_oblique & 1);
 	return (TRUE);
 }
@@ -3308,7 +3308,7 @@ GMT_LONG gmt_map_init_tm (struct GMT_CTRL *C) {
 	C->current.map.frame.horizontal = TRUE;
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[2]);
 
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	return (C->common.R.oblique);
 }
@@ -3378,7 +3378,7 @@ GMT_LONG gmt_map_init_utm (struct GMT_CTRL *C) {
 
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	return (C->common.R.oblique);
 }
@@ -3524,7 +3524,7 @@ GMT_LONG gmt_map_init_lambeq (struct GMT_CTRL *C) {
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
 			C->current.map.clip = (PFL) gmt_radial_clip;
-			if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
@@ -3612,7 +3612,7 @@ GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
 			C->current.map.clip = (PFL) gmt_radial_clip;
-			if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
@@ -3712,7 +3712,7 @@ GMT_LONG gmt_map_init_genper (struct GMT_CTRL *C) {
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
 
-		if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+		if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 		search = FALSE;
   	}
@@ -3814,7 +3814,7 @@ GMT_LONG gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
 			C->current.map.clip = (PFL) gmt_radial_clip;
-			if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
@@ -3891,7 +3891,7 @@ GMT_LONG gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			C->current.map.crossing = (PFL) gmt_radial_crossing;
 			C->current.map.overlap = (PFL) gmt_radial_overlap;
 			C->current.map.clip = (PFL) gmt_radial_clip;
-			if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+			if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 		}
 		C->current.map.left_edge = (PFD) gmt_left_circle;
 		C->current.map.right_edge = (PFD) GMT_right_circle;
@@ -3953,7 +3953,7 @@ GMT_LONG gmt_map_init_mollweide (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_mollweide;
 	C->current.proj.inv = (PFL) GMT_imollweide;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
 	return (C->common.R.oblique);
@@ -4010,7 +4010,7 @@ GMT_LONG gmt_map_init_hammer (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_hammer;
 	C->current.proj.inv = (PFL) GMT_ihammer;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
 
@@ -4064,7 +4064,7 @@ GMT_LONG gmt_map_init_grinten (struct GMT_CTRL *C) {
 	C->current.proj.r = 0.5 * C->current.proj.rect[XHI];
 	C->current.proj.fwd = (PFL) GMT_grinten;
 	C->current.proj.inv = (PFL) GMT_igrinten;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
 
@@ -4114,7 +4114,7 @@ GMT_LONG gmt_map_init_winkel (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_winkel;
 	C->current.proj.inv = (PFL) GMT_iwinkel;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (C->common.R.oblique);
 }
 
@@ -4164,7 +4164,7 @@ GMT_LONG gmt_map_init_eckert4 (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_eckert4;
 	C->current.proj.inv = (PFL) GMT_ieckert4;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
 	return (C->common.R.oblique);
@@ -4216,7 +4216,7 @@ GMT_LONG gmt_map_init_eckert6 (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_eckert6;
 	C->current.proj.inv = (PFL) GMT_ieckert6;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
 	return (C->common.R.oblique);
@@ -4267,7 +4267,7 @@ GMT_LONG gmt_map_init_robinson (struct GMT_CTRL *C) {
 	gmt_map_setinfo (C, xmin, xmax, ymin, ymax, C->current.proj.pars[1]);
 	C->current.proj.fwd = (PFL) GMT_robinson;
 	C->current.proj.inv = (PFL) GMT_irobinson;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	C->current.map.parallel_straight = TRUE;
 
 	return (C->common.R.oblique);
@@ -4293,7 +4293,7 @@ GMT_LONG gmt_map_init_sinusoidal (struct GMT_CTRL *C) {
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[1];
 	C->current.proj.fwd = (PFL) GMT_sinusoidal;
 	C->current.proj.inv = (PFL) GMT_isinusoidal;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (C->common.R.oblique) {
 		GMT_sinusoidal (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
@@ -4351,7 +4351,7 @@ GMT_LONG gmt_map_init_cassini (struct GMT_CTRL *C) {
 	}
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[2] /= C->current.proj.M_PR_DEG;
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
@@ -4507,7 +4507,7 @@ GMT_LONG gmt_map_init_polyconic (struct GMT_CTRL *C) {
 	C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
 	C->current.proj.fwd = (PFL) GMT_polyconic;
 	C->current.proj.inv = (PFL) GMT_ipolyconic;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (C->common.R.oblique) {
 		(*C->current.proj.fwd) (C, C->common.R.wesn[XLO], C->common.R.wesn[YLO], &xmin, &ymin);
