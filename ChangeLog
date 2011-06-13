@@ -1,6 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1090 2011-06-13 04:07:25 guru Exp $
+	$Id: ChangeLog,v 1.1091 2011-06-13 17:31:26 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-13	remko
+	* gmt_support.c:	Use defs GMT_{INSIDE,ONEDGE,OUTSIDE} from gmt_support.h
+				instead of local defs GMT_{INSIDE,ONSIDE,OUTSIDE}_POLYGON.
+				GMT_get_primary_annot moved to gmt_plot.c (made local).
+	* gmtselect_func.c grdlandmask_func.c:	Use defs GMT_{INSIDE,ONEDGE,OUTSIDE} from
+				gmt_support.h instead of local defs P_IS_{INSIDE,ONSIDE,OUTSIDE}.
+	* gmt_io.c (gmt_prep_ogr_output):	Likely bug fix: used GMT_IS_INSIDE (2)
+				instead of GMT_INSIDE (1) when determining polygon holes.
+	* gmt_project.h, gmt_map.c:	Renumbered GMT_IS_{FANCY,PLAIN,INSIDE,GRAPH,ROUNDED}.
+	* gmt_init.c:		No more negative annotation offsets and tick lengths.
+	* gmt_plot.c:		Complete reworking of linear frame annotations.
 
 2011-06-12	pwessel
 	* gmt_io.c:		Do recursive directory search when the given directory
