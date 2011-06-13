@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.347 2011-06-13 17:31:26 remko Exp $
+ *	$Id: gmt_plot.c,v 1.348 2011-06-13 20:54:32 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -509,7 +509,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 			if (far) PSL_command (P, "PSL_AH%ld add ", annot_pos);
 			PSL_command (P, "def\n");
 
-			for (i = 0; k < GMT_TICK_UPPER && i < nx - is_interval; i++) {
+			for (i = 0; i < nx - is_interval; i++) {
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
