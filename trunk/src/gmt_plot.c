@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.348 2011-06-13 20:54:32 remko Exp $
+ *	$Id: gmt_plot.c,v 1.349 2011-06-13 21:37:03 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -505,7 +505,10 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				PSL_command (P, "mx\n");		/* Update the longest annotation */
 			}
 			PSL_command (P, "def\n");
-			PSL_command (P, "/PSL_A%ld_y PSL_A%ld_y %ld add ", annot_pos, annot_pos, psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
+			if (annot_pos == 0)
+				PSL_command (P, "/PSL_A0_y PSL_A0_y %ld add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
+			else
+				PSL_command (P, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %ld add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
 			if (far) PSL_command (P, "PSL_AH%ld add ", annot_pos);
 			PSL_command (P, "def\n");
 
