@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.11 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.12 2011-06-13 23:56:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -504,15 +504,13 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	i = 0;
-	while (trivial && i < G->header->size) {
-		if (GMT_is_fnan (G->data[i])) trivial = FALSE;
-		i++;
-	}
+	while (trivial && i < G->header->size) if (GMT_is_fnan (G->data[i++])) trivial = FALSE;
 
 	/* Allocate other required arrays */
 
 	T = GMT_create_grid (GMT);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
+	GMT_grd_init (GMT, T->header, options, TRUE);
 	T->data = GMT_memory (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		R = GMT_create_grid (GMT);	/* Pointer for grid with array containing residual surface  */
@@ -530,6 +528,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* If a weight array is needed, get one */
 
 	W = GMT_create_grid (GMT);	/* Pointer for grid with array containing data weights  */
+	GMT_grd_init (GMT, W->header, options, TRUE);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->W.file), (void **)&W)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
