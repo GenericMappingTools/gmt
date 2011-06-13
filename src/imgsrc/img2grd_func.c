@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.20 2011-06-07 01:14:21 guru Exp $
+/* $Id: img2grd_func.c,v 1.21 2011-06-13 04:07:26 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -615,7 +615,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_Encode_ID (API, s_in_ID, in_ID);	/* Make filename with embedded object ID */
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
-		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_OUT, (void **)&Geo, NULL, (void *)Geo, &out_ID)) exit (EXIT_FAILURE);
+		if (GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, (void **)&Geo, NULL, (void *)Geo, &out_ID)) exit (EXIT_FAILURE);
 		GMT_Encode_ID (API, s_out_ID, out_ID);	/* Make filename with embedded object ID */
 	}
 	else	/* The output here is the final result */

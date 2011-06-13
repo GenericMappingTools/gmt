@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.530 2011-06-12 14:14:52 remko Exp $
+ *	$Id: gmt_support.c,v 1.531 2011-06-13 04:07:25 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7573,8 +7573,8 @@ GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], GMT_LONG *
 	n_seg_b = nb - 1;
 
 	/* Assign pointers to segment info given, or initialize zero arrays if not given */
-	sa = GMT_memory (C, NULL, na, GMT_LONG);
-	sb = GMT_memory (C, NULL, nb, GMT_LONG);
+	sa = (sa0) ? sa0 : GMT_memory (C, NULL, na, GMT_LONG);
+	sb = (sb0) ? sb0 : GMT_memory (C, NULL, nb, GMT_LONG);
 
 	GMT_x_alloc (C, X, -nx_alloc);
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.14 2011-05-17 00:58:27 remko Exp $
+ *	$Id: x2sys_cross_func.c,v 1.15 2011-06-13 04:07:26 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,7 +247,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	char item[GMT_BUFSIZ];			/* buffer */
 	char t_or_i;				/* t = time, i = dummy node time */
 	char name1[80], name2[80];		/* Name of two files to be examined */
-	char *x2sys_header = "> %s %ld %s %ld %s\n";
+	char *x2sys_header = "%s %ld %s %ld %s";
 
 	GMT_LONG n_rec[2];			/* Number of data records for both files */
 	GMT_LONG window_width;			/* Max number of points to use in the interpolation */
@@ -300,7 +300,6 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct X2SYS_FILE_INFO data_set[2];		/* File information */
 	struct X2SYS_BIX Bix;
 	struct PAIR *pair = NULL;		/* Used with -Akombinations.lis option */
-	struct GMT_OPTION *opt = NULL;
 	FILE *fp = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -434,6 +433,9 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	out = GMT_memory (GMT, NULL, n_output, double);
 	xdata[0] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
+
+	GMT->current.io.multi_segments[GMT_OUT] = TRUE;		/* Turn on -mo explicitly */
+	GMT->current.io.io_header[GMT_OUT] = TRUE;		/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = TRUE;
@@ -722,12 +724,13 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					}
 
 					if (first_header) {	/* Write the header record */
+						char *cmd = NULL;
 						t_or_i = (got_time) ? 't' : 'i';
 						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)line);
-						sprintf (line, "# Command: %s", GMT->init.progname);
-						if (cmdline_files) strcat (line, " [tracks]");
-						for (opt = options; opt; opt = opt->next) if (opt->option == GMTAPI_OPT_INFILE) {strcat (line, " "); strcat (line, opt->arg);}
+						GMT_Create_Cmd (API, &cmd, options);
+						sprintf (line, "# Command: %s %s", GMT->init.progname, cmd);	/* Build command line argument string */
+						GMT_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, (void *)line);
 						sprintf (line, "# %s\t%s\t%c_1\t%c_2\tdist_1\tdist_2\thead_1\thead_2\tvel_1\tvel_2",
 							s->info[s->out_order[s->x_col]].name, s->info[s->out_order[s->y_col]].name, t_or_i, t_or_i);
