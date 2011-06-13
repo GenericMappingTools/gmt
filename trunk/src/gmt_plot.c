@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.346 2011-06-10 01:17:30 guru Exp $
+ *	$Id: gmt_plot.c,v 1.347 2011-06-13 17:31:26 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -262,48 +262,6 @@ unsigned char GMT_glyph[2520] = {
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
-void gmt_define_baselines (struct PSL_CTRL *P)
-{
-	/* Given the sizes and lengths of text, offsets, and ticks, calculate the offset from the
-	 * axis to the baseline of each annotation class:
-	 * PSL_A0_y:	Base of primary annotation
-	 * PSL_A1_y:	Base of secondary annotation
-	 * PSL_L_y:	Base of axis label
-	 * PSL_H_y:	Base of plot title (set elsewhere)
-	 */
-
-	PSL_command (P, "/PSL_A0_y PSL_AO0 PSL_TL1 PSL_AO0 mul 0 gt {PSL_TL1 add} if PSL_AO0 0 gt {PSL_far {PSL_AH0} {0} ifelse add} if PSL_sign mul def\n");
-	PSL_command (P, "/PSL_A1_y PSL_A0_y abs PSL_AO1 add PSL_far {PSL_AH1} {PSL_AH0} ifelse add PSL_sign mul def\n");
-	PSL_command (P, "/PSL_L_y PSL_A1_y abs PSL_LO add PSL_far {PSL_LH} {PSL_AH1} ifelse add PSL_sign mul def\n");
-}
-
-void gmt_define_PS_items (struct GMT_CTRL *C, struct PSL_CTRL *P, GMT_LONG axis, GMT_LONG below, GMT_LONG ortho)
-{
-	/* GMT relies on the PostScript engine to calculate dimensions of
-	 * text items.  Therefore, the calculation of text baseline offsets
-	 * (i.e., distance from axis to base of annotations) becomes a bit
-	 * tricky and must be done in PostScript language.
-	 *
-	 * Here we set PostScript definitions of various lengths and font
-	 * sizes used in the frame annotation machinery */
-
-	PSL_command (P, "/PSL_sign %d def\n", below ? -1 : 1); /* Annotate below/left or above/right */
-	PSL_command (P, "/PSL_far %s def\n", below == (axis == GMT_X && !ortho) ? "true" : "false");		/* Current point is at the far side of the tickmark? */
-	PSL_defunits (P, "PSL_TL1", C->current.setting.map_tick_length);	/* Length of tickmark (could be negative) */
-	PSL_defunits (P, "PSL_AO0", C->current.setting.map_annot_offset[0]);	/* Offset between tick and primary annotation */
-	PSL_defunits (P, "PSL_AO1", C->current.setting.map_annot_offset[1]);	/* Offset between tick and secondary annotation */
-	PSL_defunits (P, "PSL_LO",  C->current.setting.map_label_offset);	/* Offset between annotation and label */
-	PSL_defpoints (P, "PSL_AF0", C->current.setting.font_annot[0].size);	/* Primary font size */
-	PSL_defpoints (P, "PSL_AF1", C->current.setting.font_annot[1].size);	/* Secondary font size */
-	PSL_defpoints (P, "PSL_LF",  C->current.setting.font_label.size);	/* Label font size */
-	PSL_command (P, "/PSL_AH0 0 def\n");	/* The loop over level 0 annotations will reset this to the tallest annotation */
-	PSL_command (P, "/PSL_AH1 0 def\n");	/* The loop over level 1 annotations will reset this to the tallest annotation */
-	PSL_setfont (P, C->current.setting.font_label.id);
-	PSL_command (P, "/PSL_LH ");
-	PSL_deftextdim (P, "-h", C->current.setting.font_label.size, "M");
-	PSL_command (P, "def\n");
-}
-
 void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	GMT_LONG form, cap = P->internal.line_cap;
@@ -328,18 +286,12 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 
 		PSL_setlinecap (P, cap);	/* Reset back to default */
 	}
-	if (!C->current.map.frame.header[0] || C->current.map.frame.plotted_header) return;	/* No header today */
+	if (!C->current.map.frame.header[0] || C->current.map.frame.plotted_header || C->current.setting.map_frame_type == GMT_IS_INSIDE) return;	/* No header today */
 
 	PSL_comment (P, "Placing plot title\n");
 
-	gmt_define_PS_items (C, P, GMT_X, FALSE, FALSE);
-
-	gmt_define_baselines (P);
-
-	if (C->current.map.frame.side[N_SIDE] == 0)
-		PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset);	/* Just axis line is drawn, offset by map_title_offset only */
-	else if (C->current.map.frame.side[N_SIDE] & 1)
-		PSL_command (P, "/PSL_H_y PSL_L_y %ld add def\n", psl_iz (P, C->current.setting.map_title_offset));	/* Allow for ticks + offset */
+	if (!C->current.map.frame.draw || C->current.map.frame.side[N_SIDE] == 0)
+		PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
 		PSL_command (P, "/PSL_H_y PSL_L_y PSL_LH add %ld add def\n", psl_iz (P, C->current.setting.map_title_offset));	/* For title adjustment */
 
@@ -349,13 +301,70 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 	C->current.map.frame.plotted_header = TRUE;
 }
 
-GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary)
+void gmt_get_primary_annot (struct GMT_PLOT_AXIS *A, GMT_LONG *primary, GMT_LONG *secondary)
+{	/* Return the primary and secondary annotation item numbers [== 1 if there are no unit set]*/
+
+	GMT_LONG i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
+	double val[2], s;
+
+	for (i = 0; i < 2; i++) {
+		val[i] = 0.0;
+		if (!A->item[no[i]].active) continue;
+		switch (A->item[no[i]].unit) {
+			case 'Y':
+			case 'y':
+				s = GMT_DAY2SEC_F * 365.25;
+				break;
+			case 'O':
+			case 'o':
+				s = GMT_DAY2SEC_F * 30.5;
+				break;
+			case 'U':
+			case 'u':
+				s = GMT_DAY2SEC_F * 7.0;
+				break;
+			case 'K':
+			case 'k':
+			case 'D':
+			case 'd':
+				s = GMT_DAY2SEC_F;
+				break;
+			case 'H':
+			case 'h':
+				s = GMT_HR2SEC_F;
+				break;
+			case 'M':
+			case 'm':
+				s = GMT_MIN2SEC_F;
+				break;
+			case 'C':
+			case 'c':
+				s = 1.0;
+				break;
+			default:
+				/* No unit specified - probably not a time axis */
+				s = 1.0;
+				break;
+		}
+		val[i] = A->item[no[i]].interval * s;
+	}
+	if (val[0] >= val[1]) {
+		*primary = GMT_ANNOT_UPPER;
+		*secondary = GMT_ANNOT_LOWER;
+	}
+	else {
+		*primary = GMT_ANNOT_LOWER;
+		*secondary = GMT_ANNOT_UPPER;
+	}
+}
+
+GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary)
 {
 	GMT_LONG i, found;
 	double small;
 
-	if (primary == secondary) return (FALSE);	/* Not set, no need to skip */
-	if (secondary != item) return (FALSE);		/* Not working on secondary annotation */
+	if (!n) return (FALSE);	/* Not set, no need to skip */
+	if (item == primary) return (FALSE);		/* Not working on secondary annotation */
 	if (!x2) return (FALSE);			/* None given */
 
 	small = (x2[1] - x2[0]) * GMT_SMALL;
@@ -365,21 +374,19 @@ GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n
 
 void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_LONG below, GMT_LONG annotate)
 {
-	GMT_LONG k, i, nx, np = 0;	/* Misc. variables */
+	GMT_LONG k, i, nx, np = 0, neg, far;	/* Misc. variables */
 	GMT_LONG annot_pos;		/* Either 0 for upper annotation or 1 for lower annotation */
-	GMT_LONG primary = 0;		/* Axis item number of annotation with largest interval/unit */
-	GMT_LONG secondary = 0;		/* Axis item number of annotation with smallest interval/unit */
+	GMT_LONG primary = -1;		/* Axis item number of annotation with largest interval/unit */
+	GMT_LONG secondary = -1;		/* Axis item number of annotation with smallest interval/unit */
 	GMT_LONG axis;			/* Axis id (0 = x, 1 = y) */
 	GMT_LONG is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
-	GMT_LONG check_annotation;	/* TRUE is we have two levels of tick annotations that can overprint */
 	GMT_LONG do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
 	GMT_LONG do_tick;		/* TRUE unless we are dealing with bits of weeks */
 	GMT_LONG form;			/* TRUE for outline font */
 	GMT_LONG ortho = FALSE;	/* TRUE if annotations are orthogonal to axes */
-	GMT_LONG need_txt = FALSE;		/* TRUE if we are annotating anything on this axis */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double tick_len[6];		/* Ticklengths for each of the 6 axis items */
-	double x, sign, len, t_use;	/* Misc. variables */
+	double x, t_use;	/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
@@ -393,17 +400,17 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 	axis = A->id;
 	xyz_fwd = (PFD) ((axis == GMT_X) ? GMT_x_to_xx : ((axis == GMT_Y) ? GMT_y_to_yy : GMT_z_to_zz));
-	if ((check_annotation = GMT_two_annot_items (C, axis))) {	/* Must worry about annotation overlap */
-		GMT_get_primary_annot (C, A, &primary, &secondary);			/* Find primary and secondary axis items */
-		np = GMT_coordinate_array (C, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
-	}
-	len = MAX (0.0, C->current.setting.map_tick_length);				/* Tick length if directed outward */
-	sign = (below) ? -1.0 : 1.0;							/* since annotations go either below or above */
-	tick_len[0] = tick_len[2] = sign * C->current.setting.map_tick_length;		/* Initialize the tick lengths */
-	tick_len[1] = 3.0 * sign * C->current.setting.map_tick_length;
-	tick_len[3] = (A->item[GMT_ANNOT_UPPER].active) ? tick_len[0] : 3.0 * sign * C->current.setting.map_tick_length;
-	tick_len[4] = 0.5 * sign * C->current.setting.map_tick_length;
-	tick_len[5] = 0.75 * sign * C->current.setting.map_tick_length;
+	gmt_get_primary_annot (A, &primary, &secondary);			/* Find primary and secondary axis items */
+	np = GMT_coordinate_array (C, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
+	neg = (below != (C->current.setting.map_frame_type & GMT_IS_INSIDE));	/* Annotations go either below or above */
+	far = (neg == (axis == GMT_X && !ortho));		/* Current point is at the far side of the tickmark? */
+	tick_len[0] = C->current.setting.map_tick_length;		/* Initialize the tick lengths */
+	if (neg) tick_len[0] = -tick_len[0];
+	tick_len[1] = 3.0 * tick_len[0];
+	tick_len[2] = tick_len[0];
+	tick_len[3] = A->item[GMT_ANNOT_UPPER].active ? tick_len[0] : tick_len[1];
+	tick_len[4] = 0.5 * tick_len[0];
+	tick_len[5] = 0.75 * tick_len[0];
 	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;
 
@@ -417,11 +424,14 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		PSL_comment (P, below ? "Start of front z-axis\n" : "Start of back z-axis\n");
 	PSL_setorigin (P, x0, y0, 0.0, PSL_FWD);
 
-	if (annotate && !GMT_axis_is_geo (C, axis)) {
-		for (need_txt = A->label[0], k = 0; !need_txt && k < GMT_TICK_UPPER; k++) if (A->item[k].active) need_txt = TRUE;
+	if (axis == GMT_X)
+		PSL_command (P, "/MM {%sM} def\n", neg ? "neg " : "");
+	else
+		PSL_command (P, "/MM {%sexch M} def\n", neg ? "neg " : "");
+
+	for (k = 0; k < 2; k++) {
+		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active || A->item[k+4].active ? psl_iz (P, fabs (tick_len[k])) : 0);	/* Length of primary/secondary tickmark */
 	}
-	
-	if (need_txt) gmt_define_PS_items (C, P, axis, below, ortho);	/* Create PostScript definitions of various lengths and font sizes */
 
 	PSL_comment (P, "Axis tick marks and annotations\n");
 	GMT_setpen (C, &C->current.setting.map_frame_pen);
@@ -430,7 +440,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	else
 		PSL_plotsegment (P, 0.0, length, 0.0, 0.0);
 	
-	if (C->current.setting.map_frame_type == GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
+	if (C->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
 		struct GMT_FILL arrow;
 		double vector_width, dim[7];
 		GMT_init_fill (C, &arrow, C->current.setting.map_frame_pen.rgb[0], C->current.setting.map_frame_pen.rgb[1], C->current.setting.map_frame_pen.rgb[2]);
@@ -457,30 +467,36 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 
 		is_interval = GMT_interval_axis_item (k);	/* Interval or tick mark annotation? */
 		nx = GMT_coordinate_array (C, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
+		annot_pos = GMT_lower_axis_item (k);					/* 1 means lower annotation, 0 means upper (close to axis) */
+		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
+		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
 
 		/* First plot all the tick marks */
 
-		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);
-		for (i = 0; do_tick && i < nx; i++) {
-			if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
-			x = (*xyz_fwd) (C, knots[i]);	/* Convert to inches on the page */
-			if (axis == GMT_X)
-				PSL_plotsegment (P, x, 0.0, x, tick_len[k]);
-			else
-				PSL_plotsegment (P, 0.0, x, tick_len[k], x);
+		if (do_tick) {
+			for (i = 0; i < nx; i++) {
+				if (knots[i] < (val0 - GMT_CONV_LIMIT) || knots[i] > (val1 + GMT_CONV_LIMIT)) continue;	/* Outside the range */
+				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Minor tick marks skipped when coinciding with major */
+				x = (*xyz_fwd) (C, knots[i]);	/* Convert to inches on the page */
+				if (axis == GMT_X)
+					PSL_plotsegment (P, x, 0.0, x, tick_len[k]);
+				else
+					PSL_plotsegment (P, 0.0, x, tick_len[k], x);
+			}
 		}
 
-		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && !(T->unit == 'r'));	/* Cannot annotate a Gregorian week */
-		if (do_annot) {	/* Then do annotations too - here just set text height/width parameters in PostScript */
+		/* Then do annotations too - here just set text height/width parameters in PostScript */
 
-			annot_pos = GMT_lower_axis_item (k);					/* 1 means lower annotation, 0 means upper (close to axis) */
+		if (do_annot) {
 			font = C->current.setting.font_annot[annot_pos];			/* Set the font to use */
-			PSL_setfont (P, font.id);
-
+			form = GMT_setfont (C, &font);
 			PSL_command (P, "/PSL_AH%ld 0\n", annot_pos);
 			for (i = 0; i < nx - is_interval; i++) {
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (string, label_c[i]);
 				else
@@ -489,49 +505,25 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				PSL_command (P, "mx\n");		/* Update the longest annotation */
 			}
 			PSL_command (P, "def\n");
-		}
+			PSL_command (P, "/PSL_A%ld_y PSL_A%ld_y %ld add ", annot_pos, annot_pos, psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
+			if (far) PSL_command (P, "PSL_AH%ld add ", annot_pos);
+			PSL_command (P, "def\n");
 
-		if (nx) GMT_free (C, knots);
-		if (label_c) {
-			for (i = 0; i < nx; i++) if (label_c[i]) free ((void *)label_c[i]);
-			GMT_free (C, label_c);
-		}
-	}
-	
-	/* Here, PSL_AH0, PSL_AH1, and PSL_LH have been defined.  We may now set the y offsets for text baselines */
-
-	if (need_txt) gmt_define_baselines (P);
-
-	/* Now do annotations, if requested */
-
-	form = GMT_setfont (C, &C->current.setting.font_annot[0]);
-	for (k = 0; annotate && !GMT_axis_is_geo (C, axis) && k < GMT_TICK_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
-
-		T = &A->item[k];					/* Get pointer to this item */
-		if (!T->active) continue;				/* Do not want this item plotted - go to next item */
-		if (T->unit == 'r') continue;				/* Cannot annotate a Gregorian week */
-
-		is_interval = GMT_interval_axis_item(k);		/* Interval or tick mark annotation? */
-		nx = GMT_coordinate_array (C, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
-		
-		annot_pos = GMT_lower_axis_item(k);				/* 1 means lower annotation, 0 means upper (close to axis) */
-		font = C->current.setting.font_annot[annot_pos];		/* Set the font to use */
-		GMT_setfont (C, &C->current.setting.font_annot[annot_pos]);
-
-		for (i = 0; k < 4 && i < nx - is_interval; i++) {
-			if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-			if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
-			if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
-			x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
-			if (axis == GMT_X)
-				PSL_command (P, "%ld PSL_A%ld_y M\n", psl_iz (P, x), annot_pos);			/* Move to new anchor point */
-			else
-				PSL_command (P, "PSL_A%ld_y %ld M\n", annot_pos, psl_iz (P, x));			/* Move to new anchor point */
-			if (label_c && label_c[i] && label_c[i][0])
-				strcpy (string, label_c[i]);
-			else
-				GMT_get_coordinate_label (C, string, &C->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
-			PSL_plottext (P, 0.0, 0.0, -font.size, string, (ortho == (axis == GMT_X)) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
+			for (i = 0; k < GMT_TICK_UPPER && i < nx - is_interval; i++) {
+				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
+				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+				x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
+				/* Move to new anchor point */
+				PSL_command (P, "%ld PSL_A%ld_y MM\n", psl_iz (P, x), annot_pos);
+				if (label_c && label_c[i] && label_c[i][0])
+					strcpy (string, label_c[i]);
+				else
+					GMT_get_coordinate_label (C, string, &C->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
+				PSL_plottext (P, 0.0, 0.0, -font.size, string, (ortho == (axis == GMT_X)) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
+			}
+			if (!far) PSL_command (P, "/PSL_A%ld_y PSL_A%ld_y PSL_AH%ld add def\n", annot_pos, annot_pos, annot_pos);
 		}
 
 		if (nx) GMT_free (C, knots);
@@ -545,10 +537,17 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !GMT_axis_is_geo (C, axis)) {
-		PSL_command (P, (axis == GMT_X) ? "%ld PSL_L_y M\n" : "PSL_L_y %ld M\n", psl_iz (P, 0.5 * length));		/* Move to new anchor point */
 		form = GMT_setfont (C, &C->current.setting.font_label);
+		PSL_command (P, "/PSL_LH ");
+		PSL_deftextdim (P, "-h", C->current.setting.font_label.size, "M");
+		PSL_command (P, "def\n");
+		PSL_command (P, "/PSL_L_y PSL_A0_y PSL_A1_y mx %ld add %sdef\n", psl_iz (P, C->current.setting.map_label_offset), far ? "PSL_LH add " : "");
+		/* Move to new anchor point */
+		PSL_command (P, "%ld PSL_L_y MM\n", psl_iz (P, 0.5 * length));
 		PSL_plottext (P, 0.0, 0.0, -C->current.setting.font_label.size, A->label, (axis == GMT_X) ? 0.0 : 90.0, PSL_BC, form);
 	}
+	else
+		PSL_command (P, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
 	if (axis == GMT_X)
 		PSL_comment (P, below ? "End of lower x-axis\n" : "End of upper x-axis\n");
 	else if (axis == GMT_Y)
@@ -1067,7 +1066,7 @@ void gmt_fancy_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 	double fat_pen, thin_pen;
 	GMT_LONG dual = FALSE, cap = P->internal.line_cap;
 
-	if (C->current.setting.map_frame_type == GMT_IS_PLAIN) {	/* Draw plain boundary and return */
+	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (C, P, w, e, s, n);
 		return;
 	}
@@ -1139,7 +1138,7 @@ void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w))
 		C->current.map.frame.side[E_SIDE] = C->current.map.frame.side[W_SIDE] = 0;
 
-	if (C->current.setting.map_frame_type == GMT_IS_PLAIN) { /* Draw plain boundary and return */
+	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (C, P, w, e, s, n);
 		return;
 	}
@@ -1194,7 +1193,7 @@ void gmt_conic_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 	if (C->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
 		C->current.map.frame.side[N_SIDE] = 0;
 
-	if (C->current.setting.map_frame_type == GMT_IS_PLAIN) { /* Draw plain boundary and return */
+	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_wesn_map_boundary (C, P, w, e, s, n);
 		return;
 	}
@@ -1681,7 +1680,7 @@ void gmt_map_tickmarks (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	GMT_setpen (C, &C->current.setting.map_tick_pen);
 
 	gmt_map_tickitem (C, P, w, e, s, n, GMT_ANNOT_UPPER);
-	if (C->current.setting.map_frame_type == GMT_IS_PLAIN) {	/* else we do it with checkerboard b/w patterns */
+	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_map_tickitem (C, P, w, e, s, n, GMT_TICK_UPPER);
 		gmt_map_tickitem (C, P, w, e, s, n, GMT_TICK_LOWER);
 	}
@@ -1988,8 +1987,8 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 
 	if (C->current.setting.map_annot_oblique & 2) C->current.map.frame.horizontal = 2;
 	if (C->current.map.frame.horizontal == 2) C->current.setting.map_annot_oblique |= 2;
-	if (C->current.setting.map_frame_type == GMT_IS_GRAPH && GMT_is_geographic (C, GMT_IN)) C->current.setting.map_frame_type = GMT_IS_PLAIN;
-	if (C->current.setting.map_frame_type == GMT_IS_FANCY && !gmt_is_fancy_boundary(C)) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_GRAPH && GMT_is_geographic (C, GMT_IN)) C->current.setting.map_frame_type = GMT_IS_PLAIN;
+	if (C->current.setting.map_frame_type & GMT_IS_FANCY && !gmt_is_fancy_boundary(C)) C->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	PSL_comment (P, "Start of basemap\n");
 
@@ -1999,10 +1998,9 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 
 	if (C->current.proj.got_azimuths) l_swap (C->current.map.frame.side[E_SIDE], C->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
 
-	if (C->current.setting.map_frame_type == GMT_IS_INSIDE) {
+	if (C->current.setting.map_frame_type & GMT_IS_INSIDE) {
 		GMT_map_clip_on (C, C->session.no_rgb, 3);	/* Must clip to ensure things are inside */
 		clip_on = TRUE;
-		C->current.setting.map_frame_type = GMT_IS_PLAIN;
 	}
 
 	gmt_map_gridlines (C, P, w, e, s, n);
