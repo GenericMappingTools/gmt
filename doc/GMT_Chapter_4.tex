@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.150 2011-06-12 20:32:47 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.151 2011-06-13 00:51:42 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -1210,14 +1210,14 @@ see Appendix~\ref{app:B} for complete documentation.
 If filenames are given for reading, \GMT\ programs will first look for them in the
 current directory.  If the file is not found, the programs
 will look in two other directories pointed to by environmental
-parameters (if set).  These are \textbf{GMT\_DATADIR} and
-\textbf{GMT\_USERDIR}, and they may be set by the user to point to directories
-that contain data sets of general use.  Normally, the first directory (or directories:
+parameters (if set).  These are \textbf{GMT\_USERDIR} and
+\textbf{GMT\_DATADIR}, and they may be set by the user to point to directories
+that contain data sets of general use.  Normally, the \textbf{GMT\_DATADIR} directory (or directories:
 add multiple paths by separating them with colons (semi-colons under Windows)) will
 hold data sets of a general nature (tables, grids), although a particular use
 is to make available large grids accessible via the supplemental programs \GMTprog{grdraster}
 or \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
-about these supplemental programs.  The second directory may hold miscellaneous
+about these supplemental programs.  The \textbf{GMT\_USERDIR} directory may hold miscellaneous
 data sets more specific to the user; this directory also stores \GMT\ defaults and other
 configuration files.  Any directory that ends in a trailing slash (/) will be searched
 recursively.  Data sets that the user finds are often needed

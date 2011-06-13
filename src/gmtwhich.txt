@@ -8,8 +8,8 @@ BD(gmtwhich) IT(files) [ OPT(C) ] [ GMT_V_OPT ]
 BD(gmtwhich) reports the full paths to the files given on the command line.
 We look for the file in (1) the current directory, (2) in $GMT_USERDIR (if defined),
 (3) in $GMT_DATADIR (if defined).  If found we print the full path name to the file,
-or a confirmation (see OPT(C)).  The $GMT_DATADIR environment variable can be a colon-
-separated list of directories, and we search recursively down any directory that ends
+or a confirmation (see OPT(C)).  The $GMT_USERDIR and $GMT_DATADIR environment variables
+can be colon-separated list of directories, and we search recursively down any directory that ends
 with / (i.e., /export/data is a single directory whereas /export/data/ will be searched
 recursively.)
 #include "explain_commonitems.txt"
