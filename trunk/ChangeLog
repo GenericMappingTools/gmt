@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1091 2011-06-13 17:31:26 remko Exp $
+	$Id: ChangeLog,v 1.1092 2011-06-13 20:10:26 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-13	remko
@@ -13,6 +13,7 @@
 	* gmt_project.h, gmt_map.c:	Renumbered GMT_IS_{FANCY,PLAIN,INSIDE,GRAPH,ROUNDED}.
 	* gmt_init.c:		No more negative annotation offsets and tick lengths.
 	* gmt_plot.c:		Complete reworking of linear frame annotations.
+	* pslib.h:		Back to 1200 DPI.
 
 2011-06-12	pwessel
 	* gmt_io.c:		Do recursive directory search when the given directory

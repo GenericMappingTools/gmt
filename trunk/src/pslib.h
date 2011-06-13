@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.75 2011-06-08 01:33:13 guru Exp $
+ *	$Id: pslib.h,v 1.76 2011-06-13 20:09:41 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -65,7 +65,7 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 #define PSL_POINTS_PER_INCH	72.0
 
-#define PSL_DOTS_PER_INCH	7200.0		/* Effective dots per inch resolution */
+#define PSL_DOTS_PER_INCH	1200.0		/* Effective dots per inch resolution */
 
 #define PSL_BUFSIZ	4096	/* To match GMT_BUFSIZ and be consistent across all platforms */
 
