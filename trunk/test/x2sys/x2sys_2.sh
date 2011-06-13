@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: x2sys_2.sh,v 1.2 2011-06-13 04:09:11 guru Exp $
+# $Id: x2sys_2.sh,v 1.3 2011-06-13 05:01:42 guru Exp $
 #
 # This is original Figure 2 script from
 # Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package,
@@ -9,7 +9,7 @@
 . ../functions.sh
 header "x2sys: Reproduce Wessel (2010) Comp. & Geosci., Figure 2"
 
-ps=Wessel_x2sys_Fig_2.ps
+ps=x2sys_2.ps
 
 R=181/185/0/3
 makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
