@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1088 2011-06-12 20:32:47 guru Exp $
+	$Id: ChangeLog,v 1.1089 2011-06-13 00:51:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-12	pwessel
 	* gmt_io.c:		Do recursive directory search when the given directory
-				(e.g., via GMT_DATADIR) ends in a slash [also honor original
-				scheme of appending *].
+				(e.g., via GMT_DATADIR or GMT_USERDIR) ends in a slash
+				[Under GMT_COMPAT we honor original scheme of appending *].
+
 2011-06-10	pwessel
 	* gmt_map.c:		Clip path for van Grinten was wrong for global maps.
 

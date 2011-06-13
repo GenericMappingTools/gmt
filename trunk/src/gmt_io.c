@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.286 2011-06-12 20:32:47 guru Exp $
+ *	$Id: gmt_io.c,v 1.287 2011-06-13 00:51:42 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -533,7 +533,10 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
 	 * Looks for file stem in current directory and $GMT_{USER,DATA}DIR
+	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
+	GMT_LONG d, pos, L, found, N;
+	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 #ifndef WIN32
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
 #endif
@@ -557,25 +560,22 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	if (stem[0] == DIR_DELIM) return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories */
+	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
 
-	if (C->session.USERDIR) {
-		sprintf (path, "%s%c%s", C->session.USERDIR, DIR_DELIM, stem);
-		if (!access (path, F_OK)) {	/* Yes, found it */
-			if (gmt_file_is_readable (C, path)) return (path);	/* Yes, can read it */
-			return (NULL);	/* Cannot read, give up */
-		}
-	}
-
-	if (C->session.DATADIR) {	/* Examine all directories given in that order */
-		char dir[GMT_BUFSIZ];
-		GMT_LONG pos = 0, L, found = FALSE, N = 0;
-		while (!found && (GMT_strtok (C, C->session.DATADIR, PATH_SEPARATOR, &pos, dir))) {
+	for (d = 0; d < 2; d++) {	/* Loop over USER and DATA dirs */
+		if (!udir[d]) continue;	/* This directory was not set */
+		found = pos = 0;
+		while (!found && (GMT_strtok (C, udir[d], PATH_SEPARATOR, &pos, dir))) {
 			L = strlen (dir);
 #ifndef WIN32
+#ifdef GMT_COMPAT
 			if (dir[L-1] == '*' || dir[L-1] == '/') {	/* Must search recursively from this dir */
-				N = (dir[L-1] == '/') ? L : L - 1;
-				strncpy (path, dir, N-1);	path[N-1] = 0;
+				N = (dir[L-1] == '/') ? L - 1 : L - 2;
+#else
+			if (dir[L-1] == '/') {	/* Must search recursively from this dir */
+				N = L - 1;
+#endif
+				strncpy (path, dir, N);	path[N] = 0;
 				found = gmt_traverse_dir (stem, path);
 			}
 			else {
