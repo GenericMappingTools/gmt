@@ -1,6 +1,6 @@
 #!/bin/bash
 #               GMT ANIMATION 03
-#               $Id: anim_03.sh,v 1.8 2011-06-08 01:33:12 guru Exp $
+#               $Id: anim_03.sh,v 1.9 2011-06-13 01:24:14 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT progs:    gmtset, gmtmath, psbasemap, psxy, ps2raster
@@ -31,7 +31,7 @@ while [ $az -lt 360 ]; do
 	if [ $# -eq 0 ]; then	# If a single frame is requested we pick this view
 		az=135
 	fi
-	grdview $$_above.nc -R-26/-12/63/67 -JM2.5 -C$$.cpt -Qi$dpi -B5g10/5g5 -P -X0.5i -Y0.5i \
+	grdview $$_above.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi$dpi -B5g10/5g5 -P -X0.5i -Y0.5i \
 		-p$az/${el}+w$lon/${lat}+v$x0/$y0 --PS_MEDIA=${px}ix${py}i > $$.ps
 	if [ $# -eq 0 ]; then
 		mv $$.ps ../$name.ps

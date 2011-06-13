@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_O.sh,v 1.15 2011-05-01 18:06:37 remko Exp $
+#	$Id: GMT_App_O.sh,v 1.16 2011-06-13 01:24:15 guru Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts
@@ -41,7 +41,7 @@ y0=`echo $info | cut -f13 -d ' '`
 x1=`echo $info | cut -f14 -d ' '`
 y1=`echo $info | cut -f15 -d ' '`
 project -C$x0/$y0 -E$x1/$y1 -G10 -Q > $$.d
-dist=`gmtconvert -I $$.d --FORMAT_FLOAT_OUT=%.0lf | head -1 | cut -f3`
+dist=`gmtconvert $$.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`minmax -I1 $$.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
 grdtrack $$.d -Ggeoid.nc | grdtrack -GApp_O.nc >> transect.d

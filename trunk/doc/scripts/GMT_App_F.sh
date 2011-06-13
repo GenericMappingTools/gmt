@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_F.sh,v 1.19 2011-05-18 16:24:14 remko Exp $
+#	$Id: GMT_App_F.sh,v 1.20 2011-06-13 01:24:15 guru Exp $
 #
 #	Makes the octal code charts in Appendix F
 . ./functions.sh
@@ -70,7 +70,7 @@ $AWK -f $$.awk $$.txt > $$.d
 gmtset PS_CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:Standard+:N -P -K -Gdarkgray -Y0.0 << EOF > GMT_App_F_stand+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:Standard+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
 >
 1	4
 2	4
@@ -83,7 +83,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:Standard+:N -P -K -Gdarkgray -Y0.0 << EOF > 
 1	20
 EOF
 #Then highlight Standard+ enhancements
-psxy -R -J -O -K -Glightgray << EOF >> GMT_App_F_stand+.ps
+psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_stand+.ps
 >
 2	4
 9	4
@@ -204,7 +204,7 @@ EOF
 gmtset PS_CHAR_ENCODING ISOLatin1+
 # Then for ISOLatin1+
 # First the uncoded ones
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin1+:N -P -K -Gdarkgray -Y0.0 << EOF > GMT_App_F_iso+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin1+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_iso+.ps
 >
 1	4
 2	4
@@ -217,7 +217,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin1+:N -P -K -Gdarkgray -Y0.0 << EOF >
 1	20
 EOF
 # Then highlight ISOLatin1+ enhancements
-psxy -R -J -O -K -Glightgray << EOF >> GMT_App_F_iso+.ps
+psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_iso+.ps
 >
 2	4
 9	4
@@ -295,7 +295,7 @@ BEGIN {
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:Symbol:N -P -K -Glightgray -Y2.58i << EOF > GMT_App_F_symbol.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:Symbol:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
 9	16
@@ -338,7 +338,7 @@ cat << EOF > $$.awk
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/20/32 -J -O -K -Glightgray -Y-2.58i << EOF >> GMT_App_F_symbol.ps
+psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_symbol.ps
 >
 1	21
 2	21
@@ -398,7 +398,7 @@ BEGIN {
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:ZapfDingbats:N -P -K -Glightgray -Y2.58i << EOF > GMT_App_F_dingbats.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:ZapfDingbats:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
 9	16
@@ -441,7 +441,7 @@ cat << EOF > $$.awk
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/20/32 -J -O -K -Glightgray -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
+psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
 2	21

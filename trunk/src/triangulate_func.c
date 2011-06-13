@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.12 2011-06-07 01:14:21 guru Exp $
+ *	$Id: triangulate_func.c,v 1.13 2011-06-13 01:24:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -21,10 +21,11 @@
  * using the method by Watson, D. F., ACORD: Automatic contouring of raw data,
  * Computers & Geosciences, 8, 97-101, 1982.  Optionally, the output may take
  * the form of (1) a multi-segment file with the vertex coordinates needed to
- * draw the triangles, or (2) a grid file based on gridding the plane estimates
+ * draw the triangles, or (2) a grid file based on gridding the plane estimates.
  * PS. Instead of Watson's method you may choose to link with the triangulate
  * routine written by Jonathan Shewchuk.  See the file TRIANGLE.HOWTO for
- * details.  That function is far faster than Watson's method.
+ * details.  That function is far faster than Watson's method and also allows
+ * for Voronoi polygon output.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -77,9 +78,9 @@ int compare_edge (const void *p1, const void *p2)
 	a = (struct TRIANGULATE_EDGE *)p1;
 	b = (struct TRIANGULATE_EDGE *)p2;
 	if (a->begin < b->begin) return (-1);
-	if (a->begin > b->begin) return (1);
+	if (a->begin > b->begin) return (+1);
 	if (a->end < b->end) return (-1);
-	if (a->end > b->end) return (1);
+	if (a->end > b->end) return (+1);
 	return (0);
 }
 
@@ -218,7 +219,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 
 GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	int *link = NULL;	/* int and not GMT_LONG due to triangle function */
+	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
 	GMT_LONG ij, ij1, ij2, ij3, np, n_alloc, n = 0, i, j, k, n_edge;
 	GMT_LONG col_min, col_max, row_min, row_max, p, n_fields, n_output;
