@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.10 2011-05-19 15:18:56 remko Exp $
+ *	$Id: x2sys_init_func.c,v 1.11 2011-06-13 04:07:26 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_tags, "Syntax error: No system tag given!\n");
+	n_errors += GMT_check_condition (GMT, n_tags == 0, "Syntax error: No system tag given!\n");
 	n_errors += GMT_check_condition (GMT, n_tags > 1, "Syntax error: Only give one system tag!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error: -Idx/dy must be positive!\n");
 	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "Syntax error: -R given inconsistent values!\n");
@@ -393,14 +393,14 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
 	fprintf (fp, "# Initialized by: %s\n#\n", GMT_putusername(GMT));
 	fprintf (fp, "-D%s", &Ctrl->D.file[d_start]);	/* Now a local *.def file in the TAG directory */
-	if (Ctrl->C.active) fprintf (fp, " %s", Ctrl->C.string);
-	if (Ctrl->E.active) fprintf (fp, " %s", Ctrl->E.string);
-	if (Ctrl->G.active) fprintf (fp, " %s", Ctrl->G.string);
-	if (Ctrl->m.active) fprintf (fp, " %s", Ctrl->m.string);
-	if (Ctrl->N.active[0]) fprintf (fp, " %s", Ctrl->N.string[0]);
-	if (Ctrl->N.active[1]) fprintf (fp, " %s", Ctrl->N.string[1]);
-	if (Ctrl->W.active[0]) fprintf (fp, " %s", Ctrl->W.string[0]);
-	if (Ctrl->W.active[1]) fprintf (fp, " %s", Ctrl->W.string[1]);
+	if (Ctrl->C.active) fprintf (fp, " -C%s", Ctrl->C.string);
+	if (Ctrl->E.active) fprintf (fp, " -E%s", Ctrl->E.string);
+	if (Ctrl->G.active) fprintf (fp, " -G%s", Ctrl->G.string);
+	if (Ctrl->m.active) fprintf (fp, " -m%s", Ctrl->m.string);
+	if (Ctrl->N.active[0]) fprintf (fp, " -N%s", Ctrl->N.string[0]);
+	if (Ctrl->N.active[1]) fprintf (fp, " -N%s", Ctrl->N.string[1]);
+	if (Ctrl->W.active[0]) fprintf (fp, " -W%s", Ctrl->W.string[0]);
+	if (Ctrl->W.active[1]) fprintf (fp, " -W%s", Ctrl->W.string[1]);
 	(Ctrl->I.active) ? fprintf (fp, " %s", Ctrl->I.string) : fprintf (fp, " -I1/1");
 	(GMT->common.R.active) ? fprintf (fp, " -R%g/%g/%g/%g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) : fprintf (fp, " -R0/360/-90/90");
 	fprintf (fp, "\n");

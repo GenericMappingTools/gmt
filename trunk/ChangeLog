@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1089 2011-06-13 00:51:41 guru Exp $
+	$Id: ChangeLog,v 1.1090 2011-06-13 04:07:25 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-12	pwessel
 	* gmt_io.c:		Do recursive directory search when the given directory
 				(e.g., via GMT_DATADIR or GMT_USERDIR) ends in a slash
 				[Under GMT_COMPAT we honor original scheme of appending *].
+	* x2sys:		Fixed many porting errors, added x2sys test scripts based
+				on Wessel [2010] publication figures, and make them pass.
 
 2011-06-10	pwessel
 	* gmt_map.c:		Clip path for van Grinten was wrong for global maps.

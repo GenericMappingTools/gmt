@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.6 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_list_func.c,v 1.7 2011-06-13 04:07:26 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -157,7 +157,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, mixed = FALSE, i, n_items;
+	GMT_LONG n_errors = 0, mixed = FALSE, i, n_items, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -167,6 +167,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
+				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
@@ -219,6 +220,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 		}
 	}
 
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one COEdatabase can be given (or stdin)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
@@ -253,7 +255,7 @@ void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG 
 
 GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	char **trk_name = NULL, **weight_name = NULL;
+	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
@@ -262,10 +264,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG external = TRUE;	/* FALSE if only internal xovers are needed */
 	GMT_LONG i, j, k, coe_kind, one, two, n_items, n_out, n_tracks, n_weights = 0, *trk_nx = NULL;
 	GMT_LONG p, np_use = 0, nx_use = 0, np, m, nx, id;
-	double wesn[4], val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
+	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
-	struct GMT_OPTION *opt = NULL;
 	struct X2SYS_LIST_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
@@ -317,7 +318,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database %s...\n", Ctrl->In.file);
+	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
+	if (GMT->common.R.active) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
+	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs and a total of %ld crossover records.\n", np, nx);
 
@@ -445,12 +448,13 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Time to issue output */
 	
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
+		char *cmd = NULL;
 		fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-		fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
-		if (!Ctrl->In.file) fprintf (GMT->session.std[GMT_OUT], " [stdin]");
-		for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
+		GMT_Create_Cmd (API, &cmd, options);
+		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", GMT->init.progname, cmd);	/* Build command line argument string */
+		GMT_free (GMT, cmd);
 		
-		fprintf (GMT->session.std[GMT_OUT], "\n#");
+		fprintf (GMT->session.std[GMT_OUT], "#");
 		for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
 			if (i > 0) fprintf (GMT->session.std[GMT_OUT], "\t");
 			switch (Ctrl->F.flags[i]) {	/* acdhintTvxyz */
