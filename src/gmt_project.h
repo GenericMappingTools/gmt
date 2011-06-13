@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.88 2011-06-10 01:17:30 guru Exp $
+ *	$Id: gmt_project.h,v 1.89 2011-06-13 17:28:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -354,10 +354,10 @@ struct GMT_PROJ {
 };
 
 #define GMT_IS_PLAIN	0	/* Plain baseframe */
-#define GMT_IS_FANCY	1	/* Fancy baseframe */
-#define GMT_IS_ROUNDED	2	/* Rounded, fancy baseframe */
-#define GMT_IS_INSIDE	3	/* Draws frame ticks/annotations on the inside of boundary */
-#define GMT_IS_GRAPH	4	/* As plain but adds arrow extensions on axes */
+#define GMT_IS_INSIDE	1	/* Plain frame ticks/annotations on the inside of boundary */
+#define GMT_IS_GRAPH	2	/* Plain fram with arrow extensions on axes */
+#define GMT_IS_FANCY	4	/* Fancy baseframe */
+#define GMT_IS_ROUNDED	12	/* Fancy baseframe, rounded */
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 
@@ -374,9 +374,6 @@ struct GMT_PROJ {
 
 #define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval annotations */
 #define GMT_lower_axis_item(k) (((k) == GMT_ANNOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
-#define GMT_upper_and_lower_items(C,j) (((C->current.map.frame.axis[j].item[GMT_ANNOT_UPPER].active || C->current.map.frame.axis[j].item[GMT_INTV_UPPER].active) && \
-	(C->current.map.frame.axis[j].item[GMT_ANNOT_LOWER].active || C->current.map.frame.axis[j].item[GMT_INTV_LOWER].active)) ? TRUE : FALSE)	/* TRUE if we have two levels of annotations (tick or interval) */
-#define GMT_two_annot_items(C,j) ((C->current.map.frame.axis[j].item[GMT_ANNOT_UPPER].active && C->current.map.frame.axis[j].item[GMT_ANNOT_LOWER].active) ? TRUE : FALSE)	/* TRUE if we have two levels of tick annotations */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
 /* The array side in GMT_PLOT_FRAME follows the order south, east, north, west (CCW loop) + z.
