@@ -38,7 +38,7 @@ Transpose the grid and exchange the IT(x) and IT(y) information.  Incompatible w
 .TP
 OPT(N)IT(table)
 Read the ASCII (or binary; see GMT_bi_OPT) file IT(table) and replace the corresponding
-nodal values in the grid with these IT(x,y,z) values.
+nodal values in the grid with these IT(x),IT(y),IT(z) values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the IT(x_inc), IT(y_inc)
 values are adjusted, if necessary.
