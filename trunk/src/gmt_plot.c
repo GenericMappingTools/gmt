@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.351 2011-06-14 11:32:34 remko Exp $
+ *	$Id: gmt_plot.c,v 1.352 2011-06-14 12:03:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -542,7 +542,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		PSL_command (P, "/PSL_LH ");
 		PSL_deftextdim (P, "-h", C->current.setting.font_label.size, "M");
 		PSL_command (P, "def\n");
-		PSL_command (P, "/PSL_L_y PSL_A0_y PSL_A1_y mx %ld add %sdef\n", psl_iz (P, C->current.setting.map_label_offset), far ? "PSL_LH add " : "");
+		PSL_command (P, "/PSL_L_y PSL_A0_y PSL_A1_y mx %ld add %sdef\n", psl_iz (P, C->current.setting.map_label_offset), (neg == (axis == GMT_X)) ? "PSL_LH add " : "");
 		/* Move to new anchor point */
 		PSL_command (P, "%ld PSL_L_y MM\n", psl_iz (P, 0.5 * length));
 		PSL_plottext (P, 0.0, 0.0, -C->current.setting.font_label.size, A->label, (axis == GMT_X) ? 0.0 : 90.0, PSL_BC, form);
