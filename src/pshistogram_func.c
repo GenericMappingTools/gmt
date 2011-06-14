@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.17 2011-06-08 19:21:49 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.18 2011-06-14 02:59:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -553,7 +553,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT->current.map.frame.axis[GMT_X].item[0].interval = GMT->current.map.frame.axis[GMT_X].item[4].interval = tmp;
 			GMT->current.map.frame.axis[GMT_X].item[0].parent = 0;
 			GMT->current.map.frame.axis[GMT_X].item[0].active = TRUE;
-			GMT->current.map.frame.plot = TRUE;
+			GMT->current.map.frame.draw = TRUE;
 		}
 	}
 
@@ -624,7 +624,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT->current.map.frame.axis[GMT_Y].item[0].interval = GMT->current.map.frame.axis[GMT_Y].item[4].interval = tmp;
 			GMT->current.map.frame.axis[GMT_Y].item[0].parent = 1;
 			GMT->current.map.frame.axis[GMT_Y].item[0].active = TRUE;
-			GMT->current.map.frame.plot = TRUE;
+			GMT->current.map.frame.draw = TRUE;
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Need to provide both x- and y-scale.\n");
