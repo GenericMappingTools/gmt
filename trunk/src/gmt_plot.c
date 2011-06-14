@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.350 2011-06-14 02:54:08 remko Exp $
+ *	$Id: gmt_plot.c,v 1.351 2011-06-14 11:32:34 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -402,6 +402,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	xyz_fwd = (PFD) ((axis == GMT_X) ? GMT_x_to_xx : ((axis == GMT_Y) ? GMT_y_to_yy : GMT_z_to_zz));
 	gmt_get_primary_annot (A, &primary, &secondary);			/* Find primary and secondary axis items */
 	np = GMT_coordinate_array (C, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
+	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;	/* Annotations are orthogonal */
 	neg = (below != (C->current.setting.map_frame_type & GMT_IS_INSIDE));	/* Annotations go either below or above */
 	far = (neg == (axis == GMT_X && !ortho));		/* Current point is at the far side of the tickmark? */
 	tick_len[0] = C->current.setting.map_tick_length;		/* Initialize the tick lengths */
@@ -412,7 +413,6 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	tick_len[4] = 0.5 * tick_len[0];
 	tick_len[5] = 0.75 * tick_len[0];
 	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
-	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;
 
 	/* Ready to draw axis */
 
@@ -424,10 +424,8 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		PSL_comment (P, below ? "Start of front z-axis\n" : "Start of back z-axis\n");
 	PSL_setorigin (P, x0, y0, 0.0, PSL_FWD);
 
-	if (axis == GMT_X)
-		PSL_command (P, "/MM {%sM} def\n", neg ? "neg " : "");
-	else
-		PSL_command (P, "/MM {%sexch M} def\n", neg ? "neg " : "");
+	/* Change up/down (neg) and/or flip coordinates (exch) */
+	PSL_command (P, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 
 	for (k = 0; k < 2; k++) {
 		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active || A->item[k+4].active ? psl_iz (P, fabs (tick_len[k])) : 0);	/* Length of primary/secondary tickmark */
