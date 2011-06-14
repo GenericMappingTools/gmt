@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.534 2011-06-14 01:37:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.535 2011-06-14 11:27:05 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -142,6 +142,9 @@ double *GMT_x2sys_Y;	/* Must use global variable if there is no qsort_r on this 
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 /* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
 void qsort_r(void *base, size_t nel, size_t width, void *thunk, int (*compar)(void *, const void *, const void *));
+#elif defined(WIN32)
+/* More Wonderful news: Windows is a mix of BSD and GLIBC */
+void qsort_r(void *base, size_t nel, size_t width, int (*compar)(void *, const void *, const void *), void *thunk);
 #else
 void qsort_r(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *, void *), void *thunk);
 #endif
@@ -7473,7 +7476,7 @@ GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, double
 int GMT_ysort (const void *p1, const void *p2)			/* Must use qsort and thus rely on a global variable */
 /* The global double pointer GMT_x2sys_Y must be set to point to the relevant y-array
  * before this call!!! */
-#elif defined(__APPLE__) || defined(__FreeBSD__)
+#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(WIN32)
 /* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
 int GMT_ysort (void *data, const void *p1, const void *p2)	/* Can use qsort_r and pass the extra (first) argument */
 #else
