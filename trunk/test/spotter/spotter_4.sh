@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#       $Id: spotter_4.sh,v 1.2 2011-05-26 19:18:54 guru Exp $
+#       $Id: spotter_4.sh,v 1.3 2011-06-14 22:59:07 guru Exp $
 
 . ../functions.sh
-header "Test spotter:grdrotater for grid rotation"
+header "spotter: Testing grdrotater"
 
-ps=grdrot.ps
+ps=spotter_4.ps
 
 # Build a grid
 grdmath -R0/30/0/30 -I0.25 X Y MUL = t.nc

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#       $Id: spotter_2.sh,v 1.2 2011-06-14 02:31:25 guru Exp $
+#       $Id: spotter_2.sh,v 1.3 2011-06-14 22:58:03 guru Exp $
 
 . ../functions.sh
-header "Test spotter: hotspotter"
+header "spotter: Testing hotspotter"
 
 ps=spotter_2.ps
 
