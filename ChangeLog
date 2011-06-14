@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1092 2011-06-13 20:10:26 remko Exp $
+	$Id: ChangeLog,v 1.1093 2011-06-14 01:37:34 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-06-13	pwessel
+	* gmt_support.c:	Even the order of args to the compare function in qsort_r
+				is permuted between BSD and GNU... [See 2011-05-28 entry].
+	* spotter:		Added spotter test examples - fixed porting bugs.
+				
 2011-06-13	remko
 	* gmt_support.c:	Use defs GMT_{INSIDE,ONEDGE,OUTSIDE} from gmt_support.h
 				instead of local defs GMT_{INSIDE,ONSIDE,OUTSIDE}_POLYGON.
