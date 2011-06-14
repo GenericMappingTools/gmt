@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_F.sh,v 1.20 2011-06-13 01:24:15 guru Exp $
+#	$Id: GMT_App_F.sh,v 1.21 2011-06-14 03:02:54 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
 . ./functions.sh
@@ -7,7 +7,7 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with pstext, including the header row and left column
 
-gmtset PS_CHAR_ENCODING Standard MAP_FRAME_PEN thick
+gmtset PS_CHAR_ENCODING Standard MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First chart for standard font
 
@@ -70,7 +70,7 @@ $AWK -f $$.awk $$.txt > $$.d
 gmtset PS_CHAR_ENCODING Standard+
 # Then for Standard+
 # First mark uncoded entries
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:Standard+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:.Standard+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
 >
 1	4
 2	4
@@ -204,7 +204,7 @@ EOF
 gmtset PS_CHAR_ENCODING ISOLatin1+
 # Then for ISOLatin1+
 # First the uncoded ones
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin1+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_iso+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:.ISOLatin1+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_iso+.ps
 >
 1	4
 2	4
@@ -295,7 +295,7 @@ BEGIN {
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:Symbol:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.Symbol:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
 9	16
@@ -398,7 +398,7 @@ BEGIN {
 EOF
 
 $AWK -f $$.awk $$.txt > $$.d
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:ZapfDingbats:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.ZapfDingbats:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
 9	16
