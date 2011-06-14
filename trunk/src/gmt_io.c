@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.288 2011-06-14 01:40:10 jluis Exp $
+ *	$Id: gmt_io.c,v 1.289 2011-06-14 02:26:04 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -538,6 +538,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	GMT_LONG d, pos, L, found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 #ifndef WIN32
+	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
 #endif
 	GMT_LONG gmt_file_is_readable (struct GMT_CTRL *C, char *path);
