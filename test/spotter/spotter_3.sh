@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#       $Id: spotter_3.sh,v 1.2 2011-06-14 02:31:25 guru Exp $
+#       $Id: spotter_3.sh,v 1.3 2011-06-14 22:58:03 guru Exp $
 
 . ../functions.sh
-header "Test spotter: originator"
+header "spotter: Testing originator"
 
 ps=spotter_3.ps
 

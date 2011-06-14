@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#       $Id: spotter_1.sh,v 1.1 2011-06-14 01:28:40 guru Exp $
+#       $Id: spotter_1.sh,v 1.2 2011-06-14 22:58:03 guru Exp $
 
 . ../functions.sh
-header "Test spotter: backtracker"
+header "spotter: Testing backtracker"
 
 ps=spotter_1.ps
 
