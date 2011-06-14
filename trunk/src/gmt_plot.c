@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.349 2011-06-13 21:37:03 remko Exp $
+ *	$Id: gmt_plot.c,v 1.350 2011-06-14 02:54:08 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -496,7 +496,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
-				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (string, label_c[i]);
 				else
@@ -516,7 +516,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
-				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
+				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
 				PSL_command (P, "%ld PSL_A%ld_y MM\n", psl_iz (P, x), annot_pos);
