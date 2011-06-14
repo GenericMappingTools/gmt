@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_grdcontour
+%%Title: GMT v5.0.0a (CVS Jun 13 2011 23:10:43) [64-bit] [C4] Document from GMT_grdcontour
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:36:59 2011
+%%CreationDate: Mon Jun 13 23:24:58 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -569,7 +569,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour 19735.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d -Bpa7Rf1d/10 -Bsa1O/10 -P --FORMAT_DATE_MAP=-o-yy --FONT_ANNOT_PRIMARY=9p
+%%GMT:  grdcontour 28021.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d -Bpa7Rf1d/10 -Bsa1O/10 -P --FORMAT_DATE_MAP=-o-yy --FONT_ANNOT_PRIMARY=9p
 %%PROJ: xy 0.00000000 90.00000000 0.00000000 90.00000000 0.000 90.000 0.000 90.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -840,7 +840,7 @@ def
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_AH1 0
 def
-/PSL_A1_y PSL_A1_y 83 add def
+/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add def
 /PSL_A1_y PSL_A1_y PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7200 0 T
@@ -895,7 +895,7 @@ def
 (90) mr Z
 /PSL_AH1 0
 def
-/PSL_A1_y PSL_A1_y 83 add PSL_AH1 add def
+/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -7200 0 T
 /MM {neg M} def
@@ -968,7 +968,7 @@ def
 (February-04) sh mx
 (March-04) sh mx
 def
-/PSL_A1_y PSL_A1_y 83 add PSL_AH1 add def
+/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add PSL_AH1 add def
 1240 PSL_A1_y MM
 (January-04) bc Z
 3640 PSL_A1_y MM
@@ -1143,7 +1143,7 @@ def
 (February-04) sh mx
 (March-04) sh mx
 def
-/PSL_A1_y PSL_A1_y 83 add def
+/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add def
 1240 PSL_A1_y MM
 (January-04) bc Z
 3640 PSL_A1_y MM
