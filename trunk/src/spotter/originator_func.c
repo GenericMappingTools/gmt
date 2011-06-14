@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.15 2011-06-07 21:38:30 guru Exp $
+ *	$Id: originator_func.c,v 1.16 2011-06-14 22:59:53 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -405,7 +405,8 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_expected_fields))) Return (error);
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_BY_REC))) Return (error);	/* Enables data input and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
 
 	n_read = 0;
 	while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
@@ -566,7 +567,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, c);
 		n++;
 	}
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5ld\n", n);
