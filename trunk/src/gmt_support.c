@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.533 2011-06-14 01:28:40 guru Exp $
+ *	$Id: gmt_support.c,v 1.534 2011-06-14 01:37:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,7 +143,7 @@ double *GMT_x2sys_Y;	/* Must use global variable if there is no qsort_r on this 
 /* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
 void qsort_r(void *base, size_t nel, size_t width, void *thunk, int (*compar)(void *, const void *, const void *));
 #else
-void qsort_r(void *base, size_t nel, size_t width, int (*compar)(void *, const void *, const void *), void *thunk);
+void qsort_r(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *, void *), void *thunk);
 #endif
 
 /*----------------------------------------------------------------------------- */
