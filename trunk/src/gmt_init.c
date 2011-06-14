@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.537 2011-06-13 17:29:53 remko Exp $
+ *	$Id: gmt_init.c,v 1.538 2011-06-14 03:00:39 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5619,11 +5619,10 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		default:
 			C->current.map.frame.primary = TRUE; k = 0; break;
 	}
-	C->common.B.set = (in[k] != ':' && in[k] != '/');
 
 	/* C->current.map.frame.side[] may be set already when parsing gmt.conf flags */
 
-	if (!C->current.map.frame.plot) {	/* First time we initialize stuff */
+	if (!C->current.map.frame.init) {	/* First time we initialize stuff */
 		for (i = 0; i < 3; i++) {
 			GMT_memset (&C->current.map.frame.axis[i], 1, struct GMT_PLOT_AXIS);
 			C->current.map.frame.axis[i].id = (int)i;
@@ -5634,7 +5633,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			if (C->current.proj.xyz_projection[i] == GMT_TIME) C->current.map.frame.axis[i].type = GMT_TIME;
 		}
 		C->current.map.frame.header[0] = '\0';
-		C->current.map.frame.plot = TRUE;
+		C->current.map.frame.init = TRUE;
 		C->current.map.frame.draw = FALSE;
 	}
 

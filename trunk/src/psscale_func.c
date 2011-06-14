@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.23 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psscale_func.c,v 1.24 2011-06-14 03:00:22 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,7 +343,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 		n_errors += GMT_check_condition (GMT, Ctrl->D.width <= 0.0, "Syntax error -D option: scale width must be positive\n");
 	}
 	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->common.B.set, "Syntax error -L option: Cannot be used with -B option.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.init, "Syntax error -L option: Cannot be used with -B option.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.do_pen || Ctrl->T.do_fill), "Syntax error -T option: Must set pen or fill.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
@@ -1112,7 +1112,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Because psscale uses -D to position things we need to make some
 	 * changes so that BoundingBox and others are set ~correctly */
 
-	if (Ctrl->Q.active && GMT->common.B.set) {
+	if (Ctrl->Q.active && GMT->current.map.frame.draw) {
 		sprintf (text, "X%gil/%gi", Ctrl->D.length, Ctrl->D.width);
 		start_val = pow (10.0, P->range[0].z_low);
 		stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
@@ -1156,12 +1156,13 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		d_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		d_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-	if (GMT->current.map.frame.axis[GMT_X].item[0].interval == 0.0) GMT->current.map.frame.plot = TRUE;
-
+/*
+if (GMT->current.map.frame.axis[GMT_X].item[0].interval == 0.0) GMT->current.map.frame.draw = TRUE;
+*/
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
 	
 	GMT_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, 
-		GMT->common.B.set, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
+		GMT->current.map.frame.init, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);
 	PSL_setorigin (PSL, -Ctrl->D.x, -Ctrl->D.y, 0.0, PSL_FWD);

@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1093 2011-06-14 01:37:34 guru Exp $
+	$Id: ChangeLog,v 1.1094 2011-06-14 03:01:34 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-13	pwessel
@@ -19,6 +19,10 @@
 	* gmt_init.c:		No more negative annotation offsets and tick lengths.
 	* gmt_plot.c:		Complete reworking of linear frame annotations.
 	* pslib.h:		Back to 1200 DPI.
+	* gmt_project.h, *.c:	Renamed GMT->common.map.frame.plot to GMT->common.map.frame.init
+				to avoid confusion with GMT->common.map.frame.draw.
+	* gmt_init.c:		Removed GMT->common.B.set (is same as GMT->common.map.frame.init).
+	* pshistogram_func.c:	Bug fix: make frame appear again when auto-determining box.
 
 2011-06-12	pwessel
 	* gmt_io.c:		Do recursive directory search when the given directory
