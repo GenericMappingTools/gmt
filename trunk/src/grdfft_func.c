@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.25 2011-06-07 21:38:29 guru Exp $
+ *	$Id: grdfft_func.c,v 1.26 2011-06-14 23:13:31 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,7 +34,7 @@ struct GRDFFT_CTRL {
 
 	struct In {
 		GMT_LONG active;
-		char *file;
+		char *file[2];
 	} In;
 	struct A {	/* -A<azimuth> */
 		GMT_LONG active;
@@ -60,7 +60,7 @@ struct GRDFFT_CTRL {
 	} F;
 	struct G {	/* -G<outfile> */
 		GMT_LONG active;
-		char *file;
+		char *file[2];
 	} G;
 	struct I {	/* -I[<scale>|g] */
 		GMT_LONG active;
@@ -150,11 +150,14 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 }
 
 void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
+	GMT_LONG k;
 	if (!C) return;
 	if (C->operation) GMT_free (GMT, C->operation);	
-	if (C->par) GMT_free (GMT, C->par);	
-	if (C->In.file) free ((void *)C->In.file);	
-	if (C->G.file) free ((void *)C->G.file);	
+	if (C->par) GMT_free (GMT, C->par);
+	for (k = 0; k < 2; k++) {
+		if (C->In.file[k]) free ((void *)C->In.file[k]);	
+		if (C->G.file[k]) free ((void *)C->G.file[k]);
+	}
 	GMT_free (GMT, C);	
 }
 
@@ -988,7 +991,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n, k, n_errors = 0, n_files = 0, filter_type = 0;
+	GMT_LONG j, n, k, n_errors = 0, n_in_files = 0, n_out_files = 0, filter_type = 0;
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -1005,7 +1008,12 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				Ctrl->In.active = TRUE;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_in_files < 1) 
+					Ctrl->In.file[n_in_files++] = strdup (opt->arg);
+				else {
+					n_errors++;
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: A maximum of two input grids may be processed\n");
+				}
 				break;
 
 			/* Processes program-specific parameters */
@@ -1051,7 +1059,12 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = TRUE;
-				Ctrl->G.file = strdup (opt->arg);
+				if (n_out_files < 1) 
+					Ctrl->G.file[n_out_files++] = strdup (opt->arg);
+				else {
+					n_errors++;
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G: A maximum of two output files may be specified\n");
+				}
 				break;
 			case 'I':	/* Integrate */
 				Ctrl->I.active = TRUE;
@@ -1105,8 +1118,8 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.n_user_set && (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0), "Syntax error -N option: nx2 and/or ny2 <= 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, n_in_files == 0, "Syntax error: Must specify input file(s)\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file[0], "Syntax error -G option: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1141,7 +1154,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file[0]), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	
 	GMT_grd_init (GMT, Grid->header, options, TRUE);
 	set_grid_radix_size (GMT, Ctrl, Grid);		/* This also sets the new pads */
@@ -1149,7 +1162,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	for (j = 0; j < 4; j++) Grid->header->BC[j] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&(Ctrl->In.file[0]), (void **)&Grid)) Return (GMT_DATA_READ_ERROR);	/* Get subset */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
 
 	/* Check that no NaNs are present */
@@ -1230,7 +1243,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
 				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "spectrum...");
-				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
+				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file[0], &K);
 				if (status < 0) Return (status);
 				par_count += status;
 				break;
@@ -1249,7 +1262,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* The data are in the middle of the padded array */
 
 		if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file, (void *)Out);
+		GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, (void **)&Ctrl->G.file[0], (void *)Out);
 		if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);			/* Disables further data output */
 	}
 
