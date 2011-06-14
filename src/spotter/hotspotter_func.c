@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.16 2011-06-07 01:14:21 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.17 2011-06-14 22:59:53 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -386,7 +386,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	for (col = 0; col < G->header->nx; col++) xpos[col] = GMT_grd_col_to_x (GMT, col, G_rad->header);
 	for (row = 0; row < G->header->ny; row++) {
-		ypos[row] = GMT_grd_col_to_x (GMT, row, G_rad->header);
+		ypos[row] = GMT_grd_row_to_y (GMT, row, G_rad->header);
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}
@@ -554,6 +554,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_free (GMT, xpos);
 	GMT_free (GMT, ypos);
 	GMT_free (GMT, p);
+	GMT_free_grid (GMT, &G_rad, FALSE);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 
