@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.532 2011-06-13 17:27:06 remko Exp $
+ *	$Id: gmt_support.c,v 1.533 2011-06-14 01:28:40 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7469,12 +7469,15 @@ GMT_LONG GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, double
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
 
 /* GMT_ysort must be an int since it is passed to qsort! */
-#ifdef HAVE_QSORT_R
-int GMT_ysort (void *data, const void *p1, const void *p2)	/* Can use qsort_r and pass the extra argument */
-#else
+#ifndef HAVE_QSORT_R
 int GMT_ysort (const void *p1, const void *p2)			/* Must use qsort and thus rely on a global variable */
 /* The global double pointer GMT_x2sys_Y must be set to point to the relevant y-array
  * before this call!!! */
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+/* Wonderful news: BSD and GLIBC has different argument order in qsort_r */
+int GMT_ysort (void *data, const void *p1, const void *p2)	/* Can use qsort_r and pass the extra (first) argument */
+#else
+int GMT_ysort (const void *p1, const void *p2, void *data)	/* Can use qsort_r and pass the extra (last) argument */
 #endif
 {
 	struct GMT_XSEGMENT *a = (struct GMT_XSEGMENT *)p1, *b = (struct GMT_XSEGMENT *)p2;
