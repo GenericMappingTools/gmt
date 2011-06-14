@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.287 2011-06-13 00:51:42 guru Exp $
+ *	$Id: gmt_io.c,v 1.288 2011-06-14 01:40:10 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -535,7 +535,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	 * Looks for file stem in current directory and $GMT_{USER,DATA}DIR
 	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
-	GMT_LONG d, pos, L, found, N;
+	GMT_LONG d, pos, L, found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 #ifndef WIN32
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
