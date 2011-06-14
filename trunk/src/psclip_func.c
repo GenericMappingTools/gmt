@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.25 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psclip_func.c,v 1.26 2011-06-14 02:58:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -151,9 +151,9 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	if (Ctrl->T.active) Ctrl->N.active = TRUE;	/* -T implies -N */
 	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -T ignores all input files\n");
 
-	if (Ctrl->N.active && GMT->current.map.frame.plot) {
+	if (Ctrl->N.active && GMT->current.map.frame.init) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
-		GMT->current.map.frame.plot = FALSE;
+		GMT->current.map.frame.draw = FALSE;
 	}
 
 	n_errors += GMT_check_binary_io (GMT, 2);
@@ -219,7 +219,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
-	if (Ctrl->C.active && !GMT->current.map.frame.plot) {
+	if (Ctrl->C.active && !GMT->current.map.frame.init) {
 		GMT_plotinit (GMT, options);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */

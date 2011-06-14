@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.16 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psrose_func.c,v 1.17 2011-06-14 02:58:18 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -460,11 +460,11 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		max_radius = ceil (max / tmp) * tmp;
 		if (GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) || GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval)) {	/* Tickmarks not set */
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval = tmp;
-			GMT->current.map.frame.plot = TRUE;
+			GMT->current.map.frame.draw = TRUE;
 		}
 	}
 
-	if (GMT->current.map.frame.plot && GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval)) GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval = 30.0;
+	if (GMT->current.map.frame.draw && GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval)) GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval = 30.0;
 
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 
@@ -599,7 +599,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else {	/* Use default labels */
 		Ctrl->L.w = strdup ("WEST");	Ctrl->L.e = strdup ("EAST");	Ctrl->L.s = strdup ("SOUTH");	Ctrl->L.n = strdup ("NORTH");
 	}
-	if (GMT->current.map.frame.plot) {	/* Draw grid lines etc */
+	if (GMT->current.map.frame.draw) {	/* Draw grid lines etc */
 		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 		off = max_radius * Ctrl->S.scale;
 		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;

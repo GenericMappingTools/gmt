@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.24 2011-06-08 19:36:53 remko Exp $
+ *	$Id: psbasemap_func.c,v 1.25 2011-06-14 02:59:15 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,7 +129,7 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.plot || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -L, -T\n");
+	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -L, -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

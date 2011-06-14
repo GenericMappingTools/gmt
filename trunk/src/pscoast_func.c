@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.20 2011-06-08 18:31:29 guru Exp $
+ *	$Id: pscoast_func.c,v 1.21 2011-06-14 02:58:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -966,7 +966,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (!Ctrl->M.active) {
-		if (GMT->current.map.frame.plot) {
+		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;
 			GMT_map_basemap (GMT);
 		}
