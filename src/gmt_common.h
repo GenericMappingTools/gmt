@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.32 2011-06-02 18:57:50 guru Exp $
+ *	$Id: gmt_common.h,v 1.33 2011-06-14 03:01:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,6 @@ struct GMT_COMMON {
 	} synopsis;
 	struct B {	/* -B<params> */
 		GMT_LONG active[2];	/* 0 = primary annotation, 1 = secondary annotations */
-		GMT_LONG set;		/* TRUE if other than -B or -B:... or -B/... */
 	} B;	
 	struct J {	/* -J<params> */
 		GMT_LONG active;
