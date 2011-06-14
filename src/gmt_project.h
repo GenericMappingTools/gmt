@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.89 2011-06-13 17:28:40 remko Exp $
+ *	$Id: gmt_project.h,v 1.90 2011-06-14 02:57:51 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -425,7 +425,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	char header[GMT_TEXT_LEN256];	/* Plot title */
 	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == TRUE */
 	GMT_LONG plotted_header;	/* TRUE if header has been plotted */
-	GMT_LONG plot;			/* TRUE if -B was used */
+	GMT_LONG init;			/* TRUE if -B was used */
 	GMT_LONG draw;			/* TRUE if -B<int> was used, even -B0, as sign to draw axes */
 	GMT_LONG paint;			/* TRUE if -B +g<fill> was used */
 	GMT_LONG draw_box;		/* TRUE is a 3-D Z-box is desired */
