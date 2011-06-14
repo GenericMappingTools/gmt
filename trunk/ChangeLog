@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1094 2011-06-14 03:01:34 remko Exp $
+	$Id: ChangeLog,v 1.1095 2011-06-14 11:28:38 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-14	jluis
+	* gmt_support.c:	qsort_s (Windows) uses a mix of the ordering mess between GNU and BSD
 
 2011-06-13	pwessel
 	* gmt_support.c:	Even the order of args to the compare function in qsort_r
