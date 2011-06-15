@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.15 2011-06-07 01:14:21 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.16 2011-06-15 02:38:43 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -163,7 +163,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 	}
 }
 
-void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET **DD[])
+void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	GMT_LONG i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	GMT_LONG n_alloc = GMT_CHUNK, p_alloc = GMT_TINY_CHUNK, error, ID, dim[4] = {1, 0, 0, 0};
@@ -187,7 +187,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 	
 	dim[1] = n;	/* segments */
 	dim[2] = 2;	/* Columns */
-	dim[3] = 3;	/* Rows */
+	dim[3] = (get_arcs) ? 2 : 0;	/* Rows (unknown length if polygons; 2 if arc) */
 	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&Dout[0], -1, &ID))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for sphtriangulate\n");
 		GMT_exit (EXIT_FAILURE);
@@ -251,6 +251,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 		} while (node_new != node_stop);
 
 		if (!get_arcs) {
+			S[0] = Dout[0]->table[0]->segment[node];
 			if (get_area) area_km2 = area_polygon * R2;
 			if (nodes) {
 				S[1]->coord[GMT_X][node] = lon[node];
@@ -305,7 +306,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 		if (nodes) *DD[1] = Dout[1];
 		if (get_area) GMT_report (GMT, GMT_MSG_NORMAL, "Total surface area = %g\n", area_sphere * R2);
 	}
-	*DD[0] = Dout[0];
+	*DD = Dout;
 }
 
 char *unit_name (char unit, GMT_LONG arc) {

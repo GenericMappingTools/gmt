@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.15 2011-06-15 02:38:43 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -179,7 +179,7 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances]\n");
 	GMT_message (GMT, "\t-L Specify distance unit as (f)eet, m(e)ter, (k)m, (M)ile, (n)autical mile, or (d)egree.\n");
 	GMT_message (GMT, "\t   Calculations uses spherical approximations.  Default unit is meters.\n");
-	GMT_message (GMT, "\t   Set ELLIPSOID to WGS-84 to get geodesic distances.\n");
+	GMT_message (GMT, "\t   Set PROJ_ELLIPSOID to WGS-84 to get geodesic distances.\n");
 	GMT_message (GMT, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output)\n");
 	GMT_message (GMT, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");
 	GMT_message (GMT, "\t   [Default performs Voronoi construction on input data first]\n");
@@ -237,7 +237,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 					n_errors++;
 				}
 				else
-					Ctrl->L.unit = (char)toupper (opt->arg[0]);	/* Make sure we pass upper so Geodesic is possible */
+					Ctrl->L.unit = opt->arg[0];
 				break;
 			case 'N':
 				Ctrl->N.active = TRUE;
@@ -349,7 +349,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		else {
 			for (node = 0; node < Table->n_segments; node++) {
-				sscanf (Table->segment[node]->header, "%*s %*s %*d %lf %lf", &lon[node], &lat[node]);
+				sscanf (Table->segment[node]->header, "%*s %*d %lf %lf", &lon[node], &lat[node]);
 			}
 		}
 	}
