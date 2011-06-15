@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.21 2011-05-16 21:23:09 guru Exp $
+ *    $Id: block_subs.h,v 1.22 2011-06-15 05:00:50 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -23,16 +23,16 @@
 
 #if defined(BLOCKMEAN)
 #define BLOCKMEAN_CTRL BLOCK_CTRL
-#define NEW New_blockmean_Ctrl
-#define FREE Free_blockmean_Ctrl
+#define NEW_BLK New_blockmean_Ctrl
+#define FREE_BLK Free_blockmean_Ctrl
 #elif defined(BLOCKMEDIAN)
 #define BLOCKMEDIAN_CTRL BLOCK_CTRL
-#define NEW New_blockmedian_Ctrl
-#define FREE Free_blockmedian_Ctrl
+#define NEW_BLK New_blockmedian_Ctrl
+#define FREE_BLK Free_blockmedian_Ctrl
 #else
 #define BLOCKMODE_CTRL BLOCK_CTRL
-#define NEW New_blockmode_Ctrl
-#define FREE Free_blockmode_Ctrl
+#define NEW_BLK New_blockmode_Ctrl
+#define FREE_BLK Free_blockmode_Ctrl
 #endif
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
@@ -91,7 +91,7 @@ struct BLK_DATA {
 
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
-void * NEW (struct GMT_CTRL *G) {	/* Allocate and initialize a new control structure */
+void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control structure */
 	struct BLOCK_CTRL *C;
 	
 	C = GMT_memory (G, NULL, 1, struct  BLOCK_CTRL);
@@ -103,7 +103,7 @@ void * NEW (struct GMT_CTRL *G) {	/* Allocate and initialize a new control struc
 	return ((void *)C);
 }
 
-void FREE (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
+void FREE_BLK (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
 	GMT_free (G, C);	
 }
 
