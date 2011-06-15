@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: convert.sh,v 1.7 2011-05-01 01:25:05 jluis Exp $
+#	$Id: convert.sh,v 1.8 2011-06-15 01:16:10 guru Exp $
 #
 # Tests mgd77convert
 
@@ -8,8 +8,8 @@ header "Test mgd77convert conversions between mgd77-dat-nc"
 
 log=convert.log
 
-MGD77_HOME=${MGD77_HOME:-$GMTHOME/share/mgd77}
-export MGD77_HOME
+OLD=$MGD77_HOME
+export MGD77_HOME=../../share/mgd77
 cp dummy.mgd77 12345678.mgd77
 
 # Make cdf file
@@ -33,5 +33,6 @@ echo "Test if mgd77 from dat matches original:" >> $log
 diff $$.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 
 rm -f $$.* 12345678.*
+export MGD77_HOME=$OLD
 
 passfail convert
