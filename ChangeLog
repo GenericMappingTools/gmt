@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1095 2011-06-14 11:28:38 jluis Exp $
+	$Id: ChangeLog,v 1.1096 2011-06-15 02:38:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-14	pwessel
+	* sph:			Added test suite for the sph programs.  Mostly works.
 
 2011-06-14	jluis
 	* gmt_support.c:	qsort_s (Windows) uses a mix of the ordering mess between GNU and BSD

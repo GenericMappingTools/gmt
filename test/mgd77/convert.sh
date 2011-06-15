@@ -1,10 +1,10 @@
 #!/bin/bash
-#	$Id: convert.sh,v 1.8 2011-06-15 01:16:10 guru Exp $
+#	$Id: convert.sh,v 1.9 2011-06-15 02:38:44 guru Exp $
 #
 # Tests mgd77convert
 
 . ../functions.sh
-header "Test mgd77convert conversions between mgd77-dat-nc"
+header "mgd77: Test mgd77convert conversions between mgd77-dat-nc"
 
 log=convert.log
 
