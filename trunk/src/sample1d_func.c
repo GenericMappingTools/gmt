@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sample1d_func.c,v 1.13 2011-06-08 19:21:49 guru Exp $
+ *	$Id: sample1d_func.c,v 1.14 2011-06-16 22:59:34 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -229,7 +229,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG error = FALSE, spatial = FALSE, *nan_flag = NULL;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
-	double tt, low_t, high_t, last_t, inc_degrees = 0.;
+	double tt, low_t, high_t, last_t, inc_degrees = 0.0, *lon = NULL, *lat = NULL;
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_TABLE *T = NULL, *Tout = NULL;
@@ -261,8 +261,6 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 
-	t_out = (double *)NULL;
-
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->N.file, (void **)&Cin)) Return ((error = GMT_DATA_READ_ERROR));
@@ -282,7 +280,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (Ctrl->I.active && Ctrl->I.mode == INT_2D) {
 		spatial = TRUE;
-		inc_degrees = GMT->current.proj.DIST_M_PR_DEG * Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert increment to spherical degrees */
+		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
@@ -301,7 +299,6 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = TRUE;
 			if (spatial) {	/* Need distance for spatial interpolation */
-				double *lon = NULL, *lat = NULL;
 				GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, 1.0, 2, &dist_in);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
 				lat = GMT_memory (GMT, NULL, S->n_rows, double);
@@ -357,14 +354,20 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
 			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, FALSE);	/* Readjust the row allocation */
-			if (!spatial) GMT_memcpy (Sout->coord[Ctrl->T.col], t_out, m, double);
+			if (spatial) {	/* Use resampled path coordinates */
+				GMT_memcpy (Sout->coord[GMT_X], lon, m, double);
+				GMT_memcpy (Sout->coord[GMT_Y], lat, m, double);
+			}
+			else
+				GMT_memcpy (Sout->coord[Ctrl->T.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			Sout->n_rows = m;
 				
 			for (j = 0; m && j < Din->n_columns; j++) {
 
 				if (j == Ctrl->T.col && !spatial) continue;	/* Skip the time column */
-
+				if (spatial && j <= GMT_Y) continue;		/* Skip the lon,lat columns */
+				
 				if (nan_flag[j] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
 					ttime = GMT_memory (GMT, NULL, S->n_rows, double);
@@ -387,6 +390,10 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %ld!\n", rows+result+1);
 					return (result);
 				}
+			}
+			if (spatial) {	/* Free up memory used */
+				GMT_free (GMT, dist_in);	GMT_free (GMT, t_out);
+				GMT_free (GMT, lon);		GMT_free (GMT, lat);
 			}
 		}
 	}
