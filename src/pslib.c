@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.273 2011-06-08 01:33:13 guru Exp $
+ *	$Id: pslib.c,v 1.274 2011-06-16 02:26:20 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1431,7 +1431,7 @@ PSL_LONG PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], PSL_LONG mode)
 	return (PSL_NO_ERROR);
 }
 
-PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[])
+PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding)
 {
 	/* Changes the standard PSL defaults for:
 	 * xyscales:	Global x- and y-scale magnifier [1.0, 1.0]
@@ -1442,6 +1442,12 @@ PSL_LONG PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_r
 	if (xyscales[0] != 0.0) PSL->init.magnify[0] = xyscales[0];	/* Change plot x magnifier */
 	if (xyscales[1] != 0.0) PSL->init.magnify[1] = xyscales[1];	/* Change plot y magnifier */
 	if (page_rgb) PSL_rgb_copy (PSL->init.page_rgb, page_rgb);	/* Change media color */
+	if (PSL->init.encoding && encoding && strcmp (PSL->init.encoding, encoding)) {
+		free ((void *)PSL->init.encoding);
+		PSL->init.encoding = strdup (encoding);
+	}
+	else if (!PSL->init.encoding)
+		PSL->init.encoding = (encoding) ? strdup (encoding) : strdup ("Standard");
 	return (PSL_NO_ERROR);
 }
 
