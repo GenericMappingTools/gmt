@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1096 2011-06-15 02:38:43 guru Exp $
+	$Id: ChangeLog,v 1.1097 2011-06-16 20:45:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-16	pwessel
+	* gmt_io.c:		Like for segment header, turn on -ho when a header is read.
 
 2011-06-14	pwessel
 	* sph:			Added test suite for the sph programs.  Mostly works.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.289 2011-06-14 02:26:04 jluis Exp $
+ *	$Id: gmt_io.c,v 1.290 2011-06-16 20:45:43 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1087,6 +1087,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
+			C->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
 			return (0);
 		}
 		/* Here we are passed any header records implied by -h */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.17 2011-06-07 21:38:30 guru Exp $
+ *	$Id: backtracker_func.c,v 1.18 2011-06-16 20:45:43 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -213,8 +213,16 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 			case 'A':	/* Output only an age-limited segment of the track */
 				Ctrl->A.active = TRUE;
 				if (opt->arg[0]) {	/* Gave specific limits for all input points */
-					sscanf (opt->arg, "%lf/%lf", &Ctrl->A.t_low, &Ctrl->A.t_high);
-					Ctrl->A.mode = 1;
+					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
+					if (k == 2) {
+						Ctrl->A.t_low = atof (txt_a);
+						Ctrl->A.t_high= atof (txt_b);
+						Ctrl->A.mode = 1;
+					}
+					else {
+						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
+						n_errors++;
+					}
 				}
 				else {	/* Limits for each input point given in columns 4 and 5 */
 					Ctrl->A.mode = 2;
@@ -435,6 +443,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (GMT_REC_IS_TBL_HEADER (GMT)) GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);	/* Echo table headers */
 
 		if (GMT_REC_IS_NEW_SEGMENT (GMT) && !make_path) GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+		if (GMT_REC_IS_ANY_HEADER (GMT)) continue;
 	
 		if (Ctrl->e.active) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
@@ -454,8 +463,14 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 
 		if (Ctrl->A.mode) {	/* Consider just a time interval */
-			if (Ctrl->A.mode == 1) { t_low = Ctrl->A.t_low; t_high = Ctrl->A.t_high; }
-			else if (Ctrl->A.mode == 2) t_low = in[3]; t_high = in[4];
+			if (Ctrl->A.mode == 1) {	/* Get limits from -A */
+				t_low = Ctrl->A.t_low;
+				t_high = Ctrl->A.t_high;
+			}
+			else if (Ctrl->A.mode == 2) {	/* Get limits from the input file */
+				t_low = in[3];
+				t_high = in[4];
+			}
 			age = t_high;	/* No point working more than necessary */
 		}
 		else
