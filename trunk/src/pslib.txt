@@ -27,7 +27,7 @@ File Specification Version 3.0.
 .LP
 Before any PSLIB calls can be issued, the plotting system must be
 initialized.  This is done by calling BD(PSL_beginsession), which initializes a new
-PSLIB session, sets internal
+PSLIB session; then call BD(PSL_setdefaults) which sets internal
 variables and default settings, accepts settings for measurement units and character
 encoding, and returns a pointer to a struct PSL_CTRL which must be passed as first
 argument to all other PSLIB functions.  The measure unit for sizes and positions can be set to be centimeter (c),
@@ -342,13 +342,14 @@ This option is only used by Adobe Distiller when converting PS to PDF.
 .RE
 .br
 .sp
-BD(long PSL_setdefaults) (ARG(struct PSL_CTRL,*P), ARG(double,xyscales)[], ARG(double,pagergb)[])
+BD(long PSL_setdefaults) (ARG(struct PSL_CTRL,*P), ARG(double,xyscales)[], ARG(double,pagergb)[], ARG(char,*encoding))
 .RS 5
 Allows changes to the PSL session settings and should be called immediately after BD(PSL_beginsession).
 The IT(xyscales) array affect an overall magnification of your plot [1,1].  This can be useful if you
 design a page-sized plot but would then like to magnify (or shrink) it by a given factor.
-Finally, change the default paper media color [white; 1/1/1] by
+Change the default paper media color [white; 1/1/1] by
 specifying an alternate page color.  Passing zero (or NULL for IT(pagergb)) will leave the setting unchanged.
+Finally, pass the name of the character set encoding (if NULL we select Standard).
 .RE
 .br
 .sp
