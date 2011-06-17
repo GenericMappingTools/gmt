@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_2.sh,v 1.3 2011-06-14 22:58:03 guru Exp $
+#       $Id: spotter_2.sh,v 1.4 2011-06-17 23:22:15 guru Exp $
 
 . ../functions.sh
 header "spotter: Testing hotspotter"
@@ -23,6 +23,6 @@ makecpt -Chot -T0/3000/300 -Z > t.cpt
 
 grdimage spotter_2.nc -JM6i -P -K -Ct.cpt > $ps
 pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -B20WSne >> $ps
-#rm -f t.cpt spotter_2.nc
+rm -f t.cpt spotter_2.nc
 
 pscmp
