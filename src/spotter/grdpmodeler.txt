@@ -10,7 +10,7 @@ OPT(G)IT(outgrdfile) OPT(S)BD(a)|BD(d)|BD(r)|BD(w)|BD(x)|BD(y)|BD(X)|BD(Y) [ OPT
 BD(grdpmodeler) reads a geographical age grid and a plate motion model
 and evaluates one of several model predictions.  Optionally, the user may supply a clipping polygon
 in multiple-segment format; then, only the part of the grid inside the polygon is used
-to determine the model prediction.
+to determine the model prediction; the remainder of the grid is set to NaN.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -52,25 +52,25 @@ and a polygon that contains the outline of the present Pacific plate (pac_clip_p
 To evaluate the plate motion azimuths at the present time for the Pacific, try
 .br
 .sp
-BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dir_0.nc OPT(Sa) OPT(T)0
+grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -Gpac_dir_0.nc -Sa -T0
 .br
 .sp
 To determine the changes in latitude since crust formation for the entire Pacific, try
 .br
 .sp
-BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dlat.nc OPT(Sy)
+grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -Gpac_dlat.nc -Sy
 .br
 .sp
 To determine the plate motion rates in effect when the Pacific crust was formed, try
 .br
 .sp
-BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_vel.nc OPT(Sr)
+grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -Gpac_vel.nc -Sr
 .br
 .sp
 To determine how far the crust has moved since formation, try
 .br
 .sp
-BD(grdpmodeler) pac_age.nc OPT(E)Pac_APM.d OPT(V) OPT(F)pac_clip_path.d OPT(G)pac_dist.nc OPT(Sd)
+grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -Gpac_dist.nc -Sd
 .SH "SEE ALSO"
 .IR backtracker (1),
 .IR grdrotater (1),

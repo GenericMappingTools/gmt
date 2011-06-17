@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.14 2011-06-07 01:14:21 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.15 2011-06-17 21:00:37 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -27,6 +27,7 @@
 #include "spotter.h"
 #include "gmt_proj.h"
 
+#define N_PM_ITEMS	8
 #define PM_RATE		0
 #define PM_AZIM		1
 #define PM_OMEGA	2
@@ -54,6 +55,10 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		GMT_LONG active;
 		char *file;
 	} G;
+	struct I {	/* -Idx[/dy] */
+		GMT_LONG active;
+		double inc[2];
+	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
 		GMT_LONG active;
 		GMT_LONG mode;
@@ -90,18 +95,16 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT,"grdpmodeler %s - Plate model evaluation on a geographic grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
-	GMT_message (GMT, "\t[%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\n", GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
 	GMT_message (GMT, "\t-E specifies the rotation file to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t-G is the output filename of the new, rotated grid.  The boundary of the\n");
-	GMT_message (GMT, "\t   original grid (or a subset; see -F) after rotation is written to stdout\n");
+	GMT_message (GMT, "\t-G is the output filename with the model predictions.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D Destination file for rotated polygon or grid outline [stdout]\n");
-	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area of the grid\n");
-	GMT_message (GMT, "\t   to work on [Default works on the entire grid]\n");
+	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area\n");
+	GMT_message (GMT, "\t   of the grid to work on [Default works on the entire grid].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
 	GMT_message (GMT, "\t   a : Plate spreading azimuth.\n");
@@ -153,6 +156,13 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 				Ctrl->G.active = TRUE;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
+			case 'I':
+				Ctrl->I.active = TRUE;
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+					GMT_inc_syntax (GMT, 'I', 1);
+					n_errors++;
+				}
+				break;
 			case 'S':
 				Ctrl->S.active = TRUE;
 				switch (opt->arg[0]) {
@@ -162,7 +172,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 					case 'd':	/* Distance from point to origin at ridge */
 						Ctrl->S.mode = PM_DIST;
 						break;
-					case 's':	/* Plate spreading rate */
+					case 'r':	/* Plate spreading rate */
 						Ctrl->S.mode = PM_RATE;
 						break;
 					case 'w':	/* Plate rotation omega */
@@ -196,7 +206,12 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
+	}
+	else {	/* Must not have -I -r */
+		n_errors += GMT_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
+	}
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
@@ -209,9 +224,12 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 
 GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG col, row, node, inside, seg, k, n_stages, error = FALSE;
+	GMT_LONG col, row, node, inside, seg, k, n_stages, registration, error = FALSE;
 	
-	double lon, lat, d, value = 0.0, t_max, age, *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
+	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
+	
+	char *quantity[N_PM_ITEMS] = { "velocity", "azimuth", "rotation rate", "longitude displacement", \
+		"longitude", "latitude displacement", "latitude", "distance displacement"};
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TABLE *pol = NULL;
@@ -242,19 +260,21 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Check limits and get data file */
 
-	if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&G_age)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
-
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
-
-	/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
-
-	if (!GMT_grd_setregion (GMT, G_age->header, GMT->common.R.wesn, BCR_BILINEAR)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "No grid values inside selected region - aborting\n");
-		Return (EXIT_FAILURE);
+	if (Ctrl->In.file) {	/* Gave an age grid */
+		if ((error = GMT_Begin_IO (API, 0, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->In.file), (void **)&G_age)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
+		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&G_age)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);			/* Disables further data input */
+		GMT_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
+		registration = G_age->header->registration;
+		GMT_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
 	}
-		
+	else {
+		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
+		registration = GMT->common.r.active;
+	}
+
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
 		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->F.file, (void **)&D)) Return ((error = GMT_DATA_READ_ERROR));
@@ -282,7 +302,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_grd_init (GMT, G_mod->header, options, FALSE);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_mod, GMT->common.R.wesn, G_age->header->inc, G_age->header->registration), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_mod, GMT->common.R.wesn, inc, registration), Ctrl->G.file);
 	
 	G_mod->data = GMT_memory (GMT, NULL, G_mod->header->size, float);
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
@@ -383,10 +403,10 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			strcpy (G_mod->header->z_units, "km");
 			break;
 	}
-	sprintf (G_mod->header->remark, "Plate Model predictions for model %s", Ctrl->E.file);
+	sprintf (G_mod->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode], Ctrl->E.file);
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&Ctrl->G.file, (void *)G_mod)) Return (GMT_DATA_WRITE_ERROR);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);

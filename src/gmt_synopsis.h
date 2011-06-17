@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.27 2011-06-07 21:38:29 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.28 2011-06-17 21:00:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,7 +32,7 @@
 #define GMT_B_OPT	"-B<args>"
 #define GMT_I_OPT	"-I<xinc>[u][=|+][/<yinc>[u][=|+]]"
 #define GMT_inc_OPT	"<xinc>[u][=|+][/<yinc>[u][=|+]]"
-#define GMT_Id_OPT	"-I<xinc>[m|c][/<yinc>[m|c]]"
+#define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_J_OPT	"-J<args>"
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
