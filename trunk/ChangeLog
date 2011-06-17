@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1098 2011-06-16 22:59:34 guru Exp $
+	$Id: ChangeLog,v 1.1099 2011-06-17 03:23:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-16	pwessel
 	* gmt_io.c:		Like for segment header, turn on -ho when a header is read.
 	* sample1d_func.c:	The spatial resampling had a porting bug.
+	* greenspline_func.c:	Fixed a few porting bugs, added several tests to suite.
 
 2011-06-14	pwessel
 	* sph:			Added test suite for the sph programs.  Mostly works.
