@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: spotter_4.sh,v 1.3 2011-06-14 22:59:07 guru Exp $
+#       $Id: spotter_4.sh,v 1.4 2011-06-17 23:22:15 guru Exp $
 
 . ../functions.sh
 header "spotter: Testing grdrotater"
@@ -53,7 +53,7 @@ echo 0 53 | psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
 echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
 echo 0 53 -90 -30 | psxy -R -J -O -K -Sml1i -N -W1p >> $ps
 psxy -R -J -O -T >> $ps
-rm -f *.txt t.nc rot.nc 
+rm -f [GPR].txt box.txt t.nc rot.nc 
 
 pscmp
 
