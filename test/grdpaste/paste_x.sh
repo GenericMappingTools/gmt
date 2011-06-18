@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: paste_x.sh,v 1.1 2011-06-18 16:15:00 jluis Exp $
+#	$Id: paste_x.sh,v 1.2 2011-06-18 19:48:27 guru Exp $
 #
 # Paste grids along X & Y
 
@@ -7,16 +7,20 @@
 header "Test grdpaste to paste grids horizontal and vertically"
 
 ps=paste.ps
-grdmath -R-15/0/-15/0 -I0.5 X = lixo_x1.grd
-grdmath -R0/15/-15/0  -I0.5 X = lixo_x2.grd
-grdmath -R-15/0/0.5/15 -I0.5 X = lixo_y1.grd
-grdmath -R0/15/0.5/15  -I0.5 X = lixo_y2.grd
-grdpaste lixo_x1.grd lixo_x2.grd -Glixo_x.grd
-grdpaste lixo_y1.grd lixo_y2.grd -Glixo_y.grd
-grdpaste lixo_x.grd lixo_y.grd -Glixo_xy.grd
+# The final grid
+grdmath -R-15/15/-15/15 -I0.5 X = lixo.nc
+# The 4 pieces to assemble into final grid
+grdmath -R-15/0/-15/0 -I0.5 X = lixo_x1.nc
+grdmath -R0/15/-15/0  -I0.5 X = lixo_x2.nc
+grdmath -R-15/0/0/15 -I0.5 X = lixo_y1.nc
+grdmath -R0/15/0/15  -I0.5 X = lixo_y2.nc
+grdpaste lixo_x1.nc lixo_x2.nc -Glixo_x.nc
+grdpaste lixo_y1.nc lixo_y2.nc -Glixo_y.nc
+grdpaste lixo_x.nc lixo_y.nc -Glixo_xy.nc
+# Top is single source, bottom is assembled
+grdcontour lixo_xy.nc -JX10c -C2 -B5 -P -K -Xc > $ps
+grdcontour lixo.nc -J -C2 -B5 -O -Y12c >> $ps
 
-grdcontour lixo_xy.grd -R-15/15/-15/15 -JX10c -C2 -B5 -P > $ps
+rm -f lixo*.nc
 
-rm -f lixo_*.grd
-
-#pscmp
+pscmp
