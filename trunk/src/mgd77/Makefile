@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.66 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.67 2011-06-18 04:07:36 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -25,20 +25,22 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 API_O		= gmt_mgd77.o
 API_H		= $(API_O:.o=.h)
 FUNCS_O		= mgd77convert_func.o mgd77info_func.o mgd77list_func.o mgd77path_func.o \
-		  mgd77manage_func.o mgd77magref_func.o mgd77track_func.o mgd77sniffer_func.o
+		  mgd77manage_func.o mgd77magref_func.o mgd77sniffer_func.o
+FUNCSPS_O	= mgd77track_func.o
 LIBMGD77_API_H	= gmt_mgd77.h
 LIB_H		= mgd77.h mgd77_IGF_coeffs.h mgd77_init.h mgd77_recalc.h mgd77magref.h mgd77defaults.h mgd77_functions.h cm4_functions.h
 LIB_O		= mgd77.o
 
 PROGS_H		= mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h mgd77_codes.h mgd77_e77.h
 PROGS_O		= $(FUNCS_O:_func.o=.o)
-MAN1		= $(PROGS_O:.o=.1) 
+PROGSPS_O	= $(FUNCSPS_O:_func.o=.o)
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
 #	software targets
 #-------------------------------------------------------------------------------
 
-all:		$(PROGS)
+all:		$(PROGS) $(PROGSPS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
@@ -53,7 +55,7 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)} ; \
+			mv -f $(LIBAPI:.$(LIBEXT)=).{$(SL),$(SL_VERSION)} ; \
 			$(LN_S) $(LIBAPI:.$(LIBEXT)=).{$(SL_VERSION),$(SL)} ; \
 		fi
 
@@ -75,13 +77,13 @@ uninstall-man:
 spotless::	clean
 
 clean:
-		\rm -f *% *.o *.a *.$(SL) $(PROGS)
+		rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(FUNCS_O) $(PROGS_O):	$(LIB_H) $(PROGS_H) $(GMT_H) $(PS_H) $(API_H)
+$(FUNCS_O)  $(FUNCSPS_O) $(PROGS_O) $(PROGSPS_O):	$(LIB_H) $(PROGS_H) $(GMT_H) $(PS_H) $(API_H)
 $(LIB_O):	$(LIB_H) $(GMT_H) cm4_functions.c
 
 #-------------------------------------------------------------------------------
@@ -94,12 +96,12 @@ LIBAPI		= libgmt_mgd77.$(LIBEXT)
 
 libs:		libgmt_mgd77.a
 
-libgmt_mgd77.a:	$(FUNCS_O) $(LIB_O)
+libgmt_mgd77.a:	$(FUNCS_O) $(FUNCSPS_O) $(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
 libgmt_mgd77.$(SL):	libgmt_mgd77.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(FUNCSPS_O) $(LIB_O) $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------
@@ -117,5 +119,11 @@ mgd77track$(EXE):	mgd77track.o
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBMGD77_API) -o $@
 
+$(PROGSPS):	$(LIBGMT) $(LIBAPI) $(PROGSPS_O)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) $(LIBMGD77_API) -o $@
+
 $(PROGS_O):	../gmtprogram.c
 		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMT -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c
+
+$(PROGSPS_O):	../gmtprogram.c
+		$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -DFUNC_MODE=GMTAPI_GMTPSL -DFUNC=GMT_$* -c -o $*.o ../gmtprogram.c

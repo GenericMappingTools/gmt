@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id: job32.sh,v 1.4 2011-04-25 23:56:33 remko Exp $
+#		$Id: job32.sh,v 1.5 2011-06-18 04:07:35 guru Exp $
 #
 # Purpose:	Illustrate draping of an image over topography
 # GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
@@ -64,4 +64,4 @@ pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.tx
 
 # cleanup
 
-rm -f gmt.conf euflag.cpt illum.nc cities.txt
+#rm -f gmt.conf euflag.cpt illum.nc cities.txt

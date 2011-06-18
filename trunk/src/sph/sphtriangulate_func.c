@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.16 2011-06-15 02:38:43 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.17 2011-06-18 04:07:36 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -62,7 +62,7 @@ struct SPHTRIANGULATE_CTRL {
 	} T;
 };
 
-void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET **DD[])
+void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	GMT_LONG i, ij, k, error, ID, dim[4] = {1, 0, 0, 0};
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2 = 6371007.1810 * 6371007.1810, dist = GMT->session.d_NaN;
@@ -119,8 +119,6 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			}
 		}
 		if (get_area) GMT_report (GMT, GMT_MSG_NORMAL, "Total surface area = %g\n", area_sphere * R2);
-		*DD[0] = Dout[0];
-		if (nodes) *DD[1] = Dout[1];
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating arcs */
 		GMT_LONG j, ij1, ij2, ij3, n_arcs;
@@ -159,8 +157,8 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			S[0]->header = strdup (segment_header);
 		}
 		GMT_free (GMT, arc);
-		*DD[0] = Dout[0];
 	}
+	*DD = Dout;
 }
 
 void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_LONG get_arcs, GMT_LONG get_area, GMT_LONG nodes, struct GMT_DATASET ***DD)
