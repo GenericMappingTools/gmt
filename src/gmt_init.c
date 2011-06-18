@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.539 2011-06-16 02:26:20 guru Exp $
+ *	$Id: gmt_init.c,v 1.540 2011-06-18 04:07:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1116,6 +1116,7 @@ GMT_LONG gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 
 	if (!item || !item[0]) {	/* Nothing further to parse; just set defaults */
 		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = TRUE;
+		C->current.io.io_n_header_items = 1;
 		return (GMT_NOERROR);
 	}
 	j = 0;
@@ -1127,6 +1128,8 @@ GMT_LONG gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		else
 			C->current.io.io_n_header_items = i;
 	}
+	else C->current.io.io_n_header_items = 1;
+
 	if (j == 0)	/* Both in and out may have header records */
 		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_items > 0);
 	else if (item[k] == 'i')		/* Only input should have header records */
@@ -2048,7 +2051,7 @@ GMT_LONG gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 	double az, el, z;
 	char p[GMT_TEXT_LEN256], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 
-	if (!C->common.R.active || !C->common.J.active) GMT_report (C, GMT_MSG_FATAL, "Warning -p option works best in consort with -R and -J\n");
+	if (!C->common.J.active) GMT_report (C, GMT_MSG_FATAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
 	switch (item[0]) {
 		case 'x':
 			C->current.proj.z_project.view_plane = GMT_X + GMT_ZW;

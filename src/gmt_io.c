@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.290 2011-06-16 20:45:43 guru Exp $
+ *	$Id: gmt_io.c,v 1.291 2011-06-18 04:07:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -478,7 +478,7 @@ GMT_LONG GMT_set_cols (struct GMT_CTRL *C, GMT_LONG direction, GMT_LONG expected
 		C->common.b.ncol[direction] = expected;
 	}
 	else
-		C->common.b.ncol[direction] = (direction == GMT_IN) ? GMT_MAX_COLUMNS : expected;
+		C->common.b.ncol[direction] = (direction == GMT_IN && expected == 0) ? GMT_MAX_COLUMNS : expected;
 	return (GMT_OK);
 }
 
@@ -1063,7 +1063,7 @@ GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
 
 GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_use = 0;
+	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val, **ptr = (double **)data;
@@ -1133,7 +1133,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		bad_record = set_nan_flag = FALSE;
 		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
 		line[i-1] = '\0';				/* Chop off newline at end of string */
-		col_no = pos = 0;
+		col_no = pos = n_ok = 0;
 		in_col = -1;	/* Since we will increment right away inside the loop */
 		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get each field in turn */
 			in_col++;	/* This is the actual column number in the input file */
@@ -1144,8 +1144,10 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			else
 				col_pos = col_no;	/* Default order */
 			if ((n_convert = GMT_scanf (C, token, C->current.io.col_type[GMT_IN][col_pos], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
-				if (C->current.setting.io_nan_records || !C->current.io.skip_if_NaN[col_pos])	/* This field (or all fields) can be NaN so we pass it on */
+				if (C->current.setting.io_nan_records || !C->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
 					C->current.io.curr_rec[col_pos] = C->session.d_NaN;
+					n_ok++;	/* Since NaN is OK */
+				}
 				else	/* Cannot have NaN in this column, set flag */
 					bad_record = TRUE;
 				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;
@@ -1153,10 +1155,14 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			else {					/* Successful decode, assign to array */
 				gmt_convert_col (C->current.io.col[GMT_IN][col_no], val);
 				C->current.io.curr_rec[col_pos] = val;
+				n_ok++;
 			}
 			col_no++;		/* Goto next field to keep */
 		}
-		col_no += gmt_assign_aspatial_cols (C);	/* Fill in any columns given via aspatial OGR/GMT values */
+		if ((add = gmt_assign_aspatial_cols (C))) {	/* Fill in any columns given via aspatial OGR/GMT values */
+			col_no += add;
+			n_ok += add;
+		}
 		if (bad_record) {
 			C->current.io.n_bad_records++;
 			if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
@@ -1174,9 +1180,9 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			done = TRUE;
 	}
 	*ptr = C->current.io.curr_rec;
-	C->current.io.status = (col_no == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;
+	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;
-	if (*n == GMT_MAX_COLUMNS) *n = col_no;
+	if (*n == GMT_MAX_COLUMNS) *n = n_ok;
 	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", col_no, *n, C->current.io.rec_no);
 
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) d_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
@@ -1185,7 +1191,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 	if (gmt_gap_detected (C)) return (gmt_set_gap (C));
 
 	C->current.io.pt_no++;	/* Got a valid data record */
-	return (col_no);
+	return (n_ok);
 }
 
 GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
@@ -1708,6 +1714,19 @@ GMT_LONG GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d,
 			return (TRUE);
 	}
 	return (FALSE);
+}
+
+void GMT_add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG col, GMT_LONG sep)
+{	/* formats and appends val to the record texts string.
+	 * If sep is 1 we preend col separator.
+	 * If sep is 2 we append col separator
+	 * If sep is 1|2 do both [0 means no separator].
+	 */
+	char word[GMT_TEXT_LEN64];
+	GMT_ascii_format_col (C, word, val, col);
+	if (sep & 1) strcat (record, C->current.setting.io_col_separator);
+	strcat (record, word);
+	if (sep & 2) strcat (record, C->current.setting.io_col_separator);
 }
 
 void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
@@ -3672,6 +3691,11 @@ GMT_LONG GMT_scanf (struct GMT_CTRL *C, char *s, GMT_LONG expectation, double *v
 	char calstring[GMT_TEXT_LEN64], clockstring[GMT_TEXT_LEN64], *p = NULL;
 	double x;
 	GMT_LONG callen, clocklen, rd;
+
+	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
+		if (!isdigit ((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
+	}
+	else if (isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
 	if (expectation & GMT_IS_GEO) {
 		/* True if either a lat or a lon is expected  */

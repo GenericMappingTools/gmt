@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.12 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.13 2011-06-18 04:07:36 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -437,6 +437,7 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				break;
 
 			case 'F':	/* Selected output fields */
+				Ctrl->F.active = TRUE;
 				strcpy (buffer, opt->arg);
 				if (!strcmp (buffer, "all")) strcpy (buffer, MGD77_ALL);
 				if (!strcmp (buffer, "all+")) {
@@ -485,8 +486,8 @@ GMT_LONG GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl
 				break;
 
 			case 'L':	/* Crossover correction table */
-				Ctrl->L.file = strdup (opt->arg);
 				Ctrl->L.active = TRUE;
+				Ctrl->L.file = strdup (opt->arg);
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */

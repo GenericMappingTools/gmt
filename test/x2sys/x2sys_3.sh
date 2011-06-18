@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: x2sys_3.sh,v 1.3 2011-06-13 05:01:42 guru Exp $
+# $Id: x2sys_3.sh,v 1.4 2011-06-18 04:07:36 guru Exp $
 #
 # This is original Figure 3 script from
 # Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package,
@@ -7,7 +7,7 @@
 # Here used as a test for the x2sys suite.
 
 . ../functions.sh
-header "x2sys: Reproduce Wessel (2010) Comp. & Geosci., Figure 3"
+header "Reproduce Wessel (2010) Comp. & Geosci., Figure 3"
 
 ps=x2sys_3.ps
 

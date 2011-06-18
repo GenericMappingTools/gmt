@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.20 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.21 2011-06-18 04:07:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -402,8 +402,10 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Dout);
 	}
 	else {	/* Standard resampling point case */
-		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields;
+		GMT_LONG pure_ascii = FALSE, ix, iy, n_fields, mode;
 		double *in = NULL, *out = NULL;
+		char record[GMT_BUFSIZ];
+		EXTERN_MSC GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);
 		
 		pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active);
 
@@ -418,8 +420,9 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 			GMT->common.b.ncol[GMT_OUT] = Ctrl->G.n_grids;
 		}
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+		mode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
-		while ((n_fields = GMT_Get_Record (API, GMT_READ_DOUBLE, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
+		while ((n_fields = GMT_Get_Record (API, mode, (void **)&in)) != EOF) {	/* Keep returning records until we reach EOF */
 
 			if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);	/* Bail on any i/o error */
 			if (GMT_REC_IS_TBL_HEADER (GMT)) continue;		/* Skip any table headers */
@@ -437,21 +440,22 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 
 			if (Ctrl->Z.active)	/* Simply print out values */
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, (void *)value);
-			else if (pure_ascii && n_fields > 2) {
+			else if (pure_ascii && n_fields >= 2) {
 				/* Special case: Ascii i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
+					if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
 
 				/* First get rid of any commas that may cause grief */
 				for (k = 0; GMT->current.io.current_record[k]; k++) if (GMT->current.io.current_record[k] == ',') GMT->current.io.current_record[k] = ' ';
+				record[0] = 0;
 				sscanf (GMT->current.io.current_record, "%*s %*s %[^\n]", line);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], in[ix], ix);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], in[iy], iy);	GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_fprintf (GMT->session.std[GMT_OUT], "%s", line);
+				GMT_add_to_record (GMT, record, in[ix], ix, 2);	/* Format our output x value */
+				GMT_add_to_record (GMT, record, in[iy], iy, 2);	/* Format our output y value */
+				strcat (record, line);
 				for (g = 0; g < Ctrl->G.n_grids; g++) {
-					GMT_fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-					GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], value[g], GMT_Z+g);
+					GMT_add_to_record (GMT, record, value[g], GMT_Z+g, 1);	/* Format our output y value */
 				}
-				GMT_fprintf (GMT->session.std[GMT_OUT], "\n");
+				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
 			}
 			else {	/* Simply copy other columns, append value, and output */
 				if (!out) out = GMT_memory (GMT, NULL, GMT->common.b.ncol[GMT_OUT], double);

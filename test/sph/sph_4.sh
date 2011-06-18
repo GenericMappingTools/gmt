@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#       $Id: sph_4.sh,v 1.1 2011-06-15 02:38:44 guru Exp $
+#       $Id: sph_4.sh,v 1.2 2011-06-18 04:07:36 guru Exp $
 
 . ../functions.sh
-header "sph: Testing sphtriangulate II"
+header "Testing sphtriangulate II"
 
 ps=sph_4.ps
 

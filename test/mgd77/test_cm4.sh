@@ -1,11 +1,11 @@
 #! /bin/bash
-#	$Id: test_cm4.sh,v 1.9 2011-06-15 02:38:44 guru Exp $
+#	$Id: test_cm4.sh,v 1.10 2011-06-18 04:07:36 guru Exp $
 #
 # Tests mgd77magref against the values of the original FORTRAN version 
 # Because the second term (lithospheric) does not agree it is not included in the comparison
 
 . ../functions.sh
-header "mgd77: Test mgd77magref vs original CM4 Fortran version"
+header "Test mgd77magref vs original CM4 Fortran version"
 
 data=2000.08700533
 

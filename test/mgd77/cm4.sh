@@ -1,10 +1,10 @@
 #! /bin/bash
-#	$Id: cm4.sh,v 1.6 2011-06-15 02:38:44 guru Exp $
+#	$Id: cm4.sh,v 1.7 2011-06-18 04:07:36 guru Exp $
 #
 
 . ../functions.sh
 
-header "mgd77: Test mgd77magref with 1 day data at a magnetic observatory"
+header "Test mgd77magref with 1 day data at a magnetic observatory"
 
 ps=cm4.ps
 

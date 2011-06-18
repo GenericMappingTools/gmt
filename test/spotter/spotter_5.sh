@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#       $Id: spotter_5.sh,v 1.1 2011-06-17 21:00:38 guru Exp $
+#       $Id: spotter_5.sh,v 1.2 2011-06-18 04:07:36 guru Exp $
 
 . ../functions.sh
-header "spotter: Testing grdpmodeler"
+header "Testing grdpmodeler for evaluating APM model"
 
 ps=spotter_5.ps
 

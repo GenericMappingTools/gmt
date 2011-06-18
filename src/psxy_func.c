@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.34 2011-06-10 22:36:30 guru Exp $
+ *	$Id: psxy_func.c,v 1.35 2011-06-18 04:07:36 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the psxy task */
 	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
 	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, set_type;
+	GMT_LONG default_outline, outline_active, set_type, n_needed;
 	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
 	GMT_LONG i, n_total_read = 0, j, geometry, tbl, seg, read_mode;
 	GMT_LONG n_cols_start = 2, n_fields, error = GMT_NOERROR;
@@ -643,7 +643,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 
-	error += GMT_check_binary_io (GMT, n_cols_start + S.n_required);
+	n_needed = n_cols_start + S.n_required;
+	error += GMT_check_binary_io (GMT, n_needed);
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
@@ -714,6 +715,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		read_mode = GMT_READ_DOUBLE;
 		record = (void **)&in;
 	}
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed))) Return (error);
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		if ((error = GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */

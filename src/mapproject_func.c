@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.26 2011-06-07 21:38:29 guru Exp $
+*	$Id: mapproject_func.c,v 1.27 2011-06-18 04:07:36 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -124,14 +124,6 @@ void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/*
 	if (!C) return;
 	if (C->L.file) free ((void *)C->L.file);	
 	GMT_free (GMT, C);	
-}
-
-void add_to_record (struct GMT_CTRL *C, char *record, double val, GMT_LONG col, GMT_LONG more)
-{
-	char word[GMT_TEXT_LEN64];
-	GMT_ascii_format_col (C, word, val, col);
-	strcat (record, word);
-	if (more) strcat (record, C->current.setting.io_col_separator);
 }
 
 GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
@@ -749,11 +741,11 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				pos = record[0] = 0;	/* Start with blank record */
 				GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
 				GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
-				add_to_record (GMT, record, out[x], GMT_X, TRUE);	/* Format our output x value */
-				add_to_record (GMT, record, out[y], GMT_Y, TRUE);	/* Format our output y value */
+				GMT_add_to_record (GMT, record, out[x], GMT_X, 2);	/* Format our output x value */
+				GMT_add_to_record (GMT, record, out[y], GMT_Y, 2);	/* Format our output y value */
 				if (Ctrl->E.active) {
 					GMT_strtok (GMT, line, " \t,", &pos, p);		/* Returns zstring (ignore) and update pos */
-					add_to_record (GMT, record, out[GMT_Z], GMT_Z, TRUE);	/* Format our output z value */
+					GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
 				GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
@@ -869,16 +861,16 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
 					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring (ignored) and update pos */
-					add_to_record (GMT, record, in[x], GMT_X, TRUE);	/* Format our output x value */
-					add_to_record (GMT, record, in[y], GMT_Y, TRUE);	/* Format our output y value */
+					GMT_add_to_record (GMT, record, in[x], GMT_X, 2);	/* Format our output x value */
+					GMT_add_to_record (GMT, record, in[y], GMT_Y, 2);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
 						strcat (record, &line[pos]);
 						strcat (record, GMT->current.setting.io_col_separator);
 					}
-					add_to_record (GMT, record, d, GMT_Z, Ctrl->L.active);	/* Format our output z value */
+					GMT_add_to_record (GMT, record, d, GMT_Z, 0);	/* Format our output z value */
 					if (Ctrl->L.active) {
-						add_to_record (GMT, record, xnear, fmt[0], TRUE);
-						add_to_record (GMT, record, ynear, fmt[1], FALSE);
+						GMT_add_to_record (GMT, record, xnear, fmt[0], 1);
+						GMT_add_to_record (GMT, record, ynear, fmt[1], 1);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */
 				}
@@ -916,11 +908,11 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns xstring and update pos */
 					GMT_strtok (GMT, line, " \t,", &pos, p);	/* Returns ystring and update pos */
-					add_to_record (GMT, record, out[x], GMT_Z, TRUE);	/* Format our output x value */
-					add_to_record (GMT, record, out[y], GMT_Z, TRUE);	/* Format our output y value */
+					GMT_add_to_record (GMT, record, out[x], GMT_Z, 2);	/* Format our output x value */
+					GMT_add_to_record (GMT, record, out[y], GMT_Z, 2);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
 						GMT_strtok (GMT, line, " \t,", &pos, p);		/* Returns zstring (ignored) and update pos */
-						add_to_record (GMT, record, out[GMT_Z], GMT_Z, TRUE);	/* Format our output z value */
+						GMT_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);
 					GMT_Put_Record (API, GMT_WRITE_TEXT, (void *)record);	/* Write this to output */

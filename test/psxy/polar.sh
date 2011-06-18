@@ -1,11 +1,11 @@
 #!/bin/bash
-#	$Id: polar.sh,v 1.4 2011-03-15 02:06:46 guru Exp $
+#	$Id: polar.sh,v 1.5 2011-06-18 04:07:36 guru Exp $
 #
 # Check plotting of boxes in stereographic polar projection
 # Original script by Bruce Raup.
 
 . ../functions.sh
-header "Test psxy for plotting boxes in polar stereographic projection"
+header "Test psxy by plotting boxes in polar stereographic projection"
 
 ps=polar.ps
 
