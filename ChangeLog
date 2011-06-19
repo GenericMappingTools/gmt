@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1099 2011-06-17 03:23:30 guru Exp $
+	$Id: ChangeLog,v 1.1100 2011-06-19 01:48:00 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-18	pwessel
+	* grdpaste_func.c:	Fixed porting bugs, JL added test case that now works.
 
 2011-06-16	pwessel
 	* gmt_io.c:		Like for segment header, turn on -ho when a header is read.

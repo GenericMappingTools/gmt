@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpaste_func.c,v 1.11 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdpaste_func.c,v 1.12 2011-06-19 01:48:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -170,7 +170,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		C->header->inc[GMT_Y] = A->header->inc[GMT_Y];
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_FATAL, " Grid intervals do not match!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Grid intervals do not match!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -223,12 +223,12 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, " Grids do not share a common edge!\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Grids do not share a common edge!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_FATAL, " Grids do not share a common edge!\n");
+		GMT_report (GMT, GMT_MSG_FATAL, "Grids do not share a common edge!\n");
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Must be careful in determining a match */
@@ -251,30 +251,31 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's nm,size to the same as C */
 	A->header->nm = B->header->nm = C->header->nm;
+	A->header->no_BC = B->header->no_BC = TRUE;	/* We must disable the BC machinery */
 
 	switch (way) {	/* How A and B are positioned relative to each other */
 		case 1:
-			GMT->current.io.pad[YHI] = B->header->ny - one_or_zero;
+			GMT->current.io.pad[YHI] = B->header->ny - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
-			GMT->current.io.pad[YHI] = 0;	GMT->current.io.pad[YLO] = A->header->ny - one_or_zero;
+			GMT->current.io.pad[YHI] = 2;	GMT->current.io.pad[YLO] = A->header->ny - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
 		case 2:
-			GMT->current.io.pad[YLO] = B->header->ny - one_or_zero;
+			GMT->current.io.pad[YLO] = B->header->ny - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
-			GMT->current.io.pad[YLO] = 0;	GMT->current.io.pad[YHI] = A->header->ny - one_or_zero;
+			GMT->current.io.pad[YLO] = 2;	GMT->current.io.pad[YHI] = A->header->ny - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
 		case 3:
-			GMT->current.io.pad[XLO] = B->header->nx - one_or_zero;
+			GMT->current.io.pad[XLO] = B->header->nx - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
-			GMT->current.io.pad[XLO] = 0;	GMT->current.io.pad[XHI] = A->header->nx - one_or_zero;
+			GMT->current.io.pad[XLO] = 2;	GMT->current.io.pad[XHI] = A->header->nx - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
 		case 4:
-			GMT->current.io.pad[XHI] = B->header->nx - one_or_zero;
+			GMT->current.io.pad[XHI] = B->header->nx - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[0]), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get data from A */
-			GMT->current.io.pad[XHI] = 0;	GMT->current.io.pad[XLO] = A->header->nx - one_or_zero;
+			GMT->current.io.pad[XHI] = 2;	GMT->current.io.pad[XLO] = A->header->nx - one_or_zero + 2;
 			if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file[1]), (void **)&B)) Return (GMT_DATA_READ_ERROR);	/* Get data from B */
 			break;
 	}
@@ -284,7 +285,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, (void **)&Ctrl->G.file, (void *)C);
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-	A->data = B->data = NULL;	/* Since these were never allocated */
+	A->data = B->data = NULL;	/* Since these were never actually allocated */
 
 	Return (GMT_OK);
 }

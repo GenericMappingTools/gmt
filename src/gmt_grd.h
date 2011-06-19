@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.62 2011-06-15 21:37:44 guru Exp $
+ *	$Id: gmt_grd.h,v 1.63 2011-06-19 01:48:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,6 +75,7 @@ struct GRD_HEADER {
 	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 	GMT_LONG bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
 	GMT_LONG bcr_n;			/* Width of the interpolation function */
+	GMT_LONG no_BC;			/* If TRUE we skip BC stuff entirely */
 	GMT_LONG nxp;			/* if X periodic, nxp > 0 is the period in pixels  */
 	GMT_LONG nyp;			/* if Y periodic, nxp > 0 is the period in pixels  */
 	GMT_LONG gn;			/* TRUE if top    edge will be set as N pole  */
