@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.535 2011-06-14 11:27:05 jluis Exp $
+ *	$Id: gmt_support.c,v 1.536 2011-06-19 01:48:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5749,6 +5749,8 @@ GMT_LONG GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	GMT_LONG i = 0, type;
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	
+	if (h->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
+	
 	if (C->common.n.bc_set) {	/* Override BCs via -n+<BC> */
 		while (C->common.n.BC[i]) {
 			switch (C->common.n.BC[i]) {
@@ -5859,6 +5861,8 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
 
+	if (G->header->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
+
 	for (i = n_skip = 0; i < 4; i++) {
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = FALSE; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
@@ -5869,15 +5873,15 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 
 	/* Check minimum size:  */
 	if (G->header->nx < 1 || G->header->ny < 1) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_grd_set requires nx,ny at least 1.\n");
-		return (-1);
+		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grd_set requires nx,ny at least 1.\n");
+		return (GMT_NOERROR);
 	}
 
 	/* Check that pad is at least 2 */
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_grd_set called with a pad < 2.\n");
-		return (-1);
+		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grd_set called with a pad < 2; skipped.\n");
+		return (GMT_NOERROR);
 	}
 
 	/* Initialize stuff:  */

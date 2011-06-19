@@ -1,13 +1,13 @@
 #!/bin/bash
-#	$Id: paste_x.sh,v 1.2 2011-06-18 19:48:27 guru Exp $
+#	$Id: paste_x.sh,v 1.3 2011-06-19 01:48:01 guru Exp $
 #
 # Paste grids along X & Y
 
 . ../functions.sh
 header "Test grdpaste to paste grids horizontal and vertically"
 
-ps=paste.ps
-# The final grid
+ps=paste_x.ps
+# The final grid is just f(x,y) = x
 grdmath -R-15/15/-15/15 -I0.5 X = lixo.nc
 # The 4 pieces to assemble into final grid
 grdmath -R-15/0/-15/0 -I0.5 X = lixo_x1.nc
