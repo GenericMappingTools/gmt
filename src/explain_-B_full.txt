@@ -5,11 +5,13 @@ Set map boundary annotation and tickmark intervals. The format of IT(tickinfo) i
 The leading BD(p) [Default] or BD(s) selects the primary or secondary annotation information.
 Each of the IT(?info) segments are textstrings of the form
 IT(info)[BD(:)"Axis label"BD(:)][BD(:=)"prefix"BD(:)][\fB:,\fP"unit label"BD(:)].
-The IT(info) string is made up of one or more concatenated substrings of the form [BD(which)]IT(stride)[IT(phase)][BD(u)].
-The optional BD(which) can be either BD(a) for annotation tick spacing [Default], BD(f) for frame tick spacing, and
-BD(g) for gridline spacing.  If frame interval is not set, it is assumed to be the same
-as annotation interval. IT(stride) is the desired stride interval.  The optional IT(phase) shifts the annotation
-interval by that amount (positive or negative).  The optional BD(u) indicates the unit of the IT(stride) and can be any of
+The IT(info) string is made up of one or more concatenated substrings of the form
+[BD(a)|BD(f)|BD(g)]IT(stride)[+-IT(phase)][IT(unit)].
+The leading BD(a) is used to specify the annotation and major tick spacing [Default], BD(f) for minor tick spacing, and
+BD(g) for gridline spacing.
+IT(stride) is the desired stride interval. 
+The optional IT(phase) shifts the annotation interval by that amount (positive or negative).
+The optional IT(unit) indicates the unit of the IT(stride) and can be any of
 BD(Y) (year, plot with 4 digits), BD(y) (year, plot with 2 digits), BD(O) (month, plot using BD(FORMAT_DATE_MAP)),
 BD(o) (month, plot with 2 digits), BD(U) (ISO week, plot using BD(FORMAT_DATE_MAP)), BD(u) (ISO week, plot using 2 digits),
 BD(r) (Gregorian week, 7-day stride from start of week BD(TIME_WEEK_START)), BD(K) (ISO weekday, plot name of day),

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.543 2011-06-20 21:45:14 guru Exp $
+ *	$Id: gmt_init.c,v 1.544 2011-06-20 23:36:08 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,19 +126,16 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'B':	/* Tickmark option */
 
-			GMT_message (C, "\t-B Specify Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
-			GMT_message (C, "\t   more substrings of the form [t]<stride>[+-<phase>][<unit>], where the (optional) [t] is the\n");
-			GMT_message (C, "\t   axis item type, <stride> is the spacing between ticks or annotations, the (optional)\n");
+			GMT_message (C, "\t-B Specify basemap frame info.  <tickinfo> is a textstring made up of one or\n");
+			GMT_message (C, "\t   more substrings of the form [a|f|g]<stride>[+-<phase>][<unit>], where the (optional) a");
+			GMT_message (C, "\t   indicates annotation and major tick interval, f minor tick interval and g grid interval");
+			GMT_message (C, "\t   <stride> is the spacing between ticks or annotations, the (optional)\n");
 			GMT_message (C, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
 			GMT_message (C, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
 			GMT_message (C, "\t   no spaces between the substrings - just append to make one very long string.\n");
 			GMT_message (C, "\t   -B[p] means (p)rimary annotations; use -Bs to specify (s)econdary annotations.\n");
-			GMT_message (C, "\t   Three axis item types exist:\n");
-			GMT_message (C, "\t     a: tick annotation stride.\n");
-			GMT_message (C, "\t     f: frame tick stride.\n");
-			GMT_message (C, "\t     g: grid line stride.\n");
 			GMT_message (C, "\t   For custom labels or intervals, let <tickinfo> be c<intfile>,; see man page for details.\n");
-			GMT_message (C, "\t   The optional [<unit>] modifies the <stride> value accordingly.  For maps, you may use\n");
+			GMT_message (C, "\t   The optional <unit> modifies the <stride> value accordingly.  For maps, you may use\n");
 			GMT_message (C, "\t     d: arc degree [Default].\n");
 			GMT_message (C, "\t     m: arc minutes.\n");
 			GMT_message (C, "\t     s: arc seconds.\n");
