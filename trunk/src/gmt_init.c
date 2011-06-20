@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.541 2011-06-20 02:02:38 guru Exp $
+ *	$Id: gmt_init.c,v 1.542 2011-06-20 15:15:25 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5105,7 +5105,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 	/* Determine GMT_DATADIR (data directories) */
 
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
-		if (!strchr (this, PATH_DELIM) && access (this, R_OK))	/* A single directory, but cannot be accessed */
+		if (!strchr (this, PATH_SEPARATOR) && access (this, R_OK))	/* A single directory, but cannot be accessed */
 			C->session.DATADIR = CNULL;
 		else	/* A list of directories */
 			C->session.DATADIR = strdup (this);

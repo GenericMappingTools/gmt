@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.52 2011-06-20 02:02:39 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.53 2011-06-20 15:15:25 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -132,17 +132,13 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
  *
  * _WIN32 is set whenever we are compiling GMT on a PC not running
  * a Unix flavor. 
- * _WIN32, when set, causes the directory delimiter to be set
- * to \ instead of /, and also attempts to deal with the fact
- * that DOS file systems have both TEXT and BINARY file modes.
  */
 
 #ifndef _WIN32
 #define _WIN32
 #endif
 
-#define PATH_DELIM ';'		/* (char)   Win uses ;, Unix uses : */
-#define PATH_SEPARATOR ";"	/* (char *) Win uses ;, Unix uses : */
+#define PATH_SEPARATOR ';'	/* Win uses ; while Unix uses : */
 
 #include <io.h>
 #include <direct.h>
@@ -217,12 +213,8 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
  
 /* Set a few Default Unix settings if they did not get set above */
 
-#ifndef PATH_DELIM
-#define PATH_DELIM ':'	/* Win uses ;, Unix uses : */
-#endif
-
 #ifndef PATH_SEPARATOR
-#define PATH_SEPARATOR ":"	/* Win uses ;, Unix uses : */
+#define PATH_SEPARATOR ':'	/* Win uses ; while Unix uses : */
 #endif
 
 #ifndef NO_FCNTL

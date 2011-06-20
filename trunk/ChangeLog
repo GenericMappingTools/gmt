@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1101 2011-06-20 02:02:38 guru Exp $
+	$Id: ChangeLog,v 1.1102 2011-06-20 15:15:25 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-20	remko
+	* gmt_notunix.h:	Only define PATH_SEPARATOR (as char), not also PATH_DELIM.
 
 2011-06-19	pwessel
 	* *.c:			Eliminated DIR_DELIM since '/' works for all systems.
