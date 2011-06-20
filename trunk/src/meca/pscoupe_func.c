@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.15 2011-06-08 18:31:29 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -180,7 +180,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_fill_syntax (GMT, 'E', "Set color used for extensive parts. [default is white]\n");
 	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside]\n");
 	GMT_explain_options (GMT, "OP");
@@ -222,13 +222,13 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t n = 0 both nodal planes are plotted.\n");
 	GMT_message (GMT, "\t If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_message (GMT,  "\t-W sets default pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
+	GMT_message (GMT,  "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column\n");
-	GMT_message (GMT, "\t-a plots axis. Default symbols are circles.\n");
-	GMT_message (GMT, "\t-p draws P_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-t draws T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-g Sets color used for P_symbol. [default is compressive parts color]\n");
-	GMT_message (GMT, "\t-e Sets color used for T_symbol. [default is extensive parts color]\n");
+	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
+	GMT_message (GMT, "\t-p Draw P_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-g Set color used for P_symbol. [default is compressive parts color]\n");
+	GMT_message (GMT, "\t-e Set color used for T_symbol. [default is extensive parts color]\n");
 	GMT_explain_options (GMT, "Xchi:.");
 
 	return (EXIT_FAILURE);

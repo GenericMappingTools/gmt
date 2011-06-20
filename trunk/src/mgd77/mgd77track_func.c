@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.14 2011-06-20 20:59:30 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.15 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -156,7 +156,7 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	MGD77_Cruise_Explain (GMT);
 	GMT_explain_options (GMT, "JR");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A will Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix]\n");
+	GMT_message (GMT, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix]\n");
 	GMT_message (GMT, "\t   <size> is optional text size in points [9].  The font used is controlled by LABEL_FONT\n");
 	GMT_message (GMT, "\t   Optionally, append ,<inc>[unit] to place label every <inc> units apart. <unit> may be\n");
 	GMT_message (GMT, "\t   k (km), n (nautical miles) or d (days), h (hours).\n");
@@ -165,21 +165,21 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	GMT_message (GMT, "\t   f Flat Earth\n");
 	GMT_message (GMT, "\t   g Great circle [Default]\n");
 	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
-	GMT_message (GMT, "\t-Da plots from <startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
-	GMT_message (GMT, "\t-Db plots up to <stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
+	GMT_message (GMT, "\t-D Plots from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
+	GMT_message (GMT, "\t   up to b<stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
 	GMT_message (GMT, "\t-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file]\n");
 	GMT_message (GMT, "\t-G Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0]\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none]\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L puts time/distance log marks on the track. E.g. a500ka24ht6h means (a)nnotate\n");
+	GMT_message (GMT, "\t-L Put time/distance log marks on the track. E.g. a500ka24ht6h means (a)nnotate\n");
 	GMT_message (GMT, "\t   every 500 km (k) and 24 h(ours), with (t)ickmarks every 500 km and 6 (h)ours\n");
 	GMT_message (GMT, "\t   Units of n(autical miles) and d(ays) are also recognized.\n");
 	GMT_message (GMT, "\t-N Do Not clip leg name annotation that fall outside map border [Default will clip]\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Sa plots from <startdist> (in m; append k, m, or n) [Start of the cruise]\n");
-	GMT_message (GMT, "\t-Sb plots up to <stopdist> (in m; append k, m, or n) [End of the cruise]\n");
-	GMT_message (GMT, "\t-T sets attributes of marker items. Append T for new day marker, t for same\n");
+	GMT_message (GMT, "\t-S Plot from a<startdist> (in m; append k, m, or n) [Start of the cruise]\n");
+	GMT_message (GMT, "\t   up to b<stopdist> (in m; append k, m, or n) [End of the cruise]\n");
+	GMT_message (GMT, "\t-T Set attributes of marker items. Append T for new day marker, t for same\n");
 	GMT_message (GMT, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
 	GMT_message (GMT, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
 	GMT_message (GMT, "\t   Default settings for the three marker types are:\n");
@@ -187,7 +187,7 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	GMT_message (GMT, "\t     -Tt%g,white,%g,%ld,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
 	GMT_message (GMT, "\t     -Td%g,black,%g,%ld,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
 	GMT_explain_options (GMT, "UV");
-	GMT_message (GMT, "\t-W sets track pen attributes [%s].\n", GMT_putpen (GMT, Ctrl->W.pen));
+	GMT_message (GMT, "\t-W Set track pen attributes [%s].\n", GMT_putpen (GMT, Ctrl->W.pen));
 	GMT_explain_options (GMT, "Xcpt.");
 	
 	return (EXIT_FAILURE);

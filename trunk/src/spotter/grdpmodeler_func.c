@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.15 2011-06-17 21:00:37 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -100,10 +100,10 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
-	GMT_message (GMT, "\t-E specifies the rotation file to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t-G is the output filename with the model predictions.\n");
+	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format)\n\n");
+	GMT_message (GMT, "\t-G Set output filename with the model predictions.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-F specifies a multi-segment closed polygon file that describes the area\n");
+	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
 	GMT_message (GMT, "\t   of the grid to work on [Default works on the entire grid].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
@@ -115,7 +115,7 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   y : Change in latitude since formation.\n");
 	GMT_message (GMT, "\t   X : Congitude at origin of crust.\n");
 	GMT_message (GMT, "\t   Y : Latitude at origin of crust.\n");
-	GMT_message (GMT, "\t-T sets fixed time of reconstruction to override age grid.\n");
+	GMT_message (GMT, "\t-T Set fixed time of reconstruction to override age grid.\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);

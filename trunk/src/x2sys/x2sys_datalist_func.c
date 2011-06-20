@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.10 2011-06-20 02:02:39 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.11 2011-06-20 22:15:10 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -85,13 +85,13 @@ GMT_LONG GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
 	GMT_message (GMT, "\t   according to their relative weight [no adjustments].\n");
-	GMT_message (GMT, "\t-F is comma-separated list of column names to output [Default are all fields]\n");
+	GMT_message (GMT, "\t-F Comma-separated list of column names to output [Default are all fields]\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Suppress output records where all data columns are NaN [Output all records]\n");
 	GMT_explain_options (GMT, "VD");
-	GMT_message (GMT, "\t-m will write a multi-segment header between the output from each file\n");
+	GMT_message (GMT, "\t-m Write a multi-segment header between the output from each file\n");
 	
 	return (EXIT_FAILURE);
 }

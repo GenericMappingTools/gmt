@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.12 2011-06-20 02:02:39 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.13 2011-06-20 22:15:10 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,13 +115,13 @@ GMT_LONG GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   f Flat Earth\n");
 	GMT_message (GMT, "\t   g Great circle [Default]\n");
 	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
-	GMT_message (GMT, "\t-D definition file for the track data set [<TAG>.def]\n");
+	GMT_message (GMT, "\t-D Definition file for the track data set [<TAG>.def]\n");
 	GMT_message (GMT, "\t-E Extension (suffix) for these data files\n");
 	GMT_message (GMT, "\t   [Default equals the prefix for the definition file]\n");
 	GMT_message (GMT, "\t-F Force creating new files if old ones are present [Default will abort if old files are found]\n");
-	GMT_message (GMT, "\t-G for geographical coordinates.  Append g for discontinuity at Greenwich (output 0/360 [Default])\n");
+	GMT_message (GMT, "\t-G Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default])\n");
 	GMT_message (GMT, "\t   and append d for discontinuity at Dateline (output -180/+180)\n");
-	GMT_message (GMT, "\t-I sets bin size for track bin index output [1/1]\n");
+	GMT_message (GMT, "\t-I Set bin size for track bin index output [1/1]\n");
 	GMT_message (GMT, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
 	GMT_message (GMT, "\t   c Cartesian distance (user-dist-units, user user-dist-units/user-time-units)\n");
 	GMT_message (GMT, "\t   e Metric units I (meters, m/s)\n");

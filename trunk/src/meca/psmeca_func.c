@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.13 2011-06-08 18:31:29 guru Exp $
+ *    $Id: psmeca_func.c,v 1.14 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -186,16 +186,16 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t  Default pen attributes is default pen.\n");
 	GMT_message (GMT, "\t  A line is plotted between both positions.\n");
 	GMT_message (GMT, "\t  A small circle is plotted at the initial location. Add P<pointsize value> to change the size of the circle.\n");
-	GMT_message (GMT, "\t-Ddepmin/depmax Plot events between depmin and depmax deep.\n");
+	GMT_message (GMT, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_message (GMT, "\t-E Set color used for extensive parts. [default is white]\n");
 	GMT_message (GMT, "\t-G Set color used for compressive parts. [default is black]\n");
 	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L draw line or symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-L Draw line or symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside]\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-r draw a box around text.\n");
+	GMT_message (GMT, "\t-r Draw a box around text.\n");
 	GMT_message (GMT, "\t-S Select format type and symbol size (in %s).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Choose format between\n");
 	GMT_message (GMT, "\t (c) Focal mechanisms in Harvard CMT convention\n");
@@ -227,20 +227,20 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   fontsize < 0 : no label written;\n");
 	GMT_message (GMT, "\t   offset is from the limit of the beach ball.\n");
 	GMT_message (GMT, "\t   By default label is above the beach ball. Add u to plot it under.\n");
-	GMT_message (GMT, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball using the default pen (see -W) or sets pen attribute. \n");
+	GMT_message (GMT, "\t-Tn[/<pen>] Draw nodal planes and circumference only to provide a transparent beach ball using the default pen (see -W) or sets pen attribute. \n");
 	GMT_message (GMT, "\t n = 1 the only first nodal plane is plotted\n");
 	GMT_message (GMT, "\t n = 2 the only second nodal plane is plotted\n");
 	GMT_message (GMT, "\t n = 0 both nodal planes are plotted.\n");
 	GMT_message (GMT, "\t If moment tensor is required, nodal planes overlay moment tensor.\n");
-	GMT_message (GMT, "\t-z overlays zero trace moment tensor.\n");
+	GMT_message (GMT, "\t-z Overlay zero trace moment tensor.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_message (GMT, "\t-W sets default pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
+	GMT_message (GMT, "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column\n");
-	GMT_message (GMT, "\t-a plots axis. Default symbols are circles.\n");
-	GMT_message (GMT, "\t-p draws P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-t draws T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-g Sets color used for P_symbol. [default is compressive parts color]\n");
-	GMT_message (GMT, "\t-e Sets color used for T_symbol. [default is extensive parts color]\n");
+	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
+	GMT_message (GMT, "\t-p Draw P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_message (GMT, "\t-g Set color used for P_symbol. [default is compressive parts color]\n");
+	GMT_message (GMT, "\t-e Set color used for T_symbol. [default is extensive parts color]\n");
 	GMT_message (GMT, "\t-o Use psvelomeca format (Without depth in third column)\n");
 	GMT_explain_options (GMT, "Xchi:.");
 

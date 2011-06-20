@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.16 2011-06-07 21:38:29 guru Exp $
+ *	$Id: redpol_func.c,v 1.17 2011-06-20 22:15:10 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -994,7 +994,7 @@ GMT_LONG GMT_redpol_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                 
 	GMT_message (GMT, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
-	GMT_message (GMT, "\t-G filename for output grid with the RTP solution\n");
+	GMT_message (GMT, "\t-G Filename for output grid with the RTP solution\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C<dec>/<dip> uses this constant values in the RTP procedure.\n");
 	GMT_message (GMT, "\t-E<dip_grd>/<dec_grd> Get magnetization DIP & DEC from these grids [default: use IGRF].\n");

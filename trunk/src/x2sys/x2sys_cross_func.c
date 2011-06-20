@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.15 2011-06-13 04:07:26 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,8 +103,8 @@ GMT_LONG GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles\n");
 	GMT_message (GMT, "\t-T <TAG> is the system tag for the data set.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Gives list of file pairs that are ok to compare [Default is all combinations]\n");
-	GMT_message (GMT, "\t-I sets the interpolation mode.  Choose among:\n");
+	GMT_message (GMT, "\t-A Give list of file pairs that are ok to compare [Default is all combinations]\n");
+	GMT_message (GMT, "\t-I Set the interpolation mode.  Choose among:\n");
 	GMT_message (GMT, "\t   l Linear interpolation [Default]\n");
 	GMT_message (GMT, "\t   a Akima spline interpolation\n");
 	GMT_message (GMT, "\t   c Acubic spline interpolation\n");
@@ -112,12 +112,12 @@ GMT_LONG GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-Q Append e for external crossovers\n");
 	GMT_message (GMT, "\t   Append i for internal crossovers [Default is all crossovers]\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Sets limits on lower and upper speeds (units determined by -Ns):\n");
+	GMT_message (GMT, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
 	GMT_message (GMT, "\t   -Sl sets lower speed [Default is 0]\n");
 	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0]\n");
 	GMT_message (GMT, "\t   -Su sets upper speed [Default is Infinity]\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W sets maximum points on either side of xover to use in interpolation [Default is 3]\n");
+	GMT_message (GMT, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3]\n");
 	GMT_message (GMT, "\t-Z Return z-values for each track [Default is crossover and mean value]\n");
 	GMT_explain_options (GMT, "D");
 	
