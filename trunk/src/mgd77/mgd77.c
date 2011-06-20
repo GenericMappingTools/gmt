@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.281 2011-06-20 02:02:39 guru Exp $
+ *	$Id: mgd77.c,v 1.282 2011-06-20 13:16:57 jluis Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2549,11 +2549,6 @@ void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
 		GMT_chop (C, line);
 		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (C, NULL, strlen (line) + 1, char);
-#if _WIN32
-		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
-#else
-		for (i = 0; line[i]; i++) if (line[i] == '\\') line[i] = DIR_DELIM;
-#endif
 		strcpy (F->MGD77_datadir[F->n_MGD77_paths], line);
 		F->n_MGD77_paths++;
 		if (F->n_MGD77_paths == (int)n_alloc) {
