@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.542 2011-06-20 15:15:25 remko Exp $
+ *	$Id: gmt_init.c,v 1.543 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'B':	/* Tickmark option */
 
-			GMT_message (C, "\t-B Specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
+			GMT_message (C, "\t-B Specify Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
 			GMT_message (C, "\t   more substrings of the form [t]<stride>[+-<phase>][<unit>], where the (optional) [t] is the\n");
 			GMT_message (C, "\t   axis item type, <stride> is the spacing between ticks or annotations, the (optional)\n");
 			GMT_message (C, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
@@ -191,7 +191,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'J':	/* Map projection option */
 
-			GMT_message (C, "\t-J Selects the map proJection system. The projection type is identified by a 1- or\n");
+			GMT_message (C, "\t-J Select the map proJection. The projection type is identified by a 1- or\n");
 			GMT_message (C, "\t   2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash\n");
 			GMT_message (C, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either as 1:<xxxx>\n");
 			GMT_message (C, "\t   or in %s/degree along the standard parallel. Alternatively, when the projection ID is\n", C->session.unit_name[C->current.setting.proj_length_unit]);
@@ -330,7 +330,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'j':	/* Condensed version of J */
 
-			GMT_message (C, "\t-J Selects map proJection. (<scale> in %s/degree, <width> in %s)\n", C->session.unit_name[C->current.setting.proj_length_unit], C->session.unit_name[C->current.setting.proj_length_unit]);
+			GMT_message (C, "\t-J Select map proJection. (<scale> in %s/degree, <width> in %s)\n", C->session.unit_name[C->current.setting.proj_length_unit], C->session.unit_name[C->current.setting.proj_length_unit]);
 			GMT_message (C, "\t   Append h for map height, or +|- for max|min map dimension.\n");
 			GMT_message (C, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is set.\n\n");
 
@@ -404,17 +404,17 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'O':	/* Overlay plot */
 
-			GMT_message (C, "\t-O Sets Overlay plot mode, i.e., append to an existing plot.\n");
+			GMT_message (C, "\t-O Set Overlay plot mode, i.e., append to an existing plot.\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			GMT_message (C, "\t-P Sets Portrait page orientation [%s].\n", GMT_choice[C->current.setting.ps_orientation]);
+			GMT_message (C, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[C->current.setting.ps_orientation]);
 			break;
 
 		case 'R':	/* Region option */
 
-			GMT_message (C, "\t-R Specifies the min/max coordinates of data region in user units.\n");
+			GMT_message (C, "\t-R Specify the min/max coordinates of data region in user units.\n");
 			GMT_message (C, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
 			GMT_message (C, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
 			GMT_message (C, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
@@ -425,7 +425,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'r':	/* Region option for 3-D */
 
-			GMT_message (C, "\t-R Specifies the xyz min/max coordinates of the plot window in user units.\n");
+			GMT_message (C, "\t-R Specify the xyz min/max coordinates of the plot window in user units.\n");
 			GMT_message (C, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
 			GMT_message (C, "\t   Append r if first 4 arguments to -R specify the longitudes/latitudes\n");
 			GMT_message (C, "\t   of the lower left and upper right corners of a rectangular area.\n");
@@ -454,7 +454,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'X':
 		case 'Y':	/* Reset plot origin option */
 
-			GMT_message (C, "\t-X -Y To shift origin of plot to (<xshift>, <yshift>).\n");
+			GMT_message (C, "\t-X -Y Shift origin of plot to (<xshift>, <yshift>).\n");
 			GMT_message (C, "\t   Prepend r for shift relative to current point (default), prepend a for temporary\n");
 			GMT_message (C, "\t   adjustment of origin, prepend f to position relative to lower left corner of page,\n");
 			GMT_message (C, "\t   prepend c for offset of center of plot to center of page.\n");
@@ -527,7 +527,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][<n>] Means input/output file has [%ld] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t-h[i][<n>] Input/output file has [%ld] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
@@ -539,7 +539,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			GMT_message (C, "\t-n[b|c|l|n][+a][+b<BC>][+t<threshold>] Determines the grid interpolation mode.\n");
+			GMT_message (C, "\t-n[b|c|l|n][+a][+b<BC>][+t<threshold>] Determine the grid interpolation mode.\n");
 			GMT_message (C, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
 			GMT_message (C, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
 			GMT_message (C, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
@@ -553,14 +553,14 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'o':	/* -o option for output column order */
 
-			GMT_message (C, "\t-o Sets alternate output column order [Default writes all columns in order].\n");
+			GMT_message (C, "\t-o Set alternate output column order [Default writes all columns in order].\n");
 			break;
 
 		case 'p':	/* Enhanced pseudo-perspective 3-D plot settings */
 #ifdef GMT_COMPAT
 		case 'E':	/* For backward compatibility */
 #endif
-			GMT_message (C, "\t-%c Selects a 3-D pseudo perspective view.  Append the\n", options[k]);
+			GMT_message (C, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
 			GMT_message (C, "\t   azimuth and elevation of the viewpoint [180/90].\n");
 			GMT_message (C, "\t   When used with -Jz|Z, optionally add zlevel for frame, etc [bottom of z-axis]\n");
 			GMT_message (C, "\t   Optionally, append +w<lon/lat[/z] to specify a fixed point\n");
@@ -584,7 +584,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 't':	/* -t layer transparency option  */
 
-			GMT_message (C, "\t-t Sets the overlay PDF transparency from 0-100 [Default is 0; opaque].\n");
+			GMT_message (C, "\t-t Set the overlay PDF transparency from 0-100 [Default is 0; opaque].\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */

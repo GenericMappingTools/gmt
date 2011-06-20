@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: nearneighbor_func.c,v 1.24 2011-06-08 19:21:49 guru Exp $
+ *	$Id: nearneighbor_func.c,v 1.25 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -134,7 +134,7 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t-G Name of output grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t-N Sets number of sectors and minimum number to be filled.\n");
+	GMT_message (GMT, "\t-N Set number of sectors and minimum number to be filled.\n");
 	GMT_message (GMT, "\t   Default is quadrant search [%d], requiring at least %d to be filled.\n", NN_DEF_SECTORS, NN_MIN_SECTORS);
 	GMT_explain_options (GMT, "R");
 	GMT_dist_syntax (GMT, 'S', "Only consider points inside this search radius.");
@@ -146,7 +146,7 @@ GMT_LONG GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "C0");
 	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_explain_options (GMT, "fhi");
-	GMT_message (GMT, "\t-n+b<BC> Sets boundary conditions.  <BC> can be either:\n");
+	GMT_message (GMT, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
 	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");

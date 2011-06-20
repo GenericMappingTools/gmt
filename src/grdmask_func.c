@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdmask_func.c,v 1.20 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdmask_func.c,v 1.21 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,13 +93,13 @@ GMT_LONG GMT_grdmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e. connect by straight lines,\n");
 	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_message (GMT, "\t   Ignored if -S is used since points are then not considered to be lines.\n");
-	GMT_message (GMT, "\t-N Sets <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
+	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
 	GMT_message (GMT, "\t   Optionally, use -Ni (inside) or -NI (inside+edge) to set polygon ID:\n");
 	GMT_message (GMT, "\t     a) If OGR/GMT files, get polygon ID via -a for Z column.\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-L<label>) as polygon IDs.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
-	GMT_dist_syntax (GMT, 'S', "Sets search radius to identify inside points.");
+	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_message (GMT, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");

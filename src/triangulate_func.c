@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.13 2011-06-13 01:24:15 guru Exp $
+ *	$Id: triangulate_func.c,v 1.14 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -117,7 +117,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");   
-	GMT_message (GMT, "\t-D Takes derivative in the x- or y-direction (only with -G) [Default is z value].\n");
+	GMT_message (GMT, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
@@ -128,7 +128,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R) [Delaunay triangulation].\n");
 #endif
 	GMT_explain_options (GMT, "RVC2");
-	GMT_message (GMT, "\t-bo Writes binary (double) index table [Default is ASCII i/o].\n");
+	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
 	GMT_explain_options (GMT, "fhiF:.");
 	
 	return (EXIT_FAILURE);

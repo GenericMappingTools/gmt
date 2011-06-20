@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.26 2011-06-07 01:14:20 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.27 2011-06-20 21:45:15 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -539,7 +539,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Clips polygons to the given region box (requires -R), yielding a closed polygon.\n");
+	GMT_message (GMT, "\t-C Clip polygons to the given region box (requires -R), yielding a closed polygon.\n");
 	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e. lines), see -T.\n");
 	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> (if given).\n");
 	GMT_message (GMT, "\t   Near-duplicates have a min point separation less than <dmax> [0] and closeness\n");
@@ -563,7 +563,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
 	GMT_message (GMT, "\t   Use -M+ to place the (area, handedness) or length result in the segment header\n");
 	GMT_message (GMT, "\t   on output [Default only reports results to stdout].\n");
-	GMT_message (GMT, "\t-N Determines ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
+	GMT_message (GMT, "\t-N Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
 	GMT_message (GMT, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
 	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as polygon IDs, else\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.15 2011-06-08 19:21:50 guru Exp $
+ *	$Id: trend1d_func.c,v 1.16 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -479,7 +479,7 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F Choose at least 1, up to 5, any order, of xymrw for ascii output to stdout.\n");
 	GMT_message (GMT, "\t   x=x, y=y, m=model, r=residual=y-m, w=weight.  w determined iteratively if robust fit used.\n");
 	GMT_message (GMT, "\t   Alternatively choose -Fp to output only the model coefficients (Polynomial).\n");
-	GMT_message (GMT, "\t-N fit a Polynomial [Default] or Fourier (-Nf) model with <n_model> terms.\n");
+	GMT_message (GMT, "\t-N Fit a Polynomial [Default] or Fourier (-Nf) model with <n_model> terms.\n");
 	GMT_message (GMT, "\t   Append r for robust model. E.g., robust quadratic = -N3r.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y[,w]) data.\n");

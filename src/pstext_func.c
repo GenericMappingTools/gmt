@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.28 2011-06-08 18:31:29 guru Exp $
+ *	$Id: pstext_func.c,v 1.29 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -287,9 +287,9 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Sets the clearance between characters and surrounding box.  Only used\n");
+	GMT_message (GMT, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
 	GMT_message (GMT, "\t   if -W has been set.  Append units {%s} or %% of fontsize [15%%].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "\t-D Adds <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
+	GMT_message (GMT, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
 	GMT_message (GMT, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
 	GMT_message (GMT, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
 	GMT_message (GMT, "\t-F Specify values for text attributes that apply to all text records:\n");
@@ -299,23 +299,23 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
 	GMT_message (GMT, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_message (GMT, "\t   data file in the order given on the -F option.\n");
-	GMT_message (GMT, "\t-G Paints the box underneath the text with specified color [Default is no paint].\n");
+	GMT_message (GMT, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_message (GMT, "\t   Alternatively, append c to set clip paths based on text (and -C).  No text is plotted.\n");
 	GMT_message (GMT, "\t   See psclip -Ct to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L lists the font-numbers and font-names available, then exits.\n");
-	GMT_message (GMT, "\t-M Paragraph text mode [Default is single item mode].\n");
+	GMT_message (GMT, "\t-L List the font-numbers and font-names available, then exits.\n");
+	GMT_message (GMT, "\t-M Set paragraph text mode [Default is single item mode].\n");
 	GMT_message (GMT, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
 	GMT_message (GMT, "\t   followed by lines with one or more paragraphs of text.\n");
 	GMT_message (GMT, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
 	GMT_message (GMT, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
-	GMT_message (GMT, "\t-T Sets shape of textbox when using -G and/or -W.\n");
+	GMT_message (GMT, "\t-T Set shape of textbox when using -G and/or -W.\n");
 	GMT_message (GMT, "\t   Add o for rectangle [Default], O for rectangle with rounded corners,\n");
 	GMT_message (GMT, "\t   c for concave rectangle, C for convex rectangle.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Draws a box around the text with the specified pen [Default pen is %s].");
+	GMT_pen_syntax (GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].");
 	GMT_explain_options (GMT, "X");
 	GMT_message (GMT, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
 	GMT_message (GMT, "\t   Note that -Z+ also sets -N.\n");

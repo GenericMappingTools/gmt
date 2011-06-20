@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdgradient_func.c,v 1.18 2011-06-07 21:38:29 guru Exp $
+ *	$Id: grdgradient_func.c,v 1.19 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -119,9 +119,9 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Sets azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
+	GMT_message (GMT, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_message (GMT, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
-	GMT_message (GMT, "\t-D Finds the direction of grad z.\n");
+	GMT_message (GMT, "\t-D Find the direction of grad z.\n");
 	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
 	GMT_message (GMT, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
 	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o.\n");
@@ -137,7 +137,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
 	GMT_message (GMT, "\t   This means that even if you provide other values they will be ignored.\n");
 	GMT_message (GMT, "\t-G Output file for results from -A or -D.\n");
-	GMT_message (GMT, "\t-N Will normalize gradients so that max |grad| = <amp> [1.0].\n");
+	GMT_message (GMT, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Nt<amp>/<sigma>[/<offset>] or -Ne<amp>/<sigma>[/<offset>] sets sigma\n");

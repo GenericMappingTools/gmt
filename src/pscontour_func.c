@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscontour_func.c,v 1.27 2011-06-12 20:51:27 guru Exp $
+ *	$Id: pscontour_func.c,v 1.28 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -387,7 +387,7 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");
 	GMT_message (GMT, "\t   separate segments into one file per contour level, and %%d would write all segments.\n");
 	GMT_message (GMT, "\t   to individual files; see manual page for more examples.\n");
-	GMT_message (GMT, "\t-G Controls placement of labels along contours.  Choose among five algorithms:\n");
+	GMT_message (GMT, "\t-G Control placement of labels along contours.  Choose among five algorithms:\n");
 	GMT_cont_syntax (GMT, 3, 0);
 	GMT_message (GMT, "\t-I Color triangles using the cpt file.\n");
 	GMT_explain_options (GMT, "K");
@@ -404,7 +404,7 @@ GMT_LONG GMT_pscontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append :LH to plot L and H in the center of closed contours\n");
 	GMT_message (GMT, "\t   for local Lows and Highs (e.g, give :-+ to plot - and + signs).\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].");
 	GMT_message (GMT, "\t   The default settings are\n");
 	P = GMT->current.setting.map_default_pen;
 	GMT_message (GMT, "\t   Contour pen: %s\n", GMT_putpen (GMT, P));

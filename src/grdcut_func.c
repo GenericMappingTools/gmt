@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcut_func.c,v 1.13 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdcut_func.c,v 1.14 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -77,7 +77,7 @@ GMT_LONG GMT_grdcut_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<ingrid> is file to extract a subset from.\n");
-	GMT_message (GMT, "\t-G specifies output grid file\n");
+	GMT_message (GMT, "\t-G Specify output grid file\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   Obviously, the WESN you specify must be within the WESN of the input grid.\n");
 	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");

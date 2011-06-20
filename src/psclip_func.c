@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psclip_func.c,v 1.26 2011-06-14 02:58:43 remko Exp $
+ *	$Id: psclip_func.c,v 1.27 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -73,7 +73,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C Means undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
+	GMT_message (GMT, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
 	GMT_message (GMT, "\t   Append p to terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
 	GMT_message (GMT, "\t   Append t to terminate text clipping; append how many clip levels to restore or a for all [1].\n");
 	GMT_message (GMT, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");

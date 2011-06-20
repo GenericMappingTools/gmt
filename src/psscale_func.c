@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.25 2011-06-14 03:25:51 remko Exp $
+ *	$Id: psscale_func.c,v 1.26 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -156,7 +156,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete cpt table.\n");
 	GMT_message (GMT, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
 	GMT_message (GMT, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
-	GMT_message (GMT, "\t-N effective dots-per-inch for color scale [600].\n");
+	GMT_message (GMT, "\t-N Set effective dots-per-inch for color scale [600].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_explain_options (GMT, "R");

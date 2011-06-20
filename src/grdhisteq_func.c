@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.13 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.14 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -88,7 +88,7 @@ GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	
 	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Sets how many cells (divisions) of data range to make.\n");
+	GMT_message (GMT, "\t-C Set how many cells (divisions) of data range to make.\n");
 	GMT_message (GMT, "\t-D Dump level information to stdout.\n");
 	GMT_message (GMT, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");

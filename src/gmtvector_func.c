@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.18 2011-06-07 01:14:20 guru Exp $
+*    $Id: gmtvector_func.c,v 1.19 2011-06-20 21:45:15 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,7 +114,7 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Ignored unless -fg is given.\n");
 	GMT_message (GMT, "\t-N Normalize the transformed vectors (only affects -Co output).\n");
 	GMT_message (GMT, "\t-S The secondary vector (if needed by -T), given as lon/lat, r/theta, or x/y[/z].\n");
-	GMT_message (GMT, "\t-T Specifies the desired transformation of the input data.  Choose one of\n");
+	GMT_message (GMT, "\t-T Specify the desired transformation of the input data.  Choose one of\n");
 	GMT_message (GMT, "\t   -Ta gives the average of the input and secondary vector (see -S).\n");
 	GMT_message (GMT, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S).\n");
 	GMT_message (GMT, "\t   -Td gives dot-product(s) with secondary vector (see -S).\n");

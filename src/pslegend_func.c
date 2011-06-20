@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.15 2011-06-20 20:41:01 guru Exp $
+ *	$Id: pslegend_func.c,v 1.16 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-D Sets position and size of legend box.  Prepend x if coordinates are projected;\n");
+	GMT_message (GMT, "\t-D Set position and size of legend box.  Prepend x if coordinates are projected;\n");
 	GMT_message (GMT, "\t   if so the -R -J options only required if -O is not given.  Append the justification\n");
 	GMT_message (GMT, "\t   of the whole legend box using pstext justification codes.  Optionally, append offsets\n");
 	GMT_message (GMT, "\t   to shift the box from the selected point in the direction implied by <just>.\n");
@@ -106,11 +106,11 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t<infofile> is one or more ASCII information files with legend commands.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Sets the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
+	GMT_message (GMT, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
 	GMT_message (GMT, "\t-F Draw border around the legend (using FRAME_PEN) [Default is no border].\n");
 	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
 	GMT_explain_options (GMT, "jK");
-	GMT_message (GMT, "\t-L Sets the linespacing factor in units of the current annotation font size [1.1].\n");
+	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_explain_options (GMT, "OPR");
 	GMT_message (GMT, "\t-S Dump legend script to stdout, or optionally to file <script>.\n");
 	GMT_message (GMT, "\t   [Default is to write PostScript output].\n");

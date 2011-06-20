@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.14 2011-06-07 01:14:19 guru Exp $
+ *	$Id: blockmean_func.c,v 1.15 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -53,13 +53,13 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
 	GMT_message (GMT, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]);\n");
 	GMT_message (GMT, "\t   see -W regarding the weight w.\n");
-	GMT_message (GMT, "\t-S Sets the quantity to be reported per block; choose among:\n");
+	GMT_message (GMT, "\t-S Set the quantity to be reported per block; choose among:\n");
 	GMT_message (GMT, "\t   -Sm report mean values [Default].\n");
 	GMT_message (GMT, "\t   -Sn report number of data points.\n");
 	GMT_message (GMT, "\t   -Ss report data sums.\n");
 	GMT_message (GMT, "\t   -Sw reports weight sums.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W sets Weight options, select one:\n");
+	GMT_message (GMT, "\t-W Set Weight options, select one:\n");
 	GMT_message (GMT, "\t   -Wi reads 4 cols (x,y,z,w) but writes only (x,y,z[,s,l,h]) output.\n");
 	GMT_message (GMT, "\t   -Wo reads 3 cols (x,y,z) but writes sum (x,y,z[,s,l,h],w) output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output.\n");

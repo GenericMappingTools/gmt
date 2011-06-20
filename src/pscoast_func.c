@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.21 2011-06-14 02:58:55 remko Exp $
+ *	$Id: pscoast_func.c,v 1.22 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,7 +169,7 @@ GMT_LONG GMT_pscoast_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
 	GMT_explain_options (GMT, "b");
-	GMT_fill_syntax (GMT, 'C', "Sets separate color for lakes and riverlakes [Default is same as ocean].");
+	GMT_fill_syntax (GMT, 'C', "Set separate color for lakes and riverlakes [Default is same as ocean].");
 	GMT_message (GMT, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
 	GMT_message (GMT, "\t      l = Lakes.\n");
 	GMT_message (GMT, "\t      r = River-lakes.\n");
@@ -182,7 +182,7 @@ GMT_LONG GMT_pscoast_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_fill_syntax (GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for land areas.\n");
-	GMT_pen_syntax (GMT, 'I', "draws rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
+	GMT_pen_syntax (GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
 	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -I option as many times as needed.\n");
 	GMT_message (GMT, "\t      0 = Double-lined rivers (river-lakes).\n");
 	GMT_message (GMT, "\t      1 = Permanent major rivers.\n");
@@ -203,19 +203,19 @@ GMT_LONG GMT_pscoast_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
 	GMT_message (GMT, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
 	GMT_message (GMT, "\t   Specify any combination of -W, -I, -N.\n");
-	GMT_pen_syntax (GMT, 'N', "draws boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
+	GMT_pen_syntax (GMT, 'N', "Draw boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
 	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
 	GMT_message (GMT, "\t     1 = National boundaries.\n");
 	GMT_message (GMT, "\t     2 = State boundaries within the Americas.\n");
 	GMT_message (GMT, "\t     3 = Marine boundaries.\n");
 	GMT_message (GMT, "\t     a = All boundaries (1-3).\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q means terminate previously set clip-paths.\n");
+	GMT_message (GMT, "\t-Q Terminate previously set clip-paths.\n");
 	GMT_fill_syntax (GMT, 'S', "Paint of clip \"wet\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for water areas.\n");
-	GMT_maprose_syntax (GMT, 'T', "Draws a north-pointing map rose centered on <lon0>/<lat0>.");
+	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "draw shorelines.  Append pen [Default for all levels: %s].");
+	GMT_pen_syntax (GMT, 'W', "Draw shorelines.  Append pen [Default for all levels: %s].");
 	GMT_message (GMT, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
 	GMT_message (GMT, "\t      1 = Coastline.\n");
 	GMT_message (GMT, "\t      2 = Lake shores.\n");

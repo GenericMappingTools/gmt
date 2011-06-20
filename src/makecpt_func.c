@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: makecpt_func.c,v 1.13 2011-06-07 21:38:29 guru Exp $
+ *	$Id: makecpt_func.c,v 1.14 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -116,9 +116,9 @@ GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_message (GMT, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
 	GMT_message (GMT, "\t   bottom/top values in the input cpt file.\n");
-	GMT_message (GMT, "\t-F Felect the color model for output (R for r/g/b or grayscale or colorname,\n");
+	GMT_message (GMT, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_message (GMT, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
-	GMT_message (GMT, "\t-I Reverses sense of color table as well as back- and foreground color.\n");
+	GMT_message (GMT, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
 	GMT_message (GMT, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
 	GMT_message (GMT, "\t   [Default uses the settings in the color table].\n");
 	GMT_message (GMT, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");

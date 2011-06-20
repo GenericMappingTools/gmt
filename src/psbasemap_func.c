@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.25 2011-06-14 02:59:15 remko Exp $
+ *	$Id: psbasemap_func.c,v 1.26 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,9 +75,9 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "BJZR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "K");
-	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>.");
+	GMT_mapscale_syntax (GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
 	GMT_explain_options (GMT, "OP");
-	GMT_maprose_syntax (GMT, 'T', "Draws a north-pointing map rose centered on <lon0>/<lat0>.");
+	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
 	GMT_explain_options (GMT, "UVXcfpt.");
 
 	return (EXIT_FAILURE);

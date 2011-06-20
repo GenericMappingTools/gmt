@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.20 2011-06-08 19:21:50 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.21 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -108,7 +108,7 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-A Determines what to do if multiple entries are found for a node:\n");
+	GMT_message (GMT, "\t-A Determine what to do if multiple entries are found for a node:\n");
 	GMT_message (GMT, "\t   -Af: Keep first value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Al: Keep lower (minimum) value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -An: Count number of multiple entries per node instead.\n");
@@ -116,14 +116,14 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Az: Sum multiple entries at the same node.\n");
 	GMT_message (GMT, "\t   [Default will compute mean values].\n");
-	GMT_message (GMT, "\t-D To enter header information.  Specify '=' to get default value.\n");
+	GMT_message (GMT, "\t-D Append header information; specify '=' to get default value.\n");
 	GMT_message (GMT, "\t-N Set value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_message (GMT, "\t   Z-table entries that equal <nodata> are replaced by NaN.\n");
-	GMT_message (GMT, "\t-S Requires -Z and will swap the byte-order of the input data and write\n");
-	GMT_message (GMT, "\t   the result to <zfile> (or stdout if no file given).  No grid file created!\n");
+	GMT_message (GMT, "\t-S Swap the byte-order of the input data and write resut to <zfile>\n");
+	GMT_message (GMT, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-Z Sets exact specification of incoming 1-column z-table.\n");
+	GMT_message (GMT, "\t-Z Set exact specification of incoming 1-column z-table.\n");
 	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
 	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row.\n");
 	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");

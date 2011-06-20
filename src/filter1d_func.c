@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.12 2011-06-11 00:43:32 guru Exp $
+ *	$Id: filter1d_func.c,v 1.13 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -175,7 +175,7 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-F sets filtertype.  Choose from convolution and non-convolution filters\n");
+	GMT_message (GMT, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
 	GMT_message (GMT, "\t   and append filter <width> in same units as time column.\n");
 	GMT_message (GMT, "\t   Convolution filters:\n");
 	GMT_message (GMT, "\t     b: Boxcar : Weights are equal.\n");
@@ -197,22 +197,22 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-D used when series is NOT equidistantly sampled.\n");
+	GMT_message (GMT, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
 	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e. all abscissae\n");
 	GMT_message (GMT, "\t   will be rounded off to a multiple of <increment>.\n");
-	GMT_message (GMT, "\t-E include ends of time series in output [Default loses half_width at each end].\n");
-	GMT_message (GMT, "\t-I to ignore values; If an input value == <ignore_val> it will be set to NaN.\n");
-	GMT_message (GMT, "\t-L checks for lack of data condition.  If input data has a gap exceeding\n");
+	GMT_message (GMT, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
+	GMT_message (GMT, "\t-I Ignore values; If an input value == <ignore_val> it will be set to NaN.\n");
+	GMT_message (GMT, "\t-L Check for lack of data condition.  If input data has a gap exceeding\n");
 	GMT_message (GMT, "\t   <width> then no output will be given at that point [Default does not check Lack].\n");
-	GMT_message (GMT, "\t-N sets which column contains the independent variable (time) [0].\n");
+	GMT_message (GMT, "\t-N Set the column that contains the independent variable (time) [0].\n");
 	GMT_message (GMT, "\t   The left-most column is # 0, the right-most is # (<n_cols> - 1).\n");
-	GMT_message (GMT, "\t-Q assess quality of output value by checking mean weight in convolution.\n");
+	GMT_message (GMT, "\t-Q Sssess quality of output value by checking mean weight in convolution.\n");
 	GMT_message (GMT, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is suppressed\n");
 	GMT_message (GMT, "\t   at this point [Default does not check quality].\n");
-	GMT_message (GMT, "\t-S checks symmetry of data about window center.  Enter a factor\n");
+	GMT_message (GMT, "\t-S Check symmetry of data about window center.  Enter a factor\n");
 	GMT_message (GMT, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
 	GMT_message (GMT, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
-	GMT_message (GMT, "\t-T make evenly spaced timesteps from <start> to <stop> by <int> [Default uses input times].\n");
+	GMT_message (GMT, "\t-T Make evenly spaced timesteps from <start> to <stop> by <int> [Default uses input times].\n");
 	GMT_explain_options (GMT, "VC0D0fghio.");
 	
 	return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtdp_func.c,v 1.11 2011-06-07 01:14:19 guru Exp $
+ *	$Id: gmtdp_func.c,v 1.12 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -79,11 +79,11 @@ GMT_LONG GMT_gmtdp_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_dist_syntax (GMT, 'T', "Sets tolerance as the maximum distance mismatch.");
+	GMT_dist_syntax (GMT, 'T', "Set tolerance as the maximum distance mismatch.");
 	GMT_message (GMT, "\t   No units means we will do a Cartesian calculation instead.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-G specifies an output file [Default writes to stdout].\n");
+	GMT_message (GMT, "\t-G Specify an output file [Default writes to stdout].\n");
 	GMT_explain_options (GMT, "VC2D0fghio:.");
 	
 	return (EXIT_FAILURE);

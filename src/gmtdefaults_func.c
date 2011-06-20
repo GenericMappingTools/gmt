@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtdefaults_func.c,v 1.6 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtdefaults_func.c,v 1.7 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,7 +57,7 @@ GMT_LONG GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t-D Prints the default settings for the GMT system.\n");
+	GMT_message (GMT, "\t-D Print the default settings for the GMT system.\n");
 	GMT_message (GMT, "\t   Append s to see the SI version of defaults.\n");
 	GMT_message (GMT, "\t   Append u to see the US version of defaults.\n");
 	

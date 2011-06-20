@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.32 2011-06-10 03:57:37 guru Exp $
+ *	$Id: grdview_func.c,v 1.33 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -338,12 +338,12 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
 	GMT_message (GMT, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_message (GMT, "\t   If so, you must also choose -Qi.\n");
-	GMT_message (GMT, "\t-I Gives name of intensity file and selects illumination.\n");
+	GMT_message (GMT, "\t-I Give name of intensity file and selects illumination.\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
 	GMT_message (GMT, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-Q Sets plot request. Choose one of the following:\n");
+	GMT_message (GMT, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_message (GMT, "\t   -Qm for Mesh plot [Default].  Append /<color> for mesh paint [%s]\n", GMT_putcolor (GMT, GMT->PSL->init.page_rgb));
 	GMT_message (GMT, "\t   -Qs[m] for colored or shaded Surface.  Append m to draw meshlines on the surface.\n");
 	GMT_message (GMT, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
@@ -354,7 +354,7 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_pen_syntax (GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline]");
 	GMT_message (GMT, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes for various features in form <type><pen>");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes for various features in form <type><pen>");
 	GMT_message (GMT, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = GMT->current.setting.map_default_pen;
 	GMT_message (GMT, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (GMT, P));

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2cpt_func.c,v 1.14 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grd2cpt_func.c,v 1.15 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -136,7 +136,7 @@ GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
 	GMT_message (GMT, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_message (GMT, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k)\n");
-	GMT_message (GMT, "\t-I Reverses the sense of the color table as well as back- and foreground color.\n");
+	GMT_message (GMT, "\t-I Reverse the sense of the color table as well as back- and foreground color.\n");
 	GMT_message (GMT, "\t-L Limit the range of the data [Default uses actual min,max of data].\n");
 	GMT_message (GMT, "\t-M Use GMT defaults to set back-, foreground, and NaN colors [Default uses color table].\n");
 	GMT_message (GMT, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");

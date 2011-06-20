@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: minmax_func.c,v 1.22 2011-06-08 19:21:49 guru Exp $
+ *    $Id: minmax_func.c,v 1.23 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,21 +101,21 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-A Selects reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
-	GMT_message (GMT, "\t-C Formats the min and max into separate columns.\n");
+	GMT_message (GMT, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
+	GMT_message (GMT, "\t-C Format the min and max into separate columns.\n");
 	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
 	GMT_message (GMT, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
 	GMT_message (GMT, "\t   means we operate instead on the absolute values of the data.\n");
-	GMT_message (GMT, "\t-I Returns textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes 2+ col data).\n");
+	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes 2+ col data).\n");
 	GMT_message (GMT, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_message (GMT, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_message (GMT, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
 	GMT_message (GMT, "\t   To override this behaviour, use -Ip<dx>.\n");
-	GMT_message (GMT, "\t-S Adds extra space for error bars. Useful together with -I.\n");
+	GMT_message (GMT, "\t-S Add extra space for error bars. Useful together with -I.\n");
 	GMT_message (GMT, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
 	GMT_message (GMT, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
 	GMT_message (GMT, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
-	GMT_message (GMT, "\t-T Returns textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
+	GMT_message (GMT, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_message (GMT, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
 	GMT_explain_options (GMT, "VC2fghi:.");
 	

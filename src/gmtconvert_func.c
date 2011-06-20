@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.18 2011-06-07 01:14:19 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.19 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -110,7 +110,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
 	GMT_message (GMT, "\t   All files must have the same number of segments and rows,\n");
 	GMT_message (GMT, "\t   but they may differ in their number of columns.\n");
-	GMT_message (GMT, "\t-D Writes individual segments to separate files [Default writes one\n");
+	GMT_message (GMT, "\t-D Write individual segments to separate files [Default writes one\n");
 	GMT_message (GMT, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_message (GMT, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
 	GMT_message (GMT, "\t   a sequential segment number across all tables (if more than one table).\n");

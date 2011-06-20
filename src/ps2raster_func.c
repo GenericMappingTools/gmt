@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.17 2011-06-20 02:02:39 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.18 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -265,7 +265,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
 	GMT_message (GMT, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_message (GMT, "\t   as is. Repeat to add several options [none].\n");
-	GMT_message (GMT, "\t-D Sets an alternative output directory (which must exist)\n");
+	GMT_message (GMT, "\t-D Set an alternative output directory (which must exist)\n");
 	GMT_message (GMT, "\t   [Default is same directory as PS files].\n");
 	GMT_message (GMT, "\t   Use -D. to place the output in the current directory.\n");
 	GMT_message (GMT, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others].\n");
@@ -301,7 +301,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
 	GMT_message (GMT, "\t   The EPS format can be combined with any of the other formats.\n");
 	GMT_message (GMT, "\t   For example, -Tef creates both an EPS and PDF file.\n");
-	GMT_message (GMT, "\t-V Provides progress report [default is silent] and shows the\n");
+	GMT_message (GMT, "\t-V Provide progress report [default is silent] and shows the\n");
 	GMT_message (GMT, "\t   gdal_translate command, in case you want to use this program\n");
 	GMT_message (GMT, "\t   to create a geoTIFF file.\n");
 	GMT_message (GMT, "\t-W Write a ESRI type world file suitable to make (e.g.) .tif files be\n");
