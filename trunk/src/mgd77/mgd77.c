@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.282 2011-06-20 13:16:57 jluis Exp $
+ *	$Id: mgd77.c,v 1.283 2011-06-20 18:16:23 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2523,7 +2523,7 @@ void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 
 void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
-	GMT_LONG i, n_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG n_alloc = GMT_SMALL_CHUNK;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
 	FILE *fp = NULL;
 
@@ -4981,6 +4981,14 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	return (n_list);
 }
 
+void MGD77_Free_Table (struct GMT_CTRL *C, int n_items, char **item_names)
+{
+	int i;
+	if (!n_items) return;
+	for (i = 0; i < n_items; i++) GMT_free (C, item_names[i]);
+	GMT_free (C, item_names);
+	
+}
 void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR)
 {
 	/* We seek to make the correction system very flexible, in particular

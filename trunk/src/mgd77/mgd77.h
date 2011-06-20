@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.126 2011-04-29 03:08:12 guru Exp $
+ *	$Id: mgd77.h,v 1.127 2011-06-20 18:16:23 guru Exp $
  * 
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -564,6 +564,7 @@ EXTERN_MSC void MGD77_Init_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABL
 EXTERN_MSC double MGD77_Correction (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double **value, double *aux, GMT_LONG rec);
 EXTERN_MSC double MGD77_Correction_Rec (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double *value, double *aux);
 EXTERN_MSC void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, int n);
+EXTERN_MSC void MGD77_Free_Table (struct GMT_CTRL *C, int n_items, char **item_names);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */
 #include "cm4_functions.h"
