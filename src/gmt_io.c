@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.294 2011-06-20 17:57:30 guru Exp $
+ *	$Id: gmt_io.c,v 1.295 2011-06-20 22:31:42 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -440,7 +440,10 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (C, filename, mode);
-		if (!fd) fd = fopen (GMT_getdatapath(C, filename, path), mode);
+		if (!fd) {
+			char *c;
+			if ((c = GMT_getdatapath(C, filename, path)) != NULL) fd = fopen(c, mode);
+		}
 		return (fd);
 	}
 }
