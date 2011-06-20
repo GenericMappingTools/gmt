@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_report_func.c,v 1.8 2011-06-20 02:02:39 guru Exp $
+ *	$Id: x2sys_report_func.c,v 1.9 2011-06-20 22:17:52 jluis Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -328,11 +328,11 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Time to issue output */
 	
-	fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-	fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
-	if (!Ctrl->In.file) fprintf (GMT->session.std[GMT_OUT], " [stdin]");
+	GMT_fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
+	GMT_fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
+	if (!Ctrl->In.file) GMT_fprintf (GMT->session.std[GMT_OUT], " [stdin]");
 	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-	fprintf (GMT->session.std[GMT_OUT], "\n#track\tN\tmean\tstdev\trms\tweight[%ld]\n", n_use);
+	GMT_fprintf (GMT->session.std[GMT_OUT], "\n#track\tN\tmean\tstdev\trms\tweight[%ld]\n", n_use);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
