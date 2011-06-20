@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: ps2raster_func.c,v 1.16 2011-05-16 22:22:31 guru Exp $
+ *	$Id: ps2raster_func.c,v 1.17 2011-06-20 02:02:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -689,7 +689,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_LONG dump = TRUE;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Strip GMT time-stamp...");
 			no_U_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
-			sprintf (no_U_file, "%s%cps2raster_%db.eps", Ctrl->D.dir, DIR_DELIM, (int)getpid());
+			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
@@ -723,7 +723,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			char *psfile_to_use;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Find HiResBoundingBox ");
 			BB_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
-			sprintf (BB_file, "%s%cps2raster_%ldc.bb", Ctrl->D.dir, DIR_DELIM, (GMT_LONG)getpid());
+			sprintf (BB_file, "%s/ps2raster_%ldc.bb", Ctrl->D.dir, (GMT_LONG)getpid());
 			psfile_to_use = (Ctrl->A.strip) ? no_U_file : ((clean_PS_file) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			i_unused = system (cmd);		/* Execute the command that computes the tight BB */
@@ -743,7 +743,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						fclose (fpb);
 						remove (BB_file);	/* Remove the file */
 						tmp_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
-						sprintf (tmp_file, "%s%c", Ctrl->D.dir, DIR_DELIM);
+						sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
 						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%ld -sOutputFile=%s -f%s", 
@@ -769,7 +769,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->T.eps) GMT_report (GMT, GMT_MSG_VERBOSE, " Format EPS file...");
 		tmp_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
 		if (Ctrl->T.eps) {
-			if (Ctrl->D.active) sprintf (tmp_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
+			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (!Ctrl->F.active)
 				strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			else
@@ -781,7 +781,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s%cps2raster_%ldd.eps", Ctrl->D.dir, DIR_DELIM, (GMT_LONG)getpid());
+			sprintf (tmp_file, "%s/ps2raster_%ldd.eps", Ctrl->D.dir, (GMT_LONG)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
 				continue;
@@ -1004,7 +1004,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Convert to %s...", tag);
 
 			if (!Ctrl->F.active) {
-				if (Ctrl->D.active) sprintf (out_file, "%s%c", Ctrl->D.dir, DIR_DELIM);		/* Use specified output directory */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			}
 			else
@@ -1044,7 +1044,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			north -= y_inc / 2.0;
 
 			world_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
-			if (Ctrl->D.active) sprintf (world_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
+			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
 				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
 					if (out_file[i] == '.') { 	/* Beginning of file extension */
@@ -1112,7 +1112,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		else if ( Ctrl->W.kml ) {	/* Write a basic kml file */
 			char *kml_file = NULL;
 			kml_file = GMT_memory (GMT, NULL, GMT_BUFSIZ, char);
-			if (Ctrl->D.active) sprintf (kml_file, "%s%c", Ctrl->D.dir, DIR_DELIM);	/* Use specified output directory */
+			if (Ctrl->D.active) sprintf (kml_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the kml one */
 				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
 					if (out_file[i] == '.') { 	/* Beginning of file extension */

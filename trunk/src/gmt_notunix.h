@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.51 2011-05-29 17:29:36 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.52 2011-06-20 02:02:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,6 +56,9 @@
  *--------------------------------------------------------------------*/
 
 #if defined(WIN32) && !defined(__MINGW32__)	/* Start of Windows setup */
+
+/* Turn /c/dir/... paths into c:/dir/... */
+#define DOS_path_fix(dir) if (dir && dir[0] == '/' && dir[1] && dir[2] == '/') { dir[0] = dir[1]; dir[1] = ':'; dir[2] = '/'; }
 
 #define _GMT_NOTPOSIX_H	/* This forces the following not to be reset in gmt_notposix.h */
 
@@ -138,7 +141,6 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 #define _WIN32
 #endif
 
-#define DIR_DELIM '\\'		/* Backslash as directory delimiter */
 #define PATH_DELIM ';'		/* (char)   Win uses ;, Unix uses : */
 #define PATH_SEPARATOR ";"	/* (char *) Win uses ;, Unix uses : */
 
@@ -214,10 +216,6 @@ EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
  *===================================================================*/
  
 /* Set a few Default Unix settings if they did not get set above */
-
-#ifndef DIR_DELIM
-#define DIR_DELIM '/'
-#endif
 
 #ifndef PATH_DELIM
 #define PATH_DELIM ':'	/* Win uses ;, Unix uses : */

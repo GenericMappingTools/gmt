@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.540 2011-06-18 04:07:36 guru Exp $
+ *	$Id: gmt_init.c,v 1.541 2011-06-20 02:02:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4245,7 +4245,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 
 	/* Find the global gmt.conf file */
 
-	sprintf (line, "%s%cconf%cgmt.conf", C->session.SHAREDIR, DIR_DELIM, DIR_DELIM);
+	sprintf (line, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (line, R_OK)) {
 		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
 		return (0);
@@ -4295,7 +4295,7 @@ void GMT_putdefaults (struct GMT_CTRL *C, char *this_file)	/* Dumps the GMT para
 	else if (C->session.TMPDIR) {	/* Write C->session.TMPDIR/gmt.conf */
 		char *path = CNULL;
 		path = GMT_memory (C, NULL, strlen (C->session.TMPDIR) + 10, char);
-		sprintf (path, "%s%cgmt.conf", C->session.TMPDIR, DIR_DELIM);
+		sprintf (path, "%s/gmt.conf", C->session.TMPDIR);
 		GMT_savedefaults (C, path);
 		GMT_free (C, path);
 	}
@@ -4766,11 +4766,11 @@ GMT_LONG gmt_get_history (struct GMT_CTRL *C)
 
 	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
-		sprintf (hfile, "%s%c.gmtcommands", C->session.TMPDIR, DIR_DELIM);
+		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
 		sprintf (hfile, ".gmtcommands");
 	else	/* Try home directory instead */
-		sprintf (hfile, "%s%c.gmtcommands", C->session.HOMEDIR, DIR_DELIM);
+		sprintf (hfile, "%s/.gmtcommands", C->session.HOMEDIR);
 
 	if ((fp = fopen (hfile, "r")) == NULL) return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
 
@@ -4835,11 +4835,11 @@ GMT_LONG gmt_put_history (struct GMT_CTRL *C)
 
 	not_used = getcwd (cwd, (size_t)GMT_BUFSIZ);
 	if (C->session.TMPDIR)			/* Isolation mode: Use C->session.TMPDIR/.gmtcommands */
-		sprintf (hfile, "%s%c.gmtcommands", C->session.TMPDIR, DIR_DELIM);
+		sprintf (hfile, "%s/.gmtcommands", C->session.TMPDIR);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
 		sprintf (hfile, ".gmtcommands");
 	else	/* Try home directory instead */
-		sprintf (hfile, "%s%c.gmtcommands", C->session.HOMEDIR, DIR_DELIM);
+		sprintf (hfile, "%s/.gmtcommands", C->session.HOMEDIR);
 
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
@@ -5058,6 +5058,9 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.SHAREDIR = strdup (this);
 	else	/* Default is GMT_SHARE_PATH */
 		C->session.SHAREDIR = strdup (GMT_SHARE_PATH);
+#ifdef WIN32
+	DOS_path_fix (C->session.SHAREDIR);
+#endif
 
 	/* Determine HOMEDIR (user home directory) */
 
@@ -5069,19 +5072,25 @@ void GMT_set_env (struct GMT_CTRL *C)
 #endif
 	else
 		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not determine home directory!\n");
+#ifdef WIN32
+	DOS_path_fix (C->session.HOMEDIR);
+#endif
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
 	if ((this = getenv ("GMT_USERDIR")) != CNULL)	/* GMT_USERDIR was set */
 		C->session.USERDIR = strdup (this);
 	else if (C->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
-		sprintf (path, "%s%c%s", C->session.HOMEDIR, DIR_DELIM, ".gmt");
+		sprintf (path, "%s/%s", C->session.HOMEDIR, ".gmt");
 		C->session.USERDIR = strdup (path);
 	}
 	if (access (C->session.USERDIR, R_OK)) {	/* If we cannot access this dir then we won't use it */
 		free ((void *)C->session.USERDIR);
 		C->session.USERDIR = CNULL;
 	}
+#ifdef WIN32
+	DOS_path_fix (C->session.USERDIR);
+#endif
 
 #ifdef GMT_COMPAT
 	/* Check if obsolete GMT_CPTDIR was specified */
@@ -5100,6 +5109,9 @@ void GMT_set_env (struct GMT_CTRL *C)
 			C->session.DATADIR = CNULL;
 		else	/* A list of directories */
 			C->session.DATADIR = strdup (this);
+#ifdef WIN32
+		DOS_path_fix (C->session.DATADIR);
+#endif
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
@@ -5116,6 +5128,9 @@ void GMT_set_env (struct GMT_CTRL *C)
 		}
 		else
 			C->session.TMPDIR = strdup (this);
+#ifdef WIN32
+		DOS_path_fix (C->session.TMPDIR);
+#endif
 	}
 }
 
@@ -7704,7 +7719,7 @@ struct GMT_CTRL *GMT_begin (char *session, GMT_LONG mode)
 
 	/* Initialize the standard GMT system default settings from the system file */
 
-	sprintf (path, "%s%cconf%cgmt.conf", C->session.SHAREDIR, DIR_DELIM, DIR_DELIM);
+	sprintf (path, "%s/conf/gmt.conf", C->session.SHAREDIR);
 	if (access (path, R_OK)) {
 		GMT_report (C, -GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
 		return (NULL);

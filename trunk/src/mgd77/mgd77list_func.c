@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.13 2011-06-18 04:07:36 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.14 2011-06-20 02:02:39 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -746,7 +746,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxilliary columns */
 		char path[GMT_BUFSIZ];
 		if (!Ctrl->L.file) {	/* Try default correction table */
-			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
+			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);
@@ -868,7 +868,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		char path[GMT_BUFSIZ];
 		if (!Ctrl->L.file) {	/* Try default correction table */
-			sprintf (path, "%s%cmgd77_corrections.txt", M.MGD77_HOME, DIR_DELIM);
+			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.9 2011-06-13 04:07:26 guru Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.10 2011-06-20 02:02:39 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -155,7 +155,7 @@ GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, cha
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
 	
-	sprintf (file, "%s%c%s%c%s.%s.adj", DIR, DIR_DELIM, TAG, DIR_DELIM, track, column);
+	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
 	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) return FALSE;	/* Nuthin' to read */
 	
 	adj = GMT_memory (GMT, NULL, 1, struct X2SYS_ADJUST);

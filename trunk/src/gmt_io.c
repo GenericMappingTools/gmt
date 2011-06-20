@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.291 2011-06-18 04:07:36 guru Exp $
+ *	$Id: gmt_io.c,v 1.292 2011-06-20 02:02:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -494,9 +494,9 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* If a full path is given, we only look for that file directly */
 
 #ifdef WIN32
-	if (stem[0] == DIR_DELIM || stem[1] == ':') {
+	if (stem[0] == '/' || stem[1] == ':') {
 #else
-	if (stem[0] == DIR_DELIM) {
+	if (stem[0] == '/') {
 #endif
 		if (!access (stem, R_OK)) return (strcpy (path, stem));	/* Yes, found it */
 		return (NULL);	/* No file found, give up */
@@ -505,7 +505,7 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* In isolation mode (when C->session.TMPDIR is defined), we first look there */
 
 	if (C->session.TMPDIR) {
-		sprintf (path, "%s%c%s", C->session.TMPDIR, DIR_DELIM, stem);
+		sprintf (path, "%s/%s", C->session.TMPDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -516,11 +516,11 @@ char *GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* If still not found, see if there is a file in the GMT_{HOME,USER}DIR directories */
 
 	if (C->session.HOMEDIR) {
-		sprintf (path, "%s%c%s", C->session.HOMEDIR, DIR_DELIM, stem);
+		sprintf (path, "%s/%s", C->session.HOMEDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 	if (C->session.USERDIR) {
-		sprintf (path, "%s%c%s", C->session.USERDIR, DIR_DELIM, stem);
+		sprintf (path, "%s/%s", C->session.USERDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -556,9 +556,9 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	/* If we got here and a full path is given, we give up */
 
 #ifdef WIN32
-	if (stem[0] == DIR_DELIM || stem[1] == ':') return (NULL);
+	if (stem[0] == '/' || stem[1] == ':') return (NULL);
 #else
-	if (stem[0] == DIR_DELIM) return (NULL);
+	if (stem[0] == '/') return (NULL);
 #endif
 
 	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
@@ -581,7 +581,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 			}
 			else {
 #endif
-				sprintf (path, "%s%c%s", dir, DIR_DELIM, stem);
+				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
 #ifndef WIN32
 			}
@@ -620,11 +620,11 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 		if (d_namlen == 2 && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
 #if !(defined(__CYGWIN__) || defined(__MINGW32__) || defined(__sun__))
 		if (F->d_type == DT_DIR) {	/* Entry is a directory; must search this directory recursively */
-			sprintf (path, "%s%c%s", savedpath, DIR_DELIM, F->d_name);
+			sprintf (path, "%s/%s", savedpath, F->d_name);
 			ok = gmt_traverse_dir (file, path);
 		}
 		else if (d_namlen == len && !strcmp (F->d_name, file)) {	/* Found the file in this dir (i.e., F_OK) */
-			sprintf (path, "%s%c%s", savedpath, DIR_DELIM, file);
+			sprintf (path, "%s/%s", savedpath, file);
 			ok = TRUE;
 		}
 #endif
@@ -651,22 +651,22 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 
 	/* Do not continue when full pathname is given */
 
-	if (stem[0] == DIR_DELIM) return (NULL);
+	if (stem[0] == '/') return (NULL);
 #ifdef WIN32
-	if (stem[1] == ':') return (NULL);
+	if (stem[0] && stem[1] == ':') return (NULL);
 #endif
 
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (C->session.USERDIR) {
-		sprintf (path, "%s%c%s%s", C->session.USERDIR, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s/%s%s", C->session.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
 	/* Try to get file from $GMT_SHAREDIR/subdir */
 
 	if (subdir) {
-		sprintf (path, "%s%c%s%c%s%s", C->session.SHAREDIR, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s/%s/%s%s", C->session.SHAREDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 

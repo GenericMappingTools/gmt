@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.24 2011-06-07 21:38:29 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.25 2011-06-20 02:02:39 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -1133,7 +1133,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			
 			sprintf (efile, "%s.e77", list[argno]);
 			if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
-				sprintf (efile, "%s%cE77%c%s.e77", In.MGD77_HOME, DIR_DELIM, DIR_DELIM, list[argno]);
+				sprintf (efile, "%s/E77/%s.e77", In.MGD77_HOME, list[argno]);
 				if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
 					MGD77_Free (GMT, D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */

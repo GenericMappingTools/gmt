@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.7 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.8 2011-06-20 02:02:39 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -336,8 +336,8 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/* Done, now we must rewrite the <ID>_index.b and <ID>_tracks.d files */
 
-	sprintf (track_file, "%s%c%s_tracks.d", Ctrl->T.TAG, DIR_DELIM, Ctrl->T.TAG);
-	sprintf (index_file, "%s%c%s_index.b",  Ctrl->T.TAG, DIR_DELIM, Ctrl->T.TAG);
+	sprintf (track_file, "%s/%s_tracks.d", Ctrl->T.TAG, Ctrl->T.TAG);
+	sprintf (index_file, "%s/%s_index.b",  Ctrl->T.TAG, Ctrl->T.TAG);
 	x2sys_path (GMT, track_file, track_path);
 	x2sys_path (GMT, index_file, index_path);
 

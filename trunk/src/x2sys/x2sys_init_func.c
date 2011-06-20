@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.11 2011-06-13 04:07:26 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.12 2011-06-20 02:02:39 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -290,7 +290,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
-	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != DIR_DELIM; d_start--);	/* Find pos of last slash */
+	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
 	d_start++;		/* Find start of file name */
 	
 	/* Determine the TAG directory */
@@ -310,11 +310,11 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Initialize the system TAG files in X2SYS_HOME/TAG */
 
-	sprintf (tag_file, "%s%c%s.tag", Ctrl->In.TAG, DIR_DELIM, Ctrl->In.TAG);
-	sprintf (def_file, "%s%c%s.def", Ctrl->In.TAG, DIR_DELIM, &Ctrl->D.file[d_start]);
-	sprintf (path_file, "%s%c%s_paths.txt", Ctrl->In.TAG, DIR_DELIM, Ctrl->In.TAG);
-	sprintf (track_file, "%s%c%s_tracks.d", Ctrl->In.TAG, DIR_DELIM, Ctrl->In.TAG);
-	sprintf (bin_file, "%s%c%s_index.b", Ctrl->In.TAG, DIR_DELIM, Ctrl->In.TAG);
+	sprintf (tag_file, "%s/%s.tag", Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (def_file, "%s/%s.def", Ctrl->In.TAG, &Ctrl->D.file[d_start]);
+	sprintf (path_file, "%s/%s_paths.txt", Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (track_file, "%s/%s_tracks.d", Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (bin_file, "%s/%s_index.b", Ctrl->In.TAG, Ctrl->In.TAG);
 
 	if (!x2sys_access (GMT, tag_file, R_OK)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "File exists: %s\n", tag_file);

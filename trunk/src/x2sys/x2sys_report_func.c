@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_report_func.c,v 1.7 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_report_func.c,v 1.8 2011-06-20 02:02:39 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -386,7 +386,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			adj[k].n++;
 			
 			qsort((void *)adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
-			sprintf (file, "%s%c%s%c%s.%s.adj", X2SYS_HOME, DIR_DELIM, Ctrl->T.TAG, DIR_DELIM, trk_name[k], Ctrl->C.col);
+			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);
 				Return (EXIT_FAILURE);

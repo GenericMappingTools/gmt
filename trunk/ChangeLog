@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1100 2011-06-19 01:48:00 guru Exp $
+	$Id: ChangeLog,v 1.1101 2011-06-20 02:02:38 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-19	pwessel
+	* *.c:			Eliminated DIR_DELIM since '/' works for all systems.
+				Added WIN32 check to turn /x/dir into x:/dir paths
 
 2011-06-18	pwessel
 	* grdpaste_func.c:	Fixed porting bugs, JL added test case that now works.
