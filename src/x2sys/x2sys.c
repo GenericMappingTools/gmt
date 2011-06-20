@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.161 2011-05-17 00:54:58 guru Exp $
+ *	$Id: x2sys.c,v 1.162 2011-06-20 02:02:39 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,7 +101,7 @@ GMT_LONG gmtmggpath_func (struct GMT_CTRL *GMT, char *leg_path, char *leg)
 	/* Then look elsewhere */
 
 	for (id = 0; id < n_gmtmgg_paths; id++) {
-		sprintf (geo_path, "%s%c%s.gmt", gmtmgg_path[id], DIR_DELIM, leg);
+		sprintf (geo_path, "%s/%s.gmt", gmtmgg_path[id], leg);
 		if (!access (geo_path, R_OK)) {
 			strcpy (leg_path, geo_path);
 			return (0);
@@ -134,11 +134,6 @@ void gmtmggpath_init (struct GMT_CTRL *C) {
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
 		gmtmgg_path[n_gmtmgg_paths] = GMT_memory (C, NULL, strlen (line), char);
 		line[strlen (line)-1] = 0;
-#if _WIN32
-		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
-#else
-		for (i = 0; line[i]; i++) if (line[i] == '\\') line[i] = DIR_DELIM;
-#endif
 		strcpy (gmtmgg_path[n_gmtmgg_paths], line);
 		n_gmtmgg_paths++;
 	}
@@ -148,7 +143,7 @@ void gmtmggpath_init (struct GMT_CTRL *C) {
 
 void x2sys_path (struct GMT_CTRL *C, char *fname, char *path)
 {
-	sprintf (path, "%s%c%s", X2SYS_HOME, DIR_DELIM, fname);
+	sprintf (path, "%s/%s", X2SYS_HOME, fname);
 }
 
 FILE *x2sys_fopen (struct GMT_CTRL *C, char *fname, char *mode)
@@ -218,7 +213,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	X->file_type = X2SYS_ASCII;
 	X->x_col = X->y_col = X->t_col = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
-	sprintf (line, "%s%c%s.def", TAG, DIR_DELIM, fname);
+	sprintf (line, "%s/%s.def", TAG, fname);
 	X->dist_flag = 0;	/* Cartesian distances */
 
 	if ((fp = x2sys_fopen (C, line, "r")) == NULL) return (X2SYS_BAD_DEF);
@@ -416,8 +411,11 @@ void x2sys_set_home (struct GMT_CTRL *C)
 	}
 	else {	/* Default to the x2sys dir under C->session.SHAREDIR */
 		X2SYS_HOME = GMT_memory (C, NULL, strlen (C->session.SHAREDIR) + 7, char);
-		sprintf (X2SYS_HOME, "%s%cx2sys", C->session.SHAREDIR, DIR_DELIM);
+		sprintf (X2SYS_HOME, "%s/x2sys", C->session.SHAREDIR);
 	}
+#ifdef WIN32
+		DOS_path_fix (X2SYS_HOME);
+#endif
 }
 
 void x2sys_free_info (struct GMT_CTRL *C, struct X2SYS_INFO *s)
@@ -986,7 +984,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
 	B->periodic = sfile[0] = suffix[0] = 0;
 
-	sprintf (tag_file, "%s%c%s.tag", TAG, DIR_DELIM, TAG);
+	sprintf (tag_file, "%s/%s.tag", TAG, TAG);
 	if ((fp = x2sys_fopen (C, tag_file, "r")) == NULL) {	/* Not in current directory */
 		GMT_report (C, GMT_MSG_FATAL, "Could not find/open file %s either in current of X2SYS_HOME directories\n", tag_file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -1186,7 +1184,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 	FILE *ftrack = NULL;
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL;
 
-	sprintf (track_file, "%s%c%s_tracks.d", S->TAG, DIR_DELIM, S->TAG);
+	sprintf (track_file, "%s/%s_tracks.d", S->TAG, S->TAG);
 	x2sys_path (C, track_file, track_path);
 
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -1238,7 +1236,7 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 	FILE *fbin = NULL;
 	int index = 0, flag, no_of_tracks, id;	/* These must remain 4-byte ints */
 
-	sprintf (index_file, "%s%c%s_index.b", S->TAG, DIR_DELIM, S->TAG);
+	sprintf (index_file, "%s/%s_index.b", S->TAG, S->TAG);
 	x2sys_path (C, index_file, index_path);
 
 	if ((fbin = fopen (index_path, "rb")) == NULL) {
@@ -1317,7 +1315,7 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 
 	x2sys_set_home (C);
 
-	sprintf (file, "%s%c%s%c%s_paths.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
+	sprintf (file, "%s/%s/%s_paths.txt", X2SYS_HOME, S->TAG, S->TAG);
 
 	n_x2sys_paths = 0;
 
@@ -1326,7 +1324,6 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: path file %s for %s files not found\n", file, S->TAG);
 			GMT_report (C, GMT_MSG_NORMAL, "(Will only look in current directory for such files)\n");
 			GMT_report (C, GMT_MSG_NORMAL, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
-			GMT_report (C, GMT_MSG_FATAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		}
 		return;
 	}
@@ -1335,12 +1332,10 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
 		GMT_chop (C, line);	/* Remove trailing CR or LF */
-		x2sys_datadir[n_x2sys_paths] = GMT_memory (C, NULL, strlen (line)+1, char);
-#if _WIN32
-		for (i = 0; line[i]; i++) if (line[i] == '/') line[i] = DIR_DELIM;
-#else
-		for (i = 0; line[i]; i++) if (line[i] == '\\') line[i] = DIR_DELIM;
+#ifdef WIN32
+		DOS_path_fix (line);
 #endif
+		x2sys_datadir[n_x2sys_paths] = GMT_memory (C, NULL, strlen (line)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], line);
 		n_x2sys_paths++;
 		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_report (C, GMT_MSG_FATAL, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
@@ -1359,7 +1354,7 @@ GMT_LONG x2sys_get_data_path (struct GMT_CTRL *C, char *track_path, char *track,
 	char geo_path[GMT_BUFSIZ];
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
-		strcpy(track_path, track);
+		strcpy (track_path, track);
 		return (0);
 	}
 
@@ -1382,9 +1377,9 @@ GMT_LONG x2sys_get_data_path (struct GMT_CTRL *C, char *track_path, char *track,
 
 	for (id = 0; id < n_x2sys_paths; id++) {
 		if (add_suffix)
-			sprintf (geo_path, "%s%c%s.%s", x2sys_datadir[id], DIR_DELIM, track, suffix);
+			sprintf (geo_path, "%s/%s.%s", x2sys_datadir[id], track, suffix);
 		else
-			sprintf (geo_path, "%s%c%s", x2sys_datadir[id], DIR_DELIM, track);
+			sprintf (geo_path, "%s/%s", x2sys_datadir[id], track);
 		if (!access (geo_path, R_OK)) {
 			strcpy (track_path, geo_path);
 			return (0);
@@ -1783,7 +1778,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	char path[GMT_BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 
 	if (!ctable) {	/* Try default correction table */
-		sprintf (path, "%s%c%s%c%s_corrections.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
+		sprintf (path, "%s/%s/%s_corrections.txt", X2SYS_HOME, S->TAG, S->TAG);
 		if (access (path, R_OK)) {
 			GMT_report (C, GMT_MSG_FATAL, "No default X2SYS Correction table (%s) for %s found!\n", path, S->TAG);
 			exit (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.79 2011-05-20 03:41:17 guru Exp $
+ *	$Id: libspotter.c,v 1.80 2011-06-20 02:02:39 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -402,6 +402,9 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
 		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != CNULL) ? this : GPLATES_PLATES);
+#ifdef WIN32
+		DOS_path_fix (Plates);
+#endif
 		if ((fp = GMT_fopen (C, Plates, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (EXIT_FAILURE);
@@ -425,6 +428,9 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_LON
 		}
 		/* OK, here we have the two IDs */
 		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != CNULL) ? this : GPLATES_ROTATIONS);
+#ifdef WIN32
+		DOS_path_fix (Rotations);
+#endif
 		if ((fp = GMT_fopen (C, Rotations, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.274 2011-06-16 02:26:20 guru Exp $
+ *	$Id: pslib.c,v 1.275 2011-06-20 02:02:39 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -122,11 +122,9 @@
 /* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
 
 #ifdef WIN32
-#define DIR_DELIM '\\'		/* Backslash as directory delimiter */
 #include <process.h>
 #define getpid _getpid
 #else
-#define DIR_DELIM '/'
 #include <unistd.h>
 #endif
 
@@ -446,6 +444,9 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 		PSL->internal.SHAREDIR = PSL_memory (PSL, NULL, strlen (GMT_SHARE_PATH) + 1, char);
 		strcpy (PSL->internal.SHAREDIR, GMT_SHARE_PATH);
 	}
+#ifdef WIN32
+	DOS_path_fix (PSL->internal.SHAREDIR);
+#endif
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
@@ -459,17 +460,20 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 	}
 	else if ((this = getenv ("HOME")) != NULL) {	/* HOME was set: try $HOME/.gmt */
 		PSL->internal.USERDIR = PSL_memory (PSL, NULL, strlen (this) + 6, char);
-		sprintf (PSL->internal.USERDIR, "%s%c%s", this, DIR_DELIM, ".gmt");
+		sprintf (PSL->internal.USERDIR, "%s/%s", this, ".gmt");
 	}
 	else {
 #ifdef WIN32
 		/* Set USERDIR to C:\.gmt under Windows */
 		PSL->internal.USERDIR = PSL_memory (PSL, NULL, 8, char);
-		sprintf (PSL->internal.USERDIR, "C:%c%s", DIR_DELIM, ".gmt");
+		sprintf (PSL->internal.USERDIR, "C:/%s", ".gmt");
 #else
 		PSL_message (PSL, PSL_MSG_FATAL, "Could not determine home directory!\n");
 #endif
 	}
+#ifdef WIN32
+	DOS_path_fix (PSL->internal.USERDIR);
+#endif
 	if (access (PSL->internal.USERDIR, R_OK)) PSL->internal.USERDIR = NULL;	/* If we cannot read it we might as well not try */
 
 	if (!PSL->init.encoding) PSL->init.encoding = strdup ("Standard");		/* Character encoding to use */
@@ -4504,20 +4508,20 @@ char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *st
 	/* Not found, see if there is a file in the user's GMT->session.USERDIR (~/.gmt) directory */
 
 	if (PSL->internal.USERDIR) {
-		sprintf (path, "%s%c%s%s", PSL->internal.USERDIR, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
 	/* Try to get file from $GMT->session.SHAREDIR/subdir */
 
 	if (subdir) {
-		sprintf (path, "%s%c%s%c%s%s", PSL->internal.SHAREDIR, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s/%s/%s%s", PSL->internal.SHAREDIR, subdir, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
 
 	/* Finally try file in $GMT->session.SHAREDIR (for backward compatibility) */
 
-	sprintf (path, "%s%c%s%s", PSL->internal.SHAREDIR, DIR_DELIM, stem, suffix);
+	sprintf (path, "%s/%s%s", PSL->internal.SHAREDIR, stem, suffix);
 	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */

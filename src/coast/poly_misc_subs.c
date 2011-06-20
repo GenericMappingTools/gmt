@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.7 2011-04-29 03:08:12 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.8 2011-06-20 02:02:39 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -19,6 +19,9 @@ void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N
 		fprintf (stderr, "coast: Please set GMTHOME first\n");
 		exit (EXIT_FAILURE);
 	}
+#ifdef WIN32
+	DOS_path_fix (dir);
+#endif
 	for (c = 0; c < N_CONTINENTS; c++) {	/* For each continent */
 		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
 			sprintf (line, "%s/src/coast/crude_%s_%s.txt", dir, cont[c], type[t]);

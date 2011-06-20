@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.280 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77.c,v 1.281 2011-06-20 02:02:39 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2514,8 +2514,11 @@ void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	}
 	else {	/* Set default path via C->session.SHAREDIR */
 		F->MGD77_HOME = GMT_memory (C, NULL, strlen (C->session.SHAREDIR) + 7, char);
-		sprintf (F->MGD77_HOME, "%s%cmgd77", C->session.SHAREDIR, DIR_DELIM);
+		sprintf (F->MGD77_HOME, "%s/mgd77", C->session.SHAREDIR);
 	}
+#ifdef WIN32
+	DOS_path_fix (F->MGD77_HOME);
+#endif
 }
 
 void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
@@ -2526,7 +2529,7 @@ void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 
 	MGD77_Set_Home (C, F);
 
-	sprintf (file, "%s%cmgd77_paths.txt", F->MGD77_HOME, DIR_DELIM);
+	sprintf (file, "%s/mgd77_paths.txt", F->MGD77_HOME);
 
 	F->n_MGD77_paths = 0;
 
@@ -2825,9 +2828,9 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 		if (!MGD77_format_allowed[fmt]) continue;		/* ...but not this one, apparently */
 		for (id = 0; id < F->n_MGD77_paths; id++) {	/* try each directory */
 			if (append)
-				sprintf (geo_path, "%s%c%s.%s", F->MGD77_datadir[id], DIR_DELIM, track, MGD77_suffix[fmt]);
+				sprintf (geo_path, "%s/%s.%s", F->MGD77_datadir[id], track, MGD77_suffix[fmt]);
 			else
-				sprintf (geo_path, "%s%c%s", F->MGD77_datadir[id], DIR_DELIM, track);
+				sprintf (geo_path, "%s/%s", F->MGD77_datadir[id], track);
 			if (!access (geo_path, R_OK)) {
 				strcpy (track_path, geo_path);
 				F->format = fmt;

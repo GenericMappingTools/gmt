@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.24 2011-06-07 01:14:21 guru Exp $
+ *	$Id: grdraster_func.c,v 1.25 2011-06-20 02:02:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -480,11 +480,6 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
 		strncpy(buf, &rasinfo[nfound].h.command[i], (size_t)j-i);
 		buf[j-i] = '\0';
-#if _WIN32
-		for (i = 0; buf[i]; i++) if (buf[i] == '/') buf[i] = DIR_DELIM;
-#else
-		for (i = 0; buf[i]; i++) if (buf[i] == '\\') buf[i] = DIR_DELIM;
-#endif
 
 		strcpy (rasinfo[nfound].h.remark, buf);
 
