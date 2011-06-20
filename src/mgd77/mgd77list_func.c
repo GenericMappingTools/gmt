@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.14 2011-06-20 02:02:39 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.15 2011-06-20 18:16:23 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -767,6 +767,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
 		for (i = 0; i < n_items; i++) GMT_free (GMT, item_names[i]);
 		if (n_items) GMT_free (GMT, item_names);
+		MGD77_Free_Table (GMT, n_items, item_names);
 	}
 	aux_tvalue[MGD77_AUX_ID] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
