@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.276 2011-06-20 19:14:27 guru Exp $
+ *	$Id: pslib.c,v 1.277 2011-06-20 19:29:07 jluis Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -392,7 +392,7 @@ char *strtok_r (char *s1, const char *s2, char **lasts)
 */
 void psl_path_fix (char *dir)
 {
-	GMT_LONG k, n;
+	PSL_LONG k, n;
 	
 	if (!dir) return;	/* Given NULL */
 	n = strlen (dir);
@@ -468,7 +468,7 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 		strcpy (PSL->internal.SHAREDIR, GMT_SHARE_PATH);
 	}
 #ifdef WIN32
-	DOS_path_fix (PSL->internal.SHAREDIR);
+	psl_path_fix (PSL->internal.SHAREDIR);
 #endif
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
