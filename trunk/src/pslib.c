@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.275 2011-06-20 02:02:39 guru Exp $
+ *	$Id: pslib.c,v 1.276 2011-06-20 19:14:27 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -386,6 +386,29 @@ char *strtok_r (char *s1, const char *s2, char **lasts)
 }
 #endif /* HAVE_STRTOK_R */
 
+#if WIN32
+/* Turn /c/dir/... paths into c:/dir/... 
+ * Must do it in a loop since dir may be several ;-separated dirs
+*/
+void psl_path_fix (char *dir)
+{
+	GMT_LONG k, n;
+	
+	if (!dir) return;	/* Given NULL */
+	n = strlen (dir);
+	for (k = 0; k < n; k++) {
+		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
+	}
+	
+	for (k = 0; k < n-2; k++) {
+		if (dir[k] == '/' && isalpha ((int)dir[k+1]) && dir[k+2] == '/') {
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
+	}
+}
+#endif
+
 /*------------------- PUBLIC PSL API FUNCTIONS--------------------- */
 
 struct PSL_CTRL *New_PSL_Ctrl (char *session)
@@ -472,7 +495,7 @@ PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL)
 #endif
 	}
 #ifdef WIN32
-	DOS_path_fix (PSL->internal.USERDIR);
+	psl_path_fix (PSL->internal.USERDIR);
 #endif
 	if (access (PSL->internal.USERDIR, R_OK)) PSL->internal.USERDIR = NULL;	/* If we cannot read it we might as well not try */
 
