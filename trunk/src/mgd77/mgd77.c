@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.283 2011-06-20 18:16:23 guru Exp $
+ *	$Id: mgd77.c,v 1.284 2011-06-20 20:54:08 jluis Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4985,7 +4985,7 @@ void MGD77_Free_Table (struct GMT_CTRL *C, int n_items, char **item_names)
 {
 	int i;
 	if (!n_items) return;
-	for (i = 0; i < n_items; i++) GMT_free (C, item_names[i]);
+	for (i = 0; i < n_items; i++) free (item_names[i]);		/* free because they were allocated with strdup */
 	GMT_free (C, item_names);
 	
 }
