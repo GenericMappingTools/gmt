@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.24 2011-06-09 13:22:41 remko Exp $
+ *	$Id: gmtmath_func.c,v 1.25 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -338,14 +338,14 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t  T	= table with t-coordinates.\n");
 	GMT_message (GMT, "\t  Tn	= table with normalized [-1 to +1] t-coordinates.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Requires -N and will initialize table with file <ftable> containing t and f(t) only.\n");
+	GMT_message (GMT, "\t-A Require -N and will initialize table with file <ftable> containing t and f(t) only.\n");
 	GMT_message (GMT, "\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1.\n");
 	GMT_message (GMT, "\t   No additional data files may be specified.\n");
 	GMT_message (GMT, "\t-C Change which columns to operate on [Default is all except time].\n");
 	GMT_message (GMT, "\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n");
-	GMT_message (GMT, "\t-I Reverses the output sequence into descending order [ascending].\n");
-	GMT_message (GMT, "\t-L Applies operators on a per-segment basis [cumulates operations across file].\n");
-	GMT_message (GMT, "\t-N Sets the number of columns and the id of the time column (0 is first) [2/0].\n");
+	GMT_message (GMT, "\t-I Reverse the output sequence into descending order [ascending].\n");
+	GMT_message (GMT, "\t-L Apply operators on a per-segment basis [cumulates operations across file].\n");
+	GMT_message (GMT, "\t-N Set the number of columns and the id of the time column (0 is first) [2/0].\n");
 	GMT_message (GMT, "\t-Q Quick scalar calculator. Shorthand for -Ca -N1/0 -T0/0/1.\n");
 	GMT_message (GMT, "\t-S Only write first row upon completion of calculations [write all rows].\n");
 	GMT_message (GMT, "\t   Optionally, append l for last row or f for first row [Default].\n");

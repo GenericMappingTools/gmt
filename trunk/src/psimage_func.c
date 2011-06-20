@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.25 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psimage_func.c,v 1.26 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -104,14 +104,14 @@ GMT_LONG GMT_psimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<imagefile> is an EPS or image file.\n");
-	GMT_message (GMT, "\t-E Sets image dpi (dots per inch), OR\n");
-	GMT_message (GMT, "\t-W Sets the width (and height) of the image.  If <height> = 0\n");
+	GMT_message (GMT, "\t-E Set image dpi (dots per inch), OR\n");
+	GMT_message (GMT, "\t-W Set the width (and height) of the image.  If <height> = 0\n");
 	GMT_message (GMT, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
 	GMT_message (GMT, "\t   then we use absolute value and interpolate image in PostScript.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Sets the lower left position on the map for raster image [0/0].\n");
+	GMT_message (GMT, "\t-C Set the lower left position on the map for raster image [0/0].\n");
 	GMT_message (GMT, "\t   Optionally, append justification (see pstext for codes).\n");
-	GMT_pen_syntax (GMT, 'F', "Draws a frame around the image with the given pen.");
+	GMT_pen_syntax (GMT, 'F', "Draw a frame around the image with the given pen.");
 	GMT_message (GMT, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_message (GMT, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
 	GMT_message (GMT, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrack_func.c,v 1.21 2011-06-18 04:07:36 guru Exp $
+ *	$Id: grdtrack_func.c,v 1.22 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns\n");
-	GMT_message (GMT, "\t-G Sets the name of a more 2-D binary data set to sample.\n");
+	GMT_message (GMT, "\t-G Set the name of a more 2-D binary data set to sample.\n");
 	GMT_message (GMT, "\t   If the file is a Sandwell/Smith Mercator grid (IMG format) instead,\n");
 	GMT_message (GMT, "\t   append comma-separated scale (0.1 or 1), mode, and optionally max latitude [%g].  Modes are\n", GMT_IMG_MAXLAT_80);
 	GMT_message (GMT, "\t     0 = img file w/ no constraint code, interpolate to get data at track.\n");

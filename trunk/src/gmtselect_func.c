@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.20 2011-06-12 14:34:44 remko Exp $
+ *	$Id: gmtselect_func.c,v 1.21 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -178,7 +178,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
 	GMT_message (GMT, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
-	GMT_message (GMT, "\t-I Used to reverse the tests, i.e. pass locations outside the region.\n");
+	GMT_message (GMT, "\t-I Reverse the tests, i.e. pass locations outside the region.\n");
 	GMT_message (GMT, "\t   Supply a combination of cflrz where each flag means:\n");
 	GMT_message (GMT, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
 	GMT_message (GMT, "\t   f will pass locations outside the polygons in -F.\n");
@@ -195,7 +195,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_message (GMT, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
 	GMT_explain_options (GMT, "RV");
-	GMT_message (GMT, "\t-Z Assumes the 3rd data column contains z-values and we want to keep records with\n");
+	GMT_message (GMT, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
 	GMT_message (GMT, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
 	GMT_explain_options (GMT, "C0");
 	GMT_message (GMT, "\t   Default is 2 input columns (3 if -Z is used).\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdproject_func.c,v 1.23 2011-06-07 21:38:29 guru Exp $
+ *	$Id: grdproject_func.c,v 1.24 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,10 +98,10 @@ GMT_LONG GMT_grdproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Force projected values to be in actual meters [Default uses the given map scale].\n");
 	GMT_message (GMT, "\t   Specify another unit by appending (f)eet, (k)m, (M)ile, (n)autical mile,\n");
 	GMT_message (GMT, "\t   or i (inch), c (cm), or p (points) [e].\n");
-	GMT_message (GMT, "\t-C Coordinates relative to projection center [Default is relative to lower left corner].\n");
+	GMT_message (GMT, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
 	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
 	GMT_inc_syntax (GMT, 'D', 0);
-	GMT_message (GMT, "\t-E Sets dpi for output grid.\n");
+	GMT_message (GMT, "\t-E Set dpi for output grid.\n");
 	GMT_message (GMT, "\t-I Inverse transformation from rectangular to geographical.\n");
 	GMT_message (GMT, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -A is set.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psmask_func.c,v 1.21 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psmask_func.c,v 1.22 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -352,7 +352,7 @@ GMT_LONG GMT_psmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "jR");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<b");
-	GMT_message (GMT, "\t-C Means stop existing clip-path.  No other options required.\n");
+	GMT_message (GMT, "\t-C Terminate existing clip-path.  No other options required.\n");
 	GMT_message (GMT, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
 	GMT_message (GMT, "\t   Append filename template which may contain a C-format specifier.\n");
 	GMT_message (GMT, "\t   If no filename template is given we write all polygons to stdout.\n");
@@ -362,15 +362,15 @@ GMT_LONG GMT_psmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
 	GMT_fill_syntax (GMT, 'G', "Select fill color/pattern [Default is no fill].");
 	GMT_explain_options (GMT, "ZK");
-	GMT_message (GMT, "\t-N Will invert the sense of the clipping [or tiling].\n");
+	GMT_message (GMT, "\t-N Invert the sense of the clipping [or tiling].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
 	GMT_message (GMT, "\t   Ignored unless -D is set.\n");
-	GMT_dist_syntax (GMT, 'S', "Sets search radius to identify inside points.");
+	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   This means nodes inside circles of <radius> centered on the input\n");
 	GMT_message (GMT, "\t   data points are considered to be reliable estimates of the surface.\n");
 	GMT_message (GMT, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
-	GMT_message (GMT, "\t-T Will paint tiles.  [Default will trace data outline].\n");
+	GMT_message (GMT, "\t-T Paint tiles.  [Default will trace data outline].\n");
 	GMT_message (GMT, "\t   If set you must also specify a color/fill with -G.\n");
 	GMT_explain_options (GMT, "UVXC2D0chipFt:.");
 	

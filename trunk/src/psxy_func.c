@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.35 2011-06-18 04:07:36 guru Exp $
+ *	$Id: psxy_func.c,v 1.36 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -261,7 +261,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
 	GMT_message (GMT, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_message (GMT, "\t-D Offset symbol or line positions by <dx>/<dy> [no offset].\n");
-	GMT_message (GMT, "\t-E Means draw error bars for x, y, or both.  Add cap-width [%gp].\n", CAP_WIDTH);
+	GMT_message (GMT, "\t-E Draw error bars for x, y, or both.  Add cap-width [%gp].\n", CAP_WIDTH);
 	GMT_message (GMT, "\t   Append pen attributes. A leading + applies cpt color (-C) to symbol\n");
 	GMT_message (GMT, "\t   fill and error pen; - applies it to pen only.  If X or Y is used then\n");
 	GMT_message (GMT, "\t   a box-and-whisker diagram is drawn instead, using data from 4 extra\n");
@@ -272,7 +272,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   in the median).  Finally, use -W, -G to affect the 25-75%% box.\n");
 	GMT_fill_syntax (GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_message (GMT, "\t   -G option can be present in all subheaders (not with -S).\n");
-	GMT_message (GMT, "\t-I Uses the intensity to modulate the fill color (requires -C or -G).\n");
+	GMT_message (GMT, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-L Force closed polygons.\n");
 	GMT_message (GMT, "\t-N Do not skip or clip symbols that fall outside the map border\n");
@@ -336,9 +336,9 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     Upper case H, B, T, S gives double-headed vector [Default is t].\n");
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
-	GMT_message (GMT, "\t-T Ignores all input files.\n");
+	GMT_message (GMT, "\t-T Ignore all input files.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes [Default pen is %s]:");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 	GMT_explain_options (GMT, "XaC0");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: splitxyz_func.c,v 1.16 2011-06-08 19:42:07 remko Exp $
+ *	$Id: splitxyz_func.c,v 1.17 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -161,7 +161,7 @@ GMT_LONG GMT_splitxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
 	GMT_message (GMT, "\t   Defaults are both widths = 0, giving no filtering.\n");
 	GMT_message (GMT, "\t   Use negative width to highpass.\n");
-	GMT_message (GMT, "\t-N Writes individual segments to separate files [Default writes one\n");
+	GMT_message (GMT, "\t-N Write individual segments to separate files [Default writes one\n");
 	GMT_message (GMT, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_message (GMT, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
 	GMT_message (GMT, "\t   a sequential segment number across all tables (if more than one table).\n");

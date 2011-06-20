@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.28 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.29 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -315,7 +315,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D4 grid x,y in degrees, <filter_width> in km, spherical distances.\n");
 	GMT_message (GMT, "\t     -D5 grid x,y in Mercator units (-Jm1), <filter_width> in km, spherical distances.\n");
-	GMT_message (GMT, "\t-F Sets the low-pass filter type and full diameter (6 sigma) filter-width.\n");
+	GMT_message (GMT, "\t-F Set the low-pass filter type and full diameter (6 sigma) filter-width.\n");
 	GMT_message (GMT, "\t   Choose between convolution-type filters which differ in how weights are assigned\n");
 	GMT_message (GMT, "\t   and geospatial filters that seek to return a representative value.\n");
 	GMT_message (GMT, "\t   Give a negative filter width to select highpass filtering [lowpass].\n");
@@ -334,7 +334,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t        Append - or + to the width to instead return the smallest or largest mode.\n");
 	GMT_message (GMT, "\t     u: Upper : return maximum of all points.\n");
 	GMT_message (GMT, "\t     U: Upper- : return maximum of all -ve points.\n");
-	GMT_message (GMT, "\t-G Sets output filename for filtered grid.\n");
+	GMT_message (GMT, "\t-G Set output filename for filtered grid.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 #ifdef DEBUG
 	GMT_message (GMT, "\t-A DEBUG: Use -A<mode><lon/<lat> to instead save filter specifics at that point. Choose:\n");
@@ -343,12 +343,12 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #endif
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_message (GMT, "\t-N Specifies how NaNs in the input grid should be treated.  There are three options:\n");
+	GMT_message (GMT, "\t-N Specify how NaNs in the input grid should be treated.  There are three options:\n");
 	GMT_message (GMT, "\t   -Ni skips all NaN values and returns a filtered value unless all are NaN [Default].\n");
 	GMT_message (GMT, "\t   -Np sets filtered output to NaN is any NaNs are found inside filter circle.\n");
 	GMT_message (GMT, "\t   -Nr sets filtered output to NaN if the corresponding input node was NaN.\n");
 	GMT_message (GMT, "\t      (only possible if the input and output grids are coregistered).\n");
-	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
+	GMT_message (GMT, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_message (GMT, "\t   [Default uses the same region as the input grid].\n");
 	GMT_explain_options (GMT, "Vf.");

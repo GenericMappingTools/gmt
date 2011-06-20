@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.21 2011-06-17 03:23:30 guru Exp $
+ *	$Id: greenspline_func.c,v 1.22 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -203,7 +203,7 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Option 5 applies to Cartesian 3-D volume interpolation.\n");
 	GMT_message (GMT, "\t     -D5 x,y,z in user units, Cartesian distances.\n");
 	GMT_message (GMT, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great cicle arcs.\n");
-	GMT_message (GMT, "\t-I Specifies a regular set of output locations.  Give equidistant increment for each dimension.\n");
+	GMT_message (GMT, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
 	GMT_message (GMT, "\t   Requires -R for specifying the output domain.\n");
 	GMT_message (GMT, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
 	GMT_message (GMT, "\t   Only applies to -D0-2.  [Default removes linear trend, fits residuals, and restores trend].\n");
@@ -215,7 +215,7 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
 	GMT_message (GMT, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
 	GMT_message (GMT, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
-	GMT_message (GMT, "\t-S Specifies which spline to use (if needed, normalized <tension> must be between 0 and 1):\n");
+	GMT_message (GMT, "\t-S Specify which spline to use (if needed, normalized <tension> must be between 0 and 1):\n");
 	GMT_message (GMT, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
 	GMT_message (GMT, "\t   -St<tension>[/<scale>] is spline in tension (Wessel & Bercovici, 1998).\n");
 	GMT_message (GMT, "\t      Optionally, specify a length-scale [Default is grid spacing].\n");

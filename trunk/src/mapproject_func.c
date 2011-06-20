@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.27 2011-06-18 04:07:36 guru Exp $
+*	$Id: mapproject_func.c,v 1.28 2011-06-20 21:45:16 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
 	GMT_message (GMT, "\t   Upper case B or F gives azimuths of geodesics using current ellipsoid.\n");
 	GMT_message (GMT, "\t   Use o or O to get orientations (-90/90) instead of azimuths (0/360).\n");
-	GMT_message (GMT, "\t-C Returns x/y relative to projection center [Default is relative to lower left corner].\n");
+	GMT_message (GMT, "\t-C Return x/y relative to projection center [Default is relative to lower left corner].\n");
 	GMT_message (GMT, "\t   Optionally append <dx></dy> to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
 	GMT_message (GMT, "\t   Units are plot units unless -F is set in which case the unit is meters.\n");
 	GMT_message (GMT, "\t-D Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
@@ -164,7 +164,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
-	GMT_message (GMT, "\t-I Means Inverse, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
+	GMT_message (GMT, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
 	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
@@ -175,8 +175,8 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
 	GMT_message (GMT, "\t   -Qe shows ellipsoid parameters.\n");
 	GMT_message (GMT, "\t   -Qd shows datum parameters.\n");
-	GMT_message (GMT, "\t-S Means Suppress points outside region.\n");
-	GMT_message (GMT, "\t-T Means coordinate transformation from datum <from> to datum <to>.\n");
+	GMT_message (GMT, "\t-S Suppress points outside region.\n");
+	GMT_message (GMT, "\t-T Perform coordinate transformation from datum <from> to datum <to>.\n");
 	GMT_message (GMT, "\t   Prepend h if input data are lon, lat, height [Default sets height = 0].\n");
 	GMT_message (GMT, "\t   Specify datums using datum ID (see -Qd or man page) or as <ellipsoid>:<dx>,<dy>,<dz>.\n");
 	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");

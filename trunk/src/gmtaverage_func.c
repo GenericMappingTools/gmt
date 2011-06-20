@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtaverage_func.c,v 1.8 2011-06-07 01:14:19 guru Exp $
+ *    $Id: gmtaverage_func.c,v 1.9 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -86,7 +86,7 @@ GMT_LONG GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-Q Quicker; get median|mode z and x, y at that z [Default gets median|mode of x, y, and z.].\n");
 	GMT_message (GMT, "\t   This option is ignored for -Tm|n|s|w.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W sets Weight options.\n");
+	GMT_message (GMT, "\t-W Set Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but writes weight sum on output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");

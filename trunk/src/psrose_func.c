@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.17 2011-06-14 02:58:18 remko Exp $
+ *	$Id: psrose_func.c,v 1.18 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -147,23 +147,23 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
 	GMT_message (GMT, "\t-D Will center the sectors.\n");
 	GMT_message (GMT, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
-	GMT_fill_syntax (GMT, 'G', "Specifies color for diagram [Default is no fill].");
-	GMT_message (GMT, "\t-I For inquire.  Only compute statistics - no plot is created.\n");
+	GMT_fill_syntax (GMT, 'G', "Specify color for diagram [Default is no fill].");
+	GMT_message (GMT, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_message (GMT, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_message (GMT, "\t-M Append <vectorwidth>/<headlength>/<headwidth>/<color> to set arrow attributes [%gp/%gp/%gp/black].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
-	GMT_message (GMT, "\t-N Normalizes rose plots for area, i.e. takes sqrt(r) before plotting [FALSE].\n");
+	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e. takes sqrt(r) before plotting [FALSE].\n");
 	GMT_message (GMT, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-R Specifies the region.  (<r0> = 0, <r1> = max_radius.  For azimuth:\n");
+	GMT_message (GMT, "\t-R Specifys the region.  (<r0> = 0, <r1> = max_radius.  For azimuth:\n");
 	GMT_message (GMT, "\t   Specify <theta0>/<theta1> = -90/90 (half-circle) or 0/360 only).\n");
 	GMT_message (GMT, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
 	r = (GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
-	GMT_message (GMT, "\t-S Specifies the radius of the unit circle in %s [%g]. Normalize r if n is appended.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], r);
-	GMT_message (GMT, "\t-T Indicates that the vectors are oriented (two-headed), not directed [Default].\n");
+	GMT_message (GMT, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if n is appended.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], r);
+	GMT_message (GMT, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes for outline of rose [Default is no outline].");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].");
 	GMT_explain_options (GMT, "X");
 	GMT_message (GMT, "\t-Z Multiply the radii by <scale> before plotting.\n");
 	GMT_explain_options (GMT, "c");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.13 2011-06-07 01:14:19 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.14 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,10 +118,10 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-L specify norm as -L1 or -L2; or use -L or -L3 to give both.\n");
+	GMT_message (GMT, "\t-L Specify norm as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-S will attempt to fit a small circle rather than a great circle.\n");
+	GMT_message (GMT, "\t-S Attempt to fit a small circle rather than a great circle.\n");
 	GMT_message (GMT, "\t   Optionally append the latitude of the small circle you want to fit.\n");
 	GMT_explain_options (GMT, "VC0fghio:.");
 	

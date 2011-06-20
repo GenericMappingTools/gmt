@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdcontour_func.c,v 1.30 2011-06-08 18:31:29 guru Exp $
+ *	$Id: grdcontour_func.c,v 1.31 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -186,7 +186,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-F Force dumped contours to be oriented so that the higher z-values\n");
 	GMT_message (GMT, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
 	GMT_message (GMT, "\t   the contour lines [Default is not oriented].\n");
-	GMT_message (GMT, "\t-G Controls placement of labels along contours.  Choose from:\n");
+	GMT_message (GMT, "\t-G Control placement of labels along contours.  Choose from:\n");
 	GMT_cont_syntax (GMT, 3, 0);
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-L Only contour inside this range.\n");
@@ -205,7 +205,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If two characters are passed (e.g., :LH) we use the as L and H.\n");
 	GMT_message (GMT, "\t   For string labels, simply give two strings separated by a comma (e.g., lo,hi).\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours");
 	GMT_message (GMT, "\t   The default pen settings are\n");
 	P = GMT->current.setting.map_default_pen;
 	GMT_message (GMT, "\t   Contour pen:  %s\n", GMT_putpen (GMT, P));
@@ -214,7 +214,7 @@ GMT_LONG GMT_grdcontour_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
 	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
 	GMT_explain_options (GMT, "X");
-	GMT_message (GMT, "\t-Z To subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
+	GMT_message (GMT, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_message (GMT, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
 	GMT_explain_options (GMT, "hD3cfpt.");
 	

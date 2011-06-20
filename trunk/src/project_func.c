@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.17 2011-06-18 04:07:36 guru Exp $
+ *	$Id: project_func.c,v 1.18 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,14 +343,14 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
 	GMT_message (GMT, "\t   In a cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
 	GMT_message (GMT, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
-	GMT_message (GMT, "\t-C Sets the location of the center to be <ox>/<oy>.\n");
+	GMT_message (GMT, "\t-C Set the location of the center to be <ox>/<oy>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-A Sets the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
+	GMT_message (GMT, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
 	GMT_message (GMT, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
 	GMT_message (GMT, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");
 	GMT_message (GMT, "\t   The default does not check; in spherical case this usually results in [-180,180].\n");
-	GMT_message (GMT, "\t-E Sets the option (2) location of end point E to be <bx>/<by>.\n");
+	GMT_message (GMT, "\t-E Set the option (2) location of end point E to be <bx>/<by>.\n");
 	GMT_message (GMT, "\t-F Indicate what output you want as one or more of xyzpqrs in any order;\n");
 	GMT_message (GMT, "\t   where x,y,[z] refer to input data locations and optional values,\n");
 	GMT_message (GMT, "\t   p,q are the coordinates of x,y in the projection's coordinate system,\n");
@@ -359,19 +359,19 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Note z refers to all input data columns beyond the required x,y\n");
 	GMT_message (GMT, "\t   [Default is all fields, i.e. -Fxyzpqrs].\n");
 	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
-	GMT_message (GMT, "\t-G Means Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
+	GMT_message (GMT, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
 	GMT_message (GMT, "\t   Optionally, append /<lat> for a small circle path through C and E (requires -C -E).\n");
 	GMT_message (GMT, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_message (GMT, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_message (GMT, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
 	GMT_message (GMT, "\t   Default uses all points.  Note p = 0 at C and increases toward E in azim direction.\n");
-	GMT_message (GMT, "\t-N Means Flat_earth; a cartesian projection is made.  Default is spherical.\n");
-	GMT_message (GMT, "\t-Q Means convert to Map units, so x,y,r,s are degrees,\n");
+	GMT_message (GMT, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
+	GMT_message (GMT, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
 	GMT_message (GMT, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
 	GMT_message (GMT, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
-	GMT_message (GMT, "\t-S Means the output should be Sorted into increasing p value.\n");
-	GMT_message (GMT, "\t-T Sets the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
+	GMT_message (GMT, "\t-S Output should be Sorted into increasing p value.\n");
+	GMT_message (GMT, "\t-T Set the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_message (GMT, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");

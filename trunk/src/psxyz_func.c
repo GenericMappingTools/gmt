@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.24 2011-06-08 19:21:49 guru Exp $
+ *	$Id: psxyz_func.c,v 1.25 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -126,7 +126,7 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D Offset symbol or line positions by <dx>/<dy>[/<dz>] [no offset].\n");
 	GMT_fill_syntax (GMT, 'G', "Specify color or pattern [Default is no fill].");
 	GMT_message (GMT, "\t   If -G is specified but not -S, then psxyz draws a filled polygon.\n");
-	GMT_message (GMT, "\t-I Uses the intensity to modulate the fill color (requires -C or -G).\n");
+	GMT_message (GMT, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_message (GMT, "\t-L Force closed polygons.\n");
 	GMT_message (GMT, "\t-N Do not skip or clip symbols that fall outside the map border\n");
@@ -197,7 +197,7 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_pen_syntax (GMT, 'W', "Sets pen attributes [Default pen is %s]:");
+	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   Implicitly draws symbol outline with this pen.\n");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.67 2011-06-08 19:21:49 guru Exp $
+ *	$Id: grdimage_func.c,v 1.68 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,10 +130,10 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #ifdef USE_GDAL
 	GMT_message (GMT, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif
-	GMT_message (GMT, "\t-E Sets dpi for the projected grid which must be constructed [100]\n");
+	GMT_message (GMT, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
 	GMT_message (GMT, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
 	GMT_message (GMT, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
-	GMT_rgb_syntax (GMT, 'G', "Sets transparency color for images that otherwise would result in 1-bit images\n\t  ");
+	GMT_rgb_syntax (GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images\n\t  ");
 	GMT_message (GMT, "\t-I Use illumination. Append name of intensity grid file\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-M Force monochrome image.\n");

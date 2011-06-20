@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.25 2011-06-07 21:38:29 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.26 2011-06-20 21:45:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -203,14 +203,14 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
 	GMT_message (GMT, "\t   Give -I- to not place any icons.\n");
 	GMT_message (GMT, "\t   [Default is a local icon with no directory path].\n");
-	GMT_message (GMT, "\t-K means allow for more KML code to be appended later [OFF].\n");
+	GMT_message (GMT, "\t-K Allow for more KML code to be appended later [OFF].\n");
 	GMT_message (GMT, "\t-L Supply extended data informat via <col>:<name> strings [none].\n");
-	GMT_message (GMT, "\t-N Controls the feature labels.\n");
+	GMT_message (GMT, "\t-N Control the feature labels.\n");
 	GMT_message (GMT, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
 	GMT_message (GMT, "\t   1. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
 	GMT_message (GMT, "\t   2. Append a string that may contain the format %%d for a running feature count.\n");
 	GMT_message (GMT, "\t   3. Give no argument to indicate no labels.\n");
-	GMT_message (GMT, "\t-O means append the KML code to an existing document [OFF].\n");
+	GMT_message (GMT, "\t-O Append the KML code to an existing document [OFF].\n");
 	GMT_message (GMT, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or append a to use the\n");
 	GMT_message (GMT, "\t   actual domain of the data (single file only) [no region specified].\n");
 	GMT_message (GMT, "\t-S Scale for (c)ircle icon size or (n)ame label [1].\n");

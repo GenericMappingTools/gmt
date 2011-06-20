@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdinfo_func.c,v 1.21 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdinfo_func.c,v 1.22 2011-06-20 21:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -79,19 +79,19 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "\t<grid> may be one or more grid files.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Formats report in fields on a single line using the format\n");
+	GMT_message (GMT, "\t-C Format report in fields on a single line using the format\n");
 	GMT_message (GMT, "\t   file w e s n z0 z1 dx dy nx ny [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan].\n");
 	GMT_message (GMT, "\t   (-M gives [x0 y0 x1 y1] and [n_nan]; -L1 gives [med scale]; -L2 gives [mean std rms]).\n");
-	GMT_message (GMT, "\t-F Reports domain in world mapping format [Default is generic].\n");
-	GMT_message (GMT, "\t-I Returns textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
+	GMT_message (GMT, "\t-F Report domain in world mapping format [Default is generic].\n");
+	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
 	GMT_message (GMT, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
 	GMT_message (GMT, "\t   If no argument is given then the -I<xinc>/<yinc> string is issued.\n");
 	GMT_message (GMT, "\t   If -I- is given then the grid's -R string is issued.\n");
-	GMT_message (GMT, "\t-L Sets report mode:\n");
+	GMT_message (GMT, "\t-L Set report mode:\n");
 	GMT_message (GMT, "\t   -L0 reports range of data by actually reading them (not from header).\n");
 	GMT_message (GMT, "\t   -L1 reports median and L1-scale of data set.\n");
 	GMT_message (GMT, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
-	GMT_message (GMT, "\t-M Searches for the global min and max locations (x0,y0) and (x1,y1).\n");
+	GMT_message (GMT, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
 	GMT_explain_options (GMT, "Vf.");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.21 2011-06-08 19:21:49 guru Exp $
+ *	$Id: surface_func.c,v 1.22 2011-06-20 21:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1602,19 +1602,19 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-C Set convergence limit; iteration stops when max abs change is less than <c.l.>\n");
 	GMT_message (GMT, "\t   Default will choose 0.001 of the range of your z data (1 ppt precision).\n");
 	GMT_message (GMT, "\t   Enter your own convergence limit in same units as z data.\n");
-	GMT_message (GMT, "\t-D Uses xyz data (can be multiseg) in the <breakline> file as a 'soft breakline'.\n");
+	GMT_message (GMT, "\t-D Use xyz data (can be multiseg) in the <breakline> file as a 'soft breakline'.\n");
 	GMT_message (GMT, "\t-L Constrain the range of output values:\n");
 	GMT_message (GMT, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
 	GMT_message (GMT, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
 	GMT_message (GMT, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_message (GMT, "\t   or the filename of a grid with bounding values.  [Default solution unconstrained].\n");
 	GMT_message (GMT, "\t   Example: -Ll0 gives a non-negative solution.\n");
-	GMT_message (GMT, "\t-N Sets max <n_iterations> in each cycle; default = 250.\n");
-	GMT_message (GMT, "\t-S Sets <search_radius> to initialize grid; default = 0 will skip this step.\n");
+	GMT_message (GMT, "\t-N Set max <n_iterations> in each cycle; default = 250.\n");
+	GMT_message (GMT, "\t-S Set <search_radius> to initialize grid; default = 0 will skip this step.\n");
 	GMT_message (GMT, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
 	GMT_message (GMT, "\t   i.e., have few or no common factors.\n");
 	GMT_message (GMT, "\t   Append m or s to give <search_radius> in minutes or seconds.\n");
-	GMT_message (GMT, "\t-T Adds Tension to the gridding equation; use a value between 0 and 1.\n");
+	GMT_message (GMT, "\t-T Add Tension to the gridding equation; use a value between 0 and 1.\n");
 	GMT_message (GMT, "\t   default = 0 gives minimum curvature (smoothest; bicubic) solution.\n");
 	GMT_message (GMT, "\t   1 gives a harmonic spline solution (local max/min occur only at data points).\n");
 	GMT_message (GMT, "\t   typically 0.25 or more is good for potential field (smooth) data;\n");
@@ -1624,7 +1624,7 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   No appended letter sets tension for both to same value.\n");
 	GMT_message (GMT, "\t-Q Query for grid sizes that might run faster than your -R -I give.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-Z Sets <over_relaxation parameter>.  Default = 1.4\n");
+	GMT_message (GMT, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
 	GMT_message (GMT, "\t   Use a value between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_message (GMT, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n\n");
 	GMT_explain_options (GMT, "C3fhiF:.");
