@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.13 2011-06-08 19:49:17 remko Exp $
+ *	$Id: mgd77track_func.c,v 1.14 2011-06-20 20:59:30 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -667,7 +667,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		first = TRUE;
 		for (rec = first_rec; rec <= last_rec; rec++) {
-			if (bad_coordinates (lon[rec], lat[rec]) || GMT->current.map.outside (lon[rec], lat[rec])) {
+			if (bad_coordinates (lon[rec], lat[rec]) || GMT_map_outside (GMT, lon[rec], lat[rec])) {
 				first = TRUE;
 				continue;
 			}
