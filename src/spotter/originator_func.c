@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.16 2011-06-14 22:59:53 guru Exp $
+ *	$Id: originator_func.c,v 1.17 2011-06-20 22:15:10 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -211,20 +211,20 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-E specifies the rotation file to be used (see man page for format)\n\n");
+	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format)\n\n");
 	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use\n\n");
 	GMT_message (GMT, "\t-F Specify file name for hotspot locations.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma\n");
-	GMT_message (GMT, "\t-D set sampling interval in km along tracks [5].\n");
+	GMT_message (GMT, "\t-D Set sampling interval in km along tracks [5].\n");
 	GMT_message (GMT, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
 	GMT_message (GMT, "\t   -Lt gives (time, dist, z) [Default].\n");
 	GMT_message (GMT, "\t   -Lw gives (omega, dist, z).\n");
 	GMT_message (GMT, "\t   -Ll gives (lon, lat, time, dist, z).\n");
 	GMT_message (GMT, "\t   dist is in km; use upper case T,W,L to get dist in spherical degrees.\n");
-	GMT_message (GMT, "\t-N set age (in m.y.) for seafloor where age == NaN [180].\n");
-	GMT_message (GMT, "\t-Q input files has (x,y,z) only. Append constant r/t to use.\n");
+	GMT_message (GMT, "\t-N Set age (in m.y.) for seafloor where age == NaN [180].\n");
+	GMT_message (GMT, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
 	GMT_message (GMT, "\t-S Report the <n_hs> closest hotSpots [1].\n");
 	GMT_message (GMT, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation] \n");
 	GMT_explain_options (GMT, "V");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.15 2011-06-15 02:38:43 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -175,7 +175,7 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read (but see -Q).\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
-	GMT_message (GMT, "\t-D Used to skip repeated input vertex at the end of a closed segment\n");
+	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment\n");
 	GMT_message (GMT, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances]\n");
 	GMT_message (GMT, "\t-L Specify distance unit as (f)eet, m(e)ter, (k)m, (M)ile, (n)autical mile, or (d)egree.\n");
 	GMT_message (GMT, "\t   Calculations uses spherical approximations.  Default unit is meters.\n");

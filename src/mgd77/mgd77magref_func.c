@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.16 2011-06-07 21:38:29 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.17 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -96,14 +96,14 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   alt is the altitude in km positive above the ellipsoid.\n");
 	GMT_message (GMT, "\t   time is the time of data aquisition, in <date>T<clock> format (but see -A+y).\n");
 	GMT_message (GMT, "\t   We read <stdin> if no input file is given.\n");
-	GMT_message (GMT, "\t-A Adjusts how the input records are interpreted. Append\n");
+	GMT_message (GMT, "\t-A Adjust how the input records are interpreted. Append\n");
 	GMT_message (GMT, "\t   +a<alt> to indicate a constant altitude [Default is 3rd column].\n");
 	GMT_message (GMT, "\t   +t<time> to indicate a constant time [Default is 4th column].\n");
 	GMT_message (GMT, "\t   +y to indicate times are given in decimal years [Default is ISO <date>T<clock> format].\n");
-	GMT_message (GMT, "\t-C Selects an alternate file with coefficients for the CM4 model [%s/umdl.CM4].\n", GMT->session.SHAREDIR);
-	GMT_message (GMT, "\t-D Selects an alternate file with hourly means of the Dst index for CM4 [%s/Dst_all.wdc],\n", GMT->session.SHAREDIR);
+	GMT_message (GMT, "\t-C Select an alternate file with coefficients for the CM4 model [%s/umdl.CM4].\n", GMT->session.SHAREDIR);
+	GMT_message (GMT, "\t-D Select an alternate file with hourly means of the Dst index for CM4 [%s/Dst_all.wdc],\n", GMT->session.SHAREDIR);
 	GMT_message (GMT, "\t   OR a single Dst index to apply for all records.\n");
-	GMT_message (GMT, "\t-E Selects an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [%s/F107_mon.plt],\n", GMT->session.SHAREDIR);
+	GMT_message (GMT, "\t-E Select an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [%s/F107_mon.plt],\n", GMT->session.SHAREDIR);
 	GMT_message (GMT, "\t   OR a single solar radio flux to apply for all records.\n");
 	GMT_message (GMT, "\t-F Dataflags is a string made up of 1 or more of these characters:\n");
 	GMT_message (GMT, "\t	 r means output all input columns before adding the items below (all in nTesla).\n");
@@ -131,8 +131,8 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     -Fxyz/934 the same as above but output the field components.\n");
 	GMT_message (GMT, "\t	 The data is written out in the order specified in <dataflags>\n");
 	GMT_message (GMT, "\t	 [Default is -Frthxyzdi/1]\n");
-	GMT_message (GMT, "\t-G Specifies that coordinates are geocentric [geodetic].\n");
-	GMT_message (GMT, "\t-L Computes J field vectors from certain external sources.\n");
+	GMT_message (GMT, "\t-G Specify that coordinates are geocentric [geodetic].\n");
+	GMT_message (GMT, "\t-L Compute J field vectors from certain external sources.\n");
 	GMT_message (GMT, "\t   Dataflags is a string made up of 1 or more of these characters:\n");
 	GMT_message (GMT, "\t	 r means output all input columns before adding the items below (all in Ampers/m).\n");
 	GMT_message (GMT, "\t	 t means list magnitude field.\n");
@@ -144,7 +144,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t	 2 means Primary ionospheric field.\n");
 	GMT_message (GMT, "\t	 3 means Induced ionospheric field.\n");
 	GMT_message (GMT, "\t	 4 means Poloidal field.\n");
-	GMT_message (GMT, "\t-S limits the CM4 contributions from core and lithosphere to certain harmonic degree bands.\n");
+	GMT_message (GMT, "\t-S Limit the CM4 contributions from core and lithosphere to certain harmonic degree bands.\n");
 	GMT_message (GMT, "\t   Append c(ore) or l(ithosphere) and the low and high degrees to use [-Sc1/13 -Sl14/65].\n");
 	GMT_explain_options (GMT, "VC0");
 	GMT_message (GMT, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");

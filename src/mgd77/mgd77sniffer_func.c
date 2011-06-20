@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.26 2011-06-07 21:38:29 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.27 2011-06-20 22:15:10 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -137,8 +137,8 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   where (c) type code warnings, (g)radient out of range, (o)ffsets from grid (requires -G),\n");
 	GMT_message (GMT, "\t   (s)peed out of range, (t)ime warnings, (v)alue out of range, (x) warning summaries.\n");
 	GMT_message (GMT, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
-	GMT_message (GMT, "\t-V runs in verbose mode.\n\n");
-	GMT_message (GMT, "\t-b output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
+	GMT_message (GMT, "\t-V Run in verbose mode.\n\n");
+	GMT_message (GMT, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
 	GMT_explain_options (GMT, "n");
 	GMT_message (GMT, "\tMGD77 FIELD INFO:\n");
 	GMT_message (GMT, "\tField\t\t\tAbbreviation\t\tUnits\n");

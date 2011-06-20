@@ -1,4 +1,4 @@
-/* $Id: img2grd_func.c,v 1.21 2011-06-13 04:07:26 guru Exp $
+/* $Id: img2grd_func.c,v 1.22 2011-06-20 22:15:09 guru Exp $
  *
  * Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  * See LICENSE.TXT file for copying and redistribution conditions.
@@ -132,29 +132,29 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
 	GMT_message (GMT, "\t<world_image_filename> gives name of img file.\n");
-	GMT_message (GMT, "\t-G sets filename for the output grid file.\n");
-	GMT_message (GMT, "\t-R specifies the region in decimal degrees or degrees:minutes.\n");
+	GMT_message (GMT, "\t-G Set filename for the output grid file.\n");
+	GMT_message (GMT, "\t-R Specify the region in decimal degrees or degrees:minutes.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Refer Mercator coordinates to img source origin and requires -M\n");
 	GMT_message (GMT, "\t   [Default sets lower left to 0,0].\n");
-	GMT_message (GMT, "\t-D[<minlat>/<maxlat>] input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
+	GMT_message (GMT, "\t-D Set input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	GMT_message (GMT, "\t   If no latitudes are given it is taken to mean %.3f/%.3f.\n", GMT_IMG_MINLAT_80, GMT_IMG_MAXLAT_80);
 	GMT_message (GMT, "\t   Without -D we automatically determine the extent from the file size.\n");
 	GMT_message (GMT, "\t-E Resample geographic grid to the specified -R.  Cannot be used with -M .\n");
 	GMT_message (GMT, "\t   (Default gives the exact -R of the Mercator grid).\n");
-	GMT_message (GMT, "\t-I<minutes> input img pixels are <min> minutes of longitude wide [2.0].\n");
+	GMT_message (GMT, "\t-I Set input img pixels to be <min> minutes of longitude wide [2.0].\n");
 	GMT_message (GMT, "\t   Without -I we automatically determine the pixel size from the file size.\n");
 	GMT_message (GMT, "\t-M Write a Mercator grid [Default writes a geographic grid].\n");
-	GMT_message (GMT, "\t-N<navg> will ouput averages of input in navg by navg squares [no averaging].\n");
-	GMT_message (GMT, "\t-S<scale> will multiply img integer values by scale for output [1].\n");
+	GMT_message (GMT, "\t-N Output averages of input in navg by navg squares [no averaging].\n");
+	GMT_message (GMT, "\t-S Multiply img integer values by <scale> before output [1].\n");
 	GMT_message (GMT, "\t   To set scale based on information encoded in filename, just give -S.\n");
-	GMT_message (GMT, "\t-T selects the img type format:\n");
+	GMT_message (GMT, "\t-T Select the img type format:\n");
 	GMT_message (GMT, "\t   -T0 for obsolete img files w/ no constraint code, gets data.\n");
 	GMT_message (GMT, "\t   -T1 for new img file w/ constraints coded, gets data at all points [Default].\n");
 	GMT_message (GMT, "\t   -T2 for new img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
 	GMT_message (GMT, "\t   -T3 for new img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W<maxlon> input img file runs from 0 to <maxlon> longitude [360.0].\n");
+	GMT_message (GMT, "\t-W Input img file runs from 0 to <maxlon> longitude [360.0].\n");
 	GMT_explain_options (GMT, "n.");
 	
 	return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.17 2011-06-18 04:07:36 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.18 2011-06-20 22:15:10 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -366,7 +366,7 @@ GMT_LONG GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If -T is selected we print arc lengths instead.\n");
 	GMT_message (GMT, "\t   Cannot be used with the binary output option\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]\n");
-	GMT_message (GMT, "\t-D Used to skip repeated input vertex at the end of a closed segment\n");
+	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment\n");
 	GMT_message (GMT, "\t-L Specify distance unit as (f)eet, m(e)ter, (k)m, (M)ile, (n)autical mile, or (d)egree.\n");
 	GMT_message (GMT, "\t   Calculations uses spherical approximations.  Default unit is meters.\n");
 	GMT_message (GMT, "\t   Set PROJ_ELLIPSOID to WGS-84 to get geodesic distances.\n");

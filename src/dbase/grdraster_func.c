@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.25 2011-06-20 02:02:39 guru Exp $
+ *	$Id: grdraster_func.c,v 1.26 2011-06-20 22:15:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -636,18 +636,18 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-R specifies the west, east, south, and north edges of the area.\n");
+	GMT_message (GMT, "\t-R Specify the west, east, south, and north edges of the area.\n");
 	GMT_message (GMT, "\t   Use dd:mm format for regions given in degrees and minutes.\n");
 	GMT_message (GMT, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
 	GMT_message (GMT, "\t   and upper right corners of a rectangular area.  If r is appended\n");
 	GMT_message (GMT, "\t   you must also specify a projection with -J (set scale = 1).\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G sets the filename for output grid.\n");
-	GMT_message (GMT, "\t-I specifies the sampling interval of the grid [Default is raster spacing].\n");
+	GMT_message (GMT, "\t-G Set the filename for output grid.\n");
+	GMT_message (GMT, "\t-I Specify the sampling interval of the grid [Default is raster spacing].\n");
 	GMT_message (GMT, "\t   Give -Idx or -Idx/dy if dy not equal dx.  Append m for minutes.\n");
 	GMT_message (GMT, "\t   (-I does not do any filtering; it just sub-samples the raster.)\n");
 	GMT_explain_options (GMT, "j");
-	GMT_message (GMT, "\t-T sets the filename for output ASCII table with xyz triplets.\n");
+	GMT_message (GMT, "\t-T Set the filename for output ASCII table with xyz triplets.\n");
 	GMT_message (GMT, "\t   To get binary triplets, see -bo.  Cannot be used with -G.\n");
 	GMT_explain_options (GMT, "VD3o.");
 

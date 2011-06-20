@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.7 2011-05-14 00:04:06 guru Exp $
+/*	$Id: gshhs_func.c,v 1.8 2011-06-20 22:15:09 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,8 +81,8 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "-L will only list header records (no data records will be written)\n");
-	GMT_message (GMT, "-I only output data for polygon number <id> [Default is all polygons]\n");
+	GMT_message (GMT, "-L Only list header records (no data records will be written)\n");
+	GMT_message (GMT, "-I Only output data for polygon number <id> [Default is all polygons]\n");
 	GMT_explain_options (GMT, "VD2o:.");
 	
 	return (EXIT_FAILURE);

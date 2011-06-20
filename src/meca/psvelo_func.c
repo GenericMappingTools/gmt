@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.10 2011-06-08 18:31:29 guru Exp $
+ *    $Id: psvelo_func.c,v 1.11 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -137,17 +137,17 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_message (GMT, "\t   2) p[or P]<iconsize>/<pattern> for predefined patterns (0-31).\n");
 	GMT_explain_options (GMT, "K");
-	GMT_message (GMT, "\t-L draw line or symbol outline using the current pen (see -W).\n");
+	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside]\n");
 	GMT_explain_options (GMT, "OP");
-	GMT_message (GMT, "\t-S to select symbol type and scale. Choose between\n");
+	GMT_message (GMT, "\t-S Select symbol type and scale. Choose between\n");
 	GMT_message (GMT, "\t    (e) Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format \n");
 	GMT_message (GMT, "\t    (r) Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format \n");
 	GMT_message (GMT, "\t    (n) Anisotropy : in X,Y,Vx,Vy \n");
 	GMT_message (GMT, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig \n");
 	GMT_message (GMT, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta \n");
 	GMT_explain_options (GMT, "UV");
-	GMT_message (GMT,  "\t-W sets default pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
+	GMT_message (GMT,  "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_explain_options (GMT, "Xchi:.");
 	
 	return (EXIT_FAILURE);

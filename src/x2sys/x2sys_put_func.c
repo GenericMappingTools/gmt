@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.8 2011-06-20 02:02:39 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.9 2011-06-20 22:15:10 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,8 +78,8 @@ GMT_LONG GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT,"\t-D will remove the listed tracks  [Default will add to database]\n");
-	GMT_message (GMT,"\t-F will force updates to earlier entries for a track with new information\n");
+	GMT_message (GMT,"\t-D Remove the listed tracks  [Default will add to database]\n");
+	GMT_message (GMT,"\t-F Force updates to earlier entries for a track with new information\n");
 	GMT_message (GMT,"\t   [Default refuses to process tracks already in the database]\n");
 	GMT_explain_options (GMT, "V");
 	

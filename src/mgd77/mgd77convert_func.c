@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.9 2011-06-11 14:54:18 jluis Exp $
+ *	$Id: mgd77convert_func.c,v 1.10 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -78,7 +78,7 @@ GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table\n");
 	GMT_message (GMT, "\t   By default we will refuse to overwrite existing files.  Prepend + to override this policy.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-D Selects high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
+	GMT_message (GMT, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
 	GMT_message (GMT, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision]\n");
 	GMT_message (GMT, "\t-L Log level and destination setting for verification reporting.  Append a combination\n");
 	GMT_message (GMT, "\t   of w for warnings, e for errors, and + to send log to stdout [Default is GMT->session.std[GMT_ERR]])\n");

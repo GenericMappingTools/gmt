@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.15 2011-06-20 18:16:23 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -264,13 +264,13 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   f Flat Earth\n");
 	GMT_message (GMT, "\t   g Great circle [Default]\n");
 	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
-	GMT_message (GMT, "\t-Da<date> lists from date (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
-	GMT_message (GMT, "\t  b<date> lists up to date (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
-	GMT_message (GMT, "\t  If A|B is used instead or a|b then records with no time are excluded from output\n");
+	GMT_message (GMT, "\t-D List from a<date> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
+	GMT_message (GMT, "\t   up to b<date> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
+	GMT_message (GMT, "\t   If A|B is used instead or a|b then records with no time are excluded from output\n");
 	GMT_message (GMT, "\t-E Only records that exactly matches the requested geophysical information in -F will be used.\n");
 	GMT_message (GMT, "\t   [Default will output all record that matches at least one column]\n");
-	GMT_message (GMT, "\t-Ga<rec> lists from given record [Start of cruise]\n");
-	GMT_message (GMT, "\t  b<rec> lists up to given record [End of cruise]\n");
+	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise]\n");
+	GMT_message (GMT, "\t   up to given b<record> [End of cruise]\n");
 	GMT_message (GMT, "\t-H Write one header record with column names\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none]\n");
@@ -287,13 +287,13 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity]\n");
 	GMT_message (GMT, "\t      Velocities are given in m/s unless changed by -Ns\n");
 	GMT_message (GMT, "\t-R Only return data inside the specified region [0/360/-90/90]\n");
-	GMT_message (GMT, "\t-Sa<dist> lists from dist  (in m; append k, m, or n) [Start of the cruise]\n");
-	GMT_message (GMT, "\t-Sb<dist> lists up to dist (in m; append k, m, or n) [End of the cruise]\n");
-	GMT_message (GMT, "\t-T turns OFF the otherwise automatic adjustment of values based on correction terms\n");
+	GMT_message (GMT, "\t-S List from a<dist>  (in m; append k, m, or n) [Start of the cruise]\n");
+	GMT_message (GMT, "\t   up to b<dist> (in m; append k, m, or n) [End of the cruise]\n");
+	GMT_message (GMT, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
 	GMT_message (GMT, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
 	GMT_message (GMT, "\t   Append m or e to indicate the MGD77 data set or the extended columns set. [Default is both]\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Sets weight for these data [1]\n");
+	GMT_message (GMT, "\t-W Set weight for these data [1]\n");
 	GMT_message (GMT, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+]\n");
 	GMT_explain_options (GMT, "D0.");
 	
