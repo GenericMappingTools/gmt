@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.53 2011-06-20 15:15:25 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.54 2011-06-20 17:57:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,9 +56,6 @@
  *--------------------------------------------------------------------*/
 
 #if defined(WIN32) && !defined(__MINGW32__)	/* Start of Windows setup */
-
-/* Turn /c/dir/... paths into c:/dir/... */
-#define DOS_path_fix(dir) if (dir && dir[0] == '/' && dir[1] && dir[2] == '/') { dir[0] = dir[1]; dir[1] = ':'; dir[2] = '/'; }
 
 #define _GMT_NOTPOSIX_H	/* This forces the following not to be reset in gmt_notposix.h */
 
@@ -185,6 +182,7 @@ typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byt
 
 #pragma warning( disable : 4115 )	/* Shut up this warning: 'GMT_CTRL' :named type definition in parentheses */
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *C, int direction);
+EXTERN_MSC void DOS_path_fix (char *dir);
 
 #endif		/* End of Windows setup */
 

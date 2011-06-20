@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.293 2011-06-20 15:15:25 remko Exp $
+ *	$Id: gmt_io.c,v 1.294 2011-06-20 17:57:30 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -444,6 +444,29 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		return (fd);
 	}
 }
+
+#if WIN32
+/* Turn /c/dir/... paths into c:/dir/... 
+ * Must do it in a loop since dir may be several ;-separated dirs
+*/
+void DOS_path_fix (char *dir)
+{
+	GMT_LONG k, n;
+	
+	if (!dir) return;	/* Given NULL */
+	n = strlen (dir);
+	for (k = 0; k < n; k++) {
+		if (dir[k] == '\\') dir[k] = '/';	/* Replace dumb backslashes with slashes */
+	}
+	
+	for (k = 0; k < n-2; k++) {
+		if (dir[k] == '/' && isalpha ((int)dir[k+1]) && dir[k+2] == '/') {
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
+	}
+}
+#endif
 
 /* Table I/O routines for ascii and binary io */
 
