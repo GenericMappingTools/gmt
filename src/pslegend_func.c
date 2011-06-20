@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.14 2011-06-08 19:21:49 guru Exp $
+ *	$Id: pslegend_func.c,v 1.15 2011-06-20 20:41:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -40,10 +40,10 @@ struct PSLEGEND_CTRL {
 		GMT_LONG active;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[x]<x0>/<y0>/w/h/just */
+	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
 		GMT_LONG active;
 		GMT_LONG cartesian;
-		double lon, lat, width, height;
+		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
 	struct F {	/* -F */
@@ -90,7 +90,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/w/h/just [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
@@ -100,7 +100,8 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "\t-D Sets position and size of legend box.  Prepend x if coordinates are projected;\n");
 	GMT_message (GMT, "\t   if so the -R -J options only required if -O is not given.  Append the justification\n");
-	GMT_message (GMT, "\t   of the whole legend box using pstext justification codes.\n");
+	GMT_message (GMT, "\t   of the whole legend box using pstext justification codes.  Optionally, append offsets\n");
+	GMT_message (GMT, "\t   to shift the box from the selected point in the direction implied by <just>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<infofile> is one or more ASCII information files with legend commands.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
@@ -128,7 +129,7 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG k, n, n_errors = 0;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], txt_f[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -155,8 +156,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				}
 				else				/* Gave lon, lat */
 					k = 0;
-				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, Ctrl->D.justify);
-				n_errors += GMT_check_condition (GMT, n != 5, "Error: Syntax is -D[x]<xpos>/<ypos>/<width>/<height>/<justify>\n");
+				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, Ctrl->D.justify, txt_e, txt_f);
+				n_errors += GMT_check_condition (GMT, !(n == 5 || n == 7), "Error: Syntax is -D[x]<xpos>/<ypos>/<width>/<height>/<justify>[<dx>/<dy>]\n");
 				if (opt->arg[0] == 'x') {
 					Ctrl->D.lon = GMT_to_inch (GMT, txt_a);
 					Ctrl->D.lat = GMT_to_inch (GMT, txt_b);
@@ -167,6 +168,10 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				}
 				Ctrl->D.width   = GMT_to_inch (GMT, txt_c);
 				Ctrl->D.height  = GMT_to_inch (GMT, txt_d);
+				if (n == 7) {	/* Got the optional offsets */
+					Ctrl->D.dx = GMT_to_inch (GMT, txt_e);
+					Ctrl->D.dy = GMT_to_inch (GMT, txt_f);
+				}
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
@@ -193,7 +198,7 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option: legend box sizes cannot be negative!\n");
-	if (!Ctrl->D.cartesian || !GMT->common.O.active) {	/* Overlays with -Dx does not need-R -J; other cases do */
+	if (!Ctrl->D.cartesian || !GMT->common.O.active) {	/* Overlays with -Dx does not need -R -J; other cases do */
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
@@ -204,6 +209,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 #define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 #ifdef DEBUG
+/* Used to draw the current y-line for debug purposes only.  To use you would also
+ * have to set the variable guide to 1 below. */
 void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, double y0)
 {
 	struct GMT_PEN faint_pen;
@@ -287,12 +294,12 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if ((error = GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Register data input */
 	if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_BY_REC))) Return (error);				/* Enables data input and sets access mode */
 
-	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection */
+	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
 		GMT_memset (wesn, 4, double);
 		GMT->common.R.active = TRUE;
 		GMT->common.J.active = FALSE;
-		GMT_parse_common_options (GMT, "J", 'J', "X1i");
+		GMT_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.width;	wesn[YHI] = Ctrl->D.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
@@ -309,16 +316,21 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	justify = GMT_just_decode (GMT, Ctrl->D.justify, 12);
 
-	if (!Ctrl->D.cartesian) {
+	if (!Ctrl->D.cartesian) {	/* Convert to map coordinates first */
 		GMT_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &x, &y);
 		Ctrl->D.lon = x;	Ctrl->D.lat = y;
 	}
 
-	/* Allow for justification so that D.lon/lat is the plot location of the lower left corner of box */
+	/* Allow for justification so that D.lon/D.lat is the plot location of the lower left corner of box */
 
 	Ctrl->D.lon -= 0.5 * ((justify-1)%4) * Ctrl->D.width;
 	Ctrl->D.lat -= 0.5 * (justify/4) * Ctrl->D.height;
 
+	/* Also deal with any justified offsets if given */
+	
+	Ctrl->D.lon -= ((justify%4)-2) * Ctrl->D.dx;
+	Ctrl->D.lat -= ((justify/4)-1) * Ctrl->D.dy;
+	
 	/* First draw legend frame box. */
 
 	current_pen = GMT->current.setting.map_default_pen;
