@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.292 2011-06-20 02:02:38 guru Exp $
+ *	$Id: gmt_io.c,v 1.293 2011-06-20 15:15:25 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -537,6 +537,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	 */
 	GMT_LONG d, pos, L, found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
+	char path_separator[2] = {PATH_SEPARATOR, '\0'};
 #ifndef WIN32
 	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
@@ -555,10 +556,9 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 
 	/* If we got here and a full path is given, we give up */
 
-#ifdef WIN32
-	if (stem[0] == '/' || stem[1] == ':') return (NULL);
-#else
 	if (stem[0] == '/') return (NULL);
+#ifdef WIN32
+	if (stem[1] == ':') return (NULL);
 #endif
 
 	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
@@ -566,7 +566,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	for (d = 0; d < 2; d++) {	/* Loop over USER and DATA dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		found = pos = 0;
-		while (!found && (GMT_strtok (C, udir[d], PATH_SEPARATOR, &pos, dir))) {
+		while (!found && (GMT_strtok (C, udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 #ifndef WIN32
 #ifdef GMT_COMPAT
