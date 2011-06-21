@@ -1,12 +1,12 @@
 #!/bin/bash
-# $Id: textclip.sh,v 1.3 2011-06-09 18:02:11 remko Exp $
+# $Id: textclip.sh,v 1.4 2011-06-21 22:46:12 jluis Exp $
 # Test pstext with text path clipping
 . ../functions.sh
 ps=textclip.ps
 header "Test text clip paths and delayed annotations"
 FONT=16p,Helvetica
 
-pstext -R0/10/0/10 -JX15c/10c -F+f${FONT}+jBL -Gc -B/+ggray70 -C0 -K << EOF > $ps
+pstext -R0/10/0/10 -JX15c/10c -F+f${FONT}+jBL -Gc -B+ggray70 -C0 -K << EOF > $ps
 1 3 This text should NOT be covered up by the box
 1 8 Neither should this jolly text message
 EOF
