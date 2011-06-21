@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.354 2011-06-16 02:26:20 guru Exp $
+ *	$Id: gmt_plot.c,v 1.355 2011-06-21 18:02:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -309,46 +309,37 @@ GMT_LONG gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 
 	for (i = 0; i < 2; i++) {
 		val[i] = 0.0;
-		if (!A->item[no[i]].active) continue;
+		if (!A->item[no[i]].active || A->item[no[i]].type == 'i' || A->item[no[i]].type == 'I') continue;
 		switch (A->item[no[i]].unit) {
-			case 'Y':
-			case 'y':
+			case 'Y': case 'y':
 				s = GMT_DAY2SEC_F * 365.25;
 				break;
-			case 'O':
-			case 'o':
+			case 'O': case 'o':
 				s = GMT_DAY2SEC_F * 30.5;
 				break;
-			case 'U':
-			case 'u':
+			case 'U': case 'u':
 				s = GMT_DAY2SEC_F * 7.0;
 				break;
-			case 'K':
-			case 'k':
-			case 'D':
-			case 'd':
+			case 'K': case 'k':
+			case 'D': case 'd':
 				s = GMT_DAY2SEC_F;
 				break;
-			case 'H':
-			case 'h':
+			case 'H': case 'h':
 				s = GMT_HR2SEC_F;
 				break;
-			case 'M':
-			case 'm':
+			case 'M': case 'm':
 				s = GMT_MIN2SEC_F;
 				break;
-			case 'C':
-			case 'c':
+			case 'C': case 'c':
 				s = 1.0;
 				break;
-			default:
-				/* No unit specified - probably not a time axis */
+			default:	/* No unit specified - probably not a time axis */
 				s = 1.0;
 				break;
 		}
 		val[i] = A->item[no[i]].interval * s;
 	}
-	return ((val[0] >= val[1]) ? GMT_ANNOT_UPPER : GMT_ANNOT_LOWER);
+	return ((val[0] > val[1]) ? GMT_ANNOT_UPPER : GMT_ANNOT_LOWER);
 }
 
 GMT_LONG gmt_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary)
@@ -380,7 +371,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	GMT_LONG form;			/* TRUE for outline font */
 	GMT_LONG ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double tick_len[6];			/* Ticklengths for each of the 6 axis items */
+	double tick_len[4];			/* Ticklengths for each of the 4 axis items */
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
@@ -403,10 +394,8 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	tick_len[0] = C->current.setting.map_tick_length;	/* Initialize the tick lengths */
 	if (neg) tick_len[0] = -tick_len[0];
 	tick_len[1] = 3.0 * tick_len[0];
-	tick_len[2] = tick_len[0];
-	tick_len[3] = A->item[GMT_ANNOT_UPPER].active ? tick_len[0] : tick_len[1];
-	tick_len[4] = 0.5 * tick_len[0];
-	tick_len[5] = 0.75 * tick_len[0];
+	tick_len[2] = 0.5 * tick_len[0];
+	tick_len[3] = 0.75 * tick_len[0];
 	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
 
 	/* Ready to draw axis */
@@ -423,7 +412,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	PSL_command (P, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 
 	for (k = 0; k < 2; k++) {
-		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active || A->item[k+4].active ? psl_iz (P, fabs (tick_len[k])) : 0);	/* Length of primary/secondary tickmark */
+		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (P, fabs (tick_len[k])) : 0);	/* Length of primary/secondary tickmark */
 	}
 
 	PSL_comment (P, "Axis tick marks and annotations\n");
@@ -458,9 +447,8 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		T = &A->item[k];		/* Get pointer to this item */
 		if (!T->active) continue;	/* Do not want this item plotted - go to next item */
 
-		is_interval = GMT_interval_axis_item (k);	/* Interval or tick mark annotation? */
+		is_interval = (T->type == 'i' || T->type == 'I');	/* Interval or tick mark annotation? */
 		nx = GMT_coordinate_array (C, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
-		annot_pos = GMT_lower_axis_item (k);					/* 1 means lower annotation, 0 means upper (close to axis) */
 		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (C, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
 
@@ -482,6 +470,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		/* Then do annotations too - here just set text height/width parameters in PostScript */
 
 		if (do_annot) {
+			annot_pos = (T->type == 'A' || T->type == 'I') ? 1 : 0;					/* 1 means lower annotation, 0 means upper (close to axis) */
 			font = C->current.setting.font_annot[annot_pos];			/* Set the font to use */
 			form = GMT_setfont (C, &font);
 			PSL_command (P, "/PSL_AH%ld 0\n", annot_pos);
@@ -1479,7 +1468,6 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 {
 	GMT_LONG k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dx, dy, *v = NULL;
-	char *comment[2] = {"Map gridlines (primary)", "Map gridlines (secondary)"};
 
 	for (k = 0; k < 2; k++) {
 		if (C->current.setting.map_grid_cross_size[k] > 0.0) continue;
@@ -1487,9 +1475,9 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 		dx = GMT_get_map_interval (C, 0, item[k]);
 		dy = GMT_get_map_interval (C, 1, item[k]);
 
-		if (! (C->current.map.frame.axis[GMT_X].item[item[k]].active || C->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
+		if (!(C->current.map.frame.axis[GMT_X].item[item[k]].active || C->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
 
-		PSL_comment (P, "%s\n", comment[k]);
+		PSL_comment (P, "%s\n", k ? "Map gridlines (secondary)" : "Map gridlines (primary)");
 
 		GMT_setpen (C, &C->current.setting.map_grid_pen[k]);
 
@@ -1497,26 +1485,28 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 			gmt_x_grid (C, P, s, n, v, np);
 			GMT_free (C, v);
 		}
-		else if (C->current.proj.xyz_projection[GMT_X] == GMT_TIME && dx > 0.0)
+		else if (!C->current.map.frame.axis[GMT_X].item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
+		else if (C->current.proj.xyz_projection[GMT_X] == GMT_TIME)
 			gmt_timex_grid (C, P, w, e, s, n, item[k]);
-		else if (fabs (dx) > 0.0 && C->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
+		else if (C->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 			gmt_logx_grid (C, P, w, e, s, n, dx);
-		else if (dx > 0.0 && C->current.proj.xyz_projection[GMT_X] == GMT_POW)
+		else if (C->current.proj.xyz_projection[GMT_X] == GMT_POW)
 			gmt_powx_grid (C, P, w, e, s, n, dx);
-		else if (dx > 0.0)	/* Draw grid lines that go S to N */
+		else	/* Draw grid lines that go S to N */
 			GMT_linearx_grid (C, P, w, e, s, n, dx);
 
 		if (C->current.map.frame.axis[GMT_Y].special == GMT_CUSTOM && (np = gmt_load_custom_annot (C, &C->current.map.frame.axis[GMT_Y], 'g', &v, NULL))) {
 			gmt_y_grid (C, P, w, e, v, np);
 			GMT_free (C, v);
 		}
-		if (C->current.proj.xyz_projection[GMT_Y] == GMT_TIME && dy > 0.0)
+		else if (!C->current.map.frame.axis[GMT_Y].item[item[k]].active || fabs(dy) == 0.0) { /* Nothing */ }
+		else if (C->current.proj.xyz_projection[GMT_Y] == GMT_TIME)
 			gmt_timey_grid (C, P, w, e, s, n, item[k]);
-		else if (fabs (dy) > 0.0 && C->current.proj.xyz_projection[GMT_Y] == GMT_LOG10)
+		else if (C->current.proj.xyz_projection[GMT_Y] == GMT_LOG10)
 			gmt_logy_grid (C, P, w, e, s, n, dy);
-		else if (dy > 0.0 && C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
+		else if (C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
 			gmt_powy_grid (C, P, w, e, s, n, dy);
-		else if (dy > 0.0)	/* Draw grid lines that go E to W */
+		else	/* Draw grid lines that go E to W */
 			gmt_lineary_grid (C, P, w, e, s, n, dy);
 
 		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, CNULL, 0);
@@ -1529,8 +1519,6 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
 	double x_angle, y_angle, Ca, Sa, L;
 
-	char *comment[2] = {"Map gridcrosses (primary)", "Map gridcrosses (secondary)"};
-
 	for (k = i = 0; k < 2; k++) if (C->current.setting.map_grid_cross_size[k] > 0.0) i++;
 
 	if (i == 0) return;	/* No grid ticks requested */
@@ -1540,7 +1528,7 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	for (k = 0; k < 2; k++) {
 		if (C->current.setting.map_grid_cross_size[k] <= 0.0) continue;
 
-		PSL_comment (P, "%s\n", comment[k]);
+		PSL_comment (P, "%s\n", k ? "Map gridcrosses (secondary)" : "Map gridcrosses (primary)");
 
 		GMT_setpen (C, &C->current.setting.map_grid_pen[k]);
 
@@ -1638,8 +1626,8 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (dx <= 0.0 && dy <= 0.0) return;
 
-	do_x = ((dx > 0.0 && item == GMT_ANNOT_UPPER) || (dx > 0.0 && item == GMT_TICK_UPPER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_UPPER)) || (dx > 0.0 && item == GMT_TICK_LOWER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_LOWER)));
-	do_y = ((dy > 0.0 && item == GMT_ANNOT_UPPER) || (dy > 0.0 && item == GMT_TICK_UPPER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_UPPER)) || (dy > 0.0 && item == GMT_TICK_LOWER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_LOWER)));
+	do_x = dx > 0.0 && C->current.map.frame.axis[GMT_X].item[item].active && (item == GMT_ANNOT_UPPER || (item == GMT_TICK_UPPER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_UPPER)) || (item == GMT_TICK_LOWER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_LOWER)));
+	do_y = dy > 0.0 && C->current.map.frame.axis[GMT_Y].item[item].active && (item == GMT_ANNOT_UPPER || (item == GMT_TICK_UPPER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_UPPER)) || (item == GMT_TICK_LOWER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_LOWER)));
 	len = C->current.setting.map_tick_length;
 	if (item == GMT_TICK_UPPER) len *= 0.5;
 	if (item == GMT_TICK_LOWER) len *= 0.75;

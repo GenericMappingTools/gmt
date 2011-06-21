@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.91 2011-06-21 02:12:53 remko Exp $
+ *	$Id: gmt_project.h,v 1.92 2011-06-21 18:02:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -363,17 +363,13 @@ struct GMT_PROJ {
 
 #define GMT_ANNOT_UPPER		0	/* Tick annotations closest to the axis */
 #define GMT_ANNOT_LOWER		1	/* Tick annotations farthest from the axis*/
-#define GMT_INTV_UPPER		2	/* Interval annotations closest to the axis */
-#define GMT_INTV_LOWER		3	/* Interval annotations farthest from the axis */
-#define GMT_TICK_UPPER		4	/* Frame tick marks closest to the axis */
-#define GMT_TICK_LOWER		5	/* Frame tick marks closest to the axis */
-#define GMT_GRID_UPPER		6	/* Gridline spacing */
-#define GMT_GRID_LOWER		7	/* Gridline spacing */
+#define GMT_TICK_UPPER		2	/* Frame tick marks closest to the axis */
+#define GMT_TICK_LOWER		3	/* Frame tick marks closest to the axis */
+#define GMT_GRID_UPPER		4	/* Gridline spacing */
+#define GMT_GRID_LOWER		5	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 
-#define GMT_interval_axis_item(k) (((k) == GMT_INTV_UPPER || (k) == GMT_INTV_LOWER) ? TRUE : FALSE)	/* TRUE for interval annotations */
-#define GMT_lower_axis_item(k) (((k) == GMT_ANNOT_LOWER || (k) == GMT_INTV_LOWER) ? 1 : 0)		/* 1 if this is a lower axis annotation */
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
 /* The array side in GMT_PLOT_FRAME follows the order south, east, north, west (CCW loop) + z.
@@ -398,12 +394,13 @@ struct GMT_PROJ {
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	GMT_LONG parent;		/* Id of axis this item belongs to (0,1,2) */
-	GMT_LONG id;			/* Id of this item (0-7) */
+	GMT_LONG id;			/* Id of this item (0-5) */
 	GMT_LONG active;		/* TRUE if we want to use this item */
 	GMT_LONG special;		/* TRUE if custom interval annotations */
 	double interval;		/* Distance between ticks in user units */
 	GMT_LONG flavor;		/* Index into month/day name abbreviation array (0-2) */
 	GMT_LONG upper_case;		/* TRUE if we want upper case text (used with flavor) */
+	char type;			/* One of a, i, A, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 

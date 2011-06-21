@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.308 2011-06-13 17:28:40 remko Exp $
+ *	$Id: gmt_map.c,v 1.309 2011-06-21 18:02:06 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2766,6 +2766,7 @@ GMT_LONG gmt_map_init_cylstereo (struct GMT_CTRL *C) {
  */
 
 GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
+	GMT_LONG i;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 
 	C->current.proj.GMT_convert_latitudes = !GMT_IS_SPHERICAL (C);
@@ -2875,8 +2876,10 @@ GMT_LONG gmt_map_init_stereo (struct GMT_CTRL *C) {
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		}
 		else {	/* Global view only */
-			C->current.map.frame.axis[GMT_X].item[0].interval = C->current.map.frame.axis[GMT_Y].item[0].interval = 0.0;	/* No annotations for global mode */
-			C->current.map.frame.axis[GMT_X].item[4].interval = C->current.map.frame.axis[GMT_Y].item[4].interval = 0.0;	/* No tickmarks for global mode */
+			/* No annotations or tickmarks in global mode */
+			for (i = 0; i < GMT_GRID_UPPER; i++)
+				C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
+				C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
 			C->common.R.wesn[XLO] = 0.0;
 			C->common.R.wesn[XHI] = 360.0;
 			C->common.R.wesn[YLO] = -90.0;
@@ -3443,6 +3446,7 @@ GMT_LONG GMT_UTMzone_to_wesn (struct GMT_CTRL *C, GMT_LONG zone_x, GMT_LONG zone
  */
 
 GMT_LONG gmt_map_init_lambeq (struct GMT_CTRL *C) {
+	GMT_LONG i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	C->current.proj.Dx = C->current.proj.Dy = 1.0;
@@ -3512,8 +3516,10 @@ GMT_LONG gmt_map_init_lambeq (struct GMT_CTRL *C) {
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		}
 		else {	/* Global view only */
-			C->current.map.frame.axis[GMT_X].item[0].interval = C->current.map.frame.axis[GMT_Y].item[0].interval = 0.0;	/* No annotations for global mode */
-			C->current.map.frame.axis[GMT_X].item[4].interval = C->current.map.frame.axis[GMT_Y].item[4].interval = 0.0;	/* No tickmarks for global mode */
+			/* No annotations or tickmarks in global mode */
+			for (i = 0; i < GMT_GRID_UPPER; i++)
+				C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
+				C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
 			C->common.R.wesn[XLO] = 0.0;
 			C->common.R.wesn[XHI] = 360.0;
 			C->common.R.wesn[YLO] = -90.0;
@@ -3543,6 +3549,7 @@ GMT_LONG gmt_map_init_lambeq (struct GMT_CTRL *C) {
  */
 
 GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
+	GMT_LONG i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	gmt_set_spherical (C);	/* PW: Force spherical for now */
@@ -3600,8 +3607,10 @@ GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		}
 		else {	/* Global view only */
-			C->current.map.frame.axis[GMT_X].item[0].interval = C->current.map.frame.axis[GMT_Y].item[0].interval = 0.0;	/* No annotations for global mode */
-			C->current.map.frame.axis[GMT_X].item[4].interval = C->current.map.frame.axis[GMT_Y].item[4].interval = 0.0;	/* No tickmarks for global mode */
+			/* No annotations or tickmarks in global mode */
+			for (i = 0; i < GMT_GRID_UPPER; i++)
+				C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
+				C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
 			C->common.R.wesn[XLO] = 0.0;
 			C->common.R.wesn[XHI] = 360.0;
 			C->common.R.wesn[YLO] = -90.0;
@@ -3631,9 +3640,8 @@ GMT_LONG gmt_map_init_ortho (struct GMT_CTRL *C) {
  */
 
 GMT_LONG gmt_map_init_genper (struct GMT_CTRL *C) {
-	GMT_LONG search;
+	GMT_LONG search, i;
 	double xmin, xmax, ymin, ymax, dummy, radius = 0.0;
-
 	double alt, azimuth, tilt, width, height;
 	double twist, scale, units;
 
@@ -3698,13 +3706,10 @@ GMT_LONG gmt_map_init_genper (struct GMT_CTRL *C) {
 	}
 	else {
 		if (C->current.proj.g_debug > 0) GMT_message (C, "using global view\n");
-
-		/* No annotations for global mode */
-		C->current.map.frame.axis[GMT_X].item[0].interval = C->current.map.frame.axis[GMT_Y].item[0].interval = 0.0;
-
-		/* No tickmarks for global mode */
-		C->current.map.frame.axis[GMT_X].item[4].interval = C->current.map.frame.axis[GMT_Y].item[4].interval = 0.0;
-
+		/* No annotations or tickmarks in global mode */
+		for (i = 0; i < GMT_GRID_UPPER; i++)
+			C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
+			C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
 		C->current.map.overlap = (PFL) gmt_genper_overlap;
 		C->current.map.crossing = (PFL) gmt_radial_crossing;
 		C->current.map.clip = (PFL) gmt_radial_clip;
@@ -3832,6 +3837,7 @@ GMT_LONG gmt_map_init_gnomonic (struct GMT_CTRL *C) {
  */
 
 GMT_LONG gmt_map_init_azeqdist (struct GMT_CTRL *C) {
+	GMT_LONG i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	gmt_set_spherical (C);	/* PW: Force spherical for now */
@@ -3878,8 +3884,10 @@ GMT_LONG gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 			gmt_xy_search (C, &xmin, &xmax, &ymin, &ymax, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 		}
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
-			C->current.map.frame.axis[GMT_X].item[0].interval = C->current.map.frame.axis[GMT_Y].item[0].interval = 0.0;	/* No annotations for global mode */
-			C->current.map.frame.axis[GMT_X].item[4].interval = C->current.map.frame.axis[GMT_Y].item[4].interval = 0.0;	/* No tickmarks for global mode */
+			/* No annotations or tickmarks in global mode */
+			for (i = 0; i < GMT_GRID_UPPER; i++)
+				C->current.map.frame.axis[GMT_X].item[i].active = C->current.map.frame.axis[GMT_Y].item[i].active = FALSE,
+				C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
 			C->common.R.wesn[XLO] = 0.0;
 			C->common.R.wesn[XHI] = 360.0;
 			C->common.R.wesn[YLO] = -90.0;

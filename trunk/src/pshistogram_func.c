@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pshistogram_func.c,v 1.19 2011-06-20 21:45:16 guru Exp $
+ *	$Id: pshistogram_func.c,v 1.20 2011-06-21 18:02:06 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -541,18 +541,18 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] */
-		if (GMT->current.map.frame.axis[GMT_X].item[0].interval == 0.0) {
+		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
 			if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
 		}
 		else
-			tmp = GMT->current.map.frame.axis[GMT_X].item[0].interval;
+			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		F.wesn[XLO] = floor (x_min / tmp) * tmp;
 		F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
-		if (GMT->current.map.frame.axis[GMT_X].item[0].interval == 0.0) {
-			GMT->current.map.frame.axis[GMT_X].item[0].interval = GMT->current.map.frame.axis[GMT_X].item[4].interval = tmp;
-			GMT->current.map.frame.axis[GMT_X].item[0].parent = 0;
-			GMT->current.map.frame.axis[GMT_X].item[0].active = TRUE;
+		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
+			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval = tmp;
+			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].parent = 0;
+			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].active = TRUE;
 			GMT->current.map.frame.draw = TRUE;
 		}
 	}
@@ -613,17 +613,17 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
 		GMT->common.R.active = TRUE;
 		F.wesn[YLO] = 0.0;
-		if (GMT->current.map.frame.axis[GMT_Y].item[0].interval == 0.0) {
+		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, F.yy1)));
 			if ((F.yy1 / tmp) < 3.0) tmp *= 0.5;
 		}
 		else
-			tmp = GMT->current.map.frame.axis[GMT_Y].item[0].interval;
+			tmp = GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval;
 		F.wesn[YHI] = ceil (F.yy1 / tmp) * tmp;
-		if (GMT->current.map.frame.axis[GMT_Y].item[0].interval == 0.0) {	/* Tickmarks not set */
-			GMT->current.map.frame.axis[GMT_Y].item[0].interval = GMT->current.map.frame.axis[GMT_Y].item[4].interval = tmp;
-			GMT->current.map.frame.axis[GMT_Y].item[0].parent = 1;
-			GMT->current.map.frame.axis[GMT_Y].item[0].active = TRUE;
+		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* Tickmarks not set */
+			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval = tmp;
+			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].parent = 1;
+			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].active = TRUE;
 			GMT->current.map.frame.draw = TRUE;
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
@@ -634,14 +634,15 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	if (automatic && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[0].item[0].interval, GMT->current.map.frame.axis[1].item[0].interval);
+		GMT_report (GMT, GMT_MSG_NORMAL, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
 
 	if (Ctrl->A.active) {
 		char buffer[GMT_TEXT_LEN256];
-		d_swap (GMT->current.map.frame.axis[GMT_X].item[0].interval, GMT->current.map.frame.axis[GMT_Y].item[0].interval);
-		d_swap (GMT->current.map.frame.axis[GMT_X].item[4].interval, GMT->current.map.frame.axis[GMT_Y].item[4].interval);
-		d_swap (GMT->current.map.frame.axis[GMT_X].item[5].interval, GMT->current.map.frame.axis[GMT_Y].item[5].interval);
+		d_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
+		d_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER].interval);
+		d_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval);
+		d_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].interval);
 		strcpy (buffer, GMT->current.map.frame.axis[GMT_X].label);
 		strcpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label);
 		strcpy (GMT->current.map.frame.axis[GMT_Y].label, buffer);
