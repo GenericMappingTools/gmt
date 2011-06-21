@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.28 2011-06-21 18:49:40 remko Exp $
+ *	$Id: psscale_func.c,v 1.29 2011-06-21 22:14:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -692,6 +692,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		if (B_set) {	/* Used -B */
+			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_X], !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
 			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
@@ -902,6 +903,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
 			PFL tmp = NULL;
+			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {	/* Gridlines work fine without kludging since no annotations involved */
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.547 2011-06-21 18:27:45 guru Exp $
+ *	$Id: gmt_init.c,v 1.548 2011-06-21 22:14:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5447,9 +5447,9 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 	/* Decode the annot/tick segments of the clean -B string pieces */
 
 	char *t = NULL, *s = NULL, unit, *str = "xyz";
-	double val, phase = 0.0;
+	double val = 0.0, phase = 0.0;
 
-	if (!in || !in[0]) return (GMT_NOERROR);	/* NULL pointer passed */
+	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
 		GMT_LONG k, n_int[4];
@@ -5475,10 +5475,6 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 
 	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-	if (!(isdigit ((int)t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Interval missing from -B option (%c-component, %c-info): %s\n", str[axis], flag, in);
-		return (2);
-	}
 	/* Decode interval, get pointer to next segment */
 	if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", str[axis], flag, in);
@@ -5613,6 +5609,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		gmt_handle_atcolon (C, C->current.map.frame.axis[i].prefix, 1);	/* Restore any @^ to @: */
 		gmt_handle_atcolon (C, C->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
 
+		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (C, i, 'c', out3, &C->current.map.frame.axis[i]);
 		else {	/* Parse from back for 'a', 'f', 'g' chunks */
@@ -5625,13 +5622,14 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 					error += gmt_decode_tinfo (C, i, 'a', out3, &C->current.map.frame.axis[i]);
 			}
 		}
-			
+
 		/* Make sure we have ticks to match annotation stride */
 		A = &C->current.map.frame.axis[i];
 		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
 		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_LOWER], &A->item[GMT_ANNOT_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
+		/* Note that item[].type will say 'a' or 'A' in these cases, so we know when minor ticks were not set */
 	}
 
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
