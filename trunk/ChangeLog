@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1107 2011-06-21 20:28:21 guru Exp $
+	$Id: ChangeLog,v 1.1108 2011-06-21 20:49:59 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-21	jluis
+	* gmtinstall.bat:	It now builds also the supplements and put all dlls 
+				supplements inside the main gmt.dll.
 
 2011-06-21	pwessel
 	* pslegend_func.c:	Append +r[<radius>] to -F to get a rounded rectangular border.
