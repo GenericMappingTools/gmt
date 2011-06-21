@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.27 2011-06-21 18:02:07 remko Exp $
+ *	$Id: psscale_func.c,v 1.28 2011-06-21 18:49:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,7 +29,7 @@
 #include "gmt.h"
 
 EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item);
+EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */
@@ -693,7 +693,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 		if (B_set) {	/* Used -B */
 			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_X], !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
-			if ((dx = GMT_get_map_interval (GMT, 0, GMT_GRID_UPPER)) > 0.0) {
+			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -902,7 +902,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
 			PFL tmp = NULL;
-			if ((dx = GMT_get_map_interval (GMT, 0, GMT_GRID_UPPER)) > 0.0) {	/* Gridlines work fine without kludging since no annotations involved */
+			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {	/* Gridlines work fine without kludging since no annotations involved */
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
