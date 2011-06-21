@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.163 2011-06-20 18:16:23 guru Exp $
+ *	$Id: x2sys.c,v 1.164 2011-06-21 03:55:54 remko Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -115,7 +115,6 @@ GMT_LONG gmtmggpath_func (struct GMT_CTRL *GMT, char *leg_path, char *leg)
  */
 
 void gmtmggpath_init (struct GMT_CTRL *C) {
-	GMT_LONG i;
 	char line[GMT_BUFSIZ];
 	FILE *fp = NULL;
 
@@ -1309,7 +1308,6 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 
 void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 {
-	GMT_LONG i;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
 	FILE *fp = NULL;
 
