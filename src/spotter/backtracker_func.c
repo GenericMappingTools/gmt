@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.19 2011-06-20 22:15:10 guru Exp $
+ *	$Id: backtracker_func.c,v 1.20 2011-06-21 00:18:28 jluis Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -530,7 +530,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				}
 			}
 			else {
-				if (!Ctrl->W.active) n_chunk = (*spot_func) (GMT, &lon, &lat, &age, 1, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
+				if (!Ctrl->W.active) n_chunk = (*spot_func) (GMT, &lon, &lat, &age, (GMT_LONG)1, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c);
 				
 				n_track = irint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
