@@ -1,53 +1,47 @@
 #!/bin/bash
 #
-#       $Id: gspline_5.sh,v 1.1 2011-06-17 03:23:30 guru Exp $
+#       $Id: gspline_5.sh,v 1.2 2011-06-21 18:05:57 guru Exp $
 
 . ../functions.sh
 header "greenspline: Testing Spherical 3-D interpolation"
 
 ps=gspline_5.ps
 
-# Figure 6 in Wessel, P. (2009), A general-purpose Green's function-based
-#	interpolator, Computers & Geosciences, 35, 1247–1254.
+# Figures 2+3 in Wessel, P., and J. M. Becker (2008), Interpolation using a
+# Generalized Green's Function for a Spherical Surface Spline in Tension,
+# Geophys. J. Int., 174, 21–28.
 
-D=3
-Limit=10
-tension=0.9999
-gmtset FONT_ANNOT_PRIMARY 12p
-#extract_epic -D1957/1/1/2007/12/31 -M5/12 > quakes.xyz
-awk '{print $1, $2, 1}' quakes.xyz | blockmean -Rg -I$D -fg -Sw > quakes_count.d
-greenspline -Rg -I1 quakes_count.d -D4 -SQ${tension} -Gquake_count.nc
-# Calculate number of quakes per 10^-6km^2 per year
-grdmath quake_count.nc PI 6371.007181 2 POW MUL 180 DIV $D DUP 2 DIV SIND MUL MUL 2 MUL DIV 50 DIV 1000 MUL 1000 MUL DUP $Limit GT 0 NAN MUL = density.nc
-makecpt -Cgray -T0/160/40 -I > $$.cpt
-pstext -R0/8/0/11 -Jx1i -K -P -N -D-0.25i/0.2i -F+jLB+f16p -X1.25i << EOF > $ps
-0	2.5	c)
-0	5.3	b)
-0	8.55	a)
-EOF
-pscoast -R60/-35/220/30r -JH180/5i -B40f20/20WSne -Gwhite -Wthinnest -A1000 -K -O --MAP_ANNOT_OBLIQUE=46 --FORMAT_GEO_MAP=ddd:mm:ssF -X0.25i >> $ps
-grdimage density.nc -C$$.cpt -R -J -O -K -Q >> $ps
-grdcontour density.nc -C20 -R -J -O -K -Wcthinnest >> $ps
-psxy -R -J -O -K trench.d ridge.d transform.d -W0.5p,- >> $ps
-H=`echo 220 30 | mapproject -R -J | cut -f2`
-H2=`gmtmath -Q $H 0.5 MUL =`
-psscale -C$$.cpt -D5.4i/${H2}i/2i/0.15i -O -K -E -B/:"10@+-6@+ km@+-2@+yr@+-1@+": >> $ps
-#
-pscoast -Rg -JH180/6i -B0 -Gwhite -Wthinnest -A1000 -K -O -Y2.8i -X-0.25i >> $ps
-grdimage density.nc -C$$.cpt -J -O -K -Q >> $ps
-grdcontour density.nc -C20 -J -O -K -Wcthinnest >> $ps
-psxy -R -J -O -K trench.d ridge.d transform.d -W0.5p,- >> $ps
-mapproject -R60/-35/220/30r -JH180/5i -I << EOF | psxy -Rg -JH180/6i -O -K -A -W1p -L >> $ps
-0	0
-5	0
-5	$H
-0	$H
-EOF
-#
-pscoast -Rg -JH180/6i -B0 -Gwhite -Wthinnest -A1000 -K -O -Y3.25i  >> $ps
-psxy -R -J -O -K -Sc0.02i -Gblack quakes.xyz >> $ps
-psxy -R -J -O -K trench.d ridge.d transform.d -W0.5p,- >> $ps
-psxy -R$R -J -O -T >> $ps
-rm $$.cpt quakes_count.d quake_count.nc density.nc
+# First find Parker's solution for no tension:
+greenspline -Rg -I1 mag_obs_1990.d -Sp -D4 -GFig_2_p0.nc
+# Then repeat but use the wrong Oslo longitude to recreate Parker's original figure in his book
+awk '{if ($1 == 10.45) {print 104.5, $2, $3} else {print $0}}' mag_obs_1990.d > tmp
+greenspline -Rg -I1 tmp -Sp -D4 -GFig_2_orig.nc
+pscoast -R0/360/0/90 -JA0/90/5i -P -Glightgray -K -B30 -Y5.5i --MAP_FRAME_WIDTH=0.025i \
+	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10p -X0.5 > $ps
+echo 0 90 | psxy -R -J -O -K -Sx0.1i -W0.5p >> $ps
+grdcontour -R Fig_2_p0.nc -J -O -K -Z0.001 -C5 -A10 -Gl195/0/0/90,0/90/295/0 >> $ps
+grdcontour -R Fig_2_orig.nc -J -O -K -Z0.001 -C5 -A10 -Wa0.75p,- -Wc0.25p,. -Gl160/0/270/80,270/80/340/0 >> $ps
+psxy -R -J -O -K mag_obs_1990.d -Sc0.1i -Gblack >> $ps
+psxy -R -J -O -K mag_obs_1990.d -Sc0.025i -Gwhite >> $ps
+psxy -R -J -O -K mag_validate_1990.d -Sc0.1i -Gwhite -W0.25p  >> $ps
+psxy -R -J -O -K mag_validate_1990.d -Sc0.025i -Gblack >> $ps
+echo 104.50 59.92 | psxy -R -J -O -K -Sc0.1i -Gwhite -W0.25p >> $ps
+echo 104.50 59.92 | psxy -R -J -O -K -Sx0.1i -W1p >> $ps
+echo 104.50 59.92 -42 1.65 | psxy -R -J -O -K -SV0.02i/0.1i/0.08i -Gblack --MAP_VECTOR_SHAPE=0.5 >> $ps
+
+# Repeat for Wessel&Becker's solution with t = 0.99
+
+greenspline -Rg -I1 mag_obs_1990.d -SQ0.99 -D4 -GFig_2_p5.nc
+
+pscoast -R0/360/0/90 -J -O -Glightgray -K -B30 -X2.5i -Y-5i --MAP_FRAME_WIDTH=0.025i \
+	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10 >> $ps
+echo 0 90 | psxy -R -J -O -K -Sx0.1i -W0.5p >> $ps
+grdcontour -R Fig_2_p5.nc -J -O -K -Z0.001 -C5 -A10 -Gl335/0/0/90,0/90/155/0 >> $ps
+psxy -R -J -O -K mag_obs_1990.d -Sc0.1i -Gblack >> $ps
+psxy -R -J -O -K mag_obs_1990.d -Sc0.025i -Gwhite >> $ps
+psxy -R -J -O -K mag_validate_1990.d -Sc0.1i -Gwhite -W0.25p  >> $ps
+psxy -R -J -O -K mag_validate_1990.d -Sc0.025i -Gblack >> $ps
+psxy -R -J -O -T >> $ps
+rm -f tmp Fig_2_orig.nc Fig_2_p0.nc Fig_2_p5.nc
 
 pscmp
