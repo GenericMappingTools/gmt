@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.311 2011-06-21 22:33:37 remko Exp $
+ *	$Id: gmt_map.c,v 1.312 2011-06-21 22:47:05 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2167,13 +2167,7 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	ilog = floor (log10 (d));
 	p = pow (10.0,ilog);
 	f = d / p;
-	if (f <= 2.0)
-		d = 2.0 * p;
-	else if (f <= 5.0)
-		d = 5.0 * p;
-	else
-		d = 10.0 * p;
-	T->interval = d;
+	T->interval = d = (f <= 2.0) ? 2.0 * p : (f <= 5.0) ? 5.0 * p : 10.0 * p;
 	/* Now do minor ticks as well */
 	T = &A->item[item+2];
 	if (T->interval != 0.0) return;
