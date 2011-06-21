@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.77 2011-06-16 02:26:21 guru Exp $
+ *	$Id: pslib.h,v 1.78 2011-06-21 13:05:13 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -83,6 +83,7 @@ typedef long PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #define PSL_PENTAGON		((PSL_LONG)'n')
 #define PSL_DOT			((PSL_LONG)'p')
 #define PSL_RECT		((PSL_LONG)'r')
+#define PSL_RNDRECT		((PSL_LONG)'R')
 #define PSL_SQUARE		((PSL_LONG)'s')
 #define PSL_TRIANGLE		((PSL_LONG)'t')
 #define PSL_VECTOR		((PSL_LONG)'v')

@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.30 2011-05-18 01:52:54 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.31 2011-06-21 13:05:14 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -68,6 +68,9 @@
 /SP {M {D} repeat FO}!
 % Rectangle: height width xc yc
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+% Rounded rectangle: height width radius xc yc
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW 2 div sub BoxH -2 div M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 % Square: radius xc yc
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 % Triangle: radius xc yc

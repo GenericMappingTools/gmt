@@ -447,6 +447,7 @@ PSL_MANGLE (IT(size) is expected to contain the four parameter IT(radius), IT(an
 and IT(type) as 1 or 2 to place arrow head at angle 1 and 2; use 3 for both and 0 for none),
 PSL_WEDGE (IT(size) is expected to contain the three parameter IT(radius), IT(angle1), and IT(angle2) for the sector specification),
 PSL_RECT (IT(size) is expected to contain the two dimensions IT(width) and IT(height)),
+PSL_RNDRECT (IT(size) is expected to contain the two dimensions IT(width) and IT(height) and the IT(radius) of the corners),
 PSL_ROTRECT (IT(size) is expected to contain the three parameter IT(angle), IT(width), and IT(height), with rotation relative to the horizontal), and
 PSL_VECTOR (IT(size) is expected to contain the IT(x_tip), IT(y_tip), IT(tailwidth), IT(headlength), IT(headwidth), IT(shape), and IT(dual).
 Here (IT(x_tip),IT(y_tip)) are the coordinates to the head of the vector, while (IT(x), IT(y)) are those of the tail.

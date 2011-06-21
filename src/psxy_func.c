@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.36 2011-06-20 21:45:16 guru Exp $
+ *	$Id: psxy_func.c,v 1.37 2011-06-21 13:05:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -281,8 +281,8 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
 	GMT_message (GMT, "\t   (f)ront, octa(g)on, (h)exagon, (i)nvtriangle, (j)rotated rectangle,\n");
-	GMT_message (GMT, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, (p)oint, (q)uoted line,\n");
-	GMT_message (GMT, "\t   (r)ect, (s)quare, (t)riangle, (v)ector, (w)edge, (x)cross, or (y)dash.\n");
+	GMT_message (GMT, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, (p)oint, (q)uoted line, (r)ectangle\n");
+	GMT_message (GMT, "\t   (R)ounded rectangle, (s)quare, (t)riangle, (v)ector, (w)edge, (x)cross, or (y)dash.\n");
 	GMT_message (GMT, "\t   If no size is specified, then the 3rd column must have sizes and\n");
 	GMT_message (GMT, "\t   you may append +s<scale>[unit][/<origin>][l] to convert the given data\n");
 	GMT_message (GMT, "\t   as size = (data - origin) * scale, using log10 if l is appended.\n");
@@ -853,10 +853,12 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				case GMT_SYMBOL_DIAMOND:
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
+				case GMT_SYMBOL_RNDRECT:
+					dim[2] = in[ex3];
 				case GMT_SYMBOL_RECT:
 					dim[0] = in[ex1];
 					dim[1] = in[ex2];
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_RECT);
+					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_ROTRECT:
 				case GMT_SYMBOL_ELLIPSE:
