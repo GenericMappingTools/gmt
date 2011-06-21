@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.32 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_plot.h,v 1.33 2011-06-21 13:05:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,6 +45,7 @@
 #define GMT_SYMBOL_DOT		((GMT_LONG)'p')
 #define GMT_SYMBOL_QUOTED_LINE	((GMT_LONG)'q')
 #define GMT_SYMBOL_RECT		((GMT_LONG)'r')
+#define GMT_SYMBOL_RNDRECT		((GMT_LONG)'R')
 #define GMT_SYMBOL_SQUARE	((GMT_LONG)'s')
 #define GMT_SYMBOL_TRIANGLE	((GMT_LONG)'t')
 #define GMT_SYMBOL_CUBE		((GMT_LONG)'u')

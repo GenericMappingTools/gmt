@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxyz_func.c,v 1.25 2011-06-20 21:45:16 guru Exp $
+ *	$Id: psxyz_func.c,v 1.26 2011-06-21 13:05:36 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -136,9 +136,9 @@ GMT_LONG GMT_psxyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
 	GMT_message (GMT, "\t   (f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle,\n");
-	GMT_message (GMT, "\t   (k)ustom, (%c)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint,\n", 'l');
-	GMT_message (GMT, "\t   (q)uoted line, (r)ect, (s)quare, (t)riangle, c(u)be, (v)ector, (w)edge,\n");
-	GMT_message (GMT, "\t   (x)cross, (y)dash, and (z)dash.\n");
+	GMT_message (GMT, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint,\n");
+	GMT_message (GMT, "\t   (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle,\n");
+	GMT_message (GMT, "\t   c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, and (z)dash.\n");
 	GMT_message (GMT, "\t   If no size is specified, then the 4th column must have sizes and\n");
 	GMT_message (GMT, "\t   you may append +s<scale>[unit][/<origin>][l] to convert the given data\n");
 	GMT_message (GMT, "\t   as size = (data - origin) * scale, using log10 if l is appended.\n");
@@ -615,6 +615,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				case GMT_SYMBOL_COLUMN:
 					data[n].dim[2] = (GMT_is_dnan (S.base)) ? 0.0 : GMT_z_to_zz (GMT, S.base);
 					break;
+				case GMT_SYMBOL_RNDRECT:
+					data[n].dim[2] = in[ex3];	/* radius */
 				case GMT_SYMBOL_RECT:
 					data[n].dim[0] = in[ex1];	/* x-dim */
 					data[n].dim[1] = in[ex2];	/* y-dim */
@@ -767,6 +769,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				case GMT_SYMBOL_INVTRIANGLE:
 				case GMT_SYMBOL_DIAMOND:
 				case GMT_SYMBOL_RECT:
+				case GMT_SYMBOL_RNDRECT:
 					GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 					PSL_plotsymbol (PSL, data[i].x, data[i].y, data[i].dim, data[i].symbol);
 					break;

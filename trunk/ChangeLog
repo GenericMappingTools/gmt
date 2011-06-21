@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1104 2011-06-21 02:12:19 remko Exp $
+	$Id: ChangeLog,v 1.1105 2011-06-21 13:09:05 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-21	remko
+	* pslib.[ch]:		Added rounded rectangle symbol PSL_RNDRECT ('R').
+	* PSL_prologue.ps:	---"---
+	* psxy[z]_func.c:	---"---
+	* explain_symbol.txt:	New shared file for psxy[z].txt.
 	* gmt_project.h:	Removed unused 'type' in struct GMT_PLOT_AXIS_ITEM.
 	* gmt_init.c:		Redesign gmt_decode_tinfo in advance of allowing empties.
 
