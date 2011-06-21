@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.151 2011-06-13 00:51:42 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.152 2011-06-21 01:03:39 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -172,7 +172,8 @@ effect simply by running \GMT\ commands in the directory whose
 when making final illustrations for a journal article one must often
 standardize on font sizes and font types, etc.  Keeping all those
 settings in a separate \filename{gmt.conf} file simplifies this
-process and will allow you to generate those illustrations with the same settings later on.  Likewise, \GMT\ scripts that make figures for PowerPoint
+process and will allow you to generate those illustrations with the same settings
+later on.  Likewise, \GMT\ scripts that make figures for PowerPoint
 presentations often use a different color scheme and font size than
 output intended for laser printers.  Organizing these various scenarios
 into separate \filename{gmt.conf} files will minimize headaches
@@ -287,30 +288,30 @@ these options in order of importance (some are use a lot more than others).
 
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
-\Opt{B}	&	Defines tickmarks, annotations, and labels for basemaps and axes  \\ \hline
-\Opt{J}	&	Selects a map projection or coordinate transformation  \\ \hline
-\Opt{K}	&	Allows more plot code to be appended to this plot later \\ \hline
-\Opt{O}	&	Allows this plot code to be appended to an existing plot \\ \hline
-\Opt{P}	&	Selects Portrait plot orientation [Default is landscape] \\ \hline
-\Opt{R}	&	Defines the extent of the map/plot region \\ \hline
-\Opt{U}	&	Plots a time-stamp, by default in the lower left corner of page  \\ \hline
-\Opt{V}	&	Selects verbose operation; reporting on progress  \\ \hline
-\Opt{X}	&	Sets the \emph{x}-coordinate for the plot origin on the page  \\ \hline
-\Opt{Y}	&	Sets the \emph{y}-coordinate for the plot origin on the page  \\ \hline
-\Opt{a}	&	Associates aspatial data from OGR/GMT files with data columns  \\ \hline
-\Opt{b}	&	Selects binary input and/or output  \\ \hline
-\Opt{c}	&	Specifies the number of plot copies  \\ \hline
-\Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
+\Opt{B}	&	Define tickmarks, annotations, and labels for basemaps and axes  \\ \hline
+\Opt{J}	&	Select a map projection or coordinate transformation  \\ \hline
+\Opt{K}	&	Allow more plot code to be appended to this plot later \\ \hline
+\Opt{O}	&	Allow this plot code to be appended to an existing plot \\ \hline
+\Opt{P}	&	Select Portrait plot orientation [Default is landscape] \\ \hline
+\Opt{R}	&	Define the extent of the map/plot region \\ \hline
+\Opt{U}	&	Plot a time-stamp, by default in the lower left corner of page  \\ \hline
+\Opt{V}	&	Select verbose operation; reporting on progress  \\ \hline
+\Opt{X}	&	Set the \emph{x}-coordinate for the plot origin on the page  \\ \hline
+\Opt{Y}	&	Set the \emph{y}-coordinate for the plot origin on the page  \\ \hline
+\Opt{a}	&	Associate aspatial data from OGR/GMT files with data columns  \\ \hline
+\Opt{b}	&	Select binary input and/or output  \\ \hline
+\Opt{c}	&	Specify the number of plot copies  \\ \hline
+\Opt{f}	&	Specify the data format on a per column basis  \\ \hline
 \Opt{g}	&	Identify data gaps based on supplied criteria  \\ \hline
-\Opt{h}	&	Specifies that input/output tables have header record(s)  \\ \hline
-\Opt{i}	&	Specifies which input columns to read  \\ \hline
-\Opt{n}	&	Specifies grid interpolation settings  \\ \hline
-\Opt{o}	&	Specifies which output columns to write  \\ \hline
-\Opt{p}	&	Controls perspective views for plots  \\ \hline
-\Opt{r}	&	Sets the grid registration to pixel [Default is gridline]  \\ \hline
-\Opt{s}	&	Controls output of records containing one or more NaNs  \\ \hline
+\Opt{h}	&	Specify that input/output tables have header record(s)  \\ \hline
+\Opt{i}	&	Specify which input columns to read  \\ \hline
+\Opt{n}	&	Specify grid interpolation settings  \\ \hline
+\Opt{o}	&	Specify which output columns to write  \\ \hline
+\Opt{p}	&	Control perspective views for plots  \\ \hline
+\Opt{r}	&	Set the grid registration to pixel [Default is gridline]  \\ \hline
+\Opt{s}	&	Control output of records containing one or more NaNs  \\ \hline
 \Opt{t}	&	Change layer PDF transparency  \\ \hline
-\Opt{:}	&	Assumes input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
+\Opt{:}	&	Assume input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
 \end{tabular}
 \caption{The 24 standardized \gmt\ command line switches.}
 \label{tbl:switches}
@@ -371,7 +372,7 @@ The optional \emph{clock} string is a 24-hour clock in \emph{hh}[\emph{:mm}[\emp
 If no \emph{clock} is given
 it implies 00:00:00, i.e., the start of the specified day.
 Note that not all of the specified entities need be present in the data.  All calendar date-clock strings are internally represented as double precision seconds since
-proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
+proleptic Gregorian date Monday January 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
 can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
 is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
 change was to correct for drift in the dates of significant religious observations (primarily Easter) and to prevent further drift
