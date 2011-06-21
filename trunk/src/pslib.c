@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.278 2011-06-21 13:05:13 remko Exp $
+ *	$Id: pslib.c,v 1.279 2011-06-21 18:45:42 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -859,8 +859,8 @@ PSL_LONG PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[]
 		case PSL_RECT:		/* A rectangle. size[0..1] = width and height */
 			PSL_command (PSL, "%ld %ld %ld %ld Sr\n", psl_iz (PSL, size[1]), psl_iz (PSL, size[0]), psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
-		case PSL_RNDRECT:	/* A rounded rectangle. size[0..1] = width and height, size[3] = radius */
-			PSL_command (PSL, "%ld %ld %ld %ld %ld SR\n", psl_iz (PSL, size[2]), psl_iz (PSL, size[1]), psl_iz (PSL, size[0]), psl_ix (PSL, x), psl_iy (PSL, y));
+		case PSL_RNDRECT:	/* A rounded rectangle. size[0..1] = width and height, size[2] = radius */
+			PSL_command (PSL, "%ld %ld %ld %ld %ld SR\n", psl_iz (PSL, size[1]), psl_iz (PSL, size[0]), psl_iz (PSL, size[2]), psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
 		case PSL_ROTRECT:	/* A rotated rectangle. size[0] = angle, size[1..2] = width and height */
 			PSL_command (PSL, "%ld %ld %g %ld %ld Sj\n", psl_iz (PSL, size[2]), psl_iz (PSL, size[1]), size[0], psl_ix (PSL, x), psl_iy (PSL, y));
@@ -1263,7 +1263,7 @@ PSL_LONG PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, PSL_LONG orientation, PS
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", "v 1.31 ");	/* Version number should match that of PSL_prologue.ps */
+		psl_bulkcopy (PSL, "PSL_prologue", "v 1.32 ");	/* Version number should match that of PSL_prologue.ps */
 		psl_bulkcopy (PSL, PSL->init.encoding, "");
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
