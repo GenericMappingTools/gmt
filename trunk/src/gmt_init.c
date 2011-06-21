@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.544 2011-06-20 23:36:08 remko Exp $
+ *	$Id: gmt_init.c,v 1.545 2011-06-21 02:12:00 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5344,9 +5344,8 @@ GMT_LONG gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, GMT
 GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit) {
 	/* Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 
-	GMT_LONG i, n = 1;
-	struct GMT_PLOT_AXIS_ITEM *I[2] = {NULL, NULL};
-	char item_flag[8] = {'a', 'A', 'i', 'I', 'f', 'F', 'g', 'G'}, *format = NULL;
+	struct GMT_PLOT_AXIS_ITEM *I = NULL;
+	char *format = NULL;
 
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
 		if (GMT_verify_time_step (C, irint (val), unit)) GMT_exit (EXIT_FAILURE);
@@ -5356,58 +5355,17 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 		}
 	}
 
-	switch (flag) {
-		case 'a':	/* Upper tick annotation */
-			I[0] = &A->item[0];
+	switch (unit) {	/* Determine if we have intervals or moments */
+		case 'Y':	case 'y':
+		case 'O':	case 'o':
+		case 'K':	case 'k':
+		case 'J':	case 'j':
+		case 'D':	case 'd':
+		case 'R':	case 'r':
+		case 'U':	case 'u':
+			if (A->type == GMT_TIME && flag == 'a') flag = 'i';
+			if (A->type == GMT_TIME && flag == 'A') flag = 'I';
 			break;
-		case 'A':	/* Lower tick annotation */
-			I[0] = &A->item[1];
-			break;
-		case 'i':	/* Upper interval annotation */
-			I[0] = &A->item[2];
-			break;
-		case 'I':	/* Lower interval annotation */
-			I[0] = &A->item[3];
-			break;
-		case 'f':	/* Upper Frame tick interval */
-			I[0] = &A->item[4];
-			break;
-		case 'F':	/* Lower Frame tick interval */
-			I[0] = &A->item[5];
-			break;
-		case 'g':	/* Upper Gridline interval */
-			I[0] = &A->item[6];
-			break;
-		case 'G':	/* Lower gridline interval */
-			I[0] = &A->item[7];
-			break;
-		case '*':	/* Both a and f */
-			I[0] = &A->item[0];
-			I[1] = &A->item[4];
-			n = 2;
-			break;
-		case '+':	/* Both i and f */
-			I[0] = &A->item[2];
-			I[1] = &A->item[4];
-			n = 2;
-			break;
-		case '^':	/* Both A and F */
-			I[0] = &A->item[1];
-			I[1] = &A->item[5];
-			n = 2;
-			break;
-		case '-':	/* Both I and F */
-			I[0] = &A->item[3];
-			I[1] = &A->item[5];
-			n = 2;
-			break;
-		default:	/* Bad flag should never get here */
-			GMT_report (C, GMT_MSG_FATAL, "Bad flag passed to gmt_set_titem\n");
-			GMT_exit (EXIT_FAILURE);
-			break;
-	}
-
-	switch (unit) {
 		case 'l':	/* Log10 annotation flag */
 			A->type = GMT_LOG10;
 			unit = 0;
@@ -5420,57 +5378,85 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 			break;
 	}
 
+	switch (flag) {
+		case 'a':	/* Upper tick annotation */
+			I = &A->item[0];
+			break;
+		case 'A':	/* Lower tick annotation */
+			I = &A->item[1];
+			break;
+		case 'i':	/* Upper interval annotation */
+			I = &A->item[2];
+			break;
+		case 'I':	/* Lower interval annotation */
+			I = &A->item[3];
+			break;
+		case 'f':	/* Upper Frame tick interval */
+			I = &A->item[4];
+			break;
+		case 'F':	/* Lower Frame tick interval */
+			I = &A->item[5];
+			break;
+		case 'g':	/* Upper Gridline interval */
+			I = &A->item[6];
+			break;
+		case 'G':	/* Lower gridline interval */
+			I = &A->item[7];
+			break;
+		default:	/* Bad flag should never get here */
+			GMT_report (C, GMT_MSG_FATAL, "Bad flag passed to gmt_set_titem\n");
+			GMT_exit (EXIT_FAILURE);
+			break;
+	}
+
 	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
-	for (i = 0; i < n; i++) {
-		if (I[i]->active == 1) {
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Axis sub-item %c set more than once (typo?)\n", item_flag[i]);
-		}
-		I[i]->interval = val;
+	if (I->active) {
+		GMT_report (C, GMT_MSG_FATAL, "Warning: Axis sub-item %c set more than once (typo?)\n", flag);
+		return (GMT_NOERROR);
+	}
+	I->interval = val;
 #ifdef GMT_COMPAT
-		if (unit == 'c' || unit == 'C') {
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c (arcseconds) is deprecated; use s instead.\n");
-			unit = 's';
-		}
+	if (unit == 'c' || unit == 'C') {
+		GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c (arcseconds) is deprecated; use s instead.\n");
+		unit = 's';
+	}
 #endif
-		I[i]->unit = unit;
-		I[i]->type = (flag == 'I' || flag == 'i') ? 'I' : 'A';
-		I[i]->flavor = 0;
-		I[i]->active = n;
-		I[i]->upper_case = FALSE;
-		format = (C->current.map.frame.primary) ? C->current.setting.format_time[0] : C->current.setting.format_time[1];
-		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
-			case 'F':	/* Full name, upper case */
-				I[i]->upper_case = TRUE;
-			case 'f':	/* Full name, lower case */
-				I[i]->flavor = 0;
-				break;
-			case 'A':	/* Abbreviated name, upper case */
-				I[i]->upper_case = TRUE;
-			case 'a':	/* Abbreviated name, lower case */
-				I[i]->flavor = 1;
-				break;
-			case 'C':	/* 1-char name, upper case */
-				I[i]->upper_case = TRUE;
-			case 'c':	/* 1-char name, lower case */
-				I[i]->flavor = 2;
-				break;
-			default:
-				break;
-		}
+	I->unit = unit;
+	I->flavor = 0;
+	I->active = TRUE;
+	I->upper_case = FALSE;
+	format = (C->current.map.frame.primary) ? C->current.setting.format_time[0] : C->current.setting.format_time[1];
+	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		case 'F':	/* Full name, upper case */
+			I->upper_case = TRUE;
+		case 'f':	/* Full name, lower case */
+			I->flavor = 0;
+			break;
+		case 'A':	/* Abbreviated name, upper case */
+			I->upper_case = TRUE;
+		case 'a':	/* Abbreviated name, lower case */
+			I->flavor = 1;
+			break;
+		case 'C':	/* 1-char name, upper case */
+			I->upper_case = TRUE;
+		case 'c':	/* 1-char name, lower case */
+			I->flavor = 2;
+			break;
+		default:
+			break;
 	}
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct GMT_PLOT_AXIS *A) {
+GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *in, struct GMT_PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 
-	char *t = NULL, *s = NULL, flag, orig_flag = 0, unit, *str = "xyz";
-	GMT_LONG error = 0, time_interval_unit;
+	char *t = NULL, *s = NULL, unit, *str = "xyz";
 	double val, phase = 0.0;
 
 	if (!in || !in[0]) return (GMT_NOERROR);	/* NULL pointer passed */
 
-	if (in[0] == 'c') {	/* Custom annotation arrangement */
+	if (flag == 'c') {	/* Custom annotation arrangement */
 		GMT_LONG k, n_int[4];
 		char *list = "aifg";
 		if (!(GMT_access (C, &in[1], R_OK))) {
@@ -5479,9 +5465,9 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 			if (gmt_init_custom_annot (C, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */
 			for (k = 0; k < 4; k++) {
 				if (n_int[k] == 0) continue;
-				unit = list[k];
-				if (!C->current.map.frame.primary) unit = (char)toupper ((int)unit);
-				gmt_set_titem (C, A, 0.0, 0.0, unit, 0);	/* Store the findings for this segment */
+				flag = list[k];
+				if (!C->current.map.frame.primary) flag = (char)toupper ((int)flag);
+				gmt_set_titem (C, A, 0.0, 0.0, flag, 0);	/* Store the findings for this segment */
 			}
 			if (n_int[1]) A->item[GMT_INTV_UPPER+!C->current.map.frame.primary].special = TRUE;
 		}
@@ -5491,100 +5477,42 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char *in, struct G
 	}
 	
 	t = in;
-	while (t[0] && !error) {	/* As long as there are more segments to decode and no trouble so far */
-		if (isdigit ((int)t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.')	/* No segment type given, set to * which means a + f */
-			flag = '*';
-		else {
-			flag = t[0];	/* Set flag */
-			if (!strchr ("afg", flag)) {	/* Illegal flag given */
-				error = 1;
-				continue;
-			}
-			t++;		/* Skip to next */
-			if (!t[0]) {
-				error = 2;
-				continue;
-			}
-		}
 
-		/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
+	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-		if (!(isdigit ((int)t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
-			error = 2;
-			continue;
-		}
-		/* Decode interval, get pointer to next segment */
-		if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
-			error = 3;
-			continue;
-		}
-		if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
-			t = s;
-			phase = strtod (t, &s);
-		}
+	if (!(isdigit ((int)t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
+		GMT_report (C, GMT_MSG_FATAL, "ERROR: Interval missing from -B option (%c-component, %c-info): %s\n", str[axis], flag, in);
+		return (2);
+	}
+	/* Decode interval, get pointer to next segment */
+	if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
+		GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", str[axis], flag, in);
+		return (3);
+	}
+	if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
+		t = s;
+		phase = strtod (t, &s);
+	}
+
+	/* Appended one of the allowed units, or l or p for log10/pow */
 #ifdef GMT_COMPAT
-		if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
 #else
-		if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsrRlp", s[0])) {	/* Appended one of the allowed units, or l or p for log10/pow */
+	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsrRlp", s[0]))
 #endif
-			unit = s[0];
-			s++;
-		}
-		else if (A->type == GMT_TIME)				/* Default time system unit implied */
-			unit = C->current.setting.time_system.unit;
-		else
-			unit = 0;	/* Not specified */
-
-		/* else s is either 0 or points to the next segment */
-
-		switch (unit) {	/* Determine if we have intervals or moments */
-			case 'Y':	case 'y':
-			case 'O':	case 'o':
-			case 'K':	case 'k':
-			case 'J':	case 'j':
-			case 'D':	case 'd':
-			case 'R':	case 'r':
-			case 'U':	case 'u':
-				if (A->type == GMT_TIME && flag == 'a') flag = 'i';
-				time_interval_unit = TRUE;
-				break;
-			default:
-				time_interval_unit = FALSE;
-				break;
-		}
-		orig_flag = flag;
-		if (C->current.map.frame.primary) {	/* Since this is primary axes items */
-			if (flag == '*' && time_interval_unit) flag = '+';
-		}
-		else {			/* Since this is secondary axes items */
-			if (flag == '*')
-				flag = (time_interval_unit) ? '-' : '^';
-			else
-				flag = (char) toupper ((int)flag);
-		}
-		gmt_set_titem (C, A, val, phase, flag, unit);				/* Store the findings for this segment */
-		t = s;									/* Make t point to start of next segment, if any */
-	}
-
-	if (error) {
-		switch (error) {
-			case 1:
-				GMT_report (C, GMT_MSG_FATAL, "ERROR: Unrecognized item or unit %c in -B string %c-component %s\n", orig_flag, str[axis], in);
-				break;
-			case 2:
-				GMT_report (C, GMT_MSG_FATAL, "ERROR: Interval missing from -B string %c-component %s\n", str[axis], in);
-				break;
-			case 3:
-				GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B string %c-component %s\n", str[axis], in);
-				break;
-			default:
-				break;
-		}
-	}
+		unit = s[0];
+	else if (A->type == GMT_TIME)				/* Default time system unit implied */
+		unit = C->current.setting.time_system.unit;
 	else
-		C->current.map.frame.draw = TRUE;
+		unit = 0;	/* Not specified */
+
+	if (!C->current.map.frame.primary) flag = (char) toupper ((int)flag);
+
+	gmt_set_titem (C, A, val, phase, flag, unit);				/* Store the findings for this segment */
+
+	C->current.map.frame.draw = TRUE;
 	
-	return (error);
+	return (0);
 }
 
 GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
@@ -5690,8 +5618,19 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		gmt_handle_atcolon (C, C->current.map.frame.axis[i].prefix, 1);	/* Restore any @^ to @: */
 		gmt_handle_atcolon (C, C->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
 
-		error += gmt_decode_tinfo (C, i, out3, &C->current.map.frame.axis[i]);				/* Decode the annotation intervals */
-
+		if (out3[0] == 'c')
+			error += gmt_decode_tinfo (C, i, 'c', out3, &C->current.map.frame.axis[i]);
+		else {	/* Parse from back for 'a', 'f', 'g' chunks */
+			for (k = strlen (out3) - 1; k >= 0; k--) {
+				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
+					error += gmt_decode_tinfo (C, i, out3[k], &out3[k+1], &C->current.map.frame.axis[i]);
+					out3[k] = '\0';
+				}
+				else if (k == 0)
+					error += gmt_decode_tinfo (C, i, 'a', out3, &C->current.map.frame.axis[i]);
+			}
+		}
+			
 		/* Make sure we have ticks to match annotation stride */
 		A = &C->current.map.frame.axis[i];
 		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
