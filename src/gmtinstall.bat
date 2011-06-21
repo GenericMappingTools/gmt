@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.59 2011-06-21 20:47:19 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.60 2011-06-21 23:32:45 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -272,7 +272,7 @@ REM ----------------------------------- SUPPLEMENTS ----------------------------
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77manage  /Femgd77manage  gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77path    /Femgd77path    gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77sniffer /Femgd77sniffer gmtprogram.c %GMTLIB%
-%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77track   /Femgd77track   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_mgd77track   /Femgd77track   gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77magref  /Femgd77magref  gmtprogram.c %GMTLIB%
 %CC% %COPT% misc\dimfilter.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_redpol       /Feredpol       gmtprogram.c %GMTLIB%
