@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.536 2011-06-19 01:48:01 guru Exp $
+ *	$Id: gmt_support.c,v 1.537 2011-06-21 01:46:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7190,7 +7190,7 @@ GMT_LONG GMT_strtok1 (const char *string, const char sep, GMT_LONG *pos, char *t
 	 * Returns 1 if it finds a token and 0 if no more tokens left.
 	 * pos is updated and token is returned.  char *token must point
 	 * to memory of length >= strlen (string).
-	 * string is not changed by GMT_strtok.
+	 * string is not changed by GMT_strtok1.
 	 */
 
 	GMT_LONG i, j, string_len;

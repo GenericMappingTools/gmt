@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.295 2011-06-20 22:31:42 jluis Exp $
+ *	$Id: gmt_io.c,v 1.296 2011-06-21 01:46:21 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -741,7 +741,7 @@ double gmt_convert_aspatial_value (struct GMT_CTRL *C, GMT_LONG type, char *V)
 
 GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struct GMT_OGR *S)
 {	/* Parse aspatial values; this is done once per feature (segment).  We store
- 	 * both the text representation (value) and attemtp to convert to double in dvalue. */
+ 	 * both the text representation (value) and attempt to convert to double in dvalue. */
 	GMT_LONG pos = 0, col = 0, n_alloc;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
