@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.285 2011-06-20 20:59:30 guru Exp $
+ *	$Id: mgd77.c,v 1.286 2011-06-21 20:04:16 jluis Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4981,7 +4981,7 @@ int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, i
 	return (n_list);
 }
 
-void MGD77_Free_Table (struct GMT_CTRL *C, int n_items, char **item_names)
+void MGD77_Free_Table (struct GMT_CTRL *C, GMT_LONG n_items, char **item_names)
 {
 	int i;
 	if (!n_items) return;
