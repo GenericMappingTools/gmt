@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.22 2011-06-07 21:38:29 guru Exp $
+ * $Id: dimfilter.c,v 1.23 2011-06-21 20:11:12 jluis Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -637,8 +637,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 									if (Ctrl->S.active) work_array2[n++] = Gin->data[ij_in];
 #endif							
 #ifdef DEBUG
-									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = ii;
-									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = jj;
+									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
+									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 									if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
 #endif
 #ifdef OBSOLETE					
@@ -677,8 +677,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								for (s = 0; s < Ctrl->N.n_sectors; s++) {
 									work_array[s][n_in_median[s]] = Gin->data[ij_in];
 #ifdef DEBUG
-									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = ii;
-									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = jj;
+									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
+									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 									if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
 #endif
 #ifdef OBSOLETE					
@@ -720,8 +720,8 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 								if (Ctrl->S.active) work_array2[n++] = Gin->data[ij_in];
 #endif							
 #ifdef DEBUG
-								if (n_in_median[s] < 5) x_debug[n_in_median[s]] = ii;
-								if (n_in_median[s] < 5) y_debug[n_in_median[s]] = jj;
+								if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
+								if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 								if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
 #endif
 #ifdef OBSOLETE					
