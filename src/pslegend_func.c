@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.16 2011-06-20 21:45:16 guru Exp $
+ *	$Id: pslegend_func.c,v 1.17 2011-06-21 20:28:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,6 +34,7 @@
 #endif
 
 #define FRAME_CLEARANCE	4.0	/* In points */
+#define FRAME_RADIUS	6.0	/* In points */
 
 struct PSLEGEND_CTRL {
 	struct C {	/* -C<dx>/<dy> */
@@ -46,8 +47,10 @@ struct PSLEGEND_CTRL {
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
-	struct F {	/* -F */
+	struct F {	/* -F+r[<radius>] */
 		GMT_LONG active;
+		GMT_LONG mode;
+		double radius;
 	} F;
 	struct G {	/* -G<fill> */
 		GMT_LONG active;
@@ -72,6 +75,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
 	C->D.width = C->D.height = 1.0;
+	C->F.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->L.spacing = 1.1;
 	return ((void *)C);
@@ -91,7 +95,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F[+r[<radius>]]] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
@@ -107,7 +111,8 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_message (GMT, "\t-F Draw border around the legend (using FRAME_PEN) [Default is no border].\n");
+	GMT_message (GMT, "\t-F Draw rectangular border around the legend (using FRAME_PEN) [Default is no border].\n");
+	GMT_message (GMT, "\t   Append +r[<radius>] for a rounded rectangle [%gp].\n", FRAME_RADIUS);
 	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
 	GMT_explain_options (GMT, "jK");
 	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
@@ -175,6 +180,10 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
+				if (opt->arg[0] == '+' && opt->arg[1] == 'r') {
+					Ctrl->F.mode = 1;
+					if (opt->arg[2]) Ctrl->F.radius = GMT_to_inch (GMT, &opt->arg[2]);
+				}
 				break;
 			case 'G':	/* Inside legend box fill */
 				Ctrl->G.active = TRUE;
@@ -252,7 +261,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	unsigned char *dummy = NULL;
 
-	double x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[2] = {0.0, 0.0};
+	double x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off;
 
 	struct imageinfo header;
@@ -341,7 +350,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
-		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, PSL_RECT);
+		sdim[2] = Ctrl->F.radius;
+		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode) ? PSL_RNDRECT : PSL_RECT);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
