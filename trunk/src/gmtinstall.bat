@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.58 2011-04-23 02:14:12 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.59 2011-06-21 20:47:19 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -20,7 +20,7 @@ REM	Contact info: gmt.soest.hawaii.edu
 REM --------------------------------------------------------------------
 REM This extremely lame DOS batch file will compile
 REM the GMT 5 suite of programs under WIN32|64 using
-REM Microsoft Visual or Intel C/C++ tools.  It will build GMT
+REM Microsoft Visual or Intel C/C++ tools.  It will build GMT and supplements
 REM using DLL libraries. 
 REM
 REM Author: Joaquim Luis & Paul Wessel, 06-OCT-2010
@@ -79,7 +79,7 @@ SET BINDIR=..\WIN32\bin
 SET LIBDIR=..\WIN32\lib
 SET INCDIR=..\WIN32\include\gmt
 )
-SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
+SET GMT_SHARE_PATH="\"C:\\programs\\GMT5\\share\""
 
 REM STEP e: To optionally link against the GDAL library you must set
 REM	    GDAL to "yes" or pass gdal as 2nd argument to this script
@@ -104,8 +104,8 @@ SET forMATLAB="no"
 IF  "%1%" == "ML" set forMATLAB="yes"
 REM
 IF  %forMATLAB%=="yes" (
-SET MATLIB=/LIBPATH:C:\PROGRAMS\MATLAB\R2010A\extern\lib\win%BITS%\microsoft libmex.lib 
-SET MATINC=-IC:\PROGRAMS\MATLAB\R2010A\extern\include
+SET MATLIB=/LIBPATH:C:\PROGRAMS\MATLAB\R2010B\extern\lib\win%BITS%\microsoft libmex.lib 
+SET MATINC=-IC:\PROGRAMS\MATLAB\R2010B\extern\include
 SET _MX_COMPAT=-DMX_COMPAT_32
 SET TO_MATLAB=/DGMT_MATLAB
 ) ELSE (
@@ -128,42 +128,58 @@ REM ----------------------------------------------------
 
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
-SET COPTIM=/Ox /DNDEBUG
-IF  %DEBUG%=="yes" SET OPTIM=/Z7
+SET OPTIM=/Ox /DNDEBUG
+IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
 
 SET COMPFLAGS=/W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0 /nologo
-SET COPT=/DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT%
+SET COPT=/I%cd% /DWIN32 %OPTIM% %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %USE_GDAL% %GDAL_INC% %TO_MATLAB% %COMPFLAGS% %COMPAT%
 
 set LOPT=/nologo /dll /incremental:no %LDEBUG%
+
 REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
 REM ----------------------------------------------------
+
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
 link %LOPT% /out:psl.dll /implib:psl.lib pslib.obj
 DEL pslib.obj
+
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c
+
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_notposix.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% %MATINC% gmt_init.c gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_fft.c gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmtapi_parse.c gmtapi_util.c
 %CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% *_func.c gmt_modules.c
-
 %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 
-REM Note: the following form will build a gmt.dll with all supplements
-REM if MOVE_OBJ was set to "y" in a previous run of gmtsuppl.bat
+REM ----------------------------------- SUPPLEMENTS ----------------------------------------------
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% dbase\*_func.c dbase\gmt_dbase.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gshhs\*_func.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% imgsrc\*_func.c imgsrc\gmt_imgsubs.c imgsrc\gmt_img.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% meca\*_func.c meca\nrutil.c meca\distaz.c meca\submeca.c meca\utilmeca.c meca\gmt_meca.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% mgd77\*_func.c mgd77\mgd77.c mgd77\gmt_mgd77.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% potential\*_func.c potential\gmt_potential.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% segyprogs\*_func.c segyprogs\segy_io.c segyprogs\gmt_segy.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% sph\*_func.c sph\sph.c sph\gmt_sph.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% spotter\*_func.c spotter\libspotter.c
+%CC% %COPT% /c /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% /I%cd%\mgd77 x2sys\*_func.c x2sys\x2sys.c x2sys\gmt_x2sys.c
+REM ----------------------------------------------------------------------------------------------
+
 link %LOPT% /out:gmt.dll /implib:gmt.lib psl.lib %lib_netcdf% %GDAL_LIB% %MATLIB% *.obj
 
 IF %forMATLAB%=="yes" DEL *.obj *.lib *.exp psl.dll
 IF %forMATLAB%=="yes" GOTO fim
+
 REM ----------------------------------------------------
 ECHO STEP 3: Make GMT programs 
 REM ----------------------------------------------------
+
 set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 
 %CC% %COPT% testio.c %GMTLIB%
@@ -171,6 +187,7 @@ set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_blockmean    /Feblockmean    gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_blockmedian  /Feblockmedian  gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_blockmode    /Feblockmode    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_colmath      /Fecolmath      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_filter1d     /Fefilter1d     gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_fitcircle    /Fefitcircle    gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gmt2kml      /Fegmt2kml      gmtprogram.c %GMTLIB%
@@ -239,9 +256,56 @@ set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_trend2d      /Fetrend2d      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_triangulate  /Fetriangulate  gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_xyz2grd      /Fexyz2grd      gmtprogram.c %GMTLIB%
+
+
+REM ----------------------------------- SUPPLEMENTS -----------------------------------------------
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_grdraster    /Fegrdraster    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_gshhs        /Fegshhs        gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_img2grd      /Feimg2grd      gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_pscoupe      /Fepscoupe      gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_pspolar      /Fepspolar      gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_psmeca       /Fepsmeca       gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_psvelo       /Fepsvelo       gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77convert /Femgd77convert gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77info    /Femgd77info    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77list    /Femgd77list    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77manage  /Femgd77manage  gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77path    /Femgd77path    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77sniffer /Femgd77sniffer gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77track   /Femgd77track   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_mgd77magref  /Femgd77magref  gmtprogram.c %GMTLIB%
+%CC% %COPT% misc\dimfilter.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_redpol       /Feredpol       gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_xyzokb       /Fexyzokb       gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_pssegy       /Fepssegy       gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_pssegyz      /Fepssegyz      gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_segy2grd     /Fesegy2grd     gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_sphtriangulate /Fesphtriangulate gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_sphdistance    /Fesphdistance    gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_sphinterpolate /Fesphinterpolate gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_backtracker  /Febacktracker  gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_grdpmodeler  /Fegrdpmodeler  gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_grdrotater   /Fegrdrotater   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_grdspotter   /Fegrdspotter   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_hotspotter   /Fehotspotter   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_originator   /Feoriginator   gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_rotconverter /Ferotconverter gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_binlist /Fex2sys_binlist  /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_cross   /Fex2sys_cross    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_datalist  /Fex2sys_datalist /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_get    /Fex2sys_get      /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_init   /Fex2sys_init     /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_put    /Fex2sys_put      /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_list   /Fex2sys_list     /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_report /Fex2sys_report   /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_solve  /Fex2sys_solve    /I%cd%\mgd77 gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_x2sys_merge  /Fex2sys_merge gmtprogram.c %GMTLIB%
+REM -----------------------------------------------------------------------------------------------
+
 REM ----------------------------------------------------
 ECHO STEP 4: Clean up and install executables and libraries
 REM ----------------------------------------------------
+:salto
 DEL *.obj
 MOVE *.exe %BINDIR%
 MOVE *.lib %LIBDIR%
