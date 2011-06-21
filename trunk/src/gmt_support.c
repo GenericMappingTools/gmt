@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.537 2011-06-21 01:46:43 remko Exp $
+ *	$Id: gmt_support.c,v 1.538 2011-06-21 02:07:44 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8041,7 +8041,7 @@ GMT_LONG GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta
 
 	if (delta <= 0.0) return (0);
 
-	if (C->current.map.frame.axis[x_or_y].type != 2) return (GMT_linear_array (C, min, max, delta, 0.0, array));
+	if (C->current.map.frame.axis[x_or_y].type != GMT_POW) return (GMT_linear_array (C, min, max, delta, 0.0, array));
 
 	if (x_or_y == 0) { /* x-axis */
 		C->current.proj.fwd_x (C, min, &v0);
