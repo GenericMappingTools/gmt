@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.546 2011-06-21 18:02:07 remko Exp $
+ *	$Id: gmt_init.c,v 1.547 2011-06-21 18:27:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6385,7 +6385,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
 	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon, check = TRUE, old_style, col_off = mode;
 	char symbol_type, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], text_cp[GMT_TEXT_LEN256], *c = NULL, *s = NULL;
-	static char *allowed_symbols[2] = {"-+AaBbCcDdEefGgHhIiJjmNnpqrSsTtVvWwxy", "-+AabCcDdEefGgHhIiJjmNnOopqrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"-+AaBbCcDdEefGgHhIiJjmNnpqRrSsTtVvWwxy", "-+AabCcDdEefGgHhIiJjmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 
 	p->n_required = p->convert_angles = p->n_nondim = 0;
@@ -6783,6 +6783,11 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		case 'r':
 			p->symbol = GMT_SYMBOL_RECT;
 			p->n_required = 2;
+			check = FALSE;
+			break;
+		case 'R':
+			p->symbol = GMT_SYMBOL_RNDRECT;
+			p->n_required = 3;
 			check = FALSE;
 			break;
 		case 'S':

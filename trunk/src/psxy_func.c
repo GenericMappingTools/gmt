@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psxy_func.c,v 1.37 2011-06-21 13:05:36 remko Exp $
+ *	$Id: psxy_func.c,v 1.38 2011-06-21 18:27:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,6 +325,7 @@ GMT_LONG GMT_psxy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     <labelinfo> controls the label attributes.  Choose from\n");
 	GMT_label_syntax (GMT, 7, 1);
 	GMT_message (GMT, "\t   Rectangles: x- and y-dimensions must be in columns 3-4.\n");
+	GMT_message (GMT, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_message (GMT, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     Furthermore, <size> means vectorwidth/headlength/headwidth\n");
 	GMT_message (GMT, "\t     [Default attributes are %gp/%gp/%gp].\n", VECTOR_LINE_WIDTH, VECTOR_HEAD_LENGTH, VECTOR_HEAD_WIDTH);
