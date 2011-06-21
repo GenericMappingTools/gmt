@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1103 2011-06-20 20:41:01 guru Exp $
+	$Id: ChangeLog,v 1.1104 2011-06-21 02:12:19 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-21	remko
+	* gmt_project.h:	Removed unused 'type' in struct GMT_PLOT_AXIS_ITEM.
+	* gmt_init.c:		Redesign gmt_decode_tinfo in advance of allowing empties.
 
 2011-06-20	remko
 	* gmt_notunix.h:	Only define PATH_SEPARATOR (as char), not also PATH_DELIM.
