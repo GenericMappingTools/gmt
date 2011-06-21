@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: legend.sh,v 1.18 2011-05-18 19:54:38 remko Exp $
+#	$Id: legend.sh,v 1.19 2011-06-21 20:28:21 guru Exp $
 #
 # Testing pslegend capabilities
 
@@ -9,7 +9,7 @@ header "Test pslegend and its various items"
 ps=legend.ps
 makecpt -Cpanoply -T-8/8/1 > $$.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
-pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F -B5f1 > $ps <<EOF
+pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F+r -B5f1 > $ps <<EOF
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 # H is header, L is label, S is symbol, T is paragraph text, M is map scale, B is colorbar.

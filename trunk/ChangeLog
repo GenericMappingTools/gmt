@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1106 2011-06-21 18:02:07 remko Exp $
+	$Id: ChangeLog,v 1.1107 2011-06-21 20:28:21 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-21	pwessel
+	* pslegend_func.c:	Append +r[<radius>] to -F to get a rounded rectangular border.
 
 2011-06-21	remko
 	* pslib.[ch]:		Added rounded rectangle symbol PSL_RNDRECT ('R').
