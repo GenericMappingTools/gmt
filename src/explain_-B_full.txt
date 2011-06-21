@@ -35,6 +35,8 @@ If the label consists of more than one word, enclose the entire label in double 
 BD(:)"my label"BD(:)).
 If you need to use a colon (:) as part of your label you must specify it using its octal code (\\072).
 If you want to plot just the map boundary and nothing else, OPT(B)0 suffices.
+Alternatively on linear maps, OPT(Ba) automatically determines the annotation interval, OPT(Baf) automatically
+generates suitable annotation intervals and minor tick intervals.
 .br
 By default, all 4 boundaries are plotted (referred to as BD(W), BD(E), BD(S), BD(N)).  To change the default,
 append the code for only those axes you want (e.g., BD(WS) for standard lower-left x- and y-axis system).

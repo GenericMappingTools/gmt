@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1108 2011-06-21 20:49:59 jluis Exp $
+	$Id: ChangeLog,v 1.1109 2011-06-21 22:14:06 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-21	jluis
@@ -17,6 +17,8 @@
 	* gmt_init.c:		Redesign gmt_decode_tinfo in advance of allowing empties.
 	* *.c:			Removed axis items GMT_INTV_UPPER and GMT_INTV_LOWER (interval
 				annotation is determined by 'type' in GMT_PLOT_AXIS_ITEM struct).
+	* gmt_map.c:		Added GMT_auto_frame_interval to determine frame when left blank.
+	* psscale_func.c:	---"---
 
 2011-06-20	remko
 	* gmt_notunix.h:	Only define PATH_SEPARATOR (as char), not also PATH_DELIM.

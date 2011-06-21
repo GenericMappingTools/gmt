@@ -44,6 +44,7 @@ Set annotation, tick, and gridline interval for the colorbar.  The
 x-axis label will plot beneath a horizontal bar (or vertically
 to the right of a vertical bar), except when using OPT(A).
 As an option, use the y-axis label to plot the data unit to the right of a horizontal bar (and above a vertical bar).
+When using OPT(Ba) or OPT(Baf) annotation and/or minor tick intervals are chosen automatically.
 If OPT(B) is omitted, or no annotation intervals are provided, the default is to annotate
 every color level based on the numerical entries in the cpt file
 (which may be overridden by ULB flags in the cpt file).
