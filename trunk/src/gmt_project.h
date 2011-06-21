@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.90 2011-06-14 02:57:51 remko Exp $
+ *	$Id: gmt_project.h,v 1.91 2011-06-21 02:12:53 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -404,7 +404,6 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	double interval;		/* Distance between ticks in user units */
 	GMT_LONG flavor;		/* Index into month/day name abbreviation array (0-2) */
 	GMT_LONG upper_case;		/* TRUE if we want upper case text (used with flavor) */
-	char type;			/* One of a, i, A, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
