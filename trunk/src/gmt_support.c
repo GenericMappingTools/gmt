@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.539 2011-06-21 18:02:07 remko Exp $
+ *	$Id: gmt_support.c,v 1.540 2011-06-21 18:49:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7248,29 +7248,24 @@ GMT_LONG GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep,
 	return 1;
 }
 
-double GMT_get_map_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) {
+double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T) {
 
-	if (item < GMT_ANNOT_UPPER || item > GMT_GRID_LOWER) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT ERROR in GMT_get_map_interval (wrong item %ld)\n", item);
-		GMT_exit (EXIT_FAILURE);
-	}
-
-	switch (C->current.map.frame.axis[axis].item[item].unit) {
+	switch (T->unit) {
 		case 'd':	/* arc Degrees */
-			return (C->current.map.frame.axis[axis].item[item].interval);
+			return (T->interval);
 			break;
 		case 'm':	/* arc Minutes */
-			return (C->current.map.frame.axis[axis].item[item].interval * GMT_MIN2DEG);
+			return (T->interval * GMT_MIN2DEG);
 			break;
 #ifdef GMT_COMPAT
 		case 'c':	/* arc Seconds [deprecated] */
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: Second interval unit c is deprecated; use s instead\n");
 #endif
 		case 's':	/* arc Seconds */
-			return (C->current.map.frame.axis[axis].item[item].interval * GMT_SEC2DEG);
+			return (T->interval * GMT_SEC2DEG);
 			break;
 		default:
-			return (C->current.map.frame.axis[axis].item[item].interval);
+			return (T->interval);
 			break;
 	}
 }
@@ -8151,13 +8146,13 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 
 	switch (C->current.proj.xyz_projection[T->parent]) {
 		case GMT_LINEAR:
-			n = GMT_linear_array (C, min, max, GMT_get_map_interval (C, T->parent, T->id), C->current.map.frame.axis[T->parent].phase, array);
+			n = GMT_linear_array (C, min, max, GMT_get_map_interval (C, T), C->current.map.frame.axis[T->parent].phase, array);
 			break;
 		case GMT_LOG10:
-			n = GMT_log_array (C, min, max, GMT_get_map_interval (C, T->parent, T->id), array);
+			n = GMT_log_array (C, min, max, GMT_get_map_interval (C, T), array);
 			break;
 		case GMT_POW:
-			n = GMT_pow_array (C, min, max, GMT_get_map_interval (C, T->parent, T->id), T->parent, array);
+			n = GMT_pow_array (C, min, max, GMT_get_map_interval (C, T), T->parent, array);
 			break;
 		case GMT_TIME:
 			n = GMT_time_array (C, min, max, T, array);

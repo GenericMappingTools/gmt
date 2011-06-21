@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.355 2011-06-21 18:02:07 remko Exp $
+ *	$Id: gmt_plot.c,v 1.356 2011-06-21 18:49:39 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -396,7 +396,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	tick_len[1] = 3.0 * tick_len[0];
 	tick_len[2] = 0.5 * tick_len[0];
 	tick_len[3] = 0.75 * tick_len[0];
-	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, axis, GMT_ANNOT_UPPER), A->unit, A->prefix, format);	/* Set the annotation format template */
+	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);	/* Set the annotation format template */
 
 	/* Ready to draw axis */
 
@@ -753,6 +753,7 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 {	/* Plot checkers along straight longitude boundaries */
 	GMT_LONG i, k, nx, shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, val, v1, v2, x1, x2, y1, y2, shift_s[2], shift_n[2], scale[2];
+	struct GMT_PLOT_AXIS_ITEM *T;
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -766,8 +767,9 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 	gmt_fancy_frame_offset (C, d_atan2 (y2 - y1, x2 - x1), shift_n);
 
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if (C->current.map.frame.axis[GMT_X].item[item[k]].active) {
-			dx = GMT_get_map_interval (C, 0, item[k]);
+		T = &C->current.map.frame.axis[GMT_X].item[item[k]];
+		if (T->active) {
+			dx = GMT_get_map_interval (C, T);
 			shade = ((GMT_LONG)floor ((w - C->current.map.frame.axis[GMT_X].phase)/ dx)) % 2;
 			w1 = floor ((w - C->current.map.frame.axis[GMT_X].phase)/ dx) * dx + C->current.map.frame.axis[GMT_X].phase;
 			nx = (w1 > e) ? -1 : (GMT_LONG)((e - w1) / dx + GMT_SMALL);
@@ -797,6 +799,7 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P,
 {	/* Plot checkers along curved longitude boundaries */
 	GMT_LONG i, k, nx, shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, v1, v2, val, x1, x2, y1, y2, az1, az2, dr, scale[2], radius_s, radius_n;
+	struct GMT_PLOT_AXIS_ITEM *T;
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -807,8 +810,9 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P,
 	radius_n = hypot (x2 - C->current.proj.c_x0, y2 - C->current.proj.c_y0);
 
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if (C->current.map.frame.axis[GMT_X].item[item[k]].active) {
-			dx = GMT_get_map_interval (C, 0, item[k]);
+		T = &C->current.map.frame.axis[GMT_X].item[item[k]];
+		if (T->active) {
+			dx = GMT_get_map_interval (C, T);
 			shade = ((GMT_LONG)floor ((w - C->current.map.frame.axis[GMT_X].phase) / dx)) % 2;
 			w1 = floor((w - C->current.map.frame.axis[GMT_X].phase)/dx) * dx + C->current.map.frame.axis[GMT_X].phase;
 			nx = (w1 > e) ? -1 : (GMT_LONG)((e-w1) / dx + GMT_SMALL);
@@ -856,6 +860,7 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 {	/* Plot checkers along straight latitude boundaries */
 	GMT_LONG i, k, ny, shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dy, s1, val, v1, v2, x1, x2, y1, y2, shift_w[2], shift_e[2], scale[2];
+	struct GMT_PLOT_AXIS_ITEM *T;
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -871,8 +876,9 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 	/* Tick S-N axes */
 
 	for (k = 0; k < 1 + secondary_too; k++) {
-		if (C->current.map.frame.axis[GMT_Y].item[item[k]].active) {
-			dy = GMT_get_map_interval (C, 1, item[k]);
+		T = &C->current.map.frame.axis[GMT_Y].item[item[k]];
+		if (T->active) {
+			dy = GMT_get_map_interval (C, T);
 			shade = ((GMT_LONG)floor ((s - C->current.map.frame.axis[GMT_Y].phase) / dy)) % 2;
 			s1 = floor((s - C->current.map.frame.axis[GMT_Y].phase)/dy) * dy + C->current.map.frame.axis[GMT_Y].phase;
 			ny = (s1 > n) ? -1 : (GMT_LONG)((n-s1) / dy + GMT_SMALL);
@@ -1472,8 +1478,8 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	for (k = 0; k < 2; k++) {
 		if (C->current.setting.map_grid_cross_size[k] > 0.0) continue;
 
-		dx = GMT_get_map_interval (C, 0, item[k]);
-		dy = GMT_get_map_interval (C, 1, item[k]);
+		dx = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[item[k]]);
+		dy = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[item[k]]);
 
 		if (!(C->current.map.frame.axis[GMT_X].item[item[k]].active || C->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
 
@@ -1621,13 +1627,17 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 	if (! (C->current.map.frame.axis[GMT_X].item[item].active || C->current.map.frame.axis[GMT_Y].item[item].active)) return;
 
-	dx = GMT_get_map_interval (C, 0, item);
-	dy = GMT_get_map_interval (C, 1, item);
+	dx = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[item]);
+	dy = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[item]);
 
 	if (dx <= 0.0 && dy <= 0.0) return;
 
-	do_x = dx > 0.0 && C->current.map.frame.axis[GMT_X].item[item].active && (item == GMT_ANNOT_UPPER || (item == GMT_TICK_UPPER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_UPPER)) || (item == GMT_TICK_LOWER && dx != GMT_get_map_interval (C, 0, GMT_ANNOT_LOWER)));
-	do_y = dy > 0.0 && C->current.map.frame.axis[GMT_Y].item[item].active && (item == GMT_ANNOT_UPPER || (item == GMT_TICK_UPPER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_UPPER)) || (item == GMT_TICK_LOWER && dy != GMT_get_map_interval (C, 1, GMT_ANNOT_LOWER)));
+	do_x = dx > 0.0 && C->current.map.frame.axis[GMT_X].item[item].active && (item == GMT_ANNOT_UPPER ||
+		(item == GMT_TICK_UPPER && dx != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER])) ||
+		(item == GMT_TICK_LOWER && dx != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER])));
+	do_y = dy > 0.0 && C->current.map.frame.axis[GMT_Y].item[item].active && (item == GMT_ANNOT_UPPER ||
+		(item == GMT_TICK_UPPER && dy != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER])) ||
+		(item == GMT_TICK_LOWER && dy != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER])));
 	len = C->current.setting.map_tick_length;
 	if (item == GMT_TICK_UPPER) len *= 0.5;
 	if (item == GMT_TICK_LOWER) len *= 0.75;
@@ -1722,8 +1732,8 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	}
 
 	if (C->current.proj.edge[S_SIDE] || C->current.proj.edge[N_SIDE]) {
-		dx[0] = GMT_get_map_interval (C, 0, GMT_ANNOT_UPPER);
-		dx[1] = GMT_get_map_interval (C, 0, GMT_ANNOT_LOWER);
+		dx[0] = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
+		dx[1] = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER]);
 		/* Determine if we should annotate both 0 and 360 degrees */
 
 		full_lat_range = (fabs (180.0 - fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO])) < GMT_SMALL);
@@ -1738,8 +1748,8 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	else
 		dx[0] = dx[1] = 0.0;
 	if (C->current.proj.edge[E_SIDE] || C->current.proj.edge[W_SIDE]) {
-		dy[0] = GMT_get_map_interval (C, 1, GMT_ANNOT_UPPER);
-		dy[1] = GMT_get_map_interval (C, 1, GMT_ANNOT_LOWER);
+		dy[0] = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
+		dy[1] = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER]);
 	}
 	else
 		dy[0] = dy[1] = 0.0;
