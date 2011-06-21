@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.312 2011-06-21 22:47:05 remko Exp $
+ *	$Id: gmt_map.c,v 1.313 2011-06-21 22:56:38 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2164,8 +2164,8 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	/* First guess of interval */
 	d = MAX (0.05, MIN (7.0 * C->current.setting.font_annot[item].size / d, 0.20)) * f;
 	/* Now round nicely */
-	ilog = floor (log10 (d));
-	p = pow (10.0,ilog);
+	ilog = (GMT_LONG)floor (log10 (d));
+	p = (GMT_LONG)pow (10.0,ilog);
 	f = d / p;
 	T->interval = d = (f <= 2.0) ? 2.0 * p : (f <= 5.0) ? 5.0 * p : 10.0 * p;
 	/* Now do minor ticks as well */
