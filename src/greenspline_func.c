@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.22 2011-06-20 21:45:15 guru Exp $
+ *	$Id: greenspline_func.c,v 1.23 2011-06-21 18:13:08 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -323,7 +323,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = TRUE;
-				Ctrl->D.mode = atoi(opt->arg);	/* Since I added 0 to be 1-D later so now it is -1 */
+				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now it is -1 */
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = TRUE;
@@ -409,7 +409,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 						}
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Append c|t|g|p|q\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Append c|t|g|p|q|Q\n");
 						n_errors++;
 					break;
 				}
@@ -425,6 +425,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 		}
 	}
 	
+	if (Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) Ctrl->D.mode = 4;	/* Automatically set */
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	if (dimension == 2 && Ctrl->R3.mode) {	/* Set -R via a gridfile */
 		/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
@@ -1101,7 +1102,6 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);	
 	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D ) Ctrl->S.mode += (dimension - 2);	
-	if (Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) Ctrl->D.mode = 4;	/* Automatically set */
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;

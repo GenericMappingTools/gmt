@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: gspline_5.sh,v 1.2 2011-06-21 18:05:57 guru Exp $
+#       $Id: gspline_5.sh,v 1.3 2011-06-21 18:13:08 guru Exp $
 
 . ../functions.sh
 header "greenspline: Testing Spherical 3-D interpolation"
@@ -12,10 +12,10 @@ ps=gspline_5.ps
 # Geophys. J. Int., 174, 21–28.
 
 # First find Parker's solution for no tension:
-greenspline -Rg -I1 mag_obs_1990.d -Sp -D4 -GFig_2_p0.nc
+greenspline -Rg -I1 mag_obs_1990.d -Sp -GFig_2_p0.nc
 # Then repeat but use the wrong Oslo longitude to recreate Parker's original figure in his book
 awk '{if ($1 == 10.45) {print 104.5, $2, $3} else {print $0}}' mag_obs_1990.d > tmp
-greenspline -Rg -I1 tmp -Sp -D4 -GFig_2_orig.nc
+greenspline -Rg -I1 tmp -Sp -GFig_2_orig.nc
 pscoast -R0/360/0/90 -JA0/90/5i -P -Glightgray -K -B30 -Y5.5i --MAP_FRAME_WIDTH=0.025i \
 	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10p -X0.5 > $ps
 echo 0 90 | psxy -R -J -O -K -Sx0.1i -W0.5p >> $ps
@@ -31,7 +31,7 @@ echo 104.50 59.92 -42 1.65 | psxy -R -J -O -K -SV0.02i/0.1i/0.08i -Gblack --MAP_
 
 # Repeat for Wessel&Becker's solution with t = 0.99
 
-greenspline -Rg -I1 mag_obs_1990.d -SQ0.99 -D4 -GFig_2_p5.nc
+greenspline -Rg -I1 mag_obs_1990.d -SQ0.99 -GFig_2_p5.nc
 
 pscoast -R0/360/0/90 -J -O -Glightgray -K -B30 -X2.5i -Y-5i --MAP_FRAME_WIDTH=0.025i \
 	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10 >> $ps
