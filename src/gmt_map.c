@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.309 2011-06-21 18:02:06 remko Exp $
+ *	$Id: gmt_map.c,v 1.310 2011-06-21 22:07:21 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2137,6 +2137,47 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, GMT_LONG baz)
 {
 	return (C->current.map.azimuth_func (C, lonE, latE, lonS, latS, baz));
+}
+
+void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) {
+	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
+	double d, f, p;
+	GMT_LONG ilog;
+	struct GMT_PLOT_AXIS *A = &C->current.map.frame.axis[axis];
+	struct GMT_PLOT_AXIS_ITEM *T = &A->item[item];
+
+	if (!T->active || T->interval != 0.0 || A->type == GMT_LOG10 || A->type == GMT_POW) return;
+	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
+	if (axis == GMT_X) {
+		d = fabs (C->current.proj.rect[XHI] - C->current.proj.rect[XLO]);
+		f = fabs (C->common.R.wesn[XHI] - C->common.R.wesn[XLO]);
+	}
+	else if (axis == GMT_Y) {
+		d = fabs (C->current.proj.rect[YHI] - C->current.proj.rect[YLO]);
+		f = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
+	}
+	else {
+		d = fabs (C->current.proj.zmax - C->current.proj.zmin);
+		f = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
+	}
+	d *= C->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
+	/* First guess of interval */
+	d = MAX (0.05, MIN (7.0 * C->current.setting.font_annot[item].size / d, 0.20)) * f;
+	/* Now round nicely */
+	ilog = floor (log10 (d));
+	p = pow (10.0,ilog);
+	f = d / p;
+	if (f <= 2.0)
+		d = 2.0 * p;
+	else if (f <= 5.0)
+		d = 5.0 * p;
+	else
+		d = 10.0 * p;
+	T->interval = d;
+	/* Now do minor ticks as well */
+	T = &A->item[item+2];
+	if (T->interval != 0.0) return;
+	T->interval = (T->type == 'a' || T->type == 'A') ? d : (f <= 5.0) ? p : 2.0 * p;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -7180,6 +7221,12 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 		case GMT_LINEAR:		/* Linear transformations */
 			search = gmt_map_init_linear (C);
+			GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_UPPER);
+			GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_UPPER);
+			GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_UPPER);
+			GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_LOWER);
+			GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_LOWER);
+			GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_LOWER);
 			break;
 
 		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
