@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1105 2011-06-21 13:09:05 remko Exp $
+	$Id: ChangeLog,v 1.1106 2011-06-21 18:02:07 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-21	remko
@@ -7,8 +7,9 @@
 	* PSL_prologue.ps:	---"---
 	* psxy[z]_func.c:	---"---
 	* explain_symbol.txt:	New shared file for psxy[z].txt.
-	* gmt_project.h:	Removed unused 'type' in struct GMT_PLOT_AXIS_ITEM.
 	* gmt_init.c:		Redesign gmt_decode_tinfo in advance of allowing empties.
+	* *.c:			Removed axis items GMT_INTV_UPPER and GMT_INTV_LOWER (interval
+				annotation is determined by 'type' in GMT_PLOT_AXIS_ITEM struct).
 
 2011-06-20	remko
 	* gmt_notunix.h:	Only define PATH_SEPARATOR (as char), not also PATH_DELIM.

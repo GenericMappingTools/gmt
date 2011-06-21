@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.545 2011-06-21 02:12:00 remko Exp $
+ *	$Id: gmt_init.c,v 1.546 2011-06-21 18:02:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5379,32 +5379,26 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 	}
 
 	switch (flag) {
-		case 'a':	/* Upper tick annotation */
-			I = &A->item[0];
+		case 'a': case 'i':	/* Upper annotation / major tick annotation */
+			I = &A->item[GMT_ANNOT_UPPER];
 			break;
-		case 'A':	/* Lower tick annotation */
-			I = &A->item[1];
+		case 'A': case 'I':	/* Lower annotation / major tick annotation */
+			I = &A->item[GMT_ANNOT_LOWER];
 			break;
-		case 'i':	/* Upper interval annotation */
-			I = &A->item[2];
+		case 'f':	/* Upper minor tick interval */
+			I = &A->item[GMT_TICK_UPPER];
 			break;
-		case 'I':	/* Lower interval annotation */
-			I = &A->item[3];
+		case 'F':	/* Lower minor tick interval */
+			I = &A->item[GMT_TICK_LOWER];
 			break;
-		case 'f':	/* Upper Frame tick interval */
-			I = &A->item[4];
-			break;
-		case 'F':	/* Lower Frame tick interval */
-			I = &A->item[5];
-			break;
-		case 'g':	/* Upper Gridline interval */
-			I = &A->item[6];
+		case 'g':	/* Upper gridline interval */
+			I = &A->item[GMT_GRID_UPPER];
 			break;
 		case 'G':	/* Lower gridline interval */
-			I = &A->item[7];
+			I = &A->item[GMT_GRID_LOWER];
 			break;
 		default:	/* Bad flag should never get here */
-			GMT_report (C, GMT_MSG_FATAL, "Bad flag passed to gmt_set_titem\n");
+			GMT_report (C, GMT_MSG_FATAL, "Bad flag (%c) passed to gmt_set_titem\n", flag);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -5414,14 +5408,15 @@ GMT_LONG gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, double val,
 		GMT_report (C, GMT_MSG_FATAL, "Warning: Axis sub-item %c set more than once (typo?)\n", flag);
 		return (GMT_NOERROR);
 	}
-	I->interval = val;
 #ifdef GMT_COMPAT
 	if (unit == 'c' || unit == 'C') {
 		GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit c (arcseconds) is deprecated; use s instead.\n");
 		unit = 's';
 	}
 #endif
+	I->type = flag;
 	I->unit = unit;
+	I->interval = val;
 	I->flavor = 0;
 	I->active = TRUE;
 	I->upper_case = FALSE;
@@ -5469,7 +5464,7 @@ GMT_LONG gmt_decode_tinfo (struct GMT_CTRL *C, GMT_LONG axis, char flag, char *i
 				if (!C->current.map.frame.primary) flag = (char)toupper ((int)flag);
 				gmt_set_titem (C, A, 0.0, 0.0, flag, 0);	/* Store the findings for this segment */
 			}
-			if (n_int[1]) A->item[GMT_INTV_UPPER+!C->current.map.frame.primary].special = TRUE;
+			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!C->current.map.frame.primary].special = TRUE;
 		}
 		else
 			GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
@@ -5569,7 +5564,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		for (i = 0; i < 3; i++) {
 			GMT_memset (&C->current.map.frame.axis[i], 1, struct GMT_PLOT_AXIS);
 			C->current.map.frame.axis[i].id = (int)i;
-			for (j = 0; j < 8; j++) {
+			for (j = 0; j < 6; j++) {
 				C->current.map.frame.axis[i].item[j].parent = i;
 				C->current.map.frame.axis[i].item[j].id = j;
 			}
@@ -5624,9 +5619,9 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			for (k = strlen (out3) - 1; k >= 0; k--) {
 				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
 					error += gmt_decode_tinfo (C, i, out3[k], &out3[k+1], &C->current.map.frame.axis[i]);
-					out3[k] = '\0';
+					out3[k] = '\0';	/* Replace with terminator */
 				}
-				else if (k == 0)
+				else if (k == 0)	/* If no [a|f|g] then 'a' */
 					error += gmt_decode_tinfo (C, i, 'a', out3, &C->current.map.frame.axis[i]);
 			}
 		}
@@ -5635,12 +5630,8 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		A = &C->current.map.frame.axis[i];
 		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
-		else if (A->item[GMT_INTV_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
-			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_INTV_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
 		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_LOWER], &A->item[GMT_ANNOT_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
-		else if (A->item[GMT_INTV_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
-			GMT_memcpy (&A->item[GMT_TICK_LOWER], &A->item[GMT_INTV_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
 	}
 
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */

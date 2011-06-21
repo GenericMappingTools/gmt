@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.538 2011-06-21 02:07:44 remko Exp $
+ *	$Id: gmt_support.c,v 1.539 2011-06-21 18:02:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8071,7 +8071,7 @@ GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
 	I.step = (int)T->interval;
-	interval = (T->id == GMT_INTV_UPPER || T->id == GMT_INTV_LOWER);	/* Only for I/i axis items */
+	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (C, &I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
 		if (I.dt[0] >= min || interval) val[n++] = I.dt[0];		/* Was inside region */
@@ -8145,8 +8145,7 @@ GMT_LONG GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struc
 	if (!T->active) return (0);	/* Nothing to do */
 
 	if (C->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
-		char *items = "aaiiffgg";
-		n = gmt_load_custom_annot (C, &C->current.map.frame.axis[T->parent], items[T->id], array, labels);
+		n = gmt_load_custom_annot (C, &C->current.map.frame.axis[T->parent], tolower(T->type), array, labels);
 		return (n);
 	}
 
@@ -8189,7 +8188,7 @@ GMT_LONG GMT_annot_pos (struct GMT_CTRL *C, double min, double max, struct GMT_P
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
 		if (((*pos) - GMT_CONV_LIMIT) < min || ((*pos) + GMT_CONV_LIMIT) > max) return (TRUE);	/* Outside axis range */
 	}
-	else if (GMT_interval_axis_item(T->id)) {
+	else if (T->type == 'i' || T->type == 'I') {
 		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.26 2011-06-20 21:45:16 guru Exp $
+ *	$Id: psscale_func.c,v 1.27 2011-06-21 18:02:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -418,7 +418,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			start_val = pow (10.0, P->range[0].z_low);
 			stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
 		}
-		ndec = GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[0].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
+		ndec = GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
 	else {
 		for (i = 0; i < P->n_colors; i++) {
@@ -914,7 +914,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			l_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
-			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[1].item[i].parent = GMT_Y;
+			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
 			GMT_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & 1, GMT->current.map.frame.side[flip & 1 ? W_SIDE : E_SIDE] & 2);
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 		}
@@ -1156,9 +1156,6 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		d_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		d_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-/*
-if (GMT->current.map.frame.axis[GMT_X].item[0].interval == 0.0) GMT->current.map.frame.draw = TRUE;
-*/
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
 	
 	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, 
