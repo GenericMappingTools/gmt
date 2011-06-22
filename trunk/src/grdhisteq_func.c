@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdhisteq_func.c,v 1.14 2011-06-20 21:45:15 guru Exp $
+ *	$Id: grdhisteq_func.c,v 1.15 2011-06-22 03:01:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -189,12 +189,10 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 
 GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
 {
-	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, pad[4];
-	char format[GMT_BUFSIZ];
-	double delta_cell, target;
+	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, error, pad[4];
+	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
-	
-	sprintf (format, "%s\t%s\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	struct GMT_GRID *Orig = NULL;
 	
 	cell = GMT_memory (GMT, NULL, n_cells, struct CELL);
 
@@ -202,6 +200,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 
 	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort */
+	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original */
 	GMT_sort_array (GMT, (void *)Grid->data, Grid->header->nm, GMT_FLOAT_TYPE);
 	
 	nxy = Grid->header->nm;
@@ -224,24 +223,26 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 		else	/* Use simple linear scale  */
 			j = (GMT_LONG)(floor ((current_cell + 1) * delta_cell)) - 1;
 
-		cell[current_cell].low = Grid->data[i];
+		cell[current_cell].low  = Grid->data[i];
 		cell[current_cell].high = Grid->data[j];
 
-		if (dump_intervals) GMT_fprintf (GMT->session.std[GMT_OUT], format, Grid->data[i], Grid->data[j], current_cell);
+		if (dump_intervals) {
+			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, (void *)out);
+		}
 
 		i = j;
 		current_cell++;
 	}
+	if (dump_intervals && (error = GMT_End_IO (GMT->parent, GMT_OUT, 0))) return (error);	/* Disables further data ioutput */
+	
 
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
-		GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, (void **)&Grid);
-		if (GMT_Get_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&infile, (void **)&Grid)) return (GMT_DATA_READ_ERROR);
-		GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed (again) */
-
-		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Grid->data[i])) ? GMT->session.f_NaN : get_cell (Grid->data[i], cell, n_cells_m1, last_cell);
+		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
+		GMT_free_grid (GMT, &Orig, TRUE);
 	}
 
-	GMT_grd_pad_on (GMT, Grid, pad);	/* Reinstate the oroginal pad */
+	GMT_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
 	GMT_free (GMT, cell);
 	return (0);
 }
@@ -249,7 +250,7 @@ GMT_LONG do_usual (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *infile, ch
 int compare_indexed_floats (const void *point_1, const void *point_2)
 {
 	if (((struct INDEXED_DATA *)point_1)->x < ((struct INDEXED_DATA *)point_2)->x) return (-1);
-	if (((struct INDEXED_DATA *)point_1)->x > ((struct INDEXED_DATA *)point_2)->x) return (1);
+	if (((struct INDEXED_DATA *)point_1)->x > ((struct INDEXED_DATA *)point_2)->x) return (+1);
 	return (0);
 }
 
@@ -346,14 +347,16 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->N.active)
 		error = do_gaussian (GMT, Out, Ctrl->N.norm);
 	else {
-		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
+		if (Ctrl->D.active) {	/* Initialize table output */
+			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);		/* Enables data input and sets access mode */
+		}
 		if ((error = do_usual (GMT, Out, Ctrl->In.file, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
-		if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);				/* Disables further data input */
+		/* do_usual will also call GMT_End_IO if Ctrl->D.active was TRUE */
 	}
-
-	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_REC))) Return (error);	/* Enables data output and sets access mode */
-	if (Ctrl->G.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->G.file), (void **)&Out)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	/* Initialize grid output */
+	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+	if (Ctrl->G.active && GMT_Put_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->G.file), (void *)Out)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
 
 	Return (EXIT_SUCCESS);
