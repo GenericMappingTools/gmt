@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.550 2011-06-22 02:35:07 remko Exp $
+ *	$Id: gmt_init.c,v 1.551 2011-06-22 03:43:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5561,10 +5561,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		for (i = 0; i < 3; i++) {
 			GMT_memset (&C->current.map.frame.axis[i], 1, struct GMT_PLOT_AXIS);
 			C->current.map.frame.axis[i].id = (int)i;
-			for (j = 0; j < 6; j++) {
-				C->current.map.frame.axis[i].item[j].parent = i;
-				C->current.map.frame.axis[i].item[j].id = j;
-			}
+			for (j = 0; j < 6; j++) C->current.map.frame.axis[i].item[j].parent = i;
 			if (C->current.proj.xyz_projection[i] == GMT_TIME) C->current.map.frame.axis[i].type = GMT_TIME;
 		}
 		C->current.map.frame.header[0] = '\0';
@@ -5630,13 +5627,17 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
 		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_LOWER], &A->item[GMT_ANNOT_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
-		/* Note that item[].type will say 'a' or 'A' in these cases, so we know when minor ticks were not set */
+		/* Note that item[].type will say 'a', 'A', 'i' or 'I' in these cases, so we know when minor ticks were not set */
 
 		/* Set the grid interval the same as annotation interval when not set yet */
-		if (A->item[GMT_ANNOT_UPPER].active && A->item[GMT_GRID_UPPER].active && A->item[GMT_GRID_UPPER].interval == 0.0)	/* Set grid stride = annot stride */
+		if (A->item[GMT_ANNOT_UPPER].active && A->item[GMT_GRID_UPPER].active && A->item[GMT_GRID_UPPER].interval == 0.0) {	/* Set grid stride = annot stride */
 			GMT_memcpy (&A->item[GMT_GRID_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
-		if (A->item[GMT_ANNOT_LOWER].active && A->item[GMT_GRID_LOWER].active && A->item[GMT_GRID_LOWER].interval == 0.0)	/* Set grid stride = annot stride */
+			A->item[GMT_GRID_UPPER].type = 'g';
+		}
+		if (A->item[GMT_ANNOT_LOWER].active && A->item[GMT_GRID_LOWER].active && A->item[GMT_GRID_LOWER].interval == 0.0) {	/* Set grid stride = annot stride */
 			GMT_memcpy (&A->item[GMT_GRID_LOWER], &A->item[GMT_ANNOT_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
+			A->item[GMT_GRID_LOWER].type = 'G';
+		}
 	}
 
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
