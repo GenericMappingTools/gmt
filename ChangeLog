@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1113 2011-06-22 14:09:51 remko Exp $
+	$Id: ChangeLog,v 1.1114 2011-06-22 20:39:06 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-22	jluis
+	* s_rint.c:		(for) Windows rint function that does ieee compliant rounding like GCC
 
 2011-06-22	remko
 	* gmt_map.c:		Now, for lat/lon plots, when using e.g. -Bag, sets the automatic
