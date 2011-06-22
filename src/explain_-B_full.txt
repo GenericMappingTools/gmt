@@ -6,7 +6,7 @@ The leading BD(p) [Default] or BD(s) selects the primary or secondary annotation
 Each of the IT(?info) segments are textstrings of the form
 IT(info)[BD(:)"Axis label"BD(:)][BD(:=)"prefix"BD(:)][\fB:,\fP"unit label"BD(:)].
 The IT(info) string is made up of one or more concatenated substrings of the form
-[BD(a)|BD(f)|BD(g)]IT(stride)[+-IT(phase)][IT(unit)].
+[BD(a)|BD(f)|BD(g)][IT(stride)[+-IT(phase)][IT(unit)]].
 The leading BD(a) is used to specify the annotation and major tick spacing [Default], BD(f) for minor tick spacing, and
 BD(g) for gridline spacing (when IT(stride) in omitted, gridline spacing is the same as the annotation spacing).
 IT(stride) is the desired stride interval. 
@@ -20,7 +20,16 @@ BD(R) (day, same as BD(d), aligned with BD(TIME_WEEK_START)), BD(H) (hour, plot 
 BD(h) (hour, plot with 2 digits), BD(M) (minute, plot using BD(FORMAT_CLOCK_MAP)), BD(m) (minute, plot with 2 digits), 
 BD(S) (second, plot using BD(FORMAT_CLOCK_MAP)), BD(s) (second, plot with 2 digits).  Note for geographic axes
 BD(m) and BD(s) instead mean arc minutes and arc seconds.  All entities that are language-specific are under control
-by BD(TIME_LANGUAGE).  For custom annotations and intervals, let IT(xinfo), IT(yinfo), or IT(zinfo) be
+by BD(TIME_LANGUAGE).
+.br
+Alternatively, for linear maps, we can omit IT(stride), thus setting IT(xinfo), IT(yinfo), or IT(zinfo) to
+BD(a) automatically determines the annotation interval,
+BD(af) adds suitable minor tick intervals,
+BD(g) plots grid lines with the same interval as if OPT(Ba) was used,
+BD(ag) plots both annotation and grid lines with the same spacing,
+BD(afg) adds suitable minor tick intervals.
+.br
+For custom annotations and intervals, let IT(xinfo), IT(yinfo), or IT(zinfo) be
 BD(c)IT(intfile), where IT(intfile) contains any number
 of records with IT(coord) IT(type) [IT(label)].  Here, IT(type) is one or more letters from BD(a)|BD(i), BD(f), and BD(g).
 For BD(a)|BD(i) you must supply a IT(label) that will be plotted at the IT(coord) location.
@@ -35,8 +44,6 @@ If the label consists of more than one word, enclose the entire label in double 
 BD(:)"my label"BD(:)).
 If you need to use a colon (:) as part of your label you must specify it using its octal code (\\072).
 If you want to plot just the map boundary and nothing else, OPT(B)0 suffices.
-Alternatively on linear maps, OPT(Ba) automatically determines the annotation interval, OPT(Baf) automatically
-generates suitable annotation intervals and minor tick intervals.
 .br
 By default, all 4 boundaries are plotted (referred to as BD(W), BD(E), BD(S), BD(N)).  To change the default,
 append the code for only those axes you want (e.g., BD(WS) for standard lower-left x- and y-axis system).
