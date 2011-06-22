@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_-B_custom.sh,v 1.4 2011-06-09 17:24:52 remko Exp $
+#	$Id: GMT_-B_custom.sh,v 1.5 2011-06-22 00:35:06 remko Exp $
 #
 . ./functions.sh
 
@@ -21,7 +21,7 @@ cat << EOF >| yannots.txt
 6	f
 6.2831852	ag	2@~p@~
 EOF
-psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bp25f5g25:,Ma:/cyannots.txt,WS+glightblue \
+psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bp25gf5:,Ma:/cyannots.txt,WS+glightblue \
 	-P -K > GMT_-B_custom.ps
 psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bscxannots.txt/0,WS -O \
 	--MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
