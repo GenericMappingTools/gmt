@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.27 2011-06-15 01:03:38 jluis Exp $
+ *	$Id: grdfft_func.c,v 1.28 2011-06-22 01:22:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -153,7 +153,8 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (!C) return;
 	if (C->operation) GMT_free (GMT, C->operation);	
 	if (C->par) GMT_free (GMT, C->par);	
-	if (C->In.file) free ((void *)C->In.file);	
+	if (C->In.file[0]) free ((void *)C->In.file[0]);	
+	if (C->In.file[1]) free ((void *)C->In.file[1]);	
 	if (C->G.file) free ((void *)C->G.file);	
 	GMT_free (GMT, C);	
 }
