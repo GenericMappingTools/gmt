@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.29 2011-06-21 22:14:07 remko Exp $
+ *	$Id: psscale_func.c,v 1.30 2011-06-22 19:03:45 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -403,6 +403,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd, yd, xt;
 	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off, rgb[4], rrggbb[4], xp[4], yp[4];
 	struct GMT_FILL *f = NULL;
+	struct GMT_PLOT_AXIS *A;
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
 
@@ -693,8 +694,10 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 		if (B_set) {	/* Used -B */
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
-			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_X], !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
-			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+			A = &GMT->current.map.frame.axis[GMT_X];
+			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & 1), GMT->current.map.frame.side[flip & 1 ? N_SIDE : S_SIDE] & 2);
+			if (A->item[GMT_GRID_UPPER].active) {
+				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -903,8 +906,10 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
 			PFL tmp = NULL;
+			A = &GMT->current.map.frame.axis[GMT_X];
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
-			if ((dx = GMT_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {	/* Gridlines work fine without kludging since no annotations involved */
+			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
+				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
