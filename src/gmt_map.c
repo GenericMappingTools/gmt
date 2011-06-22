@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.323 2011-06-22 17:40:34 remko Exp $
+ *	$Id: gmt_map.c,v 1.324 2011-06-22 19:25:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2185,11 +2185,11 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 
 	/* Set minor ticks as well */
 	T = &A->item[item+2];
-	if (T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d;
+	if (T->active && T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d;
 
 	/* Finally set grid interval */
 	T = &A->item[item+4];
-	if (T->interval == 0.0) T->interval = d;
+	if (T->active && T->interval == 0.0) T->interval = d;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.540 2011-06-21 18:49:40 remko Exp $
+ *	$Id: gmt_support.c,v 1.541 2011-06-22 19:25:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8057,12 +8057,12 @@ GMT_LONG GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta
 }
 
 GMT_LONG GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array)
-{	/* When interval is TRUE we must return interval start/stop even if outside min/max range */
+{	/* When T->active is TRUE we must return interval start/stop even if outside min/max range */
 	GMT_LONG n_alloc = GMT_SMALL_CHUNK, n = 0, interval;
 	struct GMT_MOMENT_INTERVAL I;
 	double *val = NULL;
 
-	if (T->interval <= 0.0) return (0);
+	if (!T->active) return (0);
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
 	I.step = (int)T->interval;
