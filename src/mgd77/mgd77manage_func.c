@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.25 2011-06-20 02:02:39 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.26 2011-06-22 01:35:00 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -129,7 +129,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77manage %s - Manage the content of MGD77+ files\n\n", MGD77_VERSION);
+	GMT_message (GMT,"mgd77manage %s [API] - Manage the content of MGD77+ files\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
 	GMT_message (GMT,"\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
 	GMT_message (GMT,"\t[-Ne|k|m|n[+|-]] [-V] [%s] [%s]\n\n", GMT_bi_OPT, GMT_n_OPT);
@@ -546,9 +546,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77manage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
 	Ctrl = (struct MGD77MANAGE_CTRL *) New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 
