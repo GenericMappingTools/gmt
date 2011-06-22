@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.11 2011-06-22 01:35:00 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.12 2011-06-22 08:10:24 jluis Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -263,10 +263,10 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77info", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
 	Ctrl = (struct MGD77INFO_CTRL *) New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
-	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return (error);
+	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return ((int)error);
 
 	/*---------------------------- This is the mgd77info main code ----------------------------*/
 
