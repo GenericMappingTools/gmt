@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.318 2011-06-22 02:35:07 remko Exp $
+ *	$Id: gmt_map.c,v 1.319 2011-06-22 03:18:31 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7235,12 +7235,6 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 		case GMT_LINEAR:		/* Linear transformations */
 			search = gmt_map_init_linear (C);
-			GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_UPPER);
-			GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_UPPER);
-			GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_UPPER);
-			GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_LOWER);
-			GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_LOWER);
-			GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_LOWER);
 			break;
 
 		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
@@ -7358,6 +7352,13 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 		default:	/* No projection selected, return to a horrible death */
 			return (GMT_MAP_NO_PROJECTION);
 	}
+
+	GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_UPPER);
+	GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_UPPER);
+	GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_UPPER);
+	GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_LOWER);
+	GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_LOWER);
+	GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_LOWER);
 
 	C->current.proj.i_scale[GMT_X] = (C->current.proj.scale[GMT_X] != 0.0) ? 1.0 / C->current.proj.scale[GMT_X] : 1.0;
 	C->current.proj.i_scale[GMT_Y] = (C->current.proj.scale[GMT_Y] != 0.0) ? 1.0 / C->current.proj.scale[GMT_Y] : 1.0;
