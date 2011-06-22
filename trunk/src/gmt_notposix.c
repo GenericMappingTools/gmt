@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notposix.c,v 1.2 2011-05-20 11:27:37 remko Exp $
+ *	$Id: gmt_notposix.c,v 1.3 2011-06-22 20:31:35 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -573,4 +573,7 @@ double atanh (double x) {
 
 	return (0.5 * (log1p (x) - log1p (-x)));
 }
+#endif
+#ifndef HAVE_RINT
+#include "s_rint.c"
 #endif

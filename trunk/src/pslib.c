@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.279 2011-06-21 18:45:42 remko Exp $
+ *	$Id: pslib.c,v 1.280 2011-06-22 20:31:35 jluis Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -4610,4 +4610,7 @@ int PSL_initerr (struct PSL_CTRL *C, char *format, ...) {
 FILE *PSL_fopen (char *file, char *mode) {
 	return (fopen (file, mode));
 }
+#endif
+#ifndef HAVE_RINT
+#include "s_rint.c"
 #endif
