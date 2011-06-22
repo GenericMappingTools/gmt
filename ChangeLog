@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1111 2011-06-22 00:04:46 guru Exp $
+	$Id: ChangeLog,v 1.1112 2011-06-22 03:01:28 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-21	jluis
@@ -11,6 +11,7 @@
 				Also added +i[<gap>/]<pen> for an secondary (inner) frame,
 				+p<pen> to specify the pen used for main frame, and +s to
 				add a shifted background shaded rectangle.
+	* grdhisteq_func.c:	Fixed porting bugs and added test script.
 
 2011-06-21	remko
 	* pslib.[ch]:		Added rounded rectangle symbol PSL_RNDRECT ('R').
