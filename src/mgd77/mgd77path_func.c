@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.9 2011-06-22 01:35:00 guru Exp $
+ *	$Id: mgd77path_func.c,v 1.10 2011-06-22 08:21:58 jluis Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -150,9 +150,9 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77path", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
 	Ctrl = (struct MGD77PATH_CTRL *) New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return ((int)error);
 	
 	/*---------------------------- This is the mgd77path main code ----------------------------*/
 
