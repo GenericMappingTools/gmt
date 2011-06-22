@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.551 2011-06-22 03:43:57 remko Exp $
+ *	$Id: gmt_init.c,v 1.552 2011-06-22 14:09:52 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5270,6 +5270,7 @@ GMT_LONG gmt_split_info_strings (struct GMT_CTRL *C, const char *in, char *x_inf
 		if (in[i] == ':') mute = !mute;
 		if (in[i] == '/' && !mute) s_pos[n_slash++] = i;	/* Axis-separating slash, not a slash in a label */
 	}
+	if (n_slash) C->current.map.frame.slash = TRUE;
 
 	if (n_slash == 3) {
 		GMT_report (C, GMT_MSG_FATAL, "Error splitting -B string %s\n", in);
