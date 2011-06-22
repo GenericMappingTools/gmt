@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.17 2011-06-21 20:28:21 guru Exp $
+ *	$Id: pslegend_func.c,v 1.18 2011-06-22 00:04:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,6 +34,7 @@
 #endif
 
 #define FRAME_CLEARANCE	4.0	/* In points */
+#define FRAME_GAP	2.0	/* In points */
 #define FRAME_RADIUS	6.0	/* In points */
 
 struct PSLEGEND_CTRL {
@@ -47,10 +48,14 @@ struct PSLEGEND_CTRL {
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
-	struct F {	/* -F+r[<radius>] */
+	struct F {	/* -F+r[<radius>][+p<pen>][+i<off>/<pen>][+s<dx>/<dy>/<fill>] */
 		GMT_LONG active;
-		GMT_LONG mode;
-		double radius;
+		GMT_LONG mode;			/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
+		double radius;			/* Radius for rounded corner */
+		double dx, dy;			/* Offset for background shaded rectangle (+s) */
+		double gap;			/* Space bewteen main and secondary frame */
+		struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
+		struct GMT_FILL fill;	/* Background shade */
 	} F;
 	struct G {	/* -G<fill> */
 		GMT_LONG active;
@@ -76,7 +81,12 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
 	C->D.width = C->D.height = 1.0;
 	C->F.radius = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_RADIUS;		/* 6 pt */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
+	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);		/* Default is no fill */
+	C->F.pen1 = GMT->current.setting.map_frame_pen;
+	C->F.pen2 = GMT->current.setting.map_default_pen;
+	C->F.gap = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_GAP;	/* Default is 2p */
+	C->F.dx = C->C.dx;	C->F.dy = -C->C.dy;			/* Default is (4p, -4p) */
+	GMT_init_fill (GMT, &C->F.fill, 0.5, 0.5, 0.5);			/* Default is gray shade if used */
 	C->L.spacing = 1.1;
 	return ((void *)C);
 }
@@ -95,7 +105,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F[+r[<radius>]]] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/]<fill>]] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
@@ -111,8 +121,11 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_message (GMT, "\t-F Draw rectangular border around the legend (using FRAME_PEN) [Default is no border].\n");
-	GMT_message (GMT, "\t   Append +r[<radius>] for a rounded rectangle [%gp].\n", FRAME_RADIUS);
+	GMT_message (GMT, "\t-F Draw rectangular border around the legend (using MAP_FRAME_PEN) [Default is no border].\n");
+	GMT_message (GMT, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
+	GMT_message (GMT, "\t   Append +p<pen> to change the border pen [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_frame_pen));
+	GMT_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
+	GMT_message (GMT, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the legend box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
 	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
 	GMT_explain_options (GMT, "jK");
 	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
@@ -133,8 +146,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG k, n, n_errors = 0;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], txt_f[GMT_TEXT_LEN256];
+	GMT_LONG k, n, pos, n_errors = 0;
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], txt_f[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -180,9 +193,47 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
-				if (opt->arg[0] == '+' && opt->arg[1] == 'r') {
-					Ctrl->F.mode = 1;
-					if (opt->arg[2]) Ctrl->F.radius = GMT_to_inch (GMT, &opt->arg[2]);
+				pos = 0;
+				while (GMT_getmodopt (GMT, opt->arg, "iprs", &pos, p)) {	/* Looking for +i, +p, +r, +s */
+					switch (p[0]) {
+						case 'i':	/* Secondary pen info */
+							Ctrl->F.mode |= 1;
+							if (p[1]) {	/* Gave 1-2 attributes */
+								n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+								if (n == 2) {	/* Got both gap and pen */
+									Ctrl->F.gap = GMT_to_inch (GMT, txt_a);
+									if (GMT_getpen (GMT, txt_b, &Ctrl->F.pen2)) n_errors++;
+								}
+								else	/* Only got pen; use dfault gap */
+									if (GMT_getpen (GMT, txt_a, &Ctrl->F.pen2)) n_errors++;
+							}
+							break;
+						case 'p':	/* Change primary pen info */
+							if (!p[1] || GMT_getpen (GMT, &p[1], &Ctrl->F.pen1)) n_errors++;
+							break;
+						case 'r':	/* corner radius */
+							if (p[1]) Ctrl->F.radius = GMT_to_inch (GMT, &p[1]);
+							Ctrl->F.mode |= 2;
+							break;
+						case 's':	/* Get shade settings */
+							if (p[1]) {
+								n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+								if (n == 3) {
+									Ctrl->F.dx = GMT_to_inch (GMT, txt_a);
+									Ctrl->F.dy = GMT_to_inch (GMT, txt_b);
+									if (GMT_getfill (GMT, txt_c, &Ctrl->F.fill)) n_errors++;
+								}
+								else if (n == 1) {
+									if (GMT_getfill (GMT, txt_a, &Ctrl->F.fill)) n_errors++;
+								}
+								else n_errors++;
+							}
+							Ctrl->F.mode |= 4;
+							break;
+						default:
+							n_errors++;
+							break;
+					}
 				}
 				break;
 			case 'G':	/* Inside legend box fill */
@@ -346,12 +397,23 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	current_fill = Ctrl->G.fill;
 
 	if (Ctrl->F.active) {	/* First draw legend frame box */
-		GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
-		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
 		sdim[2] = Ctrl->F.radius;
-		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode) ? PSL_RNDRECT : PSL_RECT);
+		if (Ctrl->F.mode & 4) {	/* Draw offset background shade */
+			GMT_setfill (GMT, &Ctrl->F.fill, FALSE);
+			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width + Ctrl->F.dx, Ctrl->D.lat + 0.5 * Ctrl->D.height + Ctrl->F.dy, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		}
+		GMT_setpen (GMT, &Ctrl->F.pen1);	/* Always draw frame outline, with or without fill */
+		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
+		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		if (Ctrl->F.mode & 1) {	/* Also draw secondary frame on the inside */
+			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.gap;
+			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.gap;
+			GMT_setpen (GMT, &Ctrl->F.pen2);
+			GMT_setfill (GMT, NULL, TRUE);	/* No fill for inner frame */
+			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
+		}
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
