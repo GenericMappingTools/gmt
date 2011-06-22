@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.39 2011-05-20 14:02:00 remko Exp $
+ *	$Id: gmt_math.h,v 1.40 2011-06-22 20:29:45 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -63,7 +63,8 @@ extern double asinh(double x);
 #ifdef HAVE_RINT
 extern double rint(double x);
 #else
-#define rint(x) (floor((x)+0.5))
+/*#define rint(x) (floor((x)+0.5))	This is now deffined by the ieee function s_rint.c */
+EXTERN_MSC double rint(double x);
 #endif
 
 #ifdef HAVE_IRINT
