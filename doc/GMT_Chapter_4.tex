@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.152 2011-06-21 01:03:39 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.153 2011-06-22 15:01:16 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -198,9 +198,9 @@ means the final resetting does not take place (unless you write your
 script very carefully.)
 \item To permanently change some of the \GMT\ parameters on the fly
 inside a script the \GMTprog{gmtset} utility can be used.  E.g., to
-change the primary annotation font to 12 point Times-Bold we run \\
+change the primary annotation font to 12 point Times-Bold in red we run \\
 
-\texttt{gmtset FONT\_ANNOT\_PRIMARY 12p,Times-Bold} \\
+\texttt{gmtset FONT\_ANNOT\_PRIMARY 12p,Times-Bold,red} \\
 
 These changes will remain in effect until they are overridden.
 \item If all you want to achieve is to change a few parameters during
@@ -418,11 +418,11 @@ height is automatically computed from the implied map scale and region).
 \end{itemize}
 Since \GMT\ version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the mapping package \progname{Proj4}. The options thus either look like:
 \begin{itemize}
-\item \Opt{Jabbrev/}[\emph{parameters}/]\emph{scale}.  Here, \textbf{abbrev} is a \emph{lower-case}
+\item \Opt{J}\emph{abbrev}/[\emph{parameters}/]\emph{scale}.  Here, \textbf{abbrev} is a \emph{lower-case}
 abbreviation that selects a particular map projection, the \emph{parameters}
 is zero or more slash-delimited projection parameter, and \emph{scale} is map scale given in
 distance units per degree or as 1:xxxxx.
-\item \Opt{JAbbrev/}[\emph{parameters}/]\emph{width}.  Here, \textbf{Abbrev} is an \emph{capitalized} abbreviation that selects a particular map projection, the \emph{parameters}
+\item \Opt{J}\emph{Abbrev}/[\emph{parameters}/]\emph{width}.  Here, \textbf{Abbrev} is an \emph{capitalized} abbreviation that selects a particular map projection, the \emph{parameters}
 is zero or more slash-delimited projection parameter, and \emph{width} is map width (map
 height is automatically computed from the implied map scale and region).
 \end{itemize}
@@ -460,9 +460,8 @@ available items are listed in Table~\ref{tbl:inttype}.
 
 By default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
 \textbf{N}).  To change this selection, append the codes for those you want
-(e.g., \textbf{WSn}).  Upper case (e.g., \textbf{W}) will annotate in addition to
-draw axis/tick-marks.  The title, if given, will appear centered above the plot\footnote{However,
-it is suppressed when a 3-D view is selected.}.  Unit label or prefix may start with a
+(e.g., \textbf{WSn}).  In this example, the lower case \textbf{n} denotes to draw the axis and (major and minor) tick marks on the ``northern'' (top) edge of the plot. The upper case \textbf{WS} will annotate the ``western'' and ''southern'' axes with numerals and plot the optional axis label in addition to
+draw axis/tick-marks.  The title, if given, will appear centered above the plot.  Unit label or prefix may start with a
 leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
 occur at multiples of \emph{stride}; you can phase-shift this by appending \emph{phase}, which can be a
 positive or negative number.  Finally, note you may paint the canvas by appending the \textbf{+g}\emph{fill} modifier.
@@ -470,9 +469,9 @@ positive or negative number.  Finally, note you may paint the canvas by appendin
 \centering
 \begin{tabular}{|c|l|} \hline
 \emph{Flag}	& \emph{Description} \\ \hline
-\textbf{a}	&	Annotation tick spacing \\ \hline
-\textbf{f}	&	Frame tick spacing \\ \hline
-\textbf{g}	&	Grid tick spacing \\ \hline
+\textbf{a}	&	Annotation and major tick spacing \\ \hline
+\textbf{f}	&	Minor tick spacing \\ \hline
+\textbf{g}	&	Grid line spacing \\ \hline
 \end{tabular}
 \caption{Interval type codes.}
 \label{tbl:inttype}
@@ -480,6 +479,10 @@ positive or negative number.  Finally, note you may paint the canvas by appendin
 \noindent
 Note that the appearance of certain time annotations (month-, week-, and day-names) may be affected
 by the \textbf{TIME\_LANGUAGE}, \textbf{FORMAT\_TIME\_PRIMARY\_MAP}, and \textbf{FORMAT\_TIME\_SECONDARY\_MAP} settings.
+
+For automated plots the region may not always be the same and thus it can be difficult to determine the appropriate \emph{stride} in advance. Here \GMT{} provides the opportunity to autoselect the spacing between the major and minor ticks and the grid lines, by not specifying the \emph{stride} value. For example, \Opt{Bafg} will select all three spacings automatically for both axes. In case of longitude-latitude plots, this will keep the spacing the same on both axes. You can also use \Opt{Bafg/afg} to autoselect them separately.
+
+In the case of automatic spacing, but also in general, when the \emph{stride} argument is omitted after \textbf{g}, the grid line spacing is chosen the same as the annotation/major tick spacing. Thus \Opt{B10g} means the same as \Opt{B10g10}.
 
 The unit flag \textbf{u} can take on one of 18 codes; these are listed in  Table~\ref{tbl:units}.
 Almost all of these units are time-axis specific.  However, the \textbf{m} and \textbf{s} units will be
