@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.322 2011-06-22 16:27:21 remko Exp $
+ *	$Id: gmt_map.c,v 1.323 2011-06-22 17:40:34 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2142,7 +2142,7 @@ double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS,
 void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
 	int i = 0;
-	double maj[8] = {1.0, 2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, sub[8] = {1.0, 1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
+	double maj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, sub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
 	double d, f, p;
 	struct GMT_PLOT_AXIS *A = &C->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T = &A->item[item];
@@ -2165,26 +2165,20 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	}
 	else {
 		f = fabs (C->current.proj.zmax - C->current.proj.zmin);
-		d = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
+		d = fabs (C->common.R.wesn[ZHI] - C->common.R.wesn[ZLO]);
 	}
 	f *= C->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 
 	/* First guess of interval */
-	d *= MAX (0.05, MIN (5.0 * C->current.setting.font_annot[item].size / f, 0.20));
+	d *= MAX (0.05, MIN (5.0 * C->current.setting.font_annot[item%2].size / f, 0.20));
 
 	/* Now determine 'round' major and minor tick intervals */
-	if (GMT_axis_is_geo (C, axis)) {	/* Geographical coordinate */
-		p = 1.0;
-		if (d < 1.0) p /= 60.0, d *= 60.0;
-		if (d < 1.0) p /= 60.0, d *= 60.0;
-		/* Here d is in degrees, minutes or seconds */
-	}
-	else {	/* General (linear) axis */
+	if (GMT_axis_is_geo (C, axis))	/* Geographical coordinate */
+		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0; 
+	else	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
-		d /= p;
-		/* Here d is between 1 and 10 */
-	}
-	while (i < 7 && maj[i] < d) i++;
+	d /= p;	/* d is now in degrees, minutes or seconds, or in the range [1;10) */
+	while (i < 6 && maj[i] < d) i++;
 	T->interval = d = maj[i] * p, f = sub[i] * p;
 
 	if (item > GMT_ANNOT_LOWER) return;	/* Do the rest only when we started with annotation stride */
