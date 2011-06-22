@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.18 2011-06-22 00:04:46 guru Exp $
+ *	$Id: pslegend_func.c,v 1.19 2011-06-22 00:33:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -48,14 +48,14 @@ struct PSLEGEND_CTRL {
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
-	struct F {	/* -F+r[<radius>][+p<pen>][+i<off>/<pen>][+s<dx>/<dy>/<fill>] */
+	struct F {	/* -F+r[<radius>][+p<pen>][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<fill>]] */
 		GMT_LONG active;
 		GMT_LONG mode;			/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
 		double gap;			/* Space bewteen main and secondary frame */
 		struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
-		struct GMT_FILL fill;	/* Background shade */
+		struct GMT_FILL fill;		/* Background shade */
 	} F;
 	struct G {	/* -G<fill> */
 		GMT_LONG active;
@@ -104,8 +104,9 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/]<fill>]] [-G<fill>] [-K] [-L<spacing>] [-O] [-P]\n", GMT_B_OPT);
+	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_message (GMT, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
+	GMT_message (GMT, "\t[-G<fill>] [%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
