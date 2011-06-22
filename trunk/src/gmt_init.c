@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.549 2011-06-21 23:29:39 remko Exp $
+ *	$Id: gmt_init.c,v 1.550 2011-06-22 02:35:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -127,7 +127,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'B':	/* Tickmark option */
 
 			GMT_message (C, "\t-B Specify basemap frame info.  <tickinfo> is a textstring made up of one or\n");
-			GMT_message (C, "\t   more substrings of the form [a|f|g]<stride>[+-<phase>][<unit>], where the (optional) a");
+			GMT_message (C, "\t   more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a");
 			GMT_message (C, "\t   indicates annotation and major tick interval, f minor tick interval and g grid interval");
 			GMT_message (C, "\t   <stride> is the spacing between ticks or annotations, the (optional)\n");
 			GMT_message (C, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
@@ -159,6 +159,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t     m: minute - plot as 2-digit integer (0-59).\n");
 			GMT_message (C, "\t     S: second - format annotation according to format_clock_map.\n");
 			GMT_message (C, "\t     s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
+			GMT_message (C, "\t   When <stride> is omitted, it will be determined automatically.\n");
 			GMT_message (C, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
 			GMT_message (C, "\t   To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...) add a prefix that begins\n");
 			GMT_message (C, "\t     with the equal-sign (=); the rest is used as annotation prefix (e.g. :=\'$\':). If the prefix has\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.317 2011-06-22 01:49:37 remko Exp $
+ *	$Id: gmt_map.c,v 1.318 2011-06-22 02:35:07 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2145,7 +2145,13 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	struct GMT_PLOT_AXIS *A = &C->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T = &A->item[item];
 
-	if (!T->active || T->interval != 0.0 || A->type == GMT_LOG10 || A->type == GMT_POW) return;
+	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;
+	if (!T->active || T->interval != 0.0) {
+		/* Annotation is not active or it is already set. Try grid lines instead. */
+		item += 4;
+		T = &A->item[item];
+		if (!T->active || T->interval != 0.0) return;	/* Nothing to be done here */
+	}
 	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
 	if (axis == GMT_X) {
 		f = fabs (C->current.proj.rect[XHI] - C->current.proj.rect[XLO]);
@@ -2169,6 +2175,7 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 		if (f < 1.0) p /= 60.0, f *= 60.0;
 		/* Here f is in degrees, minutes or seconds */
 		T->interval = d = ((f <= 1.0) ? 1.0 : (f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : (f <= 10.0) ? 10.0 : (f <= 15.0) ? 15.0 : (f <= 30.0) ? 30.0 : (f <= 60.0) ? 60.0 : 90.0) * p;
+		if (item >= GMT_GRID_UPPER) return;	/* Do the rest only when we start with annotation stride */
 		/* Now do minor ticks as well */
 		T = &A->item[item+2];
 		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : (f <= 10.0) ? 2.0 : (f <= 15.0) ? 5.0 : (f <= 30.0) ? 10.0 : (f <= 60.0) ? 15.0 : 30.0) * p;
@@ -2177,6 +2184,7 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 		p = pow (10.0, floor (log10 (d)));
 		f = d / p;
 		T->interval = d = ((f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : 10.0) * p;
+		if (item >= GMT_GRID_UPPER) return;	/* Do the rest only when we start with annotation stride */
 		/* Now do minor ticks as well */
 		T = &A->item[item+2];
 		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : 2.0) * p;
