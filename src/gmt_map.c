@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.319 2011-06-22 03:18:31 remko Exp $
+ *	$Id: gmt_map.c,v 1.320 2011-06-22 14:09:52 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7188,7 +7188,7 @@ GMT_LONG gmt_init_three_D (struct GMT_CTRL *C) {
 
 GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 {
-	GMT_LONG search;
+	GMT_LONG search, i, double_auto[6];
 
 	if (!C->common.J.active) return (GMT_MAP_NO_PROJECTION);
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
@@ -7353,12 +7353,25 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 			return (GMT_MAP_NO_PROJECTION);
 	}
 
+	/* If intervals are not set specifically, round them to some "nice" values
+	 * Remember whether frame items in both directions were are automatically set */
+	for (i = 0; i < 6; i++)
+		double_auto[i] = GMT_is_geographic (C, GMT_IN) && !C->current.map.frame.slash &&
+		C->current.map.frame.axis[GMT_X].item[i].active && C->current.map.frame.axis[GMT_X].item[i].interval == 0.0 &&
+		C->current.map.frame.axis[GMT_Y].item[i].active && C->current.map.frame.axis[GMT_Y].item[i].interval == 0.0;
+	
 	GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_UPPER);
 	GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_UPPER);
 	GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_UPPER);
 	GMT_auto_frame_interval (C, GMT_X, GMT_ANNOT_LOWER);
 	GMT_auto_frame_interval (C, GMT_Y, GMT_ANNOT_LOWER);
 	GMT_auto_frame_interval (C, GMT_Z, GMT_ANNOT_LOWER);
+
+	/* Now set the pairs of automatically set intervals to be the same in both x- and y-direction */
+	for (i = 0; i < 6; i++) {
+		if (double_auto[i]) C->current.map.frame.axis[GMT_X].item[i].interval = C->current.map.frame.axis[GMT_Y].item[i].interval =
+		MAX (C->current.map.frame.axis[GMT_X].item[i].interval, C->current.map.frame.axis[GMT_Y].item[i].interval);
+	}
 
 	C->current.proj.i_scale[GMT_X] = (C->current.proj.scale[GMT_X] != 0.0) ? 1.0 / C->current.proj.scale[GMT_X] : 1.0;
 	C->current.proj.i_scale[GMT_Y] = (C->current.proj.scale[GMT_Y] != 0.0) ? 1.0 / C->current.proj.scale[GMT_Y] : 1.0;

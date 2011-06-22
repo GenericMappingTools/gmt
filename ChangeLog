@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1112 2011-06-22 03:01:28 guru Exp $
+	$Id: ChangeLog,v 1.1113 2011-06-22 14:09:51 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-22	remko
+	* gmt_map.c:		Now, for lat/lon plots, when using e.g. -Bag, sets the automatic
+				intervals the same in both directions (unless you use -Bag/ag).
 
 2011-06-21	jluis
 	* gmtinstall.bat:	It now builds also the supplements and put all dlls 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.93 2011-06-22 03:43:57 remko Exp $
+ *	$Id: gmt_project.h,v 1.94 2011-06-22 14:09:52 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -405,7 +405,7 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	int id;			/* 0 (x), 1(y), or 2(z) */
-	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
+	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	GMT_LONG special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
@@ -428,6 +428,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	GMT_LONG horizontal;		/* TRUE is S/N annotations should be parallel to axes */
 	GMT_LONG primary;		/* TRUE if current axis is primary, FALSE if secondary */
 	GMT_LONG side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
+	GMT_LONG slash;			/* TRUE if slashes were used in the -B argument */
 };
 
 #endif /* _GMT_PROJECT_H */
