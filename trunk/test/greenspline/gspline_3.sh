@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#       $Id: gspline_3.sh,v 1.1 2011-06-17 03:23:30 guru Exp $
+#       $Id: gspline_3.sh,v 1.2 2011-06-22 21:49:35 jluis Exp $
 
 . ../functions.sh
 header "greenspline: Testing Cartesian 2-D interpolation II"
@@ -44,15 +44,15 @@ gcc ks.c -lm -o ks
 grdmath -R0/2/0/1 -I$D -r 0 = z.nc
 grdmath -R0/2/0/1 -I0.01 -r 0 = zfine.nc
 makecpt -Crainbow -T0/1/0.2 > $$.cpt
-grd2xyz z.nc | cut -f1,2 | ks | xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
-grd2xyz zfine.nc | cut -f1,2 | ks | xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
+grd2xyz z.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
+grd2xyz zfine.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
 grdview ls.nc -Jx2.5i -JZ1.75 -p155/30 -C$$.cpt -Wc1p -Qm/lightgray -B0.5/0.2/0.2wSEnZ -K --PS_SCALE_X=0.8 --PS_SCALE_Y=0.8 > $ps
 # These commands were run once to create random.xyz and commented out
 # random.xyz is in cvs
 #gmtmath -T1/150/1 0 2 RAND = x
 #sleep 1
 #gmtmath -T1/150/1 0 1 RAND = y
-#paste x y | cut -f2,4 | ks > random.xyz
+#paste x y | cut -f2,4 | ./ks > random.xyz
 blockmean random.xyz -R -I$D > use.xyz
 grdcontour lsfine.nc -Jx2.8i -O -B0.5/0.2WSne -C0.2 -A0.2 -K -Y4.25i -GlLT/1/0,1.5/0.5/1.5/1 >> $ps
 psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps
