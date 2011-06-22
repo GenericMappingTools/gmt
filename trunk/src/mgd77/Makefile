@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.67 2011-06-18 04:07:36 guru Exp $
+#	$Id: Makefile,v 1.68 2011-06-22 01:40:54 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -43,7 +43,7 @@ MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 all:		$(PROGS) $(PROGSPS)
 
 install:	all
-		$(INSTALL) $(PROGS) $(bindir)
+		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
 		if [ ! . -ef $(includedir) ]; then \
 			$(INSTALL_DIR) $(includedir)/gmt; \
 			$(INSTALL_DATA) $(LIB_H) $(API_H) $(includedir)/gmt; \
@@ -60,7 +60,7 @@ install:	all
 		fi
 
 uninstall:
-		cd $(bindir); \rm -f $(PROGS)
+		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
 		if [ ! . -ef $(includedir) ]; then \
 			cd $(includedir)/gmt; \rm -f $(LIB_H) $(API_H);\
 		fi
