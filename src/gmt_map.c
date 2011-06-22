@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.316 2011-06-22 01:24:24 remko Exp $
+ *	$Id: gmt_map.c,v 1.317 2011-06-22 01:49:37 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2168,10 +2168,10 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 		if (f < 1.0) p /= 60.0, f *= 60.0;
 		if (f < 1.0) p /= 60.0, f *= 60.0;
 		/* Here f is in degrees, minutes or seconds */
-		T->interval = d = ((f <= 1.0) ? 1.0 : (f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : (f <= 10.0) ? 10.0 : (f <= 15.0) ? 15.0 : 30.0) * p;
+		T->interval = d = ((f <= 1.0) ? 1.0 : (f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : (f <= 10.0) ? 10.0 : (f <= 15.0) ? 15.0 : (f <= 30.0) ? 30.0 : (f <= 60.0) ? 60.0 : 90.0) * p;
 		/* Now do minor ticks as well */
 		T = &A->item[item+2];
-		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : (f <= 10.0) ? 2.0 : (f <= 15.0) ? 5.0 : 10.0) * p;
+		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : (f <= 10.0) ? 2.0 : (f <= 15.0) ? 5.0 : (f <= 30.0) ? 10.0 : (f <= 60.0) ? 15.0 : 30.0) * p;
 	}
 	else {	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
