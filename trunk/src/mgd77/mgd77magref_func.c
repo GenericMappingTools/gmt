@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.17 2011-06-20 22:15:10 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.18 2011-06-22 01:35:00 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77magref %s - Evaluating the IGRF or CM4 magnetic field models\n\n", GMT_VERSION);
+	GMT_message (GMT, "mgd77magref %s [API] - Evaluating the IGRF or CM4 magnetic field models\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77magref [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
 	GMT_message (GMT, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>]\n");
 	GMT_message (GMT, "\t[-V] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_colon_OPT);
@@ -419,10 +419,10 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77magref", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-Vfb", "Hm", options))) Return ((int)error);
+	if ((error = GMT_Parse_Common (API, "-Vfb", "Hm", options))) Return (error);
 	Ctrl = (struct MGD77MAGREF_CTRL *) New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
-	if ((error = GMT_mgd77magref_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_mgd77magref_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 
@@ -510,22 +510,22 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT->current.io.col_type[GMT_IN][t_col+1] = GMT->current.io.col_type[GMT_OUT][t_col+1] = GMT_IS_FLOAT;		/* Override any previous t_col = 3 settings */
 	if (!Ctrl->copy_input) GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;	/* No time on output */
 
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return ((int)error);	/* Registers default input sources, unless already set */
-	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return ((int)error);	/* Registers default output destination, unless already set */
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return ((int)error);			/* Enables data input and sets access mode */
+	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
+	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);			/* Enables data input and sets access mode */
 
 	if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return (GMT_DATA_READ_ERROR);
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
 	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return ((int)error);
-	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return ((int)error);	/* Disables further data input */
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
+	if ((error = GMT_End_IO (API, GMT_IN,  0))) Return (error);	/* Disables further data input */
 
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}
 
-	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return ((int)error);		/* Enables data output and sets access mode */
+	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_REC))) Return (error);		/* Enables data output and sets access mode */
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {	/* Loop over all input tables */
 		T = Din->table[tbl];	/* Current table */

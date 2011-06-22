@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.8 2011-06-02 20:18:33 guru Exp $
+ *	$Id: mgd77path_func.c,v 1.9 2011-06-22 01:35:00 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -52,7 +52,7 @@ GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77path %s - Return paths to MGD77 cruises and directories\n\n", MGD77_VERSION);
+	GMT_message (GMT,"mgd77path %s [API] - Return paths to MGD77 cruises and directories\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -150,9 +150,9 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77path", &GMT_cpy);	/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
 	Ctrl = (struct MGD77PATH_CTRL *) New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77path main code ----------------------------*/
 

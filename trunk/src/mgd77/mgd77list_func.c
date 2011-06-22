@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.17 2011-06-22 01:35:00 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77list %s - Extract data from MGD77 files\n\n", MGD77_VERSION);
+	GMT_message (GMT,"mgd77list %s [API] - Extract data from MGD77 files\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[code]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
 	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][e|k|n|M]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Sa<startdist>[unit]] [-Sb<stopdist>[unit]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s]\n\n", GMT_bo_OPT);
@@ -708,9 +708,9 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77list", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-VRb", "hm", options))) Return ((int)error);
+	if ((error = GMT_Parse_Common (API, "-VRb", "hm", options))) Return (error);
 	Ctrl = (struct MGD77LIST_CTRL *) New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77list main code ----------------------------*/
 

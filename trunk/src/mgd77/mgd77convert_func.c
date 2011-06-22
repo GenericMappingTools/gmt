@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77convert_func.c,v 1.11 2011-06-21 20:06:54 jluis Exp $
+ *	$Id: mgd77convert_func.c,v 1.12 2011-06-22 01:35:00 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"mgd77convert %s - Convert MGD77 data to other file formats\n\n", MGD77_VERSION);
+	GMT_message (GMT,"mgd77convert %s [API] - Convert MGD77 data to other file formats\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|t -T[+]a|c|t [-D] [-L[e][w][+]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -199,9 +199,9 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77convert", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
 	Ctrl = (struct MGD77CONVERT_CTRL *) New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
