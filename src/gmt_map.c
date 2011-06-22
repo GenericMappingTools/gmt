@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.315 2011-06-21 23:35:29 remko Exp $
+ *	$Id: gmt_map.c,v 1.316 2011-06-22 01:24:24 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2148,27 +2148,39 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	if (!T->active || T->interval != 0.0 || A->type == GMT_LOG10 || A->type == GMT_POW) return;
 	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
 	if (axis == GMT_X) {
-		d = fabs (C->current.proj.rect[XHI] - C->current.proj.rect[XLO]);
-		f = fabs (C->common.R.wesn[XHI] - C->common.R.wesn[XLO]);
+		f = fabs (C->current.proj.rect[XHI] - C->current.proj.rect[XLO]);
+		d = fabs (C->common.R.wesn[XHI] - C->common.R.wesn[XLO]);
 	}
 	else if (axis == GMT_Y) {
-		d = fabs (C->current.proj.rect[YHI] - C->current.proj.rect[YLO]);
-		f = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
+		f = fabs (C->current.proj.rect[YHI] - C->current.proj.rect[YLO]);
+		d = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
 	}
 	else {
-		d = fabs (C->current.proj.zmax - C->current.proj.zmin);
-		f = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
+		f = fabs (C->current.proj.zmax - C->current.proj.zmin);
+		d = fabs (C->common.R.wesn[YHI] - C->common.R.wesn[YLO]);
 	}
-	d *= C->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
+	f *= C->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 	/* First guess of interval */
-	d = MAX (0.05, MIN (7.0 * C->current.setting.font_annot[item].size / d, 0.20)) * f;
+	d *= MAX (0.05, MIN (7.0 * C->current.setting.font_annot[item].size / f, 0.20));
 	/* Now round nicely */
-	p = pow (10.0, floor (log10 (d)));
-	f = d / p;
-	T->interval = d = (f <= 2.0) ? 2.0 * p : (f <= 5.0) ? 5.0 * p : 10.0 * p;
-	/* Now do minor ticks as well */
-	T = &A->item[item+2];
-	if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : (f <= 5.0) ? p : 2.0 * p;
+	if (GMT_axis_is_geo (C, axis)) {	/* Geographical coordinate */
+		f = d, p = 1.0;
+		if (f < 1.0) p /= 60.0, f *= 60.0;
+		if (f < 1.0) p /= 60.0, f *= 60.0;
+		/* Here f is in degrees, minutes or seconds */
+		T->interval = d = ((f <= 1.0) ? 1.0 : (f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : (f <= 10.0) ? 10.0 : (f <= 15.0) ? 15.0 : 30.0) * p;
+		/* Now do minor ticks as well */
+		T = &A->item[item+2];
+		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : (f <= 10.0) ? 2.0 : (f <= 15.0) ? 5.0 : 10.0) * p;
+	}
+	else {	/* General (linear) axis */
+		p = pow (10.0, floor (log10 (d)));
+		f = d / p;
+		T->interval = d = ((f <= 2.0) ? 2.0 : (f <= 5.0) ? 5.0 : 10.0) * p;
+		/* Now do minor ticks as well */
+		T = &A->item[item+2];
+		if (T->interval == 0.0) T->interval = (T->type != 'f' && T->type != 'F') ? d : ((f <= 5.0) ? 1.0 : 2.0) * p;
+	}
 	/* Finally set grid interval */
 	T = &A->item[item+4];
 	if (T->interval == 0.0) T->interval = d;
