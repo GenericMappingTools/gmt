@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.26 2011-06-22 01:35:00 guru Exp $
+ *	$Id: mgd77manage_func.c,v 1.27 2011-06-22 08:20:51 jluis Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -546,9 +546,9 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_mgd77manage", &GMT_cpy);		/* Save current state */
-	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-V", "", options))) Return ((int)error);
 	Ctrl = (struct MGD77MANAGE_CTRL *) New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return ((int)error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 

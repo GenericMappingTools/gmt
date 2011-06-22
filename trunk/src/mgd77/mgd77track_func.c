@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.16 2011-06-22 01:35:00 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.17 2011-06-22 08:26:28 jluis Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -552,13 +552,13 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
 	Ctrl = (struct MGD77TRACK_CTRL *) New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMTAPI_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) Return ((int)GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) Return ((int)GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
-	if ((error = GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options))) Return (error);
-	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options))) Return ((int)error);
+	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return ((int)error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
