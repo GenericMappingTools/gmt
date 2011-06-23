@@ -1,12 +1,12 @@
 #!/bin/bash
-#	$Id: meca_2c.sh,v 1.3 2011-05-20 19:16:02 remko Exp $
+#	$Id: meca_2c.sh,v 1.4 2011-06-23 17:52:06 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (2c)"
 
 ps=meca_2c.ps
 
-gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
+gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
 psmeca -R128/130/10/11.1 -JX2i -a0.2/cc -Sc0.4 -B1 -Y8.5 -K << EOF > $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny 

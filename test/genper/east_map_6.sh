@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: east_map_6.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: east_map_6.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km specific point)"
@@ -22,7 +22,7 @@ Height=10.0
 
 # point from an altitude of 160 km at a specific point on the earth and with a restricted view
 
-PSFILE=east_map_6.${EARTH_MODEL}
+PSFILE=east_map_6
 TITLE=:.${PSFILE}:
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitude}/${vp_latitude}/${twist}/${Width}/${Height}/7i+

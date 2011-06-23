@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 23:10:43) [64-bit] [C4] Document from GMT_grdcontour
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdcontour
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 23:24:58 2011
+%%CreationDate: Thu Jun 23 13:03:12 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -569,7 +571,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour 28021.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d -Bpa7Rf1d/10 -Bsa1O/10 -P --FORMAT_DATE_MAP=-o-yy --FONT_ANNOT_PRIMARY=9p
+%%GMT:  grdcontour 35113.nc -JX6t/6 -C5 -A10 --TIME_EPOCH=2004-01-01T --TIME_UNIT=d -Bpa7Rf1d/10 -Bsa1O/ -P --FORMAT_DATE_MAP=-o-yy --FONT_ANNOT_PRIMARY=9p
 %%PROJ: xy 0.00000000 90.00000000 0.00000000 90.00000000 0.000 90.000 0.000 90.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -790,7 +792,7 @@ PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
 /PSL_A0_y 83 def
-/PSL_A1_y 250 def
+/PSL_A1_y 0 def
 25 W
 0 7200 M 0 -7200 D S
 8 W
@@ -838,15 +840,11 @@ def
 7200 PSL_A0_y MM
 (90) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
-/PSL_AH1 0
-def
-/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add def
-/PSL_A1_y PSL_A1_y PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7200 0 T
 /MM {exch M} def
 /PSL_A0_y 83 def
-/PSL_A1_y 250 def
+/PSL_A1_y 0 def
 25 W
 0 7200 M 0 -7200 D S
 8 W
@@ -893,9 +891,6 @@ def
 (80) mr Z
 7200 PSL_A0_y MM
 (90) mr Z
-/PSL_AH1 0
-def
-/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -7200 0 T
 /MM {neg M} def
@@ -908,7 +903,6 @@ def
 800 0 M 0 -83 D S
 1360 0 M 0 -83 D S
 1920 0 M 0 -83 D S
-2480 0 M 0 -83 D S
 3040 0 M 0 -83 D S
 3600 0 M 0 -83 D S
 4160 0 M 0 -83 D S
@@ -963,7 +957,7 @@ def
 2480 0 M 0 -250 D S
 4800 0 M 0 -250 D S
 /PSL_AH1 0
-267 F0
+233 F0
 (January-04) sh mx
 (February-04) sh mx
 (March-04) sh mx
@@ -975,7 +969,6 @@ def
 (February-04) bc Z
 6000 PSL_A1_y MM
 (March-04) bc Z
-0 0 M 0 -42 D S
 80 0 M 0 -42 D S
 160 0 M 0 -42 D S
 240 0 M 0 -42 D S
@@ -1006,7 +999,6 @@ def
 2240 0 M 0 -42 D S
 2320 0 M 0 -42 D S
 2400 0 M 0 -42 D S
-2480 0 M 0 -42 D S
 2560 0 M 0 -42 D S
 2640 0 M 0 -42 D S
 2720 0 M 0 -42 D S
@@ -1035,7 +1027,6 @@ def
 4560 0 M 0 -42 D S
 4640 0 M 0 -42 D S
 4720 0 M 0 -42 D S
-4800 0 M 0 -42 D S
 4880 0 M 0 -42 D S
 4960 0 M 0 -42 D S
 5040 0 M 0 -42 D S
@@ -1066,9 +1057,6 @@ def
 7040 0 M 0 -42 D S
 7120 0 M 0 -42 D S
 7200 0 M 0 -42 D S
-0 0 M 0 -62 D S
-2480 0 M 0 -62 D S
-4800 0 M 0 -62 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 7200 T
 /MM {M} def
@@ -1081,7 +1069,6 @@ def
 800 0 M 0 83 D S
 1360 0 M 0 83 D S
 1920 0 M 0 83 D S
-2480 0 M 0 83 D S
 3040 0 M 0 83 D S
 3600 0 M 0 83 D S
 4160 0 M 0 83 D S
@@ -1138,7 +1125,7 @@ def
 2480 0 M 0 250 D S
 4800 0 M 0 250 D S
 /PSL_AH1 0
-267 F0
+233 F0
 (January-04) sh mx
 (February-04) sh mx
 (March-04) sh mx
@@ -1151,7 +1138,6 @@ def
 6000 PSL_A1_y MM
 (March-04) bc Z
 /PSL_A1_y PSL_A1_y PSL_AH1 add def
-0 0 M 0 42 D S
 80 0 M 0 42 D S
 160 0 M 0 42 D S
 240 0 M 0 42 D S
@@ -1182,7 +1168,6 @@ def
 2240 0 M 0 42 D S
 2320 0 M 0 42 D S
 2400 0 M 0 42 D S
-2480 0 M 0 42 D S
 2560 0 M 0 42 D S
 2640 0 M 0 42 D S
 2720 0 M 0 42 D S
@@ -1211,7 +1196,6 @@ def
 4560 0 M 0 42 D S
 4640 0 M 0 42 D S
 4720 0 M 0 42 D S
-4800 0 M 0 42 D S
 4880 0 M 0 42 D S
 4960 0 M 0 42 D S
 5040 0 M 0 42 D S
@@ -1242,9 +1226,6 @@ def
 7040 0 M 0 42 D S
 7120 0 M 0 42 D S
 7200 0 M 0 42 D S
-0 0 M 0 62 D S
-2480 0 M 0 62 D S
-4800 0 M 0 62 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -7200 T
 0 setlinecap

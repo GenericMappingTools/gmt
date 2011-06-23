@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: meca_4.sh,v 1.4 2011-05-20 19:16:02 remko Exp $
+#	$Id: meca_4.sh,v 1.5 2011-06-23 17:52:06 remko Exp $
 #
 
 . ../functions.sh
@@ -7,7 +7,7 @@ header "Test psmeca for plotting focal mechanisms (4)"
 
 ps=meca_4.ps
 
-gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i PS_MEDIA A4
+gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i PS_MEDIA A4
 
 #     The example should plot some residual rates of  rotation  in
 #     the  Western Transverse Ranges, California.  The wedges will

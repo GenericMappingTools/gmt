@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_pstext
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pstext
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:14:51 2011
+%%CreationDate: Thu Jun 23 13:32:09 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -569,7 +571,7 @@ O0
 1200 2400 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xa1i -Ya2i -P -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xa1i -Ya2i -K -P
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -580,10 +582,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Xa1i -Ya2i) mc Z
-600 840 M (\(1\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(1\)) mc Z
+600 600 M (-Xa1i) mc Z
+600 240 M (-Ya2i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -626,7 +629,7 @@ O0
 2400 2400 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -X2i -Y2i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -X2i -Y2i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -637,10 +640,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-X2i -Y2i) mc Z
-600 840 M (\(2\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(2\)) mc Z
+600 600 M (-X2i) mc Z
+600 240 M (-Y2i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -682,7 +686,7 @@ O0
 -600 PSL_xorig sub PSL_page_xsize 2 div add -600 PSL_yorig sub PSL_page_ysize 2 div add TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xc -Yc -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xc -Yc -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -693,10 +697,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Xc -Yc) mc Z
-600 840 M (\(3\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(3\)) mc Z
+600 600 M (-Xc) mc Z
+600 240 M (-Yc) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -738,7 +743,7 @@ O0
 -2400 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -X-2i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -X-2i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -749,10 +754,10 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-X-2i) mc Z
-600 840 M (\(4\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(4\)) mc Z
+600 600 M (-X-2i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -794,7 +799,7 @@ O0
 0 -2400 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Ya-2i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Ya-2i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -805,10 +810,10 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Ya-2i) mc Z
-600 840 M (\(5\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(5\)) mc Z
+600 600 M (-Ya-2i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -851,7 +856,7 @@ O0
 1200 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -X1i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -X1i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -862,10 +867,10 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-X1i) mc Z
-600 840 M (\(6\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(6\)) mc Z
+600 600 M (-X1i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -907,7 +912,7 @@ O0
 600 PSL_xorig sub PSL_page_xsize 2 div add -1200 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xc1i -Y-1i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xc1i -Y-1i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -918,10 +923,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Xc1i -Y-1i) mc Z
-600 840 M (\(7\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(7\)) mc Z
+600 600 M (-Xc1i) mc Z
+600 240 M (-Y-1i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -963,7 +969,7 @@ O0
 600 PSL_xorig sub PSL_page_xsize 2 div add -1200 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xc1i -Y-1i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xc1i -Y-1i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -974,10 +980,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-X -Y) mc Z
-600 840 M (\(8\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(8\)) mc Z
+600 600 M (-X) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -1019,7 +1026,7 @@ O0
 7200 PSL_xorig sub -1200 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xf6i -Y-1i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xf6i -Y-1i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1030,10 +1037,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Xf6i -Y) mc Z
-600 840 M (\(9\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(9\)) mc Z
+600 600 M (-Xf6i) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -1075,7 +1083,7 @@ O0
 7200 PSL_xorig sub -1200 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xf6i -Y-1i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xf6i -Y-1i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1086,10 +1094,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-X -Y) mc Z
-600 840 M (\(10\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(10\)) mc Z
+600 600 M (-X) mc Z
+600 240 M (-Y) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
@@ -1131,7 +1140,7 @@ O0
 5700 PSL_xorig sub 6000 PSL_yorig sub TM
 
 % PostScript produced by:
-%%GMT:  pstext -R0/1/0/1 -JX1i -B0 -F+jMC -Xf4.75i -Yf5i -O -K
+%%GMT:  pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC -Xf4.75i -Yf5i -K -O
 %%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1142,10 +1151,11 @@ clipsave
 0 1200 D
 -1200 0 D
 PSL_eoclip N
-600 360 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
-(-Xf4.75i -Yf5i) mc Z
-600 840 M (\(11\)) mc Z
+600 960 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(\(11\)) mc Z
+600 600 M (-Xf4.75i) mc Z
+600 240 M (-Yf5i) mc Z
 PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def

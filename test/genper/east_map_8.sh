@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: east_map_8.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: east_map_8.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km image)"
@@ -18,7 +18,7 @@ azimuth=210
 twist=0
 Width=30.0
 Height=30.0
-PSFILE=east_map_8.${EARTH_MODEL}
+PSFILE=east_map_8
 TITLE=:.${PSFILE}:
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+

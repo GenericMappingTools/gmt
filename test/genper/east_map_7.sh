@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: east_map_7.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: east_map_7.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 20000 km image)"
@@ -10,7 +10,7 @@ COLORMAP=topo.cpt
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
-PSFILE=east_map_7.${EARTH_MODEL}
+PSFILE=east_map_7
 TITLE=:.${PSFILE}:
 latitude=41.5
 longitude=-74.0

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 17:07:27 2011
+%%CreationDate: Thu Jun 23 12:49:24 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -569,7 +571,7 @@ O0
 2400 1800 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R8800/11200/-75/200 -JX8i/4i -X2i -Y1.5i -K -Sp0.03i -B500f100:Distance along great circle:/100f25:Gravity anomaly (mGal):WeSn \
+%%GMT:  psxy -R8800/11200/-75/200 -JX8i/4i -X2i -Y1.5i -K -Sp0.03i -Ba500f100:Distance along great circle:/a100f25:Gravity anomaly (mGal):WeSn \
 %%GMT:+ -U/-1.75i/-1.25i/Example 3d in Cookbook samp_ship.pg
 %%PROJ: xy 8800.00000000 11200.00000000 -75.00000000 200.00000000 8800.000 11200.000 -75.000 200.000 +xy +a=6378137.000 +b=6356752.314245
 % Begin GMT time-stamp
@@ -2968,7 +2970,7 @@ PSL_cliprestore
 0 3055 M -83 0 D S
 0 4800 M -83 0 D S
 /PSL_AH0 0
-233 F0
+200 F0
 (0) sw mx
 (100) sw mx
 (200) sw mx
@@ -2990,7 +2992,7 @@ def
 0 3491 M -42 0 D S
 0 3927 M -42 0 D S
 0 4364 M -42 0 D S
-/PSL_LH 400 F0
+/PSL_LH 267 F0
 (M) sh def
 /PSL_L_y PSL_A0_y PSL_A1_y mx 133 add def
 2400 PSL_L_y MM
@@ -3028,7 +3030,7 @@ V 90 R (Gravity anomaly \(mGal\)) bc Z U
 6800 0 M 0 -83 D S
 8800 0 M 0 -83 D S
 /PSL_AH0 0
-233 F0
+200 F0
 (9000) sh mx
 (9500) sh mx
 (10000) sh mx
@@ -3066,7 +3068,7 @@ def
 8400 0 M 0 -42 D S
 9200 0 M 0 -42 D S
 9600 0 M 0 -42 D S
-/PSL_LH 400 F0
+/PSL_LH 267 F0
 (M) sh def
 /PSL_L_y PSL_A0_y PSL_A1_y mx 133 add PSL_LH add def
 4800 PSL_L_y MM
@@ -3112,7 +3114,7 @@ O0
 0 5100 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R8800/11200/0/1.1 -JX8i/1.1i -O -Y4.25i -Bf100/0.5f0.1:Weight:Wesn -Sp0.03i samp_ship.xw
+%%GMT:  psxy -R8800/11200/0/1.1 -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:Weight:Wesn -Sp0.03i samp_ship.xw
 %%PROJ: xy 8800.00000000 11200.00000000 0.00000000 1.10000000 8800.000 11200.000 0.000 1.100 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -5474,7 +5476,7 @@ PSL_cliprestore
 0 1200 M -83 0 D S
 /PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-233 F0
+200 F0
 (0.0) sw mx
 (0.5) sw mx
 (1.0) sw mx
@@ -5496,7 +5498,7 @@ def
 0 960 M -42 0 D S
 0 1080 M -42 0 D S
 0 1320 M -42 0 D S
-/PSL_LH 400 F0
+/PSL_LH 267 F0
 (M) sh def
 /PSL_L_y PSL_A0_y PSL_A1_y mx 133 add def
 660 PSL_L_y MM

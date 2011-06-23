@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: pacific_map_2.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: pacific_map_2.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (Pacific 35000 km specific pnt image)"
@@ -10,7 +10,7 @@ COLORMAP=topo.cpt
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
-PSFILE=pacific_map_2.${EARTH_MODEL}
+PSFILE=pacific_map_2
 TITLE=:.${PSFILE}:
 longitude=-140.0
 latitude=0.0

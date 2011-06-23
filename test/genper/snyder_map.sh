@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: snyder_map.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: snyder_map.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km Snyder)"
@@ -18,7 +18,7 @@ twist=0
 Width=30.0
 Height=30.0
 
-PSFILE=snyder_map.${EARTH_MODEL}
+PSFILE=snyder_map
 TITLE=:.${PSFILE}:
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
