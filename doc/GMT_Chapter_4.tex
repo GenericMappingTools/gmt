@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.154 2011-06-22 15:06:06 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.155 2011-06-23 02:20:44 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -482,7 +482,7 @@ by the \textbf{TIME\_LANGUAGE}, \textbf{FORMAT\_TIME\_PRIMARY\_MAP}, and \textbf
 
 For automated plots the region may not always be the same and thus it can be difficult to determine the appropriate \emph{stride} in advance. Here \GMT{} provides the opportunity to autoselect the spacing between the major and minor ticks and the grid lines, by not specifying the \emph{stride} value. For example, \Opt{Bafg} will select all three spacings automatically for both axes. In case of longitude-latitude plots, this will keep the spacing the same on both axes. You can also use \Opt{Bafg/afg} to autoselect them separately.
 
-In the case of automatic spacing, but also in general, when the \emph{stride} argument is omitted after \textbf{g}, the grid line spacing is chosen the same as the annotation/major tick spacing. Thus \Opt{B10g} means the same as \Opt{B10g10}.
+In the case of automatic spacing, when the \emph{stride} argument is omitted after \textbf{g}, the grid line spacing is chosen the same as the minor tick spacing; unless \textbf{g} is used in consort with \textbf{a}, then the grid lines are spaced the same as the annotations.
 
 The unit flag \textbf{u} can take on one of 18 codes; these are listed in  Table~\ref{tbl:units}.
 Almost all of these units are time-axis specific.  However, the \textbf{m} and \textbf{s} units will be
