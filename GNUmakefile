@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.93 2011-06-23 22:18:22 guru Exp $
+#  $Id: GNUmakefile,v 1.94 2011-06-23 23:24:35 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,10 +224,8 @@ get_gshhs_%:
 		rm -f GSHHS$(GSHHS_VERSION)_$*.tar.bz2
 
 # For CVS usage
-get-gshhs-cvs:
-		curl "ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS$(GSHHS_VERSION)_$*.tar.bz2" -R -O
-		bzip2 -dc GSHHS$(GSHHS_VERSION)_$*.tar.bz2 | tar -xvf -
-		rm -f GSHHS$(GSHHS_VERSION)_$*.tar.bz2
+get_gshhs_cvs:
+		$(MAKE) GSHHS_DIR=pwessel/gshhs get_gshhs
 
 #-------------------------------------------------------------------------------
 #	TARRING OFF THE NEW VERSION
