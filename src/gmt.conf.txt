@@ -59,6 +59,7 @@ Sets the default for all fonts, except FONT_LOGO. This setting is not included i
 .TP
 .B FONT_ANNOT_PRIMARY
 Font used for primary annotations, etc. [12p,Helvetica,black]. 
+When BD(+) is prepended, scale fonts, offsets and ticklengths relative to BD(FONT_ANNOT_PRIMARY).
 .TP
 .B FONT_ANNOT_SECONDARY
 Font to use for time axis secondary annotations [14p,Helvetica,black].
@@ -260,8 +261,7 @@ If bit 6 is set (32), then latitude annotations will be plotted parallel to the 
 To set a combination of these, add up the values in parentheses. [1].
 .TP
 .B MAP_ANNOT_OFFSET_PRIMARY
-Distance from end of tickmark to start of annotation [5p].  A negative
-offset will place the annotation inside the map border.
+Distance from end of tickmark to start of annotation [5p].
 .TP
 .B MAP_ANNOT_OFFSET_SECONDARY
 Distance from base of primary annotation to the top of the secondary annotation [5p] (Only
@@ -290,11 +290,11 @@ Add an optional BD(+) to draw a cube of axes in perspective view.
 Pen attributes used to draw plain map frame [thicker,black].
 .TP
 .B MAP_FRAME_TYPE
-Choose between inside, plain and fancy (thick boundary, alternating black/white frame; append + for rounded corners)  [fancy].
+Choose between BD(inside), BD(plain) and BD(fancy) (thick boundary, alternating black/white frame; append BD(+) for rounded corners)  [fancy].
 For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
 In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
 directions (e.g., rectangular projections, polar projections).  For situations where all boundary ticks and annotations
-must be inside the maps (e.g., for preparing geotiffs), chose inside.
+must be inside the maps (e.g., for preparing geotiffs), chose BD()inside).
 .TP
 .B MAP_FRAME_WIDTH
 Width (> 0) of map borders for fancy map frame [5p].
@@ -348,12 +348,12 @@ the default 85/90 will draw a r = 5 radius circle at the center of the map with 
 Sets the height (> 0) on the map of the map scale bars drawn by various programs [5p].
 .TP
 .B MAP_TICK_LENGTH_PRIMARY
-The length of a primary major/minor tickmarks.  Normally, tickmarks are drawn on the outside of
-the map boundaries.  To select interior tickmarks, use a negative length [5p/2.5p].
+The length of a primary major/minor tickmarks  [5p/2.5p].
+If only the first value is set, the second is assumed to be 50% of the first.
 .TP
 .B MAP_TICK_LENGTH_SECONDARY
-The length of a secondary major/minor tickmarks.  Normally, tickmarks are drawn on the outside of
-the map boundaries.  To select interior tickmarks, use a negative length [15p/3.75p].
+The length of a secondary major/minor tickmarks  [15p/3.75p].
+If only the first value is set, the second is assumed to be 25% of the first.
 .TP
 .B MAP_TICK_PEN_PRIMARY
 Pen attributes to be used for primary tickmarks in dpi units or points (append p) [thinner,black].
