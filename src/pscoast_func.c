@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.22 2011-06-20 21:45:16 guru Exp $
+ *	$Id: pscoast_func.c,v 1.23 2011-06-23 22:18:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -844,7 +844,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free_shore (GMT, &c);
 
 	}
-	if (need_coast_base) GMT_shore_cleanup (GMT, &c);
+	if (need_coast_base) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5ld\n", bin);
+		GMT_shore_cleanup (GMT, &c);
+	}
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.35 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt_shore.h,v 1.36 2011-06-23 22:18:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,7 +49,7 @@ struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 
 struct GMT_GSHHS_pol {	/* Information pertaining to each GSHHS polygon */
 	int *parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
-	int *area;		/* Array with areas in 10*km^2 of the GSHHS polygons */
+	double *area;		/* Array with areas in km^2 of the GSHHS polygons */
 	int *area_fraction;	/* Array with micro-fraction fractions of area relative to full res area  */
 };
 
@@ -99,7 +99,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	short int *bin_nseg;	/* Array with number of segments per bin */
 	
 	int *GSHHS_parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
-	int *GSHHS_area;		/* Array with areas in 10*km^2 of the GSHHS polygons */
+	double *GSHHS_area;		/* Array with areas in km^2 of the GSHHS polygons */
 	int *GSHHS_area_fraction;	/* Array with micro-fraction fractions of area relative to full res area  */
 
 	char units[80];		/* Units of lon/lat */

@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1116 2011-06-23 17:52:00 remko Exp $
+	$Id: ChangeLog,v 1.1117 2011-06-23 22:18:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-23	pwessel
+	* gmt_shore.c:		Now reads new GSHHS 2.1.2 format that includes feature areas
+				stored as doubles.  The old int(0.1*area) would set all
+				areas < 0.1 km^2 to zero [only affected gshhs supplement].
+	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.1.2.  Fixed porting bugs.
 
 2011-06-23	remko
 	* gmt_init.c:		Introduced MAP_TICK_LENGTH_{PRIMARY,SECONDARY} to set major
