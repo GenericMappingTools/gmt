@@ -1,6 +1,6 @@
 #!/bin/sh
-#	$Id: histeq.sh,v 1.1 2011-06-22 03:01:28 guru Exp $
-# Testing grdfft
+#	$Id: histeq.sh,v 1.2 2011-06-23 07:55:19 guru Exp $
+# Testing grdhisteq
 
 . ../functions.sh
 header "Test grdhisteq for equalizing/normalization"
