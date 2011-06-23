@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.txt,v 1.3 2011-05-18 21:26:51 remko Exp $
+#	$Id: gmt_keywords.txt,v 1.4 2011-06-23 17:47:34 remko Exp $
 #
 # List of all GMT 5 defaults parameters.
 #
@@ -92,8 +92,10 @@ MAP_ORIGIN_X			# x-value of lower-left corner of map relative to page [1i]
 MAP_ORIGIN_Y			# y-value of lower-left corner of map relative to page [1i]
 MAP_POLAR_CAP			# Modify gridline spacing for polar caps
 MAP_SCALE_HEIGHT		# Height of scale bar on maps
-MAP_TICK_LENGTH			# Length of frame axes ticks
-MAP_TICK_PEN			# Pen for axes ticks
+MAP_TICK_LENGTH_PRIMARY		# Length of major and minor primary frame axes ticks
+MAP_TICK_LENGTH_SECONDARY	# Length of major and minor secondary frame axes ticks
+MAP_TICK_PEN_PRIMARY		# Pen for primary axes ticks
+MAP_TICK_PEN_SECONDARY		# Pen for secondary axes ticks
 MAP_TITLE_OFFSET		# Distance between a map title and the label
 MAP_VECTOR_SHAPE		# Head shape of vectors
 #-------------------------------------------------------

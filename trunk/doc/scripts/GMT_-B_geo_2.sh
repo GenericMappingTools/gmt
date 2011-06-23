@@ -1,12 +1,12 @@
 #!/bin/bash
-#	$Id: GMT_-B_geo_2.sh,v 1.7 2011-05-17 00:23:50 guru Exp $
+#	$Id: GMT_-B_geo_2.sh,v 1.8 2011-06-23 17:47:56 remko Exp $
 #
 . ./functions.sh
 
 gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p
 psbasemap -R-2/1/0/0.35 -JM4i -Bpa15mf5mg5mwSe -Bs1f30mg15m -K -P --MAP_FRAME_TYPE=fancy+ \
 	--MAP_GRID_PEN_PRIMARY=thinnest,black,. --MAP_GRID_CROSS_SIZE_SECONDARY=0.1i \
-	--MAP_FRAME_WIDTH=0.075i --MAP_TICK_LENGTH=0.1i > GMT_-B_geo_2.ps
+	--MAP_FRAME_WIDTH=0.075i --MAP_TICK_LENGTH_PRIMARY=0.1i > GMT_-B_geo_2.ps
 psxy -R -J -O -K -SvB0.005i/0.02i/0.015i -Gblack -Y-0.5i -N << EOF >> GMT_-B_geo_2.ps
 -1.875 0 0 0.33333
 -0.45833 0 0 0.11111

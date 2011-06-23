@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.553 2011-06-23 02:20:43 remko Exp $
+ *	$Id: gmt_init.c,v 1.554 2011-06-23 17:46:40 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2672,7 +2672,10 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.map_label_offset *= scale;
 				C->current.setting.map_title_offset *= scale;
 				C->current.setting.map_frame_width *= scale;
-				C->current.setting.map_tick_length *= scale;
+				C->current.setting.map_tick_length[0] *= scale;
+				C->current.setting.map_tick_length[1] *= scale;
+				C->current.setting.map_tick_length[2] *= scale;
+				C->current.setting.map_tick_length[3] *= scale;
 			}
 			else
 				if (GMT_getfont (C, value, &C->current.setting.font_annot[0])) error = TRUE;
@@ -2823,7 +2826,8 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				GMT_rgb_copy (&C->current.setting.map_grid_pen[0].rgb, &C->current.setting.map_default_pen.rgb);
 				GMT_rgb_copy (&C->current.setting.map_grid_pen[1].rgb, &C->current.setting.map_default_pen.rgb);
 				GMT_rgb_copy (&C->current.setting.map_frame_pen.rgb  , &C->current.setting.map_default_pen.rgb);
-				GMT_rgb_copy (&C->current.setting.map_tick_pen.rgb   , &C->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&C->current.setting.map_tick_pen[0].rgb, &C->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&C->current.setting.map_tick_pen[1].rgb, &C->current.setting.map_default_pen.rgb);
 			}
 			break;
 #ifdef GMT_COMPAT
@@ -2942,7 +2946,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			C->current.setting.map_origin[GMT_Y] = GMT_to_inch (C, value);
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_POLAR_CAP: GMT_COMPAT_CHANGE ("MAP_POLAT_CAP");
+		case GMTCASE_POLAR_CAP: GMT_COMPAT_CHANGE ("MAP_POLAR_CAP");
 #endif
 		case GMTCASE_MAP_POLAR_CAP:
 			if (!strcmp (lower_value, "none")) {	/* Means reset to no cap -> lat = 90, dlon = 0 */
@@ -2966,16 +2970,36 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.map_scale_height = dval;
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_TICK_LENGTH: GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH");
-#endif
 		case GMTCASE_MAP_TICK_LENGTH:
-			C->current.setting.map_tick_length = GMT_to_inch (C, value);
+		case GMTCASE_TICK_LENGTH: GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH_PRIMARY and MAP_TICK_LENGTH_SECONDARY");
+			C->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (C, value);
+			C->current.setting.map_tick_length[GMT_TICK_UPPER]  = 0.50 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+			C->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 3.00 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+			C->current.setting.map_tick_length[GMT_TICK_LOWER]  = 0.75 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+			break;
+#endif
+		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
+			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
+			C->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (C, txt_a);
+			C->current.setting.map_tick_length[GMT_TICK_UPPER]  = (i > 1) ? GMT_to_inch (C, txt_b) : 0.50 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+			break;
+		case GMTCASE_MAP_TICK_LENGTH_SECONDARY:
+			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
+			C->current.setting.map_tick_length[GMT_ANNOT_LOWER] = GMT_to_inch (C, txt_a);
+			C->current.setting.map_tick_length[GMT_TICK_LOWER]  = (i > 1) ? GMT_to_inch (C, txt_b) : 0.25 * C->current.setting.map_tick_length[GMT_ANNOT_LOWER];
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_TICK_PEN: GMT_COMPAT_CHANGE ("MAP_TICK_PEN");
-#endif
 		case GMTCASE_MAP_TICK_PEN:
-			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen);
+		case GMTCASE_TICK_PEN: GMT_COMPAT_CHANGE ("MAP_TICK_PEN_PRIMARY and MAP_TICK_PEN_SECONDARY");
+			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[0]);
+			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[1]);
+			break;
+#endif
+		case GMTCASE_MAP_TICK_PEN_PRIMARY:
+			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[0]);
+			break;
+		case GMTCASE_MAP_TICK_PEN_SECONDARY:
+			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[1]);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_HEADER_OFFSET: GMT_COMPAT_CHANGE ("MAP_TITLE_OFFSET");
@@ -3842,16 +3866,28 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			sprintf (value, "%g%c", C->current.setting.map_scale_height GMT_def(GMTCASE_MAP_SCALE_HEIGHT));
 			break;
 #ifdef GMT_COMPAT
+		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH: GMT_COMPAT_WARN;
 #endif
-		case GMTCASE_MAP_TICK_LENGTH:
-			sprintf (value, "%g%c", C->current.setting.map_tick_length GMT_def(GMTCASE_MAP_TICK_LENGTH));
+		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
+			sprintf (value, "%g%c/%g%c",
+			C->current.setting.map_tick_length[GMT_ANNOT_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
+			C->current.setting.map_tick_length[GMT_TICK_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
+			break;
+		case GMTCASE_MAP_TICK_LENGTH_SECONDARY:
+			sprintf (value, "%g%c/%g%c",
+			C->current.setting.map_tick_length[GMT_ANNOT_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
+			C->current.setting.map_tick_length[GMT_TICK_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
 			break;
 #ifdef GMT_COMPAT
+		case GMTCASE_MAP_TICK_PEN:
 		case GMTCASE_TICK_PEN: GMT_COMPAT_WARN;
 #endif
-		case GMTCASE_MAP_TICK_PEN:
-			sprintf (value, "%s", GMT_putpen (C, C->current.setting.map_tick_pen));
+		case GMTCASE_MAP_TICK_PEN_PRIMARY:
+			sprintf (value, "%s", GMT_putpen (C, C->current.setting.map_tick_pen[0]));
+			break;
+		case GMTCASE_MAP_TICK_PEN_SECONDARY:
+			sprintf (value, "%s", GMT_putpen (C, C->current.setting.map_tick_pen[1]));
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_HEADER_OFFSET: GMT_COMPAT_WARN;

@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_M_1.sh,v 1.9 2011-05-18 19:54:38 remko Exp $
+#	$Id: GMT_App_M_1.sh,v 1.10 2011-06-23 17:47:56 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
@@ -12,7 +12,7 @@ n=`cat $$.lis | wc -l`
 
 # dy is line spacing and y0 is total box height
 
-gmtset MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
+gmtset MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B0 > $ps
 
 i=1

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.30 2011-06-22 19:03:45 remko Exp $
+ *	$Id: psscale_func.c,v 1.31 2011-06-23 17:46:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -453,8 +453,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
-	len = GMT->current.setting.map_tick_length;	/* +ve means draw on the outside of bar */
-	len2 = 0.5 * len;
+	len = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];	/* +ve means draw on the outside of bar */
+	len2 = GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
 	xleft = x0 = 0.0;
 
 	reverse = (length < 0.0);
@@ -719,7 +719,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 			/* Then annotate and draw tickmarks */
 
-			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen);
+			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];
 			for (i = 0; i < P->n_colors; i++) {
@@ -940,7 +940,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 			/* Then annotate and draw tickmarks */
 
-			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen);
+			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];
 			for (i = 0; i < P->n_colors; i++) {

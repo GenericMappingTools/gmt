@@ -1,9 +1,9 @@
 #!/bin/bash
-#	$Id: GMT_-R.sh,v 1.14 2011-05-17 03:02:06 guru Exp $
+#	$Id: GMT_-R.sh,v 1.15 2011-06-23 17:47:56 remko Exp $
 #
 . ./functions.sh
 
-gmtset MAP_FRAME_TYPE PLAIN FONT_ANNOT_PRIMARY 8p,Helvetica MAP_TICK_LENGTH 0.05i \
+gmtset MAP_FRAME_TYPE PLAIN FONT_ANNOT_PRIMARY 8p,Helvetica MAP_TICK_LENGTH_PRIMARY 0.05i \
 	PS_CHAR_ENCODING ISOLatin1+
 pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5WSEn -K > GMT_-R.ps
 pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT << EOF >> GMT_-R.ps
