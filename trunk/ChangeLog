@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1115 2011-06-23 02:20:43 remko Exp $
+	$Id: ChangeLog,v 1.1116 2011-06-23 17:52:00 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-23	remko
+	* gmt_init.c:		Introduced MAP_TICK_LENGTH_{PRIMARY,SECONDARY} to set major
+				and minor primary and secondary ticks. Replaces MAP_TICK_LENGTH.
+				Introduced MAP_TICK_PEN_{PRIMARY,SECONDARY} to replace MAP_TICK_PEN.
+	* gmt_keywords.*:	---"---
+	* gmt_conf.*:		---"---
+				Changed map font sizes to 12p,14p,16p,24p (from 14p,16p,24p,36p).
+	* *.ps:			Updated to conform to new defaults.
 
 2011-06-22	jluis
 	* s_rint.c:		(for) Windows rint function that does ieee compliant rounding like GCC

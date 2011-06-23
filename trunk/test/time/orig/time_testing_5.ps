@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 23:10:43) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 23:24:57 2011
+%%CreationDate: Thu Jun 23 13:03:11 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -569,7 +571,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R1969-07-18T/1969-07-28T/-0.1/1.1 -JX9T/6 -Bpa7Rf1d/0.2 -Bsa1O/0.2 -Sc0.15 -Gred --FORMAT_DATE_MAP=-o yyyy --FONT_ANNOT_PRIMARY=9p \
+%%GMT:  psxy -R1969-07-18T/1969-07-28T/-0.1/1.1 -JX9T/6 -Bpa7Rf1d/0.2 -Bsa1O/ -Sc0.15 -Gred --FORMAT_DATE_MAP=-o yyyy --FONT_ANNOT_PRIMARY=9p \
 %%GMT:+ -K
 %%PROJ: xy -11124.50000000 -11114.50000000 -0.10000000 1.10000000 -11124.500 -11114.500 -0.100 1.100 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
@@ -596,7 +598,7 @@ PSL_cliprestore
 2 setlinecap
 /MM {neg exch M} def
 /PSL_A0_y 83 def
-/PSL_A1_y 250 def
+/PSL_A1_y 0 def
 25 W
 0 7200 M 0 -7200 D S
 8 W
@@ -630,15 +632,11 @@ def
 6600 PSL_A0_y MM
 (1.0) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
-/PSL_AH1 0
-def
-/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add def
-/PSL_A1_y PSL_A1_y PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 10800 0 T
 /MM {exch M} def
 /PSL_A0_y 83 def
-/PSL_A1_y 250 def
+/PSL_A1_y 0 def
 25 W
 0 7200 M 0 -7200 D S
 8 W
@@ -669,9 +667,6 @@ def
 (0.8) mr Z
 6600 PSL_A0_y MM
 (1.0) mr Z
-/PSL_AH1 0
-def
-/PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add PSL_AH1 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -10800 0 T
 /MM {neg M} def
@@ -692,7 +687,7 @@ def
 10260 PSL_A0_y MM
 (27) bc Z
 /PSL_AH1 0
-267 F0
+233 F0
 (July 1969) sh mx
 def
 /PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add PSL_AH1 add def
@@ -731,7 +726,7 @@ def
 (27) bc Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_AH1 0
-267 F0
+233 F0
 (July 1969) sh mx
 def
 /PSL_A1_y PSL_A0_y PSL_A1_y mx 83 add def
@@ -758,7 +753,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy 27999.d -R1969-07-18T/1969-07-28T/-0.1/1.1 -JX9t/6 --TIME_EPOCH=1969-07-21T02:56:00 -S+0.25 --TIME_UNIT=d --FORMAT_DATE_MAP=-o yyyy \
+%%GMT:  psxy 35086.d -R1969-07-18T/1969-07-28T/-0.1/1.1 -JX9t/6 --TIME_EPOCH=1969-07-21T02:56:00 -S+0.25 --TIME_UNIT=d --FORMAT_DATE_MAP=-o yyyy \
 %%GMT:+ --FONT_ANNOT_PRIMARY=9p -O
 %%PROJ: xy -3.12222222 6.87777778 -0.10000000 1.10000000 -3.122 6.878 -0.100 1.100 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap

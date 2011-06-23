@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: hyperbolic_map.sh,v 1.4 2011-03-15 02:06:38 guru Exp $
+#	$Id: hyperbolic_map.sh,v 1.5 2011-06-23 17:52:02 remko Exp $
 
 . ../functions.sh
 header "Test -JG (US East Coast 160 km w/tilt)"
@@ -9,7 +9,7 @@ DEBUG=
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
-PSFILE=hyperbolic_map.${EARTH_MODEL}
+PSFILE=hyperbolic_map
 TITLE=:.${PSFILE}:
 latitude=41.5
 longitude=-74.0
