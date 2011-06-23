@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.324 2011-06-22 19:25:40 remko Exp $
+ *	$Id: gmt_map.c,v 1.325 2011-06-23 02:20:43 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2141,19 +2141,18 @@ double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS,
 
 void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
-	int i = 0;
+	int i = 0, set_a = FALSE;
 	double maj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, sub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
 	double d, f, p;
 	struct GMT_PLOT_AXIS *A = &C->current.map.frame.axis[axis];
-	struct GMT_PLOT_AXIS_ITEM *T = &A->item[item];
+	struct GMT_PLOT_AXIS_ITEM *T;
 
 	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;
-	if (!T->active || T->interval != 0.0) {
-		/* Annotation is not active or it is already set. Try grid lines instead. */
-		item += 4;
-		T = &A->item[item];
-		if (!T->active || T->interval != 0.0) return;	/* Nothing to be done here */
-	}
+
+	if (!(A->item[item].active && A->item[item].interval == 0.0) &&
+		!(A->item[item+2].active && A->item[item+2].interval == 0.0) &&
+		!(A->item[item+4].active && A->item[item+4].interval == 0.0)) return;
+
 	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
 	if (axis == GMT_X) {
 		f = fabs (C->current.proj.rect[XHI] - C->current.proj.rect[XLO]);
@@ -2170,7 +2169,7 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 	f *= C->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 
 	/* First guess of interval */
-	d *= MAX (0.05, MIN (5.0 * C->current.setting.font_annot[item%2].size / f, 0.20));
+	d *= MAX (0.05, MIN (5.0 * C->current.setting.font_annot[item].size / f, 0.20));
 
 	/* Now determine 'round' major and minor tick intervals */
 	if (GMT_axis_is_geo (C, axis))	/* Geographical coordinate */
@@ -2179,17 +2178,19 @@ void GMT_auto_frame_interval (struct GMT_CTRL *C, GMT_LONG axis, GMT_LONG item) 
 		p = pow (10.0, floor (log10 (d)));
 	d /= p;	/* d is now in degrees, minutes or seconds, or in the range [1;10) */
 	while (i < 6 && maj[i] < d) i++;
-	T->interval = d = maj[i] * p, f = sub[i] * p;
+	d = maj[i] * p, f = sub[i] * p;
 
-	if (item > GMT_ANNOT_LOWER) return;	/* Do the rest only when we started with annotation stride */
+	/* Set annotation/major tick interval */
+	T = &A->item[item];
+	if (T->active && T->interval == 0.0) T->interval = d, set_a = TRUE;
 
-	/* Set minor ticks as well */
+	/* Set minor ticks as well (if copied from annotation, set to major interval) */
 	T = &A->item[item+2];
 	if (T->active && T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d;
 
-	/* Finally set grid interval */
+	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
-	if (T->active && T->interval == 0.0) T->interval = d;
+	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f;
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
