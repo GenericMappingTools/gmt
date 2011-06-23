@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.356 2011-06-21 18:49:39 remko Exp $
+ *	$Id: gmt_plot.c,v 1.357 2011-06-23 17:46:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -371,7 +371,6 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	GMT_LONG form;			/* TRUE for outline font */
 	GMT_LONG ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double tick_len[4];			/* Ticklengths for each of the 4 axis items */
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
@@ -391,11 +390,6 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;	/* Annotations are orthogonal */
 	if (C->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	far = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
-	tick_len[0] = C->current.setting.map_tick_length;	/* Initialize the tick lengths */
-	if (neg) tick_len[0] = -tick_len[0];
-	tick_len[1] = 3.0 * tick_len[0];
-	tick_len[2] = 0.5 * tick_len[0];
-	tick_len[3] = 0.75 * tick_len[0];
 	if (A->type != GMT_TIME) GMT_get_format (C, GMT_get_map_interval (C, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);	/* Set the annotation format template */
 
 	/* Ready to draw axis */
@@ -412,7 +406,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	PSL_command (P, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 
 	for (k = 0; k < 2; k++) {
-		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (P, fabs (tick_len[k])) : 0);	/* Length of primary/secondary tickmark */
+		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (P, C->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
 	}
 
 	PSL_comment (P, "Axis tick marks and annotations\n");
@@ -440,7 +434,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		}
 	}
 
-	GMT_setpen (C, &C->current.setting.map_tick_pen);
+	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 
 	for (k = 0; k < GMT_GRID_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
 
@@ -461,9 +455,9 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				if (gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Minor tick marks skipped when coinciding with major */
 				x = (*xyz_fwd) (C, knots[i]);	/* Convert to inches on the page */
 				if (horizontal)
-					PSL_plotsegment (P, x, 0.0, x, tick_len[k]);
+					PSL_plotsegment (P, x, 0.0, x, ((neg) ? -1.0 : 1.0) * C->current.setting.map_tick_length[k]);
 				else
-					PSL_plotsegment (P, 0.0, x, tick_len[k], x);
+					PSL_plotsegment (P, 0.0, x, ((neg) ? -1.0 : 1.0) * C->current.setting.map_tick_length[k], x);
 			}
 		}
 
@@ -1420,7 +1414,7 @@ void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 		if (GMT_prepare_label (C, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
 		sincosd (line_angle, &sa, &ca);
-		tick_length = C->current.setting.map_tick_length;
+		tick_length = C->current.setting.map_tick_length[0];
 		o_len = len;
 		if (C->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
 		if (C->current.setting.map_annot_oblique & 8) {
@@ -1638,9 +1632,7 @@ void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	do_y = dy > 0.0 && C->current.map.frame.axis[GMT_Y].item[item].active && (item == GMT_ANNOT_UPPER ||
 		(item == GMT_TICK_UPPER && dy != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER])) ||
 		(item == GMT_TICK_LOWER && dy != GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER])));
-	len = C->current.setting.map_tick_length;
-	if (item == GMT_TICK_UPPER) len *= 0.5;
-	if (item == GMT_TICK_LOWER) len *= 0.75;
+	len = C->current.setting.map_tick_length[item];
 
 	C->current.map.on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 
@@ -1671,15 +1663,16 @@ void gmt_map_tickmarks (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	if (!(GMT_is_geographic (C, GMT_IN) || C->current.proj.projection == GMT_POLAR)) return;	/* Tickmarks already done by linear axis */
 
 	PSL_comment (P, "Map tickmarks\n");
-	GMT_setpen (C, &C->current.setting.map_tick_pen);
 
+	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 	gmt_map_tickitem (C, P, w, e, s, n, GMT_ANNOT_UPPER);
 	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		gmt_map_tickitem (C, P, w, e, s, n, GMT_TICK_UPPER);
+		GMT_setpen (C, &C->current.setting.map_tick_pen[1]);
 		gmt_map_tickitem (C, P, w, e, s, n, GMT_TICK_LOWER);
 	}
 
-	if (C->current.setting.map_tick_pen.style) PSL_setdash (P, CNULL, 0);
+	PSL_setdash (P, CNULL, 0);
 }
 
 GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
@@ -1718,12 +1711,12 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	if (C->current.map.frame.header[0] && !C->current.map.frame.plotted_header) {	/* Make plot header for geographic maps*/
 		if (GMT_is_geographic (C, GMT_IN) || C->current.map.frame.side[N_SIDE] == 2) {
 			PSL_setfont (P, C->current.setting.font_annot[0].id);
-			PSL_command (P, "/PSL_H_y %ld ", psl_iz (P, C->current.setting.map_tick_length + C->current.setting.map_annot_offset[0] + C->current.setting.map_title_offset));
+			PSL_command (P, "/PSL_H_y %ld ", psl_iz (P, C->current.setting.map_tick_length[0] + C->current.setting.map_annot_offset[0] + C->current.setting.map_title_offset));
 			PSL_deftextdim (P, "-h", C->current.setting.font_annot[0].size, "100\\312");
 			PSL_command (P, "add def\n");
 		}
 		else
-			PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset + C->current.setting.map_tick_length);
+			PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset + C->current.setting.map_tick_length[0]);
 
 		PSL_command (P, "%ld %ld PSL_H_y add M\n", psl_iz (P, C->current.proj.rect[XHI] * 0.5), psl_iz (P, C->current.proj.rect[YHI]));
 		form = GMT_setfont (C, &C->current.setting.font_title);
@@ -2410,7 +2403,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 				x_right + 2.0 * C->current.setting.map_annot_offset[0] + dx,
 				ms->y0 + 1.5 * a_len + ((ms->justify == 't') ? fabs(C->current.setting.map_label_offset) + C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH : 0.0));
 		}
-		GMT_setpen (C, &C->current.setting.map_tick_pen);
+		GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 		PSL_plotsegment (P, x_left, ms->y0 - f_len, x_left, ms->y0);
 		for (j = 0; j < n_f_ticks[i]; j++) {
 			PSL_setfill (P, (j%2) ? C->PSL->init.page_rgb : C->current.setting.map_default_pen.rgb, TRUE);
@@ -2465,7 +2458,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 				ms->y0 - 1.5 * a_len - C->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH,
 				x_right + 2.0 * C->current.setting.map_annot_offset[0] + dx, ms->y0 + 1.5 * a_len);
 		}
-		GMT_setpen (C, &C->current.setting.map_tick_pen);
+		GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 		PSL_plotsegment (P, x_left, ms->y0 - C->current.setting.map_scale_height, x_left, ms->y0);
 		PSL_plotsegment (P, x_left, ms->y0, x_right, ms->y0);
 		PSL_plotsegment (P, x_right, ms->y0, x_right, ms->y0 - C->current.setting.map_scale_height);
@@ -2532,9 +2525,9 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 
 	R[0] = 0.75 * 0.5 * mr->size;
 	R[1] = 0.5 * mr->size;
-	tlen[0] = 0.5 * C->current.setting.map_tick_length;
-	tlen[1] = C->current.setting.map_tick_length;;
-	tlen[2] = 1.5 * C->current.setting.map_tick_length;
+	tlen[0] = C->current.setting.map_tick_length[GMT_TICK_UPPER];
+	tlen[1] = C->current.setting.map_tick_length[GMT_ANNOT_UPPER];;
+	tlen[2] = 1.5 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 	scale[0] = 0.85;
 	scale[1] = 1.0;
 	C->current.plot.r_theta_annot = FALSE;	/* Just in case it was turned on in gmt_map.c */
@@ -2542,7 +2535,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 	for (level = 0; level < 2; level++) {	/* Outer and inner angles */
 		if (level == 0 && mr->kind == 1) continue;	/* Sorry, not magnetic directions */
 		offset = (level == 0) ? mr->declination : 0.0;
-		GMT_setpen (C, &C->current.setting.map_tick_pen);
+		GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 		n_tick = GMT_linear_array (C, 0.0, 360.0, mr->g_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
@@ -2573,7 +2566,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 	}
 
 	/* Draw extra tick for the 4 main compass directions */
-	GMT_setpen (C, &C->current.setting.map_tick_pen);
+	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 	base = R[1] + C->current.setting.map_annot_offset[1] + C->current.setting.font_annot[1].size / PSL_POINTS_PER_INCH;
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
@@ -2594,7 +2587,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 			x[0] = mr->x0 + (base + 2.0*tlen[2] + C->current.setting.map_title_offset) * c, y[0] = mr->y0 + (base + 2.0*tlen[2] + C->current.setting.map_title_offset) * s;
 			form = GMT_setfont (C, &C->current.setting.font_title);
 			PSL_plottext (P, x[0], y[0], C->current.setting.font_title.size, mr->label[k], ew_angle, ljust[k], form);
-			GMT_setpen (C, &C->current.setting.map_tick_pen);
+			GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 		}
 	}
 
@@ -2653,7 +2646,7 @@ void gmt_draw_dir_rose (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_MAP_R
 
 	GMT_azim_to_angle (C, mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &angle);	/* Get angle of E-W direction at this location */
 
-	GMT_setpen (C, &C->current.setting.map_tick_pen);
+	GMT_setpen (C, &C->current.setting.map_tick_pen[0]);
 
 	if (mr->fancy) {	/* Fancy scale */
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */

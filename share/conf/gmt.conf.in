@@ -18,11 +18,11 @@ DIR_USER			=
 #
 # FONT Parameters
 #
-FONT_ANNOT_PRIMARY		= 14p,Helvetica,black
-FONT_ANNOT_SECONDARY		= 16p,Helvetica,black
-FONT_LABEL			= 24p,Helvetica,black
+FONT_ANNOT_PRIMARY		= 12p,Helvetica,black
+FONT_ANNOT_SECONDARY		= 14p,Helvetica,black
+FONT_LABEL			= 16p,Helvetica,black
 FONT_LOGO			= 8p,Helvetica,black
-FONT_TITLE			= 36p,Helvetica,black
+FONT_TITLE			= 24p,Helvetica,black
 #
 # FORMAT Parameters
 #
@@ -83,8 +83,10 @@ MAP_ORIGIN_X			= 1i
 MAP_ORIGIN_Y			= 1i
 MAP_POLAR_CAP			= 85/90
 MAP_SCALE_HEIGHT		= 5p
-MAP_TICK_LENGTH			= 5p
-MAP_TICK_PEN			= thinner,black
+MAP_TICK_LENGTH_PRIMARY		= 5p/2.5p
+MAP_TICK_LENGTH_SECONDARY	= 15p/3.75p
+MAP_TICK_PEN_PRIMARY		= thinner,black
+MAP_TICK_PEN_SECONDARY		= thinner,black
 MAP_TITLE_OFFSET		= 14p
 MAP_VECTOR_SHAPE		= 0
 #

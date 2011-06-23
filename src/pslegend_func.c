@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.19 2011-06-22 00:33:38 guru Exp $
+ *	$Id: pslegend_func.c,v 1.20 2011-06-23 17:47:16 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -461,7 +461,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				x_off = GMT_to_inch (GMT, bar_gap);
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
 				status = GMT_psscale_cmd (API, 0, (void *)buffer);	/* Plot the colorbar */
-				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 				column_number = 0;
 				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale_cmd */
 				break;

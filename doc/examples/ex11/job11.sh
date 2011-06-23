@@ -1,6 +1,6 @@
 #!/bin/bash
 #		GMT EXAMPLE 11
-#		$Id: job11.sh,v 1.16 2011-03-15 02:06:31 guru Exp $
+#		$Id: job11.sh,v 1.17 2011-06-23 17:47:56 remko Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
@@ -10,7 +10,7 @@ ps=../example_11.ps
 
 # Use psxy to plot "cut-along-the-dotted" lines.
 
-gmtset MAP_TICK_LENGTH 0
+gmtset MAP_TICK_LENGTH_PRIMARY 0
 
 psxy cut-here.dat -Wthinnest,. -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i \
 	-P -U/-2.0i/-0.2i/"Example 11 in Cookbook" -K > $ps

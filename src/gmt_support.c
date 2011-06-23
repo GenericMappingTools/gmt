@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.541 2011-06-22 19:25:40 remko Exp $
+ *	$Id: gmt_support.c,v 1.542 2011-06-23 17:47:16 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -8570,14 +8570,14 @@ double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_LONG *flip, GMT_LONG level)
 
 	double a = C->current.setting.map_annot_offset[level];
 	if (a >= 0.0) {	/* Outside annotation */
-		double dist = C->current.setting.map_tick_length;	/* Length of tickmark (could be negative) */
+		double dist = C->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
 		/* For fancy frame we must consider that the frame width might exceed the ticklength */
 		if (C->current.setting.map_frame_type & GMT_IS_FANCY && C->current.setting.map_frame_width > dist) dist = C->current.setting.map_frame_width;
 		if (dist > 0.0) a += dist;
 		*flip = FALSE;
 	}
 	else {		/* Inside annotation */
-		if (C->current.setting.map_tick_length < 0.0) a += C->current.setting.map_tick_length;
+		if (C->current.setting.map_tick_length[0] < 0.0) a += C->current.setting.map_tick_length[0];
 		*flip = TRUE;
 	}
 

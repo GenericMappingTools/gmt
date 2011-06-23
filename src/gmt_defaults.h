@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_defaults.h,v 1.43 2011-06-08 01:33:13 guru Exp $
+ *	$Id: gmt_defaults.h,v 1.44 2011-06-23 17:46:57 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -94,27 +94,27 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	GMT_LONG io_nan_mode;			/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	GMT_LONG io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
 	/* MAP group */
-	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [0.075] */
+	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double map_annot_min_spacing;		/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
-	double map_frame_width;			/* Thickness of fancy map frame [0.075] */
+	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];		/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
-	double map_label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
-	double map_line_step;			/* Maximum straight linesegment length for arcuate lines */
-	double map_logo_pos[2];			/* Where to plot timestamp relative to origin */
-	double map_origin[2];			/* x- and y-origin of plot, i.e. where lower left corner plots on paper [1, 1] */
+	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
+	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
+	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */
+	double map_origin[2];			/* x- and y-origin of plot, i.e. where lower left corner plots on paper [1i/1i] */
 	double map_polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	double map_scale_height;		/* Height of map scale drawn on a map [0.075] */
-	double map_tick_length;			/* Length of tickmarks [0.075] */
-	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [0.1875] */
+	double map_tick_length[4];			/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
+	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	GMT_LONG map_annot_oblique;		/* Controls annotations and tick angles etc. [0] */
 	GMT_LONG map_logo;			/* Plot time and map projection on map [FALSE] */
 	GMT_LONG map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
-	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [1] */
-	struct GMT_PEN map_tick_pen;		/* Pen attributes for tickmarks [2] */
+	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
+	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
 	GMT_LONG map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	char map_frame_axes[5];			/* Which axes to draw and annotate ["WESN"]  */
 	char map_annot_ortho[5];		/* Which axes have orthogonal annotations in linear projections ["we"] */
