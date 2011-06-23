@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.30 2011-05-19 15:18:56 remko Exp $
+/*	$Id: gshhstograss.c,v 1.31 2011-06-23 22:18:22 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -51,8 +51,8 @@ char *putusername();
 
 int main (int argc, char **argv)
 {
-	int i = 1;
-	double w, e, s, n, area, lon, lat;
+	int i = 1, m;
+	double w, e, s, n, area, lon, lat, scale = 1.0;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
 	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
@@ -213,12 +213,14 @@ int main (int argc, char **argv)
 		greenwich = (h.flag >> 16) & 1;
 		src = (h.flag >> 24) & 1;
 		river = (h.flag >> 25) & 1;
+		m = h.flag >> 26;				/* Magnitude for area scale */
 		w = h.west * GSHHS_SCL;
 		e = h.east * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
 		source = (src == 1) ? 'W' : 'C';
-		area = 0.1 * h.area;
+		scale = pow (10.0, (double)m);			/* Area scale */
+		area = h.area / scale;				/* Now im km^2 */
 
 		if( ( w <= maxx && e >= minx ) && ( s <= maxy && n >= miny ) ){
 			fprintf(ascii_fp,"L %d 2\n",h.n);

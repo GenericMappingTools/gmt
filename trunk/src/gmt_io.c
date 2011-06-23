@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.296 2011-06-21 01:46:21 remko Exp $
+ *	$Id: gmt_io.c,v 1.297 2011-06-23 22:18:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4913,6 +4913,7 @@ struct GMT_TEXTSET *GMT_create_textset (struct GMT_CTRL *C, GMT_LONG n_tables, G
 	
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *);
 	D->n_tables = D->n_alloc = n_tables;
+	D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
 		T = D->table[tbl];

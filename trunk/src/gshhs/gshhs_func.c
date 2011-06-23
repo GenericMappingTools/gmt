@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.8 2011-06-20 22:15:09 guru Exp $
+/*	$Id: gshhs_func.c,v 1.9 2011-06-23 22:18:22 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,6 +24,7 @@
  *				the polygons ancestor in the full resolution, and
  *				a flag to tell if a lake is a riverlake.
  *				Updated to deal with latest GSHHS database (2.0)
+ *		1.13 1-JUL-2011: Now contains improved area information (2.1.2).
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -136,10 +137,10 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000, error, ID, n_read;
+	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000, error, ID, n_read, m;
 	GMT_LONG mode, level, version, greenwich, is_river, src, must_swab, dim[4] = {1, 0, 2, 0}, first = TRUE;
 
-	double w, e, s, n, area, f_area;
+	double w, e, s, n, area, f_area, scale = 1.0;
 	
 	char source, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
 	
@@ -148,7 +149,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	struct POINT p;
 	struct GSHHS h;
  	struct GMT_DATASET *D = NULL;
+ 	struct GMT_TEXTSET *X = NULL;
  	struct GMT_LINE_SEGMENT **T = NULL;
+ 	struct GMT_TEXT_SEGMENT *TX = NULL;
 	struct GSHHS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
       
@@ -177,15 +180,39 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Return (EXIT_FAILURE);
 	}
 
-	dim[1] = n_alloc = (Ctrl->I.active) ? 1 : GMT_CHUNK;
-	if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
-		return (GMT_RUNTIME_ERROR);
+	GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
+	GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	if (Ctrl->L.active) {	/* Want a text set of headers back */
+		dim[1] = 1;
+		dim[2] = n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
+		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&X, -1, &ID))) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHS header features.\n");
+			return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else {
+#ifdef DEBUG
+		GMT_memtrack_off (GMT, GMT_mem_keeper);
+#endif
+		dim[1] = n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
+		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
+			return (GMT_RUNTIME_ERROR);
+		}
 	}
 	sprintf (header, "# Data extracted from GSHHS file %s", Ctrl->In.file);
-	D->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
-	D->table[0]->header[0] = strdup (header);
-	T = D->table[0]->segment;	/* There is only one output table with one or many segments */
+	if (Ctrl->L.active) {	/* Want a text set of headers back */
+		X->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
+		X->table[0]->header[0] = strdup (header);
+		X->table[0]->n_headers = 1;
+		TX = X->table[0]->segment[0];	/* There is only one output table with one segment */
+	}
+	else {
+		D->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
+		D->table[0]->header[0] = strdup (header);
+		D->table[0]->n_headers = 1;
+		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
+	}
 	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
@@ -219,6 +246,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		greenwich = (h.flag >> 16) & 1;			/* Greenwich is 0 or 1 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
 		is_river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
+		m = h.flag >> 26;				/* Magnitude for area scale */
 		w = h.west  * GSHHS_SCL;			/* Convert region from microdegrees to degrees */
 		e = h.east  * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
@@ -226,35 +254,46 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		source = (src == 1) ? 'W' : 'C';		/* Either WVS or CIA (WDBII) pedigree */
 		if (is_river) source = (char)tolower ((int)source);	/* Lower case c means river-lake */
 		is_line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
-		area = 0.1 * h.area;				/* Polygon area im km^2 */
-		f_area = 0.1 * h.area_full;			/* Comparable area for full-resolution feature im km^2 */
+		scale = pow (10.0, (double)m);			/* Area scale */
+		area = h.area / scale;				/* Now im km^2 */
+		f_area = h.area_full / scale;			/* Now im km^2 */
 		first = FALSE;
 
-		dim[3] = h.n;			/* Number of data records to allocate for this segment/polygon */
-		if (seg_no == n_alloc) {	/* Must add more segments to this table first */
-			n_alloc <<= 2;
-			T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
+		if (Ctrl->L.active) {	/* Want a text set of headers back */
+			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
+				n_alloc <<= 2;
+				TX->record = GMT_memory (GMT, TX->record, n_alloc, char *);
+			}
+		}
+		else {
+			dim[3] = h.n;			/* Number of data records to allocate for this segment/polygon */
+			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
+				n_alloc <<= 2;
+				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
+			}
 		}
 
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
-			sprintf (header, "%6d%8d%2ld%2c%10.5f%10.5f%10.5f%10.5f\n", h.id, h.n, level, source, w, e, s, n);
+			sprintf (header, "%6d%8d%2ld%2c%10.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
 		else {		/* Island or lake polygon */
 			(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 			(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-			sprintf (header, "%6d%8d%2ld%2c%13.3f%13.3f%10.5f%10.5f%10.5f%10.5f %s %s\n", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
+			sprintf (header, "%6d%8d%2ld%2c %.12g %.12g%10.5f%10.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 		}
-		/* Place the header in the output data structure */
-		T[seg_no]->header = strdup (header);
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
+			TX->record[seg_no] = strdup (header);
+			TX->n_rows++;
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
 		}
 		else {	/* Return the data points also */
+			/* Place the header in the output data structure */
+			T[seg_no]->header = strdup (header);
 			/* Allocate h.n number of data records */
-			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
+			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], FALSE);
 			for (k = 0; k < h.n; k++) {
 				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
@@ -268,20 +307,38 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][k] -= 360.0;
 				T[seg_no]->coord[GMT_Y][k] = p.y * GSHHS_SCL;
 			}
+			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
 		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
 	}
-	if (seg_no < n_alloc) {	/* Allocate to final size table */
-		T = GMT_memory (GMT, T, seg_no, struct GMT_LINE_SEGMENT *);
-	}
-		
 	GMT_fclose (GMT, fp);
-
-	mode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-	if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, mode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
 	
+	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
+		if (seg_no < n_alloc) {	/* Allocate to final size table */
+			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
+		}
+		X->n_records = X->table[0]->n_records = TX->n_rows;
+		if ((error = GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, (void **)&Ctrl->Out.file, (void *)X))) Return (error);
+	}
+	else {
+#if 0
+		if (seg_no < n_alloc) {	/* Allocate to final size table */
+			T = GMT_memory (GMT, T, seg_no, struct GMT_LINE_SEGMENT *);
+		}
+#endif
+		D->n_segments = D->table[0]->n_segments = seg_no;
+		mode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
+		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
+		if ((error = GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, mode, NULL, 0, (void **)&Ctrl->Out.file, (void *)D))) Return (error);
+#ifdef DEBUG
+		GMT_memtrack_on (GMT, GMT_mem_keeper);
+#endif
+	}
+  	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
+
 	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	Return (GMT_OK);

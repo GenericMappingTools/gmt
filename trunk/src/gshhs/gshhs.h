@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.35 2011-04-23 02:14:13 guru Exp $
+/*	$Id: gshhs.h,v 1.36 2011-06-23 22:18:22 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -32,6 +32,8 @@
  *			  an ancestor ID, and area of the reduced polygon. Works on
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
+ *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
+ *	24-JUN-2011.  PW: Data version is now 2.1.2. [Change in header format to store area magnitude]
  */
 
 #ifndef _GSHHS
@@ -55,10 +57,11 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_RELEASE	7	/* For v2.0 data set */
-#define GSHHS_DATA_VERSION	"2.0"	/* For v2.0 data set */
-#define GSHHS_PROG_VERSION	"1.12"
+#define GSHHS_DATA_RELEASE	9		/* For v2.1.2 data set */
+#define GSHHS_DATA_VERSION	"2.1.2"
+#define GSHHS_PROG_VERSION	"1.13"
 
+#define GSHHS_MAXPOL	200000	/* SHould never need to allocate more than this many polygons */
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
@@ -75,10 +78,11 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 3rd byte:	greenwich = (flag >> 16) & 1: Values: Greenwich is 1 if Greenwich is crossed
 	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and level = 2
+	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
-	int area;	/* Area of polygon in 1/10 km^2 */
-	int area_full;	/* Area of original full-resolution polygon in 1/10 km^2 */
+	int area;	/* Area of polygon in km^2 * 10^p */
+	int area_full;	/* Area of original full-resolution polygon in km^2 * 10^p */
 	int container;	/* Id of container polygon that encloses this polygon (-1 if none) */
 	int ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };

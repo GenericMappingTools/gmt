@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.80 2011-06-20 02:02:39 guru Exp $
+ *	$Id: gmt_shore.c,v 1.81 2011-06-23 22:18:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -339,7 +339,7 @@ char GMT_shore_adjust_res (struct GMT_CTRL *C, char res) {	/* Returns the highes
 }
 
 GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
-	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err, major, minor, release;
+	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err, major, minor, release, int_areas = FALSE;
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
@@ -359,9 +359,9 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 		major != 2 || minor < 1) {
 			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT %s\n", GMT_VERSION);
 			fprintf (stderr, "GSHHS: CVS users must get the GSHHS%s tarballs from\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: or by running \"make get-gshhs-cvs\" from the top GMT directory.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -379,7 +379,6 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
         GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
-        GMT_err_trap (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
@@ -390,6 +389,14 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_node_polygons", &c->GSHHS_node_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 	
+        if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
+		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider getting GSHHS 2.1.2.\n");
+		int_areas = TRUE;
+	}
+	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
+		GMT_report (C, GMT_MSG_FATAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
+	}
+
 	/* Get attributes */
 	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
 
@@ -442,8 +449,9 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	count[0] = c->n_poly;
 	c->GSHHS_parent = GMT_memory (C, NULL, c->n_poly, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent));
-	c->GSHHS_area = GMT_memory (C, NULL, c->n_poly, int);
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area));
+	c->GSHHS_area = GMT_memory (C, NULL, c->n_poly, double);
+	GMT_err_trap (nc_get_vara_double (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area));
+	if (int_areas) for (i = 0; i < c->n_poly; i++) c->GSHHS_area[i] *= 0.1;	/* Since they were stored as 10 * km^2 using integers */
 	c->GSHHS_area_fraction = GMT_memory (C, NULL, c->n_poly, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction));
 	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
@@ -488,7 +496,7 @@ GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
 {
 	size_t start[1], count[1];
 	int *seg_info = NULL, *seg_start = NULL, *seg_ID = NULL;
-	GMT_LONG s, i, k, err, cut_area, level, inc[4], ll_node, node, ID, *seg_skip = NULL;
+	GMT_LONG s, i, k, err, level, inc[4], ll_node, node, ID, *seg_skip = NULL;
 	double w, e, dx;
 		
 	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, c->max_level);
@@ -509,15 +517,14 @@ GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
 
 	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 	
-	cut_area = irint (10.0 * c->min_area);
 	ll_node = ((c->bins[b] / c->bin_nx) + 1) * (c->bin_nx + 1) + (c->bins[b] % c->bin_nx);		/* lower-left node in current bin */
 	inc[0] = 0;	inc[1] = 1;	inc[2] = 1 - (c->bin_nx + 1);	inc[3] = -(c->bin_nx + 1);	/* Relative incs to other nodes */
 	
-	if (cut_area) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
+	if (c->min_area > 0.0) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
-			while (c->node_level[k] && c->GSHHS_area[ID] < cut_area) {	/* Polygon must be skipped and node level reset */
+			while (c->node_level[k] && c->GSHHS_area[ID] < c->min_area) {	/* Polygon must be skipped and node level reset */
 				ID = c->GSHHS_parent[ID];	/* Pick the parent polygon since that is the next polygon up */
 				c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
 			}	/* Keep doing this until the polygon containing the node is "too big to fail" or we are in the ocean */
@@ -543,7 +550,7 @@ GMT_LONG GMT_get_shore_bin (struct GMT_CTRL *C, GMT_LONG b, struct GMT_SHORE *c)
 	for (i = 0; i < c->bin_nseg[b]; i++) {
 		seg_skip[i] = TRUE;	/* Reset later to FALSE if we pass all the tests to follow next */
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
-		if (abs(c->GSHHS_area[seg_ID[i]]) < cut_area) continue;		/* Too small. NOTE: Use abs() since double-lined-river lakes have negative area */
+		if (fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;		/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
 		level = get_level (seg_info[i]);
 		if (level < c->min_level) continue;
 		if (level > c->max_level) continue;
