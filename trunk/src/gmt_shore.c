@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.81 2011-06-23 22:18:22 guru Exp $
+ *	$Id: gmt_shore.c,v 1.82 2011-06-24 01:23:59 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -362,7 +362,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: or by running \"make get-gshhs-cvs\" from the top GMT directory.\n");
+			fprintf (stderr, "GSHHS: or by running \"make get_gshhs_cvs\" from the top GMT directory.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
