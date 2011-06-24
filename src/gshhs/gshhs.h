@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.36 2011-06-23 22:18:22 guru Exp $
+/*	$Id: gshhs.h,v 1.37 2011-06-24 21:29:29 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -61,7 +61,7 @@
 #define GSHHS_DATA_VERSION	"2.1.2"
 #define GSHHS_PROG_VERSION	"1.13"
 
-#define GSHHS_MAXPOL	200000	/* SHould never need to allocate more than this many polygons */
+#define GSHHS_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
@@ -71,8 +71,8 @@
 struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	int id;		/* Unique polygon id number, starting at 0 */
 	int n;		/* Number of points in this polygon */
-	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 */
-	/* flag contains 5 items, as follows:
+	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
+	/* flag contains 6 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 7 for GSHHS release 7
 	 * 3rd byte:	greenwich = (flag >> 16) & 1: Values: Greenwich is 1 if Greenwich is crossed
@@ -88,7 +88,7 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 };
 
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
-	int	x;
-	int	y;
+	int x;
+	int y;
 };
 #endif	/* _GSHHS */
