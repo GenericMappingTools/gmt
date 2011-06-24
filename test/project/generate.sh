@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: generate.sh,v 1.11 2011-05-20 03:41:17 guru Exp $
+#	$Id: generate.sh,v 1.12 2011-06-24 20:52:37 guru Exp $
 #
 # Tests project in generating lines
 
@@ -12,12 +12,18 @@ ps=generate.ps
 # E-W line
 project -C10/10 -A90 -G1 -L-9/11 -N > $$.xy
 psxy -R0/25/0/25 -JX4i -P -K -X2i $$.xy -W2p,red > $ps
+echo 10 10 | psxy -R -J -O -K -Sc0.1i -Gred >> $ps
+echo 10 10 0 90 | psxy -R -J -O -K -Smf0.75i -W0.75p,red -Gred >> $ps
 pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "21 11 E-W"
+pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "12 12 90\312"
 
 # 30 degrees azimuth
 project -C5/5 -A30 -G1 -L-3/12 -N > $$.xy
 psxy -R -J -O -K $$.xy -W2p,green >> $ps
+echo 5 5 | psxy -R -J -O -K -Sc0.1i -Ggreen >> $ps
+echo 5 5 60 90 | psxy -R -J -O -K -Smf0.75i -W0.75p,green -Ggreen >> $ps
 pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "3 2 -A30"
+pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "6.6 9 30\312"
 
 # Between two given points
 project -C15/5 -E2/20 -G1 -N > $$.xy
@@ -30,30 +36,33 @@ EOF
 # Spherical test
 
 # E-W line
-project -C10/10 -A90 -G10 -L-5/15 > $$.xy
-psxy -Rg -JA0/0/4i -O -K -Y4.5i $$.xy -W2p,red >> $ps
-pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "27 11 E-W"
+project -C10/10 -A90 -G10 -L-50/30 > $$.xy
+psxy -Rg -JA0/0/5i -O -K -X-0.5i -Y4.25i $$.xy -W2p,red >> $ps
+echo 10 10 | psxy -R -J -O -K -Sc0.1i -Gred >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "37 11 E-W"
 # 30 degrees azimuth
-project -C5/5 -A30 -G10 -L-10/10 > $$.xy
+project -C5/5 -A30 -G10 -L-40/50 > $$.xy
 psxy -R -J -O -K $$.xy -W2p,green >> $ps
-pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "-2 -3 -A30"
+echo 5 5 | psxy -R -J -O -K -Sc0.1i -Ggreen >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "-20 -30 -A30"
 
 # Between two given points
-project -C15/5 -E-12/-30 -G10 > $$.xy
+project -C15/5 -E-12/-40 -G10 > $$.xy
 psxy -R -J -O -K $$.xy -W2p,blue >> $ps
 psxy -R -J -O -K -Sc0.1i -Gblue << EOF >> $ps
 15	5
--12	-30
+-12	-40
 EOF
 
 # Point and rotation pole
+project -C15/15 -E85/40 -G10 -L-180/180 | psxy -R -J -O -K -W0.25p,- >> $ps
 project -C15/15 -T85/40 -G10 -L-20/60 > $$.xy
 psxy -R -J -O -K $$.xy -W2p >> $ps
 echo 15 15 | psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
 echo 85 40 | psxy -R -J -O -K -Sa0.1i -Gblack >> $ps
+pstext -R -J -F+f12p,Helvetica-Bold+jTR -O -K >> $ps <<< "85 35 P"
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
-
 rm  -f $$.xy
 
 pscmp
