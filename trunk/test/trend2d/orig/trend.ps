@@ -1,0 +1,4595 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 612 792
+%%HiResBoundingBox: 0 0 612 792
+%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:08:59) [64-bit] Document from GMT_pscontour
+%%Creator: GMT
+%%For: pwessel
+%%DocumentNeededResources: font Helvetica
+%%CreationDate: Thu Jun 23 17:23:25 2011
+%%LanguageLevel: 2
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 1
+%%EndComments
+
+%%BeginProlog
+250 dict begin
+/! {bind def} bind def
+/# {load def}!
+/A /setgray #
+/B /setdash #
+/C /setrgbcolor #
+/D /rlineto #
+/E {dup stringwidth pop}!
+/F /fill #
+/G /rmoveto #
+/H /sethsbcolor #
+/I /setpattern #
+/K /setcmykcolor #
+/L /lineto #
+/M /moveto #
+/N /newpath #
+/P /closepath #
+/R /rotate #
+/S /stroke #
+/T /translate #
+/U /grestore #
+/V /gsave #
+/W /setlinewidth #
+/Y {findfont exch scalefont setfont}!
+/Z /show #
+/FP {true charpath flattenpath}!
+/MU {matrix setmatrix}!
+/MS {/SMat matrix currentmatrix def}!
+/MR {SMat setmatrix}!
+/edef {exch def}!
+/FS {/fc edef /fs {V fc F U} def}!
+/FQ {/fs {} def}!
+/O0 {/os {N} def}!
+/O1 {/os {P S} def}!
+/FO {fs os}!
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
+/SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Sc {N 3 -1 roll 0 360 arc FO}!
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
+/Sp {N 3 -1 roll 0 360 arc F}!
+/SP {M {D} repeat FO}!
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
+/SV {0 exch M 0 D D D D D 0 D FO}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
+/Sw {2 copy M 5 2 roll arc FO}!
+/Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
+/Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
+/S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
+/S- {M dup 0 G dup -2 mul dup 0 D S}!
+/sw {stringwidth pop}!
+/sh {V MU 0 0 M FP pathbbox N 4 1 roll pop pop pop U}!
+/sd {V MU 0 0 M FP pathbbox N pop pop exch pop U}!
+/sH {V MU 0 0 M FP pathbbox N exch pop exch sub exch pop U}!
+/sb {E exch sh}!
+/bl {}!
+/bc {E -2 div 0 G}!
+/br {E neg 0 G}!
+/ml {dup 0 exch sh -2 div G}!
+/mc {dup E -2 div exch sh -2 div G}!
+/mr {dup E neg exch sh -2 div G}!
+/tl {dup 0 exch sh neg G}!
+/tc {dup E -2 div exch sh neg G}!
+/tr {dup E neg exch sh neg G}!
+/mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
+/PSL_reencode {findfont dup length dict begin
+  {1 index /FID ne {def}{pop pop} ifelse} forall
+  exch /Encoding edef currentdict end definefont pop
+}!
+/PSL_eps_begin {
+  /PSL_eps_state save def
+  /PSL_dict_count countdictstack def
+  /PSL_op_count count 1 sub def
+  userdict begin
+  /showpage {} def
+  0 setgray 0 setlinecap 1 setlinewidth
+  0 setlinejoin 10 setmiterlimit [] 0 setdash newpath
+  /languagelevel where
+  {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
+}!
+/PSL_eps_end {
+  count PSL_op_count sub {pop} repeat
+  countdictstack PSL_dict_count sub {end} repeat
+  PSL_eps_state restore
+}!
+/Standard+_Encoding [
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
+/zero		/one		/two		/three		/four		/five		/six		/seven
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
+/at		/A		/B		/C		/D		/E		/F		/G
+/H		/I		/J		/K		/L		/M		/N		/O
+/P		/Q		/R		/S		/T		/U		/V		/W
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
+/quoteleft	/a		/b		/c		/d		/e		/f		/g
+/h		/i		/j		/k		/l		/m		/n		/o
+/p		/q		/r		/s		/t		/u		/v		/w
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin
+/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn
+/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree
+/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde
+/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl
+/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown
+/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron
+/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute
+/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute
+/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis
+/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave
+/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
+/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
+] def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/F0 {/Helvetica Y}!
+/F1 {/Helvetica-Bold Y}!
+/F2 {/Helvetica-Oblique Y}!
+/F3 {/Helvetica-BoldOblique Y}!
+/F4 {/Times-Roman Y}!
+/F5 {/Times-Bold Y}!
+/F6 {/Times-Italic Y}!
+/F7 {/Times-BoldItalic Y}!
+/F8 {/Courier Y}!
+/F9 {/Courier-Bold Y}!
+/F10 {/Courier-Oblique Y}!
+/F11 {/Courier-BoldOblique Y}!
+/F12 {/Symbol Y}!
+/F13 {/AvantGarde-Book Y}!
+/F14 {/AvantGarde-BookOblique Y}!
+/F15 {/AvantGarde-Demi Y}!
+/F16 {/AvantGarde-DemiOblique Y}!
+/F17 {/Bookman-Demi Y}!
+/F18 {/Bookman-DemiItalic Y}!
+/F19 {/Bookman-Light Y}!
+/F20 {/Bookman-LightItalic Y}!
+/F21 {/Helvetica-Narrow Y}!
+/F22 {/Helvetica-Narrow-Bold Y}!
+/F23 {/Helvetica-Narrow-Oblique Y}!
+/F24 {/Helvetica-Narrow-BoldOblique Y}!
+/F25 {/NewCenturySchlbk-Roman Y}!
+/F26 {/NewCenturySchlbk-Italic Y}!
+/F27 {/NewCenturySchlbk-Bold Y}!
+/F28 {/NewCenturySchlbk-BoldItalic Y}!
+/F29 {/Palatino-Roman Y}!
+/F30 {/Palatino-Italic Y}!
+/F31 {/Palatino-Bold Y}!
+/F32 {/Palatino-BoldItalic Y}!
+/F33 {/ZapfChancery-MediumItalic Y}!
+/F34 {/ZapfDingbats Y}!
+/F35 {/Ryumin-Light-EUC-H Y}!
+/F36 {/Ryumin-Light-EUC-V Y}!
+/F37 {/GothicBBB-Medium-EUC-H Y}!
+/F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
+/PSL_pathtextdict 26 dict def
+/PSL_pathtext
+  {PSL_pathtextdict begin
+    /textheight exch def
+    /just exch def
+    /offset exch def
+    /str exch def
+    /pathdist 0 def
+    /setdist offset def
+    /charcount 0 def
+    /justy just 4 idiv textheight mul 2 div neg def
+    V flattenpath
+	{movetoproc} {linetoproc}
+	{curvetoproc} {closepathproc}
+	pathforall
+    U N
+    end
+  } def
+PSL_pathtextdict begin
+/movetoproc
+  { /newy exch def /newx exch def
+    /firstx newx def /firsty newy def
+    /ovr 0 def
+    newx newy transform
+    /cpy exch def /cpx exch def
+  } def
+/linetoproc
+  { /oldx newx def /oldy newy def
+    /newy exch def /newx exch def
+    /dx newx oldx sub def
+    /dy newy oldy sub def
+    /dist dx dup mul dy dup mul add sqrt def
+    dist 0 ne
+    { /dsx dx dist div ovr mul def
+      /dsy dy dist div ovr mul def
+      oldx dsx add oldy dsy add transform
+      /cpy exch def /cpx exch def
+      /pathdist pathdist dist add def
+      {setdist pathdist le
+	  {charcount str length lt
+	      {setchar} {exit} ifelse}
+	  { /ovr setdist pathdist sub def
+	    exit}
+	  ifelse
+      } loop
+    } if
+  } def
+/curvetoproc
+  { (ERROR: No curveto's after flattenpath!)
+    print
+  } def
+/closepathproc
+  {firstx firsty linetoproc
+    firstx firsty movetoproc
+  } def
+/setchar
+  { /char str charcount 1 getinterval def
+    /charcount charcount 1 add def
+    /charwidth char stringwidth pop def
+    V cpx cpy itransform T
+      dy dx atan R
+      0 justy M
+      char show
+      0 justy neg G
+      currentpoint transform
+      /cpy exch def /cpx exch def
+    U /setdist setdist charwidth add def
+  } def
+end
+/PSL_curved_text_labels
+{ /bits exch def
+  /PSL_clippath bits 1 and 1 eq def
+  /PSL_placetext bits 2 and 0 eq def
+  /PSL_strokeline bits 4 and 4 eq def
+  /PSL_firstcall bits 32 and 32 eq def
+  /PSL_lastcall bits 64 and 64 eq def
+  /PSL_fillbox bits 128 and 128 eq def
+  /PSL_drawbox bits 256 and 256 eq def
+  /PSL_n1 PSL_n 1 sub def
+  /PSL_m1 PSL_m 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_CT_calcstringwidth
+  PSL_CT_calclinedist
+  PSL_CT_addcutpoints
+  PSL_clippath PSL_firstcall and
+  {clipsave N clippath} if
+  PSL_setlinepen
+  /PSL_nn1 PSL_nn 1 sub def
+  /n 0 def
+  /k 0 def
+  /j 0 def
+  /PSL_seg 0 def
+  /PSL_xp PSL_nn array def
+  /PSL_yp PSL_nn array def
+  PSL_xp 0 PSL_xx 0 get put
+  PSL_yp 0 PSL_yy 0 get put
+  1 1 PSL_nn1
+  { /i exch def
+    /node_type PSL_kind i get def
+    /j j 1 add def
+    PSL_xp j PSL_xx i get put
+    PSL_yp j PSL_yy i get put
+    node_type 1 eq
+    {n 0 eq
+      {PSL_CT_drawline}
+      {	PSL_CT_reversepath
+	PSL_CT_textline} ifelse
+      /j 0 def
+      PSL_xp j PSL_xx i get put
+      PSL_yp j PSL_yy i get put
+    } if
+  } for
+  n 0 eq {PSL_CT_drawline} if
+  PSL_lastcall
+  {PSL_clippath
+    {PSL_clip} if N
+  } if
+} def
+/PSL_CT_textline
+{PSL_placetext
+  {PSL_clippath
+    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
+  } if
+  /n 0 def /k k 1 add def PSL_setlinepen
+} def
+/PSL_CT_calcstringwidth
+{ /PSL_width PSL_m array def
+  0 1 PSL_m1
+  { /i exch def
+    PSL_width i PSL_str i get stringwidth pop put
+  } for
+} def
+/PSL_CT_calclinedist
+{ /PSL_newx PSL_x 0 get def
+  /PSL_newy PSL_y 0 get def
+  /dist 0.0 def
+  /PSL_dist PSL_n array def
+  PSL_dist 0 0.0 put
+  1 1 PSL_n1
+  { /i exch def
+    /PSL_oldx PSL_newx def
+    /PSL_oldy PSL_newy def
+    /PSL_newx PSL_x i get def
+    /PSL_newy PSL_y i get def
+    /dx PSL_newx PSL_oldx sub def
+    /dy PSL_newy PSL_oldy sub def
+    /dist dist dx dx mul dy dy mul add sqrt add def
+    PSL_dist i dist put
+  } for
+} def
+/PSL_CT_addcutpoints
+{ /k 0 def
+  /PSL_nc PSL_m 2 mul 1 add def
+  /PSL_cuts PSL_nc array def
+  /PSL_nc1 PSL_nc 1 sub def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node i get get def
+    /halfwidth PSL_width i get 2 div PSL_gap_x add def
+    PSL_cuts k dist halfwidth sub put
+    /k k 1 add def
+    PSL_cuts k dist halfwidth add put
+    /k k 1 add def
+  } for
+  PSL_cuts k 100000.0 put
+  /PSL_nn PSL_n PSL_m 2 mul add def
+  /PSL_xx PSL_nn array def
+  /PSL_yy PSL_nn array def
+  /PSL_kind PSL_nn array def
+  /j 0 def
+  /k 0 def
+  /dist 0.0 def
+  0 1 PSL_n1
+  { /i exch def
+    /last_dist dist def
+    /dist PSL_dist i get def
+    k 1 PSL_nc1
+    { /kk exch def
+      /this_cut PSL_cuts kk get def
+      dist this_cut gt
+      { /ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/i1 i 0 eq {0} {i 1 sub} ifelse def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
+      } if
+    } for
+    dist PSL_cuts k get le
+    {PSL_xx j PSL_x i get put PSL_yy j PSL_y i get put
+      PSL_kind j 0 put
+      /j j 1 add def
+    } if
+  } for
+} def
+/PSL_CT_reversepath
+{PSL_xp j get PSL_xp 0 get lt
+  {0 1 j 2 idiv
+    { /left exch def
+      /right j left sub def
+      /tmp PSL_xp left get def
+      PSL_xp left PSL_xp right get put
+      PSL_xp right tmp put
+      /tmp PSL_yp left get def
+      PSL_yp left PSL_yp right get put
+      PSL_yp right tmp put
+    } for
+  } if
+} def
+/PSL_CT_placelabel
+{
+  PSL_usebox
+  {PSL_CT_clippath
+    PSL_fillbox
+    {V PSL_setboxrgb fill U} if
+    PSL_drawbox
+    {PSL_setboxpen S} if N
+  } if
+  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+} def
+/PSL_CT_clippath
+{
+  /H PSL_height 2 div PSL_gap_y add def
+  /xoff j 1 add array def
+  /yoff j 1 add array def
+  /angle 0 def
+  0 1 j {
+    /ii exch def
+    /x PSL_xp ii get def
+    /y PSL_yp ii get def
+    ii 0 eq {
+      /x1 PSL_xp 1 get def
+      /y1 PSL_yp 1 get def
+      /dx x1 x sub def
+      /dy y1 y sub def
+    }
+    { /i1 ii 1 sub def
+      /x1 PSL_xp i1 get def
+      /y1 PSL_yp i1 get def
+      /dx x x1 sub def
+      /dy y y1 sub def
+    } ifelse
+    dx 0.0 ne dy 0.0 ne and
+    { /angle dy dx atan 90 add def} if
+    /sina angle sin def
+    /cosa angle cos def
+    xoff ii H cosa mul put
+    yoff ii H sina mul put
+  } for
+  PSL_xp 0 get xoff 0 get add PSL_yp 0 get yoff 0 get add M
+  1 1 j {
+    /ii exch def
+    PSL_xp ii get xoff ii get add PSL_yp ii get yoff ii get add L
+  } for
+  j -1 0 {
+    /ii exch def
+    PSL_xp ii get xoff ii get sub PSL_yp ii get yoff ii get sub L
+  } for P
+} def
+/PSL_CT_drawline
+{
+  /str 20 string def
+  PSL_strokeline
+  {PSL_CT_placeline PSL_setlinepen S} if
+  /PSL_seg PSL_seg 1 add def
+  /n 1 def
+} def
+/PSL_CT_placeline
+{PSL_xp 0 get PSL_yp 0 get M
+  1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
+} def
+/PSL_straight_text_labels
+{
+  /bits exch def
+  /PSL_clippath bits 1 and 0 eq def
+  /PSL_rounded bits 16 and 16 eq def
+  /PSL_fillbox bits 128 and 128 eq def
+  /PSL_drawbox bits 256 and 256 eq def
+  /PSL_m1 PSL_m 1 sub def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath
+  {PSL_ST_clippath}
+  {PSL_usebox {PSL_ST_clippath} if
+    PSL_ST_placelabel
+  } ifelse
+} def
+/PSL_ST_placelabel
+{PSL_settxtrgb
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    V PSL_txt_x k get PSL_txt_y k get T
+    PSL_angle k get R
+    /BoxW PSL_str k get stringwidth pop def
+    BoxW PSL_justx mul PSL_justy M
+    PSL_str k get show
+    U
+  } for
+} def
+/PSL_ST_clippath
+{N
+  PSL_usebox not {clipsave clippath} if
+  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
+  PSL_usebox
+  {PSL_fillbox
+    {V PSL_setboxrgb fill U} if
+    PSL_drawbox
+    {PSL_setboxpen S} if N
+  }
+  {PSL_clip
+  } ifelse
+  N
+} def
+/PSL_ST_clippath_rect
+{
+  /BoxH PSL_height PSL_gap_y 2 mul add def
+  /DelY BoxH BoxH 0 3 array astore def
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    /MAT PSL_angle k get matrix R def
+    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
+    /x0 0 BoxW PSL_justx mul add def
+    /y0 0 PSL_justy add PSL_gap_y sub def
+    /DelX 0 BoxW BoxW 3 array astore def
+    x0 y0 MAT transform
+    /dy exch def /dx exch def
+    xp dx add yp dy add M
+    0 1 2
+    {
+      /ii exch def
+      x0 DelX ii get add y0 DelY ii get add MAT transform
+      /dy exch def /dx exch def
+      xp dx add yp dy add L
+    } for P
+  } for
+} def
+/PSL_ST_clippath_round
+{
+  /PSL_justy2 PSL_just 4 idiv 2 div neg def
+  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /BoxH PSL_height PSL_gap_y 2 mul add def
+  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
+  0 1 PSL_m1
+  { /k exch def
+    /xp PSL_txt_x k get def
+    /yp PSL_txt_y k get def
+    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
+    /x0 BoxW PSL_justx mul def
+    xp yp T PSL_angle k get R x0 y0 T
+    BoxR 0 M
+    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
+    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
+  } for
+} def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
+%%EndProlog
+
+%%BeginSetup
+/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+%%EndSetup
+
+%%Page: 1 1
+
+%%BeginPageSetup
+V 0.06 0.06 scale
+%%EndPageSetup
+
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
+0 A
+FQ
+O0
+1200 7800 TM
+
+% PostScript produced by:
+%%GMT:  pscontour -R0/6.5/0/6.5 ../../doc/examples/ex16/table_5.11 -C25 -A50 -JX3i -Y6.5i -Baf:.Data: -K -X1i -I -Cz.cpt -P
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+PSL_eoclip N
+{0.796 1 0 C} FS
+110 66 -110 45 2 775 55 SP
+{0.981 1 0 C} FS
+-221 -133 0 111 110 66 3 665 100 SP
+{1 0.833 0 C} FS
+-222 -133 -110 -11 0 55 221 133 4 554 144 SP
+{1 0.648 0 C} FS
+-111 -66 -222 -22 222 133 3 443 188 SP
+{1 0.463 0 C} FS
+-221 -22 111 66 2 332 233 SP
+{1 0.278 0 C} FS
+{0.241 1 0 C} FS
+280 -363 -6 -67 -332 388 3 1163 609 SP
+{0.426 1 0 C} FS
+-217 283 -74 -52 280 -363 3 825 930 SP
+{0.611 1 0 C} FS
+-155 202 -73 -52 217 -283 3 814 798 SP
+{0.796 1 0 C} FS
+-93 121 -73 -52 155 -202 3 803 665 SP
+{0.981 1 0 C} FS
+-31 41 -73 -53 93 -121 3 792 532 SP
+{1 0.833 0 C} FS
+31 -41 6 67 2 775 332 SP
+{0.426 1 0 C} FS
+-85 32 74 -102 2 332 942 SP
+{0.611 1 0 C} FS
+208 -78 -17 -99 -85 32 3 406 840 SP
+{0.796 1 0 C} FS
+329 -124 -16 -99 -208 78 3 512 695 SP
+{0.981 1 0 C} FS
+452 -170 -17 -99 -329 124 3 617 550 SP
+{1 0.833 0 C} FS
+110 11 410 -154 -16 -100 -452 170 4 723 405 SP
+{1 0.648 0 C} FS
+205 -77 -17 -99 -410 154 3 665 321 SP
+{1 0.463 0 C} FS
+-16 -99 -205 77 2 443 299 SP
+{1 0.278 0 C} FS
+{0.241 1 0 C} FS
+179 101 -312 -35 2 831 997 SP
+{0.426 1 0 C} FS
+68 -159 -168 -95 -266 133 179 101 4 519 962 SP
+{0.611 1 0 C} FS
+-266 133 168 95 2 264 1101 SP
+{0.796 1 0 C} FS
+{0.426 1 0 C} FS
+57 -229 -68 159 2 332 942 SP
+{0.611 1 0 C} FS
+-138 556 -17 -99 57 -229 3 264 1101 SP
+{0.796 1 0 C} FS
+-111 445 -16 -99 138 -556 3 166 1329 SP
+{0.981 1 0 C} FS
+-83 333 -17 -99 111 -445 3 177 1119 SP
+{1 0.833 0 C} FS
+-56 223 -16 -100 83 -333 3 188 908 SP
+{1 0.648 0 C} FS
+-28 111 -17 -99 56 -223 3 199 698 SP
+{1 0.463 0 C} FS
+-16 -99 28 -111 2 210 487 SP
+{1 0.278 0 C} FS
+{0.241 1 0 C} FS
+306 -32 -312 -35 2 831 997 SP
+{0.426 1 0 C} FS
+-74 102 -408 42 -11 -132 306 -32 4 519 962 SP
+{0.611 1 0 C} FS
+-291 30 -11 -133 408 -42 3 406 840 SP
+{0.796 1 0 C} FS
+-175 18 -11 -133 291 -30 3 512 695 SP
+{0.981 1 0 C} FS
+-58 6 -11 -133 175 -18 3 617 550 SP
+{1 0.833 0 C} FS
+58 -6 -52 73 2 775 332 SP
+{0.0555 1 0 C} FS
+214 -324 -47 -63 2 498 1772 SP
+{0.241 1 0 C} FS
+-342 519 -133 66 166 -388 214 -324 4 451 1709 SP
+{0.426 1 0 C} FS
+-171 260 -266 133 342 -519 3 356 1582 SP
+{0.611 1 0 C} FS
+-266 133 171 -260 2 261 1456 SP
+{0.796 1 0 C} FS
+{0.611 1 0 C} FS
+277 317 -388 -333 2 1163 388 SP
+{0.796 1 0 C} FS
+-167 -190 -110 -16 277 317 3 775 55 SP
+{0.981 1 0 C} FS
+-56 -63 -111 -16 167 190 3 775 166 SP
+{1 0.833 0 C} FS
+56 63 0 -55 2 775 332 SP
+{0 1 0.315 C} FS
+1 -16 9 -176 2 111 2382 SP
+{0 1 0.13 C} FS
+-2 32 10 -191 1 -16 3 120 2206 SP
+{0.0555 1 0 C} FS
+-3 47 10 -191 2 -32 3 129 2031 SP
+{0.241 1 0 C} FS
+-3 64 10 -192 3 -47 3 138 1855 SP
+{0.426 1 0 C} FS
+-4 80 10 -191 3 -64 3 148 1680 SP
+{0.611 1 0 C} FS
+-5 95 10 -191 4 -80 3 157 1505 SP
+{0.796 1 0 C} FS
+-4 77 10 -192 5 -95 3 166 1329 SP
+{0.981 1 0 C} FS
+-3 57 10 -191 4 -77 3 177 1119 SP
+{1 0.833 0 C} FS
+-2 38 10 -191 3 -57 3 188 908 SP
+{1 0.648 0 C} FS
+-1 19 10 -192 2 -38 3 199 698 SP
+{1 0.463 0 C} FS
+11 -191 1 -19 2 210 487 SP
+{1 0.278 0 C} FS
+{0.426 1 0 C} FS
+227 -105 -111 222 2 1274 166 SP
+{0.611 1 0 C} FS
+-146 68 117 116 227 -105 3 1163 388 SP
+{0.796 1 0 C} FS
+-65 30 117 117 146 -68 3 1361 467 SP
+{0.981 1 0 C} FS
+65 -30 -158 -63 2 1717 609 SP
+{0.426 1 0 C} FS
+-138 -277 -111 222 2 1274 166 SP
+{0.611 1 0 C} FS
+-250 -56 -138 -277 2 1163 388 SP
+{0.796 1 0 C} FS
+{0.426 1 0 C} FS
+-692 111 443 -166 2 1274 166 SP
+{0.611 1 0 C} FS
+-250 -56 -692 111 2 1717 0 SP
+{0.796 1 0 C} FS
+{0.426 1 0 C} FS
+327 -283 116 117 2 1274 166 SP
+{0.611 1 0 C} FS
+-210 181 0 218 327 -283 3 1390 283 SP
+{0.796 1 0 C} FS
+-93 81 0 217 210 -181 3 1507 399 SP
+{0.981 1 0 C} FS
+93 -81 -93 -93 2 1717 609 SP
+{0 1 0.5 C} FS
+-88 127 26 -237 2 1108 1495 SP
+{0 1 0.315 C} FS
+175 -253 -61 -111 -88 127 3 1134 1258 SP
+{0 1 0.13 C} FS
+125 0 115 -166 -62 -111 -175 253 4 1160 1021 SP
+{0.0555 1 0 C} FS
+38 -55 -61 -111 -115 166 3 1038 997 SP
+{0.241 1 0 C} FS
+-38 55 69 0 2 831 997 SP
+{0 1 0.13 C} FS
+-125 166 0 -166 2 1163 997 SP
+{0.0555 1 0 C} FS
+263 -351 -138 0 -125 166 3 1163 831 SP
+{0.241 1 0 C} FS
+-263 351 0 37 332 -388 3 831 997 SP
+{0 1 0.5 C} FS
+162 196 26 -237 2 1108 1495 SP
+{0 1 0.315 C} FS
+-324 -391 188 -42 162 196 3 1134 1258 SP
+{0 1 0.13 C} FS
+-265 -78 -244 -295 188 -42 324 391 4 1160 1021 SP
+{0.0555 1 0 C} FS
+-138 -167 188 -42 244 295 3 1428 1075 SP
+{0.241 1 0 C} FS
+-32 -38 188 -42 138 167 3 1722 1161 SP
+{0.426 1 0 C} FS
+32 38 -89 -26 2 2105 1274 SP
+{0 1 0.13 C} FS
+-74 -114 74 -52 2 1163 997 SP
+{0.0555 1 0 C} FS
+157 241 0 -185 -74 -114 3 1237 945 SP
+{0.241 1 0 C} FS
+144 220 96 0 0 -37 -157 -241 4 1320 887 SP
+{0.426 1 0 C} FS
+105 162 121 0 -144 -220 3 1403 829 SP
+{0.611 1 0 C} FS
+68 104 120 0 -105 -162 3 1485 771 SP
+{0.796 1 0 C} FS
+30 47 121 0 -68 -104 3 1568 713 SP
+{0.981 1 0 C} FS
+-30 -47 -66 47 2 1717 609 SP
+{0.241 1 0 C} FS
+96 98 0 -98 2 1163 609 SP
+{0.426 1 0 C} FS
+-217 -221 121 0 96 98 3 1163 511 SP
+{0.611 1 0 C} FS
+-139 -142 120 0 217 221 3 1163 388 SP
+{0.796 1 0 C} FS
+-62 -63 121 0 139 142 3 1361 467 SP
+{0.981 1 0 C} FS
+62 63 -158 -63 2 1717 609 SP
+{0 0.574 1 C} FS
+162 61 -33 -91 2 1329 2105 SP
+{0 0.759 1 C} FS
+-394 -148 185 -43 162 61 3 1296 2014 SP
+{0 0.944 1 C} FS
+-626 -235 185 -42 394 148 3 1249 1884 SP
+{0 1 0.87 C} FS
+-857 -322 184 -43 626 235 3 1202 1755 SP
+{0 1 0.685 C} FS
+-941 -443 37 -9 857 322 3 1155 1625 SP
+{0 1 0.5 C} FS
+{0.611 1 0 C} FS
+-69 163 69 55 2 1717 0 SP
+{0.796 1 0 C} FS
+138 -324 0 217 -69 163 3 1786 55 SP
+{0.981 1 0 C} FS
+187 -437 21 -6 0 174 -138 324 4 1855 111 SP
+{1 0.833 0 C} FS
+149 -349 107 -32 -187 437 3 1925 166 SP
+{1 0.648 0 C} FS
+112 -262 106 -32 -149 349 3 1994 222 SP
+{1 0.463 0 C} FS
+74 -175 107 -32 -112 262 3 2063 277 SP
+{1 0.278 0 C} FS
+38 -87 106 -32 -74 175 3 2132 332 SP
+{1 0.0926 0 C} FS
+107 -32 -38 87 2 2202 388 SP
+{0.241 1 0 C} FS
+58 -56 -58 -42 2 1163 609 SP
+{0.426 1 0 C} FS
+-132 127 0 -123 58 -56 3 1105 567 SP
+{0.611 1 0 C} FS
+-94 91 -111 -16 132 -127 3 1031 515 SP
+{0.796 1 0 C} FS
+-57 55 -110 -16 94 -91 3 958 463 SP
+{0.981 1 0 C} FS
+-19 18 -111 -16 57 -55 3 885 411 SP
+{1 0.833 0 C} FS
+19 -18 37 26 2 775 332 SP
+{0 1 0.5 C} FS
+-112 190 -62 -110 2 1108 1495 SP
+{0 1 0.315 C} FS
+225 -380 -174 79 -112 190 3 1046 1385 SP
+{0 1 0.13 C} FS
+338 -570 -175 79 -225 380 3 985 1274 SP
+{0.0555 1 0 C} FS
+197 -333 167 -387 -87 39 -338 570 4 923 1163 SP
+{0.241 1 0 C} FS
+197 -333 -166 388 2 831 997 SP
+{0 1 0.685 C} FS
+-159 115 0 -92 2 498 2326 SP
+{0 1 0.5 C} FS
+387 -280 -228 33 -159 115 3 498 2234 SP
+{0 1 0.315 C} FS
+232 -168 155 -244 -387 280 3 498 2102 SP
+{0 1 0.13 C} FS
+-77 56 0 -132 232 -168 3 266 2138 SP
+{0.0555 1 0 C} FS
+77 -56 -77 122 2 498 1772 SP
+{0 1 0.315 C} FS
+-146 68 155 -244 2 111 2382 SP
+{0 1 0.13 C} FS
+292 -137 9 -175 -146 68 3 266 2138 SP
+{0.0555 1 0 C} FS
+47 63 313 -146 9 -176 -292 137 4 421 1894 SP
+{0.241 1 0 C} FS
+-208 98 -95 -127 313 -146 3 138 1855 SP
+{0.426 1 0 C} FS
+-104 49 -95 -126 208 -98 3 148 1680 SP
+{0.611 1 0 C} FS
+-95 -127 104 -49 2 157 1505 SP
+{0.796 1 0 C} FS
+{0 1 0.87 C} FS
+344 -220 -298 -426 2 886 2880 SP
+{0 1 0.685 C} FS
+-344 220 -10 129 444 -221 3 498 2326 SP
+{0 1 0.87 C} FS
+40 260 -298 -426 2 886 2880 SP
+{0 1 0.685 C} FS
+159 -23 -30 -199 -259 -166 40 260 4 588 2454 SP
+{0 1 0.5 C} FS
+-258 -166 30 199 2 339 2349 SP
+{0 1 0.315 C} FS
+{0 0.944 1 C} FS
+-166 549 111 -554 2 775 3434 SP
+{0 1 0.87 C} FS
+142 -471 -79 -7 -166 549 3 886 2880 SP
+{0 1 0.685 C} FS
+118 -392 -79 -8 -142 471 3 783 2951 SP
+{0 1 0.5 C} FS
+95 -313 -79 -7 -118 392 3 680 3022 SP
+{0 1 0.315 C} FS
+71 -235 -79 -7 -95 313 3 578 3094 SP
+{0 1 0.13 C} FS
+48 -157 -80 -7 -71 235 3 475 3165 SP
+{0.0555 1 0 C} FS
+24 -79 -79 -7 -48 157 3 372 3236 SP
+{0.241 1 0 C} FS
+-79 -8 -24 79 2 269 3307 SP
+{0.426 1 0 C} FS
+{0 1 0.87 C} FS
+-155 -237 -103 71 2 886 2880 SP
+{0 1 0.685 C} FS
+311 474 -259 -166 -155 -237 3 783 2951 SP
+{0 1 0.5 C} FS
+467 712 -258 -166 -311 -474 3 680 3022 SP
+{0 1 0.315 C} FS
+350 534 14 249 -467 -712 3 578 3094 SP
+{0 1 0.13 C} FS
+234 356 13 249 -350 -534 3 475 3165 SP
+{0.0555 1 0 C} FS
+117 178 14 249 -234 -356 3 372 3236 SP
+{0.241 1 0 C} FS
+14 249 -117 -178 2 269 3307 SP
+{0.426 1 0 C} FS
+{0 0.204 1 C} FS
+-24 63 -49 -55 2 1329 3378 SP
+{0 0.389 1 C} FS
+71 -188 -145 14 -24 63 3 1280 3323 SP
+{0 0.574 1 C} FS
+118 -313 -146 15 -71 188 3 1182 3212 SP
+{0 0.759 1 C} FS
+166 -438 -146 14 -118 313 3 1083 3102 SP
+{0 0.944 1 C} FS
+111 -554 -44 5 -166 438 3 985 2991 SP
+{0 1 0.87 C} FS
+{0 1 0.685 C} FS
+361 -191 0 -92 -444 221 3 942 2105 SP
+{0 1 0.5 C} FS
+-258 136 -103 -77 361 -191 3 498 2234 SP
+{0 1 0.315 C} FS
+-155 82 -103 -78 258 -136 3 498 2102 SP
+{0 1 0.13 C} FS
+-52 27 -103 -77 155 -82 3 498 1970 SP
+{0.0555 1 0 C} FS
+52 -27 0 66 2 498 1772 SP
+{0 0.389 1 C} FS
+-13 201 -35 -242 2 1385 2492 SP
+{0 0.574 1 C} FS
+69 0 17 -264 -94 -82 -13 201 4 1350 2250 SP
+{0 0.759 1 C} FS
+11 -181 -94 -83 -17 264 3 1260 2105 SP
+{0 0.944 1 C} FS
+6 -99 -94 -82 -11 181 3 1160 2105 SP
+{0 1 0.87 C} FS
+1 -16 -95 -83 -6 99 3 1061 2105 SP
+{0 1 0.685 C} FS
+-1 16 19 0 2 942 2105 SP
+249 -548 -83 -62 2 942 2105 SP
+{0 1 0.5 C} FS
+-178 391 -174 80 249 -548 3 859 2043 SP
+{0 1 0.315 C} FS
+-107 234 -174 79 178 -391 3 756 1966 SP
+{0 1 0.13 C} FS
+-35 78 -175 79 107 -234 3 653 1888 SP
+{0.0555 1 0 C} FS
+35 -78 52 39 2 498 1772 SP
+{0 0.0185 1 C} FS
+-10 117 -101 -117 2 1662 2492 SP
+{0 0.204 1 C} FS
+20 -235 -111 0 -10 117 3 1561 2375 SP
+{0 0.389 1 C} FS
+9 -110 -35 -242 -55 0 -20 235 4 1460 2257 SP
+{0 0.574 1 C} FS
+9 -110 21 145 2 1329 2105 SP
+{0 0.389 1 C} FS
+-116 119 -48 -41 111 -166 3 1274 2658 SP
+{0 0.574 1 C} FS
+89 -90 -67 -111 -116 119 3 1337 2451 SP
+{0 0.759 1 C} FS
+61 -62 -66 -111 -89 90 3 1243 2369 SP
+{0 0.944 1 C} FS
+34 -34 -67 -110 -61 62 3 1149 2286 SP
+{0 1 0.87 C} FS
+5 -6 -66 -111 -34 34 3 1055 2204 SP
+{0 1 0.685 C} FS
+-5 6 18 16 2 942 2105 SP
+{0 0.204 1 C} FS
+10 -459 -49 -55 2 1329 3378 SP
+{0 0.389 1 C} FS
+-10 507 -82 47 -16 -206 10 -459 4 1280 3323 SP
+{0 0.574 1 C} FS
+-7 339 -102 58 10 -507 3 1182 3212 SP
+{0 0.759 1 C} FS
+-3 169 -102 59 7 -339 3 1083 3102 SP
+{0 0.944 1 C} FS
+-102 58 3 -169 2 985 2991 SP
+{0 1 0.87 C} FS
+{0.167 0 1 C} FS
+-7 273 -104 -52 2 1606 2825 SP
+{0 0.0185 1 C} FS
+13 -547 -110 222 -7 273 3 1502 2773 SP
+{0 0.204 1 C} FS
+5 -195 -39 -514 -56 110 -13 547 4 1398 2721 SP
+{0 0.389 1 C} FS
+5 -195 16 206 2 1274 2658 SP
+{0.167 0 1 C} FS
+39 238 56 -333 2 1606 2825 SP
+{0 0.0185 1 C} FS
+-24 -143 95 -95 39 238 3 1662 2492 SP
+{0 0.204 1 C} FS
+-8 -48 95 -95 24 143 3 1772 2492 SP
+{0 0.389 1 C} FS
+8 48 -55 0 2 1938 2492 SP
+{0.167 0 1 C} FS
+41 -43 -104 -52 2 1606 2825 SP
+{0 0.0185 1 C} FS
+-82 86 -63 -95 41 -43 3 1502 2773 SP
+{0 0.204 1 C} FS
+-121 129 -64 -95 82 -86 3 1398 2721 SP
+{0 0.389 1 C} FS
+121 -129 21 11 -111 166 3 1385 2492 SP
+{0.167 0 1 C} FS
+-119 238 56 -333 2 1606 2825 SP
+{0 0.0185 1 C} FS
+71 -143 -63 -95 -119 238 3 1662 2492 SP
+{0 0.204 1 C} FS
+24 -48 -64 -95 -71 143 3 1551 2492 SP
+{0 0.389 1 C} FS
+-24 48 55 0 2 1385 2492 SP
+{0.537 0 1 C} FS
+15 215 -138 -166 2 1883 3157 SP
+{0.352 0 1 C} FS
+-31 -430 -123 49 15 215 3 1745 2991 SP
+{0.167 0 1 C} FS
+-19 -259 -123 50 31 430 3 1606 2825 SP
+{0 0.0185 1 C} FS
+-6 -86 -123 49 19 259 3 1495 3046 SP
+{0 0.204 1 C} FS
+6 86 56 -110 2 1329 3378 SP
+{0 0.0185 1 C} FS
+154 40 -101 -117 2 1662 2492 SP
+{0 0.204 1 C} FS
+-309 -81 54 -77 154 40 3 1561 2375 SP
+{0 0.389 1 C} FS
+-464 -122 54 -76 309 81 3 1460 2257 SP
+{0 0.574 1 C} FS
+-129 30 -419 -110 54 -77 464 122 4 1359 2140 SP
+{0 0.759 1 C} FS
+-288 -76 54 -77 419 110 3 1458 2075 SP
+{0 0.944 1 C} FS
+-157 -41 54 -77 288 76 3 1643 2032 SP
+{0 1 0.87 C} FS
+-26 -7 53 -77 157 41 3 1828 1990 SP
+{0 1 0.685 C} FS
+26 7 -37 9 2 2049 1938 SP
+{0 0.389 1 C} FS
+29 -135 -82 47 2 1274 2658 SP
+{0 0.574 1 C} FS
+-64 304 -67 -111 29 -135 3 1192 2705 SP
+{0 0.759 1 C} FS
+-100 474 -66 -111 64 -304 3 1090 2763 SP
+{0 0.944 1 C} FS
+-135 642 -67 -110 100 -474 3 988 2822 SP
+{0 1 0.87 C} FS
+-23 107 -66 -111 135 -642 3 886 2880 SP
+{0 1 0.685 C} FS
+23 -107 -10 129 2 942 2105 SP
+{0 0.574 1 C} FS
+-36 91 -33 -91 2 1329 2105 SP
+{0 0.759 1 C} FS
+89 -221 -100 0 -36 91 3 1296 2014 SP
+{0 0.944 1 C} FS
+141 -350 -99 0 -89 221 3 1249 1884 SP
+{0 1 0.87 C} FS
+194 -480 -100 0 -141 350 3 1202 1755 SP
+{0 1 0.685 C} FS
+166 -610 -19 0 -194 480 3 1155 1625 SP
+{0 1 0.5 C} FS
+{0.907 0 1 C} FS
+-16 9 -102 -9 2 1994 3434 SP
+{0.722 0 1 C} FS
+32 -17 -119 0 -16 9 3 1892 3425 SP
+{0.537 0 1 C} FS
+48 -26 -118 0 -32 17 3 1789 3417 SP
+{0.352 0 1 C} FS
+64 -34 -118 0 -48 26 3 1687 3408 SP
+{0.167 0 1 C} FS
+81 -43 -119 0 -64 34 3 1585 3400 SP
+{0 0.0185 1 C} FS
+96 -51 -118 0 -81 43 3 1483 3391 SP
+{0 0.204 1 C} FS
+73 -8 90 -48 -118 0 -96 51 4 1380 3383 SP
+{0 0.389 1 C} FS
+64 -34 -119 0 -90 48 3 1256 3386 SP
+{0 0.574 1 C} FS
+36 -19 -118 0 -64 34 3 1111 3400 SP
+{0 0.759 1 C} FS
+8 -5 -118 0 -36 19 3 965 3415 SP
+{0 0.944 1 C} FS
+-8 5 44 -5 2 775 3434 SP
+{0 1 0.13 C} FS
+-191 -130 265 78 2 1163 997 SP
+{0.0555 1 0 C} FS
+402 274 83 -58 -191 -130 3 1428 1075 SP
+{0.241 1 0 C} FS
+613 419 83 -58 -402 -274 3 1722 1161 SP
+{0.426 1 0 C} FS
+78 133 542 370 82 -58 -613 -419 4 2016 1248 SP
+{0.611 1 0 C} FS
+348 238 83 -58 -542 -370 3 2027 1141 SP
+{0.796 1 0 C} FS
+155 105 83 -57 -348 -238 3 1916 951 SP
+{0.981 1 0 C} FS
+-155 -105 89 152 2 1717 609 SP
+{0.0555 1 0 C} FS
+133 -56 -10 -26 2 2492 997 SP
+{0.241 1 0 C} FS
+-401 167 247 -164 133 -56 3 2482 971 SP
+{0.426 1 0 C} FS
+-668 278 246 -164 401 -167 3 2461 918 SP
+{0.611 1 0 C} FS
+-648 270 -91 -12 49 -33 668 -278 4 2440 865 SP
+{0.796 1 0 C} FS
+-555 232 -114 -14 648 -270 3 2418 812 SP
+{0.981 1 0 C} FS
+-463 193 -113 -14 555 -232 3 2397 760 SP
+{1 0.833 0 C} FS
+-370 154 -114 -14 463 -193 3 2376 707 SP
+{1 0.648 0 C} FS
+-278 115 -113 -14 370 -154 3 2355 654 SP
+{1 0.463 0 C} FS
+-185 78 -114 -15 278 -115 3 2334 601 SP
+{1 0.278 0 C} FS
+-92 39 -114 -14 185 -78 3 2313 549 SP
+{1 0.0926 0 C} FS
+-113 -14 92 -39 2 2292 496 SP
+{0.611 1 0 C} FS
+1205 167 69 55 2 1717 0 SP
+{0.796 1 0 C} FS
+-1033 -142 -103 31 1205 167 3 1786 55 SP
+{0.981 1 0 C} FS
+-860 -119 -103 32 1033 142 3 1855 111 SP
+{1 0.833 0 C} FS
+-688 -94 -103 31 860 119 3 1925 166 SP
+{1 0.648 0 C} FS
+-516 -71 -103 32 688 94 3 1994 222 SP
+{1 0.463 0 C} FS
+-344 -48 -103 32 516 71 3 2063 277 SP
+{1 0.278 0 C} FS
+-172 -23 -102 31 344 48 3 2132 332 SP
+{1 0.0926 0 C} FS
+-103 32 172 23 2 2202 388 SP
+{0 1 0.87 C} FS
+57 -15 -39 -77 2 2880 1772 SP
+{0 1 0.685 C} FS
+-171 45 37 -185 57 -15 3 2841 1695 SP
+{0 1 0.5 C} FS
+-286 74 37 -184 171 -45 3 2764 1540 SP
+{0 1 0.315 C} FS
+-400 104 37 -185 286 -74 3 2686 1385 SP
+{0 1 0.13 C} FS
+-515 132 37 -184 400 -104 3 2609 1230 SP
+{0.0555 1 0 C} FS
+-515 132 554 -55 2 2492 997 SP
+34 -114 -107 77 2 2492 997 SP
+{0.241 1 0 C} FS
+-104 341 -146 -73 34 -114 3 2385 1074 SP
+{0.426 1 0 C} FS
+78 133 -100 327 -146 -73 104 -341 4 2169 1228 SP
+{0.611 1 0 C} FS
+-64 210 -147 -73 100 -327 3 2027 1141 SP
+{0.796 1 0 C} FS
+-28 93 -146 -73 64 -210 3 1916 951 SP
+{0.981 1 0 C} FS
+28 -93 89 152 2 1717 609 SP
+{0 1 0.5 C} FS
+-25 51 0 -83 2 2492 1772 SP
+{0 1 0.315 C} FS
+109 -219 -84 -109 -25 51 3 2492 1689 SP
+{0 1 0.13 C} FS
+194 -388 -85 -108 -109 219 3 2492 1412 SP
+{0.0555 1 0 C} FS
+107 -77 171 -341 -84 -108 -194 388 4 2492 1135 SP
+{0.241 1 0 C} FS
+-39 78 -216 154 171 -341 3 2214 1415 SP
+{0.426 1 0 C} FS
+39 -78 25 32 2 2105 1274 SP
+{0 1 0.87 C} FS
+-49 77 -39 -77 2 2880 1772 SP
+{0 1 0.685 C} FS
+148 -232 -176 0 -49 77 3 2841 1695 SP
+{0 1 0.5 C} FS
+194 -304 0 -83 -124 0 -148 232 4 2764 1540 SP
+{0 1 0.315 C} FS
+-117 182 -77 -155 194 -304 3 2492 1689 SP
+{0 1 0.13 C} FS
+-39 61 -78 -156 117 -182 3 2492 1412 SP
+{0.0555 1 0 C} FS
+39 -61 0 138 2 2492 997 SP
+{0 0.944 1 C} FS
+171 -219 -60 -150 2 2714 2326 SP
+{0 1 0.87 C} FS
+-198 255 -88 0 55 -185 171 -219 4 2654 2176 SP
+{0 1 0.685 C} FS
+-82 105 -176 0 198 -255 3 2594 2027 SP
+{0 1 0.5 C} FS
+82 -105 42 105 2 2492 1772 SP
+{0 1 0.685 C} FS
+-230 1 237 -88 2 2049 1938 SP
+{0 1 0.5 C} FS
+25 32 401 -2 10 -109 -230 1 4 2286 1850 SP
+{0 1 0.315 C} FS
+308 -2 9 -109 -401 2 3 2467 1740 SP
+{0 1 0.13 C} FS
+214 -1 9 -109 -308 2 3 2383 1631 SP
+{0.0555 1 0 C} FS
+121 0 9 -109 -214 1 3 2298 1523 SP
+{0.241 1 0 C} FS
+28 -1 9 -108 -121 0 3 2214 1415 SP
+{0.426 1 0 C} FS
+-28 1 25 32 2 2105 1274 SP
+{0.611 1 0 C} FS
+-75 -320 -91 -12 2 3157 554 SP
+{0.796 1 0 C} FS
+64 275 -103 31 -75 -320 3 3066 542 SP
+{0.981 1 0 C} FS
+54 229 -103 32 -64 -275 3 2952 528 SP
+{1 0.833 0 C} FS
+43 184 -103 31 -54 -229 3 2839 514 SP
+{1 0.648 0 C} FS
+33 138 -103 32 -43 -184 3 2725 500 SP
+{1 0.463 0 C} FS
+22 91 -103 32 -33 -138 3 2612 486 SP
+{1 0.278 0 C} FS
+10 46 -102 31 -22 -91 3 2498 471 SP
+{1 0.0926 0 C} FS
+-103 32 -10 -46 2 2384 457 SP
+{0.0555 1 0 C} FS
+63 11 -73 -37 2 2492 997 SP
+{0.241 1 0 C} FS
+-188 -31 -21 -53 63 11 3 2419 960 SP
+{0.426 1 0 C} FS
+-313 -51 -21 -53 188 31 3 2273 887 SP
+{0.611 1 0 C} FS
+-438 -71 -22 -53 313 51 3 2127 814 SP
+{0.796 1 0 C} FS
+-563 -92 -21 -52 438 71 3 1980 741 SP
+{0.981 1 0 C} FS
+-21 6 -638 -104 -21 -53 563 92 4 1834 668 SP
+{1 0.833 0 C} FS
+-510 -83 -21 -53 638 104 3 1738 603 SP
+{1 0.648 0 C} FS
+-383 -62 -21 -53 510 83 3 1845 571 SP
+{1 0.463 0 C} FS
+-255 -42 -21 -52 383 62 3 1951 539 SP
+{1 0.278 0 C} FS
+-128 -21 -21 -53 255 42 3 2058 507 SP
+{1 0.0926 0 C} FS
+-21 -53 128 21 2 2164 475 SP
+{0.241 1 0 C} FS
+97 -127 -75 227 2 3323 55 SP
+{0.426 1 0 C} FS
+-195 254 22 100 97 -127 3 3248 282 SP
+{0.611 1 0 C} FS
+-79 0 -154 200 23 99 195 -254 4 3172 509 SP
+{0.796 1 0 C} FS
+77 -100 99 0 -154 200 3 3390 354 SP
+{0.981 1 0 C} FS
+99 0 -77 100 2 3412 454 SP
+{1 0.833 0 C} FS
+{0.241 1 0 C} FS
+-36 -171 -75 227 2 3323 55 SP
+{0.426 1 0 C} FS
+70 343 -110 55 -36 -171 3 3248 282 SP
+{0.611 1 0 C} FS
+166 332 -111 56 -70 -343 3 3172 509 SP
+{0.796 1 0 C} FS
+{0.0555 1 0 C} FS
+-30 -57 65 -65 2 3046 942 SP
+{0.241 1 0 C} FS
+60 113 34 -121 -30 -57 3 3111 877 SP
+{0.426 1 0 C} FS
+90 170 35 -121 -60 -113 3 3175 812 SP
+{0.611 1 0 C} FS
+69 129 79 0 7 -24 -90 -170 4 3240 748 SP
+{0.796 1 0 C} FS
+-34 -64 64 -65 69 129 3 3236 554 SP
+{0.981 1 0 C} FS
+65 -64 34 64 2 3335 554 SP
+{1 0.833 0 C} FS
+{0 1 0.87 C} FS
+-37 -70 55 -22 2 2880 1772 SP
+{0 1 0.685 C} FS
+111 211 37 -185 -37 -70 3 2935 1750 SP
+{0 1 0.5 C} FS
+185 351 37 -184 -111 -211 3 3046 1706 SP
+{0 1 0.315 C} FS
+93 176 37 -185 -185 -351 3 3157 1662 SP
+{0 1 0.13 C} FS
+37 -184 -93 -176 2 3102 1302 SP
+{0.0555 1 0 C} FS
+{0 1 0.315 C} FS
+129 261 -55 -360 2 3157 1662 SP
+{0 1 0.13 C} FS
+-259 -523 74 -98 129 261 3 3102 1302 SP
+{0.0555 1 0 C} FS
+-155 -314 73 -99 259 523 3 3046 942 SP
+{0.241 1 0 C} FS
+-51 -105 74 -98 155 314 3 3223 1052 SP
+{0.426 1 0 C} FS
+51 105 -88 -55 2 3489 1218 SP
+{0 1 0.315 C} FS
+-258 -320 332 221 2 3157 1662 SP
+{0 1 0.13 C} FS
+184 228 74 -98 -258 -320 3 3489 1883 SP
+{0.0555 1 0 C} FS
+111 137 73 -99 -184 -228 3 3489 1693 SP
+{0.241 1 0 C} FS
+37 45 74 -98 -111 -137 3 3489 1503 SP
+{0.426 1 0 C} FS
+-37 -45 0 95 2 3489 1218 SP
+{0.0555 1 0 C} FS
+112 175 65 -65 2 3046 942 SP
+{0.241 1 0 C} FS
+-226 -351 178 111 112 175 3 3111 877 SP
+{0.426 1 0 C} FS
+-241 -376 -8 -94 88 55 226 351 4 3175 812 SP
+{0.611 1 0 C} FS
+-160 -251 -16 -190 241 376 3 3240 748 SP
+{0.796 1 0 C} FS
+-81 -126 -15 -190 160 251 3 3305 683 SP
+{0.981 1 0 C} FS
+-16 -190 81 126 2 3369 618 SP
+{1 0.833 0 C} FS
+{0 1 0.87 C} FS
+-32 -38 87 16 2 2880 1772 SP
+{0 1 0.685 C} FS
+95 114 111 -44 -32 -38 3 2967 1788 SP
+{0 1 0.5 C} FS
+158 189 111 -44 -95 -114 3 3141 1820 SP
+{0 1 0.315 C} FS
+332 221 -158 -189 2 3315 1851 SP
+{0 1 0.13 C} FS
+{0.0555 1 0 C} FS
+466 -95 123 -82 -554 55 3 3046 942 SP
+{0.241 1 0 C} FS
+253 -52 247 -164 -466 95 3 3081 820 SP
+{0.426 1 0 C} FS
+42 -9 246 -164 -253 52 3 3115 699 SP
+{0.611 1 0 C} FS
+-42 9 -7 24 2 3157 554 SP
+{0.241 1 0 C} FS
+692 83 -803 -27 2 3323 55 SP
+{0.426 1 0 C} FS
+-1385 -166 -110 55 692 83 3 2520 28 SP
+{0.611 1 0 C} FS
+-111 56 1385 166 2 1717 0 SP
+{0.796 1 0 C} FS
+{0 1 0.87 C} FS
+-116 -187 203 203 2 2880 1772 SP
+{0 1 0.685 C} FS
+348 562 174 32 -116 -187 3 3083 1975 SP
+{0 1 0.5 C} FS
+174 281 174 31 -348 -562 3 3489 2382 SP
+{0 1 0.315 C} FS
+0 -249 174 281 2 3315 1851 SP
+{0 1 0.13 C} FS
+{0.722 0 1 C} FS
+-68 -69 44 -15 2 1994 3323 SP
+{0.537 0 1 C} FS
+205 209 -48 -169 -68 -69 3 2038 3308 SP
+{0.352 0 1 C} FS
+302 307 30 7 -39 -135 -205 -209 4 2127 3279 SP
+{0.167 0 1 C} FS
+242 246 149 32 -302 -307 3 2215 3249 SP
+{0 0.0185 1 C} FS
+182 184 149 32 -242 -246 3 2304 3220 SP
+{0 0.204 1 C} FS
+121 123 149 32 -182 -184 3 2393 3190 SP
+{0 0.389 1 C} FS
+61 61 149 32 -121 -123 3 2481 3161 SP
+{0 0.574 1 C} FS
+149 32 -61 -61 2 2570 3131 SP
+{0 0.759 1 C} FS
+{0.352 0 1 C} FS
+-280 -86 3 -24 2 1883 2935 SP
+{0.167 0 1 C} FS
+200 62 95 -95 -280 -86 3 1886 2911 SP
+{0 0.0185 1 C} FS
+120 37 95 -95 -200 -62 3 1901 2792 SP
+{0 0.204 1 C} FS
+40 12 95 -95 -120 -37 3 1916 2672 SP
+{0 0.389 1 C} FS
+-40 -12 -7 60 2 1938 2492 SP
+{0 0.0185 1 C} FS
+-57 -77 110 0 2 1662 2492 SP
+{0 0.204 1 C} FS
+114 154 54 -77 -57 -77 3 1772 2492 SP
+{0 0.389 1 C} FS
+-12 59 127 171 54 -76 -114 -154 4 1883 2492 SP
+{0 0.574 1 C} FS
+-97 -131 24 -117 127 171 3 1823 2262 SP
+{0 0.759 1 C} FS
+-66 -90 23 -118 97 131 3 1877 2185 SP
+{0 0.944 1 C} FS
+-36 -49 24 -118 66 90 3 1931 2108 SP
+{0 1 0.87 C} FS
+-7 -8 24 -118 36 49 3 1985 2031 SP
+{0 1 0.685 C} FS
+7 8 -11 16 2 2049 1938 SP
+{0.352 0 1 C} FS
+-21 0 24 -24 2 1883 2935 SP
+{0.167 0 1 C} FS
+127 -2 15 -119 -21 0 3 1907 2911 SP
+{0 0.0185 1 C} FS
+234 -3 15 -120 -127 2 3 2028 2790 SP
+{0 0.204 1 C} FS
+340 -4 15 -120 -234 3 3 2150 2669 SP
+{0 0.389 1 C} FS
+-340 4 333 56 2 1938 2492 SP
+{0.907 0 1 C} FS
+-56 -65 0 -74 2 1994 3434 SP
+{0.722 0 1 C} FS
+111 166 -55 -138 -56 -65 3 1994 3360 SP
+{0.537 0 1 C} FS
+{0.722 0 1 C} FS
+87 82 -111 -166 2 1994 3323 SP
+{0.537 0 1 C} FS
+-39 -36 -48 -169 87 82 3 1883 3157 SP
+{0.352 0 1 C} FS
+39 36 0 99 2 1883 2935 SP
+{0.907 0 1 C} FS
+-74 -37 74 -37 2 1994 3434 SP
+{0.722 0 1 C} FS
+104 52 44 -15 0 -37 -74 -37 4 2068 3397 SP
+{0.537 0 1 C} FS
+88 44 89 -29 -104 -52 3 2142 3360 SP
+{0.352 0 1 C} FS
+74 37 88 -30 -88 -44 3 2215 3323 SP
+{0.167 0 1 C} FS
+59 29 89 -29 -74 -37 3 2289 3286 SP
+{0 0.0185 1 C} FS
+44 22 89 -30 -59 -29 3 2363 3249 SP
+{0 0.204 1 C} FS
+30 14 88 -29 -44 -22 3 2437 3212 SP
+{0 0.389 1 C} FS
+15 7 89 -30 -30 -14 3 2511 3175 SP
+{0 0.574 1 C} FS
+88 -29 -15 -7 2 2585 3138 SP
+{0 0.759 1 C} FS
+{0.907 0 1 C} FS
+-46 130 -56 -139 2 1994 3434 SP
+{0.722 0 1 C} FS
+94 -260 -103 -8 -46 130 3 1938 3295 SP
+{0.537 0 1 C} FS
+73 -202 -102 -9 -94 260 3 1883 3157 SP
+{0.352 0 1 C} FS
+-52 145 -123 49 73 -202 3 1687 3408 SP
+{0.167 0 1 C} FS
+-31 86 -123 50 52 -145 3 1585 3400 SP
+{0 0.0185 1 C} FS
+-11 29 -123 49 31 -86 3 1483 3391 SP
+{0 0.204 1 C} FS
+11 -29 51 5 2 1329 3378 SP
+{0 0.389 1 C} FS
+278 -2 12 -59 -333 -56 3 2271 2548 SP
+{0 0.574 1 C} FS
+-212 3 -42 -118 278 -2 3 1950 2433 SP
+{0 0.759 1 C} FS
+-146 2 -43 -117 212 -3 3 1974 2316 SP
+{0 0.944 1 C} FS
+-79 1 -43 -117 146 -2 3 1997 2198 SP
+{0 1 0.87 C} FS
+-13 0 -42 -117 79 -1 3 2021 2080 SP
+{0 1 0.685 C} FS
+13 0 -4 24 2 2049 1938 SP
+{0.537 0 1 C} FS
+-138 -43 0 -123 2 1883 3157 SP
+{0.352 0 1 C} FS
+277 110 -139 -166 -138 -43 3 1883 3034 SP
+{0.167 0 1 C} FS
+{0 0.389 1 C} FS
+-4 -124 151 50 2 2271 2548 SP
+{0 0.574 1 C} FS
+7 248 148 -74 -4 -124 3 2422 2598 SP
+{0 0.759 1 C} FS
+10 373 148 -74 -7 -248 3 2573 2648 SP
+{0 0.944 1 C} FS
+3 106 158 317 -10 -373 3 2724 2699 SP
+{0 1 0.87 C} FS
+-3 -106 -60 -20 2 2935 2769 SP
+{0 0.389 1 C} FS
+-190 -43 147 -74 2 2271 2548 SP
+{0 0.574 1 C} FS
+380 87 -42 -118 -190 -43 3 2418 2474 SP
+{0 0.759 1 C} FS
+571 130 -43 -117 -380 -87 3 2566 2400 SP
+{0 0.944 1 C} FS
+312 71 -43 -117 -571 -130 3 2714 2326 SP
+{0 1 0.87 C} FS
+-52 -12 -302 -176 312 71 3 2100 2079 SP
+{0 1 0.685 C} FS
+52 12 9 24 2 2049 1938 SP
+{0 0.944 1 C} FS
+242 26 -302 -176 2 2714 2326 SP
+{0 1 0.87 C} FS
+-484 -53 -60 -149 242 26 3 2412 2150 SP
+{0 1 0.685 C} FS
+-237 88 -248 -27 -60 -150 484 53 4 2110 1974 SP
+{0 1 0.5 C} FS
+248 27 -206 78 2 2492 1772 SP
+{0 0.944 1 C} FS
+100 -298 158 317 2 2714 2326 SP
+{0 1 0.87 C} FS
+-208 145 -88 261 259 18 100 -298 4 2872 2643 SP
+{0 1 0.685 C} FS
+346 -242 -88 261 2 3231 2363 SP
+{0 1 0.5 C} FS
+{0 0.759 1 C} FS
+134 305 116 -139 2 2658 3102 SP
+{0 0.944 1 C} FS
+-268 -609 249 166 134 305 3 2774 2963 SP
+{0 1 0.87 C} FS
+-268 -609 222 665 2 2935 2769 SP
+{0 0.389 1 C} FS
+-43 -227 194 277 2 2271 2548 SP
+{0 0.574 1 C} FS
+85 454 151 50 -43 -227 3 2465 2825 SP
+{0 0.759 1 C} FS
+50 264 151 51 -85 -454 3 2658 3102 SP
+{0 0.944 1 C} FS
+14 76 151 50 -50 -264 3 2774 2963 SP
+{0 1 0.87 C} FS
+-14 -76 -46 56 2 2935 2769 SP
+213 551 59 13 -222 -665 3 3157 3434 SP
+{0 1 0.685 C} FS
+166 428 98 22 -213 -551 3 3207 3333 SP
+{0 1 0.5 C} FS
+118 306 98 22 -166 -428 3 3258 3232 SP
+{0 1 0.315 C} FS
+71 184 97 21 -118 -306 3 3308 3132 SP
+{0 1 0.13 C} FS
+24 61 98 22 -71 -184 3 3358 3031 SP
+{0.0555 1 0 C} FS
+-24 -61 -25 50 2 3434 2880 SP
+{0 1 0.87 C} FS
+-149 158 208 -145 2 2935 2769 SP
+{0 1 0.685 C} FS
+397 -422 98 22 -149 158 3 3143 2624 SP
+{0 1 0.5 C} FS
+283 -302 98 22 -397 422 3 3489 2382 SP
+{0 1 0.315 C} FS
+171 -181 97 21 -283 302 3 3473 2524 SP
+{0 1 0.13 C} FS
+57 -60 98 22 -171 181 3 3458 2666 SP
+{0.0555 1 0 C} FS
+-57 60 8 -71 2 3434 2880 SP
+{0.907 0 1 C} FS
+-32 -37 106 0 2 1994 3434 SP
+{0.722 0 1 C} FS
+63 74 74 -37 -32 -37 3 2100 3434 SP
+{0.537 0 1 C} FS
+96 111 73 -37 -63 -74 3 2205 3434 SP
+{0.352 0 1 C} FS
+128 148 74 -37 -96 -111 3 2311 3434 SP
+{0.167 0 1 C} FS
+160 185 74 -37 -128 -148 3 2417 3434 SP
+{0 0.0185 1 C} FS
+191 222 74 -37 -160 -185 3 2523 3434 SP
+{0 0.204 1 C} FS
+223 259 74 -37 -191 -222 3 2628 3434 SP
+{0 0.389 1 C} FS
+255 296 74 -37 -223 -259 3 2734 3434 SP
+{0 0.574 1 C} FS
+287 332 73 -36 -255 -296 3 2840 3434 SP
+{0 0.759 1 C} FS
+143 166 250 166 -287 -332 3 2945 3434 SP
+{0 0.944 1 C} FS
+106 0 143 166 2 2908 3268 SP
+{0 1 0.87 C} FS
+{0.352 0 1 C} FS
+-6 -31 30 7 2 1883 2935 SP
+{0.167 0 1 C} FS
+34 184 121 -121 -6 -31 3 1913 2942 SP
+{0 0.0185 1 C} FS
+61 337 122 -121 -34 -184 3 2062 2974 SP
+{0 0.204 1 C} FS
+89 490 121 -121 -61 -337 3 2211 3006 SP
+{0 0.389 1 C} FS
+44 245 194 277 -89 -490 3 2360 3038 SP
+{0 0.574 1 C} FS
+149 32 44 245 2 2465 2825 SP
+{0 0.759 1 C} FS
+{0 0.944 1 C} FS
+-147 -388 258 19 2 2714 2326 SP
+{0 1 0.87 C} FS
+148 388 203 203 55 -185 -147 -388 4 2972 2345 SP
+{0 1 0.685 C} FS
+258 19 148 388 2 3083 1975 SP
+{0 1 0.5 C} FS
+{0 1 0.685 C} FS
+948 356 -941 -443 2 2049 1938 SP
+{0 1 0.5 C} FS
+-770 -288 10 -109 948 356 3 1108 1495 SP
+{0 1 0.315 C} FS
+-591 -221 9 -109 770 288 3 1296 1454 SP
+{0 1 0.13 C} FS
+-412 -154 9 -109 591 221 3 1484 1412 SP
+{0.0555 1 0 C} FS
+-233 -87 9 -109 412 154 3 1672 1370 SP
+{0.241 1 0 C} FS
+-54 -21 9 -108 233 87 3 1860 1328 SP
+{0.426 1 0 C} FS
+54 21 -57 12 2 2105 1274 SP
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M -83 0 D S
+0 1108 M -83 0 D S
+0 2215 M -83 0 D S
+0 3323 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 554 M -42 0 D S
+0 1662 M -42 0 D S
+0 2769 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+3600 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M 83 0 D S
+0 1108 M 83 0 D S
+0 2215 M 83 0 D S
+0 3323 M 83 0 D S
+/PSL_AH0 0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+0 554 M 42 0 D S
+0 1662 M 42 0 D S
+0 2769 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-3600 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 -83 D S
+1108 0 M 0 -83 D S
+2215 0 M 0 -83 D S
+3323 0 M 0 -83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+554 0 M 0 -42 D S
+1662 0 M 0 -42 D S
+2769 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 3600 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 83 D S
+1108 0 M 0 83 D S
+2215 0 M 0 83 D S
+3323 0 M 0 83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+554 0 M 0 42 D S
+1662 0 M 0 42 D S
+2769 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3600 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
+1800 3600 PSL_H_y add M
+400 F0
+(Data) bc Z
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R0/6.5/0/6.5 -JX3i -O -K -W0.25p,-
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+4 W
+[33 17] 0 B
+166 3378 M
+609 56 D
+S
+166 3378 M
+720 -498 D
+S
+166 3378 M
+-55 -996 D
+S
+775 3434 M
+554 -56 D
+S
+775 3434 M
+1219 0 D
+S
+775 3434 M
+111 -554 D
+S
+1329 3378 M
+665 56 D
+S
+1329 3378 M
+-443 -498 D
+S
+1329 3378 M
+277 -553 D
+S
+1329 3378 M
+554 -221 D
+S
+1329 3378 M
+-55 -720 D
+S
+1994 3434 M
+1163 0 D
+S
+1994 3434 M
+-111 -277 D
+S
+1994 3434 M
+664 -332 D
+S
+1994 3434 M
+0 -111 D
+S
+3157 3434 M
+-499 -332 D
+S
+3157 3434 M
+-222 -665 D
+S
+3157 3434 M
+277 -554 D
+S
+886 2880 M
+-775 -498 D
+S
+886 2880 M
+-388 -554 D
+S
+886 2880 M
+388 -222 D
+S
+886 2880 M
+56 -775 D
+S
+1606 2825 M
+277 110 D
+S
+1606 2825 M
+277 332 D
+S
+1606 2825 M
+-332 -167 D
+S
+1606 2825 M
+-221 -333 D
+S
+1606 2825 M
+56 -333 D
+S
+1606 2825 M
+332 -333 D
+S
+1883 2935 M
+0 222 D
+S
+1883 2935 M
+775 167 D
+S
+1883 2935 M
+55 -443 D
+S
+1883 2935 M
+388 -387 D
+S
+1883 2935 M
+111 388 D
+S
+1883 3157 M
+111 166 D
+S
+2658 3102 M
+277 -333 D
+S
+2658 3102 M
+-387 -554 D
+S
+2658 3102 M
+-664 221 D
+S
+2935 2769 M
+499 111 D
+S
+2935 2769 M
+-664 -221 D
+S
+2935 2769 M
+-221 -443 D
+S
+2935 2769 M
+554 -387 D
+S
+3434 2880 M
+55 -498 D
+S
+111 2382 M
+387 -56 D
+S
+111 2382 M
+387 -610 D
+S
+111 2382 M
+55 -1053 D
+S
+498 2326 M
+0 -554 D
+S
+498 2326 M
+444 -221 D
+S
+1274 2658 M
+111 -166 D
+S
+1274 2658 M
+-332 -553 D
+S
+1385 2492 M
+277 0 D
+S
+1385 2492 M
+-443 -387 D
+S
+1385 2492 M
+-56 -387 D
+S
+1662 2492 M
+276 0 D
+S
+1662 2492 M
+-333 -387 D
+S
+1662 2492 M
+387 -554 D
+S
+1938 2492 M
+333 56 D
+S
+1938 2492 M
+111 -554 D
+S
+2271 2548 M
+443 -222 D
+S
+2271 2548 M
+-222 -610 D
+S
+2714 2326 M
+775 56 D
+S
+2714 2326 M
+-665 -388 D
+S
+2714 2326 M
+-222 -554 D
+S
+2714 2326 M
+166 -554 D
+S
+3489 2382 M
+-609 -610 D
+S
+3489 2382 M
+0 -499 D
+S
+498 1772 M
+444 333 D
+S
+498 1772 M
+-332 -443 D
+S
+498 1772 M
+610 -277 D
+S
+498 1772 M
+333 -775 D
+S
+942 2105 M
+387 0 D
+S
+942 2105 M
+166 -610 D
+S
+1329 2105 M
+720 -167 D
+S
+1329 2105 M
+-221 -610 D
+S
+2049 1938 M
+443 -166 D
+S
+2049 1938 M
+-941 -443 D
+S
+2049 1938 M
+56 -664 D
+S
+2492 1772 M
+388 0 D
+S
+2492 1772 M
+-387 -498 D
+S
+2492 1772 M
+0 -775 D
+S
+2880 1772 M
+609 111 D
+S
+2880 1772 M
+-388 -775 D
+S
+2880 1772 M
+166 -830 D
+S
+2880 1772 M
+277 -110 D
+S
+3489 1883 M
+0 -665 D
+S
+3489 1883 M
+-332 -221 D
+S
+166 1329 M
+166 -387 D
+S
+166 1329 M
+665 -332 D
+S
+166 1329 M
+56 -1052 D
+S
+1108 1495 M
+997 -221 D
+S
+1108 1495 M
+-277 -498 D
+S
+1108 1495 M
+55 -498 D
+S
+2105 1274 M
+-942 -277 D
+S
+2105 1274 M
+-388 -665 D
+S
+2105 1274 M
+387 -277 D
+S
+3489 1218 M
+-443 -276 D
+S
+3489 1218 M
+-55 -664 D
+S
+3489 1218 M
+-332 444 D
+S
+332 942 M
+499 55 D
+S
+332 942 M
+-110 -665 D
+S
+332 942 M
+443 -610 D
+S
+831 997 M
+332 0 D
+S
+831 997 M
+332 -388 D
+S
+831 997 M
+-56 -665 D
+S
+1163 997 M
+0 -388 D
+S
+1163 997 M
+554 -388 D
+S
+1163 609 M
+554 0 D
+S
+1163 609 M
+-388 -277 D
+S
+1163 609 M
+0 -221 D
+S
+1717 609 M
+775 388 D
+S
+1717 609 M
+-554 -221 D
+S
+1717 609 M
+-443 -443 D
+S
+1717 609 M
+0 -609 D
+S
+1717 609 M
+554 -166 D
+S
+2492 997 M
+554 -55 D
+S
+2492 997 M
+665 -443 D
+S
+2492 997 M
+-221 -554 D
+S
+3046 942 M
+111 -388 D
+S
+3046 942 M
+388 -388 D
+S
+3046 942 M
+111 720 D
+S
+3157 554 M
+277 0 D
+S
+3157 554 M
+-886 -111 D
+S
+3157 554 M
+-166 -332 D
+S
+3157 554 M
+166 -499 D
+S
+3434 554 M
+-111 -499 D
+S
+222 277 M
+553 55 D
+S
+222 277 M
+553 -222 D
+S
+775 332 M
+0 -277 D
+S
+775 332 M
+388 56 D
+S
+775 55 M
+388 333 D
+S
+775 55 M
+499 111 D
+S
+775 55 M
+942 -55 D
+S
+1163 388 M
+111 -222 D
+S
+1274 166 M
+443 -166 D
+S
+1717 0 M
+554 443 D
+S
+1717 0 M
+1274 222 D
+S
+1717 0 M
+1606 55 D
+S
+2271 443 M
+720 -221 D
+S
+2991 222 M
+332 -167 D
+S
+[] 0 B
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R0/6.5/0/6.5 -JX3i -O -K ../../doc/examples/ex16/table_5.11 -Sc0.1c -Gblack
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+PSL_eoclip N
+4 W
+{0 A} FS
+24 166 3378 Sc
+24 775 3434 Sc
+24 1329 3378 Sc
+24 1994 3434 Sc
+24 3157 3434 Sc
+24 886 2880 Sc
+24 1606 2825 Sc
+24 1883 2935 Sc
+24 1883 3157 Sc
+24 2658 3102 Sc
+24 2935 2769 Sc
+24 3434 2880 Sc
+24 111 2382 Sc
+24 498 2326 Sc
+24 1274 2658 Sc
+24 1385 2492 Sc
+24 1662 2492 Sc
+24 1938 2492 Sc
+24 2271 2548 Sc
+24 2714 2326 Sc
+24 3489 2382 Sc
+24 498 1772 Sc
+24 942 2105 Sc
+24 1329 2105 Sc
+24 2049 1938 Sc
+24 2492 1772 Sc
+24 2880 1772 Sc
+24 3489 1883 Sc
+24 166 1329 Sc
+24 1108 1495 Sc
+24 2105 1274 Sc
+24 3489 1218 Sc
+24 332 942 Sc
+24 831 997 Sc
+24 1163 997 Sc
+24 1163 609 Sc
+24 1717 609 Sc
+24 2492 997 Sc
+24 3046 942 Sc
+24 3157 554 Sc
+24 3434 554 Sc
+24 222 277 Sc
+24 775 332 Sc
+24 775 55 Sc
+24 1163 388 Sc
+24 1274 166 Sc
+24 1717 0 Sc
+24 2271 443 Sc
+24 2991 222 Sc
+24 3323 55 Sc
+24 3157 1662 Sc
+24 1994 3323 Sc
+PSL_cliprestore
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psscale -Cz.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba
+%%PROJ: xy 690.00000000 960.00000000 0.00000000 0.10000000 690.000 960.000 0.000 0.100 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+0 -720 T
+25 W
+V N 0 0 T 3600 120 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 27 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [27 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+>> image
+J2tCUou%:Q""cdWE%h8,rW!j(b]*3=4bXDk_r'kF)SQE+JWq9d&9L$]%lV>SOS2pBobqR1e?Ca9%$(K!!$EB~>
+U
+2 setlinecap
+0 120 M 3600 0 D S
+0 0 M 0 120 D S
+3600 0 M 0 120 D S
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+0 0 M 3600 0 D S
+8 W
+133 0 M 0 -83 D S
+1467 0 M 0 -83 D S
+2800 0 M 0 -83 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(700) sh mx
+(800) sh mx
+(900) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+133 PSL_A0_y MM
+(700) bc Z
+1467 PSL_A0_y MM
+(800) bc Z
+2800 PSL_A0_y MM
+(900) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+0 720 T
+0 A
+FQ
+O0
+4200 0 TM
+
+% PostScript produced by:
+%%GMT:  pscontour -R0/6.5/0/6.5 trend.txt -Cr.cpt -JX3i -Baf:.Redisual: -I -O -K -X3.5i -i0-2
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+PSL_eoclip N
+{0 0.5 1 C} FS
+83 32 -83 34 2 775 55 SP
+{0 0.722 1 C} FS
+-177 -68 0 73 83 32 3 692 89 SP
+{0 0.944 1 C} FS
+-271 -103 0 73 177 68 3 598 126 SP
+{0.167 1 0.833 C} FS
+-338 -128 -27 -2 0 65 271 103 4 504 164 SP
+{0.389 1 0.611 C} FS
+-169 -64 -263 -27 338 128 3 410 202 SP
+{0.611 1 0.389 C} FS
+-263 -26 169 64 2 316 239 SP
+{0.833 1 0.167 C} FS
+{0 0.278 1 C} FS
+-2 6 -2 -1 2 1163 609 SP
+{0 0.5 1 C} FS
+68 -269 -165 192 -2 6 3 1161 608 SP
+{0 0.722 1 C} FS
+132 -529 0 -2 -163 191 -68 269 4 1062 537 SP
+{0 0.944 1 C} FS
+-63 249 -99 -70 132 -529 3 831 995 SP
+{0.167 1 0.833 C} FS
+63 -249 26 313 2 775 332 SP
+{0 0.944 1 C} FS
+-194 133 176 -242 2 332 942 SP
+{0.167 1 0.833 C} FS
+27 2 465 -318 -31 -185 -194 133 4 508 700 SP
+{0.389 1 0.611 C} FS
+233 -159 -31 -186 -465 318 3 748 330 SP
+{0.611 1 0.389 C} FS
+-30 -185 -233 159 2 485 303 SP
+{0.833 1 0.167 C} FS
+{0 0.722 1 C} FS
+6 1 -7 -1 2 831 997 SP
+{0 0.944 1 C} FS
+28 -65 -354 -76 -172 86 6 1 4 824 996 SP
+{0.167 1 0.833 C} FS
+-231 -50 -171 86 354 76 3 304 1007 SP
+{0.389 1 0.611 C} FS
+-108 -23 -171 85 231 50 3 256 1119 SP
+{0.611 1 0.389 C} FS
+108 23 42 -98 2 166 1329 SP
+{0 0.944 1 C} FS
+10 -174 -28 65 2 332 942 SP
+{0.167 1 0.833 C} FS
+-27 471 -31 -185 10 -174 3 304 1007 SP
+{0.389 1 0.611 C} FS
+-44 769 -31 -186 27 -471 3 256 1119 SP
+{0.611 1 0.389 C} FS
+-55 1041 -1 11 -30 -185 44 -769 4 208 1231 SP
+{0.833 1 0.167 C} FS
+-1 11 1 222 277 SP
+{0 0.722 1 C} FS
+7 -1 -7 -1 2 831 997 SP
+{0 0.944 1 C} FS
+-176 242 -293 55 -30 -350 7 -1 4 824 996 SP
+{0.167 1 0.833 C} FS
+293 -55 -267 368 2 775 332 SP
+{0 0.722 1 C} FS
+0 2 -1 0 2 831 997 SP
+{0 0.944 1 C} FS
+-40 -224 -132 308 0 2 3 830 997 SP
+{0.167 1 0.833 C} FS
+-79 -446 -132 308 40 224 3 658 1083 SP
+{0.389 1 0.611 C} FS
+-63 -359 -119 -159 -68 157 79 446 4 487 1169 SP
+{0.611 1 0.389 C} FS
+-63 -359 213 284 2 166 1329 SP
+{0 0.5 1 C} FS
+-357 -262 -31 -5 388 333 3 775 55 SP
+{0 0.722 1 C} FS
+-234 -172 -123 -17 357 262 3 775 121 SP
+{0 0.944 1 C} FS
+-111 -81 -123 -18 234 172 3 775 194 SP
+{0.167 1 0.833 C} FS
+111 81 0 -65 2 775 332 SP
+{0.389 1 0.611 C} FS
+10 -190 12 -240 2 111 2382 SP
+{0.611 1 0.389 C} FS
+-55 1041 0 9 88 -1673 10 -190 4 123 2142 SP
+{0.833 1 0.167 C} FS
+0 -9 -1 11 2 222 277 SP
+{0 0.0556 1 C} FS
+33 -9 -14 28 2 1274 166 SP
+{0 0.278 1 C} FS
+-163 46 74 74 33 -9 3 1260 194 SP
+{0 0.5 1 C} FS
+-35 -14 -243 69 74 74 163 -46 4 1204 305 SP
+{0 0.722 1 C} FS
+-177 50 74 75 243 -69 3 1198 402 SP
+{0 0.944 1 C} FS
+-112 32 75 74 177 -50 3 1338 458 SP
+{0.167 1 0.833 C} FS
+-47 13 74 74 112 -32 3 1478 514 SP
+{0.389 1 0.611 C} FS
+47 -13 -100 -40 2 1717 609 SP
+{0 0.0556 1 C} FS
+-79 -48 -14 28 2 1274 166 SP
+{0 0.278 1 C} FS
+388 241 -365 -82 -79 -48 3 1260 194 SP
+{0 0.5 1 C} FS
+388 241 41 9 -388 -333 3 1163 388 SP
+{0 0.0556 1 C} FS
+-424 104 331 -124 2 1274 166 SP
+{0 0.278 1 C} FS
+841 -49 60 -15 -365 -82 -424 104 4 1605 42 SP
+{0 0.5 1 C} FS
+60 -15 41 9 2 775 55 SP
+{0 0.0556 1 C} FS
+312 -143 19 19 2 1274 166 SP
+{0 0.278 1 C} FS
+-350 160 0 99 112 -42 312 -143 4 1293 185 SP
+{0 0.5 1 C} FS
+-276 126 0 108 350 -160 3 1367 259 SP
+{0 0.722 1 C} FS
+-202 92 0 109 276 -126 3 1441 333 SP
+{0 0.944 1 C} FS
+-127 58 0 108 202 -92 3 1515 408 SP
+{0.167 1 0.833 C} FS
+-53 24 0 108 127 -58 3 1590 482 SP
+{0.389 1 0.611 C} FS
+53 -24 -53 -53 2 1717 609 SP
+{0 0.278 1 C} FS
+26 -469 -17 -29 -55 498 3 1163 997 SP
+{0 0.5 1 C} FS
+12 -234 -130 -235 -26 469 3 1117 997 SP
+{0 0.722 1 C} FS
+-12 234 142 0 2 831 997 SP
+{0 0.278 1 C} FS
+-42 383 -4 5 0 -388 3 1163 997 SP
+{0 0.5 1 C} FS
+21 -191 -144 0 -42 383 3 1159 614 SP
+{0 0.722 1 C} FS
+-21 191 163 -191 2 831 997 SP
+{0 0.278 1 C} FS
+93 -473 27 -6 -55 498 3 1163 997 SP
+{0 0.5 1 C} FS
+71 -365 221 -49 -93 473 3 1228 1016 SP
+{0 0.722 1 C} FS
+51 -258 220 -49 -71 365 3 1427 1075 SP
+{0 0.944 1 C} FS
+29 -150 221 -49 -51 258 3 1627 1133 SP
+{0.167 1 0.833 C} FS
+8 -42 221 -49 -29 150 3 1826 1192 SP
+{0.389 1 0.611 C} FS
+-8 42 -79 -23 2 2105 1274 SP
+{0 0.278 1 C} FS
+33 363 3 0 0 -388 3 1163 997 SP
+{0 0.5 1 C} FS
+26 286 117 0 -33 -363 3 1199 972 SP
+{0 0.722 1 C} FS
+19 209 117 0 -26 -286 3 1309 895 SP
+{0 0.944 1 C} FS
+12 132 117 0 -19 -209 3 1419 818 SP
+{0.167 1 0.833 C} FS
+5 55 117 0 -12 -132 3 1529 741 SP
+{0.389 1 0.611 C} FS
+-5 -55 -78 55 2 1717 609 SP
+{0 0.278 1 C} FS
+3 7 0 -7 2 1163 609 SP
+{0 0.5 1 C} FS
+-35 -14 -85 -207 117 0 3 7 4 1163 602 SP
+{0 0.722 1 C} FS
+-62 -151 117 0 85 207 3 1198 402 SP
+{0 0.944 1 C} FS
+-39 -95 117 0 62 151 3 1338 458 SP
+{0.167 1 0.833 C} FS
+-17 -40 117 0 39 95 3 1478 514 SP
+{0.389 1 0.611 C} FS
+17 40 -100 -40 2 1717 609 SP
+{0 0.0556 1 C} FS
+320 268 -115 -316 2 1329 2105 SP
+{0 0.278 1 C} FS
+-78 -37 -566 -475 218 -50 320 268 4 1214 1789 SP
+{0 0.5 1 C} FS
+-152 -127 218 -50 566 475 3 1186 1532 SP
+{0 0.722 1 C} FS
+152 127 -231 -108 2 2049 1938 SP
+{0 0.278 1 C} FS
+-50 59 50 40 2 1717 0 SP
+{0 0.5 1 C} FS
+104 -124 0 108 -50 59 3 1767 40 SP
+{0 0.722 1 C} FS
+158 -189 0 109 -104 124 3 1821 83 SP
+{0 0.944 1 C} FS
+213 -254 0 108 -158 189 3 1875 127 SP
+{0.167 1 0.833 C} FS
+267 -318 0 108 -213 254 3 1930 170 SP
+{0.389 1 0.611 C} FS
+286 -342 35 -10 0 77 -267 318 4 1984 214 SP
+{0.611 1 0.389 C} FS
+220 -261 121 -37 -286 342 3 2038 257 SP
+{0.833 1 0.167 C} FS
+153 -182 121 -36 -220 261 3 2093 301 SP
+{1 0.944 0 C} FS
+85 -103 122 -36 -153 182 3 2147 344 SP
+{1 0.722 0 C} FS
+19 -22 121 -37 -85 103 3 2201 387 SP
+{1 0.498 0 C} FS
+-19 22 -15 -12 2 2271 443 SP
+{0 0.278 1 C} FS
+2 -6 -2 -1 2 1163 609 SP
+{0 0.5 1 C} FS
+-70 154 -31 -5 0 -214 2 -6 4 1161 608 SP
+{0 0.722 1 C} FS
+-46 100 -123 -17 70 -154 3 1062 537 SP
+{0 0.944 1 C} FS
+-22 48 -123 -18 46 -100 3 963 466 SP
+{0.167 1 0.833 C} FS
+22 -48 89 64 2 775 332 SP
+{0 0.278 1 C} FS
+0 37 -17 -29 2 1108 1495 SP
+{0 0.5 1 C} FS
+1 -332 -131 60 0 37 3 1091 1466 SP
+{0 0.722 1 C} FS
+1 -2 1 -623 -131 59 -1 332 4 961 1231 SP
+{0 0.944 1 C} FS
+1 -375 -132 60 -1 623 3 830 999 SP
+{0.167 1 0.833 C} FS
+0 -127 -131 60 -1 375 3 698 1307 SP
+{0.389 1 0.611 C} FS
+0 127 68 -157 2 498 1772 SP
+{0 0.944 1 C} FS
+-24 44 0 -40 2 498 2326 SP
+{0.167 1 0.833 C} FS
+232 -413 -208 29 -24 44 3 498 2286 SP
+{0.389 1 0.611 C} FS
+-232 413 0 174 387 -610 3 111 2382 SP
+256 -529 12 -240 -387 610 3 498 1772 SP
+{0.611 1 0.389 C} FS
+256 -529 -43 813 2 166 1329 SP
+{0 0.722 1 C} FS
+56 15 -60 29 2 942 2105 SP
+{0 0.944 1 C} FS
+-34 -48 -383 -100 -23 325 56 15 4 882 2134 SP
+{0.167 1 0.833 C} FS
+-76 -20 -23 325 383 100 3 532 2374 SP
+{0.389 1 0.611 C} FS
+76 20 -70 -101 2 886 2880 SP
+{0 0.944 1 C} FS
+58 44 -24 4 2 498 2326 SP
+{0.167 1 0.833 C} FS
+-550 -420 284 405 58 44 3 474 2330 SP
+{0.389 1 0.611 C} FS
+-550 -420 -70 -101 775 498 3 111 2382 SP
+14 185 -59 41 2 886 2880 SP
+{0.611 1 0.389 C} FS
+-33 -430 -60 300 14 185 3 827 2921 SP
+{0.833 1 0.167 C} FS
+-31 -397 -75 -7 -6 28 33 430 4 748 2976 SP
+{1 0.944 0 C} FS
+-26 -334 -84 -8 31 397 3 669 3030 SP
+{1 0.722 0 C} FS
+-20 -273 -84 -7 26 334 3 590 3085 SP
+{1 0.498 0 C} FS
+-16 -210 -83 -8 20 273 3 512 3139 SP
+{1 0.278 0 C} FS
+-11 -149 -84 -7 16 210 3 433 3194 SP
+{1 0.0556 0 C} FS
+-7 -86 -83 -8 11 149 3 354 3248 SP
+{0.833 0 0 C} FS
+-2 -24 -84 -8 7 86 3 275 3303 SP
+{0.61 0 0 C} FS
+2 24 30 -21 2 166 3378 SP
+{0.389 1 0.611 C} FS
+715 510 1 29 -775 -498 3 886 2880 SP
+{0.611 1 0.389 C} FS
+629 449 7 116 -715 -510 3 827 2921 SP
+{0.833 1 0.167 C} FS
+544 388 6 115 -629 -449 3 748 2976 SP
+{1 0.944 0 C} FS
+458 328 7 115 -544 -388 3 669 3030 SP
+{1 0.722 0 C} FS
+374 266 6 116 -458 -328 3 590 3085 SP
+{1 0.498 0 C} FS
+289 206 6 115 -374 -266 3 512 3139 SP
+{1 0.278 0 C} FS
+203 145 7 115 -289 -206 3 433 3194 SP
+{1 0.0556 0 C} FS
+118 84 6 116 -203 -145 3 354 3248 SP
+{0.833 0 0 C} FS
+32 23 7 115 -118 -84 3 275 3303 SP
+{0.61 0 0 C} FS
+-32 -23 30 -21 2 166 3378 SP
+{0 0.944 1 C} FS
+60 210 -177 -198 2 1329 3378 SP
+{0.167 1 0.833 C} FS
+-132 -464 -141 14 60 210 3 1152 3180 SP
+{0.389 1 0.611 C} FS
+45 -226 -89 -312 -141 14 132 464 4 939 2940 SP
+{0.611 1 0.389 C} FS
+-7 -27 -142 15 89 312 3 841 3106 SP
+{0.833 1 0.167 C} FS
+7 27 6 -28 2 775 3434 SP
+{0 0.722 1 C} FS
+-37 47 -23 -18 2 942 2105 SP
+{0 0.944 1 C} FS
+253 -324 0 -40 -384 192 -37 47 4 919 2087 SP
+{0.167 1 0.833 C} FS
+-86 110 -167 -126 253 -324 3 498 2286 SP
+{0.389 1 0.611 C} FS
+86 -110 0 174 2 498 1772 SP
+{0 0.0556 1 C} FS
+148 360 -96 0 2 1329 2105 SP
+{0 0.278 1 C} FS
+-106 -258 -148 -129 4 27 148 360 4 1233 2105 SP
+{0 0.5 1 C} FS
+-50 -119 -158 -139 106 258 3 1131 2105 SP
+{0 0.722 1 C} FS
+50 119 87 0 2 942 2105 SP
+{0 0.278 1 C} FS
+6 30 -17 8 2 1108 1495 SP
+{0 0.5 1 C} FS
+-54 -277 -83 307 6 30 3 1091 1503 SP
+{0 0.722 1 C} FS
+-90 -465 -23 -18 -72 265 54 277 4 960 1563 SP
+{0 0.944 1 C} FS
+54 280 -132 60 -90 -465 3 919 2087 SP
+{0.167 1 0.833 C} FS
+18 94 -131 60 -54 -280 3 751 1962 SP
+{0.389 1 0.611 C} FS
+-18 -94 86 64 2 498 1772 SP
+{0 0 0.61 C} FS
+44 98 -85 -98 2 1662 2492 SP
+{0 0 0.833 C} FS
+-164 -371 -114 0 44 98 3 1577 2394 SP
+{0 0.0556 1 C} FS
+-52 -360 -12 -27 -114 0 164 371 4 1343 2121 SP
+{0 0.278 1 C} FS
+12 27 -4 -27 2 1385 2492 SP
+32 -181 -69 -114 -111 166 3 1385 2492 SP
+{0 0.5 1 C} FS
+15 -84 -141 -236 -32 181 3 1237 2363 SP
+{0 0.722 1 C} FS
+-15 84 137 119 2 942 2105 SP
+{0 0.278 1 C} FS
+50 109 -40 23 2 1274 2658 SP
+{0 0.5 1 C} FS
+-153 -333 21 271 50 109 3 1234 2681 SP
+{0 0.722 1 C} FS
+-256 -557 21 271 153 333 3 1152 2728 SP
+{0 0.944 1 C} FS
+-164 -358 -177 -198 3 46 256 557 4 1070 2775 SP
+{0.167 1 0.833 C} FS
+33 72 -82 46 -164 -358 3 1152 3180 SP
+{0.389 1 0.611 C} FS
+-33 -72 53 60 2 886 2880 SP
+{0 0 0.833 C} FS
+72 151 -118 -59 2 1606 2825 SP
+{0 0.0556 1 C} FS
+-158 -332 -55 110 72 151 3 1488 2766 SP
+{0 0.278 1 C} FS
+-10 -132 -165 -348 -56 111 158 332 4 1347 2695 SP
+{0 0.5 1 C} FS
+-89 -188 -55 111 165 348 3 1284 2790 SP
+{0 0.722 1 C} FS
+-13 -27 -55 110 89 188 3 1305 3061 SP
+{0 0.944 1 C} FS
+13 27 -3 -46 2 1329 3378 SP
+{0 0 0.61 C} FS
+76 -226 -38 226 2 1662 2492 SP
+{0 0 0.833 C} FS
+-136 136 -66 197 108 0 76 -226 4 1624 2718 SP
+{0 0.0556 1 C} FS
+12 -34 162 -163 -66 197 3 1808 2492 SP
+{0 0.278 1 C} FS
+-12 34 -22 0 2 1938 2492 SP
+{0 0 0.833 C} FS
+21 -86 -118 -59 2 1606 2825 SP
+{0 0.0556 1 C} FS
+-46 190 -116 -175 21 -86 3 1488 2766 SP
+{0 0.278 1 C} FS
+-46 190 8 13 111 -166 3 1274 2658 SP
+{0 0 0.61 C} FS
+3 226 -41 0 2 1662 2492 SP
+{0 0 0.833 C} FS
+-2 -188 -97 -145 -18 107 3 226 4 1621 2492 SP
+{0 0.0556 1 C} FS
+0 -13 -116 -175 2 188 3 1507 2492 SP
+{0 0.278 1 C} FS
+0 13 8 0 2 1385 2492 SP
+{0 0 0.61 C} FS
+134 197 -157 -188 2 1883 3157 SP
+{0 0 0.833 C} FS
+46 -92 -198 -290 -102 41 134 197 4 1726 2969 SP
+{0 0.0556 1 C} FS
+-150 -221 -103 41 198 290 3 1560 2917 SP
+{0 0.278 1 C} FS
+-103 -151 -103 41 150 221 3 1505 3027 SP
+{0 0.5 1 C} FS
+-56 -81 -102 41 103 151 3 1449 3138 SP
+{0 0.722 1 C} FS
+-8 -12 -103 41 56 81 3 1394 3249 SP
+{0 0.944 1 C} FS
+8 12 10 -19 2 1329 3378 SP
+{0 0 0.61 C} FS
+114 56 -85 -98 2 1662 2492 SP
+{0 0 0.833 C} FS
+-430 -212 82 -117 114 56 3 1577 2394 SP
+{0 0.0556 1 C} FS
+-205 48 -321 -159 82 -117 430 212 4 1343 2121 SP
+{0 0.278 1 C} FS
+-185 -91 82 -118 321 159 3 1534 2057 SP
+{0 0.5 1 C} FS
+-49 -24 82 -117 185 91 3 1752 2007 SP
+{0 0.722 1 C} FS
+49 24 -79 19 2 2049 1938 SP
+{0 0.278 1 C} FS
+-29 -137 -40 23 2 1274 2658 SP
+{0 0.5 1 C} FS
+88 420 -141 -236 -29 -137 3 1234 2681 SP
+{0 0.722 1 C} FS
+132 626 -4 44 -122 -203 -88 -420 4 1152 2728 SP
+{0 0.944 1 C} FS
+73 348 -23 325 -132 -626 3 1070 2775 SP
+{0.167 1 0.833 C} FS
+14 69 -23 325 -73 -348 3 988 2822 SP
+{0.389 1 0.611 C} FS
+-14 -69 20 -12 2 886 2880 SP
+{0 0.0556 1 C} FS
+19 316 -115 -316 2 1329 2105 SP
+{0 0.278 1 C} FS
+11 -38 -34 -572 -102 0 19 316 4 1214 1789 SP
+{0 0.5 1 C} FS
+15 265 -83 307 -34 -572 3 1131 2105 SP
+{0 0.722 1 C} FS
+-15 -265 87 0 2 942 2105 SP
+{0 0 0.61 C} FS
+-12 8 -99 -8 2 1994 3434 SP
+{0 0 0.833 C} FS
+24 -18 -122 0 -12 8 3 1895 3426 SP
+{0 0.0556 1 C} FS
+36 -27 -121 0 -24 18 3 1785 3416 SP
+{0 0.278 1 C} FS
+49 -36 -122 0 -36 27 3 1676 3407 SP
+{0 0.5 1 C} FS
+61 -45 -122 0 -49 36 3 1567 3398 SP
+{0 0.722 1 C} FS
+74 -54 -122 0 -61 45 3 1457 3389 SP
+{0 0.944 1 C} FS
+117 -12 60 -44 -122 0 -74 54 4 1348 3380 SP
+{0.167 1 0.833 C} FS
+41 -30 -122 0 -60 44 3 1212 3390 SP
+{0.389 1 0.611 C} FS
+22 -16 -122 0 -41 30 3 1071 3404 SP
+{0.611 1 0.389 C} FS
+1 -1 -121 0 -22 16 3 930 3418 SP
+{0.833 1 0.167 C} FS
+-1 1 13 -1 2 775 3434 SP
+{0 0.278 1 C} FS
+-29 -44 65 19 2 1163 997 SP
+{0 0.5 1 C} FS
+118 180 110 -77 -29 -44 3 1228 1016 SP
+{0 0.722 1 C} FS
+208 315 110 -77 -118 -180 3 1427 1075 SP
+{0 0.944 1 C} FS
+297 451 110 -77 -208 -315 3 1627 1133 SP
+{0.167 1 0.833 C} FS
+387 587 110 -77 -297 -451 3 1826 1192 SP
+{0.389 1 0.611 C} FS
+-387 -587 -79 -23 388 665 3 1717 609 SP
+{0 0.722 1 C} FS
+507 -285 -16 -42 2 2492 997 SP
+{0 0.944 1 C} FS
+-611 344 -99 -13 174 -116 507 -285 4 2476 955 SP
+{0.167 1 0.833 C} FS
+-514 288 -125 -15 611 -344 3 2447 885 SP
+{0.389 1 0.611 C} FS
+-416 234 -126 -16 514 -288 3 2419 814 SP
+{0.611 1 0.389 C} FS
+-319 180 -125 -16 416 -234 3 2391 744 SP
+{0.833 1 0.167 C} FS
+-222 124 -125 -15 319 -180 3 2363 674 SP
+{1 0.944 0 C} FS
+-124 70 -126 -16 222 -124 3 2335 603 SP
+{1 0.722 0 C} FS
+-27 16 -125 -16 124 -70 3 2307 533 SP
+{1 0.498 0 C} FS
+27 -16 8 20 2 2271 443 SP
+{0 0.278 1 C} FS
+447 46 50 40 2 1717 0 SP
+{0 0.5 1 C} FS
+-937 -98 544 95 447 46 3 1767 40 SP
+{0 0.722 1 C} FS
+-1063 -111 -53 16 233 41 937 98 4 1821 83 SP
+{0 0.944 1 C} FS
+-917 -96 -91 28 1063 111 3 1875 127 SP
+{0.167 1 0.833 C} FS
+-771 -80 -92 28 917 96 3 1930 170 SP
+{0.389 1 0.611 C} FS
+-625 -65 -92 28 771 80 3 1984 214 SP
+{0.611 1 0.389 C} FS
+-478 -50 -92 29 625 65 3 2038 257 SP
+{0.833 1 0.167 C} FS
+-333 -35 -91 28 478 50 3 2093 301 SP
+{1 0.944 0 C} FS
+-187 -20 -92 28 333 35 3 2147 344 SP
+{1 0.722 0 C} FS
+-40 -4 -92 28 187 20 3 2201 387 SP
+{1 0.498 0 C} FS
+40 4 -15 -12 2 2271 443 SP
+{0 0.5 1 C} FS
+-241 276 -193 19 166 -830 3 2880 1772 SP
+{0 0.722 1 C} FS
+241 -276 120 240 2 2492 997 SP
+-62 -125 -77 55 2 2492 997 SP
+{0 0.944 1 C} FS
+167 335 -235 -117 -62 -125 3 2415 1052 SP
+{0.167 1 0.833 C} FS
+272 544 -234 -117 -167 -335 3 2285 1145 SP
+{0.389 1 0.611 C} FS
+-272 -544 51 -37 388 665 3 1717 609 SP
+{0 0.722 1 C} FS
+-77 -523 0 578 2 2492 997 SP
+{0 0.944 1 C} FS
+141 181 66 446 -130 93 -77 -523 4 2492 1575 SP
+{0.167 1 0.833 C} FS
+18 126 -129 92 -66 -446 3 2351 1591 SP
+{0.389 1 0.611 C} FS
+-18 -126 69 89 2 2105 1274 SP
+{0 0.5 1 C} FS
+102 535 -268 -535 2 2880 1772 SP
+{0 0.722 1 C} FS
+0 -578 -38 -197 -184 0 102 535 4 2612 1237 SP
+{0 0.944 1 C} FS
+38 197 0 -197 2 2492 1772 SP
+{0 0.5 1 C} FS
+21 485 -166 0 2 2880 1772 SP
+{0 0.722 1 C} FS
+-4 -105 -180 -449 -21 69 21 485 4 2714 1772 SP
+{0 0.944 1 C} FS
+-4 -105 42 105 2 2492 1772 SP
+{0 0.722 1 C} FS
+-324 -14 336 -125 2 2049 1938 SP
+{0 0.944 1 C} FS
+141 181 272 11 18 -219 -324 -14 4 2385 1813 SP
+{0.167 1 0.833 C} FS
+77 3 18 -220 -272 -11 3 2351 1591 SP
+{0.389 1 0.611 C} FS
+-77 -3 69 89 2 2105 1274 SP
+{0 0.722 1 C} FS
+174 226 -53 16 2 2991 222 SP
+{0 0.944 1 C} FS
+-211 -275 -99 -13 45 90 174 226 4 2938 238 SP
+{0.167 1 0.833 C} FS
+178 232 -92 28 -211 -275 3 3058 541 SP
+{0.389 1 0.611 C} FS
+144 188 -92 28 -178 -232 3 2933 526 SP
+{0.611 1 0.389 C} FS
+111 143 -92 29 -144 -188 3 2807 510 SP
+{0.833 1 0.167 C} FS
+77 100 -91 28 -111 -143 3 2682 494 SP
+{1 0.944 0 C} FS
+43 56 -92 28 -77 -100 3 2557 479 SP
+{1 0.722 0 C} FS
+10 12 -92 28 -43 -56 3 2431 463 SP
+{1 0.498 0 C} FS
+-10 -12 35 4 2 2271 443 SP
+{0 0.722 1 C} FS
+123 28 -139 -70 2 2492 997 SP
+{0 0.944 1 C} FS
+-329 -75 -29 -70 123 28 3 2353 927 SP
+{0.167 1 0.833 C} FS
+-535 -121 -28 -71 329 75 3 2118 810 SP
+{0.389 1 0.611 C} FS
+-35 10 -639 -145 -28 -70 535 121 4 1884 693 SP
+{0.611 1 0.389 C} FS
+-490 -112 -28 -70 639 145 3 1752 599 SP
+{0.833 1 0.167 C} FS
+-341 -77 -28 -71 490 112 3 1873 562 SP
+{1 0.944 0 C} FS
+-191 -43 -28 -70 341 77 3 1994 526 SP
+{1 0.722 0 C} FS
+-42 -10 -28 -70 191 43 3 2116 490 SP
+{1 0.498 0 C} FS
+42 10 -34 10 2 2271 443 SP
+{0 0 0.833 C} FS
+14 -11 -10 29 2 3323 55 SP
+{0 0.0556 1 C} FS
+-66 55 15 68 14 -11 3 3313 84 SP
+{0 0.278 1 C} FS
+-118 98 15 68 66 -55 3 3276 196 SP
+{0 0.5 1 C} FS
+-170 142 15 68 118 -98 3 3239 307 SP
+{0 0.722 1 C} FS
+-222 185 15 68 170 -142 3 3202 419 SP
+{0 0.944 1 C} FS
+-76 0 -169 141 15 68 222 -185 4 3165 530 SP
+{0.167 1 0.833 C} FS
+88 -73 97 0 -169 141 3 3402 413 SP
+{0.389 1 0.611 C} FS
+7 -6 96 0 -88 73 3 3418 481 SP
+{0.611 1 0.389 C} FS
+-7 6 -1 -6 2 3434 554 SP
+{0 0 0.833 C} FS
+-13 -17 -10 29 2 3323 55 SP
+{0 0.0556 1 C} FS
+67 84 -91 45 -13 -17 3 3313 84 SP
+{0 0.278 1 C} FS
+120 150 -90 45 -67 -84 3 3276 196 SP
+{0 0.5 1 C} FS
+173 217 -90 45 -120 -150 3 3239 307 SP
+{0 0.722 1 C} FS
+53 66 121 242 -38 20 -173 -217 4 3202 419 SP
+{0 0.944 1 C} FS
+-53 -66 8 -24 2 3157 554 SP
+{0 0.5 1 C} FS
+-3 -39 20 -20 2 3046 942 SP
+{0 0.722 1 C} FS
+16 221 77 -272 -3 -39 3 3066 922 SP
+{0 0.944 1 C} FS
+13 188 76 0 17 -57 -16 -221 4 3156 832 SP
+{0.167 1 0.833 C} FS
+-6 -97 90 -91 13 188 3 3233 554 SP
+{0.389 1 0.611 C} FS
+-1 -7 91 -90 6 97 3 3330 554 SP
+{0.611 1 0.389 C} FS
+1 7 -8 0 2 3434 554 SP
+{0 0.5 1 C} FS
+-63 669 18 113 166 -830 3 2880 1772 SP
+{0 0.722 1 C} FS
+9 -89 135 -54 -63 669 3 3064 1055 SP
+{0 0.944 1 C} FS
+-9 89 -12 -81 2 3157 1662 SP
+{0 0.5 1 C} FS
+7 -98 18 113 2 3046 942 SP
+{0 0.722 1 C} FS
+-39 553 113 71 7 -98 3 3064 1055 SP
+{0 0.944 1 C} FS
+-111 149 -30 414 114 71 39 -553 4 3145 1581 SP
+{0.167 1 0.833 C} FS
+12 -168 132 -175 -30 414 3 3298 1099 SP
+{0.389 1 0.611 C} FS
+-12 168 -77 -48 2 3489 1218 SP
+{0 0.944 1 C} FS
+-22 -237 133 88 2 3157 1662 SP
+{0.167 1 0.833 C} FS
+48 517 132 -175 -22 -237 3 3290 1750 SP
+{0.389 1 0.611 C} FS
+-48 -517 -41 -28 0 665 3 3489 1218 SP
+{0 0.5 1 C} FS
+5 35 20 -20 2 3046 942 SP
+{0 0.722 1 C} FS
+-28 -196 113 71 5 35 3 3066 922 SP
+{0 0.944 1 C} FS
+-52 -357 114 71 28 196 3 3156 832 SP
+{0.167 1 0.833 C} FS
+-76 -519 114 71 52 357 3 3246 742 SP
+{0.389 1 0.611 C} FS
+-18 -126 -44 -531 77 48 76 519 4 3336 651 SP
+{0.611 1 0.389 C} FS
+18 126 -7 7 2 3434 554 SP
+{0 0.5 1 C} FS
+-11 -72 132 24 2 2880 1772 SP
+{0 0.722 1 C} FS
+22 153 135 -54 -11 -72 3 3012 1796 SP
+{0 0.944 1 C} FS
+14 99 133 88 21 -8 -22 -153 4 3158 1823 SP
+{0.167 1 0.833 C} FS
+-3 -21 147 27 14 99 3 3290 1750 SP
+{0.389 1 0.611 C} FS
+3 21 -41 -28 2 3489 1883 SP
+{0 0.5 1 C} FS
+-210 78 17 -59 2 3046 942 SP
+{0 0.722 1 C} FS
+157 -59 491 -327 -361 36 -210 78 4 3063 883 SP
+{0 0.944 1 C} FS
+-157 59 -17 57 2 3157 554 SP
+{0 0 0.833 C} FS
+288 22 -311 -10 2 3323 55 SP
+{0 0.0556 1 C} FS
+-1390 -108 -91 45 288 22 3 3012 45 SP
+{0 0.278 1 C} FS
+-497 -86 -905 -71 -90 45 1390 108 4 1819 4 SP
+{0 0.5 1 C} FS
+271 21 544 95 -905 -71 3 3119 157 SP
+{0 0.722 1 C} FS
+-271 -21 38 -20 2 2991 222 SP
+{0 0.5 1 C} FS
+9 -99 123 123 2 2880 1772 SP
+{0 0.722 1 C} FS
+-19 208 146 27 9 -99 3 3003 1895 SP
+{0 0.944 1 C} FS
+-29 318 146 26 19 -208 3 3139 2031 SP
+{0.167 1 0.833 C} FS
+-40 427 147 27 29 -318 3 3275 2167 SP
+{0.389 1 0.611 C} FS
+-40 427 -38 -7 0 -499 3 3489 2382 SP
+{0 0 0.833 C} FS
+147 345 56 12 -111 -388 3 1994 3323 SP
+{0 0.0556 1 C} FS
+121 285 126 27 -147 -345 3 2086 3292 SP
+{0 0.278 1 C} FS
+95 225 126 27 -121 -285 3 2186 3259 SP
+{0 0.5 1 C} FS
+70 164 126 27 -95 -225 3 2286 3226 SP
+{0 0.722 1 C} FS
+44 104 126 27 -70 -164 3 2387 3192 SP
+{0 0.944 1 C} FS
+18 43 126 27 -44 -104 3 2487 3159 SP
+{0.167 1 0.833 C} FS
+-18 -43 -71 23 2 2658 3102 SP
+{0 0 0.833 C} FS
+-156 -126 15 -120 277 110 3 1606 2825 SP
+{0 0.0556 1 C} FS
+27 22 162 -163 -156 -126 3 1898 2815 SP
+{0 0.278 1 C} FS
+-27 -22 -7 56 2 1938 2492 SP
+{0 0 0.61 C} FS
+-9 -42 38 0 2 1662 2492 SP
+{0 0 0.833 C} FS
+35 159 82 -117 -9 -42 3 1700 2492 SP
+{0 0.0556 1 C} FS
+61 276 82 -117 -35 -159 3 1808 2492 SP
+{0 0.278 1 C} FS
+-41 203 42 191 82 -118 -61 -276 4 1916 2492 SP
+{0 0.5 1 C} FS
+-11 -51 51 -257 42 191 3 1937 2098 SP
+{0 0.722 1 C} FS
+11 51 -30 43 2 2049 1938 SP
+{0 0 0.833 C} FS
+-101 -4 116 -116 2 1883 2935 SP
+{0 0.0556 1 C} FS
+327 12 33 -267 -101 -4 3 1999 2819 SP
+{0 0.278 1 C} FS
+-327 -12 -13 12 333 56 3 1938 2492 SP
+{0 0 0.61 C} FS
+29 53 82 122 -111 -277 3 1994 3434 SP
+{0 0 0.833 C} FS
+29 53 -29 -44 2 1994 3323 SP
+{0 0 0.61 C} FS
+-82 -185 82 122 2 1883 3157 SP
+{0 0 0.833 C} FS
+-82 -185 -29 -44 111 388 3 1883 2935 SP
+{0 0 0.61 C} FS
+-79 -62 79 -40 2 1994 3434 SP
+{0 0 0.833 C} FS
+74 59 92 -31 0 -9 -79 -62 4 2073 3394 SP
+{0 0.0556 1 C} FS
+61 48 100 -33 -74 -59 3 2160 3351 SP
+{0 0.278 1 C} FS
+49 37 100 -33 -61 -48 3 2247 3307 SP
+{0 0.5 1 C} FS
+35 28 101 -34 -49 -37 3 2335 3263 SP
+{0 0.722 1 C} FS
+22 17 100 -33 -35 -28 3 2422 3220 SP
+{0 0.944 1 C} FS
+9 8 100 -34 -22 -17 3 2509 3176 SP
+{0.167 1 0.833 C} FS
+-9 -8 -62 31 2 2658 3102 SP
+{0 0 0.61 C} FS
+35 260 -23 9 -111 -277 3 1994 3434 SP
+{0 0 0.833 C} FS
+27 209 -102 41 -35 -260 3 1895 3426 SP
+{0 0.0556 1 C} FS
+21 159 -103 41 -27 -209 3 1785 3416 SP
+{0 0.278 1 C} FS
+15 109 -103 41 -21 -159 3 1676 3407 SP
+{0 0.5 1 C} FS
+7 59 -102 41 -15 -109 3 1567 3398 SP
+{0 0.722 1 C} FS
+1 9 -103 41 -7 -59 3 1457 3389 SP
+{0 0.944 1 C} FS
+-1 -9 19 2 2 1329 3378 SP
+{0 0.278 1 C} FS
+201 8 41 -203 -333 -56 3 2271 2548 SP
+{0 0.5 1 C} FS
+-54 -2 -96 -263 201 8 3 1979 2289 SP
+{0 0.722 1 C} FS
+54 2 -19 94 2 2049 1938 SP
+{0 0 0.61 C} FS
+-157 -125 0 -63 2 1883 3157 SP
+{0 0 0.833 C} FS
+157 125 120 144 -277 -110 3 1883 2935 SP
+{0 0.278 1 C} FS
+89 -139 113 37 2 2271 2548 SP
+{0 0.5 1 C} FS
+-183 285 213 -106 89 -139 3 2384 2585 SP
+{0 0.722 1 C} FS
+-147 229 55 110 28 -14 183 -285 4 2503 2625 SP
+{0 0.944 1 C} FS
+-92 142 63 126 147 -229 3 2622 2665 SP
+{0.167 1 0.833 C} FS
+-36 56 63 126 92 -142 3 2740 2704 SP
+{0.389 1 0.611 C} FS
+36 -56 -76 -25 2 2935 2769 SP
+{0 0.278 1 C} FS
+-293 -149 202 -102 2 2271 2548 SP
+{0 0.5 1 C} FS
+602 306 -96 -263 -293 -149 3 2473 2446 SP
+{0 0.722 1 C} FS
+-602 -306 -28 14 665 388 3 2049 1938 SP
+149 64 336 -125 -665 -388 3 2714 2326 SP
+{0 0.944 1 C} FS
+149 64 -107 41 2 2492 1772 SP
+{0 0.722 1 C} FS
+141 -96 55 110 2 2714 2326 SP
+{0 0.944 1 C} FS
+-303 206 225 16 141 -96 3 2769 2436 SP
+{0.167 1 0.833 C} FS
+-464 316 224 16 303 -206 3 2832 2562 SP
+{0.389 1 0.611 C} FS
+-464 316 -130 -10 554 -387 3 2935 2769 SP
+{0.167 1 0.833 C} FS
+-47 128 86 -103 2 2658 3102 SP
+{0.389 1 0.611 C} FS
+-29 -87 131 -362 136 91 -47 128 4 2744 2999 SP
+{0.611 1 0.389 C} FS
+76 -210 136 91 -131 362 3 2964 2856 SP
+{0.833 1 0.167 C} FS
+21 -57 136 90 -76 210 3 3045 3099 SP
+{1 0.944 0 C} FS
+-21 57 -31 -92 2 3157 3434 SP
+{0 0.278 1 C} FS
+34 -76 79 113 2 2271 2548 SP
+{0 0.5 1 C} FS
+-70 154 119 40 34 -76 3 2350 2661 SP
+{0 0.722 1 C} FS
+-106 233 119 40 70 -154 3 2433 2779 SP
+{0 0.944 1 C} FS
+-141 313 118 39 106 -233 3 2516 2898 SP
+{0.167 1 0.833 C} FS
+-86 103 -115 255 119 40 141 -313 4 2599 3017 SP
+{0.389 1 0.611 C} FS
+115 -255 -191 230 2 2935 2769 SP
+3 -80 29 87 2 2935 2769 SP
+{0.611 1 0.389 C} FS
+-9 304 87 19 3 -80 3 2964 2856 SP
+{0.833 1 0.167 C} FS
+-14 527 86 20 9 -304 3 3045 3099 SP
+{1 0.944 0 C} FS
+-57 115 -13 485 87 19 14 -527 4 3126 3342 SP
+{1 0.722 0 C} FS
+-7 282 87 19 13 -485 3 3214 3319 SP
+{1 0.498 0 C} FS
+-2 77 87 20 7 -282 3 3307 3135 SP
+{1 0.278 0 C} FS
+2 -77 -35 70 2 3434 2880 SP
+{0.389 1 0.611 C} FS
+518 -358 32 7 -554 387 3 3489 2382 SP
+{0.611 1 0.389 C} FS
+422 -291 87 19 -518 358 3 3485 2418 SP
+{0.833 1 0.167 C} FS
+326 -225 86 20 -422 291 3 3476 2504 SP
+{1 0.944 0 C} FS
+230 -158 87 19 -326 225 3 3466 2590 SP
+{1 0.722 0 C} FS
+133 -91 87 19 -230 158 3 3457 2676 SP
+{1 0.498 0 C} FS
+36 -25 87 20 -133 91 3 3447 2762 SP
+{1 0.278 0 C} FS
+-36 25 3 -32 2 3434 2880 SP
+{0 0 0.61 C} FS
+-14 -40 93 0 2 1994 3434 SP
+{0 0 0.833 C} FS
+30 83 87 -43 -14 -40 3 2087 3434 SP
+{0 0.0556 1 C} FS
+46 127 87 -44 -30 -83 3 2190 3434 SP
+{0 0.278 1 C} FS
+61 171 88 -44 -46 -127 3 2293 3434 SP
+{0 0.5 1 C} FS
+78 214 87 -43 -61 -171 3 2396 3434 SP
+{0 0.722 1 C} FS
+94 258 87 -44 -78 -214 3 2500 3434 SP
+{0 0.944 1 C} FS
+110 301 87 -43 -94 -258 3 2603 3434 SP
+{0.167 1 0.833 C} FS
+112 307 39 25 62 -31 -110 -301 4 2706 3434 SP
+{0.389 1 0.611 C} FS
+-79 -216 103 0 112 307 3 2697 3127 SP
+{0.611 1 0.389 C} FS
+-46 -125 103 0 79 216 3 2833 3218 SP
+{0.833 1 0.167 C} FS
+-13 -35 103 0 46 125 3 2969 3309 SP
+{1 0.944 0 C} FS
+13 35 -52 -35 2 3157 3434 SP
+{0 0 0.833 C} FS
+60 -128 56 12 2 1883 2935 SP
+{0 0.0556 1 C} FS
+-193 414 259 -259 60 -128 3 1939 2947 SP
+{0 0.278 1 C} FS
+-159 340 79 113 13 -12 193 -414 4 2065 2974 SP
+{0 0.5 1 C} FS
+116 -249 126 27 -159 340 3 2350 2661 SP
+{0 0.722 1 C} FS
+73 -157 126 27 -116 249 3 2433 2779 SP
+{0 0.944 1 C} FS
+30 -65 126 27 -73 157 3 2516 2898 SP
+{0.167 1 0.833 C} FS
+-30 65 -59 -85 2 2658 3102 SP
+{0 0.5 1 C} FS
+-268 362 123 123 2 2880 1772 SP
+{0 0.722 1 C} FS
+229 -309 196 14 -21 69 -268 362 4 3003 1895 SP
+{0 0.944 1 C} FS
+140 -189 225 16 -229 309 3 3139 2031 SP
+{0.167 1 0.833 C} FS
+52 -69 224 16 -140 189 3 3275 2167 SP
+{0.389 1 0.611 C} FS
+-52 69 -78 -79 2 3489 2382 SP
+{0 0.278 1 C} FS
+-51 -43 78 37 2 1108 1495 SP
+{0 0.5 1 C} FS
+462 390 221 -49 -51 -43 3 1186 1532 SP
+{0 0.722 1 C} FS
+-12 139 485 408 220 -49 -462 -390 4 1818 1830 SP
+{0 0.944 1 C} FS
+-282 -238 18 -219 485 408 3 1576 1391 SP
+{0.167 1 0.833 C} FS
+-79 -67 18 -220 282 238 3 1797 1342 SP
+{0.389 1 0.611 C} FS
+79 67 -87 19 2 2105 1274 SP
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M -83 0 D S
+0 1108 M -83 0 D S
+0 2215 M -83 0 D S
+0 3323 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 554 M -42 0 D S
+0 1662 M -42 0 D S
+0 2769 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+3600 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M 83 0 D S
+0 1108 M 83 0 D S
+0 2215 M 83 0 D S
+0 3323 M 83 0 D S
+/PSL_AH0 0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+0 554 M 42 0 D S
+0 1662 M 42 0 D S
+0 2769 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-3600 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 -83 D S
+1108 0 M 0 -83 D S
+2215 0 M 0 -83 D S
+3323 0 M 0 -83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+554 0 M 0 -42 D S
+1662 0 M 0 -42 D S
+2769 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 3600 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 83 D S
+1108 0 M 0 83 D S
+2215 0 M 0 83 D S
+3323 0 M 0 83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+554 0 M 0 42 D S
+1662 0 M 0 42 D S
+2769 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3600 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
+1800 3600 PSL_H_y add M
+400 F0
+(Redisual) bc Z
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psscale -Cr.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba
+%%PROJ: xy -60.00000000 120.00000000 0.00000000 0.10000000 -60.000 120.000 0.000 0.100 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+0 -720 T
+25 W
+V N 0 0 T 3600 120 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 18 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [18 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+>> image
+J,fQU\._[=%Y'!7n<=&%E=$m)`D?3$NW,GC5Kmt8PPsJ@J$(%%q#MO%%KJefE$tt~>
+U
+2 setlinecap
+0 120 M 3600 0 D S
+0 0 M 0 120 D S
+3600 0 M 0 120 D S
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+0 0 M 3600 0 D S
+8 W
+200 0 M 0 -83 D S
+1200 0 M 0 -83 D S
+2200 0 M 0 -83 D S
+3200 0 M 0 -83 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(-50) sh mx
+(0) sh mx
+(50) sh mx
+(100) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+200 PSL_A0_y MM
+(-50) bc Z
+1200 PSL_A0_y MM
+(0) bc Z
+2200 PSL_A0_y MM
+(50) bc Z
+3200 PSL_A0_y MM
+(100) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+0 720 T
+0 A
+FQ
+O0
+-4200 -6000 TM
+
+% PostScript produced by:
+%%GMT:  pscontour -R0/6.5/0/6.5 trend.txt -Cz.cpt -JX3i -Baf:.Trend: -I -O -K -X-3.5i -Y-5i -i0,1,3
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+PSL_eoclip N
+{0.796 1 0 C} FS
+553 -30 -553 -55 2 775 332 SP
+{0.981 1 0 C} FS
+553 -30 -553 222 2 775 55 SP
+{0.241 1 0 C} FS
+104 -6 -9 -106 2 831 997 SP
+{0.426 1 0 C} FS
+-316 16 194 -225 104 -6 3 822 891 SP
+{0.611 1 0 C} FS
+-159 8 -218 -155 43 -51 316 -16 4 804 676 SP
+{0.796 1 0 C} FS
+159 -8 11 130 2 775 332 SP
+{0.241 1 0 C} FS
+-23 1 19 -26 2 332 942 SP
+{0.426 1 0 C} FS
+221 -12 -35 -213 -23 1 3 351 916 SP
+{0.611 1 0 C} FS
+420 -22 -36 -214 -221 12 3 514 692 SP
+{0.796 1 0 C} FS
+-420 22 -98 136 553 55 3 222 277 SP
+{0.0555 1 0 C} FS
+338 -18 83 -192 2 166 1329 SP
+{0.241 1 0 C} FS
+-338 18 -244 122 499 55 3 332 942 SP
+{0.0555 1 0 C} FS
+-73 4 83 -192 2 166 1329 SP
+{0.241 1 0 C} FS
+4 25 141 -8 11 -216 -73 4 4 249 1137 SP
+{0.426 1 0 C} FS
+-94 5 -35 -213 141 -8 3 187 925 SP
+{0.611 1 0 C} FS
+-47 3 -36 -214 94 -5 3 199 709 SP
+{0.796 1 0 C} FS
+47 -3 -12 216 2 222 277 SP
+{0.241 1 0 C} FS
+471 -25 19 -26 -499 -55 3 831 997 SP
+{0.426 1 0 C} FS
+-290 16 -18 -215 471 -25 3 351 916 SP
+{0.611 1 0 C} FS
+-109 6 -18 -214 290 -16 3 514 692 SP
+{0.796 1 0 C} FS
+109 -6 -98 136 2 775 332 SP
+{0 1 0.5 C} FS
+3 0 -1 -2 2 498 1772 SP
+{0 1 0.315 C} FS
+-253 14 94 -221 3 0 3 497 1770 SP
+{0 1 0.13 C} FS
+-502 27 94 -220 253 -14 3 341 1563 SP
+{0.0555 1 0 C} FS
+-421 210 -196 11 95 -221 502 -27 4 186 1356 SP
+{0.241 1 0 C} FS
+196 -11 -244 122 2 831 997 SP
+{0.796 1 0 C} FS
+211 -11 0 -85 -388 -56 3 1163 388 SP
+{0.981 1 0 C} FS
+211 -11 0 192 2 775 55 SP
+{0 1 0.87 C} FS
+8 -161 1 111 2382 SP
+{0 1 0.685 C} FS
+12 -216 1 119 2221 SP
+{0 1 0.5 C} FS
+11 -216 1 131 2005 SP
+{0 1 0.315 C} FS
+11 -216 1 142 1789 SP
+{0 1 0.13 C} FS
+12 -216 1 153 1573 SP
+{0.0555 1 0 C} FS
+-10 188 11 -216 2 165 1357 SP
+{0.241 1 0 C} FS
+11 -216 1 176 1141 SP
+{0.426 1 0 C} FS
+12 -216 1 187 925 SP
+{0.611 1 0 C} FS
+11 -216 1 199 709 SP
+{0.796 1 0 C} FS
+-12 216 1 222 277 SP
+{0.611 1 0 C} FS
+247 -14 -434 -173 2 1717 609 SP
+{0.796 1 0 C} FS
+-83 166 -80 4 -204 -204 247 -14 4 1283 436 SP
+{0.981 1 0 C} FS
+80 -4 -28 56 2 1274 166 SP
+{0.796 1 0 C} FS
+-260 14 83 -166 2 1163 388 SP
+{0.981 1 0 C} FS
+-260 14 -28 56 499 111 3 775 55 SP
+-499 -111 -443 166 2 1717 0 SP
+{0.611 1 0 C} FS
+187 -10 -187 -187 2 1717 609 SP
+{0.796 1 0 C} FS
+-391 21 0 -215 187 -10 3 1530 422 SP
+{0.981 1 0 C} FS
+391 -21 52 52 -443 166 3 1717 0 SP
+{0 1 0.13 C} FS
+-123 6 21 -189 2 1108 1495 SP
+{0.0555 1 0 C} FS
+263 -14 -116 -209 -123 6 3 1129 1306 SP
+{0.241 1 0 C} FS
+-263 14 -10 92 332 0 3 831 997 SP
+237 -12 95 -112 -332 0 3 1163 997 SP
+{0.426 1 0 C} FS
+-43 3 0 -216 237 -12 3 926 885 SP
+{0.611 1 0 C} FS
+43 -3 -43 51 2 1163 609 SP
+{0 1 0.13 C} FS
+-917 49 -59 -17 997 -221 3 1108 1495 SP
+{0.0555 1 0 C} FS
+-273 15 -620 -183 917 -49 3 1129 1306 SP
+{0.241 1 0 C} FS
+273 -15 -10 92 2 1163 997 SP
+-192 10 192 -134 2 1163 997 SP
+{0.426 1 0 C} FS
+525 -28 0 -216 -192 10 3 1355 863 SP
+{0.611 1 0 C} FS
+-525 28 -29 20 554 0 3 1163 609 SP
+120 -6 0 -167 -554 0 3 1717 609 SP
+{0.796 1 0 C} FS
+120 -6 0 54 2 1163 388 SP
+{0 1 0.685 C} FS
+-710 38 -68 -32 720 -167 3 1329 2105 SP
+{0 1 0.5 C} FS
+-376 20 -411 -193 710 -38 3 1271 1944 SP
+{0 1 0.315 C} FS
+-42 3 -411 -194 376 -20 3 1194 1733 SP
+{0 1 0.13 C} FS
+42 -3 9 27 2 1108 1495 SP
+{0.611 1 0 C} FS
+-483 25 -71 -56 554 -166 3 1717 609 SP
+{0.796 1 0 C} FS
+231 -12 0 -215 -483 25 3 2200 387 SP
+{0.981 1 0 C} FS
+-231 12 231 185 2 1717 0 SP
+{0.611 1 0 C} FS
+218 -12 -218 -155 2 1163 609 SP
+{0.796 1 0 C} FS
+-218 12 0 54 388 56 3 775 332 SP
+{0 1 0.5 C} FS
+4 0 2 -2 2 498 1772 SP
+{0 1 0.315 C} FS
+-447 23 537 -244 4 0 3 500 1770 SP
+{0 1 0.13 C} FS
+-318 17 -102 -183 67 -31 447 -23 4 594 1549 SP
+{0.0555 1 0 C} FS
+-107 5 -116 -209 318 -17 3 688 1329 SP
+{0.241 1 0 C} FS
+107 -5 -48 111 2 831 997 SP
+{0 1 0.87 C} FS
+-282 15 0 -125 387 -56 3 111 2382 SP
+{0 1 0.685 C} FS
+-140 8 0 -216 282 -15 3 216 2216 SP
+{0 1 0.5 C} FS
+140 -8 -140 221 2 498 1772 SP
+{0 1 0.87 C} FS
+-97 5 105 -166 2 111 2382 SP
+{0 1 0.685 C} FS
+227 -12 12 -216 -97 5 3 216 2216 SP
+{0 1 0.5 C} FS
+1 2 355 -19 11 -216 -227 12 4 358 1993 SP
+{0 1 0.315 C} FS
+-188 10 -156 -207 355 -19 3 142 1789 SP
+{0 1 0.13 C} FS
+-21 1 -155 -207 188 -10 3 153 1573 SP
+{0.0555 1 0 C} FS
+21 -1 -1 28 2 166 1329 SP
+{0 0.574 1 C} FS
+40 -2 -36 -52 2 886 2880 SP
+{0 0.759 1 C} FS
+-200 11 15 -216 40 -2 3 850 2828 SP
+{0 0.944 1 C} FS
+-362 19 16 -216 200 -11 3 705 2621 SP
+{0 1 0.87 C} FS
+-281 140 -157 8 15 -216 362 -19 4 559 2413 SP
+{0 1 0.685 C} FS
+157 -8 -163 81 2 942 2105 SP
+{0 0.574 1 C} FS
+-41 3 -36 -52 2 886 2880 SP
+{0 0.759 1 C} FS
+205 -11 -309 -199 -41 3 3 850 2828 SP
+{0 0.944 1 C} FS
+369 -20 -310 -199 -205 11 3 705 2621 SP
+{0 1 0.87 C} FS
+369 -20 79 51 -387 56 3 498 2326 SP
+{0 0.204 1 C} FS
+514 -28 130 -89 -609 -56 3 775 3434 SP
+{0 0.389 1 C} FS
+-220 11 43 -217 514 -28 3 296 3289 SP
+{0 0.574 1 C} FS
+220 -11 -253 175 2 886 2880 SP
+{0 0.204 1 C} FS
+-134 7 130 -89 2 166 3378 SP
+{0 0.389 1 C} FS
+483 -26 -12 -215 -134 7 3 296 3289 SP
+{0 0.574 1 C} FS
+77 49 671 -35 -12 -215 -483 26 4 633 3055 SP
+{0 0.759 1 C} FS
+-374 20 -309 -199 671 -35 3 138 2866 SP
+{0 0.944 1 C} FS
+-76 4 -310 -199 374 -20 3 126 2652 SP
+{0 1 0.87 C} FS
+76 -4 3 55 2 111 2382 SP
+{0 0.204 1 C} FS
+-396 21 -123 -138 554 -56 3 775 3434 SP
+{0 0.389 1 C} FS
+-171 9 -182 -205 396 -21 3 810 3261 SP
+{0 0.574 1 C} FS
+171 -9 -33 164 2 886 2880 SP
+{0 1 0.87 C} FS
+281 -15 0 -125 2 498 2326 SP
+{0 1 0.685 C} FS
+-266 14 -178 -134 163 -81 281 -15 4 498 2201 SP
+{0 1 0.5 C} FS
+266 -14 0 213 2 498 1772 SP
+{0 0.944 1 C} FS
+-115 6 -18 -122 2 1385 2492 SP
+{0 1 0.87 C} FS
+317 -17 -232 -203 -115 6 3 1367 2370 SP
+{0 1 0.685 C} FS
+-317 17 8 51 387 0 3 942 2105 SP
+217 -11 -178 -134 2 942 2105 SP
+{0 1 0.5 C} FS
+-6 2 -537 29 60 -219 217 -11 4 764 1971 SP
+{0 1 0.315 C} FS
+-59 4 59 -219 537 -29 3 504 1770 SP
+{0 1 0.13 C} FS
+59 -4 -67 31 2 1108 1495 SP
+{0 0.944 1 C} FS
+181 -10 -18 -122 -277 0 3 1662 2492 SP
+{0 1 0.87 C} FS
+-35 2 -176 -206 181 -10 3 1367 2370 SP
+{0 1 0.685 C} FS
+35 -2 8 51 2 1329 2105 SP
+{0 0.759 1 C} FS
+-87 5 47 -70 2 1274 2658 SP
+{0 0.944 1 C} FS
+133 116 143 -8 -125 -209 -87 5 4 1321 2588 SP
+{0 1 0.87 C} FS
+36 -2 -125 -209 -143 8 3 1252 2376 SP
+{0 1 0.685 C} FS
+-36 2 78 68 2 942 2105 SP
+{0 0.204 1 C} FS
+112 -6 -123 -138 2 1329 3378 SP
+{0 0.389 1 C} FS
+-278 15 -16 -214 112 -6 3 1206 3240 SP
+{0 0.574 1 C} FS
+-103 59 -296 16 -17 -215 278 -15 4 1024 3035 SP
+{0 0.759 1 C} FS
+296 -16 -285 163 2 1274 2658 SP
+{0 0.204 1 C} FS
+86 -4 -11 -144 2 1329 3378 SP
+{0 0.389 1 C} FS
+-212 11 110 -221 86 -4 3 1318 3234 SP
+{0 0.574 1 C} FS
+-255 13 -66 -33 92 -184 212 -11 4 1302 3020 SP
+{0 0.759 1 C} FS
+255 -13 11 147 2 1274 2658 SP
+{0 0.574 1 C} FS
+33 -2 6 -37 2 1606 2825 SP
+{0 0.759 1 C} FS
+-223 11 227 -227 33 -2 3 1612 2788 SP
+{0 0.944 1 C} FS
+-223 11 -66 67 276 0 3 1662 2492 SP
+{0 0.574 1 C} FS
+43 -3 -66 -33 2 1606 2825 SP
+{0 0.759 1 C} FS
+-47 70 -123 7 -139 -208 43 -3 4 1540 2792 SP
+{0 0.944 1 C} FS
+123 -7 -64 96 2 1385 2492 SP
+{0 0.574 1 C} FS
+-29 1 6 -37 2 1606 2825 SP
+{0 0.759 1 C} FS
+205 -11 -139 -208 -29 1 3 1612 2788 SP
+{0 0.944 1 C} FS
+-205 11 -13 78 277 0 3 1385 2492 SP
+{0 0.204 1 C} FS
+342 -18 75 -148 2 1329 3378 SP
+{0 0.389 1 C} FS
+-235 13 -134 -161 137 -55 342 -18 4 1404 3230 SP
+{0 0.574 1 C} FS
+235 -13 -92 184 2 1606 2825 SP
+{0 0.944 1 C} FS
+214 -11 -114 -132 2 1662 2492 SP
+{0 1 0.87 C} FS
+-546 29 156 -224 214 -11 3 1548 2360 SP
+{0 1 0.685 C} FS
+546 -29 43 49 -720 167 3 2049 1938 SP
+{0 0.574 1 C} FS
+-99 5 103 -59 2 886 2880 SP
+{0 0.759 1 C} FS
+40 65 329 -17 15 -216 -99 5 4 989 2821 SP
+{0 0.944 1 C} FS
+-188 10 -125 -209 329 -17 3 905 2610 SP
+{0 1 0.87 C} FS
+-48 3 -125 -209 188 -10 3 921 2394 SP
+{0 1 0.685 C} FS
+48 -3 -6 73 2 942 2105 SP
+290 -16 39 -145 -387 0 3 1329 2105 SP
+{0 1 0.5 C} FS
+153 -8 60 -219 -290 16 3 1271 1944 SP
+{0 1 0.315 C} FS
+17 0 59 -219 -153 8 3 1194 1733 SP
+{0 1 0.13 C} FS
+-17 0 9 27 2 1108 1495 SP
+{0 0.0185 1 C} FS
+-230 12 -146 -12 2 1994 3434 SP
+{0 0.204 1 C} FS
+230 -12 843 0 -554 56 3 1329 3378 SP
+{0 1 0.13 C} FS
+-47 3 -12 -20 2 2105 1274 SP
+{0.0555 1 0 C} FS
+545 -29 -620 -183 -47 3 3 2093 1254 SP
+{0.241 1 0 C} FS
+494 -27 192 -134 -263 -77 -545 29 4 1971 1045 SP
+{0.426 1 0 C} FS
+40 -2 333 -234 -494 27 3 1849 836 SP
+{0.611 1 0 C} FS
+-40 2 11 18 2 1717 609 SP
+{0.241 1 0 C} FS
+394 -21 -76 -191 2 2492 997 SP
+{0.426 1 0 C} FS
+-811 43 -14 -2 347 -231 394 -21 4 2416 806 SP
+{0.611 1 0 C} FS
+811 -43 61 152 2 2271 443 SP
+307 -17 -71 -56 2 2271 443 SP
+{0.796 1 0 C} FS
+-637 34 -406 -71 484 -148 307 -17 4 2200 387 SP
+{0.981 1 0 C} FS
+637 -34 231 185 2 1717 0 SP
+{0 1 0.5 C} FS
+89 -5 -63 -125 2 2880 1772 SP
+{0 1 0.315 C} FS
+-238 13 44 -218 89 -5 3 2817 1647 SP
+{0 1 0.13 C} FS
+-386 21 43 -218 238 -13 3 2712 1437 SP
+{0.0555 1 0 C} FS
+-535 28 44 -217 386 -21 3 2607 1227 SP
+{0.241 1 0 C} FS
+535 -28 10 20 -554 55 3 3046 942 SP
+{0 1 0.13 C} FS
+-42 2 30 -22 2 2105 1274 SP
+{0.0555 1 0 C} FS
+490 -26 -122 -209 -42 2 3 2135 1252 SP
+{0.241 1 0 C} FS
+352 176 291 -15 -122 -209 -490 26 4 2461 1019 SP
+{0.426 1 0 C} FS
+-23 1 -389 -195 291 -15 3 1849 836 SP
+{0.611 1 0 C} FS
+23 -1 11 18 2 1717 609 SP
+{0 1 0.5 C} FS
+-81 4 0 -108 2 2492 1772 SP
+{0 1 0.315 C} FS
+242 -13 -161 -207 -81 4 3 2492 1664 SP
+{0 1 0.13 C} FS
+357 -19 30 -22 -145 -187 -242 13 4 2492 1448 SP
+{0.0555 1 0 C} FS
+31 -1 326 -233 -357 19 3 2492 1233 SP
+{0.241 1 0 C} FS
+-31 1 0 21 2 2492 997 SP
+{0 1 0.5 C} FS
+325 -17 0 -108 -388 0 3 2880 1772 SP
+{0 1 0.315 C} FS
+-220 11 -105 -210 325 -17 3 2492 1664 SP
+{0 1 0.13 C} FS
+-115 6 -105 -210 220 -11 3 2492 1448 SP
+{0.0555 1 0 C} FS
+-10 1 -105 -210 115 -6 3 2492 1233 SP
+{0.241 1 0 C} FS
+10 -1 0 21 2 2492 997 SP
+{0 0.944 1 C} FS
+19 -1 -11 -27 2 2714 2326 SP
+{0 1 0.87 C} FS
+-169 9 66 -219 19 -1 3 2703 2299 SP
+{0 1 0.685 C} FS
+-320 17 66 -219 169 -9 3 2619 2088 SP
+{0 1 0.5 C} FS
+-320 17 -26 88 388 0 3 2492 1772 SP
+{0 1 0.685 C} FS
+-108 6 111 -41 2 2049 1938 SP
+{0 1 0.5 C} FS
+81 104 341 -18 18 -217 -108 6 4 2160 1897 SP
+{0 1 0.315 C} FS
+162 -9 18 -216 -341 18 3 2411 1668 SP
+{0 1 0.13 C} FS
+-162 9 145 187 2 2105 1274 SP
+{0.426 1 0 C} FS
+13 -1 -14 -2 2 3157 554 SP
+{0.611 1 0 C} FS
+-236 73 -544 28 -105 -209 13 -1 4 3143 552 SP
+{0.796 1 0 C} FS
+544 -28 -484 148 2 2991 222 SP
+{0.241 1 0 C} FS
+276 -15 -352 -176 2 2492 997 SP
+{0.426 1 0 C} FS
+-581 31 -84 -211 276 -15 3 2140 821 SP
+{0.611 1 0 C} FS
+581 -31 34 17 -554 166 3 2271 443 SP
+{0.426 1 0 C} FS
+272 -14 1 -3 -277 0 3 3434 554 SP
+{0.611 1 0 C} FS
+-152 8 -47 -213 272 -14 3 3158 551 SP
+{0.796 1 0 C} FS
+-31 2 -48 -213 152 -8 3 3231 332 SP
+{0.981 1 0 C} FS
+31 -2 -19 58 2 3323 55 SP
+{0.426 1 0 C} FS
+-2 0 1 -3 2 3157 554 SP
+{0.611 1 0 C} FS
+180 -10 -105 -209 -2 0 3 3158 551 SP
+{0.796 1 0 C} FS
+107 -5 206 -104 -60 -120 -180 10 4 3231 332 SP
+{0.981 1 0 C} FS
+-107 5 -19 58 2 3323 55 SP
+{0.241 1 0 C} FS
+-130 7 179 -179 2 3046 942 SP
+{0.426 1 0 C} FS
+-130 7 -209 209 277 0 3 3157 554 SP
+{0 1 0.5 C} FS
+-246 13 -5 -33 277 -110 3 2880 1772 SP
+{0 1 0.315 C} FS
+169 -9 44 -218 -246 13 3 3152 1629 SP
+{0 1 0.13 C} FS
+93 -5 43 -218 -169 9 3 3119 1415 SP
+{0.0555 1 0 C} FS
+16 -1 44 -217 -93 5 3 3086 1201 SP
+{0.241 1 0 C} FS
+-16 1 7 46 2 3046 942 SP
+{0 1 0.5 C} FS
+31 -2 -5 -33 2 3157 1662 SP
+{0 1 0.315 C} FS
+-232 12 168 -224 31 -2 3 3152 1629 SP
+{0 1 0.13 C} FS
+-346 18 -57 -35 138 -185 232 -12 4 3119 1415 SP
+{0.0555 1 0 C} FS
+-62 4 -317 -199 346 -18 3 3086 1201 SP
+{0.241 1 0 C} FS
+62 -4 7 46 2 3046 942 SP
+{0 1 0.685 C} FS
+-79 4 0 -57 2 3489 1883 SP
+{0 1 0.5 C} FS
+306 -16 26 -35 -253 -168 -79 4 4 3489 1826 SP
+{0 1 0.315 C} FS
+138 -8 168 -224 -306 16 3 3489 1611 SP
+{0 1 0.13 C} FS
+-138 8 0 177 2 3489 1218 SP
+-54 3 -3 -38 2 3489 1218 SP
+{0.0555 1 0 C} FS
+353 -18 -317 -199 -54 3 3 3486 1180 SP
+{0.241 1 0 C} FS
+225 -12 179 -179 -69 -42 -353 18 4 3468 966 SP
+{0.426 1 0 C} FS
+225 -12 -209 209 2 3434 554 SP
+{0 1 0.685 C} FS
+-163 9 -79 -53 2 3489 1883 SP
+{0 1 0.5 C} FS
+163 -9 367 67 -277 110 3 3157 1662 SP
+{0.241 1 0 C} FS
+-285 15 49 -172 554 -55 3 2492 997 SP
+{0.426 1 0 C} FS
+-285 15 -62 216 2 3157 554 SP
+{0.796 1 0 C} FS
+-612 33 206 -104 2 2991 222 SP
+{0.981 1 0 C} FS
+-612 33 -126 63 1606 55 3 1717 0 SP
+{0 0.944 1 C} FS
+118 -6 -118 -119 2 3489 2382 SP
+{0 1 0.87 C} FS
+-322 17 0 -215 118 -6 3 3371 2263 SP
+{0 1 0.685 C} FS
+-285 15 -242 -44 0 -159 322 -17 4 3167 2059 SP
+{0 1 0.5 C} FS
+285 -15 82 82 2 2880 1772 SP
+{0 0.204 1 C} FS
+-480 25 445 -148 2 1994 3323 SP
+{0 0.389 1 C} FS
+575 124 185 -10 -61 -212 -480 25 4 2439 3175 SP
+{0 0.574 1 C} FS
+185 -10 15 53 2 1883 2935 SP
+258 -14 39 -39 -277 -110 3 1883 2935 SP
+{0 0.759 1 C} FS
+59 -4 227 -227 -258 14 3 1903 2772 SP
+{0 0.944 1 C} FS
+-59 4 -7 63 2 1938 2492 SP
+207 -11 100 -143 -276 0 3 1938 2492 SP
+{0 1 0.87 C} FS
+-95 5 44 -218 207 -11 3 1762 2349 SP
+{0 1 0.685 C} FS
+95 -5 -131 187 2 2049 1938 SP
+{0 0.574 1 C} FS
+-151 8 171 -171 2 1883 2935 SP
+{0 0.759 1 C} FS
+47 8 293 -15 28 -217 -151 8 4 2054 2764 SP
+{0 0.944 1 C} FS
+-293 15 286 48 2 1938 2492 SP
+{0 0.0185 1 C} FS
+-8 0 0 -20 2 1994 3434 SP
+{0 0.204 1 C} FS
+80 120 12 0 -84 -211 -8 0 4 1994 3414 SP
+{0 0.389 1 C} FS
+-12 0 31 46 2 1883 3157 SP
+{0 0.204 1 C} FS
+45 -3 -80 -120 2 1994 3323 SP
+{0 0.389 1 C} FS
+0 168 -15 1 -61 -212 45 -3 4 1914 3203 SP
+{0 0.574 1 C} FS
+15 -1 0 54 2 1883 2935 SP
+{0 0.0185 1 C} FS
+-45 3 45 -23 2 1994 3434 SP
+{0 0.204 1 C} FS
+82 -5 445 -148 0 -91 -45 3 4 2039 3411 SP
+{0 0.389 1 C} FS
+-82 5 -137 68 2 2658 3102 SP
+{0 0.0185 1 C} FS
+-138 8 -8 -20 2 1994 3434 SP
+{0 0.204 1 C} FS
+156 -9 417 -166 -519 -44 -138 8 4 1986 3414 SP
+{0 0.389 1 C} FS
+-156 9 19 46 2 1883 3157 SP
+{0 0.759 1 C} FS
+43 -2 -47 -8 2 2271 2548 SP
+{0 0.944 1 C} FS
+-31 154 -221 12 -77 -212 43 -2 4 2224 2540 SP
+{0 1 0.87 C} FS
+-100 5 -77 -211 221 -12 3 1969 2338 SP
+{0 1 0.685 C} FS
+100 -5 -36 182 2 2049 1938 SP
+{0 0.389 1 C} FS
+-134 7 0 -168 2 1883 3157 SP
+{0 0.574 1 C} FS
+-134 7 0 54 277 110 3 1606 2825 SP
+109 -6 -134 -44 2 2935 2769 SP
+{0 0.759 1 C} FS
+-23 12 -511 27 -105 -210 109 -6 4 2801 2725 SP
+{0 0.944 1 C} FS
+511 -27 -420 210 2 2714 2326 SP
+{0 0.759 1 C} FS
+-27 2 23 -12 2 2271 2548 SP
+{0 0.944 1 C} FS
+44 25 480 -25 -77 -212 -27 2 4 2294 2536 SP
+{0 1 0.87 C} FS
+-219 12 -338 -198 480 -25 3 2190 2326 SP
+{0 1 0.685 C} FS
+219 -12 64 177 2 2049 1938 SP
+{0 0.944 1 C} FS
+33 -2 -44 -25 2 2714 2326 SP
+{0 1 0.87 C} FS
+-287 15 -84 -211 33 -2 3 2670 2301 SP
+{0 1 0.685 C} FS
+-111 41 -374 20 -85 -211 287 -15 4 2332 2103 SP
+{0 1 0.5 C} FS
+374 -20 -332 125 2 2492 1772 SP
+{0 0.574 1 C} FS
+105 -6 -25 -50 2 2935 2769 SP
+{0 0.759 1 C} FS
+-543 29 333 -233 105 -6 3 2910 2719 SP
+{0 0.944 1 C} FS
+-543 29 -141 98 775 56 3 2714 2326 SP
+{0 0.0185 1 C} FS
+-87 5 -27 -81 2 3157 3434 SP
+{0 0.204 1 C} FS
+316 -17 -299 -199 -87 5 3 3130 3353 SP
+{0 0.389 1 C} FS
+196 -10 135 -162 -86 -57 -316 17 4 3060 3142 SP
+{0 0.574 1 C} FS
+196 -10 -142 171 2 2935 2769 SP
+{0 0.389 1 C} FS
+-238 13 135 -162 2 2658 3102 SP
+{0 0.574 1 C} FS
+134 44 392 -20 -146 -208 -238 13 4 2793 2940 SP
+{0 0.759 1 C} FS
+392 -20 138 197 2 2271 2548 SP
+{0 0.0185 1 C} FS
+-69 3 42 -84 2 3157 3434 SP
+{0 0.204 1 C} FS
+250 -14 -70 -211 -69 3 3 3199 3350 SP
+{0 0.389 1 C} FS
+431 -23 -71 -212 -250 14 3 3310 3128 SP
+{0 0.574 1 C} FS
+-431 23 -14 27 499 111 3 2935 2769 SP
+440 -23 80 -56 -499 -111 3 3434 2880 SP
+{0 0.759 1 C} FS
+-131 7 24 -217 440 -23 3 3015 2713 SP
+{0 0.944 1 C} FS
+131 -7 -141 98 2 3489 2382 SP
+{0 0.0185 1 C} FS
+1004 -53 45 -23 -1163 0 3 3157 3434 SP
+{0 0.204 1 C} FS
+223 -11 482 -241 -1004 53 3 3043 3358 SP
+{0 0.389 1 C} FS
+-223 11 86 57 2 2658 3102 SP
+-472 25 -103 -149 2 2658 3102 SP
+{0 0.574 1 C} FS
+355 -19 171 -171 -200 -43 -472 25 4 2555 2953 SP
+{0 0.759 1 C} FS
+-355 19 138 197 2 2271 2548 SP
+{0 0.944 1 C} FS
+649 -35 8 -28 -775 -56 3 3489 2382 SP
+{0 1 0.87 C} FS
+379 -20 66 -219 -649 35 3 3371 2263 SP
+{0 1 0.685 C} FS
+108 -6 66 -219 -379 20 3 3167 2059 SP
+{0 1 0.5 C} FS
+-108 6 82 82 2 2880 1772 SP
+{0 1 0.685 C} FS
+71 -3 -68 -32 2 2049 1938 SP
+{0 1 0.5 C} FS
+-500 27 18 -217 71 -3 3 1981 1906 SP
+{0 1 0.315 C} FS
+-929 49 18 -216 500 -27 3 1570 1713 SP
+{0 1 0.13 C} FS
+929 -49 51 24 -997 221 3 2105 1274 SP
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M -83 0 D S
+0 1108 M -83 0 D S
+0 2215 M -83 0 D S
+0 3323 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 554 M -42 0 D S
+0 1662 M -42 0 D S
+0 2769 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+3600 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M 83 0 D S
+0 1108 M 83 0 D S
+0 2215 M 83 0 D S
+0 3323 M 83 0 D S
+/PSL_AH0 0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+0 554 M 42 0 D S
+0 1662 M 42 0 D S
+0 2769 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-3600 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 -83 D S
+1108 0 M 0 -83 D S
+2215 0 M 0 -83 D S
+3323 0 M 0 -83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+554 0 M 0 -42 D S
+1662 0 M 0 -42 D S
+2769 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 3600 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 83 D S
+1108 0 M 0 83 D S
+2215 0 M 0 83 D S
+3323 0 M 0 83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+554 0 M 0 42 D S
+1662 0 M 0 42 D S
+2769 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3600 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
+1800 3600 PSL_H_y add M
+400 F0
+(Trend) bc Z
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psscale -Cz.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba
+%%PROJ: xy 690.00000000 960.00000000 0.00000000 0.10000000 690.000 960.000 0.000 0.100 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+0 -720 T
+25 W
+V N 0 0 T 3600 120 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 27 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [27 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+>> image
+J2tCUou%:Q""cdWE%h8,rW!j(b]*3=4bXDk_r'kF)SQE+JWq9d&9L$]%lV>SOS2pBobqR1e?Ca9%$(K!!$EB~>
+U
+2 setlinecap
+0 120 M 3600 0 D S
+0 0 M 0 120 D S
+3600 0 M 0 120 D S
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+0 0 M 3600 0 D S
+8 W
+133 0 M 0 -83 D S
+1467 0 M 0 -83 D S
+2800 0 M 0 -83 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(700) sh mx
+(800) sh mx
+(900) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+133 PSL_A0_y MM
+(700) bc Z
+1467 PSL_A0_y MM
+(800) bc Z
+2800 PSL_A0_y MM
+(900) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+0 720 T
+0 A
+FQ
+O0
+4200 0 TM
+
+% PostScript produced by:
+%%GMT:  pscontour -R0/6.5/0/6.5 trend.txt -Cw.cpt -JX3i -Baf:.Weights: -I -O -K -X3.5i -i0,1,4
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+clipsave
+0 0 M
+3600 0 D
+0 3600 D
+-3600 0 D
+PSL_eoclip N
+{1 1 0.867 C} FS
+0 277 553 -222 2 222 277 SP
+388 277 -56 -665 2 831 997 SP
+-443 610 553 55 2 222 277 SP
+499 55 166 -387 2 166 1329 SP
+56 -1052 -166 387 2 332 942 SP
+443 -610 -499 -55 2 831 997 SP
+665 -332 -332 -443 2 498 1772 SP
+388 333 0 -277 2 775 332 SP
+-55 1053 -56 1052 2 222 277 SP
+111 -222 -554 -221 2 1717 609 SP
+-388 -333 -111 222 2 1274 166 SP
+-499 -111 -443 166 2 1717 0 SP
+443 -166 -443 -443 2 1717 609 SP
+-55 498 332 0 2 831 997 SP
+0 388 332 -388 2 831 997 SP
+942 277 55 -498 2 1108 1495 SP
+0 -388 -554 388 2 1717 609 SP
+554 221 0 -221 2 1163 609 SP
+941 443 -221 -610 2 1329 2105 SP
+{1 1 0.333 C} FS
+0 125 -114 -91 2 2271 443 SP
+{1 1 0.6 C} FS
+0 -367 -220 66 0 125 3 2157 352 SP
+{1 1 0.867 C} FS
+0 -609 -220 66 0 367 3 1937 176 SP
+0 609 1 1717 0 SP
+388 56 -388 -277 2 1163 609 SP
+277 498 333 -775 2 498 1772 SP
+0 554 387 -610 2 111 2382 SP
+55 -1053 -387 610 2 498 1772 SP
+444 -221 -388 -554 2 886 2880 SP
+388 554 387 -56 2 111 2382 SP
+{0.444 0 0 C} FS
+-6 28 37 -25 2 166 3378 SP
+{0.622 0 0 C} FS
+14 -72 49 5 -6 28 3 203 3353 SP
+{0.8 0 0 C} FS
+23 -116 48 4 -14 72 3 260 3314 SP
+{0.978 0 0 C} FS
+32 -159 48 4 -23 116 3 317 3274 SP
+{1 0.156 0 C} FS
+41 -204 48 5 -32 159 3 374 3235 SP
+{1 0.333 0 C} FS
+50 -247 48 4 -41 204 3 431 3195 SP
+{1 0.511 0 C} FS
+59 -292 48 5 -50 247 3 488 3156 SP
+{1 0.689 0 C} FS
+67 -335 49 4 -59 292 3 545 3116 SP
+{1 0.867 0 C} FS
+75 -378 48 4 -67 335 3 602 3077 SP
+{1 1 0.0667 C} FS
+84 -423 48 5 -75 378 3 658 3038 SP
+{1 1 0.333 C} FS
+93 -466 48 4 -84 423 3 715 2998 SP
+{1 1 0.6 C} FS
+102 -510 48 4 -93 466 3 772 2959 SP
+{1 1 0.867 C} FS
+111 -554 48 5 -102 510 3 829 2919 SP
+-111 554 1 886 2880 SP
+{0.444 0 0 C} FS
+-40 -26 37 -25 2 166 3378 SP
+{0.622 0 0 C} FS
+101 65 -4 -78 -40 -26 3 203 3353 SP
+{0.8 0 0 C} FS
+162 104 -4 -79 -101 -65 3 260 3314 SP
+{0.978 0 0 C} FS
+224 144 -5 -79 -162 -104 3 317 3274 SP
+{1 0.156 0 C} FS
+285 183 -4 -79 -224 -144 3 374 3235 SP
+{1 0.333 0 C} FS
+347 223 -5 -79 -285 -183 3 431 3195 SP
+{1 0.511 0 C} FS
+408 262 -4 -79 -347 -223 3 488 3156 SP
+{1 0.689 0 C} FS
+469 301 -4 -78 -408 -262 3 545 3116 SP
+{1 0.867 0 C} FS
+530 341 -5 -79 -469 -301 3 602 3077 SP
+{1 1 0.0667 C} FS
+591 380 -4 -79 -530 -341 3 658 3038 SP
+{1 1 0.333 C} FS
+652 420 -4 -79 -591 -380 3 715 2998 SP
+{1 1 0.6 C} FS
+714 459 -5 -79 -652 -420 3 772 2959 SP
+{1 1 0.867 C} FS
+775 498 -4 -78 -714 -459 3 829 2919 SP
+-775 -498 1 886 2880 SP
+443 498 111 -554 2 775 3434 SP
+444 333 0 -554 2 498 2326 SP
+56 387 387 0 2 942 2105 SP
+610 -277 -444 -333 2 942 2105 SP
+333 387 -56 -387 2 1385 2492 SP
+-111 166 443 387 2 942 2105 SP
+388 -222 -443 -498 2 1329 3378 SP
+332 167 -55 -720 2 1329 3378 SP
+276 0 56 -333 2 1606 2825 SP
+111 -166 -332 -167 2 1606 2825 SP
+-56 333 277 0 2 1385 2492 SP
+277 332 277 -553 2 1329 3378 SP
+720 -167 -333 -387 2 1662 2492 SP
+56 -775 -388 222 2 1274 2658 SP
+-387 0 221 610 2 1108 1495 SP
+-553 56 -665 -56 2 1994 3434 SP
+-553 56 554 -56 2 775 3434 SP
+-942 -277 388 665 2 1717 609 SP
+{1 1 0.333 C} FS
+136 -91 45 114 2 2271 443 SP
+{1 1 0.6 C} FS
+-401 267 353 44 136 -91 3 2316 557 SP
+{1 1 0.867 C} FS
+-665 443 352 44 401 -267 3 2404 777 SP
+665 -443 1 2492 997 SP
+{1 1 0.333 C} FS
+261 46 -114 -91 2 2271 443 SP
+{1 1 0.6 C} FS
+-768 -134 287 -88 261 46 3 2157 352 SP
+{1 1 0.867 C} FS
+-1274 -222 286 -88 768 134 3 1937 176 SP
+1274 222 1 1717 0 SP
+554 -55 -388 -775 2 2880 1772 SP
+-388 -665 -387 277 2 2492 997 SP
+-387 -498 0 775 2 2492 997 SP
+388 775 0 -775 2 2492 1772 SP
+388 0 -222 -554 2 2714 2326 SP
+-443 166 387 498 2 2105 1274 SP
+{1 1 0.333 C} FS
+-34 -68 181 23 2 2271 443 SP
+{1 1 0.6 C} FS
+100 200 287 -88 -34 -68 3 2452 466 SP
+{1 1 0.867 C} FS
+166 332 286 -88 -100 -200 3 2805 510 SP
+-166 -332 1 3157 554 SP
+{1 1 0.333 C} FS
+159 80 -114 34 2 2271 443 SP
+{1 1 0.6 C} FS
+-467 -234 88 220 159 80 3 2157 477 SP
+{1 1 0.867 C} FS
+-775 -388 88 220 467 234 3 1937 543 SP
+-775 -388 1 2492 997 SP
+111 499 166 -499 2 3157 554 SP
+-166 -332 -166 499 2 3323 55 SP
+-388 388 277 0 2 3157 554 SP
+-277 110 111 720 2 3046 942 SP
+443 276 -111 -720 2 3157 1662 SP
+-332 -221 0 665 2 3489 1218 SP
+55 664 388 -388 2 3046 942 SP
+-609 -111 332 221 2 3157 1662 SP
+-554 55 -111 388 2 3157 554 SP
+-332 167 1606 55 2 1717 0 SP
+609 111 -609 -610 2 3489 2382 SP
+-111 -388 -664 221 2 2658 3102 SP
+-277 -110 -55 443 2 1938 2492 SP
+387 -554 -276 0 2 1938 2492 SP
+-388 387 333 56 2 1938 2492 SP
+-111 -166 0 -111 2 1994 3434 SP
+111 166 1 1883 3157 SP
+0 -222 -111 -166 2 1994 3323 SP
+-664 221 664 -332 2 1994 3434 SP
+-664 221 1 2658 3102 SP
+-554 221 -111 -277 2 1994 3434 SP
+-554 221 1 1883 3157 SP
+111 -554 -333 -56 2 2271 2548 SP
+-277 -332 0 222 2 1883 2935 SP
+443 -222 -664 -221 2 2935 2769 SP
+-222 -610 -443 222 2 2714 2326 SP
+443 -166 -665 -388 2 2714 2326 SP
+775 56 -221 -443 2 2935 2769 SP
+222 665 277 -333 2 2658 3102 SP
+-387 -554 -277 333 2 2935 2769 SP
+{1 0.689 0 C} FS
+-13 -37 -15 31 2 3434 2880 SP
+{1 0.867 0 C} FS
+54 162 -94 -21 -13 -37 3 3419 2911 SP
+{1 1 0.0667 C} FS
+96 288 -94 -21 -54 -162 3 3366 3015 SP
+{1 1 0.333 C} FS
+138 414 -94 -21 -96 -288 3 3314 3120 SP
+{1 1 0.6 C} FS
+179 539 -94 -21 -138 -414 3 3262 3225 SP
+{1 1 0.867 C} FS
+222 665 -95 -21 -179 -539 3 3209 3329 SP
+-222 -665 1 3157 3434 SP
+{1 0.689 0 C} FS
+-31 22 3 -28 2 3434 2880 SP
+{1 0.867 0 C} FS
+135 -95 -94 -21 -31 22 3 3437 2852 SP
+{1 1 0.0667 C} FS
+240 -168 -94 -21 -135 95 3 3447 2758 SP
+{1 1 0.333 C} FS
+344 -241 -94 -21 -240 168 3 3458 2664 SP
+{1 1 0.6 C} FS
+449 -314 -94 -21 -344 241 3 3468 2570 SP
+{1 1 0.867 C} FS
+554 -387 -95 -21 -449 314 3 3479 2476 SP
+554 -387 1 2935 2769 SP
+-499 -332 1163 0 2 1994 3434 SP
+499 332 1 2658 3102 SP
+-775 -167 387 554 2 2271 2548 SP
+-775 -56 609 610 2 2880 1772 SP
+997 -221 -941 -443 2 2049 1938 SP
+PSL_cliprestore
+2 setlinecap
+/MM {neg exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M -83 0 D S
+0 1108 M -83 0 D S
+0 2215 M -83 0 D S
+0 3323 M -83 0 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+0 554 M -42 0 D S
+0 1662 M -42 0 D S
+0 2769 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+3600 0 T
+/MM {exch M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 3600 M 0 -3600 D S
+8 W
+0 0 M 83 0 D S
+0 1108 M 83 0 D S
+0 2215 M 83 0 D S
+0 3323 M 83 0 D S
+/PSL_AH0 0
+(0) sw mx
+(2) sw mx
+(4) sw mx
+(6) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) mr Z
+1108 PSL_A0_y MM
+(2) mr Z
+2215 PSL_A0_y MM
+(4) mr Z
+3323 PSL_A0_y MM
+(6) mr Z
+0 554 M 42 0 D S
+0 1662 M 42 0 D S
+0 2769 M 42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-3600 0 T
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 -83 D S
+1108 0 M 0 -83 D S
+2215 0 M 0 -83 D S
+3323 0 M 0 -83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+554 0 M 0 -42 D S
+1662 0 M 0 -42 D S
+2769 0 M 0 -42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 3600 T
+/MM {M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+25 W
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 83 D S
+1108 0 M 0 83 D S
+2215 0 M 0 83 D S
+3323 0 M 0 83 D S
+/PSL_AH0 0
+(0) sh mx
+(2) sh mx
+(4) sh mx
+(6) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+0 PSL_A0_y MM
+(0) bc Z
+1108 PSL_A0_y MM
+(2) bc Z
+2215 PSL_A0_y MM
+(4) bc Z
+3323 PSL_A0_y MM
+(6) bc Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+554 0 M 0 42 D S
+1662 0 M 0 42 D S
+2769 0 M 0 42 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3600 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
+1800 3600 PSL_H_y add M
+400 F0
+(Weights) bc Z
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psscale -Cw.cpt -D1.5i/-0.5i/3i/0.1ih -O -K -Ba
+%%PROJ: xy 0.70000000 1.00000000 0.00000000 0.10000000 0.700 1.000 0.000 0.100 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+0 -720 T
+25 W
+V N 0 0 T 3600 120 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 15 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [15 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+>> image
+J-E^g![J37"&H_cO>kAmr[7b2b-;Wp7:?dG`*_I>r(9#<NjiC=~>
+U
+2 setlinecap
+0 120 M 3600 0 D S
+0 0 M 0 120 D S
+3600 0 M 0 120 D S
+/MM {neg M} def
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+0 0 M 3600 0 D S
+8 W
+0 0 M 0 -83 D S
+1200 0 M 0 -83 D S
+2400 0 M 0 -83 D S
+3600 0 M 0 -83 D S
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0.7) sh mx
+(0.8) sh mx
+(0.9) sh mx
+(1.0) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0.7) bc Z
+1200 PSL_A0_y MM
+(0.8) bc Z
+2400 PSL_A0_y MM
+(0.9) bc Z
+3600 PSL_A0_y MM
+(1.0) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 setlinecap
+0 720 T
+0 A
+FQ
+O0
+0 0 TM
+
+% PostScript produced by:
+%%GMT:  psxy -R0/6.5/0/6.5 -JX3i -O -T
+%%PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy +a=6378137.000 +b=6356752.314245
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF
