@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1117 2011-06-23 22:18:22 guru Exp $
+	$Id: ChangeLog,v 1.1118 2011-06-25 20:46:48 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-06-25	jluis
+	* gmtswitch.bat:	The Windows version of the *nix gmtswitch script
 
 2011-06-23	pwessel
 	* gmt_shore.c:		Now reads new GSHHS 2.1.2 format that includes feature areas
