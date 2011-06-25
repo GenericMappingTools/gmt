@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_cross_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
+ *	$Id: x2sys_cross_func.c,v 1.17 2011-06-25 02:45:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,7 +91,7 @@ void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	
 GMT_LONG GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
-	GMT_message (GMT, "%s %s - calculate crossovers\n\n", GMT->init.progname, X2SYS_VERSION);
+	GMT_message (GMT, "x2sys_cross %s - Calculate crossovers between track data files\n\n", X2SYS_VERSION);
 	GMT_message (GMT, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-Il|a|c] [%s]\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-Qe|i] [%s] [-Sl|h|u<speed>] [%s] [-W<size>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 

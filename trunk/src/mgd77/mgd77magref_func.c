@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.19 2011-06-22 08:19:54 jluis Exp $
+ *	$Id: mgd77magref_func.c,v 1.20 2011-06-25 02:45:57 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77magref %s [API] - Evaluating the IGRF or CM4 magnetic field models\n\n", GMT_VERSION);
+	GMT_message (GMT, "mgd77magref %s [API] - Evaluate the IGRF or CM4 magnetic field models\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77magref [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
 	GMT_message (GMT, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>]\n");
 	GMT_message (GMT, "\t[-V] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_colon_OPT);

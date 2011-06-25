@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDSPOTTER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
-grdspotter \- Create CVA image directly from gravity or bathymetry grids 
+grdspotter \- Create CVA image from a gravity or topography grid
 .SH SYNOPSIS
 BD(grdspotter) [IT(grdfile)] OPT(E)IT(rotfile) 
 OPT(G)IT(CVAgrid) GMT_I_OPT 

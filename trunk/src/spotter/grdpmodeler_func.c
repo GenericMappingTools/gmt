@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.17 2011-06-21 00:20:30 jluis Exp $
+ *	$Id: grdpmodeler_func.c,v 1.18 2011-06-25 02:45:59 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -93,7 +93,7 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"grdpmodeler %s - Plate model evaluation on a geographic grid\n\n", GMT_VERSION);
+	GMT_message (GMT,"grdpmodeler %s - Evaluate a plate model on a geographic grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\n", GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_r_OPT);
 

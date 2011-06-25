@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDPMODELER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
-grdpmodeler \- Evaluate plate motion parameters on a grid
+grdpmodeler \- Evaluate a plate model on a geographic grid
 .SH SYNOPSIS
 BD(grdpmodeler) IT(agegrdfile) OPT(E)IT(rot_file)
 OPT(G)IT(outgrdfile) OPT(S)BD(a)|BD(d)|BD(r)|BD(w)|BD(x)|BD(y)|BD(X)|BD(Y) [ OPT(F)IT(polygonfile) ] 

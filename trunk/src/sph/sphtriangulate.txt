@@ -3,7 +3,7 @@
 #define LEN 15
 #define SCALE OPT(JM)15BD(c)
 .SH NAME
-sphtriangulate \- Perform optimal Delaunay triangulation or Voronoi construction of spherical data
+sphtriangulate \- Delaunay or Voronoi construction of spherical lon,lat data
 .SH SYNOPSIS
 BD(sphtriangulate) [ IT(table) ] [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ OPT(L)IT(unit) ] 
 [ OPT(N)IT(nfile) ] [ OPT(Q)BD(d)|BD(v) ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 

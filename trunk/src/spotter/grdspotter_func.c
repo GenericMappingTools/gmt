@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.17 2011-06-25 02:45:59 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -209,7 +209,7 @@ GMT_LONG GMT_grdspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdspotter %s - Create CVA image from surface grids\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdspotter %s - Create CVA image from a gravity or topography grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try] [-Z<z_min>[/<z_max>[/<z_inc>]]] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);

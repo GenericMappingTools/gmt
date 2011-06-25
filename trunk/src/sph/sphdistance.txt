@@ -3,7 +3,7 @@
 #define LEN 15
 #define SCALE OPT(JM)15BD(c)
 .SH NAME
-sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
+sphdistance \- Make grid of distances to nearest points on a sphere
 .SH SYNOPSIS
 BD(sphdistance) [ IT(table) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
 [ OPT(E) ] [ GMT_I_OPT ] [ OPT(L)IT(unit) ] [ OPT(Q)IT(voronoi.d) ] 

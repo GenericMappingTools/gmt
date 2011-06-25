@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psvelo_func.c,v 1.11 2011-06-20 22:15:10 guru Exp $
+ *    $Id: psvelo_func.c,v 1.12 2011-06-25 02:45:57 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -118,7 +118,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the psvelo synopsis and optionally full usage information */
 
-	GMT_message (GMT,"psvelo %s - Plot symbols on maps\n\n", GMT_VERSION);
+	GMT_message (GMT,"psvelo %s - Plot velocity vectors, crosses, and wedges on maps\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: psvelo [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
 	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDROTATER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
-grdrotater \- Rotate a grid using a total reconstruction rotation
+grdrotater \- Finite rotation reconstruction of geographic grid
 .SH SYNOPSIS
 BD(grdrotate) IT(ingrdfile) OPT(E)IT(rotfile) | OPT(e)IT(lon)/IT(lat)/IT(angle) 
 OPT(G)IT(outgrdfile) [ OPT(F)IT(polygonfile) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(S) ]

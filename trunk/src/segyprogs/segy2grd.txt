@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH SEGY2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools [segyprogs supplement]"
 .SH NAME
-segy2grd \- Converting SEGY file to grid file format
+segy2grd \- Converting SEGY data to a GMT grid
 .SH SYNOPSIS
 BD(segy2grd) IT(segyfile) OPT(G)IT(grdfile) GMT_I_OPT
 GMT_Rgeo_OPT [ OPT(A)[BD(n)|BD(z)] ] [ GMT_GRDEDIT ]

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH MGD77INFO 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
-mgd77info \- Get information about MGD77[+] files
+mgd77info \- Extract information about MGD77 files
 .SH SYNOPSIS
 BD(mgd77info) IT(NGDC-ids) [ OPT(C)[BD(m)|BD(e)] ] [ OPT(E)[BD(m)|BD(e)] ] 
 [ OPT(I)IT(ignore) ] [ OPT(Mf)[IT(item)]|BD(r)|BD(e)|BD(h) ] [ OPT(L)[BD(v)] ] [ GMT_V_OPT ]

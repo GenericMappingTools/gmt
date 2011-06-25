@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.18 2011-06-21 00:18:28 jluis Exp $
+ *	$Id: originator_func.c,v 1.19 2011-06-25 02:45:59 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -204,7 +204,7 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "originator %s [API] -  Associate seamounts with hotspot point sources\n\n", GMT_VERSION);
+	GMT_message (GMT, "originator %s [API] -  Associate seamounts with nearest hotspot point sources\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: originator [<table>] -E[+]<rottable> -F<hotspottable> [-D<d_km>]\n");
 	GMT_message (GMT, "\t[-H] [-L[<flag>]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);

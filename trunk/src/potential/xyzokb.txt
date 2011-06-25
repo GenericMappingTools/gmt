@@ -1,16 +1,16 @@
 #include "common_options.txt"
 .TH GRDCUT 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
 .SH NAME
-grdcut \- Extract a subregion out of a grid file
+xyzokb \- Compute the gravity/magnetic effect of a body by the method of Okabe
 .SH SYNOPSIS
-BD(grdcut) IT(input_file.nc) OPT(G)IT(output_file.nc) GMT_Rgeo_OPT 
+BD(xyzokb) IT(input_file.nc) OPT(G)IT(output_file.nc) GMT_Rgeo_OPT 
 [ GMT_V_OPT ] [ OPT(Z)[BD(n)]IT(min/max)] ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-BD(grdcut) will produce a new IT(output_file.nc) file which is a subregion of IT(input_file.nc).
+BD(xyzokb) will produce a new IT(output_file.nc) file which is a subregion of IT(input_file.nc).
 The subregion is specified with OPT(R) as in other programs; the
 specified range must not exceed the range of IT(input_file.nc).  If in doubt, run BD(grdinfo)
 to check range.  Alternatively, define the subregion indirectly via a range check on the node values.
-Complementary to BD(grdcut) there is BD(grdpaste), which will join together two
+Complementary to BD(xyzokb) there is BD(grdpaste), which will join together two
 grid files along a common edge.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
@@ -37,11 +37,11 @@ OPT(Zn) to consider a NaN to be outside the IT(z)-range.
 Suppose you have used BD(surface) to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you 
 do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then: 
 .sp
-BD(grdcut) grav_148_162_8_32.nc OPT(G)grav_150_160_10_30.nc OPT(R)150/160/10/30 OPT(V)
+BD(xyzokb) grav_148_162_8_32.nc OPT(G)grav_150_160_10_30.nc OPT(R)150/160/10/30 OPT(V)
 To return the subregion of a grid such that any boundary strips where all values are entirely
 above 0, try 
 .sp
-BD(grdcut) bathy.nc OPT(G)trimmed_bathy.nc OPT(Z)-/0 OPT(V)
+BD(xyzokb) bathy.nc OPT(G)trimmed_bathy.nc OPT(Z)-/0 OPT(V)
 .SH "SEE ALSO"
 .IR grdpaste (1),
 .IR grdinfo (1),

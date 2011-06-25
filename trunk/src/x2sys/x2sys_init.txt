@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_INIT 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
-x2sys_init \- Initialize x2sys data base for track data files
+x2sys_init \- Initialize a new x2sys track database
 .SH SYNOPSIS
 BD(x2sys_init) IT(TAG) OPT(D)IT(deffile) [ OPT(Cc)|BD(f)|BD(g)|BD(e) ] [ OPT(E)IT(suffix) ] 
 [ OPT(F) ] [ OPT(Gd)|BD(g) ] [ OPT(I)IT(dx)[/IT(dy)] ] [ OPT(Nd)|BD(s)IT(unit) ] 
