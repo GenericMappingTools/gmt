@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH MGD77PATH 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
-mgd77path \- Get full pathname for MGD77 files
+mgd77path \- Return paths to MGD77 cruises and directories
 .SH SYNOPSIS
 BD(mgd77path) IT(NGDC-ids) [ OPT(A)[BD(-)] ] [ OPT(D) ] [ OPT(I)IT(ignore) ] [ GMT_V_OPT ]
 .SH DESCRIPTION

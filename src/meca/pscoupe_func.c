@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.17 2011-06-25 02:45:57 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -154,7 +154,7 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
-	GMT_message (GMT,"pscoupe %s - Plot seismological symbols on cross-sections\n\n", GMT_VERSION);
+	GMT_message (GMT,"pscoupe %s - Plot cross-sections of focal mechanisms\n\n", GMT_VERSION);
 	GMT_message (GMT,"usage: pscoupe [<table>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-E<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.8 2011-05-17 00:50:56 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.9 2011-06-25 02:45:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -67,7 +67,7 @@ void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C
 GMT_LONG GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
-	GMT_message (GMT, "x2sys_binlist %s - Create bin index listing from data files\n\n", X2SYS_VERSION);
+	GMT_message (GMT, "x2sys_binlist %s - Create bin index listing from track data files\n\n", X2SYS_VERSION);
 	GMT_message (GMT, "usage: x2sys_binlist <files> -T<TAG> [-D] [-E] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

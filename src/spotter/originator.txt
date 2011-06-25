@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH ORIGINATOR 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
-originator \- Associate seamounts with hotspot point sources 
+originator \- Associate seamounts with nearest hotspot point sources
 .SH SYNOPSIS
 BD(originator) [ IT(table) ] OPT(E)IT(rotfile) 
 OPT(F)IT(hs_file) 

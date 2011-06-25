@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_datalist_func.c,v 1.12 2011-06-20 22:17:52 jluis Exp $
+ *	$Id: x2sys_datalist_func.c,v 1.13 2011-06-25 02:45:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -74,7 +74,7 @@ void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL 
 GMT_LONG GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "x2sys_datalist %s - listing of datafiles to stdout\n\n", X2SYS_VERSION);
+	GMT_message (GMT, "x2sys_datalist %s - Extract content of track data files\n\n", X2SYS_VERSION);
 	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-F<fields>] [-L[<corrtable.txt>]]\n");
 	GMT_message (GMT, "\t[%s] [-S] [%s] [%s] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 	

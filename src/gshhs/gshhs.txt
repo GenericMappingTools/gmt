@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GSHHS 1 MANDATE GMT_STRING "Generic Mapping Tools [gshhs supplement]"
 .SH NAME
-gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
+gshhs \- Extract data tables from binary GSHHS or WDBII data files
 .SH SYNOPSIS
 BD(gshhs) IT(binaryfile.b) [ OPT(I)IT(id) ] [ OPT(L) ] [ GMT_bo_OPT ] [ GMT_o_OPT ] > IT(asciifile.txt)
 .SH DESCRIPTION

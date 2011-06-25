@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.26 2011-06-20 22:15:09 guru Exp $
+ *	$Id: grdraster_func.c,v 1.27 2011-06-25 02:45:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -616,7 +616,7 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	GMT_LONG i, nrasters;
 
-	GMT_message (GMT, "grdraster %s [API] - Extract a region from a raster and save in a grid file\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdraster %s [API] - Extract subregion from a binary raster and save as a GMT grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdraster <file number>|<text> %s [-G<outgrid>] [%s]\n", GMT_Rgeo_OPT, GMT_Id_OPT);
 	GMT_message (GMT, "\t[-T<table>] [%s] [%s]\n", GMT_bo_OPT, GMT_o_OPT);
 

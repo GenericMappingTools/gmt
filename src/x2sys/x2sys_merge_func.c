@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.6 2011-05-11 09:48:22 guru Exp $
+ *	$Id: x2sys_merge_func.c,v 1.7 2011-06-25 02:45:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,7 +57,7 @@ void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	
 GMT_LONG GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "x2sys_merge - Merge an updated COEs table (smaller) into a main one (bigger)\n\n");
+	GMT_message (GMT, "x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)\n\n");
 	GMT_message (GMT, "usage: x2sys_merge -A<main_COEdbase> -M<new_COEdbase> [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

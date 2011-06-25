@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pssegy_func.c,v 1.12 2011-06-08 19:49:17 remko Exp $
+ *	$Id: pssegy_func.c,v 1.13 2011-06-25 02:45:58 guru Exp $
  *
  *    Copyright (c) 1999-2011 by T. Henstock
  *    See README file for copying and redistribution conditions.
@@ -125,7 +125,7 @@ GMT_LONG GMT_pssegy_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "pssegy %s - Plot a segy file in PostScript\n\n", GMT_VERSION);
+	GMT_message (GMT, "pssegy %s - Plot a SEGY file on a map\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pssegy [<segyfile>] -D<dev> -F<color> | -W %s %s \n", GMT_Jx_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[-A] [-C<clip>] [-E<slop>] [-I] [-K] [-L<nsamp>] [-M<ntraces>] [-N]\n");
 	GMT_message (GMT, "\t[-O] [-P] [-Q<mode><value>] [-S<header>] [-T<tracefile>] [%s]\n", GMT_U_OPT);

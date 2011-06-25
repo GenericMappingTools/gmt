@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_DATALIST 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
-x2sys_datalist \- A generic data-extractor for ASCII or binary files
+x2sys_datalist \- Extract content of track data files
 .SH SYNOPSIS
 BD(x2sys_datalist) IT(track(s)) OPT(T)IT(TAG) [ OPT(A) ] [ OPT(F)IT(name1),IT(name2),...) ] 
 [ OPT(L)[IT(corrtable)] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_h_OPT ]

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_SOLVE 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
-x2sys_solve \- Determine systematic corrections from crossovers
+x2sys_solve \- Determine least-squares systematic correction from crossovers
 .SH SYNOPSIS
 BD(x2sys_solve) OPT(C)IT(column) OPT(T)IT(TAG) OPT(E)IT(mode) [ IT(COE_list.d) ] [ GMT_V_OPT ] [ OPT(W) ] [ GMT_bi_OPT ]
 .SH DESCRIPTION

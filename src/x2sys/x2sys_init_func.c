@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.13 2011-06-20 22:15:10 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.14 2011-06-25 02:45:59 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -101,7 +101,7 @@ void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/*
 GMT_LONG GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "x2sys_init %s - Initialize a new track system database\n\n", X2SYS_VERSION);
+	GMT_message (GMT, "x2sys_init %s - Initialize a new x2sys track database\n\n", X2SYS_VERSION);
 	GMT_message (GMT, "usage: x2sys_init <TAG> [-Cc|f|g|e] [-D<deffile>] [-E<suffix>] [-F] [-G[d/g]] [-I[<binsize>]]\n");
 	GMT_message (GMT, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t<TAG> is the unique system identifier.  Files created will be placed in\n");

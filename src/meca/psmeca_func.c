@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: psmeca_func.c,v 1.14 2011-06-20 22:15:10 guru Exp $
+ *    $Id: psmeca_func.c,v 1.15 2011-06-25 02:45:57 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -164,7 +164,7 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the psmeca synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psmeca %s - Plot seismological symbols on maps\n\n", GMT_VERSION);
+	GMT_message (GMT, "psmeca %s - Plot focal mechanisms on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
 	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);

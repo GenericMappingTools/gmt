@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: segy2grd_func.c,v 1.15 2011-05-20 15:13:57 remko Exp $
+ *	$Id: segy2grd_func.c,v 1.16 2011-06-25 02:45:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -113,7 +113,7 @@ GMT_LONG GMT_segy2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "segy2grd %s - Converting segy data to a GMT grid file\n\n", GMT_VERSION);
+	GMT_message (GMT, "segy2grd %s - Converting SEGY data to a GMT grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: segy2grd <segyfile> -G<grdfile> %s %s\n", GMT_Id_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A[n|z]] [%s] [-F] [-L<nsamp>] [-M<ntraces>] [-N<nodata>]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-Q<mode><value>] [-S<header>] [%s]\n\n", GMT_V_OPT);

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_LIST 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
-x2sys_list \- Output a subset of crossovers from data base
+x2sys_list \- Extract subset from crossover data base
 .SH SYNOPSIS
 BD(x2sys_list) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A)IT(asymm_max) ] 
 [ OPT(F)IT(acdhiInNtTvxyz) ] [ OPT(I)[IT(list)] ] [ OPT(L)[IT(corrtable)] ] [ OPT(N)IT(nx_min) ] 

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH MGD77SNIFFER 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
-mgd77sniffer \- Scan for errors in MGD77 data
+mgd77sniffer \- Along-track quality control of MGD77 cruises
 .SH SYNOPSIS
 BD(mgd77sniffer) IT(NGDC-ids) [ OPT(A)IT(fieldabbrev),IT(scale),IT(offset) ] [ OPT(C)IT(maxspd) ] 
 [ OPT(D)BD(d)|BD(e)|BD(E)|BD(f)|BD(l)|BD(m)|BD(s)|BD(v)[IT(r)] ] [ OPT(g)IT(fieldabbrev),IT(imggrid),IT(scale),IT(mode) ] 

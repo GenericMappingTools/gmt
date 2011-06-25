@@ -8,7 +8,7 @@
 #define SCALE2 OPT(Jm)0.1
 #endif
 .SH NAME
-mgd77track \- A shiptrack plotting program
+mgd77track \- Plot track-line map of MGD77 cruises
 .SH SYNOPSIS
 BD(mgd77track) IT(NGDC-ids) GMT_Rgeo_OPT GMT_J_OPT 
 [ OPT(A)[BD(c)][IT(size)][,IT(spacing)] ]  [ GMT_B_OPT ] [ OPT(C)BD(f)|BD(g)|BD(e) ] [ OPT(Da)IT(startdate) ] 

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDRASTER 1 MANDATE GMT_STRING "Generic Mapping Tools [dbase supplement]"
 .SH NAME
-grdraster \- extract subregion from a binary raster and write a grid file
+grdraster \- Extract subregion from a binary raster and save as a GMT grid
 .SH SYNOPSIS
 BD(grdraster) [ IT(filenumber) | IT("text pattern") ] GMT_Rgeo_OPT 
 [ OPT(G)IT(grdfile) ] [ GMT_Id_OPT ] [ GMT_J_OPT ] [ GMT_V_OPT ] 

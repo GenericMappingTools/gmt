@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH HOTSPOTTER 1 MANDATE GMT_STRING "Generic Mapping Tools [spotter supplement]"
 .SH NAME
-hotspotter \- Create CVA image from seamount flowlines 
+hotspotter \- Create CVA image from seamount locations
 .SH SYNOPSIS
 BD(hotspotter) [IT(table)] OPT(E)IT(rotfile) 
 OPT(G)IT(CVAgrid) GMT_I_OPT GMT_Rgeo_OPT [ OPT(D)IT(factor) ] 

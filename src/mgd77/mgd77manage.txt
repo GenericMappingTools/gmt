@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH MGD77MANAGE 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
-mgd77manage \- Manage extra columns in MGD77+ files
+mgd77manage \- Manage the content of MGD77+ files
 .SH SYNOPSIS
 BD(mgd77manage) IT(NGDC-ids) [ OPT(A)[BD(+)]BD(a)|BD(c)|BD(d)|BD(D)|BD(e)|BD(E)|BD(g)|BD(i)|BD(n)|BD(t)|BD(T)IT(fileinfo) ] 
 [ OPT(C)BD(f)|BD(g)|BD(e) ] [ OPT(D)IT(abbrev1),IT(abbrev2),...) ] [ OPT(E)IT(empty) ] [ OPT(F) ] 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.12 2011-06-22 08:10:24 jluis Exp $
+ *	$Id: mgd77info_func.c,v 1.13 2011-06-25 02:45:57 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -77,7 +77,7 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	struct GMT_CTRL *GMT = C->GMT;
 	struct MGD77_CONTROL M;
 
-	GMT_message (GMT, "mgd77info %s [API]Return ( - Extract information about MGD77 files\n\n", GMT_VERSION);
+	GMT_message (GMT, "mgd77info %s [API] - Extract information about MGD77 files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

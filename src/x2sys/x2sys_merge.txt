@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_MERGE 1 MANDATE GMT_STRING "Generic Mapping Tools [x2sys supplement]"
 .SH NAME
-x2sys_merge \- Merge an updated COEs tables
+x2sys_merge \- Merge an updated COEs table (smaller) into the main table (bigger)
 .SH SYNOPSIS
 BD(x2sys_merge) OPT(A)IT(main_COElist.d) OPT(M)IT(new_COElist.d)  
 .SH DESCRIPTION

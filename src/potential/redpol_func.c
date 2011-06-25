@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: redpol_func.c,v 1.17 2011-06-20 22:15:10 guru Exp $
+ *	$Id: redpol_func.c,v 1.18 2011-06-25 02:45:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -986,7 +986,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 GMT_LONG GMT_redpol_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "redpol %s - Compute the\n\n", GMT_VERSION);
+	GMT_message (GMT, "redpol %s - Compute the Continuous Reduction To the Pole, AKA differential RTP\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: redpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>]\n");
 	GMT_message (GMT, "       [-E<dip_grd>/<dec_grd>] [-F<m>/<n>] [-M<m|r>] [-N] [-W<win_width>]\n");
 	GMT_message (GMT, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);

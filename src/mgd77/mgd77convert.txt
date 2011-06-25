@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH MGD77CONVERT 1 MANDATE GMT_STRING "Generic Mapping Tools [mgd77 supplement]"
 .SH NAME
-mgd77convert \- Translate between different formats of MGD77 files
+mgd77convert \- Convert MGD77 data to other file formats
 .SH SYNOPSIS
 BD(mgd77convert) IT(NGDC-ids) OPT(Fa)|BD(c)|BD(t) OPT(T)[BD(+)]BD(a)|BD(b)|BD(t) 
 [ OPT(D) ] [ OPT(L)[BD(w)][BD(e)][BD(+)] ] [ GMT_V_OPT ]

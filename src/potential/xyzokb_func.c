@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.15 2011-06-07 21:38:30 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.16 2011-06-25 02:45:57 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,7 +217,7 @@ GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type);
 GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
-	GMT_message (GMT, "xyzokb - Computes the gravity/magnetic effect of a body by the method of Okabe\n\n");
+	GMT_message (GMT, "xyzokb - Compute the gravity/magnetic effect of a body by the method of Okabe\n\n");
 	GMT_message (GMT, "usage: xyzokb [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
 	GMT_message (GMT, "\t[-Z<level>] [-T] [-L<z_observation>] [-S<radius>] [-D]\n");
 	GMT_message (GMT, "\t[-F<polygon>] [z<dz>] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>]\n");
