@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdmath \- Reverse Polish Notation calculator for grid files
+grdmath \- Reverse Polish Notation (RPN) calculator for grids (element by element)
 .SH SYNOPSIS
 BD(grdmath) [ GMT_I_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]

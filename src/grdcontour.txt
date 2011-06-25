@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDCONTOUR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdcontour \- Contouring of 2-D gridded data sets
+grdcontour \- Make contour map using a grid
 .SH SYNOPSIS
 BD(grdcontour) IT(grid) OPT(C)IT(cont_int)|IT(cpt) GMT_J_OPT 
 [ OPT(A)[BD(-)|IT(annot_int)][IT(labelinfo)] ] 

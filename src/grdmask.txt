@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdmask \- Create mask grid files from xy paths.
+grdmask \- Create mask grid from polygons or point coverage
 .SH SYNOPSIS
 BD(grdmask) IT(pathfiles) OPT(G)IT(mask_grd_file)] GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)[BD(m)|BD(p)] ] 

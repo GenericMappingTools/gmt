@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDPASTE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdpaste \- Paste together two IT(.nc) files along a common edge.
+grdpaste \- Join two grids along their common edge
 .SH SYNOPSIS
 BD(grdpaste) IT(file_a.nc file_b.nc) OPT(G)IT(outfile.nc) [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PS2RASTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-ps2raster \- Converts one or several IT(PostScript) file(s) to other formats using GhostScript
+ps2raster \- Convert [E]PS file(s) to other formats using GhostScript
 .SH SYNOPSIS
 BD(ps2raster) IT(psfile(s)) [ OPT(A)[BD(u)[IT(margins)]|-] ] [ OPT(C)IT(gs_option) ] [ OPT(D)IT(outdir) ] 
 [ OPT(E)IT(resolution) ] [ OPT(G)IT(ghost_path) ] [ OPT(L)IT(listfile) ] [ OPT(P) ] 

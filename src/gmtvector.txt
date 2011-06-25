@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTVECTOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtvector \- Basic manipulation of 2-D and 3-D vectors.
+gmtvector \- Basic manipulation of Cartesian vectors
 .SH SYNOPSIS
 BD(gmtvector) [ IT(table) ] [ OPT(A)IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
 [ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)] ] [ GMT_V_OPT ] 

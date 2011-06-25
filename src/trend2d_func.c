@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend2d_func.c,v 1.15 2011-06-08 19:21:50 guru Exp $
+ *	$Id: trend2d_func.c,v 1.16 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -408,7 +408,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "trend2d %s [API] - Fit a [weighted] [robust] polynomial for z = f(x,y) to ascii xyz[w]\n\n", GMT_VERSION);
+	GMT_message (GMT, "trend2d %s [API] - Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: trend2d [<table>] -F<xyzmrw> -N<n_model>[r] [-C<condition_#>] [-I[<confidence>]]\n");
 	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 

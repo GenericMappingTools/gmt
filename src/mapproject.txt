@@ -3,7 +3,7 @@
 #define	LEN1	0.5
 #define SCALE1	OPT(Jm)0.5BD(c)
 .SH NAME
-mapproject \- Forward and Inverse map transformation of 2-D coordinates 
+mapproject \- Forward and inverse map transformations, datum conversions and geodesy
 .SH SYNOPSIS
 BD(mapproject) [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)] ] [ OPT(C)[IT(dx)/IT(dy)] ] [ OPT(Dc)|BD(i)|BD(p) ] [ OPT(E)[IT(datum)] ] 

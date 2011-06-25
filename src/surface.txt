@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH SURFACE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-surface \- adjustable tension continuous curvature surface gridding algorithm
+surface \- Grid table data using adjustable tension continuous curvature splines
 .SH SYNOPSIS
 BD(surface) [ IT(table) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
 [ OPT(C)IT(convergence_limit) ] [ OPT(Ll)IT(lower) ] [ OPT(Lu)IT(upper) ] [ OPT(N)IT(max_iterations) ] [ OPT(Q) ] 

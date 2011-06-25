@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRD2RGB 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grd2rgb \- Converting a grid file, a raw, or a Sun raster file to r/g/b grids
+grd2rgb \- Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile
 .SH SYNOPSIS
 BD(grd2rgb) IT(infile) OPT(G)IT(template) [ OPT(C)IT(cptfile) ] 
 [ GMT_Id_OPT ] [ OPT(L)IT(layer) ] [ GMT_Rx_OPT ] [ GMT_V_OPT ] 

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-psimage \- To plot images (EPS or raster files) on maps
+psimage \- Place images or EPS files on maps
 .SH SYNOPSIS
 BD(psimage) IT(imagefile) [ OPT(W)[BD(-)]IT(width)[/IT(height)] | OPT(E)IT(dpi) ] 
 [ OPT(C)IT(xpos)/IT(ypos)[/IT(justify)] ] [ OPT(F)IT(pen) ] 

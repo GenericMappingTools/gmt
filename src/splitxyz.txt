@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH SPLITXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
+splitxyz \- Split xyz[dh] data tables into individual segments
 .SH SYNOPSIS
 BD(splitxyz) [ IT(table) ] OPT(C)IT(course_change) [ OPT(A)IT(azimuth)/IT(tolerance) ] 
 [ OPT(D)IT(minimum_distance) ] [ OPT(F)IT(xy_filter)/IT(z_filter) ] 

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH FILTER1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-filter1d \- Time domain filtering of 1-D time series
+filter1d \- Perform time domain filtering of 1-D data tables
 .SH SYNOPSIS
 BD(filter1d) [ IT(table) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
 [ OPT(E) ] [ OPT(I)IT(ignore_val) ] [ OPT(L)IT(lack_width) ] 

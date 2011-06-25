@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: colmath_func.c,v 1.9 2011-06-07 01:14:19 guru Exp $
+ *	$Id: colmath_func.c,v 1.10 2011-06-25 01:59:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,7 +81,7 @@ GMT_LONG GMT_colmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "colmath %s [API] - Do math on columns from table data\n\n", GMT_VERSION);
+	GMT_message (GMT, "colmath %s [API] - Do mathematics on columns from data tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: colmath [<table>] [-A] [-N] [-Q<seg>] [-S[~]\"search string\"] [-T] [%s]\n\t[%s] [%s]", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT);
 	GMT_message (GMT, " [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] OPERATORS\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH SPECTRUM1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] time-series.
+spectrum1d \- Compute auto\- [and cross\- ] spectra from one [or two] time-series
 .SH SYNOPSIS
 BD(spectrum1d) [ IT(table) ] OPT(S)IT(segment_size)] 
 [ OPT(C)[BD(xycnpago)] ] [ OPT(D)IT(dt) ] 

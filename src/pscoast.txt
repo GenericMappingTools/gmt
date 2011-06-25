@@ -5,7 +5,7 @@
 #define LEN_2   1
 #define SCALE_M2   OPT(Jm)1BD(c)
 .SH NAME
-pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
+pscoast \- Plot continents, shorelines, rivers, and borders on maps
 .SH SYNOPSIS
 BD(pscoast) GMT_J_OPT GMT_Rgeoz_OPT 
 [ GMT_A_OPT ] [ GMT_B_OPT ] [ OPT(C)[BD(l)|BD(r)/]IT(fill) ] 

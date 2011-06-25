@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDEDIT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdedit \- Modifying the header or content of a 2-D grid file
+grdedit \- Modify header or content of a grid
 .SH SYNOPSIS
 BD(grdedit) IT(grid) [ OPT(A) ] [ GMT_GRDEDIT ] [ OPT(E) ] 
 [ OPT(N)IT(table) ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 

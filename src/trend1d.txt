@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH TREND1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
+trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data
 .SH SYNOPSIS
 BD(trend1d) [ IT(table) ] OPT(F)BD(xymrw|p) OPT(N)[BD(f)]IT(n_model)[BD(r)] [ IT(xy[w]file) ] 
 [ OPT(C)IT(condition_number) ] [ OPT(I)[IT(confidence_level)] ] [ GMT_V_OPT ] 

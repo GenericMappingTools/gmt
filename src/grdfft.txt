@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDFFT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 
+grdfft \- Perform mathematical operations on grids in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
 BD(grdfft) IT(ingrid) OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
 [ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)] ] 

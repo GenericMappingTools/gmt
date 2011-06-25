@@ -6,7 +6,7 @@
 #define LEN2	10
 #define SCL2	OPT(S)10BD(i)
 .SH NAME
-grdvector \- Plot vector fields from grid files
+grdvector \- Plot vector field from two component grids
 .SH SYNOPSIS
 BD(grdvector) IT(compx.nc) IT(compy.nc) GMT_J_OPT [ OPT(A) ] 
 [ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(E) ]  

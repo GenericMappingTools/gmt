@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDVOLUME 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdvolume \- Calculating volume under a surface within a contour
+grdvolume \- Calculate grid volume and area constrained by a contour
 .SH SYNOPSIS
 BD(grdvolume) IT(grdfile) [ OPT(C)IT(cval) or OPT(C)IT(low/high/delta) ] 
 [ OPT(L)IT(base) ] [ GMT_Rgeo_OPT ] [ OPT(S)[IT(unit)] ] [ OPT(T)[BD(c)|BD(h)] ] [ GMT_V_OPT ] 

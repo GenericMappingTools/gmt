@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDREFORMAT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdreformat \- Converting between different grid file formats.
+grdreformat \- Convert between different grid formats
 .SH SYNOPSIS
 BD(grdreformat) IT(ingrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
 IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 

@@ -6,7 +6,7 @@
 #define LEN_2	5
 #define SCALE_2	OPT(S)5BD(c)
 .SH NAME
-psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
+psrose \- Plot a polar histogram (rose, sector, windrose diagrams)
 .SH SYNOPSIS
 BD(psrose) [ IT(table) ] [ OPT(A)IT(sector_width)[BD(r)] ] 
 [ GMT_B_OPT ] [ OPT(C)[IT(mode_file)] ] [ OPT(D) ] [ OPT(I) ] [ OPT(G)IT(fill) ] 

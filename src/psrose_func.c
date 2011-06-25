@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psrose_func.c,v 1.19 2011-06-23 17:47:16 remko Exp $
+ *	$Id: psrose_func.c,v 1.20 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ GMT_LONG GMT_psrose_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the psrose synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psrose %s [API] - Polar histogram (rose diagram) plotter\n\n", GMT_VERSION);
+	GMT_message (GMT, "psrose %s [API] - Plot a polar histogram (rose, sector, windrose diagrams)\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M<parameters>] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s]\n", GMT_U_OPT);

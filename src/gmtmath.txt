@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtmath \- Reverse Polish Notation calculator for data tables
+gmtmath \- Reverse Polish Notation (RPN) calculator for data tables
 .SH SYNOPSIS
 BD(gmtmath) [ OPT(A)IT(t_f(t).d) ] [ OPT(C)IT(cols) ] [ OPT(I) ] 
 [ OPT(N)IT(n_col)/IT(t_col) ] [ OPT(Q) ] [ OPT(S)[BD(f)|BD(l)] ] 

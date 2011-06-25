@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.68 2011-06-20 21:45:15 guru Exp $
+ *	$Id: grdimage_func.c,v 1.69 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -99,7 +99,7 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdimage %s [API] - Plot grid files in 2-D\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdimage %s [API] - Project grids or images and plot them on maps\n\n", GMT_VERSION);
 #ifdef USE_GDAL
 	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
 			GMT_J_OPT, GMT_B_OPT);
@@ -121,7 +121,7 @@ GMT_LONG GMT_grdimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 #ifdef USE_GDAL
-	GMT_message (GMT, "\t-A Save image in a raster format instead of postscript. Append =<driver> to select.\n");
+	GMT_message (GMT, "\t-A Save image in a raster format instead of PostScript. Append =<driver> to select.\n");
 	GMT_message (GMT, "\t   the image format. The 'driver' is the driver code name used by GDAL. For example\n");
 	GMT_message (GMT, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif

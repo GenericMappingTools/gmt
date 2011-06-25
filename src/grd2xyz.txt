@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRD2XYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grd2xyz \- Converting grid file(s) to ASCII or binary data
+grd2xyz \- Convert grid file to data table
 .SH SYNOPSIS
 BD(grd2xyz) IT(grid) [ GMT_Rgeo_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)[IT(weight)] ] [ OPT(Z)[IT(flags)] ] 

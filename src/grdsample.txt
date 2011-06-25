@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDSAMPLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdsample \- Resample a grid file onto a new grid
+grdsample \- Resample a grid onto a new lattice
 .SH SYNOPSIS
 BD(grdsample) IT(in_grdfile) OPT(G)IT(out_grdfile) [ GMT_I_OPT ] 
 [ OPT(L)IT(flag) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 

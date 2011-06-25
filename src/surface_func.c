@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: surface_func.c,v 1.22 2011-06-20 21:45:16 guru Exp $
+ *	$Id: surface_func.c,v 1.23 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1581,7 +1581,7 @@ GMT_LONG GMT_surface_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "surface %s [API] - Adjustable tension continuous curvature surface gridding\n\n", GMT_VERSION);
+	GMT_message (GMT, "surface %s [API] - Grid table data using adjustable tension continuous curvature splines\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>] [-D<breakline>]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T<tension>[i][b]]\n");

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDLANDMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.
+grdlandmask \- Create a "wet-dry" mask grid from shoreline data base
 .SH SYNOPSIS
 BD(grdlandmask) OPT(G)IT(mask_grd_file)] GMT_I_OPT GMT_Rgeo_OPT [ GMT_A_OPT ] 
 [ OPT(D)IT(resolution)[BD(+)] ] [ OPT(N)IT(maskvalues)[BD(o)] ] 

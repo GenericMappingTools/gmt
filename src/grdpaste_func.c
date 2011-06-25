@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpaste_func.c,v 1.12 2011-06-19 01:48:01 guru Exp $
+ *	$Id: grdpaste_func.c,v 1.13 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,7 +59,7 @@ GMT_LONG GMT_grdpaste_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdpaste %s [API] - Join two grid files along common edge\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdpaste %s [API] - Join two grids along their common edge\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

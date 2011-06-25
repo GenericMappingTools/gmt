@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDPROJECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdproject \- Forward and Inverse map transformation of 2-D grid files 
+grdproject \- Forward and inverse map transformation of grids 
 .SH SYNOPSIS
 BD(grdproject) IT(in_grdfile) OPT(G)IT(out_grdfile) GMT_J_OPT
 [ OPT(A)[BD(c|i|p|e|f|k|M|n)] ] [ OPT(C)[IT(dx/dy)] ] [ OPT(D)GMT_inc_OPT ] 

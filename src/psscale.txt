@@ -6,7 +6,7 @@
 #define LEN_3	6
 #define LEN_4	4
 .SH NAME
-psscale \- Plot gray scale or color scale on maps
+psscale \- Plot a gray-scale or color-scale on maps
 .SH SYNOPSIS
 BD(psscale) OPT(D)IT(xpos)/IT(ypos)/IT(length)/IT(width)[BD(h)] [ OPT(A)[BD(a)|BD(l)|BD(c)] ] [ GMT_B_OPT ] 
 [ OPT(C)IT(cpt_file) ] [ OPT(E)[BD(b)|BD(f)][IT(length)][BD(+n)[IT(text)]] ] [ OPT(I)[IT(max_intens)|IT(low_i)/IT(high_i)] ] 

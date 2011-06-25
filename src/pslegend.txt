@@ -5,7 +5,7 @@
 #define GAP 2BD(p)
 #define SHIFT 4BD(p)/-4BD(p)
 .SH NAME
-pslegend \- To plot a map legend
+pslegend \- Plot legends on maps
 .SH SYNOPSIS
 BD(pslegend) [ IT(textfile) ] OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)/IT(height)/IT(just)[/IT(dx)/IT(dy)] 
 [ GMT_B_OPT ] [ OPT(C)IT(dx)/IT(dy) ] [ OPT(F)[BD(+r)[IT(radius)]] ] [ OPT(G)IT(fill) ] [ GMT_J_OPT ] 

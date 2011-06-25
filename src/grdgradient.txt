@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDGRADIENT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdgradient \- Compute directional derivative or gradient from 2-D grid file representing z(x,y)
+grdgradient \- Compute directional derivative or gradient from a grid
 .SH SYNOPSIS
 BD(grdgradient) IT(in_grdfile) OPT(G)IT(out_grdfile) 
 [ OPT(A)IT(azim)[/IT(azim2)] ] [ OPT(D)[BD(c)][BD(o)][BD(n)] ] 

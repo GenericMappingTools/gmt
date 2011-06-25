@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDTREND 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdtrend \- Fit and/or remove a polynomial trend in a grid file
+grdtrend \- Fit trend surface to grids and compute residuals
 .SH SYNOPSIS
 BD(grdtrend) IT(grdfile) OPT(N)IT(n_model)[BD(r)] 
 [ OPT(D)IT(diff.nc) ] [ GMT_Rgeo_OPT ] [ OPT(T)IT(trend.nc) ] [ GMT_V_OPT ] 

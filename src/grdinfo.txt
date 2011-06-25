@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDINFO 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdinfo \- Get information about the contents of a 2-D grid file
+grdinfo \- Extract information from grids
 .SH SYNOPSIS
 BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
 [ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|)2)] ] 

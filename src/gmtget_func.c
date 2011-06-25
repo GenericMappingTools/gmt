@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtget_func.c,v 1.4 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtget_func.c,v 1.5 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ GMT_LONG GMT_gmtget_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtget %s [API] - Get individual default parameters\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtget %s [API] - Get individual GMT default parameters\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtget [-L] [-G<defaultsfile>] PARAMETER1 PARAMETER2 PARAMETER3 ...\n");
 	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 

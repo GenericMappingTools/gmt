@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdvolume_func.c,v 1.11 2011-06-07 21:38:29 guru Exp $
+ *	$Id: grdvolume_func.c,v 1.12 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -294,7 +294,7 @@ GMT_LONG GMT_grdvolume_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdvolume %s [API] - Calculating volume under a surface within a contour\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdvolume %s [API] - Calculate grid volume and area constrained by a contour\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

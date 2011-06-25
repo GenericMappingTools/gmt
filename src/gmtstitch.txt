@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTSTITCH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtstitch \- Join line segments whose end points match within tolerance
+gmtstitch \- Join individual lines whose end points match within tolerance
 .SH SYNOPSIS
 BD(gmtstitch) [ IT(table) ] [ OPT(C)[IT(closed)] ] [ OPT(D)[IT(template)] ]
 [ OPT(L)[IT(linkfile)] ] [ OPT(Q)[IT(template)] ] 
