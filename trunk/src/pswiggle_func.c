@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pswiggle_func.c,v 1.19 2011-06-23 17:46:57 remko Exp $
+ *	$Id: pswiggle_func.c,v 1.20 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -200,7 +200,7 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
-	GMT_message (GMT, "pswiggle %s [API] - Plot xyz-series along tracks\n\n", GMT_VERSION);
+	GMT_message (GMT, "pswiggle %s [API] - Plot z = f(x,y) anomalies along tracks\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pswiggle [<table>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A<azimuth>] [%s] [-C<center>] [-G[-|+|=]<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-I<az>] [%s] [-K] [-O] [-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>]\n", GMT_Jz_OPT);

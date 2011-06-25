@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtselect_func.c,v 1.21 2011-06-20 21:45:15 guru Exp $
+ *	$Id: gmtselect_func.c,v 1.22 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -150,7 +150,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtselect %s [API] - Select data subsets based on multiple spatial criteria\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtselect %s [API] - Select data table subsets based on multiple spatial criteria\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_message (GMT, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
 	GMT_message (GMT, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",

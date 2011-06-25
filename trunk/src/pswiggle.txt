@@ -3,7 +3,7 @@
 #define LEN 15
 #define SCALE_S OPT(JS)0/90/15BD(c)
 .SH NAME
-pswiggle \- Plot anomaly along track on a map
+pswiggle \- Plot z = f(x,y) anomalies along tracks
 .SH SYNOPSIS
 BD(pswiggle) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
 OPT(Z)IT(scale) [ OPT(A)IT(azimuth) ] [ GMT_B_OPT ] [ OPT(C)IT(center) ] 

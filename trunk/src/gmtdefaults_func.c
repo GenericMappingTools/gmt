@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtdefaults_func.c,v 1.7 2011-06-20 21:45:14 guru Exp $
+ *	$Id: gmtdefaults_func.c,v 1.8 2011-06-25 01:59:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -52,7 +52,7 @@ GMT_LONG GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtdefaults %s [API] - List GMT default parameters to stdout\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtdefaults %s [API] - List current GMT default parameters\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtdefaults [-D[s|u]]\n\n");
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

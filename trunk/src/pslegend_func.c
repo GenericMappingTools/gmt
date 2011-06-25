@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslegend_func.c,v 1.20 2011-06-23 17:47:16 remko Exp $
+ *	$Id: pslegend_func.c,v 1.21 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -103,7 +103,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the pslegend synopsis and optionally full usage information */
 
-	GMT_message (GMT, "pslegend %s [API] - To plot legends on maps\n\n", GMT_VERSION);
+	GMT_message (GMT, "pslegend %s [API] - Plot legends on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>/<h>/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_message (GMT, "\t[-G<fill>] [%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);

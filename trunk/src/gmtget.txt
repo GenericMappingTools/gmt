@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTGET 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtget \- To list a single BD(GMT) parameter
+gmtget \- Get individual BD(GMT) default parameters
 .SH SYNOPSIS
 BD(gmtget) [ OPT(G)IT(defaultsfile) ] [ OPT(L) ] IT(PARAMETER1) [ IT(PARAMETER2) IT(PARAMETER3) ... ]
 .SH DESCRIPTION

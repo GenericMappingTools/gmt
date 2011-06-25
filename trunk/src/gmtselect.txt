@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTSELECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtselect \- Select data subsets based on multiple spatial criteria 
+gmtselect \- Select data table subsets based on multiple spatial criteria 
 .SH SYNOPSIS
 BD(gmtselect) [ IT(table) ] [ GMT_A_OPT ] 
 [ OPT(C)IT(dist)[IT(unit)]/IT(ptfile) ] [ OPT(D)IT(resolution)[BD(+)] ] [ OPT(E)[BD(fn)] ] [ OPT(F)IT(polygonfile) ] 

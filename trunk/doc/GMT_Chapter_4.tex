@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.155 2011-06-23 02:20:44 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.156 2011-06-25 01:59:46 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -2109,6 +2109,107 @@ unit of the z-coordinate. The default is simply ``z''.
 
 \index{grid file!formats!netCDF|)}
 \index{grid file!formats!COARDS|)}
+
+\section{Options for grids and images read via GDAL}
+\label{sec:GDAL}
+\index{grid file!formats!GDAL|(}
+\index{grid file!formats!GDAL|(}
+
+If the support has been configured during installation, then \GMT\ can read a variety of grid and image formats via GDAL.
+This extends the capability of \GMT\ to handle data sets from a variety of sources.
+
+\subsection{Reading multi-band images}
+
+\GMTprog{grdimage} and \GMTprog{psimage} both lets the user select individual bands in a multi-band image file and treats the result as an image
+(that is the values, in the 0--255 range, are treated as colors, not data). To select individual bands you use the {\bf +b}{\it band-number} mechanism that
+must be appended to the image filename. Here, {\it band-number} can be the number of one individual band (the counting starts at zero), or
+it could be a comma-separated list of bands. For example
+\begin{verbatim}
+psimage jpeg_image_with_three_bands.jpg+b0
+\end{verbatim}
+will plot only the first band (i.e., the red band) of the jpeg image as a gray-scale image, and
+\begin{verbatim}
+psimage jpeg_image_with_three_bands.jpg+b2,1,0
+\end{verbatim}
+will plot the same image in color but where the RGB band order has been reversed.
+
+Instead of treating them as images, all other \GMT\ programs that process grids can read individual bands from an image but will consider
+the values to be regular data. For example, let \filename{multiband} be the name of a multi-band file with a near infrared component in band 4 and red
+in band 3. We will compute the NDVI (Normalized Difference Vegetation Index), which is defined as NDVI = (NIR - R) / (NIR + R), as
+\begin{verbatim}
+grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
+	multiband=gd+b2 ADD DIV = ndvi.nc
+\end{verbatim}
+The resulting grid \filename{ndvi.nc} can then be plotted as usual.
+
+\subsection{Reading more complex multi-band IMAGES or GRIDS}
+
+It is also possible to access to sub-datasets in a multi-band grid. The next example shows how we can extract the SST from the MODIS
+file \filename{A20030012003365.L3m\_YR\_NSST\_9} that is stored in the HDF ``format''. We need to run the GDAL program \GMTprog{gdalinfo} on the
+file because we first must extract the necessary metadata from the file:
+
+\begin{verbatim}
+gdalinfo A20030012003365.L3m_YR_NSST_9
+Driver: HDF4/Hierarchical Data Format Release 4
+Files: A20030012003365.L3m_YR_NSST_9
+Size is 512, 512
+Coordinate System is `'
+Metadata:
+ Product Name=A20030012003365.L3m_YR_NSST_9
+ Sensor Name=MODISA
+ Sensor=
+ Title=MODISA Level-3 Standard Mapped Image
+...
+ Scaling=linear
+ Scaling Equation=(Slope*l3m_data) + Intercept = Parameter value
+ Slope=0.000717185
+ Intercept=-2
+ Scaled Data Minimum=-2
+ Scaled Data Maximum=45
+ Data Minimum=-1.999999
+ Data Maximum=34.76
+Subdatasets:
+ SUBDATASET_1_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
+ SUBDATASET_1_DESC=[2160x4320] l3m_data (16-bit unsigned integer)
+ SUBDATASET_2_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":1
+ SUBDATASET_2_DESC=[2160x4320] l3m_qual (8-bit unsigned integer)
+\end{verbatim}
+
+Now, to access this file with \GMT\ we need to use the =gd mechanism and append the name of the sub-dataset that we want to extract.
+Here, a simple example using \GMTprog{grdinfo} would be
+
+\scriptsize
+\begin{verbatim}
+grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Remark:
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Gridline node registration used
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Grid file format: gd = Import through GDAL (convert to float)
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: x_min: 0.5 x_max: 4319.5 x_inc: 1 name: x nx: 4320
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: y_min: 0.5 y_max: 2159.5 y_inc: 1 name: y ny: 2160
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: z_min: 0 z_max: 65535 name: z
+HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: scale_factor: 1 add_offset: 0
+\end{verbatim}
+\normalsize
+
+Be warned, however, that things are not yet completed because while the data are scaled according to the equation printed above
+(``Scaling Equation=(Slope*l3m\_data) + Intercept = Parameter value''),
+this scaling is not applied by GDAL on reading so it cannot be done automatically by \GMT. One solution is to do the reading and
+scaling via \GMTprog{grdmath} first, i.e.,
+
+\scriptsize
+\begin{verbatim}
+grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+	0.000717185 MUL -2 ADD = sst.nc
+\end{verbatim}
+\normalsize
+\noindent
+then plot the \filename{sst.nc} directly.
+
+\index{grid file!formats!GDAL|)}
+\index{grid file!formats!GDAL|)}
 
 \section{The NaN data value}
 \index{NaN}

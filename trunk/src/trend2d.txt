@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH TREND2D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data.
+trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data
 .SH SYNOPSIS
 BD(trend2d) [ IT(table) ] OPT(F)BD(xyzmrw) OPT(N)IT(n_model)[BD(r)] [ IT(xyz[w]file) ] 
 [ OPT(C)IT(condition_number) ] [ OPT(I)[IT(confidence_level)] ] [ GMT_V_OPT ] [ OPT(W) ] 

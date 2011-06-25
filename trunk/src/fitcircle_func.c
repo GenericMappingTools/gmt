@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: fitcircle_func.c,v 1.14 2011-06-20 21:45:14 guru Exp $
+ *    $Id: fitcircle_func.c,v 1.15 2011-06-25 01:59:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -111,7 +111,7 @@ GMT_LONG GMT_fitcircle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "fitcircle %s [API] - Find best-fitting great- or small-circle to points on sphere\n\n", GMT_VERSION);
+	GMT_message (GMT, "fitcircle %s [API] - Find mean position and best-fitting great- or small-circle to points on sphere\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: fitcircle [<table>] -L[<n>] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);

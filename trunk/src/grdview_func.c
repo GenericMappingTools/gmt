@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdview_func.c,v 1.33 2011-06-20 21:45:15 guru Exp $
+ *	$Id: grdview_func.c,v 1.34 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -319,7 +319,7 @@ GMT_LONG GMT_grdview_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	struct GMT_PEN P;
 
-	GMT_message (GMT, "grdview %s [API] - Plot topofiles in 3-D\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdview %s [API] - Create 3-D perspective image or surface mesh from a grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-I<intensgrid>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);

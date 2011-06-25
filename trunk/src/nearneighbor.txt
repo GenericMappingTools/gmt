@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH NEARNEIGHBOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-nearneighbor \- A "Nearest neighbor" gridding algorithm
+nearneighbor \- Grid table data using a "Nearest neighbor" algorithm
 .SH SYNOPSIS
 BD(nearneighbor) [ IT(table) ] OPT(G)IT(out_grdfile) GMT_I_OPT  
 OPT(N)IT(sectors)[/IT(min_sectors)] GMT_Rgeo_OPT OPT(S)IT(search_radius)[IT(unit)] 

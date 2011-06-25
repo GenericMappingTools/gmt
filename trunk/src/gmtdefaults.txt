@@ -5,7 +5,7 @@
 #define CODE_US		Standard+
 #define PAPER_US	letter
 .SH NAME
-gmtdefaults \- To list current BD(GMT) defaults
+gmtdefaults \- List current BD(GMT) default parameters
 .SH SYNOPSIS
 BD(gmtdefaults) [ OPT(D)[BD(u)|BD(s)] ]
 .SH DESCRIPTION

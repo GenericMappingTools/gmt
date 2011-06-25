@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtmath_func.c,v 1.25 2011-06-20 21:45:15 guru Exp $
+ *	$Id: gmtmath_func.c,v 1.26 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -314,7 +314,7 @@ GMT_LONG GMT_gmtmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtmath %s [API] - Reverse Polish Notation (RPN) calculator for table data\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtmath %s [API] - Reverse Polish Notation (RPN) calculator for data tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
 	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin>/<tmax>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);

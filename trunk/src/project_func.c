@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: project_func.c,v 1.18 2011-06-20 21:45:16 guru Exp $
+ *	$Id: project_func.c,v 1.19 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -323,7 +323,7 @@ GMT_LONG GMT_project_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "project %s [API] - Project data onto line or great circle, generate track, or translate coordinates\n\n", GMT_VERSION);
+	GMT_message (GMT, "project %s [API] - Project table data onto lines or great circles, generate tracks, or translate coordinates\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
 	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<lat>]] [-L[w][<l_min>/<l_max>]]\n");
 	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);

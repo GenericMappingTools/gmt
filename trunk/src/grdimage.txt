@@ -5,7 +5,7 @@
 #define LEN_X   10
 #define SCALE2	OPT(Jx)10BD(i)
 .SH NAME
-grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
+grdimage \- Project grids or images and plot them on maps
 .SH SYNOPSIS
 BD(grdimage) IT(grd_z) | IT(grd_r grd_g grd_b) [OPT(A)<IT(out_img=driver)>]  OPT(C)IT(cptfile) [ OPT(D)[BD(r)] ] GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(Ei)[|IT(dpi)] ] [ OPT(G)[BD(f)|BD(b)]IT(color) ] [ OPT(I)IT(intensfile) ] 

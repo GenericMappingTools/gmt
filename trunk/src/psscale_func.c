@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.31 2011-06-23 17:46:57 remko Exp $
+ *	$Id: psscale_func.c,v 1.32 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ GMT_LONG GMT_psscale_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the psscale synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psscale %s [API] - To create grayscale or colorscale for maps\n\n", GMT_VERSION);
+	GMT_message (GMT, "psscale %s [API] - Plot a gray-scale or color-scale on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>] [-E[b|f][<length>][+n[<txt>]]]\n");
 	GMT_message (GMT, "\t[%s] [-I[<max_intens>|<low_i>/<high_i>] [%s] [%s] [-K] [-L[i][<gap>[<unit>]]]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-O] [-P] [-Q] [-S] [-T[+p<pen>][+g<fill>][+l|r|b|t<off>]]\n\t[%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH SAMPLE1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-sample1d \- Resampling of 1-D data sets
+sample1d \- Resample 1-D table data using splines
 .SH SYNOPSIS
 BD(sample1d) [ IT(table) ] [ OPT(A)BD(m)|BD(p) ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
 [ OPT(N)IT(knotfile) ] [ OPT(S)IT(start)[/IT(stop)] ] [ OPT(T)IT(col) ] 

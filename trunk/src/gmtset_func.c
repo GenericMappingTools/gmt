@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtset_func.c,v 1.6 2011-05-16 22:22:30 guru Exp $
+ *	$Id: gmtset_func.c,v 1.7 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -62,7 +62,7 @@ GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtset %s [API] - Set individual default parameters\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtset %s [API] - Change individual GMT default parameters\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtset [-C | -D[s|u] | -G<defaultsfile>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n");
 	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: trend1d_func.c,v 1.16 2011-06-20 21:45:16 guru Exp $
+ *	$Id: trend1d_func.c,v 1.17 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -470,7 +470,7 @@ GMT_LONG GMT_trend1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to ascii xy[w]\n\n", GMT_VERSION);
+	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: trend1d [<table>] -F<xymrw|p> -N[f]<n_model>[r] [-C<condition_#>]\n");
 	GMT_message (GMT, "\t[-I[<confidence>]] [%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 

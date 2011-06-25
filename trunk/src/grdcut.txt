@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDCUT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdcut \- Extract a subregion out of a grid file
+grdcut \- Extract subregion from a grid
 .SH SYNOPSIS
 BD(grdcut) IT(ingrid) OPT(G)IT(outgrid) GMT_Rgeo_OPT 
 [ GMT_V_OPT ] [ OPT(Z)[BD(n)]IT(min/max)] ] [ GMT_f_OPT ]

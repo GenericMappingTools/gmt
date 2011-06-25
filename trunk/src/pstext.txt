@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSTEXT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-pstext \- To plot text strings on maps
+pstext \- Plot or typeset text on maps
 .SH SYNOPSIS
 BD(pstext) [ IT(textfiles) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)IT(dx/dy) ]  

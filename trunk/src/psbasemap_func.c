@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.26 2011-06-20 21:45:16 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.27 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -64,7 +64,7 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psbasemap %s [API] - To plot PostScript basemaps\n\n", GMT_VERSION);
+	GMT_message (GMT, "psbasemap %s [API] - Plot PostScript base maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
 	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);

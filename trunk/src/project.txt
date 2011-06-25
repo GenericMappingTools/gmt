@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PROJECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-project \- project data along a line or great circle, generate a profile track, or translate coordinates.
+project \- Project table data onto lines or great circles, generate tracks, or translate coordinates
 .SH SYNOPSIS
 BD(project) [ IT(table) ] OPT(C)IT(cx)/IT(cy) [ OPT(A)IT(azimuth) ] 
 [ OPT(E)IT(bx)/IT(by) ] [ OPT(F)IT(flags) ] [ OPT(G)IT(dist)[/IT(lat)] ]

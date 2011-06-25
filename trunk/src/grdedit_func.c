@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdedit_func.c,v 1.14 2011-06-07 01:14:20 guru Exp $
+ *	$Id: grdedit_func.c,v 1.15 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ GMT_LONG GMT_grdedit_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdedit %s [API] - Modifying the header or content of a 2-D grid file\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdedit %s [API] - Modify header or content of a grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-E] [%s] [-N<table>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);

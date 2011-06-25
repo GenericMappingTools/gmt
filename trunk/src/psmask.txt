@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-psmask \- To clip or mask areas of no data on a map
+psmask \- Use data tables to clip or mask map areas with no coverage
 .SH SYNOPSIS
 BD(psmask) [ IT(table) ] GMT_I_OPT GMT_J_OPT GMT_Rgeoz_OPT [ GMT_B_OPT ]  
 [ OPT(D)IT(dumpfile) ] [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] 

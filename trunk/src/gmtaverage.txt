@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTAVERAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtaverage \- filter to block average (IT(x),IT(y),IT(z)) data.
+gmtaverage \- Block average (IT(x),IT(y),IT(z)) data tables by mean, median, or mode estimation
 .SH SYNOPSIS
 BD(gmtaverage) [ IT(xyz[w]file(s)) ] GMT_I_OPT GMT_Rx_OPT OPT(Te)|BD(m)|BD(n)|BD(o)|BD(s)|BD(w)|IT(quantile) 
 [ OPT(C) ] [ OPT(E)[BD(b)] ] [ OPT(Q) ] 

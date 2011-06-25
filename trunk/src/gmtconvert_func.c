@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.19 2011-06-20 21:45:14 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.20 2011-06-25 01:59:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtconvert %s [API] - Convert format or paste/extract columns from table data\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtconvert %s [API] - Convert, paste, or extract columns from data tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l]] [-I] [-L] [-N] [-Q<seg>]\n");
 	GMT_message (GMT, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);

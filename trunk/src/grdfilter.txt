@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDFILTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdfilter \- Filter a 2-D grid file in the space (or time) domain
+grdfilter \- Filter a grid in the space (or time) domain
 .SH SYNOPSIS
 BD(grdfilter) IT(ingrid) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
 OPT(G)IT(outgrid) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]

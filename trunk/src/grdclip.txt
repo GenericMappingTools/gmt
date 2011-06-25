@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDCLIP 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdclip \- Clipping of range in grid files.
+grdclip \- Clip the range of grids
 .SH SYNOPSIS
 BD(grdclip) IT(ingrid) OPT(G)IT(outgrid) [ GMT_Rgeo_OPT ] 
 [ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ GMT_V_OPT ] 

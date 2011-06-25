@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTSET 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtset \- To change individual BD(GMT) default parameters
+gmtset \- Change individual BD(GMT) default parameters
 .SH SYNOPSIS
 BD(gmtset) [ OPT(C) | OPT(D)[BD(s)|BD(u)] | OPT(G)IT(defaultsfile) ] PARAMETER1 [=] IT(value1) PARAMETER2 [=] IT(value2) PARAMETER3 [=] IT(value3) ...
 .SH DESCRIPTION

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH BLOCKMEDIAN 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-blockmedian \- filter to block average (IT(x),IT(y),IT(z)) data by L1 norm.
+blockmedian \- Block average (IT(x),IT(y),IT(z)) data tables by L1 norm
 .SH SYNOPSIS
 BD(blockmedian) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
 [ OPT(C) ] [ OPT(E)[BD(b)] ] [ OPT(Q) ] [ OPT(T)IT(quantile) ] 

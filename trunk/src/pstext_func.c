@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pstext_func.c,v 1.29 2011-06-20 21:45:16 guru Exp $
+ *	$Id: pstext_func.c,v 1.30 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -246,7 +246,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 
 	/* This displays the pstext synopsis and optionally full usage information */
 
-	GMT_message (GMT, "pstext %s [API] - To plot text on maps\n\n", GMT_VERSION);
+	GMT_message (GMT, "pstext %s [API] - Plot or typeset text on maps\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<fill>] [%s] [-K] [-L]\n", GMT_Jz_OPT);

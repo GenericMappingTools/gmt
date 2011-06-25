@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH BLOCKMODE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-blockmode \- filter to block average (IT(x),IT(y),IT(z)) data by mode estimation.
+blockmode \- Block average (IT(x),IT(y),IT(z)) data tables by mode estimation
 .SH SYNOPSIS
 BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
 [ OPT(C) ] [ OPT(E) ] [ OPT(Q) ] [ GMT_V_OPT ] 

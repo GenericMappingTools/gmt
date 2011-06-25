@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH COLMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-colmath \- Does mathematics on columns from ASCII and binary 1-D tables
+colmath \- Do mathematics on columns from data tables
 .SH SYNOPSIS
 BD(colmath) [ IT(table) ] [ OPT(A) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
 [ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 

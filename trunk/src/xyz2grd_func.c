@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyz2grd_func.c,v 1.21 2011-06-20 21:45:16 guru Exp $
+ *	$Id: xyz2grd_func.c,v 1.22 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -95,7 +95,7 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "xyz2grd %s [API] - Converting [xy]z data to a GMT grid file\n\n", GMT_VERSION);
+	GMT_message (GMT, "xyz2grd %s [API] - Convert data table to a grid file\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: xyz2grd [<table>] -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A[f|l|n|s|u|z]] [%s]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",

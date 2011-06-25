@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDTRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdtrack \- Sampling of 2-D grided data set(s) along 1-D trackline (a sequence of x,y points)
+grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
 [ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] 

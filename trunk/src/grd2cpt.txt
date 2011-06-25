@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRD2CPT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grd2cpt \- Make a color palette table from grid files
+grd2cpt \- Make linear or histogram-equalized color palette table from grid
 .SH SYNOPSIS
 BD(grd2cpt) IT(grid) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(cptmaster) ] 
 [ OPT(D)[BD(i)|BD(o)] ] [ OPT(E)IT(nlevels) ]

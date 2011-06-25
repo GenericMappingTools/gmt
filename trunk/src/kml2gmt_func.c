@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: kml2gmt_func.c,v 1.13 2011-05-23 00:08:40 guru Exp $
+ *	$Id: kml2gmt_func.c,v 1.14 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "kml2gmt %s - Extract GMT data from a Google Earth KML file\n\n", GMT_VERSION);
+	GMT_message (GMT, "kml2gmt %s - Extract GMT table data from Google Earth KML files\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

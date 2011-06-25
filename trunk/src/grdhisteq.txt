@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GRDHISTEQ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-grdhisteq \- Histogram equalization for grid files 
+grdhisteq \- Perform histogram equalization for a grid 
 .SH SYNOPSIS
 BD(grdhisteq) IT(in_grdfile) [ OPT(G)IT(out_grdfile) ] 
 [ OPT(C)IT(n_cells) ] [ OPT(D) ] [ OPT(N)[IT(norm)] ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ]

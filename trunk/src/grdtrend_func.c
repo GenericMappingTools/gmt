@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdtrend_func.c,v 1.12 2011-06-13 23:56:19 guru Exp $
+ *	$Id: grdtrend_func.c,v 1.13 2011-06-25 01:59:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdtrend %s [API] - Fit trend surface to gridded data\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdtrend %s [API] - Fit trend surface to grids and compute residuals\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>]\n");
 	GMT_message (GMT, "\t[%s] [-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 

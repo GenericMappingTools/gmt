@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTCONVERT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
+gmtconvert \- Convert, Paste, and/or Extract columns from data tables
 .SH SYNOPSIS
 BD(gmtconvert) [ IT(table) ] [ OPT(A) ] [ OPT(D)[IT(template)] ] [ OPT(E)[BD(f)|BD(l)] ] 
 [ OPT(L) ] [ OPT(I) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 

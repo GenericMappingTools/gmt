@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSCLIP 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-psclip \- To set up polygonal clip paths
+psclip \- Initialize or terminate polygonal clip paths
 .SH SYNOPSIS
 BD(psclip) [ IT(table) ] GMT_J_OPT GMT_Rgeoz_OPT 
 [ GMT_B_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(N) ] 

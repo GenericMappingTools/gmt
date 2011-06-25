@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: blockmean_func.c,v 1.15 2011-06-20 21:45:14 guru Exp $
+ *	$Id: blockmean_func.c,v 1.16 2011-06-25 01:59:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,7 +36,7 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "blockmean %s [API] - Block averaging by L2 norm\n\n", GMT_VERSION);
+	GMT_message (GMT, "blockmean %s [API] - Block average (x,y,z) data tables by L2 norm\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-C] [-E] [-S[m|n|s|w]]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",

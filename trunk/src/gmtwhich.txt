@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTWHICH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtwhich \- Find full path to listed data files
+gmtwhich \- Find full path to specified files
 .SH SYNOPSIS
 BD(gmtwhich) IT(files) [ OPT(C) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
