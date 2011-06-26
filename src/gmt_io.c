@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.297 2011-06-23 22:18:22 guru Exp $
+ *	$Id: gmt_io.c,v 1.298 2011-06-26 01:40:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1140,6 +1140,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			C->current.io.seg_no++;
 			i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
 			strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
+			if (C->current.setting.io_octave[GMT_IN]) p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Skip the NaN-line */
 			return (0);
 		}
 
@@ -1763,12 +1764,18 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 	GMT_LONG i;
 	
 	if (!C->current.io.multi_segments[GMT_OUT]) return;	/* No output segments requested */
-	if (C->common.b.active[GMT_OUT])			/* Binary native file uses all NaNs */
+	if (C->common.b.active[GMT_OUT]) {			/* Binary native file uses all NaNs */
 		for (i = 0; i < n; i++) C->current.io.output (C, fp, 1, &C->session.d_NaN);
-	else if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
+		return;
+	}
+	if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
 		fprintf (fp, "%c\n", C->current.setting.io_seg_marker[GMT_OUT]);
 	else
 		fprintf (fp, "%c %s\n", C->current.setting.io_seg_marker[GMT_OUT], C->current.io.segment_header);
+	if (C->current.setting.io_octave[GMT_OUT] && n) {	/* Automatically prepare Octave/Matlab NaN-record to indicate segment break */
+		for (i = 1 ; i < n; i++) fprintf (fp, "NaN%s", C->current.setting.io_col_separator);
+		fprintf (fp, "NaN\n");
+	}
 }
 
 void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)

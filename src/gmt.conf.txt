@@ -238,7 +238,10 @@ applicable).
 .B IO_SEGMENT_MARKER
 This holds the character we expect to indicate a segment header in an incoming ASCII data or text table.  If this
 marker should be different for output then append another character for the output segment marker.  The two
-characters may be separated by a comma  [>].
+characters may be separated by a comma  [>].  Octave or Matlab users may consider using % as the marker and
+append  +.  Then, we write a NaN record following the segment header to indicate a break in line.  If %+ is
+used for input we automatically skip the NaN record expected to follow the segment header.  If you do not
+have segment header and only NaN records then see IO_NAN_RECORDS = pass instead.
 .TP
 .B MAP_ANNOT_MIN_ANGLE
 If the angle between the map boundary and the annotation baseline is less than this minimum value (in degrees), the

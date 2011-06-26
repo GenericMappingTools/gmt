@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1118 2011-06-25 20:46:48 jluis Exp $
+	$Id: ChangeLog,v 1.1119 2011-06-26 01:40:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-06-25	pqwessel
+	* gmt_io.c:		If the IO_SEGMENT_MARKER is given as %+ then we also
+				write an Octave/Matlab NaN-record to indicate a segment break.
+				If %+ is given for input marker we automatically skip the
+				NaN-record that is required to follow the segment header.
 2011-06-25	jluis
 	* gmtswitch.bat:	The Windows version of the *nix gmtswitch script
 
