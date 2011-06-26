@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.10 2011-06-25 02:45:57 guru Exp $
+/*	$Id: gshhs_func.c,v 1.11 2011-06-26 00:30:30 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,6 +49,13 @@ struct GSHHS_CTRL {
 		GMT_LONG active;
 		char *file;
 	} Out;
+	struct A {	/* -A */
+		GMT_LONG active;
+		double min;	/* Cutoff area in km^2 */
+	} A;
+	struct G {	/* -G */
+		GMT_LONG active;
+	} G;
 	struct L {	/* -L */
 		GMT_LONG active;
 	} L;
@@ -78,10 +85,13 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII %s data files\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-I<id>] [-L] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-A<area>] [-I<id>] [-G] [-L] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
+        GMT_message (GMT, "-A Only extract polygons whose area is greater than or equal to <area> (in km^2)\n");
+	GMT_message (GMT, "-G Use '%%' as segment marker and insert NaN-record to flag new segment\n");
+	GMT_message (GMT, "   (this enables the file to be read with GNU Octave or MatLab).\n");                 /****************NEW*******************/
 	GMT_message (GMT, "-L Only list header records (no data records will be written)\n");
 	GMT_message (GMT, "-I Only output data for polygon number <id> [Default is all polygons]\n");
 	GMT_explain_options (GMT, "VD2o:.");
@@ -115,6 +125,13 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
+			case 'A':
+				Ctrl->A.active = TRUE;
+				Ctrl->A.min = atof (opt->arg);
+				break;
+			case 'G':
+				Ctrl->G.active = TRUE;
+				break;
 			case 'L':
 				Ctrl->L.active = TRUE;
 				break;
@@ -142,7 +159,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double w, e, s, n, area, f_area, scale = 1.0;
 	
-	char source, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
+	char source, marker, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
 	
 	FILE *fp = NULL;
 	
@@ -182,6 +199,10 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
 	GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
+	if (Ctrl->G.active) {
+		marker = GMT->current.setting.io_seg_marker[GMT_OUT];
+		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';
+	}
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
@@ -266,7 +287,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 		}
 		else {
-			dim[3] = h.n;			/* Number of data records to allocate for this segment/polygon */
+			dim[3] = h.n;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				n_alloc <<= 2;
 				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
@@ -340,6 +361,8 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
   	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);				/* Disables further data output */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
+
+	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;	/* Restore defaults */
 
 	Return (GMT_OK);
 }
