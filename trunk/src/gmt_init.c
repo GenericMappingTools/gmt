@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.554 2011-06-23 17:46:40 remko Exp $
+ *	$Id: gmt_init.c,v 1.555 2011-06-26 01:40:21 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2549,13 +2549,14 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 
 GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
-	GMT_LONG i, ival, case_val, pos, manual, error = FALSE;
+	GMT_LONG i, ival, case_val, pos, manual, len, error = FALSE;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 	double dval;
 
 	if (!value) return (TRUE);		/* value argument missing */
 	strncpy (lower_value, value, (size_t)GMT_BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
+	len = strlen (value);
 
 	case_val = GMT_hash_lookup (C, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
@@ -3198,7 +3199,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #endif
 		case GMTCASE_PS_MEDIA:
 			manual = FALSE;
-			ival = strlen (lower_value) - 1;
+			ival = len - 1;
 			if (lower_value[ival] == '-') {	/* Manual Feed selected */
 				lower_value[ival] = '\0';
 				manual = TRUE;
@@ -3350,17 +3351,26 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 
 		case GMTCASE_IO_SEGMENT_MARKER:
-			if (strlen (value) == 0)
+			if (len == 0)	/* Blank gives default */
 				C->current.setting.io_seg_marker[GMT_OUT] = C->current.setting.io_seg_marker[GMT_IN] = '>';
-			else if (strlen (value) == 1)
+			else if (len == 1)	/* Same marker for input and output */
 				C->current.setting.io_seg_marker[GMT_OUT] = C->current.setting.io_seg_marker[GMT_IN] = value[0];
-			else if (strlen (value) == 2) {
-				C->current.setting.io_seg_marker[GMT_IN]  = value[0];
-				C->current.setting.io_seg_marker[GMT_OUT] = value[1];
+			else if (len == 2) {	/* Either separate in/out marker or single marker with Octave modifier */
+				C->current.setting.io_seg_marker[GMT_IN] = value[0];
+				if (value[1] == '+') {	/* Octave for in/out put */
+					C->current.setting.io_octave[GMT_IN] = C->current.setting.io_octave[GMT_OUT] = TRUE;
+					C->current.setting.io_seg_marker[GMT_OUT] = value[0];
+				}
+				else	/* Separate marker */
+					C->current.setting.io_seg_marker[GMT_OUT] = value[1];
 			}
-			else if (strlen (value) == 3 && value[1] == ',') {
-				C->current.setting.io_seg_marker[GMT_IN]  = value[0];
-				C->current.setting.io_seg_marker[GMT_OUT] = value[2];
+			else if (strchr (value, ',')) {
+				char A[8], B[8];
+				sscanf (value, "%[^,],%s", A, B);
+				C->current.setting.io_seg_marker[GMT_IN] = A[0];
+				if (A[1] == '+') C->current.setting.io_octave[GMT_IN] = TRUE;	/* Octave for input */
+				C->current.setting.io_seg_marker[GMT_OUT] = B[0];
+				if (B[1] == '+') C->current.setting.io_octave[GMT_OUT] = TRUE;	/* Octave for output */
 			}
 			else
 				error = TRUE;
@@ -3553,7 +3563,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 	}
 
-	if ((i = strlen(value))) C->current.setting.given_unit[case_val] = value[i-1];
+	if (len) C->current.setting.given_unit[case_val] = value[len-1];
 
 	if (error && case_val >= 0) GMT_report (C, GMT_MSG_FATAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 	return (error);
@@ -4143,8 +4153,11 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 
 		case GMTCASE_IO_SEGMENT_MARKER:
-			if (C->current.setting.io_seg_marker[GMT_OUT] != C->current.setting.io_seg_marker[GMT_IN])
-				sprintf (value, "%c,%c", C->current.setting.io_seg_marker[GMT_IN], C->current.setting.io_seg_marker[GMT_OUT]);
+			if (C->current.setting.io_octave[GMT_OUT] || C->current.setting.io_octave[GMT_IN] || C->current.setting.io_seg_marker[GMT_OUT] != C->current.setting.io_seg_marker[GMT_IN]) {
+				char *add[2] = {"", "+"};
+				sprintf (value, "%c%s,%c%s", C->current.setting.io_seg_marker[GMT_IN], add[C->current.setting.io_octave[GMT_IN]],
+					C->current.setting.io_seg_marker[GMT_OUT], add[C->current.setting.io_octave[GMT_OUT]]);
+			}
 			else
 				sprintf (value, "%c", C->current.setting.io_seg_marker[GMT_IN]);
 			break;
