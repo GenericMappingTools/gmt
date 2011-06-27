@@ -214,7 +214,7 @@ for all GMT programs.  No space between the option flag and the associated argum
 #include "explain_grd_input.txt"
 .SH "SEE ALSO"
 Look up the individual man pages for more details and full syntax.
-Run BD(gmt) without options
-to list all GMT programs and to show all installation directories.
+Run BD(gmt --help) to list all GMT programs and to show all installation directories.
+For an explanation of the various BD(GMT) settings in this man page (like BD(FORMAT_FLOAT_OUT)), see the man page of the GMT configuration file BD(gmt.conf).
 Information is also available on the BD(GMT) home page gmt.soest.hawaii.edu
 #include "refs.i"
