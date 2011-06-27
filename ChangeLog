@@ -1,12 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1119 2011-06-26 01:40:21 guru Exp $
+	$Id: ChangeLog,v 1.1120 2011-06-27 19:55:45 guru Exp $
 -----------------------------------------------------------------------------------------
 
-2011-06-25	pqwessel
-	* gmt_io.c:		If the IO_SEGMENT_MARKER is given as %+ then we also
-				write an Octave/Matlab NaN-record to indicate a segment break.
-				If %+ is given for input marker we automatically skip the
-				NaN-record that is required to follow the segment header.
+2011-06-27	pqwessel
+	* gmt_io.c:		If the IO_SEGMENT_MARKER is given as B or N then we consider
+				blank lines or NaN records as segment breaks, respectively.
+				To actually use a B or N as segment marker, escape them with
+				a leading backslash.
+				
 2011-06-25	jluis
 	* gmtswitch.bat:	The Windows version of the *nix gmtswitch script
 
@@ -14,7 +15,9 @@
 	* gmt_shore.c:		Now reads new GSHHS 2.1.2 format that includes feature areas
 				stored as doubles.  The old int(0.1*area) would set all
 				areas < 0.1 km^2 to zero [only affected gshhs supplement].
-	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.1.2.  Fixed porting bugs.
+	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.1.2.  Fixed porting bugs.  Also added
+				-Amin to exclude smaller polygons on output [suggested by José
+				Luis García Pallero].
 
 2011-06-23	remko
 	* gmt_init.c:		Introduced MAP_TICK_LENGTH_{PRIMARY,SECONDARY} to set major
