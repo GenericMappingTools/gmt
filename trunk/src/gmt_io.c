@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.298 2011-06-26 01:40:21 guru Exp $
+ *	$Id: gmt_io.c,v 1.299 2011-06-27 19:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1084,12 +1084,34 @@ GMT_LONG GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
 	return (i);
 }
 
+GMT_LONG GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
+{	/* Returns TRUE if record is NaN NaN [NaN NaN] etc */
+	GMT_LONG pos = 0;
+	char p[GMT_TEXT_LEN256];
+	
+	while ((GMT_strtok (C, line, " \t,", &pos, p))) {
+		GMT_str_tolower (p);
+		if (strncmp (p, "nan", (size_t)3)) return (FALSE);
+	}
+	return (TRUE);
+}
+
+GMT_LONG GMT_is_segment_header (struct GMT_CTRL *C, char *line)
+{	/* Returns 1 if this record is a GMT segment header;
+	 * Returns 2 if this record is a segment breaker;
+	 * Otherwise returns 0 */
+	if (C->current.setting.io_blankline[GMT_IN] && GMT_is_a_blank_line (line)) return (2);	/* Treat blank line as segment break */
+	if (C->current.setting.io_nanline[GMT_IN] && GMT_is_a_NaN_line (C, line)) return (2);	/* Treat NaN-records as segment break */
+	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) return (1);	/* Got a regular GMT segment header */
+	return (0);	/* Not a segment header */
+}
+
 /* This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 
 GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
 {
-	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok, add, n_use = 0;
+	GMT_LONG i, pos, col_no = 0, in_col, col_pos, n_convert, n_ok, kind, add, n_use = 0;
 	GMT_LONG done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, token[GMT_BUFSIZ];
 	double val, **ptr = (double **)data;
@@ -1117,7 +1139,13 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			return (0);
 		}
 		/* Here we are passed any header records implied by -h */
-		while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;	/* Skip blank lines */
+		if (C->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read one line */
+			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);
+			C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;
+		}
+		else {	/* Skip all blank lines until we get something else */
+			while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;
+		}
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up and get the next record */
 		if (line[0] == '#') {	/* Got a file header, take action and return */
 			strcpy (C->current.io.current_record, line);
@@ -1134,13 +1162,16 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			return (-1);
 		}
 
-		if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
+		if ((kind = GMT_is_segment_header (C, line))) {	/* Got a segment header, take action and return */
 			C->current.io.status = GMT_IO_SEG_HEADER;
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
-			i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
-			strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
-			if (C->current.setting.io_octave[GMT_IN]) p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Skip the NaN-line */
+			if (kind == 1) {
+				i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
+				strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
+			}
+			else
+				C->current.io.segment_header[0] = '\0';
 			return (0);
 		}
 
@@ -1768,14 +1799,17 @@ void GMT_write_segmentheader (struct GMT_CTRL *C, FILE *fp, GMT_LONG n)
 		for (i = 0; i < n; i++) C->current.io.output (C, fp, 1, &C->session.d_NaN);
 		return;
 	}
-	if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
+	/* Here we are doing ASCII */
+	if (C->current.setting.io_blankline[GMT_OUT])	/* Write blank line to indicate segment break */
+		fprintf (fp, "\n");
+	else if (C->current.setting.io_nanline[GMT_OUT]) {	/* Write NaN record to indicate segment break */
+		for (i = 1 ; i < MIN (2,n); i++) fprintf (fp, "NaN%s", C->current.setting.io_col_separator);
+		fprintf (fp, "NaN\n");
+	}
+	else if (!C->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
 		fprintf (fp, "%c\n", C->current.setting.io_seg_marker[GMT_OUT]);
 	else
 		fprintf (fp, "%c %s\n", C->current.setting.io_seg_marker[GMT_OUT], C->current.io.segment_header);
-	if (C->current.setting.io_octave[GMT_OUT] && n) {	/* Automatically prepare Octave/Matlab NaN-record to indicate segment break */
-		for (i = 1 ; i < n; i++) fprintf (fp, "NaN%s", C->current.setting.io_col_separator);
-		fprintf (fp, "NaN\n");
-	}
 }
 
 void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, GMT_LONG dir)

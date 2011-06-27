@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.555 2011-06-26 01:40:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.556 2011-06-27 19:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2551,6 +2551,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	GMT_LONG i, ival, case_val, pos, manual, len, error = FALSE;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
+	
 	double dval;
 
 	if (!value) return (TRUE);		/* value argument missing */
@@ -3353,27 +3354,30 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_IO_SEGMENT_MARKER:
 			if (len == 0)	/* Blank gives default */
 				C->current.setting.io_seg_marker[GMT_OUT] = C->current.setting.io_seg_marker[GMT_IN] = '>';
-			else if (len == 1)	/* Same marker for input and output */
-				C->current.setting.io_seg_marker[GMT_OUT] = C->current.setting.io_seg_marker[GMT_IN] = value[0];
-			else if (len == 2) {	/* Either separate in/out marker or single marker with Octave modifier */
-				C->current.setting.io_seg_marker[GMT_IN] = value[0];
-				if (value[1] == '+') {	/* Octave for in/out put */
-					C->current.setting.io_octave[GMT_IN] = C->current.setting.io_octave[GMT_OUT] = TRUE;
-					C->current.setting.io_seg_marker[GMT_OUT] = value[0];
+			else {
+				GMT_LONG dir, k;
+				char txt[2][GMT_TEXT_LEN256];
+				if (strchr (value, ',')) {	/* Got separate markers for input,output */
+					sscanf (value, "%[^,],%s", txt[GMT_IN], txt[GMT_OUT]);
 				}
-				else	/* Separate marker */
-					C->current.setting.io_seg_marker[GMT_OUT] = value[1];
+				else {	/* Just duplicate */
+					strcpy (txt[GMT_IN], value);	strcpy (txt[GMT_OUT], value);
+				}
+				for (dir = 0; dir < 2; dir++) {
+					switch (txt[dir][0]) {
+						case 'B':
+							C->current.setting.io_blankline[dir] = TRUE;
+							break;
+						case 'N':
+							C->current.setting.io_nanline[dir] = TRUE;
+							break;
+						default:
+							k = (txt[dir][0] == '\\') ? 1 : 0;
+							C->current.setting.io_seg_marker[dir] = txt[dir][k];
+							break;
+					}
+				}
 			}
-			else if (strchr (value, ',')) {
-				char A[8], B[8];
-				sscanf (value, "%[^,],%s", A, B);
-				C->current.setting.io_seg_marker[GMT_IN] = A[0];
-				if (A[1] == '+') C->current.setting.io_octave[GMT_IN] = TRUE;	/* Octave for input */
-				C->current.setting.io_seg_marker[GMT_OUT] = B[0];
-				if (B[1] == '+') C->current.setting.io_octave[GMT_OUT] = TRUE;	/* Octave for output */
-			}
-			else
-				error = TRUE;
 			break;
 
 		/* PROJ GROUP */
@@ -3571,7 +3575,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 {	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_TEXT_LEN256];
+	static char value[GMT_TEXT_LEN256], txt[8];
 	GMT_LONG case_val, error = FALSE;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
 	
@@ -4153,13 +4157,17 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 
 		case GMTCASE_IO_SEGMENT_MARKER:
-			if (C->current.setting.io_octave[GMT_OUT] || C->current.setting.io_octave[GMT_IN] || C->current.setting.io_seg_marker[GMT_OUT] != C->current.setting.io_seg_marker[GMT_IN]) {
-				char *add[2] = {"", "+"};
-				sprintf (value, "%c%s,%c%s", C->current.setting.io_seg_marker[GMT_IN], add[C->current.setting.io_octave[GMT_IN]],
-					C->current.setting.io_seg_marker[GMT_OUT], add[C->current.setting.io_octave[GMT_OUT]]);
+			value[0] = '\0';
+			if (C->current.setting.io_seg_marker[GMT_OUT] != C->current.setting.io_seg_marker[GMT_IN]) {
+				if ((C->current.setting.io_seg_marker[GMT_IN] == 'N' && !C->current.setting.io_nanline[GMT_IN]) || (C->current.setting.io_seg_marker[GMT_IN] == 'B' && !C->current.setting.io_blankline[GMT_IN])) value[0] = '\\';
+				sprintf (txt, "%c,", C->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
+				if ((C->current.setting.io_seg_marker[GMT_IN] == 'N' && !C->current.setting.io_nanline[GMT_IN]) || (C->current.setting.io_seg_marker[GMT_IN] == 'B' && !C->current.setting.io_blankline[GMT_IN])) strcat (value, "\\");
+				sprintf (txt, "%c", C->current.setting.io_seg_marker[GMT_OUT]);	strcat (value, txt);
 			}
-			else
-				sprintf (value, "%c", C->current.setting.io_seg_marker[GMT_IN]);
+			else {
+				if ((C->current.setting.io_seg_marker[GMT_IN] == 'N' && !C->current.setting.io_nanline[GMT_IN]) || (C->current.setting.io_seg_marker[GMT_IN] == 'B' && !C->current.setting.io_blankline[GMT_IN])) value[0] = '\\';
+				sprintf (txt, "%c", C->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
+			}
 			break;
 
 		/* PROJ GROUP */

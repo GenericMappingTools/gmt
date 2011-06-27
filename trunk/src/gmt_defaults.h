@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_defaults.h,v 1.45 2011-06-26 01:40:21 guru Exp $
+ *	$Id: gmt_defaults.h,v 1.46 2011-06-27 19:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,7 +93,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	GMT_LONG io_nan_records;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	GMT_LONG io_nan_mode;			/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	GMT_LONG io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
-	GMT_LONG io_octave[2];			/* TRUE means segment header must be followed by NaN-record (for OCtave/Matlab) [FALSE,FALSE] */
+	GMT_LONG io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
+	GMT_LONG io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
