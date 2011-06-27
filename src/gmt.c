@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.c,v 1.4 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmt.c,v 1.5 2011-06-27 20:24:22 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -63,14 +63,14 @@ int main (int argc, char *argv[]) {
 	};
 
 	if (argc < 2) {
-		fprintf (stderr, "GMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, and J. Luis\n\n", GMT_VERSION_YEAR);
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 		fprintf (stderr, "GNU General Public License.\n");
 		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n");
-		fprintf (stderr, "For a brief description of GMT programs, type GMT --help\n");
+		fprintf (stderr, "For a brief description of GMT programs, type gmt --help\n");
 		exit (EXIT_FAILURE);
 	}
 	
@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
 	}
 	
 	if ((func = lookup_program (argv[1], program, GMT_N_PROGRAMS, &mode)) == NULL) {
-		fprintf (stderr, "GMT: No such program: %s\n", argv[1]);
+		fprintf (stderr, "gmt: No such program: %s\n", argv[1]);
 		exit (EXIT_FAILURE);
 	}
 	
