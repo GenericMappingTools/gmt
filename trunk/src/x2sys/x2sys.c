@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.164 2011-06-21 03:55:54 remko Exp $
+ *	$Id: x2sys.c,v 1.165 2011-06-28 03:15:52 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -222,7 +222,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	if (!strcmp (fname, "mgd77+")) {
 		X->read_file = (PFL) x2sys_read_mgd77ncfile;
 		X->geographic = TRUE;
-		X->geodetic = 0;
+		X->geodetic = GMT_IS_0_TO_P360_RANGE;
 		X->dist_flag = 2;	/* Creat circle distances */
 		MGD77_Init (C, &M);	/* Initialize MGD77 Machinery */
 	}
@@ -230,14 +230,14 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 	else if (!strcmp (fname, "gmt")) {
 		X->read_file = (PFL) x2sys_read_gmtfile;
 		X->geographic = TRUE;
-		X->geodetic = 0;
+		X->geodetic = GMT_IS_0_TO_P360_RANGE;
 		X->dist_flag = 2;	/* Creat circle distances */
 	}
 #endif
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFL) x2sys_read_mgd77file;
 		X->geographic = TRUE;
-		X->geodetic = 0;
+		X->geodetic = GMT_IS_0_TO_P360_RANGE;
 		X->dist_flag = 2;	/* Creat circle distances */
 		MGD77_Init (C, &M);	/* Initialize MGD77 Machinery */
 	}
@@ -1031,8 +1031,8 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 					break;
 				case 'G':	/* Geographical coordinates, set discontinuity */
 					geographic = TRUE;
-					geodetic = 0;
-					if (p[2] == 'd') geodetic = 2;
+					geodetic = GMT_IS_0_TO_P360_RANGE;
+					if (p[2] == 'd') geodetic = GMT_IS_M180_TO_P180_RANGE;
 					break;
 				case 'I':
 					if (GMT_getinc (C, &p[2], B->inc)) {

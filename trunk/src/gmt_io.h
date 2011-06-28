@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.115 2011-05-31 17:55:32 remko Exp $
+ *	$Id: gmt_io.h,v 1.116 2011-06-28 03:15:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -222,12 +222,13 @@ enum GMT_io {GMT_IN, GMT_OUT, GMT_ERR};
 
 /* Various ways to report longitudes */
 
-#define GMT_IS_0_TO_P360_RANGE		0	/* Report 0 <= lon <= 360 */
-#define GMT_IS_0_TO_P360		1	/* Report 0 <= lon < 360 */
-#define GMT_IS_M360_TO_0_RANGE		2	/* Report -360 <= lon <= 0 */
-#define GMT_IS_M360_TO_0		3	/* Report -360 < lon <= 0 */
-#define GMT_IS_M180_TO_P180_RANGE	4	/* Report -180 <= lon <= +180 */
-#define GMT_IS_M180_TO_P180		5	/* Report -180 <= lon < +180 */
+#define GMT_IS_0_TO_P360_RANGE		1	/* Report 0 <= lon <= 360 */
+#define GMT_IS_0_TO_P360		2	/* Report 0 <= lon < 360 */
+#define GMT_IS_M360_TO_0_RANGE		3	/* Report -360 <= lon <= 0 */
+#define GMT_IS_M360_TO_0		4	/* Report -360 < lon <= 0 */
+#define GMT_IS_M180_TO_P180_RANGE	5	/* Report -180 <= lon <= +180 */
+#define GMT_IS_M180_TO_P180		6	/* Report -180 <= lon < +180 */
+#define GMT_IS_M180_TO_P270_RANGE	7	/* Report -180 <= lon < +270 [GSHHS only] */
 
 #ifdef WIN32
 /* Functions we have written to handle DLL troubles */

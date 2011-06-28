@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.37 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.38 2011-06-28 03:15:52 guru Exp $
 #
 #		Makefile for GMT 5 spotter supplements
 #
@@ -24,8 +24,8 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 LIB_H		= spotter.h
 LIB_O		= libspotter.o
-FUNCS_O		= backtracker_func.o grdpmodeler_func.o grdrotater_func.o grdspotter_func.o hotspotter_func.o \
-		  originator_func.o rotator_func.o rotconverter_func.o rotextractor_func.o rotsmoother_func.o
+FUNCS_O		= backtracker_func.o grdpmodeler_func.o grdrotater_func.o grdspotter_func.o \
+		  hotspotter_func.o originator_func.o rotconverter_func.o
 API_O		= gmt_spotter.o
 API_H		= $(API_O:.o=.h)
 PROGS_O		= $(FUNCS_O:_func.o=.o)
@@ -108,10 +108,7 @@ grdrotater$(EXE):	grdrotater.o
 grdspotter$(EXE):	grdspotter.o
 hotspotter$(EXE):	hotspotter.o
 originator$(EXE):	originator.o
-rotator$(EXE):		rotator.o
 rotconverter$(EXE):	rotconverter.o
-rotsmoother$(EXE):	rotsmoother.o
-rotextractor$(EXE):	rotextractor.o
 
 $(PROGS):	$(LIBGMT) $(LIBAPI) $(PROGS_O)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBAPI) $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
