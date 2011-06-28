@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.299 2011-06-27 19:55:45 guru Exp $
+ *	$Id: gmt_io.c,v 1.300 2011-06-28 03:15:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1630,6 +1630,10 @@ void GMT_lon_range_adjust (GMT_LONG range, double *lon)
 		case GMT_IS_M180_TO_P180:	/* Make -180 <= lon < +180 [Special case where +180 is not desired] */
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 180.0) (*lon) -= 360.0;
+			break;
+		case GMT_IS_M180_TO_P270_RANGE:	/* Make -180 <= lon < +270 [Special case for GSHHS only] */
+			while ((*lon) < -180.0) (*lon) += 360.0;
+			while ((*lon) >= 270.0) (*lon) -= 360.0;
 			break;
 	}
 }

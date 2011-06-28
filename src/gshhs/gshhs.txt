@@ -3,7 +3,7 @@
 .SH NAME
 gshhs \- Extract data tables from binary GSHHS or WDBII data files
 .SH SYNOPSIS
-BD(gshhs) IT(binaryfile.b) [ OPT(A)IT(min) ] [ OPT(I)IT(id) ] [ OPT(L) ] \
+BD(gshhs) IT(binaryfile.b) [ OPT(A)IT(min) ] [ OPT(G) ] [ OPT(I)IT(id) ] [ OPT(L) ] \
 [ GMT_bo_OPT ] [ GMT_o_OPT ] > IT(asciifile.txt)
 .SH DESCRIPTION
 BD(gshhs) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
@@ -29,6 +29,9 @@ GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  
 .TP
 OPT(A)IT(min)
 Only output information for the polygon if its area equals or exceeds IT(min) [default outputs all polygons].
+.TP
+OPT(G)
+Write output that can be imported into GNU Octave or Matlab by ending segments with a NaN-record.
 .TP
 OPT(I)IT(id)
 Only output information for the polygon that matches IT(id) [default outputs all polygons].
