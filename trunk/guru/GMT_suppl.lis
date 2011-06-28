@@ -173,14 +173,8 @@ src/spotter/makespotter.bat
 src/spotter/originator.1
 src/spotter/originator_func.c
 src/spotter/pac_hs.d
-src/spotter/rotator.1
-src/spotter/rotator_func.c
 src/spotter/rotconverter.1
 src/spotter/rotconverter_func.c
-src/spotter/rotextractor.1
-src/spotter/rotextractor_func.c
-src/spotter/rotsmoother.1
-src/spotter/rotsmoother_func.c
 src/spotter/seamounts.d
 src/spotter/spotter.bat
 src/spotter/spotter.h
@@ -263,10 +257,7 @@ doc/html/man/pspolar.html
 doc/html/man/pssegy.html
 doc/html/man/pssegyz.html
 doc/html/man/psvelo.html
-doc/html/man/rotator.html
 doc/html/man/rotconverter.html
-doc/html/man/rotextractor.html
-doc/html/man/rotsmoother.html
 doc/html/man/segy2grd.html
 doc/html/man/sphdistance.html
 doc/html/man/sphinterpolate.html
