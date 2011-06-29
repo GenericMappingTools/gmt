@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: filtertest.sh,v 1.5 2011-06-29 19:18:12 guru Exp $
+#	$Id: filtertest.sh,v 1.6 2011-06-29 20:56:13 guru Exp $
 # Testing grdfilter's weights at a given point for a given
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
 
 . ../functions.sh
-header "Test grdfilter for filter weights"
+header "Test grdfilter for filter weights (-DDEBUG only)"
 
 grep DEBUG ../../src/config.mk > tmp
 if [ ! -s tmp ]; then
