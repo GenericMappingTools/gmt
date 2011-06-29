@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1122 2011-06-29 02:28:24 guru Exp $
+	$Id: ChangeLog,v 1.1123 2011-06-29 06:33:29 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-28	pqwessel
-	* gmtstitch_func.c:	Fixed some porting bugs.
+	* gmtstitch_func.c:	Fixed some porting bugs.  Got stitch.sh example to run.
+	* sph/sphdistance_func.c:	Fixed some porting bugs.  Got all sph examples to run.
 
 2011-06-27	pqwessel
 	* gmt_io.c:		If the IO_SEGMENT_MARKER is given as B or N then we consider
