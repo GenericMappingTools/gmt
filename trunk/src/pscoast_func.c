@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.23 2011-06-23 22:18:22 guru Exp $
+ *	$Id: pscoast_func.c,v 1.24 2011-06-29 20:28:24 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -515,7 +515,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {	/* High-level function that implements the pscoast task */
 
-	GMT_LONG i, np, ind, bin, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
+	GMT_LONG i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	GMT_LONG level_to_be_painted = 0, direction, start_direction, stop_direction, last_pen_level;
 	GMT_LONG shift = FALSE, need_coast_base, recursive;
 	GMT_LONG greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;

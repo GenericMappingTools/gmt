@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psscale_func.c,v 1.32 2011-06-25 01:59:47 guru Exp $
+ *	$Id: psscale_func.c,v 1.33 2011-06-29 20:28:24 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -400,8 +400,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	GMT_LONG reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
-	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd, yd, xt;
-	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off, rgb[4], rrggbb[4], xp[4], yp[4];
+	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
+	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], xp[4], yp[4];
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A;
 

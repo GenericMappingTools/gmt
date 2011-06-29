@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.30 2011-06-25 01:59:47 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.31 2011-06-29 20:28:24 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -147,7 +147,7 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	 */
 
 	GMT_LONG i, j, ij;
-	double x, y, yc, y0, r, ry;
+	double x, y, yc, y0, r, ry = 0.0;
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point (i,j) = (0,0) */
 	if (F->d_flag == 5) yc = IMG2LAT (yc);	/* Recover actual latitude in IMG grid at this center point */
@@ -241,7 +241,7 @@ GMT_LONG init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, GMT_LONG m
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
 	GMT_LONG row, col, ij;
-	double row_weight, col_weight, dy_half, dx, y, lat, lat_s, lat_n, s2;
+	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
 	/* Based the grid on the input grid domain and increments. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, A, G->header->wesn, G->header->inc, G->header->registration), "");

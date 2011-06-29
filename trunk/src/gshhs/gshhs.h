@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.37 2011-06-24 21:29:29 guru Exp $
+/*	$Id: gshhs.h,v 1.38 2011-06-29 20:30:58 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -33,7 +33,8 @@
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
  *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
- *	24-JUN-2011.  PW: Data version is now 2.1.2. [Change in header format to store area magnitude]
+ *	24-JUN-2011.  PW: Data version is now 2.1.2. [Change in header format to store
+ *			  area magnitude and let greenwich be 2-bit flag (0-3 range)]
  */
 
 #ifndef _GSHHS
