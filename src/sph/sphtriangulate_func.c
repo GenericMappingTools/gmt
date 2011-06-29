@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.18 2011-06-20 22:15:10 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.19 2011-06-29 07:09:37 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -362,22 +362,21 @@ GMT_LONG GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-A Compute and print triangle or polygon areas in header records (see -L for units)\n");
+	GMT_message (GMT, "\t-A Compute and print triangle or polygon areas in header records (see -L for units).\n");
 	GMT_message (GMT, "\t   If -T is selected we print arc lengths instead.\n");
-	GMT_message (GMT, "\t   Cannot be used with the binary output option\n");
-	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]\n");
-	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment\n");
-	GMT_message (GMT, "\t-L Specify distance unit as (f)eet, m(e)ter, (k)m, (M)ile, (n)autical mile, or (d)egree.\n");
-	GMT_message (GMT, "\t   Calculations uses spherical approximations.  Default unit is meters.\n");
-	GMT_message (GMT, "\t   Set PROJ_ELLIPSOID to WGS-84 to get geodesic distances.\n");
-	GMT_message (GMT, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers]\n");
-	GMT_message (GMT, "\t   Delaunay: output is the node triplets and area (i, j, k, area)\n");
+	GMT_message (GMT, "\t   Cannot be used with the binary output option.\n");
+	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
+	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
+	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
+	GMT_message (GMT, "\t   PROJ_ELLIPSOID determines if geodesic or gerat-circle distances are used.\n");
+	GMT_message (GMT, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
+	GMT_message (GMT, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
 	GMT_message (GMT, "\t   Voronoi: output is the node coordinates and polygon area (lon, lat, area).\n");
 	GMT_message (GMT, "\t   Cannot be used with -T.\n");
-	GMT_message (GMT, "\t-Q Append d for Delaunay triangles or v for Voronoi polygons [Delaunay]\n");
-	GMT_message (GMT, "\t   If -bo is used then -N may be used to specify a separate file where the polygon\n");
-	GMT_message (GMT, "\t   information normally is written.\n");
-	GMT_message (GMT, "\t-T Write arcs [Default writes polygons]\n");
+	GMT_message (GMT, "\t-Q Append d for Delaunay triangles or v for Voronoi polygons [Delaunay].\n");
+	GMT_message (GMT, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
+	GMT_message (GMT, "\t   polygon information normally is written.\n");
+	GMT_message (GMT, "\t-T Write arcs [Default writes polygons].\n");
 	GMT_explain_options (GMT, "VC2D0hi:.");
 
 	return (EXIT_FAILURE);
@@ -414,8 +413,8 @@ GMT_LONG GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_
 				break;
 			case 'L':
 				Ctrl->L.active = TRUE;
-				if (!(opt->arg && strchr ("defkMn", opt->arg[0]))) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Ld|e|f|k|M|n]\n");
+				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else
