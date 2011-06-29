@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.16 2011-06-20 22:15:10 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.17 2011-06-29 02:55:28 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -68,35 +68,23 @@ struct SPHDISTANCE_CTRL {
 	} Q;
 };
 
-void prepare_polygon (struct GMT_LINE_SEGMENT *P)
+void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
 {
-	GMT_LONG i, quad_no, n_quad;
-	GMT_LONG quad[4] = {FALSE, FALSE, FALSE, FALSE};
-	double lon_sum = 0.0, lat_sum = 0.0, lon, dlon;
-	double xmin1 = 360.0, xmin2 = 360.0, xmax1 = -360.0, xmax2 = -360.0;
+	GMT_LONG i;
+	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
-	P->min[GMT_X] = P->max[GMT_X] = P->coord[GMT_X][0];
+	GMT_get_lon_minmax (C, P->coord[GMT_X], P->n_rows, &(P->min[GMT_X]), &(P->max[GMT_X]));
+	
 	P->min[GMT_Y] = P->max[GMT_Y] = P->coord[GMT_Y][0];
-	for (i = 1; i < P->n_rows; i++) {
-		lon = P->coord[GMT_X][i];
-		while (lon < 0.0) lon += 360.0;	/* Start off with everything in 0-360 range */
-		xmin1 = MIN (lon, xmin1);
-		xmax1 = MAX (lon, xmax1);
-		quad_no = (GMT_LONG)floor (lon/90.0);	/* Yields quadrants 0-3 */
-		if (quad_no == 4) quad_no = 0;		/* When lon == 360.0 */
-		quad[quad_no] = TRUE;
-		while (lon > 180.0) lon -= 360.0;	/* Switch to -180+/180 range */
-		xmin2 = MIN (lon, xmin2);
-		xmax2 = MAX (lon, xmax2);
+	for (i = 1; i < P->n_rows; i++) {	/* Start at i = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
 		dlon = P->coord[GMT_X][i] - P->coord[GMT_X][i-1];
 		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
 		lon_sum += dlon;
 		lat_sum += P->coord[GMT_Y][i];
 		if (P->coord[GMT_Y][i] < P->min[GMT_Y]) P->min[GMT_Y] = P->coord[GMT_Y][i];
 		if (P->coord[GMT_Y][i] > P->max[GMT_Y]) P->max[GMT_Y] = P->coord[GMT_Y][i];
-		if (P->coord[GMT_X][i] < P->min[GMT_X]) P->min[GMT_X] = P->coord[GMT_X][i];
-		if (P->coord[GMT_X][i] > P->max[GMT_X]) P->max[GMT_X] = P->coord[GMT_X][i];
 	}
+	P->pole = 0;
 	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* Contains a pole */
 		if (lat_sum < 0.0) { /* S */
 			P->pole = -1;
@@ -106,36 +94,7 @@ void prepare_polygon (struct GMT_LINE_SEGMENT *P)
 			P->pole = +1;
 			P->max[GMT_Y] = 90.0;
 		}
-		P->min[GMT_X] = 0.0;
-		P->max[GMT_X] = 360.0;
-	}
-	else {
-		P->pole = 0;
-		n_quad = quad[0] + quad[1] + quad[2] + quad[3];	/* How many quadrants had data */
-		if (quad[0] && quad[3]) {	/* Longitudes on either side of Greenwhich only, must use -180/+180 notation */
-			P->min[GMT_X] = xmin2;
-			P->max[GMT_X] = xmax2;
-		}
-		else if (quad[1] && quad[2]) {	/* Longitudes on either side of the date line, must user 0/360 notation */
-			P->min[GMT_X] = xmin1;
-			P->max[GMT_X] = xmax1;
-		}
-		else if (n_quad == 2 && ((quad[0] && quad[2]) || (quad[1] && quad[3]))) {	/* Funny quadrant gap, pick shortest longitude extent */
-			if ((xmax1 - xmin1) < (xmax2 - xmin2)) {	/* 0/360 more compact */
-				P->min[GMT_X] = xmin1;
-				P->max[GMT_X] = xmax1;
-			}
-			else {						/* -180/+180 more compact */
-				P->min[GMT_X] = xmin2;
-				P->max[GMT_X] = xmax2;
-			}
-		}
-		else {						/* Either will do, use default settings */
-			P->min[GMT_X] = xmin1;
-			P->max[GMT_X] = xmax1;
-		}
-		if (P->min[GMT_X] > P->max[GMT_X]) P->min[GMT_X] -= 360.0;
-		if (P->min[GMT_X] < 0.0 && P->max[GMT_X] < 0.0) P->min[GMT_X] += 360.0, P->max[GMT_X] += 360.0;
+		P->min[GMT_X] = 0.0;	P->max[GMT_X] = 360.0;
 	}
 }
 
@@ -477,7 +436,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		/* Here we have the polygon in P */
 		
-		prepare_polygon (P);	/* Determine the enclosing sector */
+		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		s_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
 		n_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
