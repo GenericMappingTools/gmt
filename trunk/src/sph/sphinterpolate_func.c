@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.14 2011-06-07 21:38:30 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.15 2011-06-29 07:09:37 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -106,18 +106,18 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_message (GMT, "\t   1: Smooth interpolation with local gradient estimates.\n");
 	GMT_message (GMT, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
-	GMT_message (GMT, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3]\n");
-	GMT_message (GMT, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10]\n");
-	GMT_message (GMT, "\t      U = Maximum change in a gradient at the last iteration [0.01]\n");
+	GMT_message (GMT, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
+	GMT_message (GMT, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10],\n");
+	GMT_message (GMT, "\t      U = Maximum change in a gradient at the last iteration [0.01].\n");
 	GMT_message (GMT, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
-	GMT_message (GMT, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01]\n");
-	GMT_message (GMT, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints]\n");
-	GMT_message (GMT, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3]\n");
+	GMT_message (GMT, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
+	GMT_message (GMT, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
+	GMT_message (GMT, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg]\n");
-	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant]\n");
+	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
+	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling]\n");
+	GMT_message (GMT, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
 	GMT_explain_options (GMT, "C3hiF:.");
 	
 	return (EXIT_FAILURE);
