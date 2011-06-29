@@ -49,7 +49,8 @@ internal (i.e., self-intersecting polygons) crossovers or BD(e) to only compute 
 OPT(M)[BD(+)[IT(unit)]]
 Measure the area of all polygons or length of line segments.  Use OPT(M+) to append the area to each polygons segment header
 [Default simply writes the area to stdout].  For polygons we also compute the centroid location while for line data we compute the
-mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).
+mid-point (half-length) position.  Append a distance unit to select the unit used (see UNITS).  Note that the area will depend
+on the current setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get accurate results.
 .TP
 OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)]
 Determine if one (or all, with BD(+a)) points of each feature in the input data are inside any of the polygons

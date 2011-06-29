@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: stitch.sh,v 1.1 2011-06-03 00:34:04 guru Exp $
+#	$Id: stitch.sh,v 1.2 2011-06-29 02:28:24 guru Exp $
 #
 # Basic stitching of Cartesian and geographic data
 
@@ -16,5 +16,5 @@ psxy piece?? -R -J -O -W1p -B2g1WSne -X3.5i -K >> $ps
 gmtstitch piece?? -T0.1 | psxy -R -J -O -W1p -Gorange -B2g1WSne -X-3.5i -Y-3.5i -K >> $ps
 gmtstitch piece?? -T25k -fg | psxy -R -JM3i -O -W1p -Gred -B2g1WSne -X3.5i -K >> $ps
 psxy -R -J -O -T >> $ps
-rm -f t.txt piece??
+#rm -f t.txt piece??
 pscmp
