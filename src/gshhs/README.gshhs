@@ -1,13 +1,24 @@
-#	$Id: README.gshhs,v 1.26 2011-04-14 05:33:52 guru Exp $
+#	$Id: README.gshhs,v 1.27 2011-06-29 20:33:12 guru Exp $
 
 			G S H H S
 
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
-GMT 5 Version July 1, 2011
+Version Jul 1, 2011
+Work with the latest GSHHS data set version 2.1.2.  Here, the
+greenwich flag is now 2-bit with values 0-3 (1 = Greenwich, 2 =
+Dateline crossing, 3 = both) and area is stored with a magnitude
+embedded in the flag; see code for details.  This ensure higher
+precision for smaller areas.  gshhs is now a module.
 
-Here, gshhs has become a module.
+Version Jan 1, 2011
+No source code changes but expected to work with the latest GSHHS
+data set version 2.1.1
+
+Version July 1, 2010
+No source code changes but expected to work with the latest GSHHS
+data set version 2.1.0
 
 Version July 1, 2009
 This version include a revised GSHHS data format in which the
