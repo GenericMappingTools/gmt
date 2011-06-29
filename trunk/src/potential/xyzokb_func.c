@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.16 2011-06-25 02:45:57 guru Exp $
+ *	$Id: xyzokb_func.c,v 1.17 2011-06-29 22:27:00 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -34,8 +34,6 @@
  *	Mudei DBL_EPSILON para FLT_EPSILON prque senao dava merda 04-02-01
  *	Tirei uma origem orlat orlon  11-02-01
  *
- *	Corrected potential bug if -z and -P	25-5-01
- *
  *	Retirei o orlat e orlon (era estupido)	27-5-01
  *	Added a test for checking (and swaping if needed) the triangle order.	27-5-01
  *
@@ -55,9 +53,6 @@
  *	07-11-03
  *	Na modif anterior so tinha retirado o orlon. Agora retiro tambem o orlat.
  *	Nao sei se faz diferenca
- *
- *	16-11-03
- *	Adicionei um teste para nao gastar tempo em calculos se a mag do triang for nula
  *
  *	17-02-04
  *	No seguimento da mixordice voltei a por o z0 *= z_dir. Isto faz a coisa mais
@@ -217,7 +212,7 @@ GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type);
 GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
-	GMT_message (GMT, "xyzokb - Compute the gravity/magnetic effect of a body by the method of Okabe\n\n");
+	GMT_message (GMT, "xyzokb - Compute the gravity/magnetic anomaly of a body by the method of Okabe\n\n");
 	GMT_message (GMT, "usage: xyzokb [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
 	GMT_message (GMT, "\t[-Z<level>] [-T] [-L<z_observation>] [-S<radius>] [-D]\n");
 	GMT_message (GMT, "\t[-F<polygon>] [z<dz>] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>]\n");
@@ -380,7 +375,8 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "Error: Must specify either -G or -F options\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "Error: Must specify -I option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 , "Error: Must specify either -Cdensity or -H<stuff>\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 , 
+					"Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "Warning: -tr overrides -S\n"))
@@ -494,7 +490,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 
 	if (n_swap > 0)
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld triangles had ccw order\n", n_swap);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld triangles had ccw order\n", n_swap);
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
@@ -763,7 +759,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
         	mag_var2 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR2);
 	else if (Ctrl->T.m_var3)
         	mag_var3 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR3);
-	else
+	else if (Ctrl->T.m_var4)
         	mag_var4 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR4);
 	
 	if (Ctrl->M.active) {	/* take a first read just to compute the central logitude */
@@ -776,7 +772,6 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 		*central_lat  = (y_min + y_max) / 2;
 		rewind(fp_xyz);
 	}
-
 
 	while (fgets (line, GMT_TEXT_LEN256, fp_xyz)) { 
 		if (!Ctrl->T.m_var) {
@@ -826,7 +821,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 			mag_var3[ndata_xyz].m_dec = in[4];
 			mag_var3[ndata_xyz].m_dip = in[5];
 		}
-		else {
+		else if (Ctrl->T.m_var4) {
 			mag_var4[ndata_xyz].t_dec = in[3];
 			mag_var4[ndata_xyz].t_dip = in[4];
 			mag_var4[ndata_xyz].m = in[5];
@@ -843,7 +838,7 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file) {
 	/* read file with vertex indexes of triangles */
 	GMT_LONG n_alloc, ndata_t;
-	GMT_LONG in[3];
+	int in[3];
 	char line[GMT_TEXT_LEN256];
 
 	n_alloc = GMT_CHUNK;
@@ -851,7 +846,7 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file) {
 	vert = GMT_memory (GMT, NULL, (size_t) n_alloc, struct VERT);
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp_t)) { 
-		if(sscanf (line, "%ld %ld %ld", &in[0], &in[1], &in[2]) !=3)
+		if(sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, t_file);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
