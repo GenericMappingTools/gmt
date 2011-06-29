@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: filtertest.sh,v 1.4 2011-06-02 19:54:02 guru Exp $
+#	$Id: filtertest.sh,v 1.5 2011-06-29 19:18:12 guru Exp $
 # Testing grdfilter's weights at a given point for a given
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.
@@ -7,6 +7,12 @@
 . ../functions.sh
 header "Test grdfilter for filter weights"
 
+grep DEBUG ../../src/config.mk > tmp
+if [ ! -s tmp ]; then
+	echo "[N/A]"
+	rm -f tmp
+	exit
+fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 DATA=../genper/etopo10.nc	# Test on ETOP10 data
@@ -71,5 +77,5 @@ if [ $# -eq 4 ]; then
 	ps2raster $ps -Tf
 	open $pdf
 fi
-rm -f t.nc r.nc t.cpt n_conv.txt
+rm -f t.nc r.nc t.cpt n_conv.txt tmp
 pscmp
