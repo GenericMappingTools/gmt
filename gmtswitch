@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	$Id: gmtswitch,v 1.15 2011-03-15 02:06:28 guru Exp $
+#	$Id: gmtswitch,v 1.16 2011-06-29 21:42:41 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -18,6 +18,11 @@
 #-------------------------------------------------------------------------------
 #	gmtswitch - switch between several installed GMT versions
 #
+function checkinput() 
+{ # Make sure argument is an integer
+	echo $1 | grep -Eq '^(\+|-)?[0-9]+$'
+	echo $?
+}
 help=0
 if [ $# -gt 1 ]; then
 	help=1
@@ -62,7 +67,7 @@ home=`pwd`
 if [ ! -f $home/.gmtversions ]; then	# No .gmtversions exists yet, first do that part
 	cat << EOF >&2
 
-	GMTSWITCH $Revision: 1.15 $
+	GMTSWITCH $Revision: 1.16 $
 	
 gmtswitch helps you modify your environment to allow for the switching back
 and forth between several GMT versions, in particular GMT 4.x and previous GMT
@@ -136,6 +141,11 @@ else
 		read v
 		if [ "X$v" = "X" ]; then
 			v=1
+		fi
+		result=`checkinput $v`
+		if [ $result -eq 1 ]; then
+			echon "ERROR: You must give an integer from 1-$n" >&2
+			v=-1
 		fi
 	done
 	line=`sed -n ${v}p $home/.gmtversions`
