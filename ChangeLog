@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1123 2011-06-29 06:33:29 guru Exp $
+	$Id: ChangeLog,v 1.1124 2011-06-29 07:03:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
-2011-06-28	pqwessel
+2011-06-28	pwessel
 	* gmtstitch_func.c:	Fixed some porting bugs.  Got stitch.sh example to run.
 	* sph/sphdistance_func.c:	Fixed some porting bugs.  Got all sph examples to run.
 
