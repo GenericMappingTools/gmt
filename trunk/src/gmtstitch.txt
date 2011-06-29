@@ -24,7 +24,7 @@ None.
 #include "explain_intables.txt"
 .TP
 OPT(C)[IT(closed)]
-Write all the closed polygons to IT(closed) [gmtstitch_closed.d] and all other segments as they
+Write all the closed polygons to IT(closed) [gmtstitch_closed.txt] and all other segments as they
 are to stdout.  No stitching takes place.  Use OPT(T)IT(cutoff) to set a minimum separation [0],
 and if IT(cutoff) is > 0 then we also close the polygons on output.
 .TP
@@ -34,12 +34,12 @@ file].  Append a format template for the individual file names; this template BD
 C format specifier that can format an integer argument (the segment number); this is usually %d but could
 be %8.8d which gives leading zeros, etc. Optionally, it may also contain the format %c IT(before) the
 integer; this will then be replaced by C (closed) or O (open) to indicate segment type.
-[Default is gmtstitch_segment_%d.d].  Note that segment headers will be written in either case.
+[Default is gmtstitch_segment_%d.txt].  Note that segment headers will be written in either case.
 For composite segments, a generic segment header will be written and the segment headers of individual
 pieces will be written out as comments to make it possible to identify where the stitched pieces came from.
 .TP
 OPT(L)[IT(linkfile)]
-Writes the link information to the specified file [gmtstitch_link.d]. For each segment we write the original segment
+Writes the link information to the specified file [gmtstitch_link.txt]. For each segment we write the original segment
 id, and for the beginning and end point of the segment we report the id of the closest segment, whether it
 is the beginning (B) or end (E) point that is closest, and the distance between those points in units determined
 by OPT(T).
@@ -47,7 +47,7 @@ by OPT(T).
 OPT(Q)[IT(template)]
 Used with OPT(D) to a list file with the names of the individual output files.  Optionally, append a filename
 template for the individual file names; this template BD(may) contain a
-C format specifier that can format an character (C or O for closed or open, respectively). [Default is gmtstitch_list.d].
+C format specifier that can format an character (C or O for closed or open, respectively). [Default is gmtstitch_list.txt].
 .TP
 OPT(T)IT(cutoff)[IT(unit)][/IT(nn_dist)]
 Specifies the separation tolerance in the data coordinate units [0]; append distance unit (see UNITS).
@@ -71,19 +71,19 @@ units as IT(cutoff).
 #include "explain_precision.txt"
 .SH EXAMPLES
 .sp
-To combine the digitized segment lines segment_*.d (whose coordinates are in cm)
+To combine the digitized segment lines segment_*.txt (whose coordinates are in cm)
 into as few complete lines as possible,
 assuming the end points slop could be up to 0.1 mm, run
 .br
 .sp
-gmtstitch segment_*.d -Tf0.1 > new_segments.d
+gmtstitch segment_*.txt -Tf0.1 > new_segments.txt
 .br
 .sp
-To combine the digitized segments in the multisegment file my_lines.d (whose coordinates are in lon,lat)
+To combine the digitized segments in the multisegment file my_lines.txt (whose coordinates are in lon,lat)
 into as few complete lines as possible, assuming the end points slop could be up to 150 m, and write
 the complete segments to separate files called Map_segment_0001.dat,  Map_segment_0002.dat, etc., run
 .sp
-gmtstitch my_lines.d -T150e -DMap_segment_%4.4d.dat
+gmtstitch my_lines.txt -T150e -DMap_segment_%4.4d.dat
 .sp
 .SH "SEE ALSO"
 .IR gmt (1),

@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.13 2011-06-28 03:15:52 guru Exp $
+/*	$Id: gshhs_func.c,v 1.14 2011-06-29 02:28:24 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -224,7 +224,6 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 	else {
-		dim[1] = n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
 		dim[1] = n_alloc = 0;
 		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim, (void **)&D, -1, &ID))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.27 2011-06-20 21:45:15 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.28 2011-06-29 02:28:24 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -213,7 +213,6 @@ GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, do
 	}
 	xp = GMT_memory (GMT, NULL, n, double);	yp = GMT_memory (GMT, NULL, n, double);
 	if (*geo == 1) {	/* Initializes GMT projection parameters to the -JA settings */
-		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");
 		GMT->current.proj.projection = GMT_LAMB_AZ_EQ;
 		GMT->current.proj.unit = 1.0;
 		GMT->current.proj.pars[3] = 39.3700787401574814;
@@ -222,7 +221,6 @@ GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, do
 		GMT->current.setting.map_line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-		*geo = 2;
 		GMT->current.proj.pars[0] = out[GMT_X];
 		GMT->current.proj.pars[1] = out[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) return (0);
@@ -743,7 +741,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE, geometry = GMT_IS_POLY;
-	GMT_LONG geo = FALSE, internal = FALSE, external = FALSE;
+	GMT_LONG internal = FALSE, external = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -809,8 +807,6 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = TRUE;
 	
-	geo = GMT_is_geographic (GMT, GMT_IN);
-
 	GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
 	
 	/* OK, with data in hand we can do some damage */
@@ -860,7 +856,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	if (Ctrl->M.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
-		GMT_LONG handedness = 0, c, p, mode, poly;
+		GMT_LONG handedness = 0, c, p, mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
+
 		char line[GMT_BUFSIZ];
 		
 		GMT_init_distaz (GMT, Ctrl->M.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
