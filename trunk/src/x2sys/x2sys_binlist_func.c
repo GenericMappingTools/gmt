@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_binlist_func.c,v 1.10 2011-06-30 07:13:51 guru Exp $
+ *	$Id: x2sys_binlist_func.c,v 1.11 2011-06-30 08:45:18 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -76,7 +76,7 @@ GMT_LONG GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-T <TAG> is the system tag for this compilation.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Calculate track-lengths per bin (see x2sys_init -C for method and -N for units).\n");
-	GMT_message (GMT, "\t-E Do binning using equal-area bins (with -D only).\n");
+	GMT_message (GMT, "\t-E Bin tracks using equal-area bins (with -D only).\n");
 	GMT_explain_options (GMT, "V");
 	
 	return (EXIT_FAILURE);

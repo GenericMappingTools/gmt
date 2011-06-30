@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: pscoupe_func.c,v 1.17 2011-06-25 02:45:57 guru Exp $
+ *    $Id: pscoupe_func.c,v 1.18 2011-06-30 08:45:18 guru Exp $
  *
  *    Copyright (c) 1996-2011 by G. Patau
  *    Distributed under the GNU Public Licence
@@ -181,8 +181,8 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_explain_options (GMT, "K");
 	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
-	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside]\n");
+	GMT_message (GMT, "\t-M Set same size for any magnitude. Size is given with -S.\n");
+	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-S Select format type and symbol size (in measure_unit).\n");
 	GMT_message (GMT, "\t   Choose format between\n");
@@ -210,25 +210,26 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t     X,Y,depth,T_value,T_azimuth,T_plunge,N_value,N_azimuth,N_plunge,\n");
 	GMT_message (GMT, "\t     P_value,P_azimuth,P_plunge,exp,event_title\n");
 	GMT_message (GMT, "\t Optionally add /fontsize[/offset][u]\n");
-	GMT_message (GMT, "\t   Default values are /%g/%f\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_message (GMT, "\t   Default values are /%g/%f.\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
 	GMT_message (GMT, "\t   fontsize < 0 : no label written;\n");
 	GMT_message (GMT, "\t   offset is from the limit of the beach ball.\n");
 	GMT_message (GMT, "\t   By default label is above the beach ball. Add u to plot it under.\n");
 	GMT_message (GMT, "\t-s Select symbol type and symbol size (in %s). Choose between:\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t    st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
-	GMT_message (GMT, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball using the current pen (see -W) or sets pen attribute. \n");
-	GMT_message (GMT, "\t n = 1 the only first nodal plane is plotted\n");
-	GMT_message (GMT, "\t n = 2 the only second nodal plane is plotted\n");
-	GMT_message (GMT, "\t n = 0 both nodal planes are plotted.\n");
-	GMT_message (GMT, "\t If moment tensor is required, nodal planes overlay moment tensor.\n");
+	GMT_message (GMT, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
+	GMT_message (GMT, "\t   using the current pen (see -W) or sets pen attribute.\n");
+	GMT_message (GMT, "\t   n = 1 the only first nodal plane is plotted.\n");
+	GMT_message (GMT, "\t   n = 2 the only second nodal plane is plotted.\n");
+	GMT_message (GMT, "\t   n = 0 both nodal planes are plotted.\n");
+	GMT_message (GMT, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_explain_options (GMT, "UV");
-	GMT_message (GMT,  "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column\n");
+	GMT_message (GMT, "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
+	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
 	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
 	GMT_message (GMT, "\t-p Draw P_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-g Set color used for P_symbol. [default is compressive parts color]\n");
-	GMT_message (GMT, "\t-e Set color used for T_symbol. [default is extensive parts color]\n");
+	GMT_message (GMT, "\t-g Set color used for P_symbol [default is compressive parts color].\n");
+	GMT_message (GMT, "\t-e Set color used for T_symbol [default is extensive parts color].\n");
 	GMT_explain_options (GMT, "Xchi:.");
 
 	return (EXIT_FAILURE);

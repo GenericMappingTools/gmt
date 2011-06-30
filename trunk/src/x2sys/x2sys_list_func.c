@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_list_func.c,v 1.8 2011-06-20 13:18:59 jluis Exp $
+ *	$Id: x2sys_list_func.c,v 1.9 2011-06-30 08:45:18 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -136,7 +136,7 @@ GMT_LONG GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_message (GMT, "\t-N Only output results for tracks with more than <nx_min> crossovers [Use all tracks].\n");
+	GMT_message (GMT, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
 	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");

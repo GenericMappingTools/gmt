@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.14 2011-06-25 01:59:46 guru Exp $
+ *	$Id: filter1d_func.c,v 1.15 2011-06-30 08:45:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -207,8 +207,8 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-N Set the column that contains the independent variable (time) [0].\n");
 	GMT_message (GMT, "\t   The left-most column is # 0, the right-most is # (<n_cols> - 1).\n");
 	GMT_message (GMT, "\t-Q Sssess quality of output value by checking mean weight in convolution.\n");
-	GMT_message (GMT, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is suppressed\n");
-	GMT_message (GMT, "\t   at this point [Default does not check quality].\n");
+	GMT_message (GMT, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is\n");
+	GMT_message (GMT, "\t   suppressed at this point [Default does not check quality].\n");
 	GMT_message (GMT, "\t-S Check symmetry of data about window center.  Enter a factor\n");
 	GMT_message (GMT, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
 	GMT_message (GMT, "\t   then no output will be given at this point [Default does not check Symmetry].\n");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: originator_func.c,v 1.20 2011-06-30 07:13:51 guru Exp $
+ *	$Id: originator_func.c,v 1.21 2011-06-30 08:45:18 guru Exp $
  *
  *   Copyright (c) 2000-2011 by P. Wessel
  *
@@ -215,8 +215,8 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use.\n");
 	GMT_message (GMT, "\t-F Specify file name for hotspot locations.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma.\n");
+	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
+	GMT_message (GMT, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
 	GMT_message (GMT, "\t-D Set sampling interval in km along tracks [5].\n");
 	GMT_message (GMT, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
 	GMT_message (GMT, "\t   -Lt gives (time, dist, z) [Default].\n");
@@ -228,7 +228,7 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-S Report the <n_hs> closest hotSpots [1].\n");
 	GMT_message (GMT, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Only report seamounts whose closest encounter to a hotspot is less than <maxdist> km.\n");
+	GMT_message (GMT, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
 	GMT_message (GMT, "\t   [Default reports for all seamounts].\n");
 	GMT_message (GMT, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
 	GMT_explain_options (GMT, "C5hi:");

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77track_func.c,v 1.18 2011-06-30 04:54:50 guru Exp $
+ *	$Id: mgd77track_func.c,v 1.19 2011-06-30 08:45:18 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -165,7 +165,7 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	GMT_message (GMT, "\t   f Flat Earth\n");
 	GMT_message (GMT, "\t   g Great circle [Default]\n");
 	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
-	GMT_message (GMT, "\t-D Plots from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
+	GMT_message (GMT, "\t-D Plot from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
 	GMT_message (GMT, "\t   up to b<stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
 	GMT_message (GMT, "\t-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].\n");
 	GMT_message (GMT, "\t-G Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0].\n");
