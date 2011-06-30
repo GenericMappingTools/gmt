@@ -13,9 +13,9 @@ ANIM=anim_01.ps anim_02.ps anim_03.ps anim_04.ps
 examples run-examples:	$(EX)
 animations run-animations:	$(ANIM)
 extests tests test:	$(EX) $(ANIM)
-	run_ex_tests.sh $(EX) $(ANIM)
+	./run_ex_tests.sh $(EX) $(ANIM)
 failed:	$(EX) $(ANIM)
-	run_ex_tests.sh `cut -d: -f1 fail_count.d`
+	./run_ex_tests.sh `cut -d: -f1 fail_count.d`
 
 clean spotless:
 	rm -f *.ps *.png *.pdf *.tex
