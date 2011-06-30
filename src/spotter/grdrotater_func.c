@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.29 2011-06-30 07:13:51 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.30 2011-06-30 08:45:18 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -111,7 +111,7 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
 	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon table that describes the area of the grid\n");
 	GMT_message (GMT, "\t   that should be projected [Default projects entire grid].\n");
-	GMT_message (GMT, "\t-N Do not output the rotated polygon or grid outline.\n");
+	GMT_message (GMT, "\t-N Do NOT output the rotated polygon or grid outline.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline (requires -D).\n");
 	GMT_message (GMT, "\t-T Set the time of reconstruction, if -E is used.\n");

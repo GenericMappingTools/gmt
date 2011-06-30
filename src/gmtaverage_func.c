@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtaverage_func.c,v 1.10 2011-06-25 01:59:46 guru Exp $
+ *    $Id: gmtaverage_func.c,v 1.11 2011-06-30 08:45:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -78,7 +78,7 @@ GMT_LONG GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q]\n");
+	GMT_message (GMT, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w]); see -W regarding w.\n");
 	GMT_message (GMT, "\t   Here, scale is standard deviation, L1 scale, or LMS scale depending on -T.\n");

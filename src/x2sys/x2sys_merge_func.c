@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_merge_func.c,v 1.7 2011-06-25 02:45:59 guru Exp $
+ *	$Id: x2sys_merge_func.c,v 1.8 2011-06-30 08:45:18 guru Exp $
  *
  *      Copyright (c) 1999-2011 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -62,10 +62,10 @@ GMT_LONG GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-A<main_COEdbase> File with the main crossover error data base.\n");
-	GMT_message (GMT, "\t-M<new_COEdbase> File with the new crossover error data base.\n");
-	GMT_message (GMT, "\t  The new COEs will replace the old ones present in <main_COEdbase>.\n\n");
-	GMT_message (GMT, "\t  Result is printed to stdout.\n");
+	GMT_message (GMT, "\t-A Give file with the main crossover error data base.\n");
+	GMT_message (GMT, "\t-M Give file with the new crossover error data base.\n");
+	GMT_message (GMT, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
+	GMT_message (GMT, "\t   Result is printed to stdout.\n");
 	GMT_explain_options (GMT, "V");
 	
 	return (EXIT_FAILURE);

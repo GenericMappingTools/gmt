@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.19 2011-06-30 07:13:51 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.20 2011-06-30 08:45:18 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -196,8 +196,8 @@ GMT_LONG GMT_hotspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-G Specify file name for output CVA grid.\n");
 	GMT_message (GMT, "\t-I Specify grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma.\n");
+	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
+	GMT_message (GMT, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Scale affecting distance between points along flowline [0.5].\n");
 	GMT_message (GMT, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");

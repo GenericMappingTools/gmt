@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77list_func.c,v 1.19 2011-06-30 04:54:50 guru Exp $
+ *	$Id: mgd77list_func.c,v 1.20 2011-06-30 08:45:18 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -267,10 +267,9 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-D List from a<date> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
 	GMT_message (GMT, "\t   up to b<date> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise].\n");
 	GMT_message (GMT, "\t   If A|B is used instead or a|b then records with no time are excluded from output.\n");
-	GMT_message (GMT, "\t-E Only records that exactly matches the requested geophysical information in -F will be used.\n");
+	GMT_message (GMT, "\t-E Output records that exactly matches the requested geophysical information in -F\n");
 	GMT_message (GMT, "\t   [Default will output all record that matches at least one column].\n");
-	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise]\n");
-	GMT_message (GMT, "\t   up to given b<record> [End of cruise].\n");
+	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise] up to given b<record> [End of cruise].\n");
 	GMT_message (GMT, "\t-H Write one header record with column names.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none].\n");
@@ -282,11 +281,11 @@ GMT_LONG GMT_mgd77list_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   M British/US units (miles, miles/hr).\n");
 	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
-	GMT_message (GMT, "\t-Q Only return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
+	GMT_message (GMT, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
 	GMT_message (GMT, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e. 0/360].\n");
 	GMT_message (GMT, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
 	GMT_message (GMT, "\t      Velocities are given in m/s unless changed by -Ns.\n");
-	GMT_message (GMT, "\t-R Only return data inside the specified region [0/360/-90/90].\n");
+	GMT_message (GMT, "\t-R Return data inside the specified region only [0/360/-90/90].\n");
 	GMT_message (GMT, "\t-S Begin list from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_message (GMT, "\t   End list at b<stopdist>[<unit>] [End of cruise].\n");
 	GMT_message (GMT, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");

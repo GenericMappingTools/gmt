@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.14 2011-06-30 04:54:50 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.15 2011-06-30 08:45:18 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	GMT_message (GMT, "\t     h: Display the MGD77+ file's history.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files [Default ignores none].\n");
-	GMT_message (GMT, "\t-L Just list all the institutions and their 2-character GEODAS codes.  Append v to also\n");
+	GMT_message (GMT, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
 	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
 	GMT_explain_options (GMT, "V");
 	
