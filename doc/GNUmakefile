@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.59 2011-06-10 04:03:58 guru Exp $
+#	$Id: GNUmakefile,v 1.60 2011-06-30 20:16:28 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -90,11 +90,11 @@ DOCPS0=	fig/GMT_App_P_1.ps fig/GMT_App_P_2.ps fig/GMT_App_M_2.ps
 
 # PS files for GMT_Docs created from scripts. Scripts have to be converted to TeX (without comments)
 DOCPS1=	fig/GMT_App_K_1.ps fig/GMT_App_K_2.ps fig/GMT_App_K_3.ps fig/GMT_App_K_4.ps \
-	fig/GMT_App_K_5.ps fig/GMT_-B_custom.ps \
+	fig/GMT_App_K_5.ps \
 	fig/GMT_App_O_1.ps fig/GMT_App_O_2.ps fig/GMT_App_O_3.ps \
 	fig/GMT_App_O_4.ps fig/GMT_App_O_5.ps fig/GMT_App_O_6.ps fig/GMT_App_O_7.ps \
 	fig/GMT_App_O_8.ps fig/GMT_App_O_9.ps \
-	fig/GMT_-B_time1.ps fig/GMT_-B_time2.ps fig/GMT_-B_time3.ps \
+	fig/GMT_-B_custom.ps fig/GMT_-B_time1.ps fig/GMT_-B_time2.ps fig/GMT_-B_time3.ps \
 	fig/GMT_-B_time4.ps fig/GMT_-B_time5.ps fig/GMT_-B_time6.ps fig/GMT_-B_time7.ps \
 	fig/GMT_linear.ps fig/GMT_log.ps fig/GMT_pow.ps \
 	fig/GMT_linear_cal.ps fig/GMT_linear_d.ps fig/GMT_polar.ps \
