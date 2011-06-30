@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.17 2011-06-25 02:45:59 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.18 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -217,30 +217,30 @@ GMT_LONG GMT_grdspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
 	GMT_message (GMT, "\t<ingrid> is the grid with topo or gravity\n");
-	GMT_message (GMT, "\t-E Specify the rotations table to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use\n\n");
+	GMT_message (GMT, "\t-E Specify the rotations table to be used (see man page for format).\n");
+	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
 	GMT_message (GMT, "\t-G Specify file name for output CVA convolution grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages]\n");
+	GMT_message (GMT, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
 	GMT_message (GMT, "\t-D Set optional output grids:\n");
-	GMT_message (GMT, "\t   -Di<file> Use flowlines to estimate data importance DI grid\n");
-	GMT_message (GMT, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations\n");
-	GMT_message (GMT, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs]\n");
+	GMT_message (GMT, "\t   -Di<file> Use flowlines to estimate data importance DI grid.\n");
+	GMT_message (GMT, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations.\n");
+	GMT_message (GMT, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs].\n");
 	GMT_message (GMT, "\t-M Do flowline calculations as needed rather than storing in memory.\n");
-	GMT_message (GMT, "\t   You may have to use this option if -R is too large. Cannot be used with -B or -Z-slicing\n");
-	GMT_message (GMT, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180]\n");
-	GMT_message (GMT, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs]\n");
-	GMT_message (GMT, "\t   Each line would be TAG ID [w e s n] with optional zoom box\n");
-	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum\n");
-	GMT_message (GMT, "\t-T Set upper ages.  Repeatable, choose from\n");
-	GMT_message (GMT, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates]\n");
-	GMT_message (GMT, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations\n");
+	GMT_message (GMT, "\t   You may have to use this option if -R is too large. Cannot be used with -B or -Z-slicing.\n");
+	GMT_message (GMT, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180].\n");
+	GMT_message (GMT, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs].\n");
+	GMT_message (GMT, "\t   Each line would be TAG ID [w e s n] with optional zoom box.\n");
+	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
+	GMT_message (GMT, "\t-T Set upper ages.  Repeatable, choose from:\n");
+	GMT_message (GMT, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates].\n");
+	GMT_message (GMT, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
-	GMT_message (GMT, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf]\n");
-	GMT_message (GMT, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid]\n");
+	GMT_message (GMT, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
+	GMT_message (GMT, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
 	GMT_explain_options (GMT, "F");
 
 	return (EXIT_FAILURE);

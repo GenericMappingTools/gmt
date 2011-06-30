@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdrotater_func.c,v 1.28 2011-06-20 22:15:10 guru Exp $
+ *	$Id: grdrotater_func.c,v 1.29 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -103,15 +103,15 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-G Set output filename of the new, rotated grid.  The boundary of the\n");
 	GMT_message (GMT, "\t   original grid (or a subset; see -F) after rotation is written to stdout\n");
 	GMT_message (GMT, "\t   unless the grid is global.\n");
-	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n\n");
+	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
+	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
 	GMT_message (GMT, "\t   This option requires you to specify the age of the reconstruction with -T.\n");
 	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
 	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon table that describes the area of the grid\n");
 	GMT_message (GMT, "\t   that should be projected [Default projects entire grid].\n");
-	GMT_message (GMT, "\t-N Do not output the rotated polygon or grid outline\n");
+	GMT_message (GMT, "\t-N Do not output the rotated polygon or grid outline.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline (requires -D).\n");
 	GMT_message (GMT, "\t-T Set the time of reconstruction, if -E is used.\n");

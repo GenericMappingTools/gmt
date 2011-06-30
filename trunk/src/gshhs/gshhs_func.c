@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.15 2011-06-29 20:28:24 guru Exp $
+/*	$Id: gshhs_func.c,v 1.16 2011-06-30 07:13:51 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -91,11 +91,11 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-        GMT_message (GMT, "-A Only extract polygons whose area is greater than or equal to <area> (in km^2)\n");
+        GMT_message (GMT, "-A Only extract polygons whose area is greater than or equal to <area> (in km^2).\n");
 	GMT_message (GMT, "-G will write '%%' at start of each segment header [P or L] (overwrites -M)\n");
 	GMT_message (GMT, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
-	GMT_message (GMT, "-L Only list header records (no data records will be written)\n");
-	GMT_message (GMT, "-I Only output data for polygon number <id> [Default is all polygons]\n");
+	GMT_message (GMT, "-L Only list header records (no data records will be written).\n");
+	GMT_message (GMT, "-I Only output data for polygon number <id> [Default is all polygons].\n");
 	GMT_explain_options (GMT, "VD2o:.");
 	
 	return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdpmodeler_func.c,v 1.18 2011-06-25 02:45:59 guru Exp $
+ *	$Id: grdpmodeler_func.c,v 1.19 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -100,7 +100,7 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
-	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format)\n\n");
+	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
 	GMT_message (GMT, "\t-G Set output filename with the model predictions.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon file that describes the area\n");

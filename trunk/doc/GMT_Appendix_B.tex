@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.44 2011-05-18 22:23:49 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.45 2011-06-30 07:13:51 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright (c) 2000-2011.
@@ -24,18 +24,20 @@ read both ASCII, native binary, and netCDF table data.
 \index{Table!multisegment}
 
 \subsubsection{Optional file header records}
-The first data record may be preceded by 1 or more header records.
+The first data record may be preceded by one or more header records.
 Any records that begins with '\#' is considered a header or comment
 line and are always processed correctly.  If your data file has leading
 header records that do \emph{not} start with '\#' then you must
 make sure to use the \Opt{h} option and set
 the parameter \textbf{IO\_N\_HEADER\_RECS} in the \filename{gmt.conf} file
-(\GMT\ default is 1 header record if \Opt{h} is set; you may also
+(\GMT\ default is one header record if \Opt{h} is given; you may also
 use \Opt{h}\emph{nrecs} directly).  Fields
 within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
 coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
 Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid input strings.
+On output, fields will be separated by the character given by the parameter \textbf{IO\_COL\_SEPARATOR},
+which by default is a TAB.
 
 \subsubsection{Optional segment header records}
 When dealing with time- or (\emph{x,y})-series it is usually
@@ -58,7 +60,12 @@ fill attributes for individual segments, \Opt{Z} to change
 color via a CPT file, \Opt{L} for label specifications, or \Opt{T} for
 general-purpose text descriptions.  These settings
 (and occasionally others) will override the corresponding command line options.
-
+\GMT\ also provides for two special values for \textbf{IO\_SEGMENT\_MARKER} that can
+make interoperability with other software packages easier.  Choose the marker \textbf{B}
+to have blank lines recognized as segment breaks, or use \textbf{N} to have data records
+whose fields equal NaN mean segment breaks (e.g., as used by GNU Octave or Matlab).
+When these markers are used then no other segment header will be considered.  Note that
+\textbf{IO\_SEGMENT\_MARKER} can be set differently for input and output.
 \subsection{Binary tables}
 \index{Table!binary}
 \index{Binary tables}
@@ -70,8 +77,8 @@ general-purpose text descriptions.  These settings
 \GMT\ programs also support native binary tables to speed up input-output
 for i/o-intensive tasks like gridding and preprocessing.  Files
 may have a header section and the \Opt{h}\emph{n} option can be used to skip the
-first \emph{n} bytes.  The data can be in any format, mixing different data types
-and even contained byte-swapped items.  For input, specify \Opt{bi} and append
+first \emph{n} bytes.  The data record can be in any format, mixing different data types
+and even containing byte-swapped items.  For input, specify \Opt{bi} and append
 one or more comma-separated combinations of
 \emph{n}\textbf{t}, where \textbf{t} is one of \textbf{c} (signed byte),
 \textbf{u} (unsigned byte), \textbf{h} (signed 2-byte int), \textbf{U} (unsigned
@@ -81,7 +88,7 @@ one or more comma-separated combinations of
 float).  Append \textbf{w} to any item to force byte-swapping.
 Alternatively, append \textbf{+L} or \textbf{+B} to indicate that the entire data file
 should be read as little- or big-endian, respectively.
-Here, \emph{n} is the number of each data type in your binary input file; the
+Here, \emph{n} is the consecutive number of each data type in your binary input file; the
 total number may exceeds the columns actually needed by the program.  If no
 \emph{n} is specified we assume that \textbf{t} applies to all columns and
 that \emph{n} is implied by the expectation of the program.
@@ -203,9 +210,10 @@ The grid registration is determined by the common \GMT\ \Opt{r} option
 \index{grid file!boundary conditions|(}
 
 \GMT\ has the option to specify boundary conditions in some programs
-that operate on grids (\GMTprog{grdsample} \Opt{L}; \GMTprog{grdgradient}
-\Opt{L}; \GMTprog{grdtrack} \Opt{L}; \GMTprog{nearneighbor} \Opt{L};
-\GMTprog{grdview} \Opt{L}).  The boundary conditions come into play
+that operate on grids (e.g., \GMTprog{grdsample}, \GMTprog{grdgradient},
+\GMTprog{grdtrack}, \GMTprog{nearneighbor}, and
+\GMTprog{grdview}, to name a few.  The desired condition can be set with
+the common \GMT\ option \Opt{n}; see Section \ref{sec:resample}.  The boundary conditions come into play
 when interpolating or computing derivatives near the limits of the
 region covered by the grid. The \emph{default} boundary
 conditions used are those which are ``natural'' for the boundary

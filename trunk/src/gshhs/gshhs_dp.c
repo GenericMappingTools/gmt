@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.30 2011-04-23 02:14:13 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.31 2011-06-30 07:13:51 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -58,15 +58,15 @@ int main (int argc, char **argv)
 	
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
 		fprintf (stderr, "gshhs_dp %s - Line reduction of GSHHS %s using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-		fprintf (stderr, "usage: gshhs_dp input.b tolerance output.b [-v]\n");
-		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
-		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");
+		fprintf (stderr, "usage: gshhs_dp input.b tolerance output.b [-v].\n");
+		fprintf (stderr, "\ttolerance is maximum mismatch in km.\n");
+		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage.\n");
 		exit (EXIT_FAILURE);
 	}
 
 	verbose = (argc == 5);
 	tolerance = atof (argv[2]);
-	if (verbose) fprintf (stderr,"gshhs_dp: Tolerance used is %g km\n", tolerance);
+	if (verbose) fprintf (stderr,"gshhs_dp: Tolerance used is %g km.\n", tolerance);
 	fp_in  = fopen(argv[1], "rb");
 	fp_out = fopen(argv[3], "wb");
 	
