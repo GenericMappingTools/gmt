@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.70 2011-05-31 17:55:32 remko Exp $
+ *	$Id: gmtapi_util.c,v 1.71 2011-06-30 01:13:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -560,7 +560,7 @@ GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_
 
 	/* OK, now it is safe to remove the object */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "Unregistering object no %" GMT_LL "d\n", item);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "Unregistering object no %" GMT_LL "d\n", API->object[item]->ID);
 
 	if (API->object[item]->filename) free (API->object[item]->filename);	/* Free any strdup-allocated filename */
 	GMT_free (API->GMT, API->object[item]);		/* Free the current data object */

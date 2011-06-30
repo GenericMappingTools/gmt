@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.19 2011-06-29 02:28:24 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.20 2011-06-30 01:13:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -413,6 +413,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_report (GMT, GMT_MSG_NORMAL, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = 1;
 	}
+	if (n_open > 1 || n_closed > 1) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 	if (wrap_up) {	/* Write out results and return */
 		if (wrap_up == 2) {	/* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
@@ -527,7 +528,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
 			return (GMT_RUNTIME_ERROR);
 		}
-		sprintf (buffer, "# segid\tbegin_id\tb_pt\tb_dist\tb_nndist\tend_id\te_pt\te_dist\te_nndist\n");
+		sprintf (buffer, "# segid\tbegin_id\tb_pt\tb_dist\tb_nndist\tend_id\te_pt\te_dist\te_nndist");
 		LNK->table[0]->n_headers = 1;
 		LNK->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		LNK->table[0]->header[0] = strdup (buffer);
@@ -547,7 +548,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				strcpy (name1, &pp[2]);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%ld", seg[i].buddy[1].orig_id);
-			sprintf (buffer, "%s\t%s\t%c\t%g\t%g\t%s\t%c\t%g\t%g\n", name, name0, BE[seg[i].buddy[0].end_order], seg[i].buddy[0].dist, seg[i].buddy[0].next_dist, name1, \
+			sprintf (buffer, "%s\t%s\t%c\t%g\t%g\t%s\t%c\t%g\t%g", name, name0, BE[seg[i].buddy[0].end_order], seg[i].buddy[0].dist, seg[i].buddy[0].next_dist, name1, \
 				BE[seg[i].buddy[1].end_order], seg[i].buddy[1].dist, seg[i].buddy[1].next_dist);
 			LNK->table[0]->segment[0]->record[i] = strdup (buffer);
 		}
@@ -597,7 +598,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Get a new segment structure */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_pol_pts, n_columns, TRUE);
 		
-		sprintf (buffer, "%c Possibly a composite segment; see comments for individual segment headers\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
+		sprintf (buffer, "Possibly a composite segment; see comments for individual segment headers");
 		T[OPEN][out_seg]->header = strdup (buffer);
 		/* First dump start segment */
 		
@@ -630,7 +631,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					j = 0;
 					n = np;
 				}
-				GMT_report (GMT, GMT_MSG_DEBUG, "Forward %s", D[GMT_IN]->table[G]->segment[L]->header);
+				GMT_report (GMT, GMT_MSG_DEBUG, "Forward Segment no %ld-%ld ", G, L);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, j, np-1);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];
@@ -645,7 +646,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					j = 0;
 					n = np;
 				}
-				GMT_report (GMT, GMT_MSG_DEBUG, "Reversed %s", D[GMT_IN]->table[G]->segment[L]->header);
+				GMT_report (GMT, GMT_MSG_DEBUG, "Reverse Segment %ld-%ld ", G, L);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, np-1-j, 0);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];
@@ -666,6 +667,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				done = TRUE;
 			k++;
 		} while (!done);
+		GMT_report (GMT, GMT_MSG_DEBUG, "\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld made from %ld pieces\n", out_seg, k);
 		
 		if (p_first_x == p_last_x && p_first_y == p_last_y) {
@@ -691,6 +693,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		done = (start_id == ns);	/* No more unused segments */
 	}
 	
+	if (out_seg > 1) GMT->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo explicitly */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		if ((error = GMT_Put_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, NULL, (void *)Q))) Return (error);
 	}
