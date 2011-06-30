@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.94 2011-06-23 23:24:35 remko Exp $
+#  $Id: GNUmakefile,v 1.95 2011-06-30 20:16:28 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -88,11 +88,11 @@ help::
 #!make <target>, where <target> can be:
 #!
 #!update        : Get the latest source via cvs
+#!alltests      : Run all tests and compare to originals
 #!manpages      : Create manpages from text files
 #!usable        : Install software, data, manpages and run examples & animations
 #!pdfman        : Create PDF version of manpages
-#!webman        : Create HTML version of manpages
-#!docs          : Create PDF documentation
+#!pdfdocs       : Create PDF documentation
 #!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
@@ -137,9 +137,9 @@ tests:
 		@cd test ; $(MAKE) $@
 
 cleantests:
-		cd doc/examples ; $(MAKE) clean
-		cd doc/scripts ; $(MAKE) clean
-		cd test ; $(MAKE) clean
+		@cd doc/examples ; $(MAKE) clean
+		@cd doc/scripts ; $(MAKE) clean
+		@cd test ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
 # Cleaning
