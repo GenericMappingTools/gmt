@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer_func.c,v 1.28 2011-06-22 01:35:00 guru Exp $
+ *	$Id: mgd77sniffer_func.c,v 1.29 2011-06-30 04:54:50 guru Exp $
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2011 by P. Wessel and M. T. Chandler
@@ -66,16 +66,16 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-A Apply scale factor and DC adjustment to specified data field. Allows adjustment of\n");
 	GMT_message (GMT, "\t   cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined\n");
 	GMT_message (GMT, "\t   before applying these global data adjustments. May not be used for multiple cruises.\n");
-	GMT_message (GMT, "\t-B Adjust navigation on land threshold (meters inland) [100]\n");
-	GMT_message (GMT, "\t-C Set maximum ship speed (10 m/s by default, use -N to indicate knots)\n");
+	GMT_message (GMT, "\t-B Adjust navigation on land threshold (meters inland) [100].\n");
+	GMT_message (GMT, "\t-C Set maximum ship speed (10 m/s by default, use -N to indicate knots).\n");
 	GMT_message (GMT, "\t-D Dump cruise data such as sniffer limits, values, gradients and mgd77 records.\n");
-	GMT_message (GMT, "\t  -Dd print out cruise-grid differences (requires -G option)\n");
+	GMT_message (GMT, "\t  -Dd print out cruise-grid differences (requires -G option).\n");
 	GMT_message (GMT, "\t  -De output formatted error summary for each record. See E77 ERROR FORMAT below.\n");
 	GMT_message (GMT, "\t  -DE same as -De but no regression checks will be done.\n");
 	GMT_message (GMT, "\t  -Df for each field, output value change and distance (or time with -St) since last observation.\n");
-	GMT_message (GMT, "\t  -Dl print out mgd77sniffer default limits (requires no additional arguments)\n");
-	GMT_message (GMT, "\t  -Dm print out MGD77 format\n\t  -Ds print out gradients\n\t  -Dv print out values\n");
-	GMT_message (GMT, "\t  -Dn print out distance to coast for each record (requires -gnav or -Gnav)\n");
+	GMT_message (GMT, "\t  -Dl print out mgd77sniffer default limits (requires no additional arguments).\n");
+	GMT_message (GMT, "\t  -Dm print out MGD77 format\n\t  -Ds print out gradients\n\t  -Dv print out values.\n");
+	GMT_message (GMT, "\t  -Dn print out distance to coast for each record (requires -gnav or -Gnav).\n");
 	GMT_message (GMT, "\t   Append r to include all records (default omits records where navigation errors were detected).\n");
 #ifdef DEBUG
 	GMT_message (GMT, "\t-F Test regression analysis. A simulated grid is created from the ship data using slope\n");
@@ -84,7 +84,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 #endif
 	GMT_message (GMT, "\t-g Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77\n");
 	GMT_message (GMT, "\t   field abbreviation followed by a comma, the path (if not in current directory)\n");
-	GMT_message (GMT, "\t   and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details)\n");
+	GMT_message (GMT, "\t   and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details).\n");
 	GMT_message (GMT, "\t   Optionally, append max latitude in the IMG file [72.0059773539]. Nav on land\n");
 	GMT_message (GMT, "\t   test can be activated using -g or -G options and requires a distance to nearest\n");
 	GMT_message (GMT, "\t   coast grid (i.e., -gnav,/data/GRIDS/dist_to_land.grd) with distance reported in cm.\n");
@@ -98,8 +98,8 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   nearest coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported\n");
 	GMT_message (GMT, "\t   in cm.\n");
 	GMT_message (GMT, "\t-H (with -G|g only) disable (or force) decimation during RLS analysis of ship and gridded data.\n");
-	GMT_message (GMT, "\t   By default mgd77sniffer analyses both the full and decimated data sets then reports RLS statistics\n");
-	GMT_message (GMT, "\t   for the higher correlation regression.\n");
+	GMT_message (GMT, "\t   By default mgd77sniffer analyses both the full and decimated data sets then reports\n");
+	GMT_message (GMT, "\t   RLS statistics for the higher correlation regression.\n");
 	GMT_message (GMT, "\t  -Hb analyze both (default), report better of two.\n");
 	GMT_message (GMT, "\t  -Hd to disable data decimation (equivalent to -H with no argument).\n");
 	GMT_message (GMT, "\t  -Hf to force data decimation.\n");
@@ -123,14 +123,14 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t\tmag	-800	800	-	-\n");
 	GMT_message (GMT, "\t\tfaa	-250	250	100	2500\n");
 	GMT_message (GMT, "\t   Use a dash '-' to retain a default limit.\n");
-	GMT_message (GMT, "\t   Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>\n");
+	GMT_message (GMT, "\t   Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.\n");
 	GMT_message (GMT, "\t-N Use nautical units.\n");
 	GMT_message (GMT, "\t-P Flag regression statistics that are outside the specified confidence level.\n");
 	GMT_message (GMT, "\t   (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%%.)\n");
-	GMT_message (GMT, "\t-S Specify gradient type for along-track excessive slope  checking.\n");
-	GMT_message (GMT, "\t  -Sd Calculate change in z values along track (dz)\n");
-	GMT_message (GMT, "\t  -Ss Calculate spatial gradients (dz/ds) [default]\n");
-	GMT_message (GMT, "\t  -St Calculate time gradients (dz/dt)\n");
+	GMT_message (GMT, "\t-S Specify gradient type for along-track excessive slope checking.\n");
+	GMT_message (GMT, "\t  -Sd Calculate change in z values along track (dz).\n");
+	GMT_message (GMT, "\t  -Ss Calculate spatial gradients (dz/ds) [default].\n");
+	GMT_message (GMT, "\t  -St Calculate time gradients (dz/dt).\n");
 	GMT_message (GMT, "\t-T Set maximum acceptable distance gap between records (km) [5].\n");
 	GMT_message (GMT, "\t   Set to zero to deactivate gap checking.\n");
 	GMT_message (GMT, "\t-W Print out only certain warning types. Comma delimit any combination of c|g|o|s|t|v|x:\n");
@@ -172,7 +172,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "# Examined: Wed Oct  3 16:30:13 2007 by mtchandl\n");
 	GMT_message (GMT, "# Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\n");
 	GMT_message (GMT, "N Errata table verification status\n");
-	GMT_message (GMT, "# mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review)\n");
+	GMT_message (GMT, "# mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review).\n");
 	GMT_message (GMT, "# For instructions on E77 format and usage, see http://gmt.soest.hawaii.edu/mgd77/errata.php\n");
 	GMT_message (GMT, "# Verified by:\n");
 	GMT_message (GMT, "# Comments:\n");

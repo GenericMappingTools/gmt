@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77manage_func.c,v 1.27 2011-06-22 08:20:51 jluis Exp $
+ *	$Id: mgd77manage_func.c,v 1.28 2011-06-30 04:54:50 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files
@@ -147,22 +147,22 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   c: Create a new column to be calculated from existing columns.  Add code:\n");
 #ifdef USE_CM4
 	GMT_message (GMT, "\t        4 = CM4 field, m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\")\n");
-	GMT_message (GMT, "\t        R = recomputed magnetic anomaly rmag = mtfx - CM4 total field\n");
-	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field\n");
+	GMT_message (GMT, "\t        R = recomputed magnetic anomaly rmag = mtfx - CM4 total field.\n");
+	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field.\n");
 #else
-	GMT_message (GMT, "\t        m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\")\n");
-	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field\n");
+	GMT_message (GMT, "\t        m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\").\n");
+	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field.\n");
 #endif
-	GMT_message (GMT, "\t        Append x for which mtfx field to use (1 or 2) [1]\n");
+	GMT_message (GMT, "\t        Append x for which mtfx field to use (1 or 2) [1].\n");
 	GMT_message (GMT, "\t        For g, optionally append 1-4 to select the gravity formula to use:\n");
 	GMT_message (GMT, "\t        1 = Heiskanen 1924, 2 = International 1930, 3 = IGF1967, 4 = IGF1980.\n");
-	GMT_message (GMT, "\t        [Default uses formula specified in the MGD77 header, or 4 if not valid]\n");
+	GMT_message (GMT, "\t        [Default uses formula specified in the MGD77 header, or 4 if not valid].\n");
 	GMT_message (GMT, "\t   d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file\n");
 	GMT_message (GMT, "\t      with distances (in km) in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_message (GMT, "\t      If filename is - we read from stdin.  Only records with mathcing distance will have data assigned.\n");
 	GMT_message (GMT, "\t   D: Same as d but we interpolate between the dist,data pairs to fill in all data records.\n");
 	GMT_message (GMT, "\t   e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look\n");
-	GMT_message (GMT, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77\n");
+	GMT_message (GMT, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77.\n");
 	GMT_message (GMT, "\t      By default we will apply recommended header (h) and systematic fixes (f) and set all data bit flags.\n");
 	GMT_message (GMT, "\t      Append a combination of these flags to change the default accordingly:\n");
 	GMT_message (GMT, "\t        h = Ignore all header recommendations\n");
@@ -170,7 +170,7 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t        n = Ignore data record bitflags pertaining to navigation (time, lon, lat).\n");
 	GMT_message (GMT, "\t        v = Ignore data record bitflags pertaining to data values.\n");
 	GMT_message (GMT, "\t        s = Ignore data record bitflags pertaining to data slopes (gradients).\n");
-	GMT_message (GMT, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y]\n");
+	GMT_message (GMT, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y].\n");
 	GMT_message (GMT, "\t      Note: Previous E77 information will be removed prior to processing this E77 information.\n");
 	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -n).\n");
 	GMT_message (GMT, "\t      Append filename of the GMT grid.\n");
@@ -190,26 +190,26 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      If filename is - we read from stdin.  Only records with matching times will have data assigned.\n");
 	GMT_message (GMT, "\t   T: Same as t but we interpolate between the time, data pairs to fill in all data records.\n");
 	GMT_message (GMT, "\t-C Append code for distance calculation procedure (when -Ad|D is set):\n");
-	GMT_message (GMT, "\t     f Flat Earth\n");
-	GMT_message (GMT, "\t     g Great circle [Default]\n");
-	GMT_message (GMT, "\t     e Ellipsoidal (geodesic) using current GMT ellipsoid\n");
+	GMT_message (GMT, "\t     f Flat Earth.\n");
+	GMT_message (GMT, "\t     g Great circle [Default].\n");
+	GMT_message (GMT, "\t     e Ellipsoidal (geodesic) using current GMT ellipsoid.\n");
 	GMT_message (GMT, "\t-D Delete the columns listed from all the cruise data files.\n");
 	GMT_message (GMT, "\t   The columns are removed before any data are added.  It is not a substitute for -A+.\n");
-	GMT_message (GMT, "\t   However, sometimes the shape of new data demands the old to be deleted first (you will be told)\n");
+	GMT_message (GMT, "\t   However, sometimes the shape of new data demands the old to be deleted first (you will be told).\n");
 	GMT_message (GMT, "\t-E Give character used to fill empty/missing string columns [9]\n");
-	GMT_message (GMT, "\t-F Force mode.  This allows you to even replace the standard MGD77 columns [only extended columns can be changed]\n");
+	GMT_message (GMT, "\t-F Force mode.  This allows you to even replace the standard MGD77 columns [only extended columns can be changed].\n");
 	GMT_message (GMT, "\t-I In addition to the file information above, you must also specify column information:\n");
-	GMT_message (GMT, "\t      abbrev:  Short, abbreviated word (lower case only), like satfaa (%d char max)\n", MGD77_COL_ABBREV_LEN);
-	GMT_message (GMT, "\t      name:    Descriptive name, like \"Geosat/ERS-1 Free-air gravity\" (%d char max)\n", MGD77_COL_NAME_LEN);
-	GMT_message (GMT, "\t      units:   Units for the column (e.g., mGal, gamma, km) (%d char max)\n", MGD77_COL_NAME_LEN);
-	GMT_message (GMT, "\t      size:    Either t(ext), b(yte), s(hort), f(loat), i(nt), or d(ouble)\n");
-	GMT_message (GMT, "\t      scale:   Multiply data by this scale before writing to mgd77+ file\n");
-	GMT_message (GMT, "\t      offset:  Add after scaling before writing to mgd77+ file\n");
-	GMT_message (GMT, "\t      comment: Any text (in double quotes) for information about column (%d char max)\n", MGD77_COL_COMMENT_LEN);
-	GMT_message (GMT, "\t      -I is ignored by -Ae\n");
+	GMT_message (GMT, "\t      abbrev:  Short, abbreviated word (lower case only), like satfaa (%d char max).\n", MGD77_COL_ABBREV_LEN);
+	GMT_message (GMT, "\t      name:    Descriptive name, like \"Geosat/ERS-1 Free-air gravity\" (%d char max).\n", MGD77_COL_NAME_LEN);
+	GMT_message (GMT, "\t      units:   Units for the column (e.g., mGal, gamma, km) (%d char max).\n", MGD77_COL_NAME_LEN);
+	GMT_message (GMT, "\t      size:    Either t(ext), b(yte), s(hort), f(loat), i(nt), or d(ouble).\n");
+	GMT_message (GMT, "\t      scale:   Multiply data by this scale before writing to mgd77+ file.\n");
+	GMT_message (GMT, "\t      offset:  Add after scaling before writing to mgd77+ file.\n");
+	GMT_message (GMT, "\t      comment: Any text (in double quotes) for information about column (%d char max).\n", MGD77_COL_COMMENT_LEN);
+	GMT_message (GMT, "\t      -I is ignored by -Ae.\n");
 	GMT_message (GMT, "\t   Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.\n");
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
-	GMT_message (GMT, "\t   (e) meter, (k) km, (M) miles, or (n) nautical miles [Default is -Nk]\n");
+	GMT_message (GMT, "\t   (e) meter, (k) km, (M) miles, or (n) nautical miles [Default is -Nk].\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
 	GMT_explain_options (GMT, "VC0n" GMT_OPT("Q"));
 	

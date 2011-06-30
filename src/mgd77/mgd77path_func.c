@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77path_func.c,v 1.10 2011-06-22 08:21:58 jluis Exp $
+ *	$Id: mgd77path_func.c,v 1.11 2011-06-30 04:54:50 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -58,11 +58,11 @@ GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
 	MGD77_Cruise_Explain (GMT);
-	GMT_message (GMT, "\t-A List full cruise pAths [Default].  Append - to only get cruise names\n");
-	GMT_message (GMT, "\t-D Instead of full cruise paths just list all directories with MGD77 files\n");
+	GMT_message (GMT, "\t-A List full cruise pAths [Default].  Append - to only get cruise names.\n");
+	GMT_message (GMT, "\t-D Instead of full cruise paths just list all directories with MGD77 files.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none]\n");
+	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none].\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
