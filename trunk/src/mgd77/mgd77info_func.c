@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77info_func.c,v 1.13 2011-06-25 02:45:57 guru Exp $
+ *	$Id: mgd77info_func.c,v 1.14 2011-06-30 04:54:50 guru Exp $
  *
  *    Copyright (c) 2004-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -85,12 +85,12 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (GMT);
 	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-C List abbreviations of all columns present for each cruise\n");
-	GMT_message (GMT, "\t   Append m for listing just the MGD77 columns present\n");
-	GMT_message (GMT, "\t   Append e for listing just any extra columns present\n");
-	GMT_message (GMT, "\t-E Give the information summary of each cruise's geographical/temporal extent\n");
-	GMT_message (GMT, "\t   Append m for counting just the number of non-NaN values for each MGD77 field\n");
-	GMT_message (GMT, "\t   Append e for counting just the of non-NaN values for each extra field\n");
+	GMT_message (GMT, "\t-C List abbreviations of all columns present for each cruise.\n");
+	GMT_message (GMT, "\t   Append m for listing just the MGD77 columns present.\n");
+	GMT_message (GMT, "\t   Append e for listing just any extra columns present.\n");
+	GMT_message (GMT, "\t-E Give the information summary of each cruise's geographical/temporal extent.\n");
+	GMT_message (GMT, "\t   Append m for counting just the number of non-NaN values for each MGD77 field.\n");
+	GMT_message (GMT, "\t   Append e for counting just the of non-NaN values for each extra field.\n");
 	GMT_message (GMT, "\t-M Print header items (and MGD77+ history).  Append type of presentation:\n");
 	GMT_message (GMT, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
 	GMT_message (GMT, "\t        item (e.g. Port_of_Departure), all [Default], or - to see a list of items.\n");
@@ -99,9 +99,9 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	GMT_message (GMT, "\t     e: Display the MGD77+ file's E77 status.\n");
 	GMT_message (GMT, "\t     h: Display the MGD77+ file's history.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files. [Default ignores none]\n");
+	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, or (t) plain table files [Default ignores none].\n");
 	GMT_message (GMT, "\t-L Just list all the institutions and their 2-character GEODAS codes.  Append v to also\n");
-	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution\n");
+	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
 	GMT_explain_options (GMT, "V");
 	
 	MGD77_end (GMT, &M);	/* Close machinery */

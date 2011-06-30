@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.286 2011-06-21 20:04:16 jluis Exp $
+ *	$Id: mgd77.c,v 1.287 2011-06-30 04:54:49 guru Exp $
  *
  *    Copyright (c) 2005-2011 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3011,6 +3011,9 @@ void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 	 * If way is -1 we return the inverse (convert meters to given unit) */
 
 	switch (dist[strlen(dist)-1]) {
+		case 'f':	/* feet */
+			*scale = METERS_IN_A_FOOT;
+			break;
 		case 'k':	/* km */
 			*scale = 1000.0;
 			break;
@@ -3020,7 +3023,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 		case 'n':	/* nautical miles */
 			*scale = MGD77_METERS_PER_NM;
 			break;
-		default:
+		default:	/* Meter */
 			*scale = 1.0;
 			break;
 	}

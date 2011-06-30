@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77magref_func.c,v 1.20 2011-06-25 02:45:57 guru Exp $
+ *	$Id: mgd77magref_func.c,v 1.21 2011-06-30 04:54:50 guru Exp $
  *
  *    Copyright (c) 2009-2011 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -91,7 +91,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> contains records that must contain lon, lat, alt, time[, other cols]\n");
+	GMT_message (GMT, "\t<table> contains records that must contain lon, lat, alt, time[, other cols].\n");
 	GMT_message (GMT, "\t   longitude and latitude is the geocentric position on the ellipsoid [but see -G].\n");
 	GMT_message (GMT, "\t   alt is the altitude in km positive above the ellipsoid.\n");
 	GMT_message (GMT, "\t   time is the time of data aquisition, in <date>T<clock> format (but see -A+y).\n");
@@ -114,7 +114,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t	 z means list Z component.\n");
 	GMT_message (GMT, "\t	 d means list declination.\n");
 	GMT_message (GMT, "\t	 i means list inclination.\n");
-	GMT_message (GMT, "\t   Append a number to indicate the requested field contribution(s)\n");
+	GMT_message (GMT, "\t   Append a number to indicate the requested field contribution(s):\n");
 	GMT_message (GMT, "\t	 0 means Core field from IGRF only (no CM4 evalution).\n");
 	GMT_message (GMT, "\t	 1 means Core field.\n");
 	GMT_message (GMT, "\t	 2 means Lithospheric field.\n");
