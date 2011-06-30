@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_solve_func.c,v 1.8 2011-06-20 22:15:10 guru Exp $
+ *	$Id: x2sys_solve_func.c,v 1.9 2011-06-30 07:13:51 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -182,17 +182,17 @@ GMT_LONG GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C Specify the column name to process (e.g., faa, mag)\n");
+	GMT_message (GMT, "\t-C Specify the column name to process (e.g., faa, mag).\n");
 	GMT_message (GMT, "\t-E Equation to fit: specify <flag> as c (constant), d (drift over distance),\n");
 	GMT_message (GMT, "\t     g (latitude), h (heading), s (scale with data), or t (drift over time) [c].\n");
 	GMT_message (GMT, "\t-T <TAG> is the x2sys tag for the data set.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin]\n");
+	GMT_message (GMT, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin].\n");
 #ifdef SAVEFORLATER
-	GMT_message (GMT, "\t-I List of tracks and their start date (required for -Et)\n");
+	GMT_message (GMT, "\t-I List of tracks and their start date (required for -Et).\n");
 #endif
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-W Weights are present in last column for weighted fit [no weights]\n");
+	GMT_message (GMT, "\t-W Weights are present in last column for weighted fit [no weights].\n");
 	GMT_explain_options (GMT, "C");
 	
 	return (EXIT_FAILURE);

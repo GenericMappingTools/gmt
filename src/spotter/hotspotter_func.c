@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: hotspotter_func.c,v 1.18 2011-06-20 22:15:10 guru Exp $
+ *	$Id: hotspotter_func.c,v 1.19 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -186,23 +186,23 @@ GMT_LONG GMT_hotspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "hotspotter %s - Create CVA image from seamount locations\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: hotspotter [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", GMT_Id_OPT);
 	GMT_message (GMT, "\t%s [-D<factor>] [-N<upper_age>]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-S] [-T] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use\n\n");
+	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
+	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use.\n");
 	GMT_message (GMT, "\t-G Specify file name for output CVA grid.\n");
 	GMT_message (GMT, "\t-I Specify grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma\n");
+	GMT_message (GMT, "\t   Expects (x,y,z,r,t) records, with t in Ma.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D Scale affecting distance between points along flowline [0.5]\n");
-	GMT_message (GMT, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180]\n");
-	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum\n");
-	GMT_message (GMT, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates]\n");
+	GMT_message (GMT, "\t-D Scale affecting distance between points along flowline [0.5].\n");
+	GMT_message (GMT, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
+	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
+	GMT_message (GMT, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
 	GMT_explain_options (GMT, "VC5hioF:.");
 	
 	return (EXIT_FAILURE);

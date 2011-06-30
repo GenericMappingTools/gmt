@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_report_func.c,v 1.9 2011-06-20 22:17:52 jluis Exp $
+ *	$Id: x2sys_report_func.c,v 1.10 2011-06-30 07:13:51 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,17 +114,17 @@ GMT_LONG GMT_x2sys_report_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-C <column> is the name of the data column whose crossovers we want.\n");
 	GMT_message (GMT, "\t-T <TAG> is the system tag for the data set.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<COEdbase> File with crossover error data base [stdin]\n");
+	GMT_message (GMT, "\t<COEdbase> File with crossover error data base [stdin].\n");
 	GMT_message (GMT, "\t-A Create adjustment splines per track to redistribute COEs between tracks\n");
 	GMT_message (GMT, "\t   according to their relative weight.\n");
-	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks]s\n");
+	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_message (GMT, "\t-N Only output results for tracks with more than <nx_min> crossovers [0, i.e., report all tracks]\n");
-	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is external]\n");
+	GMT_message (GMT, "\t-N Only output results for tracks with more than <nx_min> crossovers [0, i.e., report all tracks].\n");
+	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is external].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t   [Default region is the entire data domain]\n");
-	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks]\n");
+	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
+	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks].\n");
 	GMT_explain_options (GMT, "V");
 	
 	return (EXIT_FAILURE);

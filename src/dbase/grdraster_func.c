@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdraster_func.c,v 1.27 2011-06-25 02:45:57 guru Exp $
+ *	$Id: grdraster_func.c,v 1.28 2011-06-30 07:13:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -628,9 +628,9 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	for (i = 0; i < nrasters; i++) GMT_message (GMT, "%s\n", rasinfo[i].h.command);
 	GMT_message (GMT, "------------------------------------------------------------------------------------\n\n");
 #ifdef WORDS_BIGENDIAN
-	GMT_message (GMT, "grdraster default binary byte order is Big-endian\n");
+	GMT_message (GMT, "grdraster default binary byte order is Big-endian.\n");
 #else
-	GMT_message (GMT, "grdraster default binary byte order is Little-endian\n");
+	GMT_message (GMT, "grdraster default binary byte order is Little-endian.\n");
 #endif
 	GMT_free (GMT, rasinfo);
 

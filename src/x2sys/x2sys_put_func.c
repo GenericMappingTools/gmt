@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_put_func.c,v 1.9 2011-06-20 22:15:10 guru Exp $
+ *	$Id: x2sys_put_func.c,v 1.10 2011-06-30 07:13:51 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,15 +72,15 @@ GMT_LONG GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	
 	GMT_message (GMT, "x2sys_put %s - Update track index database from track bin file\n\n", X2SYS_VERSION);
 	GMT_message (GMT, "usage: x2sys_put [<info.tbf>] -T<TAG> [-D] [-F] [%s]\n\n", GMT_V_OPT);
-	GMT_message (GMT, "\t<info.tbf> is one track bin file from x2sys_binlist [Default reads stdin]\n");
-	GMT_message (GMT, "\t-T <TAG> is the system tag for this compilation\n");
+	GMT_message (GMT, "\t<info.tbf> is one track bin file from x2sys_binlist [Default reads stdin].\n");
+	GMT_message (GMT, "\t-T <TAG> is the system tag for this compilation.\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT,"\t-D Remove the listed tracks  [Default will add to database]\n");
-	GMT_message (GMT,"\t-F Force updates to earlier entries for a track with new information\n");
-	GMT_message (GMT,"\t   [Default refuses to process tracks already in the database]\n");
+	GMT_message (GMT,"\t-D Remove the listed tracks  [Default will add to database].\n");
+	GMT_message (GMT,"\t-F Force updates to earlier entries for a track with new information.\n");
+	GMT_message (GMT,"\t   [Default refuses to process tracks already in the database].\n");
 	GMT_explain_options (GMT, "V");
 	
 	return (EXIT_FAILURE);

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_get_func.c,v 1.10 2011-06-20 22:15:10 guru Exp $
+ *	$Id: x2sys_get_func.c,v 1.11 2011-06-30 07:13:51 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -86,16 +86,16 @@ GMT_LONG GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "	-C Report center of each tile with tracks instead [Default is track files]\n");
-	GMT_message (GMT, "	-F Comma-separated list of column names that must ALL be present [Default is any field]\n");
-	GMT_message (GMT, "	-G Report global flags per track [Default reports for segments inside region]\n");
+	GMT_message (GMT, "	-C Report center of each tile with tracks instead [Default is track files].\n");
+	GMT_message (GMT, "	-F Comma-separated list of column names that must ALL be present [Default is any field].\n");
+	GMT_message (GMT, "	-G Report global flags per track [Default reports for segments inside region].\n");
 	GMT_message (GMT, "	-L Setup mode: Return all pairs of cruises that might intersect given\n");
 	GMT_message (GMT, "	   the bin distribution.  Optionally, give file with a list of cruises.\n");
 	GMT_message (GMT, "	   Then, only pairs with at least one cruise from the list is output.\n");
 	GMT_message (GMT, "	   Use -L+ to include internal pairs in the list [external only].\n");
-	GMT_message (GMT, "	-N Comma-separated list of column names that ALL must be missing\n");
+	GMT_message (GMT, "	-N Comma-separated list of column names that ALL must be missing.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "	[Default region is the entire data domain]\n");
+	GMT_message (GMT, "	[Default region is the entire data domain].\n");
 	GMT_explain_options (GMT, "V");
 
 	return (EXIT_FAILURE);

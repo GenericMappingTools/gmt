@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: rotconverter_func.c,v 1.9 2011-06-07 01:14:21 guru Exp $
+ *	$Id: rotconverter_func.c,v 1.10 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -127,15 +127,15 @@ GMT_LONG GMT_rotconverter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
 	GMT_message (GMT, "\t   Rotations will be added/subtracted in the order given.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Report angles as time [Default uses time]\n");
-	GMT_message (GMT, "\t-D Report all longitudes in -180/+180 range [Default is 0-360]\n");
-	GMT_message (GMT, "\t-E Reduce opening angles for stage rotations by <factor> [0.5]\n");
-	GMT_message (GMT, "\t   Typically used to get half-rates needed for flowlines\n");
-	GMT_message (GMT, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft]\n");
-	GMT_message (GMT, "\t-G Write rotations using GPlates format [Default is spotter format]\n");
-	GMT_message (GMT, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates]\n");
-	GMT_message (GMT, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates]\n");
-	GMT_message (GMT, "\t-T Transpose the result (i.e., change sign of final rotation angle)\n");
+	GMT_message (GMT, "\t-A Report angles as time [Default uses time].\n");
+	GMT_message (GMT, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
+	GMT_message (GMT, "\t-E Reduce opening angles for stage rotations by <factor> [0.5].\n");
+	GMT_message (GMT, "\t   Typically used to get half-rates needed for flowlines.\n");
+	GMT_message (GMT, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
+	GMT_message (GMT, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
+	GMT_message (GMT, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates].\n");
+	GMT_message (GMT, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates].\n");
+	GMT_message (GMT, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
 	GMT_explain_options (GMT, "Vh.");
 	
 	return (EXIT_FAILURE);

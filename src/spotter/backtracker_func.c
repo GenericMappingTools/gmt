@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: backtracker_func.c,v 1.21 2011-06-25 02:45:59 guru Exp $
+ *	$Id: backtracker_func.c,v 1.22 2011-06-30 07:13:51 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -155,28 +155,28 @@ GMT_LONG GMT_backtracker_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma)\n");
-	GMT_message (GMT, "\t-E Specify file with the rotations to be used (see man page for format)\n\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use\n\n");
-	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points\n");
+	GMT_message (GMT, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma).\n");
+	GMT_message (GMT, "\t-E Specify file with the rotations to be used (see man page for format).\n");
+	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track]\n");
+	GMT_message (GMT, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track].\n");
 	GMT_message (GMT, "\t   If no limit is given, then each seamount should have their limits in columns 4 and 5 instead.\n");
 	GMT_message (GMT, "\t   Only applicable in conjunction with the -L option.\n");
-	GMT_message (GMT, "\t-Db Backtrack mode: move forward in time (from older to younger positions) [Default]\n");
-	GMT_message (GMT, "\t-Df Flowline mode: move backward in time (from younger to older positions)\n");
+	GMT_message (GMT, "\t-Db Backtrack mode: move forward in time (from older to younger positions) [Default].\n");
+	GMT_message (GMT, "\t-Df Flowline mode: move backward in time (from younger to older positions).\n");
 	GMT_message (GMT, "\t-F Give file with lon, lat, time records describing motion of hotspot responsible for)\n");
 	GMT_message (GMT, "\t   the seamount/path we are concerned with [fixed hotspots].  If given, then the)\n");
 	GMT_message (GMT, "\t   input lon, lat is replaced by the position of the drifting hotspot at the given age.)\n");
 	GMT_message (GMT, "\t   Note: If -F is used the <d_km> in -L is assumed to be point spacing in Ma.)\n");
 	GMT_message (GMT, "\t-Lb Compute hotspot tracks sampled every <d_km> interval [Default projects single points].\n");
-	GMT_message (GMT, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points]\n");
-	GMT_message (GMT, "\t    If no <d_km> is given, the start/stop points for each stage are returned\n");
-	GMT_message (GMT, "\t    If B and F is used instead, stage id is returned as z-value [Default is predicted ages]\n");
-	GMT_message (GMT, "\t-N Extend earliest stage pole back to <upper_age> [no extension]\n");
+	GMT_message (GMT, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points].\n");
+	GMT_message (GMT, "\t    If no <d_km> is given, the start/stop points for each stage are returned.\n");
+	GMT_message (GMT, "\t    If B and F is used instead, stage id is returned as z-value [Default is predicted ages].\n");
+	GMT_message (GMT, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
 	GMT_message (GMT, "\t-Q Assigned a fixed age to all input points.\n");
-	GMT_message (GMT, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L)\n");
-	GMT_message (GMT, "\t-T Set the current age in Ma [0]\n");
+	GMT_message (GMT, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
+	GMT_message (GMT, "\t-T Set the current age in Ma [0].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Return projected point and confidence ellipse for the finite rotation.\n");
 	GMT_message (GMT, "\t   The input time must exactly match the age of a finite rotation or else we skip the point.\n");

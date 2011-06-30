@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.18 2011-06-29 06:33:30 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.19 2011-06-30 07:13:51 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -141,11 +141,11 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances].\n");
 	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
 	GMT_message (GMT, "\t   PROJ_ELLIPSOID determines if geodesic or gerat-circle distances are used.\n");
-	GMT_message (GMT, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output)\n");
+	GMT_message (GMT, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
 	GMT_message (GMT, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");
-	GMT_message (GMT, "\t   [Default performs Voronoi construction on input data first]\n");
+	GMT_message (GMT, "\t   [Default performs Voronoi construction on input data first].\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg]\n");
+	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
 	GMT_explain_options (GMT, "VC2hiF:.");
 	
 	return (EXIT_FAILURE);
