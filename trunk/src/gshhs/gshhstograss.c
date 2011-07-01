@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.31 2011-06-23 22:18:22 guru Exp $
+/*	$Id: gshhstograss.c,v 1.32 2011-07-01 18:55:06 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -24,6 +24,7 @@
 *			layer 2: cat = unique polygon ID, with level nr, 
 *                   in case unique IDs for each line are wanted
 *			improved acknowledging of user-defined extends
+*		1.13 1-JUL-2011: Now contains improved area information (2.1.2).
 *
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -52,7 +53,7 @@ char *putusername();
 int main (int argc, char **argv)
 {
 	int i = 1, m;
-	double w, e, s, n, area, lon, lat, scale = 1.0;
+	double w, e, s, n, area, lon, lat, scale = 10.0;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
 	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
@@ -210,16 +211,18 @@ int main (int argc, char **argv)
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
-		greenwich = (h.flag >> 16) & 1;
+		greenwich = (h.flag >> 16) & 3;
 		src = (h.flag >> 24) & 1;
 		river = (h.flag >> 25) & 1;
-		m = h.flag >> 26;				/* Magnitude for area scale */
 		w = h.west * GSHHS_SCL;
 		e = h.east * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
 		source = (src == 1) ? 'W' : 'C';
-		scale = pow (10.0, (double)m);			/* Area scale */
+		if (version >= 9) {				/* Magnitude for area scale */
+			m = h.flag >> 26;
+			scale = pow (10.0, (double)m);		/* Area scale */
+		}
 		area = h.area / scale;				/* Now im km^2 */
 
 		if( ( w <= maxx && e >= minx ) && ( s <= maxy && n >= miny ) ){
@@ -239,7 +242,7 @@ int main (int argc, char **argv)
 					p.y = swabi4 ((unsigned int)p.y);
 				}
 				lon = p.x * GSHHS_SCL;
-				if (greenwich && p.x > max) lon -= 360.0;
+				if ((greenwich & 1) && p.x > max) lon -= 360.0;
 				lat = p.y * GSHHS_SCL;
 				fprintf(ascii_fp," %f %f\n",lon,lat);
 			}
