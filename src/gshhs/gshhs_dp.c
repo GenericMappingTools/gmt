@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.31 2011-06-30 07:13:51 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.32 2011-07-01 18:55:06 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,6 +20,7 @@
  *	    1.5 11-SEPT-2004: Updated to work with GSHHS v1.3 data format
  *	    1.6 02-MAY-2006: Updated to work with GSHHS v1.4 data format
  *	    1.8 02-MAR-2007: Updated to work with GSHHS v1.5 data format
+ *	    1.13 1-JUL-2011: Now contains improved area information (2.1.2).
  *
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,7 +49,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out;
 	int	n_id, n_out, n, k, verbose = FALSE, *index;
-	int	n_tot_in, n_tot_out, n_use, n_read, flip, level, version, greenwich, src;
+	int	n_tot_in, n_tot_out, n_use, n_read, flip, version;
 	int *x, *y;
 	double	redux, redux2, tolerance = 0.0;
 	struct	GSHHS h;
@@ -96,10 +97,6 @@ int main (int argc, char **argv)
 			h.container  = swabi4 ((unsigned int)h.container);
 			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
-		level = h.flag && 255;
-		version = (h.flag >> 8) & 255;
-		greenwich = (h.flag >> 16) & 1;
-		src = (h.flag >> 24) & 1;
 		if (verbose) fprintf (stderr, "Poly %6d", h.id);	
 		
 		x = (int *) get_memory ((void *)x, h.n, sizeof (int), "gshhs_dp");
@@ -115,8 +112,7 @@ int main (int argc, char **argv)
 				p.x = swabi4 ((unsigned int)p.x);
 				p.y = swabi4 ((unsigned int)p.y);
 			}
-			x[k] = p.x;
-			y[k] = p.y;
+			x[k] = p.x;	y[k] = p.y;
 		}
 		n_tot_in += h.n;
 		

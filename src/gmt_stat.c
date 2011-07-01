@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.89 2011-06-01 03:28:13 guru Exp $
+ *	$Id: gmt_stat.c,v 1.90 2011-07-01 18:55:06 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1430,6 +1430,19 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
 
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
+}
+
+GMT_LONG GMT_mean (struct GMT_CTRL *C, double *x, GMT_LONG n, double *mean)
+{	/* Return the mean of the non-NaN values in x */
+	GMT_LONG k, m;
+	double X = 0.0;
+	for (k = m = 0; k < n; k++) {
+		if (GMT_is_dnan (x[k])) continue;
+		X += x[k];
+		m++;
+	}
+	*mean = (m) ? X / n : C->session.d_NaN;
+	return (GMT_NOERROR);
 }
 
 GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)

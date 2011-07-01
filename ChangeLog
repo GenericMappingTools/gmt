@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1124 2011-06-29 07:03:47 guru Exp $
+	$Id: ChangeLog,v 1.1125 2011-07-01 18:58:17 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-06-28	pwessel
@@ -16,10 +16,10 @@
 	* gmtswitch.bat:	The Windows version of the *nix gmtswitch script
 
 2011-06-23	pwessel
-	* gmt_shore.c:		Now reads new GSHHS 2.1.2 format that includes feature areas
+	* gmt_shore.c:		Now reads new GSHHS 2.2.0 format that includes feature areas
 				stored as doubles.  The old int(0.1*area) would set all
 				areas < 0.1 km^2 to zero [only affected gshhs supplement].
-	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.1.2.  Fixed porting bugs.  Also added
+	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.2.0.  Fixed porting bugs.  Also added
 				-Amin to exclude smaller polygons on output and -G for special
 				Octave/Matlab-formatted output [suggested by José Luis García Pallero].
 
