@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: filter1d_func.c,v 1.15 2011-06-30 08:45:18 guru Exp $
+ *	$Id: filter1d_func.c,v 1.16 2011-07-01 08:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -167,7 +167,7 @@ GMT_LONG GMT_filter1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "filter1d %s [API] - Perform time domain filtering of 1-D data tables\n\n", GMT_VERSION);
+	GMT_message (GMT, "filter1d %s [API] - Do time domain filtering of 1-D data tables\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<start>/<stop>/<int>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.28 2011-06-29 02:28:24 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.29 2011-07-01 08:03:00 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -524,7 +524,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtspatial %s - Geospatial operations on lines and polygons\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtspatial %s [API] - Do geospatial operations on lines and polygons\n\n", GMT_VERSION);
 #ifdef PW_TESTING
 	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-M[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else

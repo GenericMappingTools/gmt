@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.26 2011-06-20 21:45:14 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.27 2011-07-01 08:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -169,7 +169,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
-	GMT_message (GMT, "gmt2kml %s - Convert GMT data tables to KML files for Google Earth\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmt2kml %s [API] - Convert GMT data tables to KML files for Google Earth\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
 	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n-|[+]<fill>] [-I<icon>] [-K] [-L<col:name>,<col:name>,...]\n");
 	GMT_message (GMT, "\t[-N+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");

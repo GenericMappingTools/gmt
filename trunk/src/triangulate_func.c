@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.15 2011-06-25 01:59:47 guru Exp $
+ *	$Id: triangulate_func.c,v 1.16 2011-07-01 08:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -104,7 +104,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "triangulate %s [API] - Perform optimal (Delaunay) triangulation and gridding of Cartesian table data [%s]\n\n", GMT_VERSION, ALGORITHM);
+	GMT_message (GMT, "triangulate %s [API] - Do optimal (Delaunay) triangulation and gridding of Cartesian table data [%s]\n\n", GMT_VERSION, ALGORITHM);
 	GMT_message (GMT, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
 	GMT_message (GMT, "\t[%s] [%s]", GMT_I_OPT, GMT_J_OPT);
 #ifdef TRIANGLE_D

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH GMTSPATIAL 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtspatial \- Geospatial operations on lines and polygons
+gmtspatial \- Do geospatial operations on lines and polygons
 .SH SYNOPSIS
 BD(gmtspatial) [ IT(table) ] [ OPT(C) ] [ OPT(D)[BD(+f)IT(file)][BD(+a)IT(amax)][BD(+d)IT(dmax)][BD(+c|C)IT(cmax)][BD(+s)IT(fact)] ]
 [ OPT(E)BD(+)|BD(-) ] [ OPT(I)[BD(e)|BD(i)] ] [ OPT(M)[BD(+)[IT(unit)]] ] [ OPT(N)IT(pfile)[BD(+a)][BD(+p)IT(start)][BD(+r)][BD(+z)] ] 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfft_func.c,v 1.29 2011-06-25 01:59:47 guru Exp $
+ *	$Id: grdfft_func.c,v 1.30 2011-07-01 08:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -928,7 +928,7 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdfft %s [API] - Perform mathematical operations on grids in the wavenumber (or frequency) domain\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdfft %s [API] - Do mathematical operations on grids in the wavenumber (or frequency) domain\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdfft <ingrid> [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
 	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
