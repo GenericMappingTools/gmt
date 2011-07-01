@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdfilter_func.c,v 1.31 2011-06-29 20:28:24 guru Exp $
+ *	$Id: grdfilter_func.c,v 1.32 2011-07-01 08:03:00 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -296,7 +296,7 @@ GMT_LONG GMT_grdfilter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdfilter %s [API%s] - Filter a grid in the space (or time) domain\n\n", GMT_VERSION, GMT_MP);
+	GMT_message (GMT, "grdfilter %s [API] %s - Filter a grid in the space (or time) domain\n\n", GMT_VERSION, GMT_MP);
 	GMT_message (GMT, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<outgrid>\n");
 	GMT_message (GMT, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 

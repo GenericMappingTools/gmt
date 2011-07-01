@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.20 2011-06-25 01:59:47 guru Exp $
+*    $Id: gmtvector_func.c,v 1.21 2011-07-01 08:03:00 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -96,7 +96,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtvector %s - Basic manipulation of Cartesian vectors\n\n", GMT_VERSION);
+	GMT_message (GMT, "gmtvector %s [API] - Basic manipulation of Cartesian vectors\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtvector [<table>] [-A<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);

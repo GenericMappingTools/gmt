@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*	$Id: mapproject_func.c,v 1.29 2011-06-25 01:59:47 guru Exp $
+*	$Id: mapproject_func.c,v 1.30 2011-07-01 08:03:00 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ GMT_LONG GMT_mapproject_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mapproject %s [API] - Forward and inverse map transformations, datum conversions and geodesy\n\n", GMT_VERSION);
+	GMT_message (GMT, "mapproject %s [API] - Do forward and inverse map transformations, datum conversions and geodesy\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[<lon0>/<lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_message (GMT, "\t[-I] [-L<ltable>[/<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");

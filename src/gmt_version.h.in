@@ -24,7 +24,7 @@
 #define GMT_VERSION_YEAR @GMT_VERSION_YEAR@
 #define GSHHS_VERSION "@GSHHS_VERSION@"
 #ifdef _OPENMP	/* Open MP Parallelization is on */
-#define GMT_MP "-MP"
+#define GMT_MP "[MP]"
 #else
 #define GMT_MP ""
 #endif
