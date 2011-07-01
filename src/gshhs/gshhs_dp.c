@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.32 2011-07-01 18:55:06 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.33 2011-07-01 18:58:18 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,7 +20,14 @@
  *	    1.5 11-SEPT-2004: Updated to work with GSHHS v1.3 data format
  *	    1.6 02-MAY-2006: Updated to work with GSHHS v1.4 data format
  *	    1.8 02-MAR-2007: Updated to work with GSHHS v1.5 data format
- *	    1.13 1-JUL-2011: Now contains improved area information (2.1.2).
+ *	    1.9 27-AUG-2007: Handle line data as well as polygon data
+ *	    1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+ *	    1.11 15-JUN-2009: Now contains information on container polygon,
+ *			      the polygons ancestor in the full resolution, and
+ *			      a flag to tell if a lake is a riverlake.
+ *			      Updated to deal with latest GSHHS database (2.0)
+ *	    1.12 24-MAY-2010: Deal with 2.1 format.
+ *	    1.13 1-JUL-2011: Now contains improved area information (2.2.0).
  *
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,13 +54,13 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname);
 
 int main (int argc, char **argv)
 {
-	FILE	*fp_in, *fp_out;
-	int	n_id, n_out, n, k, verbose = FALSE, *index;
-	int	n_tot_in, n_tot_out, n_use, n_read, flip, version;
-	int *x, *y;
-	double	redux, redux2, tolerance = 0.0;
-	struct	GSHHS h;
-	struct	POINT p;
+	FILE *fp_in = NULL, *fp_out = NULL;
+	int n_id, n_out, n, k, verbose = FALSE, *index;
+	int n_tot_in, n_tot_out, n_use, n_read, flip, level, version;
+	int *x = NULL, *y = NULL;
+	double redux, redux2, tolerance = 0.0;
+	struct GSHHS h;
+	struct POINT p;
         
 	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 	

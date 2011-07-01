@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.32 2011-07-01 18:55:06 guru Exp $
+/*	$Id: gshhstograss.c,v 1.33 2011-07-01 18:58:18 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -24,7 +24,16 @@
 *			layer 2: cat = unique polygon ID, with level nr, 
 *                   in case unique IDs for each line are wanted
 *			improved acknowledging of user-defined extends
-*		1.13 1-JUL-2011: Now contains improved area information (2.1.2).
+*		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
+*		1.9 27-AUG-2007: Handle line data as well as polygon data
+*		1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+*		1.11 15-JUN-2009: Now contains information on container polygon,
+*				the polygons ancestor in the full resolution, and
+*				a flag to tell if a lake is a riverlake.
+*				Updated to deal with latest GSHHS database (2.0)
+*		1.12 24-MAY-2010: Deal with 2.1 format.
+*		1.13 1-JUL-2011: Now contains improved area information (2.2.0),
+*				 and revised greenwhich flags (now 2-bit; see gshhs.h).
 *
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -257,7 +266,7 @@ int main (int argc, char **argv)
 			fprintf(stderr,"line %d skipped\n", h.id);
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
 		}
-		max = 180000000;	/* Only Eurasiafrica needs 270 */
+		max = 180000000;	/* Only Eurasia needs 270 */
 
 		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	}
