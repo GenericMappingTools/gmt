@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.93 2011-04-23 02:14:11 guru Exp $
+#	$Id: Makefile,v 1.94 2011-07-01 01:57:53 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -95,8 +95,8 @@ help::
 install:	install-gmt install-suppl
 uninstall:	uninstall-gmt uninstall-suppl
 
-install-all:	install-gmt install-suppl install-data install-man install-doc
-uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-doc
+install-all:	install install-data install-man install-doc
+uninstall-all:	uninstall uninstall-data uninstall-man uninstall-doc
 
 gmt:		gmtmacros
 		cd src ; $(MAKE) all

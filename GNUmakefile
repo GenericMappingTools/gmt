@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.95 2011-06-30 20:16:28 remko Exp $
+#  $Id: GNUmakefile,v 1.96 2011-07-01 01:57:53 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -41,8 +41,8 @@
 #
 #	Subtasks (done by make archive and make site):
 #
-#	To compile/link GMT:		make all and/or make install
-#	To create examples:		make examples
+#	To compile/install GMT:		make all and/or make install
+#	To create examples, animations:	make examples animations
 #	To generate man pages:		make man
 #	To generate documentation:	make docs
 #
@@ -111,9 +111,9 @@ newsite:	get_gshhs site
 
 usable:		install install-data install-man examples animations
 
-site:		usable install-doc
+site:		install-all examples animations
 
-archive:	site create tar_all
+archive:	install-all create tar_all
 
 manpages:	$(FILES)
 		cd src ; $(MAKE) $@
