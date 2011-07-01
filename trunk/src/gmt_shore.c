@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.82 2011-06-24 01:23:59 guru Exp $
+ *	$Id: gmt_shore.c,v 1.83 2011-07-01 18:58:18 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -358,7 +358,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 		sscanf (c->version, "%" GMT_LL "d.%" GMT_LL "d.%" GMT_LL "d", &major, &minor, &release) < 3 ||
 		major != 2 || minor < 1) {
 			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT %s\n", GMT_VERSION);
-			fprintf (stderr, "GSHHS: CVS users must get the GSHHS%s tarballs from\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: CVS users must get the GSHHS %s tarballs from\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
@@ -390,7 +390,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 	
         if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
-		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider getting GSHHS 2.1.2.\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider getting GSHHS %s.\n", GSHHS_VERSION);
 		int_areas = TRUE;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */

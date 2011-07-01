@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.118 2011-06-23 22:18:22 guru Exp $
+dnl $Id: configure.ac,v 1.119 2011-07-01 18:58:17 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.118 $)
+AC_REVISION($Revision: 1.119 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -28,10 +28,10 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
 AC_INIT(GMT, 5.0.0a, gmt-help@lists.hawaii.edu)
-MANDATE="1 Jul 2011"
+MANDATE="15 Jul 2011"
 DOCDATE="July 2011"
 DOCYEAR="2011"
-GSHHS_VERSION=2.1.2
+GSHHS_VERSION=2.2.0
 CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------

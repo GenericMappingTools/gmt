@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.38 2011-06-29 20:30:58 guru Exp $
+/*	$Id: gshhs.h,v 1.39 2011-07-01 18:58:18 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -33,8 +33,8 @@
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
  *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
- *	24-JUN-2011.  PW: Data version is now 2.1.2. [Change in header format to store
- *			  area magnitude and let greenwich be 2-bit flag (0-3 range)]
+ *	1-JUL-2011.   PW: Data version is now 2.2.0. [Change in header format to store
+ *			  area magnitude and let greenwich be 2-bit flag (0-3)]
  */
 
 #ifndef _GSHHS
@@ -58,8 +58,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_RELEASE	9		/* For v2.1.2 data set */
-#define GSHHS_DATA_VERSION	"2.1.2"
+#define GSHHS_DATA_RELEASE	9		/* For v2.2.0 data set */
+#define GSHHS_DATA_VERSION	"2.2.0"
 #define GSHHS_PROG_VERSION	"1.13"
 
 #define GSHHS_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
@@ -76,14 +76,15 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	/* flag contains 6 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 7 for GSHHS release 7
-	 * 3rd byte:	greenwich = (flag >> 16) & 1: Values: Greenwich is 1 if Greenwich is crossed
+ 	 * 3rd byte:	greenwich = (flag >> 16) & 3: Values: 0 if Greenwich nor Dateline are crossed,
+	 *		1 if Greenwich is crossed, 2 if Dateline is crossed, 3 if both is crossed.
 	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and level = 2
-	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26
+	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
-	int area;	/* Area of polygon in km^2 * 10^p */
-	int area_full;	/* Area of original full-resolution polygon in km^2 * 10^p */
+	int area;	/* Area of polygon in km^2 * 10^p for this resolution file */
+	int area_full;	/* Area of corresponding full-resolution polygon in km^2 * 10^p */
 	int container;	/* Id of container polygon that encloses this polygon (-1 if none) */
 	int ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };
