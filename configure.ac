@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.119 2011-07-01 18:58:17 guru Exp $
+dnl $Id: configure.ac,v 1.120 2011-07-03 23:59:09 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.119 $)
+AC_REVISION($Revision: 1.120 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -115,6 +115,7 @@ AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(compat,   [  --enable-compat         Attempt backward compatibility with GMT4])
 AC_ARG_ENABLE(openmp,   [  --enable-openmp         Enable parallel calculations via OpenMP multi-processing])
+AC_ARG_ENABLE(fapi,     [  --enable-fapi           Include FORTRAN API bindings])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
 AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
@@ -637,6 +638,13 @@ if test "X$enable_compat" = "Xyes" ; then
 	GMT_COMPAT=""
 else
 	GMT_COMPAT="#"
+fi
+dnl -----------------------------------------------------------------
+dnl Allow developers to set --enable-fapi to include Fortran bindings
+dnl -----------------------------------------------------------------
+dnl
+if test "X$enable_fapi" = "Xyes" ; then
+	CPPFLAGS="$CPPFLAGS -DFORTRAN_API"
 fi
 dnl
 dnl -----------------------------------------------------------------
