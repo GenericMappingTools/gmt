@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.90 2011-07-01 18:55:06 guru Exp $
+ *	$Id: gmt_stat.c,v 1.91 2011-07-03 23:59:09 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1432,17 +1432,30 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
 
-GMT_LONG GMT_mean (struct GMT_CTRL *C, double *x, GMT_LONG n, double *mean)
+double GMT_std (struct GMT_CTRL *C, double *x, GMT_LONG n)
+{	/* Return the standard deviation of the non-NaN values in x */
+	GMT_LONG k, m;
+	double dx, mean = 0.0, sum2 = 0.0;
+	for (k = m = 0; k < n; k++) {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+		if (GMT_is_dnan (x[k])) continue;
+		m++;
+		dx = x[k] - mean;
+		mean += dx / m;
+		sum2 += dx * (x[k] - mean);
+	}
+	return ((m > 1) ? sqrt (sum2 / (m-1.0)) : C->session.d_NaN);
+}
+
+double GMT_mean (struct GMT_CTRL *C, double *x, GMT_LONG n)
 {	/* Return the mean of the non-NaN values in x */
 	GMT_LONG k, m;
 	double X = 0.0;
 	for (k = m = 0; k < n; k++) {
 		if (GMT_is_dnan (x[k])) continue;
-		X += x[k];
 		m++;
+		X += x[k];
 	}
-	*mean = (m) ? X / n : C->session.d_NaN;
-	return (GMT_NOERROR);
+	return ((m) ? X / m : C->session.d_NaN);
 }
 
 GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)
