@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.33 2011-07-01 18:58:18 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.34 2011-07-04 19:14:29 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 {
 	FILE *fp_in = NULL, *fp_out = NULL;
 	int n_id, n_out, n, k, verbose = FALSE, *index;
-	int n_tot_in, n_tot_out, n_use, n_read, flip, level, version;
+	int n_tot_in, n_tot_out, n_use, n_read, flip, version;
 	int *x = NULL, *y = NULL;
 	double redux, redux2, tolerance = 0.0;
 	struct GSHHS h;
