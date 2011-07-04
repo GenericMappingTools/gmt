@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.556 2011-06-27 19:55:45 guru Exp $
+ *	$Id: gmt_init.c,v 1.557 2011-07-04 21:04:37 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7820,3 +7820,33 @@ int GMT_fscanf (FILE *stream, char *format, ...) {
 }
 #endif
 #endif
+
+GMT_LONG AlmostEqual2sComplementDouble (double A, double B, int maxUlps) {
+	/* Make sure maxUlps is non-negative and small enough that the */
+	/* default NAN won't compare as equal to anything. */
+	/* http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm */
+#ifdef WIN32
+	__int64 aInt = *(__int64*)&A;
+	__int64 bInt = *(__int64*)&B;
+	__int64 intDiff;
+#else
+	long aInt = *(long*)&A;
+	long bInt = *(long*)&B;
+	long intDiff;
+#endif
+	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
+	/* Make aInt lexicographically ordered as a twos-complement int */
+	if (aInt < 0)
+		aInt = 0x8000000000000000 - aInt;
+	/* Make bInt lexicographically ordered as a twos-complement int */
+	if (bInt < 0)
+		bInt = 0x8000000000000000 - bInt;
+#ifdef WIN32
+	intDiff = _abs64(aInt - bInt);
+#else
+	intDiff = labs(aInt - bInt);
+#endif
+	if (intDiff <= maxUlps)
+		return TRUE;
+	return FALSE;
+}
