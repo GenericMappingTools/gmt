@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.98 2011-04-27 15:35:24 remko Exp $
+#  $Id: GNUmakefile,v 1.99 2011-07-04 21:37:13 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -16,6 +16,9 @@
 #
 #	Date:		1-JAN-2011
 #-------------------------------------------------------------------------------
+
+FUNCS_O = testapi_func.o gmtaverage_func.o
+DEMOS_O	= testgmt5.o testgmtio.o testio.o
 
 include Makefile
 
@@ -176,4 +179,10 @@ include manpages.mk
 # How to clean it all up
 
 spotless::
-			\rm -f $(FILES)
+			rm -f $(FILES)
+
+testapi$(EXE):		testapi.o
+testgmt5$(EXE):		testgmt5.o
+testio$(EXE):		testio.o
+testgmtio$(EXE):	testgmtio.o
+gmtaverage$(EXE):	gmtaverage.o
