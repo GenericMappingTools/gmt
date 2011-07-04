@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: greenspline_func.c,v 1.24 2011-06-25 01:59:47 guru Exp $
+ *	$Id: greenspline_func.c,v 1.25 2011-07-04 23:44:50 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -698,8 +698,10 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 	GMT_LONG n;
 	double z[2], pq[4];
 	
-	if (x == +1.0) return (1.0);
-	if (x == -1.0) return (0.0);
+	/*if (x == +1.0) return (1.0);
+	if (x == -1.0) return (0.0);*/
+	if (GMT_equal_double(x, 1.0, 1))  return (1.0);
+	if (GMT_equal_double(x, -1.0, 1)) return (0.0);
 
 	GMT_PvQv (GMT, -x, par, pq, &n);	/* Get P_nu(-x) */
 	gmt_Cdiv (pq, &par[4], z);		/* Get P_nu(-x) / sin (nu*M_PI) */
