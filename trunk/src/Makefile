@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.72 2011-06-27 20:24:03 remko Exp $
+#	$Id: Makefile,v 1.73 2011-07-04 19:14:29 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -53,7 +53,7 @@ FUNCS_O		= blockmean_func.o blockmedian_func.o blockmode_func.o colmath_func.o f
 		  grdpaste_func.o grdproject_func.o grdsample_func.o grdreformat_func.o grdtrack_func.o grdtrend_func.o grdvolume_func.o \
 		  greenspline_func.o kml2gmt_func.o makecpt_func.o mapproject_func.o minmax_func.o nearneighbor_func.o project_func.o \
 		  ps2raster_func.o sample1d_func.o spectrum1d_func.o splitxyz_func.o surface_func.o trend1d_func.o \
-		  trend2d_func.o triangulate_func.o xyz2grd_func.o gmtaverage_func.o
+		  trend2d_func.o triangulate_func.o xyz2grd_func.o gmtaverage_func.o testapi_func.o
 
 FUNCSPS_O	= gmtdefaults_func.o gmtget_func.o gmtset_func.o grdcontour_func.o grdimage_func.o grdvector_func.o \
 		  grdview_func.o psbasemap_func.o psclip_func.o pscoast_func.o pscontour_func.o pshistogram_func.o psimage_func.o \
@@ -306,6 +306,7 @@ trend2d$(EXE):		trend2d.o
 triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
 gmtaverage$(EXE):	gmtaverage.o
+testapi$(EXE):		testapi.o
 
 gmt2rgb$(EXE):		grd2rgb$(EXE)
 		$(RM) gmt2rgb$(EXE)
