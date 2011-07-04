@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.51 2011-07-04 21:35:12 jluis Exp $
+ *	$Id: gmt_prototypes.h,v 1.52 2011-07-04 23:43:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -265,7 +265,8 @@ EXTERN_MSC void GMT_pickdefaults (struct GMT_CTRL *C, GMT_LONG lines, struct GMT
 EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 EXTERN_MSC GMT_LONG GMT_geo_C_format (struct GMT_CTRL *C);
 EXTERN_MSC GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file);
-EXTERN_MSC GMT_LONG AlmostEqual2sComplementDouble(double A, double B, int maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_double (double A, double B, int maxUlps);
+EXTERN_MSC GMT_LONG GMT_equal_float  (float A, float B, int maxUlps);
 
 #if defined (WIN32) || defined (__MINGW32__)
 EXTERN_MSC int GMT_message (struct GMT_CTRL *C, char *format, ...);
