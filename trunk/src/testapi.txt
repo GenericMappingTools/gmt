@@ -1,0 +1,25 @@
+#include "common_options.txt"
+.TH TESTAPI 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+testapi \- Testing GMT 5 i/o library
+.SH SYNOPSIS
+BD(testapi) [ GMT_V_OPT ]
+.SH DESCRIPTION
+BD(testapi) will test i/o.  More will be added later.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(I)
+Set input method.
+.TP
+OPT(T)
+Specify types.
+.TP
+OPT(W)
+Set output method
+.SH OPTIONAL ARGUMENTS
+#include "explain_-V.txt"
+.SH EXAMPLES
+Noe so far
+.SH "SEE ALSO"
+.IR gmt (1),
