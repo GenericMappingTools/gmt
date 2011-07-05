@@ -1,25 +1,41 @@
 #include "common_options.txt"
 .TH TESTAPI 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-testapi \- Testing GMT 5 i/o library
+testapi \- Test API i/o methods for any data type
 .SH SYNOPSIS
-BD(testapi) [ GMT_V_OPT ]
+BD(testapi) OPT(I)BD(c)|BD(d)|BD(f)|BD(r)|BD(s) OPT(T)BD(c)|BD(d)|BD(g)|GD(i)|GD(t) 
+OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s) [ GMT_V_OPT ]
 .SH DESCRIPTION
-BD(testapi) will test i/o.  More will be added later.
+BD(testapi) will test the API for all i/o combinations. In general,
+data types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from
+or written to 5 different ways (file, stream, file descriptor, copy from
+memory, reference from memory).  We use this tool to check the various
+possibilities, for each data type.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-OPT(I)
-Set input method.
+OPT(I)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)
+Set input method; choose from BD(c)opy from memory, file BD(d)escriptor, BD(f)ile,
+memory BD(r)eference, or BD(s)tream.
 .TP
-OPT(T)
-Specify types.
+OPT(T)BD(c)|BD(d)|BD(g)|GD(i)|GD(t) 
+Specify data type; choose from BD(c)pt, BD(d)ataset, BD(g)rid, BD(i)mage, or BD(t)extset.
 .TP
-OPT(W)
-Set output method
+OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)
+Set output method; choose from BD(c)opy to memory, file BD(d)escriptor, BD(f)ile,
+memory BD(r)eference, or BD(s)tream.
 .SH OPTIONAL ARGUMENTS
 #include "explain_-V.txt"
 .SH EXAMPLES
-Noe so far
+To check if reading and writing the test dataset file yields an identical copy, try
+.br
+.sp
+testapi -Td -If -Wf -V
+.br
+.sp
+To check if reading the test grid from memory and writing it to file yields an identical copy, try
+.br
+.sp
+testapi -Tg -Ic -Wf -V
 .SH "SEE ALSO"
 .IR gmt (1),
