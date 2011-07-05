@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.74 2011-07-05 04:57:28 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.75 2011-07-05 06:00:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1033,7 +1033,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	 * Note: Memory is allocated for the Dataset except for GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, row, seg, first_item = 0, last_item, error = 0, n_alloc, allocate = FALSE;
+	GMT_LONG item, row, seg, first_item = 0, last_item, error = 0, n_alloc, update = FALSE, allocate = FALSE;
 	char *t = NULL;
 	struct GMT_TEXTSET *T = NULL, *Tin = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -1083,6 +1083,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 					return (GMT_Report_Error (API, error));
 				if (error == GMT_IO_EOF) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				T->table[T->n_tables]->id = T->n_tables;	/* Give internal ID numbers to tables */
+				update = TRUE;
 				break;
 			case GMT_IS_COPY:	/* Duplicate the input dataset */
 				if (n_alloc > 1) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));
@@ -1090,7 +1091,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				GMT_free (API->GMT, T->table);	/* Free up what we allocated since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, T);
 				Tin = (struct GMT_TEXTSET *)(*S->ptr);
-				GMT_alloc_textset (API->GMT, Tin, &T, GMT_ALLOC_NORMAL);
+				GMT_duplicate_textset (API->GMT, Tin, &T, GMT_ALLOC_NORMAL);
 				break;
 			case GMT_IS_REF:	/* Just pass memory location, so free up what we allocated first */
 				if (n_alloc > 1) return (GMT_Report_Error (API, GMT_ONLY_ONE_ALLOWED));
@@ -1115,6 +1116,7 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				T->table[T->n_tables]->n_records += M->n_rows;
 				T->table[T->n_tables]->n_segments = 1;
 				if (M->alloc_mode == 1) GMT_free (API->GMT, *S->ptr);
+				update = TRUE;
 				break;
 			default:	/* Barking up the wrong tree here... */
 				GMT_report (API->GMT, GMT_MSG_FATAL, "Wrong method used to import data tables\n");
@@ -1123,13 +1125,15 @@ GMT_LONG GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				return (GMT_WRONG_KIND);
 				break;		
 		}
-		T->n_segments += T->table[T->n_tables]->n_segments;	/* Sum up total number of segments across the data set */
-		T->n_records += T->table[T->n_tables]->n_records;	/* Sum up total number of records across the data set */
-		/* Update segment IDs so they are sequential across many tables (GMT_read_table sets the ids relative to current table). */
-		if (T->n_tables > 0) 
-			for (seg = 0; seg < T->table[T->n_tables]->n_segments; seg++) 
-				T->table[T->n_tables]->segment[seg]->id += T->table[T->n_tables-1]->n_segments;
-		T->n_tables++;
+		if (update) {
+			T->n_segments += T->table[T->n_tables]->n_segments;	/* Sum up total number of segments across the data set */
+			T->n_records += T->table[T->n_tables]->n_records;	/* Sum up total number of records across the data set */
+			/* Update segment IDs so they are sequential across many tables (GMT_read_table sets the ids relative to current table). */
+			if (T->n_tables > 0) 
+				for (seg = 0; seg < T->table[T->n_tables]->n_segments; seg++) 
+					T->table[T->n_tables]->segment[seg]->id += T->table[T->n_tables-1]->n_segments;
+			T->n_tables++;
+		}
 		if (allocate && T->n_tables == n_alloc) {	/* Must allocate space for more tables */
 			n_alloc += GMT_TINY_CHUNK;
 			T->table = GMT_memory (API->GMT, T->table, n_alloc, struct GMT_TEXT_TABLE *);
@@ -1192,6 +1196,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 		case GMT_IS_COPY:		/* Duplicate the input dataset */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_TEXTSET memory location\n");
 			GMT_alloc_textset (API->GMT, T, &T_copy, GMT_ALLOC_NORMAL);
+			GMT_duplicate_textset (API->GMT, T, &T_copy, GMT_ALLOC_NORMAL);
 			*S->ptr = (void *)T_copy;
 			S->data = *S->ptr;
 			break;
