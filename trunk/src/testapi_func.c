@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.6 2011-07-05 20:18:45 guru Exp $
+ *	$Id: testapi_func.c,v 1.7 2011-07-05 22:03:50 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -275,7 +275,12 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		case GMT_IS_FDESC:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
+#ifdef WIN32
+					/* I think they exist on Win too, but no mutch time to find out how. JL */
+					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT);
+#else
 					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+#endif
 					fdp = &fd;
 					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, (void **)&fdp, NULL, NULL, &out_ID);
 					break;
