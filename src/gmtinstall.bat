@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.60 2011-06-21 23:32:45 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.61 2011-07-05 23:07:37 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -252,6 +252,7 @@ set GMTLIB=gmt.lib %lib_netcdf% setargv.obj
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_spectrum1d   /Fespectrum1d   gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_splitxyz     /Fesplitxyz     gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_surface      /Fesurface      gmtprogram.c %GMTLIB%
+%CC% %COPT% /DFUNC_MODE=GMTAPI_GMTPSL /DFUNC=GMT_testapi      /Fetestapi      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_trend1d      /Fetrend1d      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_trend2d      /Fetrend2d      gmtprogram.c %GMTLIB%
 %CC% %COPT% /DFUNC_MODE=GMTAPI_GMT    /DFUNC=GMT_triangulate  /Fetriangulate  gmtprogram.c %GMTLIB%
