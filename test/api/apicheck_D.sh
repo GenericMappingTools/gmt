@@ -1,90 +1,44 @@
 #!/bin/bash
-# Test the C API for i/
+# Test the C API for i/o involving datasets
 
 . ../functions.sh
-header "Test the API for various i/o combinations"
+function dataset_check {
+	testapi -I$1 -W$2 -Td
+	diff -q dtest[io].txt >> fail
+}
+header "Test the API for various DATASET i/o combinations"
 
-# DATASETS
-# 1. Read File and write datasets via...
-# 1a. File
-testapi -If -Wf -Td
-diff -q dtest[io].txt > fail
-# 1b. Stream
-testapi -If -Ws -Td
-diff -q dtest[io].txt >> fail
-# 1c. File descriptor
-testapi -If -Wd -Td
-diff -q dtest[io].txt >> fail
-# 1d. Copy
-testapi -If -Wc -Td
-diff -q dtest[io].txt >> fail
-# 1e. Reference
-testapi -If -Wr -Td
-diff -q dtest[io].txt >> fail
-# 2. Read Stream and write datasets via...
-# 2a. File
-testapi -Is -Wf -Td
-diff -q dtest[io].txt >> fail
-# 2b. Stream
-testapi -Is -Ws -Td
-diff -q dtest[io].txt >> fail
-# 2c. File descriptor
-testapi -Is -Wd -Td
-diff -q dtest[io].txt >> fail
-# 2d. Copy
-testapi -Is -Wc -Td
-diff -q dtest[io].txt >> fail
-# 2e. Reference
-testapi -Is -Wr -Td
-diff -q dtest[io].txt >> fail
-# 3. Read File Descriptor and write datasets via...
-# 3a. File
-testapi -Id -Wf -Td
-diff -q dtest[io].txt >> fail
-# 3b. Stream
-testapi -Id -Ws -Td
-diff -q dtest[io].txt >> fail
-# 3c. File descriptor
-testapi -Id -Wd -Td
-diff -q dtest[io].txt >> fail
-# 3d. Copy
-testapi -Id -Wc -Td
-diff -q dtest[io].txt >> fail
-# 3e. Reference
-testapi -Id -Wr -Td
-diff -q dtest[io].txt >> fail
-# 4. Read Copy and write datasets via...
-# 4a. File
-testapi -Ic -Wf -Td
-diff -q dtest[io].txt >> fail
-# 4b. Stream
-testapi -Ic -Ws -Td
-diff -q dtest[io].txt >> fail
-# 4c. File descriptor
-testapi -Ic -Wd -Td
-diff -q dtest[io].txt >> fail
-# 4d. Copy
-testapi -Ic -Wc -Td
-diff -q dtest[io].txt >> fail
-# 4e. Reference
-testapi -Ic -Wr -Td
-diff -q dtest[io].txt >> fail
-# 5. Read Reference and write datasets via...
-# 5a. File
-testapi -Ir -Wf -Td
-diff -q dtest[io].txt >> fail
-# 5b. Stream
-testapi -Ir -Ws -Td
-diff -q dtest[io].txt >> fail
-# 5c. File descriptor
-testapi -Ir -Wd -Td
-diff -q dtest[io].txt >> fail
-# 5d. Copy
-testapi -Ir -Wc -Td
-diff -q dtest[io].txt >> fail
-# 5e. Reference
-testapi -Ir -Wr -Td
-diff -q dtest[io].txt >> fail
+rm -f fail
+# 1. Read File and write DATASET via...
+dataset_check f f	# 1a. File
+dataset_check f s	# 1b. Stream
+dataset_check f d	# 1c. File descriptor
+dataset_check f c	# 1d. Copy
+dataset_check f r	# 1e. Reference
+# 2. Read Stream and write DATASET via...
+dataset_check s f	# 2a. File
+dataset_check s s	# 2b. Stream
+dataset_check s d	# 2c. File descriptor
+dataset_check s c	# 2d. Copy
+dataset_check s r	# 2e. Reference
+# 3. Read File Descriptor and write DATASET via...
+dataset_check d f	# 3a. File
+dataset_check d s	# 3b. Stream
+dataset_check d d	# 3c. File descriptor
+dataset_check d c	# 3d. Copy
+dataset_check d r	# 3e. Reference
+# 4. Read Copy and write DATASET via...
+dataset_check c f	# 4a. File
+dataset_check c s	# 4b. Stream
+dataset_check c d	# 4c. File descriptor
+dataset_check c c	# 4d. Copy
+dataset_check c r	# 4e. Reference
+# 5. Read Reference and write DATASET via...
+dataset_check r f	# 5a. File
+dataset_check r s	# 5b. Stream
+dataset_check r d	# 5c. File descriptor
+dataset_check r c	# 5d. Copy
+dataset_check r r	# 5e. Reference
 
 rm -f dtesto.txt
 passfail apicheck_D

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.1 2011-07-04 22:37:35 guru Exp $
+ *	$Id: testapi_func.c,v 1.2 2011-07-05 04:57:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 
 GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error, in_ID, out_ID;
+	GMT_LONG error = 0, in_ID, out_ID;
 	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
 	
 	char *ikind[7] = {"DATASET", "TEXTSET", "GRID", "CPT", "IMAGE", "VECTOR", "MATRIX"};
@@ -164,15 +164,10 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	char string[GMTAPI_STRLEN], *input = NULL, *output = NULL;
 
 	FILE *fp = NULL;
-	int fd = 0;
+	int *fdp = NULL, fd = 0;
 	
 	struct TESTAPI_CTRL *Ctrl = NULL;
 	void *In = NULL, *Out = NULL, *Intmp = NULL;
-	struct GMT_DATASET *D[2] = {NULL, NULL};
-	struct GMT_TEXTSET *T[2] = {NULL, NULL};
-	struct GMT_GRID *G[2] = {NULL, NULL};
-	struct GMT_IMAGE *I[2] = {NULL, NULL};
-	struct GMT_PALETTE *P[2] = {NULL, NULL};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -195,19 +190,22 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %s %s via %s and write to %s via %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], ivia[Ctrl->I.mode], ofile[Ctrl->T.mode], ivia[Ctrl->W.mode]);
 	
+	if ((error = GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, options))) Return (error);	/* Registers default input destination, unless already set */
+	if ((error = GMT_Begin_IO (API, Ctrl->T.mode, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+
 	switch (Ctrl->I.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_IN, (void **)&(ifile[Ctrl->T.mode]), NULL, NULL, &in_ID);
+			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, (void **)&(ifile[Ctrl->T.mode]), NULL, NULL, &in_ID);
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ifile[Ctrl->T.mode], "r");
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_IN, (void **)&fp, NULL, NULL, &in_ID);
+					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, (void **)&fp, NULL, NULL, &in_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
-					error = TRUE;
+					Return (GMT_WRONG_KIND);
 					break;
 			}
 			break;
@@ -215,114 +213,93 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fd = open (ifile[Ctrl->T.mode], O_RDONLY);
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_IN, (void **)&fd, NULL, NULL, &in_ID);
+					fdp = &fd;
+					error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, (void **)&fdp, NULL, NULL, &in_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
-					error = TRUE;
+					Return (GMT_WRONG_KIND);
 					break;
 			}
 			break;
 		case GMT_IS_COPY: case GMT_IS_REF:
-			error = GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->I.mode], NULL, 0, (void **)&(ifile[Ctrl->T.mode]), &Intmp);
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
+			error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&(ifile[Ctrl->T.mode]), &Intmp);
+			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
-			error = TRUE;
+			Return (GMT_WRONG_KIND);
 			break;
 	}
+	
+	if (error) Return (GMT_RUNTIME_ERROR);
 	
 	/* Now get the data from the source */
 	
 	GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 	input = strdup (string);
-	if ((error = GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->I.mode], GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input destination, unless already set */
-	if ((error = GMT_Begin_IO (API, Ctrl->T.mode, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
-	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], NULL, 0, (void **)&input, &In);
+	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&input, &In);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
 	/* Get output and register it */
 	
 	switch (Ctrl->W.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_OUT, (void **)&(ofile[Ctrl->T.mode]), NULL, NULL, &out_ID);
+			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, (void **)&(ofile[Ctrl->T.mode]), NULL, NULL, &out_ID);
 			break;
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
 					fp = GMT_fopen (GMT, ofile[Ctrl->T.mode], "w");
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_OUT, (void **)&fp, NULL, NULL, &out_ID);
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, (void **)&fp, NULL, NULL, &out_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
-					error = TRUE;
+					Return (GMT_WRONG_KIND);
 					break;
 			}
 			break;
 		case GMT_IS_FDESC:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
-					fd = open (ofile[Ctrl->T.mode], O_WRONLY);
-					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_OUT, (void **)&fd, NULL, NULL, &out_ID);
+					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+					fdp = &fd;
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, (void **)&fdp, NULL, NULL, &out_ID);
 					break;
 				default:
 					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
-					error = TRUE;
+					Return (GMT_WRONG_KIND);
 					break;
 			}
 			break;
 		case GMT_IS_COPY: case GMT_IS_REF:
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
-			error = TRUE;
+			Return (GMT_WRONG_KIND);
 			break;
 	}
-		
-	/* Now puy the data to the destination */
+	if (error) Return (GMT_RUNTIME_ERROR);
+			
+	/* Now put the data to the destination */
 	
 	GMT_Encode_ID (API, string, out_ID);	/* Make filename with embedded object ID */
 	output = strdup (string);
 
-	if ((error = GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->I.mode], GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default output destination, unless already set */
+	if ((error = GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, options))) Return (error);	/* Registers default output destination, unless already set */
 	if ((error = GMT_Begin_IO (API, Ctrl->T.mode, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
-	error = GMT_Put_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->I.mode], NULL, 0, (void **)&output, Out);
-	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+	error = GMT_Put_Data (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&output, In);
 	
-	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must compare in memory */
-		switch (Ctrl->T.mode) {
-			case GMT_IS_DATASET:
-				D[GMT_IN] = (struct GMT_DATASET *)In;	D[GMT_OUT] = (struct GMT_DATASET *)Out;
-				if (D[GMT_IN]->n_tables != D[GMT_OUT]->n_tables) error++;
-				if (D[GMT_IN]->n_segments != D[GMT_OUT]->n_segments) error++;
-				if (D[GMT_IN]->n_records != D[GMT_OUT]->n_records) error++;
-				break;
-			case GMT_IS_TEXTSET:
-				T[GMT_IN] = (struct GMT_TEXTSET *)In;	T[GMT_OUT] = (struct GMT_TEXTSET *)Out;
-				if (T[GMT_IN]->n_tables   != T[GMT_OUT]->n_tables) error++;
-				if (T[GMT_IN]->n_segments != T[GMT_OUT]->n_segments) error++;
-				if (T[GMT_IN]->n_records  != T[GMT_OUT]->n_records) error++;
-				break;
-			case GMT_IS_GRID:
-				G[GMT_IN] = (struct GMT_GRID *)In;	G[GMT_OUT] = (struct GMT_GRID *)Out;
-				if (G[GMT_IN]->header->size   != G[GMT_OUT]->header->size) error++;
-				break;
-			case GMT_IS_CPT:
-				P[GMT_IN] = (struct GMT_PALETTE *)In;	P[GMT_OUT] = (struct GMT_PALETTE *)Out;
-				if (P[GMT_IN]->n_colors   != P[GMT_OUT]->n_colors) error++;
-				break;
-			case GMT_IS_IMAGE:
-				I[GMT_IN] = (struct GMT_IMAGE *)In;	I[GMT_OUT] = (struct GMT_IMAGE *)Out;
-				if (I[GMT_IN]->header->size   != I[GMT_OUT]->header->size) error++;
-				break;
-		}
+	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must write out what is in memory to the file */
+		error = GMT_Put_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&ofile[Ctrl->T.mode], Out);
 	}
-	
-	printf ("%ld\n", error);
-	
+	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
+		
 	free ((void *)input);	free ((void *)output);
+	
+	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Intmp);
+	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF)) GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Out);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);
 }
