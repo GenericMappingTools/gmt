@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.74 2011-07-04 21:37:13 guru Exp $
+#	$Id: Makefile,v 1.75 2011-07-05 19:50:19 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,7 +55,7 @@ FUNCS_O		+= blockmean_func.o blockmedian_func.o blockmode_func.o colmath_func.o 
 		  ps2raster_func.o sample1d_func.o spectrum1d_func.o splitxyz_func.o surface_func.o trend1d_func.o \
 		  trend2d_func.o triangulate_func.o xyz2grd_func.o
 
-FUNCSPS_O	= gmtdefaults_func.o gmtget_func.o gmtset_func.o grdcontour_func.o grdimage_func.o grdvector_func.o \
+FUNCSPS_O	+= gmtdefaults_func.o gmtget_func.o gmtset_func.o grdcontour_func.o grdimage_func.o grdvector_func.o \
 		  grdview_func.o psbasemap_func.o psclip_func.o pscoast_func.o pscontour_func.o pshistogram_func.o psimage_func.o \
 		  psmask_func.o psrose_func.o psscale_func.o pstext_func.o pswiggle_func.o psxy_func.o psxyz_func.o pslegend_func.o
 

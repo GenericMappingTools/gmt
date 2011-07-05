@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.3 2011-07-05 05:08:39 guru Exp $
+ *	$Id: testapi_func.c,v 1.4 2011-07-05 19:50:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -240,6 +240,17 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	input = strdup (string);
 	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&input, &In);
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+	
+	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
+		char buffer[GMT_BUFSIZ];
+		error += GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, &In, NULL, In, &in_ID);
+		GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
+		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter", string);
+		error += GMT_psimage_cmd (API, 0, (void *)buffer);	/* Plot the image */
+		GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Intmp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+		Return (GMT_OK);
+	}
 	
 	/* Get output and register it */
 	
