@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtspatial_func.c,v 1.29 2011-07-01 08:03:00 guru Exp $
+*    $Id: gmtspatial_func.c,v 1.30 2011-07-05 23:45:47 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -129,7 +129,6 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C = GMT_memory (GMT, NULL, 1, struct GMTSPATIAL_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->M.unit = 'k';		/* Default geographic distance unit is km */
 	C->L.box_offset = 1.0e-10;	/* Minimum significant amplitude */
 	C->L.path_noise = 1.0e-10;	/* Minimum significant amplitude */
 	C->D.I.a_threshold = MIN_AREA_DIFF;
@@ -167,13 +166,12 @@ double area (double x[], double y[], GMT_LONG n)
 }
 
 void centroid (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double *pos, GMT_LONG geo)
-{
+{	/* Estimate mean position */
 	GMT_LONG i, k;
 	
-	if (n == 0) return;
-	
-	/* Estimate mean position */
-	
+	n--; /* Skip 1st point since it is repeated as last] */
+	if (n <= 0) return;
+
 	if (geo) {	/* Geographic data, must use vector mean */
 		double P[3], M[3];
 		GMT_memset (M, 3, double);
@@ -205,7 +203,7 @@ GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, do
 	
 	centroid (GMT, x, y, n, out, *geo);	/* Get mean location */
 	
-	for (i = 0; i < n; i++) {	/* Find data extent */
+	for (i = 0; i < n; i++) {
 		wesn[XLO] = MIN (wesn[XLO], x[i]);
 		wesn[XHI] = MAX (wesn[XHI], x[i]);
 		wesn[YLO] = MIN (wesn[YLO], y[i]);
@@ -595,6 +593,8 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
+	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->M.unit = 'k';	/* Default geographic distance unit is km */
+	
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
@@ -860,7 +860,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		char line[GMT_BUFSIZ];
 		
-		GMT_init_distaz (GMT, Ctrl->M.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->M.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->M.active == 2) {
 			mode = GMT_IS_POLY;
@@ -876,11 +876,11 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			for (j = 0; j < D->table[k]->n_segments; j++) {
 				S = D->table[k]->segment[j];
 				if (S->n_rows == 0) continue;
-				if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
+				if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {	/* Line */
 					length_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out);
 					poly = FALSE;
 				}
-				else {
+				else {	/* Polygon */
 					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
 					poly = TRUE;
 				}
@@ -892,18 +892,17 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						handedness = Ctrl->E.mode;
 					}
 					if (S->header) {
-						S->header[strlen(S->header)-1] = '\0';	/* Remove /n */
 						if (poly)
-							sprintf (line, "%s -A%.12g -C%.12g/%.12g %s\n", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							sprintf (line, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							sprintf (line, "%s -D%.12g -M%.12g/%.12g\n", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							sprintf (line, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
 						free (S->header);
 					}
 					else {
 						if (poly)
-							sprintf (line, "%c -A%.12g -C%.12g/%.12g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							sprintf (line, "%c -A%.12g -C%.12g/%.12g %s", GMT->current.setting.io_seg_marker[GMT_OUT], out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							sprintf (line, "%s -D%.12g -M%.12g/%.12g\n", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							sprintf (line, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
 					}
 					S->header = strdup (line);
 				}

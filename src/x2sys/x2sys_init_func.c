@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys_init_func.c,v 1.15 2011-06-30 07:13:51 guru Exp $
+ *	$Id: x2sys_init_func.c,v 1.16 2011-07-05 23:45:47 guru Exp $
  *
  *      Copyright (c) 1999-2011 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -192,6 +192,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 			case 'I':
 				Ctrl->I.active = TRUE;
 				if (opt->arg[0]) GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
+				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'm':
 				Ctrl->m.active = TRUE;
@@ -401,7 +402,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	if (Ctrl->N.active[1]) fprintf (fp, " -N%s", Ctrl->N.string[1]);
 	if (Ctrl->W.active[0]) fprintf (fp, " -W%s", Ctrl->W.string[0]);
 	if (Ctrl->W.active[1]) fprintf (fp, " -W%s", Ctrl->W.string[1]);
-	(Ctrl->I.active) ? fprintf (fp, " %s", Ctrl->I.string) : fprintf (fp, " -I1/1");
+	(Ctrl->I.active) ? fprintf (fp, " -I%s", Ctrl->I.string) : fprintf (fp, " -I1/1");
 	(GMT->common.R.active) ? fprintf (fp, " -R%g/%g/%g/%g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) : fprintf (fp, " -R0/360/-90/90");
 	fprintf (fp, "\n");
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
