@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.300 2011-06-28 03:15:51 guru Exp $
+ *	$Id: gmt_io.c,v 1.301 2011-07-05 04:57:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1070,7 +1070,7 @@ GMT_LONG gmt_trim_line (struct GMT_CTRL *C, char *line, GMT_LONG add_linefeed) {
 		GMT_exit (EXIT_FAILURE);
 	}
 #endif
-	for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Chop off trailing whitespace and CR/LF */
+	for (i = len - 1; i >= 0 && strchr (" \t\r\n", (int)line[i]); i--);	/* Chop off trailing whitespace and CR/LF */
 	if (add_linefeed) line[++i] = '\n';	/* Append linefeed \n at end */
 	line[++i] = '\0';			/* Now have clean C string with [\n]\0 at end */
 	return (i);				/* Return length of clean string */
@@ -1186,11 +1186,10 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 
 		/* First chop off trailing whitespace and commas */
 
-		i = gmt_trim_line (C, line, TRUE);	/* Eliminate DOS endings and trailing white space, add linefeed */
+		i = gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space, add linefeed */
 
 		bad_record = set_nan_flag = FALSE;
 		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
-		line[i-1] = '\0';				/* Chop off newline at end of string */
 		col_no = pos = n_ok = 0;
 		in_col = -1;	/* Since we will increment right away inside the loop */
 		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get each field in turn */
@@ -1301,7 +1300,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 
 	/* First chop off trailing whitespace and commas */
 
-	i = gmt_trim_line (C, line, TRUE);	/* Eliminate DOS endings and trailing white space */
+	i = gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space */
 
 	strcpy (C->current.io.current_record, line);
 
@@ -3991,8 +3990,8 @@ GMT_LONG GMT_read_texttable (struct GMT_CTRL *C, void *source, GMT_LONG source_t
 		if (!no_segments) {			/* Handle info stored in multi-seg header record */
 			char buffer[GMT_BUFSIZ];
 			GMT_memset (buffer, GMT_BUFSIZ, char);
-			if (GMT_parse_segment_item (C, in, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
-			if (strlen (in)) T->segment[seg]->header = strdup (in);
+			if (GMT_parse_segment_item (C, C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
+			if (strlen (C->current.io.segment_header)) T->segment[seg]->header = strdup (C->current.io.segment_header);
 		}
 
 		T->segment[seg]->record = GMT_memory (C, NULL, n_row_alloc, char *);
@@ -5451,10 +5450,18 @@ void GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, struct GMT_
 		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TABLE *);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			gmt_alloc_table (C, Din->table[tbl], &D->table[tbl], D->n_columns, n_rows);
-			D->n_records += D->table[tbl]->n_records;
 		}
 	}
 	*Dout = D;
+}
+
+void GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, struct GMT_DATASET **Dout, GMT_LONG n_columns, GMT_LONG mode)
+{	/* Make an exact replica */
+	GMT_LONG tbl, seg;
+	GMT_alloc_dataset (C, Din, Dout, n_columns, 0, mode);
+	for (tbl = 0; tbl < Din->n_tables; tbl++) for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+		GMT_duplicate_segment (C, Din->table[tbl]->segment[seg], (*Dout)->table[tbl]->segment[seg]);
+	}
 }
 
 void gmt_free_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)

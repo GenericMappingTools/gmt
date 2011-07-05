@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.543 2011-07-04 19:14:29 guru Exp $
+ *	$Id: gmt_support.c,v 1.544 2011-07-05 04:57:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2533,6 +2533,8 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, GMT_
 	double cmyk[5];
 	char format[GMT_BUFSIZ], cpt_file[GMT_BUFSIZ], code[3] = {'B', 'F', 'N'};
 	FILE *fp = NULL;
+
+	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		strcpy (cpt_file, (char *)dest);

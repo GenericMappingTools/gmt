@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.73 2011-07-03 23:59:09 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.74 2011-07-05 04:57:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -77,6 +77,7 @@ static const char *GMT_method[GMT_N_METHODS] = {"File", "Stream", "File Descript
 static const char *GMT_family[GMT_N_FAMILIES] = {"Data Table", "Text Table", "GMT Grid", "CPT Table", "GMT Image"};
 static const char *GMT_via[2] = {"User Vector", "User Matrix"};
 static const char *GMT_direction[2] = {"Input", "Output"};
+static const char *GMT_stream[2] = {"Standard", "User-supplied"};
 
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
@@ -299,7 +300,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 {	/* Get ready for the next source/destination (open file, initialize counters, etc.) */
 	int *fd = NULL;	/* !!! Must be int* due to nature of Unix system function */
 	GMT_LONG kind, via = 0;
-	static const char *dir[2] = {"from", "to"}, *stream[2] = {"Standard", "User-supplied"};
+	static const char *dir[2] = {"from", "to"};
 	static const char *operation[2] = {"Reading", "Writing"};
 	char *mode = NULL;
 	struct GMT_MATRIX *M = NULL;
@@ -340,13 +341,13 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 				GMT_setmode (API->GMT, (int)direction);	/* Windows may need to have its read mode changed from text to binary */
 #endif
 			kind = (S->fp == API->GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
-			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", stream[kind], GMT_direction[direction]);
+			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "%s %s %s %s %s stream\n", 
-				operation[direction], GMT_family[S->family], dir[direction], stream[kind], GMT_direction[direction]);
+				operation[direction], GMT_family[S->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S->fp, direction);
 				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream\n",
-					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], stream[kind]);
+					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
 			
@@ -357,13 +358,13 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 				return (GMT_ERROR_ON_FDOPEN);
 			}
 			kind = (S->fp == API->GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
-			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", stream[kind], GMT_direction[direction]);
+			sprintf (API->GMT->current.io.current_filename[direction], "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "%s %s %s %s %s stream via supplied file descriptor\n", 
-				operation[direction], GMT_family[S->family], dir[direction], stream[kind], GMT_direction[direction]);
+				operation[direction], GMT_family[S->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S->fp, direction);
 				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream via supplied file descriptor\n",
-					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], stream[kind]);
+					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
 			
@@ -538,7 +539,7 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 	GMT_LONG i, item;
 
 	if (API->n_objects == 0) return (FALSE);	/* There are no known resources yet */
-	if (!data) return (FALSE);			/* Nothing allocated yet  */
+	//if (!data) return (FALSE);			/* Nothing allocated yet  */
 	
 	 /* Search for the object in the active list.  However, if object_ID == GMTAPI_NOTSET we pick the first in that direction */
 	
@@ -549,7 +550,7 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 		if (API->object[i]->direction != direction) continue;		/* Wrong direction */
 		if (API->object[i]->family != family) continue;			/* Wrong family */
 		if (API->object[i]->geometry != geometry) continue;		/* Wrong geometry */
-		if (API->object[i]->data == data) item = API->object[i]->ID;	/* Yes: already registered */
+		if (data && API->object[i]->data == data) item = API->object[i]->ID;	/* Yes: already registered */
 	}
 	*object_ID = item;			/* The ID of the object (or -1) */
 	return (item != GMTAPI_NOTSET);		/* Either found or not */
@@ -587,7 +588,7 @@ GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 	 * Note: Memory is allocated for the CPT except for method GMT_IS_REF.
 	 */
 	
-	GMT_LONG item, error;
+	GMT_LONG item, kind, error;
 	struct GMT_PALETTE *D = NULL, *Din = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	
@@ -604,10 +605,20 @@ GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 
 	switch (S->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
-		case GMT_IS_STREAM:
- 		case GMT_IS_FDESC:
 			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s\n", GMT_method[S->method], (char *)(*S->ptr));
+			if ((error = GMT_read_cpt (API->GMT, (char *)(*S->ptr), S->method, mode, &D))) return (GMT_Report_Error (API, error));
+			break;
+		case GMT_IS_STREAM:
+ 			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
+			kind = (S->fp == API->GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s stream\n", GMT_method[S->method], GMT_stream[kind]);
+			if ((error = GMT_read_cpt (API->GMT, (char *)(*S->ptr), S->method, mode, &D))) return (GMT_Report_Error (API, error));
+			break;
+		case GMT_IS_FDESC:
+			/* GMT_read_cpt will report where it is reading from if level is GMT_MSG_NORMAL */
+			kind = (*((int *)S->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s stream\n", GMT_method[S->method], GMT_stream[kind]);
 			if ((error = GMT_read_cpt (API->GMT, (char *)(*S->ptr), S->method, mode, &D))) return (GMT_Report_Error (API, error));
 			break;
 		case GMT_IS_COPY:	/* Duplicate the input CPT pallete */
@@ -620,6 +631,7 @@ GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing CPT table from GMT_PALETTE memory location\n");
 			D = (struct GMT_PALETTE *)(*S->ptr);
 			D->alloc_mode = GMT_REFERENCE;	/* Tell GMT_* modules not to free this memory since we did not allocate */
+			break;
 		default:	/* Barking up the wrong tree here... */
 			GMT_report (API->GMT, GMT_MSG_FATAL, "Wrong method used to import CPT tables\n");
 			return (GMT_WRONG_KIND);
@@ -635,7 +647,7 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 {	/* Does the actual work of writing out the specified CPT to a destination.
 	 * The mode controls how the back, for, NaN color entries are handled.
 	 */
-	GMT_LONG item, error;
+	GMT_LONG item, kind, error;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_PALETTE *P_copy = NULL;
 	
@@ -649,22 +661,34 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	switch (S->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
-	 	case GMT_IS_STREAM:
-	 	case GMT_IS_FDESC:
 			/* GMT_write_cpt will report where it is writing from if level is GMT_MSG_NORMAL */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Write CPT table to %s %s\n", GMT_method[S->method], S->filename);
-			if ((error = GMT_write_cpt (API->GMT, (void *)S->fp, GMT_IS_STREAM, mode, P)))  return (GMT_Report_Error (API, error));
+			if ((error = GMT_write_cpt (API->GMT, (void *)S->filename, S->method, mode, P)))  return (GMT_Report_Error (API, error));
+			break;
+	 	case GMT_IS_STREAM:
+			/* GMT_write_cpt will report where it is writing from if level is GMT_MSG_NORMAL */
+			kind = (S->fp == API->GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Write CPT table to %s %s output stream\n", GMT_method[S->method], GMT_stream[kind]);
+			if ((error = GMT_write_cpt (API->GMT, (void *)S->fp, S->method, mode, P)))  return (GMT_Report_Error (API, error));
+			break;
+	 	case GMT_IS_FDESC:
+			/* GMT_write_cpt will report where it is writing from if level is GMT_MSG_NORMAL */
+			kind = (*((int *)S->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Write CPT table to %s %s output stream\n", GMT_method[S->method], GMT_stream[kind]);
+			if ((error = GMT_write_cpt (API->GMT, (void *)S->fp, S->method, mode, P)))  return (GMT_Report_Error (API, error));
 			break;
 		case GMT_IS_COPY:		/* Duplicate the input cpt */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating CPT table to GMT_PALETTE memory location\n");
 			P_copy = GMT_memory (API->GMT, NULL, 1, struct GMT_PALETTE);
 			GMT_copy_palette (API->GMT, P_copy, P);
-			S->ptr = (void **)&P_copy;
+			*S->ptr = (void *)P_copy;
+			S->data = *S->ptr;
 			break;
 		case GMT_IS_REF:	/* Just pass memory location */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing CPT table to GMT_PALETTE memory location\n");
 			P->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing by GMT_* modules since nothing was allocated */
-			S->ptr = (void **)&P;
+			*S->ptr = (void *)P;
+			S->data = *S->ptr;
 			break;
 		default:
 			GMT_report (API->GMT, GMT_MSG_FATAL, "Wrong method used to export CPT tables\n");
@@ -758,9 +782,8 @@ GMT_LONG GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				GMT_free (API->GMT, D->table);	/* Free up what we allocated earlier since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, D);
 				Din = (struct GMT_DATASET *)(*S->ptr);
-				GMT_alloc_dataset (API->GMT, Din, &D, Din->n_columns, 0, GMT_ALLOC_NORMAL);
-				D->n_tables++;	/* Since we just copied one */
-				update = TRUE;
+				GMT_duplicate_dataset (API->GMT, Din, &D, Din->n_columns, GMT_ALLOC_NORMAL);
+				//update = TRUE;
 				break;
 				
 			case GMT_IS_REF:	/* Just pass memory location, so free up what we allocated first */
@@ -909,8 +932,8 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	default_method = GMT_IS_FILE;
 	if (S->filename)	/* Write to this file */
 		ptr = (void *)S->filename;
-	else {			/* No filename so we switch to writing to the stream */
-		default_method = GMT_IS_STREAM;
+	else {			/* No filename so we switch to writing to the stream or fdesc */
+		default_method = (S->method == GMT_IS_FILE) ? GMT_IS_STREAM : S->method;
 		ptr = (void *)S->fp;
 #ifdef SET_IO_MODE
 		GMT_setmode (API->GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
@@ -930,14 +953,16 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 			
 		case GMT_IS_COPY:		/* Duplicate the input dataset */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_DATASET memory location\n");
-			GMT_alloc_dataset (API->GMT, D, &D_copy, D->n_columns, 0, GMT_ALLOC_NORMAL);
-			S->ptr = (void **)&D_copy;
+			GMT_duplicate_dataset (API->GMT, D, &D_copy, D->n_columns, GMT_ALLOC_NORMAL);
+			*S->ptr = (void *)D_copy;
+			S->data = *S->ptr;
 			break;
 			
 		case GMT_IS_REF:	/* Just pass memory location */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing data table to GMT_DATASET memory location\n");
 			D->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing upstream */
-			S->ptr = (void **)&D;
+			*S->ptr = (void *)D;
+			S->data = *S->ptr;
 			break;
 			
 	 	case GMT_IS_COPY + GMT_VIA_MATRIX:
@@ -951,6 +976,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				v = GMT_memory (API->GMT, NULL, 1, void *);
 				*v = GMT_memory (API->GMT, NULL, size, char);
 				*(S->ptr) = *v;
+				S->data = *S->ptr;
 			}
 				
 			for (tbl = offset = M->n_rows = 0; tbl < D->n_tables; tbl++) {
@@ -977,6 +1003,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				v = GMT_memory (API->GMT, NULL, D->n_columns, void *);
 				for (col = 0; col < D->n_columns; col++) v[col] = GMT_memory (API->GMT, NULL, size * API->GMTAPI_size[V->type[col]], char);
 				*(S->ptr) = *v;
+				S->data = *S->ptr;
 			}
 			for (tbl = ij = V->n_rows = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
@@ -1148,7 +1175,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 	if (S->filename)	/* Write to this file */
 		ptr = (void *)S->filename;
 	else {			/* No filename so we switch to writing to the stream */
-		default_method = GMT_IS_STREAM;
+		default_method = (S->method == GMT_IS_FILE) ? GMT_IS_STREAM : S->method;
 		ptr = (void *)S->fp;
 	}
 	T->io_mode = mode;
@@ -1165,12 +1192,14 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 		case GMT_IS_COPY:		/* Duplicate the input dataset */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating data table to GMT_TEXTSET memory location\n");
 			GMT_alloc_textset (API->GMT, T, &T_copy, GMT_ALLOC_NORMAL);
-			S->ptr = (void **)&T_copy;
+			*S->ptr = (void *)T_copy;
+			S->data = *S->ptr;
 			break;
 		case GMT_IS_REF:	/* Just pass memory location */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing data table to GMT_TEXTSET memory location\n");
 			T->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing */
-			S->ptr = (void **)&T;
+			*S->ptr = (void *)T;
+			S->data = *S->ptr;
 			break;
 	 	case GMT_IS_COPY + GMT_VIA_MATRIX:
 			M = (struct GMT_MATRIX *)(*S->ptr);
@@ -1183,6 +1212,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG m
 				v = GMT_memory (API->GMT, NULL, 1, void *);
 				*v = GMT_memory (API->GMT, NULL, size, char);
 				*(S->ptr) = *v;
+				S->data = *S->ptr;
 			}
 			ptr = *S->ptr;
 				
@@ -2415,6 +2445,9 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 		return (GMT_OK);	/* Already registeredso we are done */
 	}
 	
+	/* Check if this filename is an embedded API Object ID passed via the filename.  If it is, just validate it and return either error or OK */
+	if ((*object_ID = GMTAPI_Decode_ID ((char *)(*resource))) != GMTAPI_NOTSET) return (GMT_Report_Error (API, GMTAPI_Validate_ID (API, family, *object_ID, direction, &item)));
+
 	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
 	m = method - (via + 1) * GMT_VIA_VECTOR;
 	
@@ -2452,6 +2485,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 		case GMT_IS_READONLY:
 			S = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction);
 			if (!S) return (GMT_Report_Error (API, GMT_MEMORY_ERROR));	/* No more memory */
+			if (method == GMT_IS_STREAM || method == GMT_IS_FDESC) S->fp = (FILE *)(*resource);	/* Pass the stream of fdesc onward */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Successfully registered %s %s as an %s resource\n", GMT_family[family], GMT_method[method], GMT_direction[direction]);
 			break;
 

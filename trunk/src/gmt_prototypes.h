@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_prototypes.h,v 1.52 2011-07-04 23:43:53 jluis Exp $
+ *	$Id: gmt_prototypes.h,v 1.53 2011-07-05 04:57:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -146,6 +146,7 @@ EXTERN_MSC void GMT_create_table (struct GMT_CTRL *C, struct GMT_TABLE **Tout, G
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data);
 EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, GMT_LONG n_columns);
 EXTERN_MSC void GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, struct GMT_DATASET **Dout, GMT_LONG n_columns, GMT_LONG n_rows, GMT_LONG mode);
+EXTERN_MSC void GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, struct GMT_DATASET **Dout, GMT_LONG n_columns, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TABLE **T, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io);
 EXTERN_MSC GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_DATASET *D, GMT_LONG use_GMT_io, GMT_LONG table);
 EXTERN_MSC GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type, struct GMT_TABLE *T, GMT_LONG use_GMT_io, GMT_LONG io_mode);
