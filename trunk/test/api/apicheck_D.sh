@@ -8,6 +8,17 @@ function dataset_check {
 }
 header "Test the API for various DATASET i/o combinations"
 
+cat << EOF > dtesti.txt
+> first seg
+1	10
+2	20
+3	30
+> 2nd seg
+4	40
+5	50
+6	60
+7	70
+EOF
 rm -f fail
 # 1. Read File and write DATASET via...
 dataset_check f f	# 1a. File
@@ -40,5 +51,5 @@ dataset_check r d	# 5c. File descriptor
 dataset_check r c	# 5d. Copy
 dataset_check r r	# 5e. Reference
 
-rm -f dtesto.txt
+rm -f dtest?.txt
 passfail apicheck_D
