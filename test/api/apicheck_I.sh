@@ -1,7 +1,9 @@
 #!/bin/bash
 # Test the C API for i/o involving images
 # Note the -W option is not used but must be present.
-# Requires the GDAL biuld
+# Requires the GDAL build
+# The comparison PS was created thus:
+# psimage itesti.jpg -W6i -F0.25p -P --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+ > itesti.ps
 
 . ../functions.sh
 GDAL=`grdreformat 2>&1 | grep -c gd`
