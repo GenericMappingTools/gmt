@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.2 2011-07-05 04:57:28 guru Exp $
+ *	$Id: testapi_func.c,v 1.3 2011-07-05 05:08:39 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,8 +20,7 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  *
- * Brief synopsis: testapi reads one or more grid file and [optionally] prints
- * out various statistics like mean/standard deviation and median/scale.
+ * Brief synopsis: testapi allows us to test the API i/o functions.
  *
  */
 
@@ -30,15 +29,15 @@
 /* Control structure for testapi */
 
 struct TESTAPI_CTRL {
-	struct T {	/* -T */
+	struct T {	/* -T sets data type */
 		GMT_LONG active;
 		GMT_LONG mode;
 	} T;
-	struct I {	/* -I */
+	struct I {	/* -I sets input method */
 		GMT_LONG active;
 		GMT_LONG mode;
 	} I;
-	struct W {	/* -W */
+	struct W {	/* -W sets output method */
 		GMT_LONG active;
 		GMT_LONG mode;
 	} W;
@@ -61,7 +60,7 @@ void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deall
 GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "testapi %s [API] - Extract information from grids\n\n", GMT_VERSION);
+	GMT_message (GMT, "testapi %s [API] - test API i/o methods for any data type\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: testapi -If|s|d|c|r -Td|t|g|c|i|v|m -Wf|s|d [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -70,9 +69,8 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   f : File\n");
 	GMT_message (GMT, "\t   s : Stream\n");
 	GMT_message (GMT, "\t   d : File descriptor\n");
-	GMT_message (GMT, "\t   c : Input Copy\n");
-	GMT_message (GMT, "\t   r : Input Reference\n");
-	GMT_message (GMT, "\t   o : Input Readonly reference\n");
+	GMT_message (GMT, "\t   c : Memory Copy\n");
+	GMT_message (GMT, "\t   r : Memory Reference\n");
 	GMT_message (GMT, "\t-T Specify data type.  Choose among:\n");
 	GMT_message (GMT, "\t   d : Dataset\n");
 	GMT_message (GMT, "\t   t : Textset\n");
@@ -85,6 +83,8 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   f : File\n");
 	GMT_message (GMT, "\t   s : Stream\n");
 	GMT_message (GMT, "\t   d : File descriptor\n");
+	GMT_message (GMT, "\t   c : Memory Copy\n");
+	GMT_message (GMT, "\t   r : Memory Reference\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "V.");
 	

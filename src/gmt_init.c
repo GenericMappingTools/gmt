@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.558 2011-07-04 23:43:53 jluis Exp $
+ *	$Id: gmt_init.c,v 1.559 2011-07-05 05:10:28 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -7837,18 +7837,15 @@ GMT_LONG GMT_equal_double (double A, double B, int maxUlps) {
 	
 	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
 	/* Make aInt lexicographically ordered as a twos-complement int */
-	if (aInt < 0)
-		aInt = 0x8000000000000000 - aInt;
+	if (aInt < 0) aInt = 0x8000000000000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
-	if (bInt < 0)
-		bInt = 0x8000000000000000 - bInt;
+	if (bInt < 0) bInt = 0x8000000000000000 - bInt;
 #ifdef WIN32
 	intDiff = _abs64(aInt - bInt);
 #else
 	intDiff = labs(aInt - bInt);
 #endif
-	if (intDiff <= maxUlps)
-		return TRUE;
+	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
 
@@ -7859,13 +7856,10 @@ GMT_LONG GMT_equal_float (float A, float B, int maxUlps) {
 
 	/*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);*/
 	/* Make aInt lexicographically ordered as a twos-complement int */
-	if (aInt < 0)
-		aInt = 0x80000000 - aInt;
+	if (aInt < 0) aInt = 0x80000000 - aInt;
 	/* Make bInt lexicographically ordered as a twos-complement int */
-	if (bInt < 0)
-		bInt = 0x80000000 - bInt;
-	intDiff = abs(aInt - bInt);
-	if (intDiff <= maxUlps)
-		return TRUE;
+	if (bInt < 0) bInt = 0x80000000 - bInt;
+	intDiff = abs (aInt - bInt);
+	if (intDiff <= maxUlps) return TRUE;
 	return FALSE;
 }
