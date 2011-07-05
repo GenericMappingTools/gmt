@@ -5,7 +5,7 @@
 
 function cpt_check {
 	testapi -I$1 -W$2 -Tc
-	diff -q ctest[io].cpt >> fail
+	diff -q ctest[io].cpt --strip-trailing-cr >> fail
 }
 
 header "Test the API for various CPT i/o combinations"
