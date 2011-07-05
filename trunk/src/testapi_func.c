@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.4 2011-07-05 19:50:19 guru Exp $
+ *	$Id: testapi_func.c,v 1.5 2011-07-05 19:58:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -238,7 +238,9 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	GMT_Encode_ID (API, string, in_ID);	/* Make filename with embedded object ID */
 	input = strdup (string);
+	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	error = GMT_Get_Data (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], NULL, 0, (void **)&input, &In);
+	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 2);	/* Reset to GMT default */
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
