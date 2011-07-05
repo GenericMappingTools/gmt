@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psimage_func.c,v 1.27 2011-06-25 01:59:47 guru Exp $
+ *	$Id: psimage_func.c,v 1.28 2011-07-05 19:50:19 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -263,6 +263,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
 	int j;
 
+	if (!strncmp (file, "@GMTAPI@-", 9)) return (0);	/* Special passing of image */
 	j = (int)strlen(file) - 1;
 	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
 	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */

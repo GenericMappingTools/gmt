@@ -1,15 +1,11 @@
 #!/bin/bash
 # Test the C API for i/o involving images
 # Note the -W option is not used but must be present.
+# Requires the GDAL biuld
 
 . ../functions.sh
-grep USE_GDAL ../../src/config.mk > tmp
-if [ ! -s tmp ]; then
- 	header "Test the API for passing IMAGE to psimage (GDAL only)"
-	echo "[N/A]"
-        rm -f tmp
-        exit
-fi
+GDAL=`grdreformat 2>&1 | grep -c gd`
+if [ $GDAL -eq 0 ]; then exit; fi
 # Use another image as test to avoid storing one for the test
 cp ../grdimage/gdal/needle.jpg itesti.jpg
 # Fake three identical PS files via temporary links
@@ -30,4 +26,4 @@ header "Test the API for passing IMAGE via reference (GDAL only)"
 ps=im_r.ps
 testapi -Ir -Wf -Ti > $ps
 pscmp
-rm -f itesti.jpg orig/im_[cfr].ps tmp
+rm -f itesti.jpg orig/im_[cfr].ps
