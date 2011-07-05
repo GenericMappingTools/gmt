@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.301 2011-07-05 04:57:27 guru Exp $
+ *	$Id: gmt_io.c,v 1.302 2011-07-05 06:00:55 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5052,6 +5052,15 @@ void GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, struct GMT_
 		for (tbl = 0; tbl < D->n_tables; tbl++) gmt_alloc_texttable (C, Din->table[tbl], &D->table[tbl]);
 	}
 	*Dout = D;
+}
+
+void GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, struct GMT_TEXTSET **Dout, GMT_LONG mode)
+{
+	GMT_LONG tbl, seg, row;
+	GMT_alloc_textset (C, Din, Dout, mode);
+	for (tbl = 0; tbl < Din->n_tables; tbl++) for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+		for (row = 0; row < Din->table[tbl]->segment[seg]->n_rows; row++) (*Dout)->table[tbl]->segment[seg]->record[row] = strdup (Din->table[tbl]->segment[seg]->record[row]);
+	}
 }
 
 void gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, struct GMT_TABLE **Tout, GMT_LONG n_columns, GMT_LONG n_rows)
