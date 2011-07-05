@@ -5,6 +5,7 @@
 
 function cpt_check {
 	testapi -I$1 -W$2 -Tc
+	diff -q --strip-trailing-cr ctest[io].cpt >> fail
 	diff -q ctest[io].cpt --strip-trailing-cr >> fail
 }
 
