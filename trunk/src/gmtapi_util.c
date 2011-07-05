@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.75 2011-07-05 06:00:55 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.76 2011-07-05 20:18:45 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1327,7 +1327,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			/* Here we will read grid data. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we use everything passed in */
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating grid data from GMT_GRID memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating image data from GMT_IMAGE memory location\n");
 			if (!I->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I->header->size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which may include padding */
 				I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
@@ -1355,7 +1355,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			
 	 	case GMT_IS_REF:	/* GMT grid and header in a GMT_GRID container object by reference */
 			if (S->region) return (GMT_Report_Error (API, GMT_SUBSET_NOT_ALLOWED));
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from GMT_GRID memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from GMT_IMAGE memory location\n");
 			I = (struct GMT_IMAGE *)(*S->ptr);
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "Change alloc mode\n");
@@ -1373,7 +1373,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			I = (struct GMT_IMAGE *)(*S->ptr);
 			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
 			if (GMTAPI_need_grdpadding (I->header, API->GMT->current.io.pad)) return (GMT_Report_Error (API, GMT_PADDING_NOT_ALLOWED));
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from read-only GMT_GRID memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from read-only GMT_IMAGE memory location\n");
 			I->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			break;
 			
@@ -1389,7 +1389,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			}
 			I->alloc_mode = GMT_ALLOCATED;
 			/* Must convert to new array */
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing grid data from user memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Importing image data from user memory location\n");
 			GMT_set_grddim (API->GMT, I->header);	/* Set all dimensions */
 			I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
 			GMT_grd_loop (API->GMT, I, row, col, ij) {
@@ -1411,7 +1411,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
 				return (GMT_Report_Error (API, GMT_NOT_A_VALID_IO_ACCESS));
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from user memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from user memory location\n");
 			I->data = (unsigned char *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			I->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
@@ -1432,7 +1432,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			}
 			if (!(M->shape == GMTAPI_ORDER_ROW && M->type == GMTAPI_FLOAT && M->alloc_mode == 0 && !complex_mode)) 
 				return (GMT_Report_Error (API, GMT_NOT_A_VALID_IO_ACCESS));
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from user read-only memory location\n");
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from user read-only memory location\n");
 			I->data = (unsigned char *)(M->data);
 			S->alloc_mode = FALSE;	/* No memory needed to be allocated (so none should be freed later */
 			I->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
