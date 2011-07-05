@@ -13,6 +13,7 @@ function gridset_check {
 header "Test the API for various GRID i/o combinations"
 
 rm -f fail
+grdmath -R0/5/0/5 -I1 X Y MUL = gtesti.nc 
 # FYI: For grids, the stream and file descriptor cases are N/A
 # 1. Read File and write GRID via...
 gridset_check f f	# 1a. File
@@ -27,5 +28,5 @@ gridset_check r f	# 5a. File
 gridset_check r c	# 5d. Copy
 gridset_check r r	# 5e. Reference
 
-rm -f ttesto.nc tmp.nc
+rm -f gtest?.nc tmp.nc
 passfail apicheck_G

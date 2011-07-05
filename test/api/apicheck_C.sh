@@ -10,6 +10,7 @@ function cpt_check {
 
 header "Test the API for various CPT i/o combinations"
 
+makecpt -Cno_green -T0/10/1 > ctesti.cpt
 rm -f fail
 # 1. Read File and write CPT via...
 cpt_check f f	# 1a. File
@@ -42,5 +43,5 @@ cpt_check r d	# 5c. File descriptor
 cpt_check r c	# 5d. Copy
 cpt_check r r	# 5e. Reference
 
-rm -f ctesto.cpt
+rm -f ctest?.cpt
 passfail apicheck_C

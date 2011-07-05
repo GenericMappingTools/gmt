@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1126 2011-07-05 04:57:27 guru Exp $
+	$Id: ChangeLog,v 1.1127 2011-07-05 08:25:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-04	pwessel
 	* gmtapi_util.c:	Fixed lots of errors for the i/o involving sources and destinations
 				not used by the GMT modules (e.g., memory to memory, memory to file,
-				etc.  Added api test suite for this purpose).
+				etc.)  Added api test suite for this purpose.
 
 2011-06-28	pwessel
 	* gmtstitch_func.c:	Fixed some porting bugs.  Got stitch.sh example to run.
