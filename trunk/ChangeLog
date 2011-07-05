@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1127 2011-07-05 08:25:50 guru Exp $
+	$Id: ChangeLog,v 1.1128 2011-07-05 21:05:45 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-05	pwessel
+	* tests:		Added api test for images and a new kml dir with tests for
+				gmt2kml and kml2gmt.
 
 2011-07-04	pwessel
 	* gmtapi_util.c:	Fixed lots of errors for the i/o involving sources and destinations
