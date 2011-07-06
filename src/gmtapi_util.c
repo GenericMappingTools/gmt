@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.78 2011-07-06 02:54:26 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.79 2011-07-06 20:00:48 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1540,7 +1540,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 				G->data = GMT_memory (API->GMT, NULL, G->header->size, float);
 			}
 			G->alloc_mode = GMT_ALLOCATED;
-			if (!S->region && !GMT_grd_pad_status (API->GMT, G->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
+			if (!S->region && GMT_grd_pad_status (API->GMT, G->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				GMT_memcpy (G->data, G_orig->data, G_orig->header->size, float);
 				break;		/* Done with this grid */
 			}
