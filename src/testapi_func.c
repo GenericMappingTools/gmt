@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.8 2011-07-06 02:54:27 guru Exp $
+ *	$Id: testapi_func.c,v 1.9 2011-07-06 21:10:53 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -210,7 +210,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		M->n_rows = 10;	M->n_columns = 15;	M->n_layers = 1;	M->dim = 15;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 		M->limit[XLO] = 0.0;	M->limit[XHI] = 30.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 20.0;	M->limit[4] = 0.0;	M->limit[5] = M->size - 1.0;
 		idata = GMT_memory (GMT, NULL, M->size, int);
-		for (k = 0; k < M->size; k++) idata[k] = k;
+		for (k = 0; k < M->size; k++) idata[k] = (int)k;
 		M->data = (void *)idata;
 	}
 	/* Vector: We will fake 3 10-point vectors which will be used to build datasets or grids. First is double, the next 2 are float */
