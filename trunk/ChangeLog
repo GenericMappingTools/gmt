@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1129 2011-07-05 23:45:47 guru Exp $
+	$Id: ChangeLog,v 1.1130 2011-07-06 02:12:55 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-05	jluis
+	* gmt_init.c:		Add GMT_equal_double|float functions to compare floats after
+				www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
+				For the time being they are only used in greenspline.
 
 2011-07-05	pwessel
 	* tests:		Added api test for images and a new kml dir with tests for
@@ -21,7 +26,7 @@
 				blank lines or NaN records as segment breaks, respectively.
 				To actually use a B or N as segment marker, escape them with
 				a leading backslash.
-				
+
 2011-06-25	jluis
 	* gmtswitch.bat:	The Windows version of the *nix gmtswitch script
 
