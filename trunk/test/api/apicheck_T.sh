@@ -4,7 +4,7 @@
 . ../functions.sh
 function textset_check {
 	testapi -I$1 -W$2 -Tt
-	diff -q ttest[io].txt >> fail
+	diff -q --strip-trailing-cr ttest[io].txt >> fail
 }
 header "Test the API for various TEXTSET i/o combinations"
 
@@ -49,5 +49,5 @@ textset_check r d	# 5c. File descriptor
 textset_check r c	# 5d. Copy
 textset_check r r	# 5e. Reference
 
-rm -f ttest?.txt
+#rm -f ttest?.txt
 passfail apicheck_T
