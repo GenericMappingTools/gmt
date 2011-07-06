@@ -4,7 +4,7 @@
 testapi \- Test API i/o methods for any data type
 .SH SYNOPSIS
 BD(testapi) OPT(I)BD(c)|BD(d)|BD(f)|BD(r)|BD(s) OPT(T)BD(c)|BD(d)|BD(g)|GD(i)|GD(t) 
-OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s) [ GMT_V_OPT ]
+OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s) [ OPT(M)BD(m)|BD(v) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(testapi) will test the API for all i/o combinations. In general,
 data types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from
@@ -25,6 +25,11 @@ OPT(W)BD(c)|BD(d)|BD(f)|BD(r)|BD(s)
 Set output method; choose from BD(c)opy to memory, file BD(d)escriptor, BD(f)ile,
 memory BD(r)eference, or BD(s)tream.
 .SH OPTIONAL ARGUMENTS
+.TP
+OPT(M)BD(m)|BD(v)
+Here, we want to obtain a dataset or grid via either a user matrix (BD(m)) or a set
+of user vectors (BD(v)).  We simulate this internally by filling out a matrix or vectors
+and pass that as the source instead of a data file.
 #include "explain_-V.txt"
 .SH EXAMPLES
 To check if reading and writing the test dataset file yields an identical copy, try

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.77 2011-07-06 01:42:06 jluis Exp $
+ *	$Id: gmtapi_util.c,v 1.78 2011-07-06 02:54:26 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -297,7 +297,9 @@ GMT_LONG GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, dou
 }
 
 GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
-{	/* Get ready for the next source/destination (open file, initialize counters, etc.) */
+{	/* Get ready for the next source/destination (open file, initialize counters, etc.).
+	 * Note this is only a mechanism for dataset and textset files where it is common
+	 * to give many files on the command line (e.g., *.txt). */
 	int *fd = NULL;	/* !!! Must be int* due to nature of Unix system function */
 	GMT_LONG kind, via = 0;
 	static const char *dir[2] = {"from", "to"};
@@ -503,8 +505,8 @@ GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 }
 
 GMT_LONG GMTAPI_Decode_ID (char *filename)
-{	/* Checking if ptr contains a filename with embedded GMTAPI Object ID.
-	 * If found we return the ID otherwise we return GMTAPI_NOTSET.
+{	/* Checking if filename contains a name with embedded GMTAPI Object ID.
+	 * If found we return the ID, otherwise we return GMTAPI_NOTSET.
  	*/
 	GMT_LONG object_ID = GMTAPI_NOTSET;
 	
@@ -539,7 +541,6 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 	GMT_LONG i, item;
 
 	if (API->n_objects == 0) return (FALSE);	/* There are no known resources yet */
-	//if (!data) return (FALSE);			/* Nothing allocated yet  */
 	
 	 /* Search for the object in the active list.  However, if object_ID == GMTAPI_NOTSET we pick the first in that direction */
 	
@@ -584,7 +585,7 @@ GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_
 
 GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode, struct GMT_PALETTE **P)
 {	/* Does the actual work of loading in a CPT palette table.
- 	 * The mode controls how the back, for, NaN color entries are handled.
+ 	 * The mode controls how the back-, fore-, NaN-color entries are handled.
 	 * Note: Memory is allocated for the CPT except for method GMT_IS_REF.
 	 */
 	
@@ -621,7 +622,7 @@ GMT_LONG GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode,
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading CPT table from %s %s stream\n", GMT_method[S->method], GMT_stream[kind]);
 			if ((error = GMT_read_cpt (API->GMT, (char *)(*S->ptr), S->method, mode, &D))) return (GMT_Report_Error (API, error));
 			break;
-		case GMT_IS_COPY:	/* Duplicate the input CPT pallete */
+		case GMT_IS_COPY:	/* Duplicate the input CPT palette */
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating CPT table from GMT_PALETTE memory location\n");
 			D = GMT_memory (API->GMT, NULL, 1, struct GMT_PALETTE);
 			Din = (struct GMT_PALETTE *)(*S->ptr);
@@ -1327,16 +1328,17 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			/* Here we will read grid data. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we use everything passed in */
-			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating image data from GMT_IMAGE memory location\n");
 			if (!I->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I->header->size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which may include padding */
 				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->header->n_bands, unsigned char);
 			}
 			I->alloc_mode = GMT_ALLOCATED;
 			if (!S->region && GMT_grd_pad_status (API->GMT, I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
+				GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating image data from GMT_IMAGE memory location\n");
 				GMT_memcpy (I->data, I_orig->data, I_orig->header->size * I_orig->header->n_bands, char);
 				break;		/* Done with this image */
 			}
+			GMT_report (API->GMT, GMT_MSG_NORMAL, "Extracting subset image data from GMT_IMAGE memory location\n");
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			j1 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YLO], I_orig->header);

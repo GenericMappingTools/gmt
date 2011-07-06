@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.7 2011-07-05 22:03:50 jluis Exp $
+ *	$Id: testapi_func.c,v 1.8 2011-07-06 02:54:27 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -36,10 +36,12 @@ struct TESTAPI_CTRL {
 	struct I {	/* -I sets input method */
 		GMT_LONG active;
 		GMT_LONG mode;
+		GMT_LONG via;
 	} I;
 	struct W {	/* -W sets output method */
 		GMT_LONG active;
 		GMT_LONG mode;
+		GMT_LONG via;
 	} W;
 };
 
@@ -61,7 +63,7 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "testapi %s [API] - test API i/o methods for any data type\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: testapi -If|s|d|c|r -Td|t|g|c|i|v|m -Wf|s|d [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -71,6 +73,7 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   d : File descriptor\n");
 	GMT_message (GMT, "\t   c : Memory Copy\n");
 	GMT_message (GMT, "\t   r : Memory Reference\n");
+	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to get data via vector or matrix.\n");
 	GMT_message (GMT, "\t-T Specify data type.  Choose among:\n");
 	GMT_message (GMT, "\t   d : Dataset\n");
 	GMT_message (GMT, "\t   t : Textset\n");
@@ -85,6 +88,7 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   d : File descriptor\n");
 	GMT_message (GMT, "\t   c : Memory Copy\n");
 	GMT_message (GMT, "\t   r : Memory Reference\n");
+	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to put data via vector or matrix.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "V.");
 	
@@ -117,6 +121,8 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 					case 'c': Ctrl->I.mode = GMT_IS_COPY; break;
 					case 'r': Ctrl->I.mode = GMT_IS_REF; break;
 				}
+				if (opt->arg[1] == '/' && opt->arg[2] == 'v') Ctrl->I.via = GMT_VIA_VECTOR;
+				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->I.via = GMT_VIA_MATRIX;
 				break;
 			case 'T':	/* Type */
 				Ctrl->T.active = TRUE;
@@ -140,6 +146,8 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 					case 'c': Ctrl->W.mode = GMT_IS_COPY; break;
 					case 'r': Ctrl->W.mode = GMT_IS_REF; break;
 				}
+				if (opt->arg[1] == '/' && opt->arg[2] == 'v') Ctrl->W.via = GMT_VIA_VECTOR;
+				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->W.via = GMT_VIA_MATRIX;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -147,6 +155,8 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 		}
 	}
 
+	if (Ctrl->I.via && !(Ctrl->I.mode == GMT_IS_COPY || Ctrl->I.mode == GMT_IS_REF)) n_errors++;
+	if (Ctrl->W.via && !(Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF)) n_errors++;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -154,8 +164,12 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 
 GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG error = 0, in_ID, out_ID;
+	GMT_LONG error = 0, in_ID, k, col, out_ID, par[1] = {3};
 	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
+	
+	int *idata = NULL;
+	float **fdata = NULL;
+	double *ddata = NULL;
 	
 	char *ikind[7] = {"DATASET", "TEXTSET", "GRID", "CPT", "IMAGE", "VECTOR", "MATRIX"};
 	char *ivia[6] = {"FILE", "STREAM", "FDESC", "COPY", "REF", "READONLY"};
@@ -167,6 +181,8 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	int *fdp = NULL, fd = 0;
 	
 	struct TESTAPI_CTRL *Ctrl = NULL;
+	struct GMT_MATRIX *M = NULL;
+	struct GMT_VECTOR *V = NULL;
 	void *In = NULL, *Out = NULL, *Intmp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 
@@ -186,6 +202,35 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	/*---------------------------- This is the testapi main code ----------------------------*/
 
+	/* Fill in the matrix and vector data sources used for testing */
+	
+	/* Matrix: We will fake a 10 x 15 int matrix which will be used to build datasets or grids */
+	if (Ctrl->I.via == GMT_VIA_MATRIX) {
+		GMT_Create_Data (API, GMT_IS_MATRIX, par, (void **)&M, GMT_IN, &k);
+		M->n_rows = 10;	M->n_columns = 15;	M->n_layers = 1;	M->dim = 15;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
+		M->limit[XLO] = 0.0;	M->limit[XHI] = 30.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 20.0;	M->limit[4] = 0.0;	M->limit[5] = M->size - 1.0;
+		idata = GMT_memory (GMT, NULL, M->size, int);
+		for (k = 0; k < M->size; k++) idata[k] = k;
+		M->data = (void *)idata;
+	}
+	/* Vector: We will fake 3 10-point vectors which will be used to build datasets or grids. First is double, the next 2 are float */
+	if (Ctrl->I.via == GMT_VIA_VECTOR) {
+		GMT_Create_Data (API, GMT_IS_VECTOR, par, (void **)&V, GMT_IN, &k);
+		V->n_rows = 10;
+		fdata = GMT_memory (GMT, NULL, V->n_columns, float *);
+		ddata = GMT_memory (GMT, NULL, V->n_rows, double);
+		for (col = 0; col < V->n_columns; col++) {
+			if (col != 0) fdata[col] = GMT_memory (GMT, NULL, V->n_rows, float);
+			for (k = 0; k < V->n_rows; k++) {
+				if (col == 0)
+					ddata[k] = (double)(col*V->n_rows+k);
+				else
+					fdata[col][k] = (float)(col*V->n_rows+k);
+			}
+			V->data[col] = (col == 0) ? (void *)ddata : (void *) fdata[col];
+			V->type[col] = (col == 0) ? GMTAPI_DOUBLE : GMTAPI_FLOAT;
+		}
+	}	
 	/* Get input and register it */
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read %s %s via %s and write to %s via %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], ivia[Ctrl->I.mode], ofile[Ctrl->T.mode], ivia[Ctrl->W.mode]);
@@ -224,7 +269,17 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			break;
 		case GMT_IS_COPY: case GMT_IS_REF:
-			error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&(ifile[Ctrl->T.mode]), &Intmp);
+			switch (Ctrl->I.via) {
+				case GMT_VIA_MATRIX:	/* Get the dataset|grid via a user matrix */
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, (void **)&M, &Intmp);
+					break;
+				case GMT_VIA_VECTOR:	/* Get the dataset|grid via a user vectors */
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], NULL, 0, (void **)&V, &Intmp);
+					break;
+				default:		/* Get directly */
+					error += GMT_Get_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], NULL, 0, (void **)&(ifile[Ctrl->T.mode]), &Intmp);
+					break;
+			}
 			error += GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, &Intmp, NULL, Intmp, &in_ID);
 			break;
 		default:
@@ -291,7 +346,17 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			break;
 		case GMT_IS_COPY: case GMT_IS_REF:
-			error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+			switch (Ctrl->W.via) {
+				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					break;
+				case GMT_VIA_VECTOR:	/* Put the dataset|grid via a user vector */
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					break;
+				default:
+					error = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, &Out, NULL, Out, &out_ID);
+					break;
+			}
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
@@ -316,7 +381,10 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 	free ((void *)input);	free ((void *)output);
 	
+	if (Ctrl->I.via == GMT_VIA_VECTOR) GMT_free (GMT, fdata);
 	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Intmp);
+	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&M);
+	GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&V);
 	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF)) GMT_Destroy_Data (API, GMT_CLOBBER, (void **)&Out);
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 	Return (GMT_OK);
