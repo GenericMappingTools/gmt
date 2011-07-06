@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.79 2011-07-06 20:00:48 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.80 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1297,7 +1297,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
 			if (!I->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
-				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->n_bands, unsigned char);
+				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->header->n_bands, unsigned char);
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/

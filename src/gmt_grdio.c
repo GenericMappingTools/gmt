@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.197 2011-05-19 15:18:56 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.198 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -960,7 +960,7 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->mx = gmt_grd_get_nxpad (h, h->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
 	h->my = gmt_grd_get_nypad (h, h->pad);
 	h->nm = gmt_grd_get_nm (h);		/* Sets the number of actual data items */
-	h->size = gmt_grd_get_size (h);		/* Sets the nm items needed to hold this array */
+	h->size = gmt_grd_get_size (h);		/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
 	h->xy_off = 0.5 * h->registration;
 	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];	/* Get inverse increments to avoid divisions later */
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
@@ -1694,7 +1694,6 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 		return (EXIT_FAILURE);
 	}
 
-	I->n_bands = from_gdalread->RasterCount;
 	I->ColorInterp  = from_gdalread->ColorInterp;		/* Must find out how to release this mem */
 	I->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
 	I->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
@@ -1775,7 +1774,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	}
 
 	I->ColorMap = from_gdalread->ColorMap;
-	I->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
+	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	if (expand) {	/* Must undo the region extension and reset nx, ny */
 		I->header->nx -= (int)(P.pad[XLO] + P.pad[XHI]);

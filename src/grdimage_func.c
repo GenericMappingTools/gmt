@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdimage_func.c,v 1.69 2011-06-25 01:59:47 guru Exp $
+ *	$Id: grdimage_func.c,v 1.70 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -437,7 +437,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			I->header->r_inc[GMT_Y] = 1.0 / dy;
 		}
 
-		Ctrl->In.do_rgb = (I->n_bands >= 3);
+		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
 		n_grids = 0;	/* Flag that we are using a GMT_IMAGE */
 
 		if (I->ProjRefPROJ4 != NULL) GMT_report (GMT, GMT_MSG_NORMAL, "Data projection (Proj4 type)\n\t%s\n", I->ProjRefPROJ4);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.63 2011-06-19 01:48:01 guru Exp $
+ *	$Id: gmt_grd.h,v 1.64 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ struct GRD_HEADER {
 	GMT_LONG complex_mode;		/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
 	GMT_LONG mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
 	GMT_LONG nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	GMT_LONG n_bands;		/* Number of bands. Used only with IMAGE containers and macros to get ij index from row,col, band */
+	GMT_LONG n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	GMT_LONG size;			/* Actual number of items required to hold this grid (mx * my) */
 	GMT_LONG pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
 	GMT_LONG BC[4];			/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
