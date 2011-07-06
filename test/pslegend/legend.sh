@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: legend.sh,v 1.19 2011-06-21 20:28:21 guru Exp $
+#	$Id: legend.sh,v 1.20 2011-07-06 23:23:19 jluis Exp $
 #
 # Testing pslegend capabilities
 
@@ -38,7 +38,7 @@ G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
 T Let us just try some simple text that can go on a few lines.
-T There is no easy way to predetermine how many lines may be required,
+T There is no easy way to predetermine how many lines may be required
 T so we may have to adjust the height to get the right size box.
 EOF
 
