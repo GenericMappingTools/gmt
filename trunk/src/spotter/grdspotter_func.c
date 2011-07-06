@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdspotter_func.c,v 1.18 2011-06-30 07:13:51 guru Exp $
+ *	$Id: grdspotter_func.c,v 1.19 2011-07-06 22:25:13 guru Exp $
  *
  *   Copyright (c) 1999-2011 by P. Wessel
  *
@@ -432,15 +432,15 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 	return (np);
 }
 
-GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, float *age, GMT_LONG node, double upper_age, GMT_LONG truncate, GMT_LONG no_ages)
+GMT_LONG set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, GMT_LONG node, double upper_age, GMT_LONG truncate)
 {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
 
-	if (no_ages || GMT_is_fnan (age[node]))		/* Age is NaN, assign upper value */
+	if (!A || GMT_is_fnan (A->data[node]))		/* Age is NaN, assign upper value */
 		*t_smt = upper_age;
 	else {	/* Assign given value */
-		*t_smt = age[node];
+		*t_smt = A->data[node];
 		if (*t_smt > upper_age) {	/* Exceeding our limit */
 			if (truncate)		/* Allowed to truncate to max age */
 				*t_smt = upper_age;
@@ -464,7 +464,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG n_alloc = 0, inc_alloc = BIG_CHUNK;
 	GMT_LONG i, j, k, ij, m, row, col, k_step, np, max_ij = 0, n_flow, mem = 0, n_unique_nodes = 0;
 	GMT_LONG error = FALSE;		/* TRUE when arguments are wrong */
-	GMT_LONG no_ages = TRUE;	/* TRUE when no age grid is given */
 	GMT_LONG keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG forth_flag;		/* Holds the do_time + 10 flag passed to forthtrack */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
@@ -566,13 +565,16 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* sampling_int_in_km = 0.5 * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO])); */
 	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
-	GMT_report (GMT, GMT_MSG_NORMAL, "%s: Flowline sampling interval = %.3f km\n", GMT->init.progname, sampling_int_in_km);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
 
-	if (Ctrl->T.active[TRUNC]) GMT_report (GMT, GMT_MSG_NORMAL, "%s: Ages truncated to %g\n", GMT->init.progname, Ctrl->N.t_upper);
+	if (Ctrl->T.active[TRUNC]) GMT_report (GMT, GMT_MSG_NORMAL, "Ages truncated to %g\n", Ctrl->N.t_upper);
 
 	/* Start to read input data */
 	
-	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->In.file), (void **)&Z)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
+	if ((error = GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN,  GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data input */
+	if ((error = GMT_Begin_IO (API, GMT_IS_GRID, GMT_IN,  GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+
+	if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, (void **)&(Ctrl->In.file), (void **)&Z)) Return (GMT_DATA_READ_ERROR);	/* Get data */
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
 	for (i = 0; i < Z->header->nx; i++) x_smt[i] = D2R * GMT_grd_col_to_x (GMT, i, Z->header);
@@ -593,7 +595,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, (void **)&(Ctrl->A.file), (void **)&A)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
-		no_ages = FALSE;
 	}
 	if (Ctrl->L.file) {
 		if (GMT_Get_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, (void **)&(Ctrl->L.file), (void **)&L)) Return (GMT_DATA_READ_ERROR);	/* Get header only */
@@ -641,6 +642,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		Ctrl->Q.mode = TRUE;
 	}
 
+	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+
 	if (Ctrl->M.active) {
 		keep_flowlines = FALSE;	/* Do it the hard way to save memory */
 		k_step = 2;		/* Reset back to 3 if needed later */
@@ -665,7 +668,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		/* STEP 1: Determine if z exceeds threshold and if so assign age */
 		if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 		if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
-		if (!set_age (GMT, &t_smt, A->data, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC], no_ages)) continue;
+		if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;
 		/* STEP 2: Calculate this node's flowline */
 		if (Ctrl->Q.mode && ID_info[(GMT_LONG)ID[ij]].check_region) /* Set up a box-limited flowline sampling */
 			GMT_memcpy (this_wesn, ID_info[(GMT_LONG)ID[ij]].wesn, 4, double);
@@ -878,7 +881,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				/* STEP 1: Determine if z exceeds threshold and if so assign age */
 				if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 				if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
-				if (!set_age (GMT, &t_smt, A->data, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC], no_ages)) continue;
+				if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;
 				/* STEP 2: Calculate this node's flowline */
 				if (Ctrl->Q.mode && ID_info[(GMT_LONG)ID[ij]].check_region) /* Set up a box-limited flowline sampling */
 					GMT_memcpy (this_wesn, ID_info[(GMT_LONG)ID[ij]].wesn, 4, double);
@@ -989,10 +992,12 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		if (Ctrl->PA.active) GMT_free (GMT, flowline[i].PA);
 	}
 	GMT_free (GMT, p);
-	GMT_free (GMT, x_smt);
-	GMT_free (GMT, y_smt);
+	GMT_free (GMT, x_smt);	GMT_free (GMT, y_smt);
+	GMT_free (GMT, x_cva);	GMT_free (GMT, y_cva);
+	GMT_free (GMT, lat_area);
 	if (keep_flowlines) GMT_free (GMT, flowline);
 	if (Ctrl->Q.mode) GMT_free (GMT, ID_info);
+	GMT_free_grid (GMT, &G_rad, FALSE);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 
