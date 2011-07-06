@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.21 2011-05-16 08:47:57 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.22 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -260,7 +260,7 @@ GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, do
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
-	GMT_LONG i, j, ij, b, nb = G->n_bands;
+	GMT_LONG i, j, ij, b, nb = G->header->n_bands;
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */

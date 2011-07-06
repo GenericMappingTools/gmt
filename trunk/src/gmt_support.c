@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.544 2011-07-05 04:57:27 guru Exp $
+ *	$Id: gmt_support.c,v 1.545 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6262,7 +6262,7 @@ GMT_LONG GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	GMT_LONG jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	GMT_LONG jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	GMT_LONG j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	GMT_LONG b, nb = G->n_bands;
+	GMT_LONG b, nb = G->header->n_bands;
 	GMT_LONG n_skip, set[4] = {TRUE, TRUE, TRUE, TRUE};
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};

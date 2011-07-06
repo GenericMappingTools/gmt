@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.325 2011-06-23 02:20:43 remko Exp $
+ *	$Id: gmt_map.c,v 1.326 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6109,7 +6109,7 @@ GMT_LONG GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IM
 	 * made "interpolant" an integer (was GMT_LONG bilinear).
 	 */
 
-	GMT_LONG col_in, row_in, ij_in, col_out, row_out, ij_out, b, nb = I->n_bands;
+	GMT_LONG col_in, row_in, ij_in, col_out, row_out, ij_out, b, nb = I->header->n_bands;
 	short int *nz = NULL;
 	double x_proj = 0.0, y_proj = 0.0, inv_nz, rgb[4];
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.117 2011-07-04 19:14:29 guru Exp $
+ *	$Id: gmt_io.h,v 1.118 2011-07-06 20:30:46 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -543,21 +543,13 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	GMT_LONG id;			/* The internal number of the data set */
-	GMT_LONG n_rows;		/* Number of rows in this image */
-	GMT_LONG n_columns;		/* Number of columns in this image */
-	GMT_LONG n_bands;		/* Number of bands in a 1,3|4-D image [1] */
-	GMT_LONG dim;			/* Allocated length of longest C or Fortran dim */
-	GMT_LONG shape;			/* 0 = C (rows) and 1 = Fortran (cols) */
 	GMT_LONG type;			/* Data type, e.g. GMTAPI_FLOAT */
-	GMT_LONG registration;     	/* 0 for gridline and 1 for pixel registration  */
-	GMT_LONG size;			/* Byte length of data */
 	GMT_LONG alloc_mode;		/* Allocation info [0] */
 	int		*ColorMap;
 	const char	*ProjRefPROJ4;
 	const char	*ProjRefWKT;
 	const char	*ColorInterp;
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the image */
-	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	unsigned char *data;		/* Pointer to actual image */
 };
 
