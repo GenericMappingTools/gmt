@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.76 2011-07-05 20:18:45 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.77 2011-07-06 01:42:06 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1330,11 +1330,11 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Duplicating image data from GMT_IMAGE memory location\n");
 			if (!I->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I->header->size = GMTAPI_set_grdarray_size (API->GMT, I->header, S->wesn);	/* Get array dimension only, which may include padding */
-				I->data = GMT_memory (API->GMT, NULL, I->header->size, unsigned char);
+				I->data = GMT_memory (API->GMT, NULL, I->header->size * I->header->n_bands, unsigned char);
 			}
 			I->alloc_mode = GMT_ALLOCATED;
-			if (!S->region && !GMT_grd_pad_status (API->GMT, I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
-				GMT_memcpy (I->data, I_orig->data, I_orig->header->size, char);
+			if (!S->region && GMT_grd_pad_status (API->GMT, I->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
+				GMT_memcpy (I->data, I_orig->data, I_orig->header->size * I_orig->header->n_bands, char);
 				break;		/* Done with this image */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
