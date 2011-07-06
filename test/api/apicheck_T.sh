@@ -49,5 +49,5 @@ textset_check r d	# 5c. File descriptor
 textset_check r c	# 5d. Copy
 textset_check r r	# 5e. Reference
 
-#rm -f ttest?.txt
+rm -f ttest?.txt
 passfail apicheck_T
