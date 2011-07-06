@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: intersect.sh,v 1.1 2011-07-05 23:45:47 guru Exp $
+#	$Id: intersect.sh,v 1.2 2011-07-06 01:15:25 guru Exp $
 # Testing gmtspatial intersection
 
 . ../functions.sh
@@ -33,7 +33,7 @@ psxy $R -Jx1.5i -P -Ba1g1WSne A.txt -W3p,red -K -X0.75i > $ps
 psxy -R -J -O B.txt -W3p,blue -K >> $ps
 gmtspatial A.txt B.txt -Ie | psxy -R -J -O -K -Sc0.15i -W0.25p >> $ps
 # Truncate A given B
-gmtspatial A.txt -TB.txt -R | psxy -R -J -O -K -W0.5p,green >> $ps
+gmtspatial A.txt -TB.txt | psxy -R -J -O -K -W0.5p,green >> $ps
 # Clip A and B to a smaller region
 psxy -R -J -O -K -Ba1g1:.Cartesian:WSne -W0.25p,. [AB].txt -Y4i >> $ps
 psxy -R -J -O -K -L -W0.5p,- << EOF >> $ps
@@ -54,7 +54,7 @@ psxy $R -Jm0.15i -O -Ba5g5WSne Ag.txt -W3p,red -K -Y-4i -X3.75i >> $ps
 psxy -R -J -O Bg.txt -W3p,blue -K >> $ps
 gmtspatial Ag.txt Bg.txt -Ie -fg | psxy -R -J -O -K -Sc0.15i -W0.25p >> $ps
 # Truncate Ag given Bg
-gmtspatial Ag.txt -TBg.txt -R -fg | psxy -R -J -O -K -W0.5p,green >> $ps
+gmtspatial Ag.txt -TBg.txt -fg | psxy -R -J -O -K -W0.5p,green >> $ps
 # Clip Ag and Bg to a smaller region
 psxy -R -J -O -K -Ba5g5:.Geographic:WSne -W0.25p,. [AB]g.txt -Y4i >> $ps
 psxy -R -J -O -K -L -W0.5p,- << EOF >> $ps
