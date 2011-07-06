@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1130 2011-07-06 02:12:55 jluis Exp $
+	$Id: ChangeLog,v 1.1131 2011-07-06 22:25:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-07-06	pwessel
+	* spotter/gridspotter_func.c:	Fixed porting bugs and added spotter_7.sh as test.
+	
 2011-07-05	jluis
 	* gmt_init.c:		Add GMT_equal_double|float functions to compare floats after
 				www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
