@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: testapi_func.c,v 1.10 2011-07-07 07:04:09 guru Exp $
+ *	$Id: testapi_func.c,v 1.11 2011-07-07 11:16:07 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -213,7 +213,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->n_rows; k++) {
-				fdata[2*k] = k;	fdata[2*k+1] = k*10;
+				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
 			}
 			fdata[0] = fdata[1] = fdata[8] = fdata[9] = GMT->session.f_NaN;
 		}
@@ -221,7 +221,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMTAPI_INT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			M->limit[XLO] = 0.0;	M->limit[XHI] = 5.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 5.0;	M->limit[4] = 0.0;	M->limit[5] = 25.0;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
-			for (k = 0; k < M->size; k++) fdata[k] = (int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows);
+			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
 		}
 		M->data = (void *)fdata;
 	}
@@ -231,7 +231,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		fdata = GMT_memory (GMT, NULL, V->n_rows, float);
 		ddata = GMT_memory (GMT, NULL, V->n_rows, double);
 		for (k = 0; k < V->n_rows; k++) {
-			fdata[k] = k;	ddata[k] = k*10;
+			fdata[k] = (float)k;	ddata[k] = k*10.0;
 		}
 		fdata[0] = fdata[4] = GMT->session.f_NaN;
 		ddata[0] = ddata[4] = GMT->session.d_NaN;
