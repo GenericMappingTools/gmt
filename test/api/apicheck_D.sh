@@ -14,10 +14,10 @@ cat << EOF > dtesti.txt
 2	20
 3	30
 > 2nd seg
-4	40
 5	50
 6	60
 7	70
+8	80
 EOF
 rm -f fail
 # 1. Read File and write DATASET via...
