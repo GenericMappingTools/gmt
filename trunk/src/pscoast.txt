@@ -52,8 +52,9 @@ OPT(I)IT(river)[/IT(pen)]
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, style = solid].
 .br
-Choose from the list of river types below.
-Repeat option OPT(I) as often as necessary.
+Choose from the list of river types below; repeat option OPT(I) as often as necessary.
+.br
+	 0 = Double-lined rivers (river-lakes)
 .br
 	 1 = Permanent major rivers
 .br
@@ -75,9 +76,15 @@ Repeat option OPT(I) as often as necessary.
 .br
 	10 = Irrigation canals
 .br
-	 a = All rivers and canals (1-10)
+	You can also choose from several preconfigured river groups:
 .br
-	 r = All permanent rivers (1-4)
+	 a = All rivers and canals (0-10)
+.br
+	 A = All rivers and canals except river-lakes (1-10)
+.br
+	 r = All permanent rivers (0-4)
+.br
+	 R = All permanent rivers except river-lakes (1-4)
 .br
 	 i = All intermittent rivers (5-7)
 .br

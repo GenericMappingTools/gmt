@@ -3,7 +3,7 @@
 .SH NAME
 gshhs \- Extract data tables from binary GSHHS or WDBII data files
 .SH SYNOPSIS
-BD(gshhs) IT(binaryfile.b) [ OPT(A)IT(min) ] [ OPT(G) ] [ OPT(I)IT(id) ] [ OPT(L) ] \
+BD(gshhs) IT(binaryfile.b) [ OPT(A)IT(min) ] [ OPT(G) ] [ OPT(I)IT(id) ] [ OPT(L) ] [ OPT(Qe)|BD(i) ] 
 [ GMT_bo_OPT ] [ GMT_o_OPT ] > IT(asciifile.txt)
 .SH DESCRIPTION
 BD(gshhs) reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
@@ -38,6 +38,11 @@ Only output information for the polygon that matches IT(id) [default outputs all
 .TP
 OPT(L)
 Only output a listing of polygon or line segment headers [default outputs headers and data records].
+.TP
+OPT(Qe)|BD(i)
+Control what to do with river-lakes (river sections large enough to be stored as closed polygons).
+Use OPT(Qe) to exclude them and OPT(Qi) to exclude everything else instead [default outputs all polygons].
+
 #include "explain_-bo.txt"
 #include "explain_-ocols.txt"
 .SH EXAMPLES

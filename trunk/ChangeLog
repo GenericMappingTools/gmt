@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1132 2011-07-07 02:20:29 guru Exp $
+	$Id: ChangeLog,v 1.1133 2011-07-07 19:53:01 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-07	pwessel
+	* pscoast_func.c:	Added river groups A and R which equals a and r except they
+				do not include the river-lake features (which are plotted
+				as polygons anyway).
 
 2011-07-06	pwessel
 	* spotter/gridspotter_func.c:	Fixed porting bugs and added spotter_7.sh as test.
