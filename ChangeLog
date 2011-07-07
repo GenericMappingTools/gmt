@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1131 2011-07-06 22:25:13 guru Exp $
+	$Id: ChangeLog,v 1.1132 2011-07-07 02:20:29 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-06	pwessel
 	* spotter/gridspotter_func.c:	Fixed porting bugs and added spotter_7.sh as test.
+	* gmtvector_func.c:	Fixed several bugs and added some enhancements.  Now has
+				a few test scripts in the test dir.
 	
 2011-07-05	jluis
 	* gmt_init.c:		Add GMT_equal_double|float functions to compare floats after

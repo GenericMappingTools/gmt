@@ -3,8 +3,8 @@
 .SH NAME
 gmtvector \- Basic manipulation of Cartesian vectors
 .SH SYNOPSIS
-BD(gmtvector) [ IT(table) ] [ OPT(A)IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
-[ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)] ] [ GMT_V_OPT ] 
+BD(gmtvector) [ IT(table) ] [ OPT(A)BD(m)[IT(conf)]|IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
+[ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(r)[IT(arg)|BD(s)|BD(x)] ] [ GMT_V_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
 BD(gmtvector) reads either (x, y), (x, y, z), (r, theta) or (lon, lat) [or (lat,lon); see OPT(:)] coordinates
@@ -13,7 +13,7 @@ read (i.e., lon, lat) then these coordinates are converted to Cartesian three-ve
 Otherwise we expect (r, theta) unless OPT(Ci) is in effect.  If no file is found but the single argument given
 can be interpreted as an x/y[/z], lon/lat, or r/theta vector then we decode it as such.  Several standard vector
 operations (angle between vectors, cross products, vector sums, and vector rotations) can be selected;
-some require a single second vector, provided via OPT(S).  The output vectors will be converted back to (lon, lat) or
+most require a single second vector, provided via OPT(S).  The output vectors will be converted back to (lon, lat) or
 (r, theta) unless OPT(Co) requests (x, y[, z]) Cartesian coordinates.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
@@ -24,8 +24,11 @@ IT(table)
 One or more ASCII [or binary, see GMT_bi_OPT] file containing lon,lat [lat,lon if OPT(:)] values in the first 2 columns
 (if OPT(fg) is given) or (r, theta), or perhaps (x, y[, z]) if OPT(Ci) is given).  If no file is specified, BD(gmtvector), will read from standard input.
 .TP
-OPT(A)[IT(vector)]
+OPT(A)BD(m)[IT(conf)]|IT(vector)
 Specify a single, primary vector instead of reading IT(infiles); see IT(infiles) for possible vector formats.
+Alternatively, append BD(m) to read IT(infiles) and set the single, primary vector to be the mean resultant vector first.
+We also compute the confidence ellipse for the mean vector (azimuth of major axis, major axis, and minor axis; for geographic
+data the axes are given in km).  You may optionally append the confidence level in percent [95].
 .TP
 OPT(C)[BD(i)|BD(o)]
 Select Cartesian coordinates on input and output.  Append BD(i) for input only or BD(o) for output only; otherwise both input and output
@@ -45,10 +48,9 @@ need two vectors (dot product, cross product, and sum).
 .TP
 OPT(T)BD(a)|BD(d)|BD(D)|BD(x)|BD(s)|BD(r)[IT(arg)]
 Specify the vector transformation of interest.  Append BD(a) for average, BD(b) for the pole of the two points bisector,
-BD(d) for dot product (use BD(D) to
-get angle in degrees between the two vectors), BD(x) for cross-product, BD(s) for vector sum, and BD(r)IT(par)
-for vector rotation.  Here, IT(par) is a single angle for 2-D Cartesian data
-and IT(lon/lat/angle) for a 3-D rotation pole and angle.
+BD(d) for dot product (use BD(D) to get angle in degrees between the two vectors), BD(m) for mean input vector (OPT(S) not used),
+BD(r)IT(par) for vector rotation (here, IT(par) is a single angle for 2-D Cartesian data
+and IT(lon/lat/angle) for a 3-D rotation pole and angle), BD(s) for vector sum, and BD(x) for cross-product.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 or 3 input columns].
@@ -90,6 +92,14 @@ To find the mid-point along the great circle connecting the points 123/35 and -1
 .br
 .sp
 gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
+.br
+.sp
+To find the mean location of the geographical points listed in points.txt, use
+.br
+.sp
+gmtvector points.txt -Am -fg > centroid.txt
+.br 
+.sp
 .SH ROTATIONS
 For more advanced 3-D rotations as used in plate tectonic reconstructions, see the GMT "spotter" supplement.
 .SH "SEE ALSO"
