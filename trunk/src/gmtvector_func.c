@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
-*    $Id: gmtvector_func.c,v 1.21 2011-07-01 08:03:00 guru Exp $
+*    $Id: gmtvector_func.c,v 1.22 2011-07-07 02:20:29 guru Exp $
 *
 *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,8 +47,10 @@ struct GMTVECTOR_CTRL {
 		GMT_LONG n_args;
 		char *arg;
 	} In;
-	struct A {	/* -A[vec] */
+	struct A {	/* -A[m[<conf>]|<vec>] */
 		GMT_LONG active;
+		GMT_LONG mode;
+		double conf;
 		char *arg;
 	} A;
 	struct C {	/* -C[i|o] */
@@ -82,6 +84,7 @@ void *New_gmtvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GMTVECTOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	C->A.conf = 0.95;	/* 95% conf level */
 	return ((void *)C);
 }
 
@@ -97,7 +100,7 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtvector %s [API] - Basic manipulation of Cartesian vectors\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtvector [<table>] [-A<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
+	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -108,6 +111,9 @@ GMT_LONG GMT_gmtvector_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
 	GMT_message (GMT, "\t   If no file(s) is given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
+	GMT_message (GMT, "\t   Alternatively, give -Am to compute a single primary vector as the mean of the input vectors.\n");
+	GMT_message (GMT, "\t   The confidence ellipse for the mean vector is determined (95%% level);\n");
+	GMT_message (GMT, "\t   optionally append a different confidence level in percent.\n");
 	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta.\n");
 	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates.\n");
 	GMT_message (GMT, "\t-E Automatically convert between geodetic and geocentric coordinates [no conversion].\n");
@@ -158,7 +164,12 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 			case 'A':	/* Secondary vector */
 				Ctrl->A.active = TRUE;
-				Ctrl->A.arg = strdup (opt->arg);
+				if (opt->arg[0] == 'm') {
+					Ctrl->A.mode = 1;
+					if (opt->arg[1]) Ctrl->A.conf = 0.01 * atof (&opt->arg[1]);
+				}
+				else
+					Ctrl->A.arg = strdup (opt->arg);
 				break;
 			case 'C':	/* Cartesian coordinates on in|out */
 				if (opt->arg[0] == 'i')
@@ -232,7 +243,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_in);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active, "Syntax error: Cannot give input files and -A at the same time\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -339,13 +350,92 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	GMT_normalize3v (C, P);
 }
 
+void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesian, double conf, double *M, double *E)
+{
+	/* Determines the mean vector M and the covariance matrix C */
+	
+	GMT_LONG i, j, k, p, tbl, seg, row, nv, n, nrots;
+	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
+	double *P[3], X[3], B[3], C[9];
+	struct GMT_LINE_SEGMENT *S = NULL;
+	
+	GMT_memset (M, 3, double);
+	nv = (GMT_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
+	for (k = 0; k < nv; k++) P[k] = GMT_memory (GMT, NULL, D->n_records, double);
+	for (tbl = n = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			S = D->table[tbl]->segment[seg];
+			for (row = 0; row < S->n_rows; row++) {
+				if (!cartesian) {	/* Want to turn geographic or polar into Cartesian */
+					if (GMT_is_geographic (GMT, GMT_IN))
+						GMT_geo_to_cart (GMT, S->coord[GMT_Y][row], S->coord[GMT_X][row], X, TRUE);	/* get x/y/z */
+					else
+						GMT_polar_to_cart (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], X, TRUE);
+					for (k = 0; k < nv; k++) P[k][n] = X[k];
+				}
+				else for (k = 0; k < nv; k++) P[k][n] = S->coord[k][row];
+				for (k = 0; k < nv; k++) M[k] += P[k][n];
+				n++;
+			}
+		}
+	}
+	for (k = 0; k < nv; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
+	GMT_memcpy (X, M, 3, double);
+	
+	/* Get covariance matrix */
+	
+	GMT_memset (C, 9, double);
+	for (j = 0; j < nv; j++) for (i = 0; i < nv; i++) {
+		k = nv*j + i;
+		C[k] = 0.0;
+		for (p = 0; p < n; p++) C[k] += (P[j][p] - M[j]) * (P[i][p] - M[i]);
+		C[k] /= (n - 1.0);
+	}
+	for (k = 0; k < nv; k++) GMT_free (GMT, P[k]);
+
+	if (GMT_jacobi (GMT, C, &nv, &nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
+		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+	}
+	if (nv == 3) {
+		GMT_cart_to_geo (GMT, &lat, &lon, X, TRUE);
+		if (lon < 0.0) lon += 360.0;
+	}
+	else { lon = X[GMT_X]; lat = X[GMT_Y]; }
+
+	/* Find the xy[z] point of end of eigenvector 1: */
+	GMT_memset (B, 3, double);
+	for (k = 0; k < nv; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
+	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
+	for (k = 0; k < nv; k++) B[k] /= L;
+	if (nv == 3) {
+		GMT_cart_to_geo (GMT, &lat2, &lon2, B, TRUE);
+		if (lon2 < 0.0) lon2 += 360.0;
+		L = lon2 - lon;
+		if (fabs (L) > 180.0) L = copysign (360.0 - fabs (L), L);
+	}
+	else {
+		lon2 = B[GMT_X];
+		lat2 = B[GMT_Y];
+	}
+	Y = lat2 - lat;
+
+	E[0] = 90.0 - atan2 (Y, L * cos (lat * D2R)) * R2D;
+	/* Convert to 95% confidence in km */
+
+	scl = (nv == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (GMT_chi2crit (GMT, conf, 3)) : sqrt (GMT_chi2crit (GMT, conf, 2));
+	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
+	E[2] = 2.0 * sqrt (lambda[1]) * scl;
+
+	GMT_report (GMT, GMT_MSG_NORMAL, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
+}
+
 #define Return(code) {Free_gmtvector_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
 GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
-	GMT_LONG tbl, seg, row, error = 0, k, n, n_out, single = FALSE;
+	GMT_LONG tbl, seg, row, error = 0, k, n, nv, n_out, add = 0, single = FALSE;
 
-	double out[3], vector_1[3], vector_2[3], vector_3[3], R[3][3];
+	double out[3], vector_1[3], vector_2[3], vector_3[3], R[3][3], E[3];
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_LINE_SEGMENT *Sin = NULL,  *Sout = NULL;
@@ -377,7 +467,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		R[0][0] = c;	R[0][1] = -s;
 		R[1][0] = s;	R[1][1] = c;
 	}
-	else if (Ctrl->T.mode != DO_NOTHING) {	/* Will need secondary vector, get that first before input file */
+	else if (!Ctrl->T.mode == DO_NOTHING) {	/* Will need secondary vector, get that first before input file */
 		n = decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (EXIT_FAILURE);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
@@ -391,19 +481,34 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	
 	/* Read input data set */
 	
-	if (Ctrl->A.active) {	/* Gave single primary vector */
-		n = decode_vector (GMT, Ctrl->A.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
-		if (n == 0) Return (EXIT_FAILURE);
-		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize before we turn dot-product into angle */
-			if (n == 2)
-				GMT_normalize2v (GMT, vector_1);
-			else
-				GMT_normalize3v (GMT, vector_1);
+	GMT_memset (vector_1, 3, double);
+	GMT_memset (vector_3, 3, double);
+	if (Ctrl->A.active) {	/* Want a single primary vector */
+		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
+			if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
+			if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
+			if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, (void **)&Din)) Return ((error = GMT_DATA_READ_ERROR));
+			if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
+			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
+			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellispe parameters */
+			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Din);
+			add = 3;	/* Make space for angle major minor */
+		}
+		else {	/* Decode a single vector */
+			n = decode_vector (GMT, Ctrl->A.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
+			if (n == 0) Return (EXIT_FAILURE);
+			if (Ctrl->T.mode == DO_DOT) {	/* Must normalize before we turn dot-product into angle */
+				if (n == 2)
+					GMT_normalize2v (GMT, vector_1);
+				else
+					GMT_normalize3v (GMT, vector_1);
+			}
+			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
 		Din = GMT_create_dataset (GMT, 1, 1, 3, 1);
-		for (k = 0; k < n; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
+		nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+		for (k = 0; k < nv; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = TRUE;
-		n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 	}
 	else {	/* Read input files or stdin */
 		if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options))) Return (error);	/* Registers default input sources, unless already set */
@@ -420,12 +525,14 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
-	GMT_alloc_dataset (GMT, Din, &Dout, n_out, 0, GMT_ALLOC_NORMAL);
+	GMT_alloc_dataset (GMT, Din, &Dout, n_out + add, 0, GMT_ALLOC_NORMAL);
+	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */
 	
-	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (GMT_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
-
+	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
+	nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+	
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			Sin = Din->table[tbl]->segment[seg];
@@ -438,11 +545,11 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					else
 						GMT_polar_to_cart (GMT, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], vector_1, TRUE);
 				}
-				else for (k = 0; k < n; k++) vector_1[k] = Sin->coord[k][row];
+				else for (k = 0; k < nv; k++) vector_1[k] = Sin->coord[k][row];
 				
 				switch (Ctrl->T.mode) {
 					case DO_AVERAGE:	/* Get sum of 2-D or 3-D vectors and compute average */
-						for (k = 0; k < n; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);
+						for (k = 0; k < nv; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);
 						break;
 					case DO_BISECTOR:	/* Compute pole or bisector of vector 1 and 2 */
 						get_bisector (GMT, vector_1, vector_2, vector_3);
@@ -461,7 +568,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						GMT_cross3v (GMT, vector_1, vector_2, vector_3);
 						break;
 					case DO_SUM:	/* Get sum of 2-D or 3-D vectors */
-						for (k = 0; k < n; k++) vector_3[k] = vector_1[k] + vector_2[k];
+						for (k = 0; k < nv; k++) vector_3[k] = vector_1[k] + vector_2[k];
 						break;
 					case DO_ROT2D:	/* Rotate a 2-D vector about the z_axis */
 						matrix_vect_mult (GMT, 2, R, vector_1, vector_3);
@@ -470,6 +577,7 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 						matrix_vect_mult (GMT, 3, R, vector_1, vector_3);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
+						GMT_memcpy (vector_3, vector_1, nv, double);
 						break;
 				}
 				if (Ctrl->C.active[GMT_OUT]) {	/* Report Cartesian output... */
@@ -497,13 +605,14 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 	}
 
+	if (Ctrl->A.mode) for (k = 0; k < 3; k++) Sout->coord[k+n_out][0] = E[k];	/* Place az, major, minor in the single output record */
+	
 	/* Time to write out the results */
 	
 	if ((error = GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options))) Return (error);	/* Establishes data output */
 	if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_BY_SET))) Return (error);	/* Enables data output and sets access mode */
 	if (GMT_Put_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, (void **)&Ctrl->Out.file, (void **)Dout)) Return ((error = GMT_DATA_READ_ERROR));
 	if ((error = GMT_End_IO (API, GMT_OUT, 0))) Return (error);	/* Disables further data output */
-	
 	if (single) GMT_free_dataset (GMT, &Din);
 	
 	Return (EXIT_SUCCESS);
