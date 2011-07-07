@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.81 2011-07-07 02:39:41 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.82 2011-07-07 02:40:14 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1676,6 +1676,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode, struct GMT_GRID *G)
 {	/* Writes out a single grid to destination */
 	GMT_LONG item, row, col, ij, ijp, ij_orig, error, i0, i1, j0, j1, complex_mode, done = 1;
+	double dx, dy;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M = NULL;
