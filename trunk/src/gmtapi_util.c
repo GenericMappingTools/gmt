@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.80 2011-07-06 20:30:46 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.81 2011-07-07 02:39:41 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1258,6 +1258,7 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 	 */
 	
 	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, error, complex_mode, reset, size, done = 1;
+	double dx, dy;
 	struct GMT_IMAGE *I = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
@@ -1341,10 +1342,11 @@ GMT_LONG GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mod
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Extracting subset image data from GMT_IMAGE memory location\n");
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
-			j1 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YLO], I_orig->header);
-			j0 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YHI], I_orig->header);
-			i0 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XLO], I_orig->header);
-			i1 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XHI], I_orig->header);
+			dx = I->header->inc[GMT_X] * I->header->xy_off;	dy = I->header->inc[GMT_Y] * I->header->xy_off;
+			j1 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YLO]+dy, I_orig->header);
+			j0 = GMT_grd_y_to_row (API->GMT, I->header->wesn[YHI]-dy, I_orig->header);
+			i0 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XLO]+dx, I_orig->header);
+			i1 = GMT_grd_x_to_col (API->GMT, I->header->wesn[XHI]-dx, I_orig->header);
 			GMT_memcpy (I->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -1465,6 +1467,7 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 	 */
 	
 	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, error, complex_mode, reset, size, done = 1;
+	double dx, dy;
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
@@ -1546,10 +1549,11 @@ GMT_LONG GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
-			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO], G_orig->header);
-			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI], G_orig->header);
-			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO], G_orig->header);
-			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI], G_orig->header);
+			dx = G->header->inc[GMT_X] * G->header->xy_off;	dy = G->header->inc[GMT_Y] * G->header->xy_off;
+			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO]+dy, G_orig->header);
+			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI]-dy, G_orig->header);
+			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO]+dx, G_orig->header);
+			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI]-dx, G_orig->header);
 			GMT_memcpy (G->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -1716,10 +1720,11 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG ID, GMT_LONG mode
 			G_copy = GMT_create_grid (API->GMT);
 			GMT_memcpy (G_copy->header, G->header, 1, struct GRD_HEADER);
 			GMT_memcpy (G_copy->header->wesn, S->wesn, 4, double);
-			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO], G->header);
-			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI], G->header);
-			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO], G->header);
-			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI], G->header);
+			dx = G->header->inc[GMT_X] * G->header->xy_off;	dy = G->header->inc[GMT_Y] * G->header->xy_off;
+			j1 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YLO]+dy, G->header);
+			j0 = GMT_grd_y_to_row (API->GMT, G->header->wesn[YHI]-dy, G->header);
+			i0 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XLO]+dx, G->header);
+			i1 = GMT_grd_x_to_col (API->GMT, G->header->wesn[XHI]-dx, G->header);
 			GMT_memcpy (G->header->pad, API->GMT->current.io.pad, 4, GMT_LONG);		/* Set desired padding */
 			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G->header, S->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = GMT_memory (API->GMT, NULL, G_copy->header->size, float);
