@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.18 2011-07-01 18:58:18 guru Exp $
+/*	$Id: gshhs_func.c,v 1.19 2011-07-07 19:53:01 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,9 +25,10 @@
  *				a flag to tell if a lake is a riverlake.
  *				Updated to deal with latest GSHHS database (2.0)
  *		1.12 24-MAY-2010: Deal with 2.1 format.
- *		1.13 1-JUL-2011: Now contains improved area information (2.2.0),
+ *		1.13 15-JUL-2011: Now contains improved area information (2.2.0),
  *				 and revised greenwhich flags (now 2-bit; see gshhs.h).
- *				 Also added -A and -G as suggested by José Luis García Pallero.
+ *				 Also added -A and -G as suggested by José Luis García Pallero,
+ *				 as well as -Qe|i to control river-lake output.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -66,6 +67,10 @@ struct GSHHS_CTRL {
 		GMT_LONG active;
 		GMT_LONG id;
 	} I;
+	struct Q {	/* -Qe|i */
+		GMT_LONG active;
+		GMT_LONG mode;
+	} Q;
 };
 
 void *New_gshhs_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -88,7 +93,7 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII %s data files\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -97,6 +102,8 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
 	GMT_message (GMT, "-L List header records only (no data records will be written).\n");
 	GMT_message (GMT, "-I Output data for polygon number <id> only [Default is all polygons].\n");
+	GMT_message (GMT, "-Q controls river-lakes.  By default all polygons are output.\n");
+	GMT_message (GMT, "   use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes.\n");
 	GMT_explain_options (GMT, "VD2o:.");
 	
 	return (EXIT_FAILURE);
@@ -142,6 +149,15 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				Ctrl->I.active = TRUE;
 				Ctrl->I.id = atoi (opt->arg);
 				break;
+			case 'Q':
+				Ctrl->Q.active = TRUE;
+				if (opt->arg[0] == 'e')
+					Ctrl->Q.mode = 1;
+				else if (opt->arg[0] == 'i')
+					Ctrl->Q.mode = 2;
+				else
+					n_errors++;
+				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -163,7 +179,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {
 	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000;
 	GMT_LONG error, ID, n_read, m, mode, level, version, greenwich, is_river, src;
-	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, first = TRUE;
+	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
 	
@@ -265,17 +281,12 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			h.container	= swabi4 ((unsigned int)h.container);
 			h.ancestor	= swabi4 ((unsigned int)h.ancestor);
 		}
-		if (Ctrl->I.active && h.id != Ctrl->I.id) {	/* Not what we are looking for, skip to next */
-			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
-			continue;	/* Back to top of loop */
-		}
-		
 		/* OK, we want to return info for this feature */
 		
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
 		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS version %ld in file %s\n", version, Ctrl->In.file);
+		first = FALSE;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
 		is_river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
@@ -293,10 +304,15 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		}
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
-		first = FALSE;
-		if (h.id == 92) {
-			first = FALSE;
+		
+		OK = ((!Ctrl->I.active || h.id == Ctrl->I.id) && area >= Ctrl->A.min);	/* FALSE if not our ID or area too small */
+		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* in/ex-clude riverlakes */
+		if (!OK) {	/* Not what we are looking for, skip to next */
+			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
+			n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+			continue;	/* Back to top of loop */
 		}
+		
 
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */

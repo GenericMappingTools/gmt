@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pscoast_func.c,v 1.24 2011-06-29 20:28:24 guru Exp $
+ *	$Id: pscoast_func.c,v 1.25 2011-07-07 19:53:01 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -195,8 +195,11 @@ GMT_LONG GMT_pscoast_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t      8 = Major canals.\n");
 	GMT_message (GMT, "\t      9 = Minor canals.\n");
 	GMT_message (GMT, "\t     10 = Irrigation canals.\n");
+	GMT_message (GMT, "\t     Alternatively, specify preselected river groups:\n");
 	GMT_message (GMT, "\t      a = All rivers and canals (0-10).\n");
+	GMT_message (GMT, "\t      A = All rivers and canals except river-lakes (1-10).\n");
 	GMT_message (GMT, "\t      r = All permanent rivers (0-4).\n");
+	GMT_message (GMT, "\t      R = All permanent rivers except river-lakes (1-4).\n");
 	GMT_message (GMT, "\t      i = All intermittent rivers (5-7).\n");
 	GMT_message (GMT, "\t      c = All canals (8-10).\n");
 	GMT_explain_options (GMT, "K");
@@ -305,8 +308,14 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 					case 'a':
 						for (k = 0; k < GMT_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
+					case 'A':
+						for (k = 1; k < GMT_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						break;
 					case 'r':
 						for (k = 0; k < GMT_RIV_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						break;
+					case 'R':
+						for (k = 1; k < GMT_RIV_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
 						break;
 					case 'i':
 						for (k = GMT_RIV_INTERMITTENT; k < GMT_RIV_CANALS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
