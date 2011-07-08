@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.39 2011-07-01 18:58:18 guru Exp $
+/*	$Id: gshhs.h,v 1.40 2011-07-08 02:16:05 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -33,8 +33,9 @@
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
  *	24-MAY-2010.  PW: Data version is now 2.1.0. [no change to format]
- *	1-JUL-2011.   PW: Data version is now 2.2.0. [Change in header format to store
- *			  area magnitude and let greenwich be 2-bit flag (0-3)]
+ *	15-JUL-2011.   PW: Data version is now 2.2.0. [Change in header format to store
+ *			  area magnitude and let greenwich be 2-bit flag (0-3)].  Also
+ *			  flag WDBII riverlakes with the river flag as used for GSHHS.
  */
 
 #ifndef _GSHHS
@@ -75,11 +76,11 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 + p << 26 */
 	/* flag contains 6 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
-	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 7 for GSHHS release 7
+	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 9 for GSHHS release 9.
  	 * 3rd byte:	greenwich = (flag >> 16) & 3: Values: 0 if Greenwich nor Dateline are crossed,
 	 *		1 if Greenwich is crossed, 2 if Dateline is crossed, 3 if both is crossed.
 	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS
-	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and level = 2
+	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and GSHHS level = 2 (or WDBII level 0)
 	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */

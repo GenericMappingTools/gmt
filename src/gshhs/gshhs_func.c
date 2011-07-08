@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.19 2011-07-07 19:53:01 guru Exp $
+/*	$Id: gshhs_func.c,v 1.20 2011-07-08 02:16:05 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,7 +93,7 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII %s data files\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-	GMT_message (GMT, "usage: gshhs gshhs_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "usage: gshhs gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -285,7 +285,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS version %ld in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %ld in file %s\n", version, Ctrl->In.file);
 		first = FALSE;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
