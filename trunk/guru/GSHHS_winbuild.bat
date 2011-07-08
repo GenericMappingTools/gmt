@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.15 2011-03-15 02:06:31 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.16 2011-07-08 23:17:25 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -10,14 +10,20 @@ REM	   to its command line tool is added to PATH
 REM	3. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
-SET GSHHS=2.1.0
+SET GSHHS=2.2.0
+
+IF "%1%" == "home" (
+	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+) ELSE (
+	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+)
 
 echo === 1. Get all GSHHS %GSHHS% bzipped tar balls and extract files...
 
 C:
-cd \
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS%GSHHS%_high.tar.bz2 C:\
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS%GSHHS%_full.tar.bz2 C:\
+cd C:\GMTdev
+copy %GMTDIR%\ftp\GSHHS%GSHHS%_high.tar.bz2 C:\GMTdev\
+copy %GMTDIR%\ftp\GSHHS%GSHHS%_full.tar.bz2 C:\GMTdev\
 7z x GSHHS%GSHHS%_high.tar.bz2
 7z x GSHHS%GSHHS%_full.tar.bz2
 7z x GSHHS%GSHHS%_high.tar -oGMT -aoa
@@ -27,7 +33,9 @@ del GSHHS%GSHHS%_*.tar
 
 echo === 2. Build the GSHHS %GSHHS% full/high installer...
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_hfcoast.iss
+iscc /Q %GMTDIR%\guru\GMTsetup_hfcoast.iss
+
+copy INSTALLERS\*.exe %GMTDIR%\ftp
 
 echo === 4. DONE
 ECHO ON
