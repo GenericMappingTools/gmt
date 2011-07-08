@@ -1,4 +1,4 @@
-/*	$Id: gshhs_func.c,v 1.20 2011-07-08 02:16:05 guru Exp $
+/*	$Id: gshhs_func.c,v 1.21 2011-07-08 20:17:32 guru Exp $
  *
  *	Copyright (c) 1996-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,7 +28,8 @@
  *		1.13 15-JUL-2011: Now contains improved area information (2.2.0),
  *				 and revised greenwhich flags (now 2-bit; see gshhs.h).
  *				 Also added -A and -G as suggested by José Luis García Pallero,
- *				 as well as -Qe|i to control river-lake output.
+ *				 as well as -Qe|i to control river-lake output, and -N to
+ *				 get a particular level.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -63,10 +64,15 @@ struct GSHHS_CTRL {
 	struct G {	/* -G */
 		GMT_LONG active;
 	} G;
-	struct I {	/* -I[<id>] */
+	struct I {	/* -I[<id>|c] */
 		GMT_LONG active;
+		GMT_LONG mode;
 		GMT_LONG id;
 	} I;
+	struct N {	/* -N<level> */
+		GMT_LONG active;
+		GMT_LONG level;
+	} N;
 	struct Q {	/* -Qe|i */
 		GMT_LONG active;
 		GMT_LONG mode;
@@ -93,7 +99,7 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII %s data files\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
-	GMT_message (GMT, "usage: gshhs gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "usage: gshhs gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -101,9 +107,11 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
 	GMT_message (GMT, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
 	GMT_message (GMT, "-L List header records only (no data records will be written).\n");
-	GMT_message (GMT, "-I Output data for polygon number <id> only [Default is all polygons].\n");
-	GMT_message (GMT, "-Q controls river-lakes.  By default all polygons are output.\n");
-	GMT_message (GMT, "   use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes.\n");
+	GMT_message (GMT, "-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
+	GMT_message (GMT, "   [Default is all polygons].\n");
+	GMT_message (GMT, "-N Output features whose level matches <level> [Default outputs all levels].\n");
+	GMT_message (GMT, "-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
+	GMT_message (GMT, "   [Default outputs all polygons].\n");
 	GMT_explain_options (GMT, "VD2o:.");
 	
 	return (EXIT_FAILURE);
@@ -147,7 +155,14 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				break;
 			case 'I':
 				Ctrl->I.active = TRUE;
-				Ctrl->I.id = atoi (opt->arg);
+				if (opt->arg[0] == 'c')
+					Ctrl->I.mode = 1;
+				else
+					Ctrl->I.id = atoi (opt->arg);
+				break;
+			case 'N':
+				Ctrl->N.active = TRUE;
+				Ctrl->N.level = atoi (opt->arg);
 				break;
 			case 'Q':
 				Ctrl->Q.active = TRUE;
@@ -156,7 +171,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				else if (opt->arg[0] == 'i')
 					Ctrl->Q.mode = 2;
 				else
-					n_errors++;
+					Ctrl->Q.mode = 3;	/* Flag the error */
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -165,6 +180,10 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	}
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.level < 0, "Syntax error -N: Level cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.id < 0, "Syntax error -I: ID cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -234,7 +253,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
-		dim[2] = n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
+		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
 		if ((error = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim, (void **)&X, -1, &ID))) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHS header features.\n");
 			return (GMT_RUNTIME_ERROR);
@@ -258,7 +277,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		D->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		D->table[0]->header[0] = strdup (header);
 		D->table[0]->n_headers = 1;
-		n_alloc = (Ctrl->I.active) ? 1 : GSHHS_MAXPOL;
+		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
 		D->table[0]->segment = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
@@ -305,8 +324,9 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
 		
-		OK = ((!Ctrl->I.active || h.id == Ctrl->I.id) && area >= Ctrl->A.min);	/* FALSE if not our ID or area too small */
-		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* in/ex-clude riverlakes */
+		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && h.id == Ctrl->I.id) || (Ctrl->I.mode && h.id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
+		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* Skip if riverlake/not riverlake (-Q) */
+		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
 			n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
@@ -330,13 +350,13 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
-			sprintf (header, "%6d%8d%2ld%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
+			sprintf (header, "%6d%8d%3ld%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
 		else {		/* Island or lake polygon */
 			(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 			(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-			sprintf (header, "%6d%8d%2ld%2c %.12g %.12g%11.5f%10.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
+			sprintf (header, "%6d%8d%2ld%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 		}
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */

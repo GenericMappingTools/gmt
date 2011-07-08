@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: openmp.sh,v 1.1 2011-07-08 04:04:37 guru Exp $
+#	$Id: openmp.sh,v 1.2 2011-07-08 20:17:32 guru Exp $
 # Testing grdfilter if openmp is used.
 
 . ../functions.sh
@@ -17,7 +17,7 @@ D=1000			# 1000 km filter width
 DATA=../genper/etopo10.nc	# Test on ETOP10 data
 ps=openmp.ps
 # Run grdfilter as specified
-grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg
+grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg -V
 makecpt -Cglobe -Z > t.cpt
 grdimage t.nc -JQ0/7i -Ba:."$D km Gaussian filter":WSne -Ct.cpt -P -K -Xc -Y1.5i > $ps
 psscale -Ct.cpt -D3.5i/-0.5i/6i/0.1ih -O -K -Ba/:m: >> $ps
