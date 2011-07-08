@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 20:51:20) [64-bit] [C4] Document from GMT_pscoast
+%%Title: GMT v5.0.0b (CVS Jul  7 2011 16:20:28) [64-bit] Document from GMT_pscoast
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 21:09:28 2011
+%%CreationDate: Thu Jul  7 17:24:58 2011
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -63,6 +63,8 @@
 /Sp {N 3 -1 roll 0 360 arc F}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -143,7 +145,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -183,6 +185,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -569,7 +572,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5WSEn -K
+%%GMT:  pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5WsEN -K
 %%PROJ: merc -90.00000000 -70.00000000 18.00000000 35.81900000 -1113194.908 1113194.908 2024351.426 4250737.610 +proj=merc +lon_0=-80 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4478,11 +4481,11 @@ S
 2400 252 M 60 0 D S
 0 1572 M -60 0 D S
 2400 1572 M 60 0 D S
-0 -143 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0 2543 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(-90š) tc Z
-1200 -143 M (-80š) tc Z
-2400 -143 M (-70š) tc Z
+(-90š) bc Z
+1200 2543 M (-80š) bc Z
+2400 2543 M (-70š) bc Z
 -143 252 M (20š) mr Z
 2543 252 M (20š) ml Z
 -143 1572 M (30š) mr Z
@@ -4567,7 +4570,7 @@ O0
 3300 600 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5WSEn -K -X2.75 -Y0.5
+%%GMT:  pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5WsEN -K -X2.75 -Y0.5
 %%PROJ: omerc 269.90000000 294.56730000 13.58504992 35.97448399 -1003319.942 1017207.821 1246230.969 3266754.263 +unavailable +a=6371008.771 +b=6371008.771415
 0 setlinecap
 0 setlinejoin
@@ -7975,13 +7978,14 @@ S
 2400 928 M 56 23 D S
 0 1474 M -56 -22 D S
 2188 2400 M 55 24 D S
-49 -135 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+338 2532 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-V -70.2 R (-90š) ml Z U
-1415 -134 M V -69.1 R (-80š) ml Z U
+V -66.6 R (-80š) mr Z U
 2454 774 M V -67.9 R (-70š) ml Z U
+1709 2531 M V -66 R (-70š) mr Z U
 2533 982 M V 22.1 R (20š) ml Z U
 -133 1421 M V 21.6 R (30š) mr Z U
+2319 2458 M V 24 R (30š) ml Z U
 25 W
 2 setlinecap
 0 0 M 0 2400 D S
