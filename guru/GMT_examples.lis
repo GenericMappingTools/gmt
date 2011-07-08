@@ -1,6 +1,5 @@
 doc/examples/Makefile
 doc/examples/README.SCRIPTS
-doc/examples/do_examples.sh
 doc/examples/do_view.sh
 doc/examples/do_view.bat
 doc/examples/functions.sh

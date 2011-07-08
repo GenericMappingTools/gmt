@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.77 2011-04-27 15:35:24 remko Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.78 2011-07-08 02:34:57 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -12,9 +12,7 @@ config.guess
 config.sub
 configure.ac
 configure
-gmt_bench-marks
 gmtswitch
-gmtpatch.sh
 install-sh
 Makefile
 src/Makefile
@@ -36,13 +34,11 @@ src/gmt_contour.h
 src/gmt_crossing.h
 src/gmt_customio.h
 src/gmt_datums.h
-src/gmt_debug.h
 src/gmt_defaults.h
 src/gmt_dimensions.h
 src/gmt_ellipsoids.h
 src/gmt_error.h
 src/gmt_gdalread.h
-src/gmt_globals.h
 src/gmt_grd.h
 src/gmt_grdkeys.h
 src/gmt_grdio.h
@@ -84,7 +80,6 @@ src/blockmean_func.c
 src/blockmedian_func.c
 src/blockmode_func.c
 src/block_subs.h
-src/block_subs.c
 src/filter1d_func.c
 src/fitcircle_func.c
 src/gmt.c
@@ -114,10 +109,8 @@ src/gmtdp_func.c
 src/gmtconvert_func.c
 src/gmtget_func.c
 src/gmtmath_func.c
-src/gmtmath_def.h
 src/gmtmath_op.h
 src/gmtmath_explain.h
-src/gmtmath.h
 src/gmtlogo
 src/gmtselect_func.c
 src/gmtset_func.c
@@ -142,10 +135,8 @@ src/grdinfo_func.c
 src/grdlandmask_func.c
 src/grdmask_func.c
 src/grdmath_func.c
-src/grdmath_def.h
 src/grdmath_op.h
 src/grdmath_explain.h
-src/grdmath.h
 src/grdpaste_func.c
 src/grdproject_func.c
 src/grdreformat_func.c
@@ -265,5 +256,4 @@ src/trend1d.1
 src/trend2d.1
 src/triangulate.1
 src/xyz2grd.1
-share/conf/gmtdefaults.in
 share/conf/gmt.conf.in
