@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1133 2011-07-07 19:53:01 guru Exp $
+	$Id: ChangeLog,v 1.1134 2011-07-08 20:17:32 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-07	pwessel
@@ -45,8 +45,10 @@
 				stored as doubles.  The old int(0.1*area) would set all
 				areas < 0.1 km^2 to zero [only affected gshhs supplement].
 	* gshhs/gshhs_func.c:	Updated to handle GSHHS 2.2.0.  Fixed porting bugs.  Also added
-				-Amin to exclude smaller polygons on output and -G for special
-				Octave/Matlab-formatted output [suggested by José Luis García Pallero].
+				-Amin to exclude smaller polygons on output [suggested by José
+				Luis García Pallero], as well as -Q to control output of river-lakes
+				and -N to control which levels to get.  Octave/Matlab format can be
+				natively requiested in GMT using 
 
 2011-06-23	remko
 	* gmt_init.c:		Introduced MAP_TICK_LENGTH_{PRIMARY,SECONDARY} to set major
