@@ -1,82 +1,115 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.51 2011-03-25 01:32:31 remko Exp $
+REM	$Id: GMT_winbuild.bat,v 1.52 2011-07-08 23:17:25 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
 REM
 REM	Assumptions:
-REM	1. You have run make tar_all
-REM	2. You have placed netcdf in C:\NETCDF
-REM	3. INCLUDE, LIB, PATH have been set so that CL and
-REM	   LIB will find the netcdf & f2c includes and librares
-REM	4. HOME and GMTHOME has been set
-REM	5. Inno Setup 5 has been installed and the path
+REM	1. You have run make tar_all tar_coast
+REM	2. You have placed netcdf in C:\GMTdev\netcdf-3.6.3\VC10_32|64
+REM	3. You have placed gdal in C:\GMTdev\gdal\VC10_32|64
+REM	4. You have placed gawk.exe in C:\GMTdev\GNU
+REM	5. You have C:\GMTdev with dirs INFO and INSTALLERS
+REM	6. Inno Setup 5 has been installed and the path
 REM	   to its command line tool is added to PATH
-REM	6. 7zip has been installed and the path
+REM	7. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
+REM
+REM To build 32-bit installer, run GMT_winbuild drive 32
+REM To build 64-bit installer, run GMT_winbuild drive 64 (ASSUMES 32 was run first!)
 
-SET GVER=5.0.0
+REM MAKE SURE THESE TWO ARE UPDATED!
+SET GVER=5.0.0b
+SET GSHHS=2.2.0
 
-echo === 1. Get all GMT%GVER% bzipped tar balls and extract files...
+IF "%1%" == "home" (
+	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+) ELSE (
+	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+)
+IF "%2%" == "64" (
+	SET BITS=64
+) ELSE (
+	SET BITS=32
+)
+set NETCDF_DIR=C:\GMTdev\netcdf-3.6.3\VC10_%BITS%
+set GDAL_DIR=C:\GMTdev\gdal\VC10_%BITS%
+set GNU_DIR=C:\GMTdev\GNU
 
 C:
-cd \
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GMT%GVER%*.tar.bz2 C:\
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS2.1.0_*.tar.bz2 C:\
-7z x GMT*.tar.bz2
-7z x GSHHS*.tar.bz2
-7z x GMT*.tar -aoa
-7z x GSHHS*.tar -oGMT%GVER% -aoa
-del *.tar.bz2
-del *.tar
-rename GMT%GVER% GMT
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\src\gmt_version.h C:\GMT\src
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\src\gmt_notposix.h C:\GMT\src
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmt.conf C:\GMT\share\conf
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmtdefaults_SI C:\GMT\share\conf
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\share\conf\gmtdefaults_US C:\GMT\share\conf
+IF "%BITS%" == "32" (
+	echo === 0. Get all GMT%GVER% bzipped tar balls and extract files...
 
-echo === 2. Build the GMT executables, including supplements...
+	cd C:\GMTdev
+	copy %GMTDIR%\ftp\GMT%GVER%*.tar.bz2 C:\GMTdev\
+	copy %GMTDIR%\ftp\GSHHS%GSHHS%_*.tar.bz2 C:\GMTdev\
+	7z x GMT*.tar.bz2
+	7z x GSHHS*.tar.bz2
+	7z x GMT*.tar -aoa
+	7z x GSHHS*.tar -oGMT%GVER% -aoa
+	del *.tar.bz2
+	del *.tar
+	rename GMT%GVER% GMT
+	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\GMT\src
+	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\GMT\src
+	copy %GMTDIR%\share\conf\gmt.conf.win C:\GMTdev\GMT\share\conf\gmt.conf
+	copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMTdev\GMT\share\conf
+	copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMTdev\GMT\share\conf
 
-cd C:\GMT
-mkdir bin
+	mkdir C:\GMTdev\INFO
+	mkdir C:\GMTdev\INSTALLERS
+
+	copy %GMTDIR%\guru\GMT_postinstall_message.txt C:\GMTdev\INFO
+)
+
+echo === 1. Build %BITS% GMT executables, including supplements, enabling GDAL...
+
+set OLD_INCLUDE=%INCLUDE%
+set OLD_LIB=%LIB%
+set INCLUDE=%OLD_INCLUDE%;%NETCDF_DIR%\include;%GDAL_DIR%\include
+set LIB=%OLD_LIB%;%NETCDF_DIR%\lib;%GDAL_DIR%\lib
+
+cd C:\GMTdev\GMT
+mkdir bin%BITS%
 mkdir lib
 mkdir include
 cd src
-call gmtinstall tri no
-call gmtsuppl
+call gmtinstall yes yes %BITS%
+call gmtsuppl %BITS%
 
-echo === 3. Run all the examples...
+echo === 2. Run all the examples...
 
-cd C:\GMT\doc\examples
+set GMT_SHAREDIR=C:\GMTdev\GMT\share
+set OLDPATH=%PATH%
+set PATH=C:\GMTdev\GMT\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
+
+cd C:\GMTdev\GMT\doc\examples
 call do_examples
-cd C:\GMT
+cd C:\GMTdev\GMT
 
-echo === 4. Remove all the examples PS files...
+echo === 3. Remove all the examples PS files...
 
-cd C:\GMT\doc\examples
-for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
-cd C:\GMT
+cd C:\GMTdev\GMTdoc\examples
+del example_*.ps
+cd C:\GMTdev\GMT
 
-echo === 5. Build the GMT Basic installer...
+echo === 4. Build the %BITS%-bit GMT+GDAL installer...
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_basic.iss
+iscc /Q %GMTDIR%\guru\GMTsetup%BITS%.iss
 
-echo === 6. Rebuild the GMT executables enabling GDAL support...
+IF "%BITS%" == "32" (
+	echo === 5. Build the GMT PDF installer...
 
-cd C:\GMT\src
-call gmtinstall tri gdal
-call gmtsuppl
+	iscc /Q %GMTDIR%\guru\GMTsetup_pdf.iss
+)
 
-echo === 7. Build the GMT+GDAL installer...
+echo === 6. PLACE INSTALLERS in ftp dir
 
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_gdal.iss
+cd C:\GMTdev\
+copy INSTALLERS\*.exe %GMTDIR%\ftp
 
-echo === 8. Build the GMT PDF installer...
-
-iscc /Q Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\guru\GMTsetup_pdf.iss
-
-echo === 9. DONE
-cd C:\
+set PATH=%OLDPATH%
+ 
+echo === 7. DONE
 
 ECHO ON
