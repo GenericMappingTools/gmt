@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.50 2011-05-18 22:23:49 remko Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.51 2011-07-08 03:34:15 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright (c) 2000-2011.
@@ -95,6 +95,8 @@ nearneighborxxxxx \=					\kill
 \end{tabbing}
 \index{GMT@\GMT!overview|)}
 
+\clearpage
+
 \section{\gmt\ quick reference}
 \index{GMT@\GMT!quick reference|(}
 \label{sec:purpose}
@@ -131,9 +133,6 @@ for each of the over 30 projections available in \GMT. \\
 \GMTprog{pswiggle}	&	Draw anomalies along track \\ \hline
 \GMTprog{psxy}		&	Plot symbols, polygons, and lines in 2-D \\ \hline
 \GMTprog{psxyz}		&	Plot symbols, polygons, and lines in 3-D \\ \hline
-\end{tabular}
-
-\begin{tabular}{|ll|}
 \multicolumn{2}{c}\textbf{GRIDDING OF (X,Y,Z) TABLE DATA} \\ \hline
 \GMTprog{greenspline}	&	Interpolation using Green's functions for splines in 1--3 dimensions \\ \hline
 \GMTprog{nearneighbor}	&	Nearest-neighbor gridding scheme \\ \hline
@@ -147,6 +146,9 @@ for each of the over 30 projections available in \GMT. \\
 \GMTprog{grdproject}	&	Transform gridded data to a new coordinate system \\ \hline
 \GMTprog{mapproject}	&	Transform table data to a new coordinate system \\ \hline
 \GMTprog{project}	&	Project data onto lines or great circles \\ \hline
+\end{tabular}
+
+\begin{tabular}{|ll|}
 \multicolumn{2}{c}\textbf{INFORMATION} \\ \hline
 \GMTprog{gmtdefaults}	&	List the current default settings \\ \hline
 \GMTprog{gmtget}	&	Retrieve selected parameters in current \filename{gmt.conf} file \\ \hline
@@ -193,6 +195,7 @@ for each of the over 30 projections available in \GMT. \\
 \multicolumn{2}{c}\textbf{MANIPULATING \GMT\ POSTSCRIPT FILES} \\ \hline
 \GMTprog{ps2raster}	&	Crop and convert PostScript files to raster images, EPS and PDF \\ \hline
 \end{tabular}
+\end{center}
 
 \clearpage
 
@@ -311,7 +314,10 @@ for each of the over 30 projections available in \GMT. \\
 \index{\Opt{t} (PDF transparency)|(}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)|(}
 
-
+\GMT\ offers 31 map projection.  These are specified using the \Opt{J} common option.
+There are two conventions you may use: (a) \GMT-style syntax and (b) \progname{Proj4}-style
+syntax.
+The projection codes for the \GMT-style are tabulated below.
 \newenvironment{cmdlineopts}[1]{
 \newcommand{\lon}[1]{$lon_{##1}$}
 \newcommand{\lat}[1]{$lat_{##1}$}
@@ -321,39 +327,14 @@ for each of the over 30 projections available in \GMT. \\
 \newcommand{~}{\hspace{0.2in}}
 
 \begin{tabular}{|ll|}
-\multicolumn{2}{c}\textbf{STANDARDIZED COMMAND LINE OPTIONS #1} \\ \hline
-\multicolumn{2}{|l|}{\Opt{B}[\textbf{p}$|$\textbf{s}]\emph{xinfo}[\emph{/yinfo}[\emph{/zinfo}]][\emph{WESNZwesnz+}][\emph{:.title:}] Tickmarks. Each \emph{info} is} \\
-\multicolumn{2}{|l|}{~[\textbf{t}]\emph{stride}[\emph{phase}][\textbf{u}][\textbf{l}$|$\textbf{p}][:"label":][:="prefix":][:,"unit":], where \textbf{l} and \textbf{p} apply to $\log_{10}$ axes only,} \\
-\multicolumn{2}{|l|}{~and type \textbf{t} = \{\textbf{a, A, f, g, i, I}\}; unit \textbf{u} = \{\textbf{d, D, h, H, K, k, m, M, o, O, r, R, s, S, u, U, y, Y}\}} \\
-\multicolumn{2}{|l|}{~The leading \textbf{p}$|$\textbf{s} selects primary [Default] or secondary axis items} \\ \hline
+\multicolumn{2}{c}\textbf{#1} \\ \hline
 \Opt{J}	(upper case for \Wi, lower case for \wi) &	Map projection \\ \hline
 }{
-\Opt{K}	&	Append more PS later \\ \hline
-\Opt{O}	&	This is an overlay plot \\ \hline
-\Opt{P}	&	Select Portrait orientation \\ \hline
-\Opt{R}\emph{west/east/south/north}[\emph{/zmin/zmax}][\textbf{r}] & Specify Region of interest \\ \hline
-\Opt{U}[[\emph{just}]/\emph{dx}/\emph{dy}/][\emph{label}]	&	Plot time-stamp on plot \\ \hline
-\Opt{V}	&	Run in verbose mode \\ \hline
-\Opt{X}[\textbf{a}$|$\textbf{c}$|$\textbf{r}]\emph{off}[\textbf{u}]	&	Shift plot origin in $x$-direction \\ \hline
-\Opt{Y}[\textbf{a}$|$\textbf{c}$|$\textbf{r}]\emph{off}[\textbf{u}]	&	Shift plot origin in $y$-direction \\ \hline
-\Opt{a}\emph{name=col,...}	&	Associates aspatial data with columns \\ \hline
-\Opt{b}[\textbf{i}$|$\textbf{o}][\emph{ncol}][\textbf{t}]	&	Select binary input or output \\ \hline
-\Opt{c}\emph{copies}	&	Set number of plot copies [1] \\ \hline
-\Opt{f}[\textbf{i}$|$\textbf{o}]\emph{colinfo}	&	Set formatting of ASCII input or output \\ \hline
-\Opt{g}[\textbf{+}]\textbf{x}$|$\textbf{X}$|$\textbf{y}$|$\textbf{Y}$|$\textbf{d}$|$\textbf{D}\emph{gap}[\textbf{u}]	&	Segment data by detecting gaps \\ \hline
-\Opt{h}[\textbf{i}$|$\textbf{i}][\emph{n\_headers}]		&	ASCII [input$|$output] tables have header record[s] \\ \hline
-\Opt{i}\emph{columns}		&	Selection of input columns \\ \hline
-\Opt{o}\emph{columns}		&	Selection of output columns \\ \hline
-\Opt{n}[\emph{type}][\textbf{+a}][\textbf{b}\emph{BC}][\textbf{+t}\emph{threshold}] 		&	Set grid interpolation mode \\ \hline
-\Opt{p}\emph{azim/elev}[/\emph{zlevel}][\textbf{+w}\emph{lon0/lat0}[/\emph{z0}]][\textbf{+v}\emph{x0/y0}]	&	Control 3-D perspective view \\ \hline
-\Opt{r}	&	Sets grid registration \\ \hline
-\Opt{s}[\textbf{z}$|$\emph{cols}]	&	Control treatment of NaN records \\ \hline
-\Opt{t}\emph{transp}	&	Set layer PDF transparency \\ \hline
-\Opt{:}[\textbf{i}$|$\textbf{o}]	&	Expect \emph{y}/\emph{x} input rather than \emph{x}/\emph{y} \\ \hline
 \end{tabular}
 }
 
-\begin{cmdlineopts}{WITH OLD PROJECTION CODES}
+\begin{center}
+\begin{cmdlineopts}{WITH GMT PROJECTION CODES}
 ~\Opt{JA}\lon0/\lat0\ho/\Wi	&	Lambert azimuthal equal area \\ \hline
 ~\Opt{JB}\lon0/\lat0/\lat1/\lat2/\Wi	&	Albers conic equal area \\ \hline
 ~\Opt{JC}\lon0/\lat0/\Wi	&	Cassini cylindrical \\ \hline
@@ -386,7 +367,13 @@ for each of the over 30 projections available in \GMT. \\
 ~\Opt{JX}\Wi[\textbf{l}$|$\textbf{p}\emph{exp}$|$\textbf{T}$|$\textbf{t}][/\emph{height}[\textbf{l}$|$\textbf{p}\emph{exp}$|$\textbf{T}$|$\textbf{t}]][\textbf{d}]	&	Linear, log$_{10}$, $x^a$--$y^b$, and time \\ \hline
 ~\Opt{JY}\lon0/\lat0/\Wi	&	Cylindrical equal area \\ \hline
 \end{cmdlineopts}
+\end{center}
 
+\clearpage
+
+The projection codes for the \progname{Proj4}-style are tabulated below.
+
+\begin{center}
 \begin{cmdlineopts}{(WITH \progname{Proj4} PROJECTION CODES)}
 ~\Opt{Jaea/}\lon0/\lat0/\lat1/\lat2/\wi	&	Albers conic equal area \\ \hline
 ~\Opt{Jaeqd/}\lon0/\lat0\ho/\wi	&	Azimuthal equidistant \\ \hline
@@ -420,6 +407,44 @@ for each of the over 30 projections available in \GMT. \\
 ~\Opt{Jwintri/}[\lon0/]\wi	&	Winkel Tripel \\ \hline
 ~\Opt{Jxy/}\emph{xscale}[\textbf{l}$|$\textbf{p}\emph{exp}$|$\textbf{T}$|$\textbf{t}][/\emph{yscale}[\textbf{l}$|$\textbf{p}\emph{exp}$|$\textbf{T}$|$\textbf{t}]][\textbf{d}]	&	Linear, log$_{10}$, $x^a$--$y^b$, and time \\ \hline
 \end{cmdlineopts}
+\end{center}
+
+\clearpage
+
+Finally, the rest of the \GMT\ common options are given below:
+
+\begin{center}
+
+\begin{tabular}{|ll|}
+\multicolumn{2}{c}\textbf{STANDARDIZED COMMAND LINE OPTIONS} \\ \hline
+\multicolumn{2}{|l|}{\Opt{B}[\textbf{p}$|$\textbf{s}]\emph{xinfo}[\emph{/yinfo}[\emph{/zinfo}]][\emph{WESNZwesnz+}][\emph{:.title:}] Tickmarks. Each \emph{info} is} \\
+\multicolumn{2}{|l|}{~[\textbf{t}]\emph{stride}[\emph{phase}][\textbf{u}][\textbf{l}$|$\textbf{p}][:"label":][:="prefix":][:,"unit":][\textbf{+g}\emph{fill}], where \textbf{l} and \textbf{p} apply to $\log_{10}$ axes only,} \\
+\multicolumn{2}{|l|}{~and type \textbf{t} = \{\textbf{a, A, f, g, i, I}\}; unit \textbf{u} = \{\textbf{d, D, h, H, K, k, m, M, o, O, r, R, s, S, u, U, y, Y}\}} \\
+\multicolumn{2}{|l|}{~The leading \textbf{p}$|$\textbf{s} selects primary [Default] or secondary axis items} \\ \hline
+\Opt{K}	&	Append more PS later \\ \hline
+\Opt{O}	&	This is an overlay plot \\ \hline
+\Opt{P}	&	Select Portrait orientation \\ \hline
+\Opt{R}\emph{west/east/south/north}[\emph{/zmin/zmax}][\textbf{r}] & Specify Region of interest \\ \hline
+\Opt{U}[[\emph{just}]/\emph{dx}/\emph{dy}/][\emph{label}]	&	Plot time-stamp on plot \\ \hline
+\Opt{V}	&	Run in verbose mode \\ \hline
+\Opt{X}[\textbf{a}$|$\textbf{c}$|$\textbf{r}]\emph{off}[\textbf{u}]	&	Shift plot origin in $x$-direction \\ \hline
+\Opt{Y}[\textbf{a}$|$\textbf{c}$|$\textbf{r}]\emph{off}[\textbf{u}]	&	Shift plot origin in $y$-direction \\ \hline
+\Opt{a}\emph{name=col,...}	&	Associates aspatial data with columns \\ \hline
+\Opt{b}[\textbf{i}$|$\textbf{o}][\emph{ncol}][\textbf{t}]	&	Select binary input or output \\ \hline
+\Opt{c}\emph{copies}	&	Set number of plot copies [1] \\ \hline
+\Opt{f}[\textbf{i}$|$\textbf{o}]\emph{colinfo}	&	Set formatting of ASCII input or output \\ \hline
+\Opt{g}[\textbf{+}]\textbf{x}$|$\textbf{X}$|$\textbf{y}$|$\textbf{Y}$|$\textbf{d}$|$\textbf{D}\emph{gap}[\textbf{u}]	&	Segment data by detecting gaps \\ \hline
+\Opt{h}[\textbf{i}$|$\textbf{i}][\emph{n\_headers}]		&	ASCII [input$|$output] tables have header record[s] \\ \hline
+\Opt{i}\emph{columns}		&	Selection of input columns \\ \hline
+\Opt{o}\emph{columns}		&	Selection of output columns \\ \hline
+\Opt{n}[\emph{type}][\textbf{+a}][\textbf{b}\emph{BC}][\textbf{+t}\emph{threshold}] 		&	Set grid interpolation mode \\ \hline
+\Opt{p}\emph{azim/elev}[/\emph{zlevel}][\textbf{+w}\emph{lon0/lat0}[/\emph{z0}]][\textbf{+v}\emph{x0/y0}]	&	Control 3-D perspective view \\ \hline
+\Opt{r}	&	Sets grid registration \\ \hline
+\Opt{s}[\textbf{z}$|$\emph{cols}]	&	Control treatment of NaN records \\ \hline
+\Opt{t}\emph{transp}	&	Set layer PDF transparency \\ \hline
+\Opt{:}[\textbf{i}$|$\textbf{o}]	&	Expect \emph{y}/\emph{x} input rather than \emph{x}/\emph{y} \\ \hline
+\end{tabular}
+
 
 \index{Standardized command line options|)}
 \index{\Opt{B} (set annotations and ticks)|)}
