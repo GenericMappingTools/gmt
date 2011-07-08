@@ -1,17 +1,19 @@
-#	$Id: README.gshhs,v 1.28 2011-07-01 18:58:18 guru Exp $
+#	$Id: README.gshhs,v 1.29 2011-07-08 02:16:05 guru Exp $
 
 			G S H H S
 
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
-Version Jul 1, 2011
+Version Jul 15, 2011
 Work with the latest GSHHS data set version 2.2.0.  Here, the
 greenwich flag is now 2-bit with values 0-3 (0 = no Greenwich
 nor Dateline crossing, 1 = Greenwich crossing, 2 = Dateline
 crossing, 3 = both), and the area is stored with a magnitude
 embedded in the flag; see code for details.  This ensure higher
-precision for smaller areas.  gshhs.c is now a module.
+precision for smaller areas.  gshhs.c is now a module.  Also
+set river flag for the river-lakes in the WDBII files so they
+can be detected.
 
 Version Jan 1, 2011
 No source code changes but expected to work with the latest GSHHS
