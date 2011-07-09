@@ -13,6 +13,8 @@ share/x2sys/xyz.def
 src/dbase/Makefile
 src/dbase/README.dbase
 src/dbase/grdraster.1
+src/dbase/gmt_dbase.c
+src/dbase/gmt_dbase.h
 src/dbase/grdraster_func.c
 src/gshhs/Makefile
 src/gshhs/README.gshhs
@@ -27,6 +29,8 @@ src/gshhs/gshhstograss.1
 src/gshhs/gshhstograss.c
 src/imgsrc/Makefile
 src/imgsrc/README.imgsrc
+src/imgsrc/gmt_img.c
+src/imgsrc/gmt_img.h
 src/imgsrc/gmt_imgsubs.c
 src/imgsrc/gmt_imgsubs.h
 src/imgsrc/img2google
@@ -112,6 +116,8 @@ src/misc/gmtdigitize.c
 src/segyprogs/Makefile
 src/segyprogs/Makefile
 src/segyprogs/README.segyprogs
+src/segyprogs/gmt_segy.c
+src/segyprogs/gmt_segy.h
 src/segyprogs/pssegy.1
 src/segyprogs/pssegy_func.c
 src/segyprogs/pssegyz.1
@@ -136,6 +142,8 @@ src/sph/gshhs_c.txt
 src/sph/hotspots.d
 src/sph/lun2.txt
 src/sph/mars370.txt
+src/sph/gmt_sph.c
+src/sph/gmt_sph.h
 src/sph/sph.c
 src/sph/sph.h
 src/sph/sph_ex_1.sh
@@ -154,6 +162,8 @@ src/spotter/DC85.d
 src/spotter/Makefile
 src/spotter/README.spotter
 src/spotter/WK97.d
+src/spotter/gmt_spotter.c
+src/spotter/gmt_spotter.h
 src/spotter/backtracker.1
 src/spotter/backtracker_func.c
 src/spotter/grdpmodeler.1
@@ -177,6 +187,8 @@ src/spotter/spotter.h
 src/spotter/spotter.sh
 src/x2sys/Makefile
 src/x2sys/README.x2sys
+src/x2sys/gmt_x2sys.c
+src/x2sys/gmt_x2sys.h
 src/x2sys/x2sys.c
 src/x2sys/x2sys.h
 src/x2sys/x2sys_binlist.1

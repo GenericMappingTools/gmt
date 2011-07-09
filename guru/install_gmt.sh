@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.173 2011-06-03 02:13:17 guru Exp $
+#	$Id: install_gmt.sh,v 1.174 2011-07-09 00:41:17 guru Exp $
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	3-Aug-2010
+#	15-Jul-2011
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=5.0.0
-GSHHS=2.1.0
+VERSION=5.0.0b
+GSHHS=2.2.0
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -459,6 +459,7 @@ GMT_suppl_meca=d
 GMT_suppl_mex=d
 GMT_suppl_mgd77=d
 GMT_suppl_misc=d
+GMT_suppl_potential=d
 GMT_suppl_segyprogs=d
 GMT_suppl_sph=d
 GMT_suppl_spotter=d
@@ -492,6 +493,7 @@ meca:      Plotting special symbols in seismology and geodesy
 mex:       Interface for reading/writing GMT grdfiles (REQUIRES MATLAB or OCTAVE)
 mgd77:     Programs for handling MGD77 data files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
+potential: Misc geopotential modeling
 segyprogs: Plot SEGY seismic data files
 sph:       Spherical triangulation, Voronoi construction and interpolation
 spotter:   Plate tectonic backtracking and hotspotting
@@ -514,6 +516,7 @@ EOF
 		GMT_suppl_mex=$y_or_n
 		GMT_suppl_mgd77=$y_or_n
 		GMT_suppl_misc=$y_or_n
+		GMT_suppl_potential=$y_or_n
 		GMT_suppl_segyprogs=$y_or_n
 		GMT_suppl_sph=$y_or_n
 		GMT_suppl_spotter=$y_or_n
@@ -527,6 +530,7 @@ EOF
 		GMT_suppl_mex=`get_def_answer "Install the mex supplemental package? (y/n)?" "y"`
 		GMT_suppl_mgd77=`get_def_answer "Install the mgd77 supplemental package? (y/n)?" "y"`
 		GMT_suppl_misc=`get_def_answer "Install the misc supplemental package? (y/n)?" "y"`
+		GMT_suppl_potential=`get_def_answer "Install the potential supplemental package? (y/n)?" "y"`
 		GMT_suppl_segyprogs=`get_def_answer "Install the segyprogs supplemental package? (y/n)?" "y"`
 		GMT_suppl_sph=`get_def_answer "Install the sph supplemental package? (y/n)?" "y"`
 		GMT_suppl_spotter=`get_def_answer "Install the spotter supplemental package? (y/n)?" "y"`
@@ -616,6 +620,7 @@ GMT_suppl_mex=$GMT_suppl_mex
 GMT_mex_type=$GMT_mex_type
 GMT_suppl_mgd77=$GMT_suppl_mgd77
 GMT_suppl_misc=$GMT_suppl_misc
+GMT_suppl_potential=$GMT_suppl_potential
 GMT_suppl_segyprogs=$GMT_suppl_segyprogs
 GMT_suppl_sph=$GMT_suppl_sph
 GMT_suppl_spotter=$GMT_suppl_spotter

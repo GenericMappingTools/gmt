@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.78 2011-07-08 02:34:57 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.79 2011-07-09 00:41:17 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -24,7 +24,11 @@ src/gmt_shell_functions.sh
 src/gmtinstall.bat
 src/gmtsuppl.bat
 src/gmt.h
-src/gmt_calclock.h
+src/gmtapi.h
+src/gmtapi_define.h
+src/gmtapi_errno.h
+src/gmtapi_errstr.h
+src/src/gmt_calclock.h
 src/gmt_colors.h
 src/gmt_colornames.h
 src/gmt_color_rgb.h
@@ -52,6 +56,7 @@ src/gmt_macros.h
 src/gmt_map.h
 src/gmt_math.h
 src/gmt_mgg_header2.h
+src/gmt_modules.h
 src/gmt_nan.h
 src/gmt_notposix.h.in
 src/gmt_notunix.h
@@ -60,6 +65,10 @@ src/gmt_media_size.h
 src/gmt_pennames.h
 src/gmt_proj.h
 src/gmt_project.h
+src/gmt_prognames.h
+src/gmt_progcases.h
+src/gmt_progpurpose.h
+src/gmt_prototypes.h
 src/gmt_plot.h
 src/gmt_ps.h
 src/gmt_shore.h
@@ -76,6 +85,7 @@ src/gmt_version.h.in
 src/pslib.h
 src/pslconfig.h.in
 src/gmt.c
+src/colmath_func.c
 src/blockmean_func.c
 src/blockmedian_func.c
 src/blockmode_func.c
@@ -83,10 +93,15 @@ src/block_subs.h
 src/filter1d_func.c
 src/fitcircle_func.c
 src/gmt.c
+src/gmtapi_parse.c
+src/gmtapi_util.c
+src/gmtprogram.c
 src/gmt_bcr.c
 src/gmt_calclock.c
 src/gmt_cdf.c
 src/gmt_customio.c
+src/gmt_esri_io.c
+src/gmt_fft.c
 src/gmt_gdalread.c
 src/gmt_gdalwrite.c
 src/gmt_grdio.c
@@ -94,6 +109,8 @@ src/gmt_init.c
 src/gmt_io.c
 src/gmt_map.c
 src/gmt_mgg_header2.c
+src/gmt_modules.c
+src/gmt_notposix.c
 src/gmt_agc_io.c
 src/gmt_nc.c
 src/gmt_plot.c
@@ -105,10 +122,12 @@ src/gmt_support.c
 src/gmt_vector.c
 src/gmt2kml_func.c
 src/gmtdefaults_func.c
+src/gmtaverage_func.c
 src/gmtdp_func.c
 src/gmtconvert_func.c
 src/gmtget_func.c
 src/gmtmath_func.c
+src/gmtmath_func.h
 src/gmtmath_op.h
 src/gmtmath_explain.h
 src/gmtlogo
@@ -135,6 +154,7 @@ src/grdinfo_func.c
 src/grdlandmask_func.c
 src/grdmask_func.c
 src/grdmath_func.c
+src/grdmath_func.h
 src/grdmath_op.h
 src/grdmath_explain.h
 src/grdpaste_func.c
@@ -177,6 +197,10 @@ src/trend1d_func.c
 src/trend2d_func.c
 src/triangulate_func.c
 src/xyz2grd_func.c
+src/testapi_func.c
+src/testgmt5.c
+src/testgmtio.c
+src/testio.c
 src/gmt.1
 src/blockmean.1
 src/blockmedian.1
