@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.50 2011-05-18 21:20:46 remko Exp $
+#       $Id: install_gmt_form.pl,v 1.51 2011-07-09 00:41:17 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -51,6 +51,7 @@ $use_triangle	= $gmt_form{'radio_triangle'};
 $libtype	= $gmt_form{'radio_link'};
 $cc		= $gmt_form{'cc'};
 $custom_cc	= $gmt_form{'custom_cc'};
+$gmt_mp		= $gmt_form{'checkbox_mp'};
 $gmt_64		= $gmt_form{'checkbox_64'};
 $gmt_univ	= $gmt_form{'checkbox_univ'};
 $make		= $gmt_form{'make'};
@@ -75,6 +76,7 @@ $get_mgd77	= $gmt_form{'checkbox_mgd77'};
 $get_mex	= $gmt_form{'checkbox_mex'};
 $mex_type	= $gmt_form{'radio_mex'};
 $get_misc	= $gmt_form{'checkbox_misc'};
+$get_potential	= $gmt_form{'checkbox_potential'};
 $get_segyprogs	= $gmt_form{'checkbox_segyprogs'};
 $get_sph	= $gmt_form{'checkbox_sph'};
 $get_spotter	= $gmt_form{'checkbox_spotter'};
@@ -95,14 +97,14 @@ chop($now);
 open (FILE, ">" . $OUT) || die "Sorry, cound not create tmp file\n";
 print FILE <<EOF;
 # This file contains parameters needed by the install script
-# install_gmt for GMT Version 4.5.0.  Give this file
+# install_gmt for GMT Version 5.0.0b.  Give this file
 # as the argument to the install_gmt script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.50 $, on
+# Processed by install_gmt_form.pl $Revision: 1.51 $, on
 #
 #	$now
 #
@@ -278,6 +280,13 @@ if ($get_misc eq "on") {
 else {
 	print FILE "n\n";
 }
+print FILE "GMT_suppl_potential=";
+if ($get_potential eq "on") {
+	print FILE "y\n";
+}
+else {
+	print FILE "n\n";
+}
 print FILE "GMT_suppl_segyprogs=";
 if ($get_segyprogs eq "on") {
 	print FILE "y\n";
@@ -370,6 +379,13 @@ elsif ($k[0] eq "2.") {
 }
 else {
 	print FILE "GMT_cc=", $custom_cc, "\n";
+}
+print FILE "GMT_MP=";
+if ($gmt_mp eq "on") {
+	print FILE "y\n";
+}
+else {
+	print FILE "n\n";
 }
 print FILE "GMT_64=";
 if ($gmt_64 eq "on") {

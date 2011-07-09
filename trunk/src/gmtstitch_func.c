@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.21 2011-06-30 02:20:01 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.22 2011-07-09 00:41:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT_LONG i, j, k, np, ns, id, pos, start_id, done, end_order, n_columns, n_rows, out_p, n_alloc_pts;
 	GMT_LONG n_new, n, chain = 0, n_islands = 0, n_trouble = 0, n_closed = 0, id2, L, G, error = 0, mode = 0;
 	GMT_LONG n_id_alloc = GMT_CHUNK, out_seg, match = 0, n_steps, ID, n_seg_length, io_mode = GMT_WRITE_DATASET;
-	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, n_qfiles = 0, q_mode, *skip = NULL;
+	GMT_LONG save_type = FALSE, first, wrap_up = FALSE, n_qfiles = 0, q_mode = 0, *skip = NULL;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;

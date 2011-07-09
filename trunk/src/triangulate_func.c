@@ -1,5 +1,5 @@
  /*--------------------------------------------------------------------
- *	$Id: triangulate_func.c,v 1.16 2011-07-01 08:03:00 guru Exp $
+ *	$Id: triangulate_func.c,v 1.17 2011-07-09 00:41:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,7 +227,10 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
-	double *xe = NULL, *ye = NULL, *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
+	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
+#ifdef TRIANGLE_D
+	double *xe = NULL, *ye = NULL;
+#endif
 
 	struct GMT_GRID *Grid = NULL;
 

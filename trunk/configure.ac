@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.121 2011-07-08 02:19:34 guru Exp $
+dnl $Id: configure.ac,v 1.122 2011-07-09 00:41:17 guru Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.121 $)
+AC_REVISION($Revision: 1.122 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -841,8 +841,10 @@ if test "X$enable_openmp" = "Xyes" ; then
 	if test ! "X$MEX_BLD" = "X" ; then
 		MEX_BLD="$MEX_BLD -fopenmp"
 	fi
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
 fi
-AC_MSG_RESULT($enable_openmp)
 dnl
 dnl -----------------------------------------------------------------
 dnl Update the GMT macros
