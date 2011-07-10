@@ -1,5 +1,5 @@
 /*
- *	$Id: gmt_mex.c,v 1.7 2011-05-16 21:23:11 guru Exp $
+ *	$Id: gmt_mex.c,v 1.8 2011-07-10 23:25:37 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -416,8 +416,8 @@ GMT_LONG get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG *data_
 GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, const mxArray *prhs[], int nrhs, char **key, GMT_LONG n_keys, struct GMT_OPTIONS **head)
 {
 	/* API controls all things within GMT.
-	 * plhs (and nlhs) are the outputs specified on the left side of the equal sign.
-	 * prhs (and nrhs) are the inputs specified after the option string.
+	 * plhs (and nlhs) are the outputs specified on the left side of the equal sign in Matlab.
+	 * prhs (and nrhs) are the inputs specified after the option string in the GMT-mex function.
 	 * key is array with 3-char codes for current module i/o.
 	 * opt is the linked list of GMT options passed in.
 	 */
