@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.17 2011-06-29 22:27:00 jluis Exp $
+ *	$Id: xyzokb_func.c,v 1.18 2011-07-10 19:08:49 jluis Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,9 +59,6 @@
  *	coerente. Assim, na opcao -Z o <level> deve obedecer ao sinal. Ou seja, -Z-2300
  *	significa que a base está a -2300 m de prof.
  *
- *	28-04-10
- *	All variables used by the okb routines are now doubles. Fixed bug on y_obs[] that could
- *	be at most as big as x_obs (same as z_obs, that now use zobs while it is made variable)
  */
 
 #include "gmt_potential.h"
@@ -192,11 +189,11 @@ void Free_xyzokb_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz, double *central_long, double *central_lat);
-GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file);
-GMT_LONG read_raw (struct GMT_CTRL *GMT, FILE *fp_r, char *raw_file, double z_dir);
-GMT_LONG read_stl (struct GMT_CTRL *GMT, FILE *fp_s, char *stl_file, double z_dir);
-GMT_LONG read_poly (struct GMT_CTRL *GMT, FILE *fp, GMT_LONG switch_xy);
+GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *central_long, double *central_lat);
+GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname);
+GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
+GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy);
 void set_center (GMT_LONG n_triang);
 double okabe (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, double x, double y, struct BODY_DESC bd_desc, 
 	      GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or);
@@ -214,13 +211,12 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	GMT_message (GMT, "xyzokb - Compute the gravity/magnetic anomaly of a body by the method of Okabe\n\n");
 	GMT_message (GMT, "usage: xyzokb [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
-	GMT_message (GMT, "\t[-Z<level>] [-T] [-L<z_observation>] [-S<radius>] [-D]\n");
-	GMT_message (GMT, "\t[-F<polygon>] [z<dz>] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>]\n");
-	GMT_message (GMT, "\t[-H] [-0] [-t[<[d]xyz_file>/<vert_file>[/m]]|<[r]raw_file>] [-P<thick>] [-V]\n");
+	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>] [-M]\n");
+	GMT_message (GMT, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
+	GMT_message (GMT, "\t[-T[<[d]xyz_file>/<vert_file>[/m]]|<[r|s]raw_file>] [-Z<level>] [-V]\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\txyzfile is the file whose grav/mag efect is to be computed.\n");
 	GMT_message (GMT, "\t-H sets parameters for computation of magnetic anomaly\n");
 	GMT_message (GMT, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
 	GMT_message (GMT, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");
@@ -229,13 +225,14 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-G name of the output grdfile.\n");
 	GMT_message (GMT, "\t-I sets the grid spacing for the grid.  Append m for minutes, c for seconds\n");
 	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
-	GMT_message (GMT, "\t-M Map units TRUE; x,y in degrees, dist units in m.\n\t   [Default dist unit = x,y unit].\n");
+	GMT_message (GMT, "\t-M Map units TRUE; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
 	GMT_message (GMT, "\t-E give layer thickness in m [Default = 0 m]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S search radius in km\n");
-	GMT_message (GMT, "\t-T Give either names of xyz[m] and vertex files or of a raw file defining a close surface.\n");
-	GMT_message (GMT, "\t   In the first case append an d imediatly after -t and optionaly a /m after the vertex file name.\n");
-	GMT_message (GMT, "\t   In the second case append an r imediatly after -t and before the raw file name.\n");
+	GMT_message (GMT, "\t-T Give either names of xyz[m] and vertex files or of a file defining a close surface.\n");
+	GMT_message (GMT, "\t   In the first case append an 'd' imediatly after -T and optionaly a /m after the vertex file name.\n");
+	GMT_message (GMT, "\t   In the second case append an 'r' or a 's' imediatly after -T and before the file name.\n");
+	GMT_message (GMT, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
 	GMT_explain_options (GMT, "C0:.");
@@ -343,7 +340,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 							j++;
 						}
 						if (j != 2 && j != 3) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -t option: Must give names for data points and vertex files\n");
+							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
 						Ctrl->T.triangulate = TRUE;
@@ -379,7 +376,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 					"Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
-	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "Warning: -tr overrides -S\n"))
+	if (GMT_check_condition (GMT, Ctrl->T.raw && !Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = TRUE;
 
 	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
@@ -405,7 +402,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	double	cc_t, cs_t, s_t;
 	double	central_long = 0, central_lat = 0;
 
-	FILE *fp = NULL, *fp_t = NULL, *fp_xyz = NULL, *fp_r = NULL, *fp_s = NULL;
+	FILE *fp = NULL;
 
 	struct	LOC_OR *loc_or;
 	struct	XYZOKB_CTRL *Ctrl = NULL;
@@ -447,45 +444,40 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	/* ---- Read files section ---------------------------------------------------- */
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ((fp = fopen (Ctrl->F.file, "r")) == NULL) {
+		if ( (ndata_p = read_poly (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->F.file);
 			return (EXIT_FAILURE);
 		}
-		ndata_p = read_poly (GMT, fp, switch_xy);
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
-		if ((fp_xyz = fopen (Ctrl->T.xyz_file, "r")) == NULL) {
+		if ( (ndata_xyz = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &central_long, &central_lat)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			return (EXIT_FAILURE);
 		}
-		if ((fp_t = fopen (Ctrl->T.t_file, "r")) == NULL) {
+		/* read vertex file */
+		if ( (ndata_t = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.t_file);
 			return (EXIT_FAILURE);
 		}
 
-		ndata_xyz = read_xyz (GMT, Ctrl, fp_xyz, &central_long, &central_lat);
-		/* read vertex file */
-		ndata_t = read_t (GMT, fp_t, Ctrl->T.t_file);
 		t_center = GMT_memory (GMT, NULL, (size_t) ndata_t, struct TRI_CENTER);
 		/* compute aproximate center of each triangle */
 		n_swap = check_triang_cw (ndata_t, 0);
 		set_center (ndata_t);
 	}
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
-		if ((fp_s = fopen (Ctrl->T.stl_file, "r")) == NULL) {
+		if ( (ndata_s = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.stl_file);
 			return (EXIT_FAILURE);
 		}
-		ndata_s = read_stl (GMT, fp_s, Ctrl->T.stl_file, Ctrl->D.dir);
 		/*n_swap = check_triang_cw (ndata_s, 1);*/
 	}
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
-		if ((fp_r = fopen (Ctrl->T.raw_file, "r")) == NULL) {
+		if ( (ndata_r = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.raw_file);
 			return (EXIT_FAILURE);
 		}
-		ndata_r = read_raw (GMT, fp_r, Ctrl->T.raw_file, Ctrl->D.dir);
 		/*n_swap = check_triang_cw (ndata_r, 1);*/
 	}
 
@@ -741,13 +733,16 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 }
 
 /* -------------------------------------------------------------------------*/
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz, double *central_long, double *central_lat) {
+GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *central_long, double *central_lat) {
 	/* read xyz[m] file with point data coordinates */
 
 	GMT_LONG n_alloc, ndata_xyz;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_TEXT_LEN256];
+	FILE *fp = NULL;
+
+	if ((fp = fopen (fname, "r")) == NULL) return (-1);
 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
@@ -763,17 +758,17 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
         	mag_var4 = GMT_memory (GMT, NULL, (size_t)n_alloc, struct MAG_VAR4);
 	
 	if (Ctrl->M.active) {	/* take a first read just to compute the central logitude */
-		while (fgets (line, GMT_TEXT_LEN256, fp_xyz)) { 
+		while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done bellow */
 			x_min = (float)MIN(in[0], x_min);	x_max = (float)MAX(in[0], x_max);
 			y_min = (float)MIN(in[1], y_min);	y_max = (float)MAX(in[1], y_max);
 		}
 		*central_long = (x_min + x_max) / 2;
 		*central_lat  = (y_min + y_max) / 2;
-		rewind(fp_xyz);
+		rewind(fp);
 	}
 
-	while (fgets (line, GMT_TEXT_LEN256, fp_xyz)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
 				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
@@ -830,24 +825,27 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, FILE *fp_xyz,
 		}
 		ndata_xyz++;
 	}
-	fclose(fp_xyz);
+	fclose(fp);
 	return (ndata_xyz);
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file) {
+GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
 	GMT_LONG n_alloc, ndata_t;
 	int in[3];
 	char line[GMT_TEXT_LEN256];
+	FILE *fp = NULL;
+
+	if ((fp = fopen (fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
 	vert = GMT_memory (GMT, NULL, (size_t) n_alloc, struct VERT);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp_t)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, t_file);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
 			vert = GMT_memory (GMT, vert, (size_t)n_alloc, struct VERT);
@@ -857,25 +855,28 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, FILE *fp_t, char *t_file) {
 		vert[ndata_t].c = in[2];
 		ndata_t++;
 	}
-	fclose(fp_t);
+	fclose(fp);
 	return (ndata_t);
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_raw (struct GMT_CTRL *GMT, FILE *fp_r, char *raw_file, double z_dir) {
+GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
 	GMT_LONG n_alloc, ndata_r;
 	double in[9];
 	char line[GMT_TEXT_LEN256];
+	FILE *fp = NULL;
+
+	if ((fp = fopen (fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
 	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp_r)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg", 
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, raw_file);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
 			n_alloc <<= 1;
 			raw_mesh = GMT_memory (GMT, raw_mesh, (size_t)n_alloc, struct RAW);
@@ -891,39 +892,42 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, FILE *fp_r, char *raw_file, double z_di
 		raw_mesh[ndata_r].t3[2] = in[8] * z_dir;
 		ndata_r++;
 	}
-	fclose(fp_r);
+	fclose(fp);
 	return (ndata_r);
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_stl (struct GMT_CTRL *GMT, FILE *fp_s, char *stl_file, double z_dir) {
+GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
 	GMT_LONG n_alloc, ndata_s;
 	double in[3];
 	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
+	FILE *fp = NULL;
+
+	if ((fp = fopen (fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_s = 0;
 	raw_mesh = GMT_memory (GMT, NULL, (size_t) n_alloc, struct RAW);
 	
-	while (fgets (line, GMT_TEXT_LEN256, fp_s)) { 
+	while (fgets (line, GMT_TEXT_LEN256, fp)) { 
 		sscanf (line, "%s", text);
 		if (strcmp (text, "outer") == 0) {
-			fgets (line, GMT_TEXT_LEN256, fp_s); /* get first vertex */
+			fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
-			fgets (line, GMT_TEXT_LEN256, fp_s); /* get second vertex */
+			fgets (line, GMT_TEXT_LEN256, fp); /* get second vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
-			fgets (line, GMT_TEXT_LEN256, fp_s); /* get third vertex */
+			fgets (line, GMT_TEXT_LEN256, fp); /* get third vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, stl_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t3[0] = in[0];
 			raw_mesh[ndata_s].t3[1] = -in[1];
 			raw_mesh[ndata_s].t3[2] = in[2] * z_dir;
@@ -936,18 +940,20 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, FILE *fp_s, char *stl_file, double z_di
 		else
 			continue;
 	}
-	fclose(fp_s);
+	fclose(fp);
 	return (ndata_s);
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_poly (struct GMT_CTRL *GMT, FILE *fp, GMT_LONG switch_xy) {
-	/* Read file with xy points where anomaly is to be computed*/
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
+	/* Read file with xy points where anomaly is going to be computed*/
 	GMT_LONG n_alloc, ndata, ix = 0, iy = 1;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
+	FILE *fp = NULL;
 
-	if (fp == NULL) fp = stdin;
+	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+
        	n_alloc = GMT_CHUNK;
 	ndata = 0;
 	if (switch_xy) {iy = 0; ix = 1;}
@@ -965,7 +971,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, FILE *fp, GMT_LONG switch_xy) {
 		data[ndata].y = in[iy];
 		ndata++;
 	}
-	if (fp != stdin) fclose(fp);
+	fclose(fp);
 	return (ndata);
 }
 
