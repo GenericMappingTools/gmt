@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.28 2011-07-10 04:53:25 guru Exp $
+	$Id: README.WIN32,v 1.29 2011-07-10 22:30:30 jluis Exp $
 
 #	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
 
@@ -19,17 +19,11 @@ To compile GMT for your Windows you must
    PATH in the environmental parameters via the system settings so
    that %GMTHOME%\bin is included.
    
-3  Also modify the entries for INCLUDE and LIB (create them if they
-   do not exist) so they include the paths to the netCDF library
-   netcdf.lib and the netCDF include file netcdf.h.  These are used
-   by the Microsoft (and other?) compilers and linkers to find these
-   files.
-
-4  Read the src\gmtinstall.bat and src\gmtsuppl.bat file instructions
+3  Read the src\gmtinstall.bat file instructions
    and make whatever modifications you need to (e.g., if you want to
    use static libraries or the optional TRIANGLE function.)
 
-5  Run gmtinstall.bat followed by gmtsuppl.bat.
+4  Run gmtinstall.bat
 
 
 ADDITIONAL MATERIAL:
