@@ -3,16 +3,12 @@
 .SH NAME
 xyzokb \- Compute the gravity/magnetic effect of a body by the method of Okabe
 .SH SYNOPSIS
-BD(xyzokb) [ OPT(C)IT(density) ] [ OPT(G)IT(outputgrid.nc) ] GMT_Rgeo_OPT 
- [ OPT(D) ] 
- [ OPT(E)IT(thickness) ] 
- [ OPT(F)IT(xy_file) ] 
- [ OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip) ] 
- [ OPT(L)IT(z_observation) ] 
- [ OPT(M) ] 
- [ OPT(S)IT(radius) ] 
- [ OPT(T)[[IT(d)]IT(xyz_file)/IT(vert_file)[IT(/m)]]|[IT(r|s)]IT(raw_file) ] 
- [ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+BD(xyzokb) [ OPT(C)IT(density) ]
+[ OPT(D) ] [ OPT(E)IT(thickness) ] [ OPT(F)IT(xy_file) ] [ OPT(G)IT(outputgrid.nc) ] 
+[ OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip) ] [ OPT(L)IT(z_observation) ] 
+[ OPT(M) ] GMT_Rgeo_OPT [ OPT(S)IT(radius) ] 
+[ OPT(T)[[IT(d)]IT(xyz_file)/IT(vert_file)[IT(/m)]]|[IT(r|s)]IT(raw_file) ] 
+[ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(xyzokb) will compute the gravity or magnetic anomaly of a body described by a set of triangles. 
 The output can either be along a given set of xy locations or on a grid. This method is not particularly fast 
