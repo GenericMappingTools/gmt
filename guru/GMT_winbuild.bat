@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.52 2011-07-08 23:17:25 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.53 2011-07-10 04:53:25 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -23,9 +23,9 @@ SET GVER=5.0.0b
 SET GSHHS=2.2.0
 
 IF "%1%" == "home" (
-	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+	SET GMTDIR=W:\RESEARCH\CVSPROJECTS\GMTdev\GMT5
 ) ELSE (
-	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\GMT4
+	SET GMTDIR=%1%:\UH\RESEARCH\CVSPROJECTS\GMTdev\GMT5
 )
 IF "%2%" == "64" (
 	SET BITS=64
@@ -50,11 +50,11 @@ IF "%BITS%" == "32" (
 	del *.tar.bz2
 	del *.tar
 	rename GMT%GVER% GMT
-	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\GMT\src
-	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\GMT\src
-	copy %GMTDIR%\share\conf\gmt.conf.win C:\GMTdev\GMT\share\conf\gmt.conf
-	copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMTdev\GMT\share\conf
-	copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMTdev\GMT\share\conf
+	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\GMT5\src
+	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\GMT5\src
+	copy %GMTDIR%\share\conf\gmt.conf.win C:\GMTdev\GMT5\share\conf\gmt.conf
+	copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMTdev\GMT5\share\conf
+	copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMTdev\GMT5\share\conf
 
 	mkdir C:\GMTdev\INFO
 	mkdir C:\GMTdev\INSTALLERS
@@ -69,7 +69,7 @@ set OLD_LIB=%LIB%
 set INCLUDE=%OLD_INCLUDE%;%NETCDF_DIR%\include;%GDAL_DIR%\include
 set LIB=%OLD_LIB%;%NETCDF_DIR%\lib;%GDAL_DIR%\lib
 
-cd C:\GMTdev\GMT
+cd C:\GMTdev\GMT5
 mkdir bin%BITS%
 mkdir lib
 mkdir include
@@ -79,19 +79,19 @@ call gmtsuppl %BITS%
 
 echo === 2. Run all the examples...
 
-set GMT_SHAREDIR=C:\GMTdev\GMT\share
+set GMT_SHAREDIR=C:\GMTdev\GMT5\share
 set OLDPATH=%PATH%
-set PATH=C:\GMTdev\GMT\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
+set PATH=C:\GMTdev\GMT5\bin%BITS%;%NETCDF_DIR%\bin;%GDAL_DIR%\bin;%GNU_DIR%;%OLDPATH%
 
-cd C:\GMTdev\GMT\doc\examples
+cd C:\GMTdev\GMT5\doc\examples
 call do_examples
-cd C:\GMTdev\GMT
+cd C:\GMTdev\GMT5
 
 echo === 3. Remove all the examples PS files...
 
-cd C:\GMTdev\GMTdoc\examples
+cd C:\GMTdev\GMT5\doc\examples
 del example_*.ps
-cd C:\GMTdev\GMT
+cd C:\GMTdev\GMT5
 
 echo === 4. Build the %BITS%-bit GMT+GDAL installer...
 

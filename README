@@ -1,6 +1,6 @@
 #	Information for installing GMT 5.x
 #
-#		$Id: README,v 1.68 2011-06-03 02:13:17 guru Exp $
+#		$Id: README,v 1.69 2011-07-10 04:53:25 guru Exp $
 #
 #	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
 #
@@ -56,14 +56,14 @@ and installation details.
 
 Note there are several GMT tar archives available:
 
-1. GMT_src.tar.bz2		: Source code and Unix man pages only, no documentation
-2. GMT_share.tar.bz2		: Shared run-time support files
+1. GMT5_src.tar.bz2		: Source code and Unix man pages only, no documentation
+2. GMT5_share.tar.bz2		: Shared run-time support files
 3. GSHHS_coast.tar.bz2		: Standard resolution GSHHS coastline data
-4. GMT_doc.tar.bz2		: All documentation, examples, and tutorial
+4. GMT5_doc.tar.bz2		: All documentation, examples, and tutorial
 5. GSHHS_full.tar.bz2		: Full resolution GSHHS coastline data
 6. GSHHS_high.tar.bz2		: High resolution GSHHS coastline data
-7. GMT_suppl.tar.bz2		: GMT Supplemental programs that link with GMT
-8. GMT_triangle.tar.bz2		: Optional source code for Shewchuk's triangularization.
+7. GMT5_suppl.tar.bz2		: GMT Supplemental programs that link with GMT
+8. GMT5_triangle.tar.bz2		: Optional source code for Shewchuk's triangularization.
 
 You MUST get 1-3 for a minimal GMT installation.
 
@@ -385,7 +385,7 @@ GMT users elsewhere have developed programs that utilize the GMT
 libraries and produce PostScript code compatible with the rest of
 GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.  Such code is available
-in the file GMT_suppl.tar.bz2.  Note that these programs are
+in the file GMT5_suppl.tar.bz2.  Note that these programs are
 not part of the official GMT package and were not all developed by
 us.  Please DO NOT send us bug reports or other inquiries
 regarding these programs.  The README files in the tar archive
@@ -410,7 +410,7 @@ Currently, the supplemental archive include the directories:
 	x_system  - Track intersection (crossover) tools (old version).
 	xgrid	  - X11 editor for grid files.
 
-Place the GMT_suppl.tar.bz2 file in the GMT main directory and
+Place the GMT5_suppl.tar.bz2 file in the GMT main directory and
 bzip2/tar out the contents.  You may have to modify makefiles
 or start scripts.  Each subdirectory will contain *.man files
 (Unix man files) and *.html files (HTML-version of man pages).
@@ -428,7 +428,7 @@ To do all of the installations above, you can use the simple shortcut
 
 	A complete set of the example scripts used to create all the
 example plots, including all necessary data files can be
-found as part of the GMT_doc.tar.bz2 archive.
+found as part of the GMT5_doc.tar.bz2 archive.
 If you installed the documentation, you can run all the examples from the
 src directory using
 
