@@ -1,8 +1,8 @@
-	$Id: README.WIN32,v 1.27 2011-03-25 01:32:31 remko Exp $
+	$Id: README.WIN32,v 1.28 2011-07-10 04:53:25 guru Exp $
 
 #	Copyright (c) 1991-2011, P. Wessel, W. H. F. Smith, R. Scharroo, & J. Luis
 
-README file for installing GMT from scratch (i.e., compiling the
+README file for installing GMT5 from scratch (i.e., compiling the
 source) under Windows.  If you only want to install executables,
 follow the GMT website link to our GMT Windows Installers.
 
@@ -37,7 +37,7 @@ ADDITIONAL MATERIAL:
 
 For complete GMT Documentation, including a Cookbook and Technical
 Reference Manual, a Tutorial and Short Course Manual, all examples,
-and UNIX man pages, all in HTML and PDF format, get the GMT_doc.bz2
+and UNIX man pages, all in HTML and PDF format, get the GMT5_doc.bz2
 archive.  After installing, make a bookmark for the file
 
 	GMT\doc\html\gmt_sevices.html.
