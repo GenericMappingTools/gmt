@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.61 2011-07-05 23:07:37 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.62 2011-07-10 23:17:54 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -57,7 +57,7 @@ SET lib_netcdf=libnetcdf_w%BITS%.lib
 
 REM STEP  : Set the environment needed by GMT.  These are
 REM	    GMTHOME	Top dir of the GMT installation tree, e.g., C:\GMT
-REM	    GMT_SHAREDIR	Place to read GMT run-time files.  If not
+REM	    GMT5_SHAREDIR	Place to read GMT run-time files.  If not
 REM				set we use %GMTHOME%\share
 REM	    PATH	Add the path to the netCDF DLL library netcdf.dll
 REM	    PATH	Add the path to the GMT executables (%GMTHOME%\bin)
