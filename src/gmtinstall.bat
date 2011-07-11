@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.62 2011-07-10 23:17:54 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.63 2011-07-11 01:33:05 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -90,8 +90,6 @@ IF  "%2%" == "gdal" set GDAL="yes"
 SET GDAL_INC=
 SET GDAL_LIB=
 SET USE_GDAL=
-REM IF %GDAL%=="yes" SET GDAL_INC=/IC:\programs\FWTools2.4.3\include 
-REM IF %GDAL%=="yes" SET GDAL_LIB=C:\programs\FWTools2.4.3\lib\gdal_i.lib 
 IF  %GDAL%=="yes" SET GDAL_INC="/IC:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\include" 
 IF  %GDAL%=="yes" SET GDAL_LIB=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\lib\gdal_i.lib 
 IF  %GDAL%=="yes" SET USE_GDAL=/DUSE_GDAL
