@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.101 2011-07-05 21:37:41 remko Exp $
+#  $Id: GNUmakefile,v 1.102 2011-07-11 00:28:49 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -16,10 +16,6 @@
 #
 #	Date:		1-JAN-2011
 #-------------------------------------------------------------------------------
-
-FUNCS2_O	= gmtaverage_func.o
-FUNCSPS2_O	= testapi_func.o
-DEMOS2_O	= testgmt5.o testgmtio.o testio.o
 
 include Makefile
 
