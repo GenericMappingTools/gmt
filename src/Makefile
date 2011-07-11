@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.76 2011-07-05 21:37:41 remko Exp $
+#	$Id: Makefile,v 1.77 2011-07-11 00:28:49 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -45,6 +45,11 @@ DEMOS		= $(DEMOS_O:.o=$(EXE))
 
 PSLDEMO_O	= psldemo.o
 PSLDEMO		= $(PSLDEMO_O:.o=$(EXE))
+
+# These three lines are temporarily here for the beta release
+FUNCS2_O	= gmtaverage_func.o
+FUNCSPS2_O	= testapi_func.o
+DEMOS2_O	= testgmt5.o testgmtio.o testio.o
 
 FUNCS_O		= blockmean_func.o blockmedian_func.o blockmode_func.o colmath_func.o filter1d_func.o fitcircle_func.o gmt2kml_func.o \
 		  gmtconvert_func.o gmtdp_func.o gmtmath_func.o gmtselect_func.o gmtspatial_func.o gmtstitch_func.o gmtvector_func.o\

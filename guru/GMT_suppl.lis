@@ -133,6 +133,14 @@ src/misc/dimfilter.1
 src/misc/dimfilter.c
 src/misc/gmtdigitize.1
 src/misc/gmtdigitize.c
+src/potential/Makefile
+src/potential/README.potential
+src/potential/gmt_potential.c
+src/potential/gmt_potential.h
+src/potential/redpol.1
+src/potential/redpol_func.c
+src/potential/xyzokb.1
+src/potential/xyzokb_func.c
 src/segyprogs/Makefile
 src/segyprogs/Makefile
 src/segyprogs/README.segyprogs

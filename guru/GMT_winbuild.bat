@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.53 2011-07-10 04:53:25 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.54 2011-07-11 00:28:49 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -49,12 +49,13 @@ IF "%BITS%" == "32" (
 	7z x GSHHS*.tar -oGMT%GVER% -aoa
 	del *.tar.bz2
 	del *.tar
-	rename GMT%GVER% GMT
+	rename GMT%GVER% GMT5
 	copy %GMTDIR%\src\gmt_version.h C:\GMTdev\GMT5\src
 	copy %GMTDIR%\src\gmt_notposix.h C:\GMTdev\GMT5\src
-	copy %GMTDIR%\share\conf\gmt.conf.win C:\GMTdev\GMT5\share\conf\gmt.conf
-	copy %GMTDIR%\share\conf\gmtdefaults_SI C:\GMTdev\GMT5\share\conf
-	copy %GMTDIR%\share\conf\gmtdefaults_US C:\GMTdev\GMT5\share\conf
+	copy %GMTDIR%\src\pslconfig.h C:\GMTdev\GMT5\src
+	copy %GMTDIR%\share\conf\gmt.conf C:\GMTdev\GMT5\share\conf\gmt.conf
+	copy %GMTDIR%\share\conf\gmt_SI.conf C:\GMTdev\GMT5\share\conf
+	copy %GMTDIR%\share\conf\gmt_US.conf C:\GMTdev\GMT5\share\conf
 
 	mkdir C:\GMTdev\INFO
 	mkdir C:\GMTdev\INSTALLERS
