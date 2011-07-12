@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.10 2011-04-23 02:14:13 guru Exp $
+#  $Id: manpages.mk,v 1.11 2011-07-12 20:55:21 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ $(DEP3):	%.dep:	%.txt
 $(DEP5):	%.dep:	%.txt
 		$(TXT2MAN) -I$(INCDIR) -MM -MG $*.txt | sed s,.o:,.5:, > $@
 
-manpages:	$(MAN1) $(MAN3) $(MAN5)
+manpages:	$(FILES) $(MAN1) $(MAN3) $(MAN5)
 
 spotless::
 		\rm -f *.1 *.3 *.5 *.dep $(API_H) $(API_C)
