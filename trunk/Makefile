@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.94 2011-07-01 01:57:53 remko Exp $
+#	$Id: Makefile,v 1.95 2011-07-12 22:55:56 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -156,11 +156,7 @@ uninstall-doc:
 # Run examples with the binaries from the src directory, not the installation directory.
 
 examples run-examples animations run-animations:
-		@if [ -d doc/examples ]; then \
-			cd doc/examples; $(MAKE) $@; \
-		else \
-			echo "examples directory not installed"; \
-		fi
+		cd doc/examples; $(MAKE) $@
 
 clean::
 		$(MAKE) TARGET=$@ $(SUPPL)
