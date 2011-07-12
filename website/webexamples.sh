@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.27 2011-03-25 01:32:31 remko Exp $
+#	 $Id: webexamples.sh,v 1.28 2011-07-12 02:03:37 remko Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -15,15 +15,10 @@
 #
 #	gmt/gmt_examples.html
 #	gmt/examples/gmt_example_??.html
-#	gmt/examples/gmt_example_??.ps (copy from examples directory)
-#	gmt/examples/example_??_50dpi.png (using ps2raster)
-#	gmt/examples/example_??_100dpi.png (using ps2raster)
+#	gmt/examples/gmt_example_??.{ps,png} (copy from fig directory)
 #-----------------------------------------------------------------------------
 
-n_examples=29
-
-GMT050dpi="ps2raster -E50 -Tg -P"
-GMT100dpi="ps2raster -E100 -Tg -P"
+n_examples=30
 
 if [ $# -eq 1 ]; then
 	gush=0
@@ -146,6 +141,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex29/gmt_example_29.html">Spherical surface gridding using Green's functions.</A></LI>
+
+<LI>
+<A HREF="examples/ex30/gmt_example_30.html">A simple math graph with curved arrow.</A></LI>
 </OL>
 </BODY>
 </HTML>
@@ -177,23 +175,9 @@ while [ $i -le $n_examples ]; do
 
 	cp -f $TOP/doc/examples/$dir/job${number}.sh job${number}.sh.txt
 
-#	Copy over the example PS file
+#	Zip the example PS files
 
-	cp -f $TOP/doc/examples/$dir/example_${number}.ps .
-
-#	TMP FIX FOR EX19 SINCE GS IS FUCKED
-	if [ $number -eq 19 ]; then
-		echo "webexamples.sh: Kludge to make Ex 19 pass through buggy gs"
-		grep -v showpage example_${number}.ps | sed -e 's/scale 0 A/scale 0 A showpage/g' > new.ps
-		mv -f new.ps example_${number}.ps
-	fi
-		 
-#	Make the PNG at both 50 and 100 dpi, rotating the landscape ones
-
-	$GMT100dpi $rot example_${number}.ps
-	mv example_${number}.png example_${number}_100dpi.png
-	$GMT050dpi $rot example_${number}.ps
-	mv example_${number}.png example_${number}_50dpi.png
+	zip -j example_${number}.zip $TOP/doc/fig/example_${number}.ps .
 
 #	Write the html file
 
@@ -203,8 +187,8 @@ cat << EOF > gmt_example_${number}.html
 <TITLE>GMT - Example ${number}</title>
 <BODY bgcolor="#ffffff">
 <CENTER>
-<A HREF="example_${number}_100dpi.png">
-<img src="example_${number}_50dpi.png">
+<A HREF="../../doc/html/images/example_${number}.png">
+<img src="../../doc/html/images/example_${number}.png">
 </A><P></CENTER>
 EOF
 	tail +2 ../../../../../website/job${number}.txt >> gmt_example_${number}.html
