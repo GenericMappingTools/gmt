@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.98 2011-07-12 21:37:11 remko Exp $
+#  $Id: GNUmakefile,v 1.99 2011-07-12 21:43:25 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -82,7 +82,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 
 FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
-		src/gmt_version.h src/gmt_notposix.h src/gmt src/isogmt doc/GMT_version.tex
+		src/gmt_version.h src/gmt_notposix.h src/isogmt doc/GMT_version.tex
 
 help::
 		@grep '^#!' GNUmakefile | cut -c3-
@@ -180,7 +180,8 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 $(FILES):
 		touch $@
 else
-$(FILES):	guru/gmtguru.macros configure config.sub config.guess $(addsuffix .in,$(FILES))
+$(FILES):	guru/gmtguru.macros configure config.sub config.guess src/config.mk.in share/conf/gmt.conf.in \
+		src/gmt_version.h.in src/gmt_notposix.h.in src/isogmt.in doc/GMT_version.tex.in
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
 		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_OCTAVE) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_OTHER)
