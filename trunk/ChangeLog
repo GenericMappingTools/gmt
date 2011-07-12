@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1134 2011-07-08 20:17:32 guru Exp $
+	$Id: ChangeLog,v 1.1135 2011-07-12 02:04:23 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-11	remko
+	* website:		Updates ported from GMT4.
 
 2011-07-07	pwessel
 	* pscoast_func.c:	Added river groups A and R which equals a and r except they
