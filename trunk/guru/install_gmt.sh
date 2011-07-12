@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.174 2011-07-09 00:41:17 guru Exp $
+#	$Id: install_gmt.sh,v 1.175 2011-07-12 02:03:17 remko Exp $
 #
 #	Automatic installation of GMT 5
 #	Suitable for the Bourne shell (or compatible)
@@ -1294,7 +1294,7 @@ fi
 #--------------------------------------------------------------------------------
 
 if [ $write_doc -eq 1 ]; then
-	if [ -d share/doc ]; then
+	if [ -d doc ]; then
 		$GMT_make install-doc || exit
 		echo "All users should add $GMT_doc/html/gmt_services.html to their browser bookmarks" >&2
 	fi
@@ -1312,8 +1312,8 @@ fi
 if [ -d doc/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
-	$GMT_make run-examples || exit
-	$GMT_make run-animations || exit
+	$GMT_make examples || exit
+	$GMT_make animations || exit
 fi
 
 cd $here/src
