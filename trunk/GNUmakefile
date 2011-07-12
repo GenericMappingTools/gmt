@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.96 2011-07-01 01:57:53 remko Exp $
+#  $Id: GNUmakefile,v 1.97 2011-07-12 20:55:21 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -80,6 +80,17 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 		latest-config help update create newsite usable site archive \
 		tar_all tar_gshhs installl suppl alltests \
 		doctests extests tests ex examples animations cvsclean
+
+#-------------------------------------------------------------------------------
+# FILES stands for all those files (makefiles, etc) that are not part of the CVS
+# distribution but rather are created from more primitive forms.  Since those
+# primitive forms may undergo modifications we must check for changes before
+# compiling, making man pages, etc.  What follows is the rules for making these
+# FILES from the CVS-distributed master files:
+#-------------------------------------------------------------------------------
+
+FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
+		src/gmt_version.h doc/GMT_version.tex
 
 help::
 		@grep '^#!' GNUmakefile | cut -c3-
@@ -164,17 +175,6 @@ webdoc:		;
 #-------------------------------------------------------------------------------
 DOS:
 		$(SHELL) guru/DOS_finder.sh
-
-#-------------------------------------------------------------------------------
-# FILES stands for all those files (makefiles, etc) that are not part of the CVS
-# distribution but rather are created from more primitive forms.  Since those
-# primitive forms may undergo modifications we must check for changes before
-# compiling, making man pages, etc.  What follows is the rules for making these
-# FILES from the CVS-distributed master files:
-#-------------------------------------------------------------------------------
-
-FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
-		src/gmt_version.h doc/GMT_version.tex
 
 gmtmacros examples animations FILES:		$(FILES)
 
