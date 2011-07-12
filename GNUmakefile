@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.99 2011-07-12 21:43:25 remko Exp $
+#  $Id: GNUmakefile,v 1.100 2011-07-12 22:56:28 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -185,6 +185,7 @@ $(FILES):	guru/gmtguru.macros configure config.sub config.guess src/config.mk.in
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
 		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_OCTAVE) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_OTHER)
+		touch $(FILES)
 endif
 
 configure:	configure.ac
