@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.97 2011-07-12 20:55:21 remko Exp $
+#  $Id: GNUmakefile,v 1.98 2011-07-12 21:37:11 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,7 +24,6 @@
 #
 #	New GMT gurus should create a file guru/gmtguru.macros with any settings
 #	that are intended to overrule the DEFAULT SETTINGS specified below.
-#	Once done, it is reasonable to first try "make site".
 #
 #	To ensure the very latest code, start with "make update".
 #	To get the latest and make all, do "make install".
@@ -39,20 +38,13 @@
 #
 #	To generate new archive:	make archive or make "version" e.g., make GMT4
 #
-#	Subtasks (done by make archive and make site):
+#	Subtasks:
 #
 #	To compile/install GMT:		make all and/or make install
 #	To create examples, animations:	make examples animations
 #	To generate man pages:		make man
 #	To generate documentation:	make docs
-#
-#	Other subtasks: (done by make archive):
-#
 #	To generate tarfiles:		make tar_all
-#	To tar source:			make tar_progs
-#	To tar shared data		make tar_share
-#	To tar docs			make tar_doc
-#	To tar supplements		make tar_suppl
 #
 #	This must be done separately:
 #	To tar all coastlines		make tar_gshhs
@@ -76,9 +68,9 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-.PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl \
-		latest-config help update create newsite usable site archive \
-		tar_all tar_gshhs installl suppl alltests \
+.PHONY:		FILES man manpages webman webdoc pdfman docs \
+		latest-config help update create prep prepare archive \
+		tar_all tar_gshhs install suppl alltests \
 		doctests extests tests ex examples animations cvsclean
 
 #-------------------------------------------------------------------------------
@@ -90,7 +82,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 
 FILES =		src/config.mk share/conf/gmt.conf share/conf/gmt_SI.conf share/conf/gmt_US.conf \
-		src/gmt_version.h doc/GMT_version.tex
+		src/gmt_version.h src/gmt_notposix.h src/gmt src/isogmt doc/GMT_version.tex
 
 help::
 		@grep '^#!' GNUmakefile | cut -c3-
@@ -104,8 +96,8 @@ help::
 #!usable        : Install software, data, manpages and run examples & animations
 #!pdfman        : Create PDF version of manpages
 #!pdfdocs       : Create PDF documentation
-#!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
+#!prepare       : Create all files needed for a release
 #!archive       : Build the release archives
 #!
 
@@ -118,17 +110,13 @@ create:
 
 GMT$(GMT_VERSION):	archive
 
-newsite:	get_gshhs site
+prep prepare:	manpages webman pdfman webdoc pdfdocs
 
-usable:		install install-data install-man examples animations
-
-site:		install-all examples animations
-
-archive:	install-all create tar_all
+archive:	prepare create tar_all
 
 manpages:	$(FILES)
 		cd src ; $(MAKE) $@
-		$(MAKE) TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ $(SUPPL)
 
 all:		$(FILES)
 		cd src ; $(MAKE) $@
@@ -192,8 +180,7 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 $(FILES):
 		touch $@
 else
-$(FILES):	guru/gmtguru.macros configure config.sub config.guess src/gmt_notposix.h.in \
-		src/config.mk.in share/conf/gmt.conf.in src/gmt_version.h.in doc/GMT_version.tex.in
+$(FILES):	guru/gmtguru.macros configure config.sub config.guess $(addsuffix .in,$(FILES))
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
 		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_OCTAVE) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_OTHER)
@@ -206,14 +193,14 @@ latest-config:
 		curl "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" -s -R -o config.sub
 		curl "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" -s -R -o config.guess
 
+install-doc::	webman pdfman docs
+
 docs pdfdocs:	$(FILES)
 		cd doc ; $(MAKE) pdf
 pdfman:		$(FILES)
 		cd doc ; $(MAKE) man
 webman:		$(FILES)
 		cd doc ; $(MAKE) html
-
-prep_suppl:	clean config
 
 GSHHS_DIR	= gmt
 get_coast:	get_gshhs
@@ -231,40 +218,20 @@ get_gshhs_cvs:
 #	TARRING OFF THE NEW VERSION
 #-------------------------------------------------------------------------------
 
-tar_all:	tar_progs tar_share tar_doc tar_suppl
-		@echo " "
-		@echo "Completed tarring off entire archive"
-
-tar_gshhs:	tar_coast tar_full tar_high
-
 ftpdir:
 		mkdir -p ftp
 
-tar_progs tar_src:	ftpdir
-		echo "make GMT$(GMT_VERSION)_src.tar.bz2"
+tar_all:	ftpdir
+		echo "make gmt-$(GMT_VERSION).tar.bz2"
 		grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_src.tar.bz2 -C .. -T tmp.lis
-		echo "make GMT$(GMT_VERSION)_triangle.tar.bz2"
-		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_triangle.tar.bz2 -C .. -T tmp.lis
-		rm -f tmp.lis
-
-tar_share:	ftpdir
-		echo "make GMT$(GMT_VERSION)_share.tar.bz2"
-		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_share.tar.bz2 -C .. -T tmp.lis
-		rm -f tmp.lis
-
-tar_doc:	ftpdir
-		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples,tutorial,www}.lis > tmp.lis
-		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
-		rm -f tmp.lis
-
-tar_suppl:	ftpdir
-		echo "make GMT$(GMT_VERSION)_suppl.tar.bz2"
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis > tmp.lis
-		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_suppl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
+		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
+		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis >> tmp.lis
+		ls doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis >> tmp.lis
+		COPYFILE_DISABLE=true tar -cjf ftp/gmt-$(GMT_VERSION).tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
 # The tar_win target is for GMT Developers building GMT on a Windows platform without configure
@@ -272,18 +239,17 @@ tar_suppl:	ftpdir
 
 tar_win:	ftpdir
 		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
-		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmt_??.conf \
+		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? \
 			guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
 # Note: coastline files now stored relative to share, instead of GMT/share
 
-tar_%:	ftpdir
-		echo "make GSHHS$(GSHHS_VERSION)_$*.tar.bz2"
-		if [ "$*" == "coast" ]; then suf=cli; else suf=`echo $*|cut -c1`; fi; \
-			COPYFILE_DISABLE=true tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$*.tar.bz2 LICENSE.TXT \
-			share/coast/binned_*_[$$suf].cdf -C src/coast/GSHHS+WDBII README.TXT
+tar_gshhs:	ftpdir
+		echo "make gshhs-$(GSHHS_VERSION).tar.bz2"
+		COPYFILE_DISABLE=true tar -cjf ftp/gshhs-$(GSHHS_VERSION).tar.bz2 LICENSE.TXT \
+			share/coast/binned_*.cdf -C src/coast/GSHHS+WDBII README.TXT
 
 include Makefile
 
@@ -292,4 +258,4 @@ include Makefile
 #-------------------------------------------------------------------------------
 
 spotless::
-		rm -rf src/config.mk src/gmt_version.h configure autom4te.cache
+		rm -rf $(FILES) configure autom4te.cache
