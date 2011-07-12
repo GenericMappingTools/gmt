@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.28 2011-07-12 02:03:37 remko Exp $
+#	 $Id: webexamples.sh,v 1.29 2011-07-12 22:27:59 remko Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -177,7 +177,7 @@ while [ $i -le $n_examples ]; do
 
 #	Zip the example PS files
 
-	zip -j example_${number}.zip $TOP/doc/fig/example_${number}.ps .
+	zip -j example_${number}.zip $TOP/doc/fig/example_${number}.ps
 
 #	Write the html file
 
@@ -187,8 +187,8 @@ cat << EOF > gmt_example_${number}.html
 <TITLE>GMT - Example ${number}</title>
 <BODY bgcolor="#ffffff">
 <CENTER>
-<A HREF="../../doc/html/images/example_${number}.png">
-<img src="../../doc/html/images/example_${number}.png">
+<A HREF="../../html/images/example_${number}.png">
+<img src="../../html/images/example_${number}.png">
 </A><P></CENTER>
 EOF
 	tail +2 ../../../../../website/job${number}.txt >> gmt_example_${number}.html
@@ -197,7 +197,7 @@ cat << EOF >> gmt_example_${number}.html
 <p>
 <A HREF="job${number}.sh.txt"><IMG SRC="../../gmt_script.gif" ALT="RETURN">View GMT script.</A>
 <A HREF="example_${number}.zip"><IMG SRC="../../gmt_ps.gif" ALT="RETURN">Download zipped PostScript file.</A>
-<A HREF="../../gmt_examples.html"><IMG SRC="../../doc/html/gmt_back.gif" ALT="RETURN">Back</A>
+<A HREF="../../gmt_examples.html"><IMG SRC="../../html/gmt_back.gif" ALT="RETURN">Back</A>
 </BODY>
 </HTML>
 EOF
