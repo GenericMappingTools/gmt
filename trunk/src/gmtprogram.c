@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtprogram.c,v 1.3 2011-04-23 02:14:12 guru Exp $
+ *	$Id: gmtprogram.c,v 1.4 2011-07-13 02:56:13 guru Exp $
  *
  *	Copyright (c) 1991-$year by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,7 +32,7 @@ EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, struct GMT_OPTION *options);
 
 int main (int argc, char *argv[]) {
 
-	int status = 0;			/* Status code from GMT API */
+	int status = 0;				/* Status code from GMT API */
 	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
