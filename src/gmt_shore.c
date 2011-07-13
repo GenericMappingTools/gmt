@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.83 2011-07-01 18:58:18 guru Exp $
+ *	$Id: gmt_shore.c,v 1.84 2011-07-13 20:39:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -359,9 +359,7 @@ GMT_LONG GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, doub
 		major != 2 || minor < 1) {
 			fprintf (stderr, "GSHHS: Version 2.1.0 or newer is needed to use coastlines with GMT %s\n", GMT_VERSION);
 			fprintf (stderr, "GSHHS: CVS users must get the GSHHS %s tarballs from\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_coast.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_high.tar.bz2\n", GSHHS_VERSION);
-			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/GSHHS%s_full.tar.bz2\n", GSHHS_VERSION);
+			fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/gshhs/gshhs-%s.tar.bz2\n", GSHHS_VERSION);
 			fprintf (stderr, "GSHHS: or by running \"make get_gshhs_cvs\" from the top GMT directory.\n");
 		GMT_exit (EXIT_FAILURE);
 	}

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.100 2011-07-12 22:56:28 remko Exp $
+#  $Id: GNUmakefile,v 1.101 2011-07-13 20:39:54 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -206,11 +206,10 @@ webman:		$(FILES)
 
 GSHHS_DIR	= gmt
 get_coast:	get_gshhs
-get_gshhs:	get_gshhs_coast get_gshhs_high get_gshhs_full
-get_gshhs_%:
-		curl "ftp://$(FTPSITE)/$(GSHHS_DIR)/GSHHS$(GSHHS_VERSION)_$*.tar.bz2" -R -O
-		bzip2 -dc GSHHS$(GSHHS_VERSION)_$*.tar.bz2 | tar -xvf -
-		rm -f GSHHS$(GSHHS_VERSION)_$*.tar.bz2
+get_gshhs:	
+		curl "ftp://$(FTPSITE)/$(GSHHS_DIR)/gshhs-$(GSHHS_VERSION).tar.bz2" -R -O
+		bzip2 -dc gshhs-$(GSHHS_VERSION).tar.bz2 | tar -xvf -
+		rm -f gshhs-$(GSHHS_VERSION).tar.bz2
 
 # For CVS usage
 get_gshhs_cvs:
