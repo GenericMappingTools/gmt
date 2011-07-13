@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.81 2011-07-11 00:28:49 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.82 2011-07-13 02:56:13 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -15,6 +15,7 @@ configure
 gmtswitch
 install-sh
 Makefile
+gmtswitch.bat
 src/Makefile
 src/config.mk.in
 src/common.mk
@@ -22,7 +23,6 @@ src/isogmt.in
 src/alpha-sincos.s
 src/gmt_shell_functions.sh
 src/gmtinstall.bat
-src/gmtsuppl.bat
 src/gmt.h
 src/gmtapi.h
 src/gmtapi_define.h
