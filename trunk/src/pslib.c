@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.282 2011-07-14 20:44:41 jluis Exp $
+ *	$Id: pslib.c,v 1.283 2011-07-14 20:51:57 guru Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -1577,7 +1577,7 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char 
 
 	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL;
 	PSL_LONG font, sub, super, small, old_font;
-	double small_size, size, scap_size;
+	double orig_size, small_size, size, scap_size;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "text_item > %d long!\n", PSL_BUFSIZ);
@@ -1612,9 +1612,9 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char 
 	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
 	font = old_font = PSL->current.font_no;
-	size = fontsize;
-	small_size = fontsize * 0.7;
-	scap_size = fontsize * 0.85;
+	orig_size = size = fontsize;
+	small_size = size * 0.7;
+	scap_size = size * 0.85;
 	sub = super = small = FALSE;
 
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
@@ -1673,11 +1673,13 @@ PSL_LONG PSL_deftextdim (struct PSL_CTRL *PSL, char *dim, double fontsize, char 
 		else if (ptr[0] == ':') {	/* Font size change */
 			ptr++;
 			if (ptr[0] == ':')
-				size = fontsize;
+				size = fontsize = orig_size;
 			else {
-				size = atof (ptr);
+				size = fontsize = atof (ptr);
 				while (*ptr != ':') ptr++;
 			}
+			small_size = size * 0.7;
+			scap_size = size * 0.85;
 			ptr++;
 			strcpy (piece, ptr);
 		}
@@ -1751,7 +1753,7 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 	char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	PSL_LONG dy, i = 0, j, font, x_just, y_just, upen, ugap, mode = (pmode > 0);
 	PSL_LONG sub, super, small, old_font, n_uline, start_uline, stop_uline;
-	double small_size, size, scap_size, ustep, dstep;
+	double orig_size, small_size, size, scap_size, ustep, dstep;
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
@@ -1835,13 +1837,13 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 
 	font = old_font = PSL->current.font_no;
 	sub = super = small = FALSE;
-	size = fontsize;
-	small_size = fontsize * 0.7;
-	scap_size = fontsize * 0.85;
-	ustep = 0.35 * fontsize;
-	dstep = 0.25 * fontsize;
-	upen = psl_ip (PSL, 0.025 * fontsize);	/* Underline pen thickness */
-	ugap = psl_ip (PSL, 0.075 * fontsize);	/* Underline shift */
+	size = orig_size = fontsize;
+	small_size = size * 0.7;
+	scap_size = size * 0.85;
+	ustep = 0.35 * size;
+	dstep = 0.25 * size;
+	upen = psl_ip (PSL, 0.025 * size);	/* Underline pen thickness */
+	ugap = psl_ip (PSL, 0.075 * size);	/* Underline shift */
 	start_uline = stop_uline = n_uline = 0;
 
 	while (ptr) {	/* Loop over all the sub-text items separated by escape characters */
@@ -1913,11 +1915,15 @@ PSL_LONG PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize
 		else if (ptr[0] == ':') {	/* Font size change */
 			ptr++;
 			if (ptr[0] == ':')	/* Reset size */
-				size = fontsize;
+				size = fontsize = orig_size;
 			else {
-				size = atof (ptr);
+				size = fontsize = atof (ptr);
 				while (*ptr != ':') ptr++;
 			}
+			small_size = size * 0.7;	scap_size = size * 0.85;
+			ustep = 0.35 * size;	dstep = 0.25 * size;
+			upen = psl_ip (PSL, 0.025 * size);	/* Underline pen thickness */
+			ugap = psl_ip (PSL, 0.075 * size);	/* Underline shift */
 			ptr++;
 			strcpy (piece, ptr);
 		}
