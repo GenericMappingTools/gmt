@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.78 2011-06-21 13:05:13 remko Exp $
+ *	$Id: pslib.h,v 1.79 2011-07-14 16:23:50 remko Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -375,12 +375,14 @@ EXTERN_MSC PSL_LONG PSL_free_nonmacro (struct PSL_CTRL *P, void **addr);
 /* Due to the DLL boundary cross problem on Windows the next macros are implemented as functions
    in pslib.c */
 EXTERN_MSC int PSL_command (struct PSL_CTRL *C, char *format, ...);
+EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, char *format, ...);
 EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 #else
 /* From FORTRAN there is PSL_command_ that only accepts one text argument */
-#define PSL_initerr(C,...) fprintf (C->init.err, __VA_ARGS__)
 #define PSL_command(C,...) fprintf (C->internal.fp, __VA_ARGS__)
+#define PSL_comment(C,...) (C->internal.comments ? PSL_command (C, "%%\n%% ") + PSL_command (C, __VA_ARGS__) + PSL_command (C, "%%\n") : 0)
+#define PSL_initerr(C,...) fprintf (C->init.err, __VA_ARGS__)
 #define PSL_fopen fopen
 #endif
 
@@ -390,7 +392,6 @@ EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 #define PSL_message(C,level,...) ((level) <= C->internal.verbose ? PSL_initerr (C, "PSL: ") + PSL_initerr (C, __VA_ARGS__) : 0)
 #endif
 
-#define PSL_comment(C,...) (C->internal.comments ? PSL_command (C, "%%\n%% ") + PSL_command (C, __VA_ARGS__) + PSL_command (C, "%%\n") : 0)
 #define PSL_free(C,ptr) PSL_free_nonmacro (C,(void**)&ptr)					/* Easier macro for PSL_free */
 
 #ifdef __cplusplus
