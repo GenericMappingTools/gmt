@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1136 2011-07-14 16:23:50 remko Exp $
+	$Id: ChangeLog,v 1.1137 2011-07-14 20:51:57 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-14	pwessel
+	* pslib.c:		The @-, @+, @# would reset size to the original font size, ignoring
+				any changes any @:<size>: sequence would have made.  Also, when
+				@:<size>: was used the derived sizes for sub/super were not updated.
 
 2011-07-14	remko
 	* pslib.[ch]:		Made PSL_comment a function for WIN32.
