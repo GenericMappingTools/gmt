@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.19 2011-06-29 07:09:37 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.20 2011-07-14 23:02:23 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -97,7 +97,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			S[0] = Dout[0]->table[0]->segment[k];
 			/* Write segment header with triangle # and the three node numbers */
 			if (get_area) {
-				for (i = 0; i < 3; i++) GMT_geo_to_cart (GMT, lon[D->tri[ij+i]], lat[D->tri[ij+i]], V[i], TRUE);
+				for (i = 0; i < 3; i++) GMT_geo_to_cart (GMT, lat[D->tri[ij+i]], lon[D->tri[ij+i]], V[i], TRUE);
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
 			}
@@ -231,9 +231,9 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, GMT_LONG n, double *lon, dou
 				plon[vertex] = V->lon[vertex_last];
 				plat[vertex] = V->lat[vertex_last];
 				if (get_area) {	/* Convert three corners to Cartesian */
-					GMT_geo_to_cart (GMT, V->lon[node], V->lat[node], V1, TRUE);
-					GMT_geo_to_cart (GMT, V->lon[vertex_last], V->lat[vertex_last], V2, TRUE);
-					GMT_geo_to_cart (GMT, V->lon[vertex_new], V->lat[vertex_new], V3, TRUE);
+					GMT_geo_to_cart (GMT, V->lat[node], V->lon[node], V1, TRUE);
+					GMT_geo_to_cart (GMT, V->lat[vertex_last], V->lon[vertex_last], V2, TRUE);
+					GMT_geo_to_cart (GMT, V->lat[vertex_new], V->lon[vertex_new], V3, TRUE);
 					area_triangle = stripack_areas (V1, V2, V3);
 					area_polygon += area_triangle;
 				}
