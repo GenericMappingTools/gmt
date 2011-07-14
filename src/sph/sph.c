@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.32 2011-06-21 01:56:31 guru Exp $
+ *	$Id: sph.c,v 1.33 2011-07-14 21:43:55 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -49,7 +49,7 @@ typedef int logical;
 #define FALSE_ 0
 #define TRUE_ 1
 
-int dbg_verbose = 0;	/* Set to 1 to get more original verbose output */
+/* define SPH_DEBUG to get more original verbose output from s*pack.c */
 
 /* STRIPACK FORTRAN SUBROUTINES PROTOTYPES */
 int trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
