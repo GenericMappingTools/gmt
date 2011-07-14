@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.303 2011-07-14 23:02:22 guru Exp $
+ *	$Id: gmt_io.c,v 1.304 2011-07-14 23:45:54 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5157,7 +5157,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 	/* Reads an entire data set into a single table memory with any number of segments */
 
 	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments, n_head_alloc = GMT_TINY_CHUNK;
-	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col;
+	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col, n_row_alloc;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
@@ -5232,6 +5232,8 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 
 	T->file[GMT_IN] = strdup (file);
 	T->header = GMT_memory (C, NULL, n_head_alloc, char *);
+	n_row_alloc = GMT_CHUNK;	/* Initial space allocated for rows in the current segment. Since allcoation/reallocation is
+					 * expensive we will set n_row_alloc to the size of the previous segment */
 
 	while (n_fields >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
 		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
@@ -5292,7 +5294,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (EXIT_FAILURE);
 		}
-		GMT_alloc_segment (C, T->segment[seg], GMT_CHUNK, T->segment[seg]->n_columns, TRUE);	/* Alloc space for this segment with GMT_CHUNK rows */
+		GMT_alloc_segment (C, T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, TRUE);	/* Alloc space for this segment with n_row_alloc rows */
 
 		while (! (C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {
@@ -5346,14 +5348,14 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		
 		/* Reallocate to free up some memory */
 
-		GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
-
+		if (n_row_alloc > T->segment[seg]->n_rows) GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
+		n_row_alloc = T->segment[seg]->n_rows;	/* Reset initial allocation size to match last segment */
 		if (T->segment[seg]->n_rows == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
 			GMT_free (C, T->segment[seg]);
 			seg--;	/* Go back to where we were */
 		}
 
-		if (seg == (T->n_alloc-1)) {
+		if (seg == (T->n_alloc-1)) {	/* Need to allocate more segments */
 			T->n_alloc <<= 1;
 			T->segment = GMT_memory (C, T->segment, T->n_alloc, struct GMT_LINE_SEGMENT *);
 		}

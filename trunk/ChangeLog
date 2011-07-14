@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1138 2011-07-14 23:02:22 guru Exp $
+	$Id: ChangeLog,v 1.1139 2011-07-14 23:45:54 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-14	pwessel
 	* sph/sphtriangulate_func.c:	Passed lon,lat instead of lat,lon to GMT_geo_to_cart
 				which would affect the -A option only.
+	* gmt_io.c:		Try to minimize size of allocations/reallocations in GMT_read_table
+				by adjusting to actual segment sizes found.
 -----------------------------------------------------------------------------------------
 2011-07-14	pwessel
 	NOTE: * GMT 4.5.7 finalized and released.
