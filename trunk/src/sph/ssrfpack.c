@@ -1,4 +1,4 @@
-/* $Id: ssrfpack.c,v 1.9 2011-03-15 02:06:37 guru Exp $
+/* $Id: ssrfpack.c,v 1.10 2011-07-14 21:43:55 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -555,7 +555,9 @@ doublereal arclen_(doublereal *p, doublereal *q)
 /*  100 FORMAT ('1','ERROR IN ARCINT -- P1 = ',2(F9.6,',  '), */
 /*     .        F9.6/1X,19X,'P2 = ',2(F9.6,',  '),F9.6) */
 L2:
-    if (dbg_verbose) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
+#ifdef SPH_DEBUG
+        fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
+#endif
     i__ = 1;
     return 0;
 } /* arcint_ */
@@ -1174,7 +1176,9 @@ L1:
 
 /*      IF (LUN .GE. 0) WRITE (LUN,100) N, FTOL */
 /*  100 FORMAT ('1',13X,'GETSIG -- N =',I4,', TOL = ',E10.3//) */
-if (dbg_verbose) fprintf (stderr, "GETSIG -- N = %4d TOL = %g\n", *n, ftol);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "GETSIG -- N = %4d TOL = %g\n", *n, ftol);
+#endif
 
 /* Initialize change counter ICNT and maximum change DSM for */
 /*   the loop on arcs. */
@@ -1206,7 +1210,9 @@ L2:
 
 /*        IF (LUN .GE. 0) WRITE (LUN,110) N1, N2 */
 /*  110   FORMAT (/1X,'ARC',I4,' -',I4) */
-if (dbg_verbose) fprintf (stderr, "ARC %d - %d\n", n1, n2);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "ARC %d - %d\n", n1, n2);
+#endif
 	p1[0] = x[n1];
 	p1[1] = y[n1];
 	p1[2] = z__[n1];
@@ -1299,7 +1305,9 @@ L3:
 /*  120   FORMAT (1X,'CONVEXITY -- SIG = ',E15.8, */
 /*     .          ', F(SIG) = ',E15.8/1X,35X,'FP(SIG) = ', */
 /*     .          E15.8) */
-if (dbg_verbose) fprintf (stderr, "CONVEXITY -- SIG = %g  F(SIG) = %g  FP(SIG) = %g\n", sig, f, fp);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "CONVEXITY -- SIG = %g  F(SIG) = %g  FP(SIG) = %g\n", sig, f, fp);
+#endif
 	++nit;
 
 /*   Test for convergence. */
@@ -1367,7 +1375,9 @@ L5:
 	dsig = -f * dsig / (f - f0);
 /*        IF (LUN .GE. 0) WRITE (LUN,130) DSIG */
 /*  130   FORMAT (1X,'MONOTONICITY -- DSIG = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "MONOTONICITY -- DSIG = %g\n", dsig);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "MONOTONICITY -- DSIG = %g\n", dsig);
+#endif
 	if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	    goto L7;
 	}
@@ -1430,7 +1440,9 @@ L6:
 /*        IF (LUN .GE. 0) WRITE (LUN,140) NIT, SIG, F */
 /*  140   FORMAT (1X,11X,I2,' -- SIG = ',E15.8,', F = ', */
 /*     .          E15.8) */
-if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#endif
 
 /*   Test for convergence. */
 
@@ -3713,8 +3725,10 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
 /*     .        ', LOWER BOUND = ',E15.8) */
 /*  110 FORMAT (//1X,'SIG0 -- N1 =',I4,', N2 =',I4, */
 /*     .        ', UPPER BOUND = ',E15.8) */
-if (dbg_verbose) if (rf < 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
-if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
+#ifdef SPH_DEBUG
+    if (rf < 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
+    if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
+#endif
 
 /* Test for errors and store local parameters. */
 
@@ -3887,7 +3901,9 @@ if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
 /*      IF (LUN .GE. 0) WRITE (LUN,120) SIG, SNEG, F0, FMAX */
 /*  120 FORMAT (1X,8X,'SIG = ',E15.8,', SNEG = ',E15.8/ */
 /*     .        1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/) */
-if (dbg_verbose) fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig, sneg, f0, fmax);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig, sneg, f0, fmax);
+#endif
     dsig = sig;
     fneg = fmax;
     d2 = s2 - s;
@@ -3981,7 +3997,9 @@ L7:
 /*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
 /*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
 /*     .        E15.8) */
-if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#endif
     if (f0 * f < 0.) {
 
 /*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F and */
@@ -4028,7 +4046,9 @@ L9:
     dsig = -f * dsig / (f - f0);
 /*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
 /*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "DSIG = %g\n", dsig);
+#endif
     if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	goto L8;
     }
@@ -4243,8 +4263,10 @@ doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x,
 /*     .        ', LOWER BOUND = ',E15.8) */
 /*  110 FORMAT (//1X,'SIG1 -- N1 =',I4,', N2 =',I4, */
 /*     .        ', UPPER BOUND = ',E15.8) */
-if (dbg_verbose) if (rf < 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
-if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
+#ifdef SPH_DEBUG
+    if (rf < 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
+    if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
+#endif
 
 /* Test for errors and store local parameters. */
 
@@ -4383,7 +4405,9 @@ if ((rf < 0. && min(d__1,s) < bnd) || (rf > 0. && bnd < max(d__2,s))) {
 /*      IF (LUN .GE. 0) WRITE (LUN,120) F0, FMAX, SIG */
 /*  120 FORMAT (1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/ */
 /*     .        1X,8X,'SIG = ',E15.8/) */
-if (dbg_verbose) fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\n", f0, fmax, sig);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\n", f0, fmax, sig);
+#endif
     d__1 = sig * exp(-sig) + .5;
     if (store_(&d__1) == .5) {
 	goto L10;
@@ -4463,7 +4487,9 @@ L6:
 /*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
 /*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
 /*     .        E15.8) */
-if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
+#endif
     if (f0 * f < 0.) {
 
 /*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F */
@@ -4507,7 +4533,9 @@ L8:
     dsig = -f * dsig / (f - f0);
 /*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
 /*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "DSIG = %g\n", dsig);
+#endif
     if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	goto L7;
     }
@@ -4707,7 +4735,9 @@ doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x,
 
 /*      IF (LUN .GE. 0) WRITE (LUN,100) N1, N2 */
 /*  100 FORMAT (//1X,'SIG2 -- N1 =',I4,', N2 =',I4) */
-if (dbg_verbose) fprintf (stderr, "SIG2 -- N1 = %d  N2 = %d\n", *n1, *n2);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "SIG2 -- N1 = %d  N2 = %d\n", *n1, *n2);
+#endif
 
 /* Test for errors and set local parameters. */
 
@@ -4861,7 +4891,9 @@ L6:
 /*      IF (LUN .GE. 0) WRITE (LUN,110) NIT, SIG, F, FP */
 /*  110 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
 /*     .        E15.8/1X,31X,'FP = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\n", nit, sig, f, fp);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\n", nit, sig, f, fp);
+#endif
 
 /*   Test for convergence. */
 
@@ -5478,7 +5510,9 @@ L7:
 /*        IF (LUN .GE. 0) WRITE (LUN,100) */
 /*  100   FORMAT (///1X,'SMSURF -- THE CONSTRAINT IS NOT ', */
 /*     .          'ACTIVE AND THE FITTING FCN IS CONSTANT.') */
-if (dbg_verbose) fprintf (stderr, "SMSURF -- THE CONSTRAINT IS NOT ACTIVE AND THE FITTING FCN IS CONSTANT\n");
+#ifdef SPH_DEBUG
+    fprintf (stderr, "SMSURF -- THE CONSTRAINT IS NOT ACTIVE AND THE FITTING FCN IS CONSTANT\n");
+#endif
 	return 0;
     }
 
@@ -5490,7 +5524,9 @@ if (dbg_verbose) fprintf (stderr, "SMSURF -- THE CONSTRAINT IS NOT ACTIVE AND TH
 /*      IF (LUN .GE. 0) WRITE (LUN,110) SM, TOL, NITMAX, G0 */
 /*  110 FORMAT (///1X,'SMSURF -- SM = ',E10.4,', GSTOL = ', */
 /*     .        E7.1,', NITMAX = ',I2,', G(0) = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "SMSURF -- SM = %g  GSTOL = %g  NITMAX = %d  G(0) = %g\n", *sm, tol, nitmax, g0);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "SMSURF -- SM = %g  GSTOL = %g  NITMAX = %d  G(0) = %g\n", *sm, tol, nitmax, g0);
+#endif
 
 /* G(P) is strictly increasing and concave, and G(0) .LT. 0. */
 /*   Initialize parameters for the secant method.  The method */
@@ -5537,7 +5573,9 @@ L3:
 /*      IF (LUN .GE. 0) WRITE (LUN,120) ITER, P, G, NIT, DFMAX */
 /*  120 FORMAT (/1X,I2,' -- P = ',E15.8,', G = ',E15.8, */
 /*     .        ', NIT = ',I2,', DFMAX = ',E12.6) */
-if (dbg_verbose) fprintf (stderr, " %d -- P = %g  G = %g  NIT = %d  DFMAX = %g\n", iter, p, g, nit, dfmax);
+#ifdef SPH_DEBUG
+    fprintf (stderr, " %d -- P = %g  G = %g  NIT = %d  DFMAX = %g\n", iter, p, g, nit, dfmax);
+#endif
 
 /*   Test for convergence. */
 
@@ -5575,7 +5613,9 @@ L5:
     dp = -g * dp / (g - g0);
 /*      IF (LUN .GE. 0) WRITE (LUN,130) DP */
 /*  130 FORMAT (1X,5X,'DP = ',E15.8) */
-if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "DP = %g\n", dp);
+#endif
     if (fabs(dp) > fabs(dmax__)) {
 
 /*   G0*G .GT. 0 and the new estimate would be outside of the */

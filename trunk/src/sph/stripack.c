@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.8 2011-03-15 02:06:37 guru Exp $
+/* $Id: stripack.c,v 1.9 2011-07-14 21:43:55 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -3775,7 +3775,9 @@ L25:
 /*      WRITE (*,100) NIT, IERR */
 /*  100 FORMAT (//5X,'*** Error in OPTIM (called from ', */
 /*     .        'DELNOD):  NIT = ',I4,', IER = ',I1,' ***'/) */
-fprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\n", nit, ierr);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\n", nit, ierr);
+#endif
     return 0;
 
 /* Error flag 1 returned by OPTIM. */
@@ -4406,7 +4408,9 @@ L33:
 /*  130 FORMAT (//5X,'*** Error in EDGE:  Invalid triangula', */
 /*     .        'tion or null triangles on boundary'/ */
 /*     .        9X,'IN1 =',I4,', IN2=',I4/) */
-fprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\n", *in1, *in2);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\n", *in1, *in2);
+#endif
     return 0;
 
 /* Error flag (other than 1) returned by OPTIM. */
@@ -4416,7 +4420,9 @@ L34:
 /*      WRITE (*,140) NIT, IERR */
 /*  140 FORMAT (//5X,'*** Error in OPTIM (called from EDGE):', */
 /*     .        '  NIT = ',I4,', IER = ',I1,' ***'/) */
-fprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\n", nit, ierr);
+#ifdef SPH_DEBUG
+    fprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\n", nit, ierr);
+#endif
     return 0;
 
 /* Error flag 1 returned by OPTIM. */
