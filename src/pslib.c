@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.281 2011-07-14 16:23:50 remko Exp $
+ *	$Id: pslib.c,v 1.282 2011-07-14 20:44:41 jluis Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -4604,7 +4604,7 @@ int PSL_comment (struct PSL_CTRL *C, char *format, ...) {
 	fprintf (C->internal.fp, "%%\n%% ");
 	va_start (args, format);
 	vfprintf (C->internal.fp, format, args);
-	fprintf (C->internal.fp, "%%");
+	fprintf (C->internal.fp, "%%\n");
 	va_end (args);
 
 	return (0);
