@@ -17,9 +17,11 @@ fi
 LANG=C
 
 # Extend executable and library path to use the current version
-srcdir=`cd ../../../src;pwd`
-export PATH=$srcdir:$PATH
-export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
+if test -d ../../../src ; then
+	srcdir=`cd ../../../src;pwd`
+	export PATH=$srcdir:$PATH
+	export LD_LIBRARY_PATH=$srcdir:${LD_LIBRARY_PATH:-/usr/lib}
+fi
 
 # Make sure to cleanup at end
 trap "\rm -f .gmt* gmt.conf" EXIT
