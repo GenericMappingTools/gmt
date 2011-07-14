@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.79 2011-07-14 16:23:50 remko Exp $
+ *	$Id: pslib.h,v 1.80 2011-07-14 20:15:54 jluis Exp $
  *
  *	Copyright (c) 2009-2011 by P. Wessel and R. Scharroo
  *
@@ -384,6 +384,18 @@ EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 #define PSL_comment(C,...) (C->internal.comments ? PSL_command (C, "%%\n%% ") + PSL_command (C, __VA_ARGS__) + PSL_command (C, "%%\n") : 0)
 #define PSL_initerr(C,...) fprintf (C->init.err, __VA_ARGS__)
 #define PSL_fopen fopen
+#endif
+
+#if 0
+/* Alternative definition as a macro for Windows that cannot apply the same solution as in unix because
+   PSL_command is a function and compiler optimizations will change the order of the terms in the
+   addition as it pleases */
+#define PSL_comment(C,...) do {			\
+	if (C->internal.comments) {		\
+		PSL_command (C, "%%\n%% ");	\
+		PSL_command (C, __VA_ARGS__);	\
+	}					\
+} while (0)
 #endif
 
 #ifdef DEBUG
