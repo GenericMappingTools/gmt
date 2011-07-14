@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.302 2011-07-05 06:00:55 guru Exp $
+ *	$Id: gmt_io.c,v 1.303 2011-07-14 23:02:22 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5154,11 +5154,10 @@ struct GMT_DATASET *GMT_create_dataset (struct GMT_CTRL *C, GMT_LONG n_tables, G
 
 GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type, struct GMT_TABLE **table, GMT_LONG greenwich, GMT_LONG poly, GMT_LONG use_GMT_io)
 {
-	/* Reads an entire segment data set into memory */
+	/* Reads an entire data set into a single table memory with any number of segments */
 
-	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments;
+	GMT_LONG ascii, close_file = FALSE, header = TRUE, no_segments, n_head_alloc = GMT_TINY_CHUNK;
 	GMT_LONG n_fields, n_expected_fields, k, n_read = 0, seg = -1, row = 0, col;
-	GMT_LONG n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
@@ -5227,7 +5226,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 		return (GMT_IO_EOF);
 	}
-	/* Allocate the Table structure */
+	/* Allocate the Table structure with GMT_CHUNK segments, but none has any rows or columns */
 
 	GMT_create_table (C, &T, GMT_CHUNK, 0, 0);
 
@@ -5257,7 +5256,6 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
 
 		while (no_segments || (GMT_REC_IS_SEG_HEADER (C) && !GMT_REC_IS_EOF (C))) {
-			/* PW: This will need to change to allow OGR comments to follow segment header */
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (seg == -1 || T->segment[seg]->n_rows > 0) {
 				seg++;	/* Only advance segment if last had any points or was the first one */
@@ -5281,9 +5279,11 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		if (GMT_REC_IS_EOF (C)) continue;	/* At EOF; get out of this loop */
 		if (ascii && !no_segments) {	/* Only ascii files can have info stored in multi-seg header record */
 			char buffer[GMT_BUFSIZ];
-			GMT_memset (buffer, GMT_BUFSIZ, char);
-			if (GMT_parse_segment_item (C, C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
-			if (strlen (C->current.io.segment_header)) T->segment[seg]->header = strdup (C->current.io.segment_header);
+			if (strlen (C->current.io.segment_header)) {
+				GMT_memset (buffer, GMT_BUFSIZ, char);
+				T->segment[seg]->header = strdup (C->current.io.segment_header);
+				if (GMT_parse_segment_item (C, C->current.io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
+			}
 			if (C->current.io.ogr == 1) gmt_copy_ogr_seg (C, T->segment[seg], C->current.io.OGR);	/* Copy over any feature-specific values */
 		}
 
@@ -5292,7 +5292,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (EXIT_FAILURE);
 		}
-		GMT_alloc_segment (C, T->segment[seg], GMT_CHUNK, T->segment[seg]->n_columns, TRUE);
+		GMT_alloc_segment (C, T->segment[seg], GMT_CHUNK, T->segment[seg]->n_columns, TRUE);	/* Alloc space for this segment with GMT_CHUNK rows */
 
 		while (! (C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {

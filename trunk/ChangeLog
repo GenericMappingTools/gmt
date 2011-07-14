@@ -1,7 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1137 2011-07-14 20:51:57 guru Exp $
+	$Id: ChangeLog,v 1.1138 2011-07-14 23:02:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2011-07-14	pwessel
+	* sph/sphtriangulate_func.c:	Passed lon,lat instead of lat,lon to GMT_geo_to_cart
+				which would affect the -A option only.
+-----------------------------------------------------------------------------------------
+2011-07-14	pwessel
+	NOTE: * GMT 4.5.7 finalized and released.
+-----------------------------------------------------------------------------------------
 2011-07-14	pwessel
 	* pslib.c:		The @-, @+, @# would reset size to the original font size, ignoring
 				any changes any @:<size>: sequence would have made.  Also, when
