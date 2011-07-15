@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.101 2011-07-13 20:39:54 guru Exp $
+#  $Id: GNUmakefile,v 1.102 2011-07-15 22:16:35 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -93,7 +93,6 @@ help::
 #!update        : Get the latest source via cvs
 #!alltests      : Run all tests and compare to originals
 #!manpages      : Create manpages from text files
-#!usable        : Install software, data, manpages and run examples & animations
 #!pdfman        : Create PDF version of manpages
 #!pdfdocs       : Create PDF documentation
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
