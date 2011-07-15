@@ -1,21 +1,13 @@
 Package: gmt
-Version: 4.5.3
+Version: 4.5.7
 Revision: 1
-Source:  ftp://ftp.soest.hawaii.edu/gmt/GMT%v_doc.tar.bz2
-Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
-Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
-Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
-Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
-Source-MD5:  a2f0243bbbea4c6e1472a1d92a2c6d7c
-Source2-MD5: 378ea1b0e46b09455722df81c4c191ab
-Source3-MD5: ad069cfcc8216fdef69e0cb94536c2a6
-Source4-MD5: 7d4bcb2ac56ee558cae8446363a74e64
-Source5-MD5: 5bccc9d473fc2a659cb21d3aafd8b228
+Source: ftp://ftp.soest.hawaii.edu/gmt/gmt-%v.tar.bz2
+Source-MD5: fc8a4a546ff8572c225aa7bdb56bbdf8
 
 SourceDirectory: GMT%v
 BuildDepends: netcdf (>= 3.6.2-6)
-Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs-lores (>= 2.1.0)
-Recommends: %n-doc, gshhs-hires (>= 2.1.0)
+Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs (>= 2.2.0)
+Recommends: %n-doc
 NoSetCPPFLAGS: true
 NoSetLDFLAGS: true
 
@@ -36,12 +28,12 @@ SplitOff2: <<
   Package: %N-shlibs
   Files: lib/*.4.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.3-1)
-    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.3-1)
-    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.3-1)
-    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.3-1)
-    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.3-1)
-    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.3-1)
+    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.7-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.7-1)
   <<
   DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
@@ -61,13 +53,10 @@ DescDetail: <<
  perspective views. GMT supports ~30 map projections and transformations
  and comes with support data such as coastlines, rivers, and political
  boundaries.
-
- Also consider:
- gmt-doc: Documentation and example files
- gshhs-hires: High resolution coastlines
 <<
 DescPort: <<
  Removed xgrid supplementary package so X11 is not required.
+ Removed mex support so that neither matlab or octave are required.
 <<
 License: GPL, Restrictive/Distributable
 DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
