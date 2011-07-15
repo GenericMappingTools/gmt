@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: xyzokb_func.c,v 1.18 2011-07-10 19:08:49 jluis Exp $
+ *	$Id: xyzokb_func.c,v 1.19 2011-07-15 02:46:55 remko Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -401,8 +401,6 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	double	*x_obs = NULL, *y_obs = NULL, *z_obs = NULL, *x = NULL, *y = NULL, *cos_vec = NULL;
 	double	cc_t, cs_t, s_t;
 	double	central_long = 0, central_lat = 0;
-
-	FILE *fp = NULL;
 
 	struct	LOC_OR *loc_or;
 	struct	XYZOKB_CTRL *Ctrl = NULL;
