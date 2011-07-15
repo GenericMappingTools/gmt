@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.33 2011-07-14 21:43:55 guru Exp $
+ *	$Id: sph.c,v 1.34 2011-07-15 02:49:25 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -223,6 +223,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	/* Create the triangulation. Main output is (P.I->(list, lptr, lend) */
 
 	n4 = (int)n;
+	GMT_memset (&P, 1, struct STRIPACK);
 	P.mode = INTERPOLATE;
 	stripack_lists (C, (GMT_LONG)n, x, y, z, &P);
 	
