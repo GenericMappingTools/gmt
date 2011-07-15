@@ -1,17 +1,17 @@
 <HTML>
-<!--  $Id: gmt_bugs.html,v 1.18 2011-03-15 02:06:46 guru Exp $  -->
+<!--  $Id: gmt_bugs.html,v 1.19 2011-07-15 23:21:52 guru Exp $  -->
 <TITLE>GMT Bug Notes</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT Bug Notes</CENTER></H2><P>
 <HR>
-To file a bug report, please send e-mail to <A HREF="mailto:gmt-help@hawaii.edu">GMT Help</A>.
+To file a bug report, please send e-mail to <A HREF="mailto:gmt-help@lists.hawaii.edu">GMT Help</A>.
 Note that due to the ever-growing presence of spam, you will need to subscribe to this mailing-list
 in order to post.  We apologize if this may be a hassle to you, but it saves the 1000+ subscribers
-from seeing all the junk spam otherwise would get through.
+from seeing all the junk spam that otherwise would get through.
 Make sure your email includes the following information:
 <UL>
-<LI>Version of GMT you are using.
-<LI>Hardware platform and Operating System, including version.
+<LI>Version of GMT you are using (e.g., type psxy - to see what is reported).
+<LI>Hardware platform and Operating System, including version (e.g., under Unix-like systems, type uname -a to get details; for Windows, just tell us what version).
 <LI>Individual GMT program that may have a bug.
 <LI>A clear explanation of the problem.
 <LI>Example script or command line and, if necessary, test data that
@@ -22,7 +22,11 @@ exceed one Mb - we will contact you should we need further
 information.
 <LI>Other pieces of relevant information
 </UL>
-Note that sometimes a work-around can be crafted while waiting for the next release.  You may want
+The easier we can reproduce the problem then the quicker we can fix it.  Some bugs are
+platform-dependent and can only be reproduced on that system; we have several Linux-flavors
+running in a simulator for that purpose.  The CVS version of GMT will immediately be updated
+once a fix has been found.
+Note that sometimes a work-around can be crafted while waiting for the next official release.  You may want
 to check the <A HREF="http://www.soest.hawaii.edu/wiki/index.php/Generic_Mapping_Tools" target="_blank">SOEST GMT Wiki</A>
 to see if anything relevant have been added.
 <HR>

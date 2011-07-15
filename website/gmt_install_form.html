@@ -1,20 +1,20 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.93 2011-07-09 00:41:17 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.94 2011-07-15 23:21:53 guru Exp $  -->
 <HEAD>
-<TITLE>GMT5 Installation Helper</TITLE>
+<TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.93 $" NAME="form_version">
-<H2><CENTER>GMT5 Installation Helper</CENTER></H2>
+<INPUT TYPE="hidden" VALUE="$Revision: 1.94 $" NAME="form_version">
+<H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
-This page helps you customize the GMT5 installation procedure under Unix or Unix-like
+This page helps you customize the GMT installation procedure under Unix or Unix-like
 operating systems capable of running a Bourne (sh) script. When submitting the completed form,
-you will receive a parameter file (GMTparam.txt) that you may save and use as argument to the
-<b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMTparam.txt,
-you can install the GMT5 package with the command<BR>
+you will receive a parameter file (e.g., GMT4param.txt) that you may save and use as argument to the
+<b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMT4param.txt,
+you can install the GMT4 package with the command<BR>
 <p>
-sh install_gmt.sh GMTparam.txt<BR>
+sh install_gmt.sh GMT4param.txt<BR>
 <p>
 Output may be redirected to a log file by appending >& install.log (if your login shell
 is csh or tcsh) or appending > install.log 2>&1 (if your login shell is bash or sh).<BR>
@@ -26,7 +26,7 @@ is of course optional.<BR>
 in previous versions.  However, after a successful install it will write all the parameters
 to a file named by you, and this file can be used for background installs as shown above.</I><BR>
 <P>
-<b>IMPORTANT: Move or remove old GMT*.bz2 files from the current directory before running install_gmt.sh!</b>
+<b>IMPORTANT: Move or remove old gmt-*.bz2 files from the current directory before running install_gmt.sh!</b>
 <P>
 <HR>
 <CENTER><H3>A. Basic Requirements: </H3></CENTER>
@@ -38,34 +38,47 @@ and furthermore /usr/bin/awk thinks sin(1) = 1.</LI>
 	from the <A HREF="http://www.bzip.org" target="_blank">bzip2</A> site.</LI>
 <LI>You have write permissions in all directories you specify below.  If you have specified system directories for
 	the install then you may need to run the script using sudo (or as root).</LI>
-<LI>You have obtained and saved <A HREF="install_gmt.sh" target="_blank">install_gmt.sh</A>, the GMT5 install script.
+<LI>You have obtained and saved <A HREF="install_gmt.sh" target="_blank">install_gmt.sh</A>, the GMT install script.
    Be aware that some browsers may decide to save the script with a different extension (e.g., .txt) so you may have to
    rename the file after download.</LI>
 <LI>If you are using Cygwin, check these <A HREF="gmt_cygwin.html" target="_blank">important notes</A> before you proceed.</LI>
 </UL>
+<HR>
 
+<!--  GMT VERSION SELECTION  -->
+
+<B>0. Select GMT version</B><BR>
+
+<INPUT TYPE="radio" VALUE="4.5.7" NAME="radio_version" CHECKED> GMT 4.5.7<BR>
+<INPUT TYPE="radio" VALUE="5.0.0b" NAME="radio_version"> GMT 5.0.0 beta<BR>
+<P>
+<I>Note: GMT 4.5.7 is the latest stable version of GMT.  We also offer
+an installation of GMT 5.0.0 beta.  All our development is now focused on GMT 5 and only bug
+fixes will be considered for GMT 4.  Because GMT 5 will be a beta release we recommend you install
+both versions and use gmtswitch to toggle between the two as needed.</I><BR>
+<HR>
 <!--  SI OR US UNIT SELECTION  -->
 
-<B>1. Select default units in GMT5:</B><BR>
+<B>1. Select default units in GMT:</B><BR>
 
 <INPUT TYPE="radio" VALUE="SI" NAME="radio_unit" CHECKED> SI units (cm)<BR>
 <INPUT TYPE="radio" VALUE="US" NAME="radio_unit"> US units (inch)<BR>
 <P>
-<I>Note: This used to be a choice that affected the compilation of GMT5.  However, since version 3.3.2
+<I>Note: This used to be a choice that affected the compilation of GMT.  However, since version 3.3.2
 this selection is a run-time selection, meaning you can reverse it at any time.  The present choice is
-simply a convenient way to set the default units for all users of your GMT5 installation (see gmtdefaults
+simply a convenient way to set the default units for all users of your GMT installation (see gmtdefaults
 man page for how to change this choice at a later time).  Individual users can always override the default
 with gmtset MEASURE_UNIT cm|inch</I><BR>
 <HR>
 
 <!--  PS OR EPS SELECTION  -->
 
-<B>2. Select default PostScript output format for GMT5:</B><BR>
+<B>2. Select default PostScript output format for GMT:</B><BR>
 
 <INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED> Freeform PostScript (PS)<BR>
 <INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
 <P>
-<I>Note: GMT5-produced PostScript files will by default
+<I>Note: GMT-produced PostScript files will by default
 use the printer configuration command <b>setpagedevice</b> to set image area (i.e., paper size) and
 to select specific paper trays, including the manual tray (e.g., when making overhead
 transparencies).  Encapsulated PostScript files (EPS) are not allowed to use this command.  Some older
@@ -85,13 +98,13 @@ for more details.</I><BR>
 <INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock" CHECKED> NO. Do not use file locking<BR>
 
 <P>
-<I>Note: GMT5 passes information about previous GMT5 command-line options to future GMT5 commands via a
+<I>Note: GMT passes information about previous GMT command-line options to future GMT commands via a
 hidden file in the current directory (.gmtcommands4).  To avoid that this file is updated by more than
-one program at the time (e.g., when you connect two or more GMT5 commands with a pipe) we use POSIX
+one program at the time (e.g., when you connect two or more GMT commands with a pipe) we use POSIX
 advisory file locking on the file.  Unfortunately, some versions of the Network File System (NFS) have
 not implemented file locking properly.  We know this to be the case with Linux pre-2.4 kernels when
 mounting NFS disks from a Sun server.  If this is your case, you should turn file locking OFF, and
-avoid using the GMT5 shorthands in commands that are piped together.</I><BR>
+avoid using the GMT shorthands in commands that are piped together.</I><BR>
 <HR>
 
 <!--  NETCDF SELECTION  -->
@@ -122,18 +135,18 @@ parameters.</I>
 
 If you selected to use GDAL, give full pathname to the GDAL directory: <INPUT NAME="gdal_dir" TYPE="text" SIZE="30"><BR>
 <P>
-<I>Note: If selected, GMT5 will be able to read additional grid formats supported by GDAL, and grdimage can plot
+<I>Note: If selected, GMT will be able to read additional grid formats supported by GDAL, and grdimage can plot
 images such as geotiffs.  Specify the parent directory where both the lib and include subdirs for GDAL can be found.
 If these directories do not have the same parent directory, then leave the path blank and manually set the environmental
 variables $GDAL_LIB and $GDAL_INC prior to running the installer.</I>
 <HR>
 	
-<!--  GMT5 FTP SELECTION  -->
+<!--  GMT FTP SELECTION  -->
 
-<CENTER><H3>C. GMT5 Setup</H3></CENTER>
+<CENTER><H3>C. GMT Setup</H3></CENTER>
 <B>1. Select the FTP site nearest you:</B><BR>
 
-<INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED> Pacific (SOEST, University of Hawaii [GMT5 Home], Honolulu, Hawaii, USA)<BR>
+<INPUT TYPE="radio" VALUE="1" NAME="radio_site" CHECKED> Pacific (SOEST, University of Hawaii [GMT Home], Honolulu, Hawaii, USA)<BR>
 <INPUT TYPE="radio" VALUE="2" NAME="radio_site"> North America (NOAA, Lab for Satellite Altimetry, Silver Springs, Maryland, USA<BR>
 <INPUT TYPE="radio" VALUE="3" NAME="radio_site"> North America (Incorporated Research Institutions for Seismology, Seattle, Washington, USA)<BR>
 <INPUT TYPE="radio" VALUE="4" NAME="radio_site"> South America (IAG-USP, Dept. of Geophysics, University of Sao Paulo, Brazil)<BR>
@@ -162,23 +175,15 @@ Only if you have some very old ftp client, you may have to resort to active ftp
 (which involves the server connecting back to the client).
 </I>
 
-<!--  GMT5 ARCHIVE SELECTION  -->
+<!--  GMT ARCHIVE SELECTION  -->
 
 <HR><B>3. Select the components you want (bzip2 sizes indicated):</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT5 source code (1.1 Mb, the main GMT5 programs, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT5 Shared Data (0.04 Mb, shared run-time files, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_doc" CHECKED> GMT5 Documentation (24 Mb, PDF & HTML versions of Cookbook, Tutorial and Man pages, examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT5 Supplemental Programs (3.9 Mb, see section C.10 below for details)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (9.3 Mb)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS Full-resolution Coastlines (29.0 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_gmt" CHECKED> GMT source, docs, supplements (38 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_gshhs" CHECKED> GSHHS Coastlines (all resolutions) (45 Mb)<BR>
 
 <P>
-<I>Note: The first three are required for a simple GMT5 install (in order to run all the examples in the cookbook).
-Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.
-Make sure you remove old GMT5 *.bz2 archives from the working directory before you
-run the script; otherwise the script may decide that it does not need to ftp new versions of those archives.</I>
+<I>Note: Both are required for a complete GMT install (in order to run all the examples in the Cookbook).</I>
 
 <!--  OPTIONAL TRIANGLE SELECTION  -->
 
@@ -190,8 +195,7 @@ run the script; otherwise the script may decide that it does not need to ftp new
 <P>
 <I>Note: You may want to select Shewchuk's faster triangulation routine but as it is not distributed
 under the GNU Public License it is not included by default.  For-profit organizations should first inspect
-<A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.  Only Watson's algorithm is included in the
-GMT5 source code archive.</I>
+<A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.</I>
 
 <!--  INSTALL TOOL OPTION SELECTION  -->
 
@@ -201,8 +205,8 @@ GMT5 source code archive.</I>
 <INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
 
 <P>
-<I>Note: The GMT5 libraries can be made static or shared.  The main benefit of using shared (dynamic)
-libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT5 install
+<I>Note: The GMT libraries can be made static or shared.  The main benefit of using shared (dynamic)
+libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT install
 procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
 OSX, and IRIX.  For other systems capable of generating shared libraries you must manually configure the
 config.mk file.  If you have no preferences or no idea what to do on an unlisted system, select
@@ -230,19 +234,13 @@ When producing executables:<BR>
 <INPUT TYPE="radio" VALUE="y" NAME="radio_64"> Force 64-bit (not recommended)<BR>
 <INPUT TYPE="radio" VALUE="" NAME="radio_64" CHECKED> Use default (whatever your compiler prefers)<BR>
 For OS X only: <INPUT TYPE="checkbox" NAME="checkbox_univ"> Build universal binaries (OS X)<BR>
-<I>Note: GMT5 can be built as 32-bit or 64-bit.  We do not recommend that you
+<I>Note: GMT can be built as 32-bit or 64-bit.  We do not recommend that you
 	explicitly choose 32-bit or 64-bit, as the netCDF install is
 	not set up to honor either of these settings. The default is
 	to compile without sending any 32-bit or 64-bit options to the
 	compiler, which generally create 32-bit versions on older systems,
 	and 64-bit versions on newer systems, like OS X Snow Leopard.
 If universal is checked we will attempt to build universal binaries under OS X.</I><BR>
-
-When producing executables:<BR> 
-<INPUT TYPE="radio" VALUE="n" NAME="radio_mp"> Build with OPEN MP support if possible<BR>
-<I>Note: For GNU gcc only.  Will pass the -fopenmp flag to activate multi-thread support
-	for those programs that can take advantage of it.  Currently that is only grdfilter
-	but this will change as we move forward.</I><BR>
 
 <!--  MAKE SELECTION  -->
 
@@ -260,41 +258,41 @@ use GNU make (assuming it is installed): Select "other" and enter the path for m
 
 Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
-<!--  GMT5 DESTINATION DIRECTORIES SELECTION  -->
+<!--  GMT DESTINATION DIRECTORIES SELECTION  -->
 
-<HR><B>8. Select GMT5 final destination directories</B><BR>
+<HR><B>8. Select GMT final destination directories</B><BR>
 
 <TABLE border=0 cellspacing=2 cellpadding=2>
-<TR><TD>Place GMT5 in subdirectories of:</TD><TD><INPUT NAME="gmt_prefix" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT in subdirectories of:</TD><TD><INPUT NAME="gmt_prefix" TYPE="text" SIZE="45"></TD></TR>
 <TR></TR>
 <TR><TD><B>OR</B></TD></TR>
-<TR><TD>Place GMT5 executables in:</TD><TD><INPUT NAME="gmt_bin" TYPE="text" SIZE="45"></TD></TR>
-<TR><TD>Place GMT5 libraries in:</TD><TD><INPUT NAME="gmt_lib" TYPE="text" SIZE="45"></TD></TR>
-<TR><TD>Place GMT5 include files in:</TD><TD><INPUT NAME="gmt_include" TYPE="text" SIZE="45"></TD></TR>
-<TR><TD>Place GMT5 data resources in:</TD><TD><INPUT NAME="gmt_share" TYPE="text" SIZE="45"></TD></TR>
-<TR><TD>Place GMT5 man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="45">
-<TR><TD>Place GMT5 doc pages in:</TD><TD><INPUT NAME="gmt_doc" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT executables in:</TD><TD><INPUT NAME="gmt_bin" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT libraries in:</TD><TD><INPUT NAME="gmt_lib" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT include files in:</TD><TD><INPUT NAME="gmt_include" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT data resources in:</TD><TD><INPUT NAME="gmt_share" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="45">
+<TR><TD>Place GMT doc pages in:</TD><TD><INPUT NAME="gmt_doc" TYPE="text" SIZE="45"></TD></TR>
 </TABLE>
 
 <I><P>
-Note: The installation will install all GMT5 components in several subdirectories
-under one root directory.  By default, GMT5 will be installed under GMT5.0.0b
+Note: The installation will install all GMT components in several subdirectories
+under one root directory.  By default, GMT will be installed under GMT4.5.7
 in the current working directory where install_gmt.sh is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, include, share, share/man, and share/doc/gmt, respectively.
-To select another location for the root directory than the default (GMT5.0.0b),
+To select another location for the root directory than the default (GMT4.5.7),
 specify it in the first box above, or enter subdirectories individually.
 Only specify alternative directories if you want to place the files elsewhere. 
 <P>
 Note that the man pages will be be placed in the sub-directories man1 and man3 of the directory
 specified above.
-The man utility will find the GMT5 man pages if the chosen man directory is included in the
+The man utility will find the GMT man pages if the chosen man directory is included in the
 users' MANPATH environmental variable.
 Make sure the users' search path contains the directory where you place the executables.  
 Finally, advise users to add a browser bookmark for the
-file gmt/doc/html/gmt_services.html in the doc directory you chose above; that page provides links to online
-GMT5 documentation and man pages (assuming you selected the doc archive in Section C.3).</I><BR>
+file share/doc/gmt/html/gmt_services.html in the doc directory you chose above; that page provides links to online
+GMT documentation and man pages.</I><BR>
 
 <!--  GMT_SHAREDIR DIRECTORY SELECTION  -->
 
@@ -303,78 +301,44 @@ GMT5 documentation and man pages (assuming you selected the doc archive in Secti
 Alternative GMT_SHAREDIR directory: <INPUT NAME="gmt_sharedir" TYPE="text" SIZE="30"><BR>
 
 <P><I>
-Note: At run-time GMT5 will look in the shared data directory (specified in section C.8) to
+Note: At run-time GMT will look in the shared data directory (specified in section C.8) to
 find configuration and data files.
 That directory may appear with a different name to remote users if a different mount point
 is used or a symbolic link is set.
-GMT5 can use the environment variable $GMT_SHAREDIR to point to the right place.
+GMT can use the environment variable $GMT_SHAREDIR to point to the right place.
 If users see a different location for the shared data files, specify it here.
 (It will be used only to remind you at the end of the installation to set
 the environment variable $GMT_SHAREDIR).
 Leave blank to select the shared data directory of the data resources directory given in
-C.7 [Default].</I><BR>
+C.8 [Default].</I><BR>
 
-<!--  GMT5 COASTLINE ALTERNATE DIRECTORIES SELECTION  -->
+<!--  GMT SUPPLEMENTAL PACKAGE SELECTION  -->
 
-<HR><B>10. Alternative coastline directories</B><BR>
+<HR><B>10. Select optional supplemental packages to install:</B><BR>
 
-<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED> Install all selected coastline files in $GMT_SHAREDIR/coast<BR>
-<INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
-
+<INPUT TYPE="checkbox" NAME="checkbox_mex"> MEX: Interface for reading/writing GMT grdfiles for
+	<INPUT TYPE="radio" VALUE="matlab" NAME="radio_mex"> Matlab or <INPUT TYPE="radio" VALUE="octave" NAME="radio_mex" CHECKED>Octave<BR>
+	<INPUT TYPE="checkbox" NAME="checkbox_xgrid"> XGRID: X11 graphical editor for netCDF-based .nc files (REQUIRES Xlibs)<BR>
 <P>
-<I>Note: Normally, all coastline files reside in $GMT_SHAREDIR/coast.  However, if your disk resources are limited
-or you are sharing files via NFS or similar mounts, you may want to place the larger files in places
-separate from where the smaller files reside.  The selections below are only used if you chose that way.</I><BR>
-<P>
-<TABLE border=0 cellspacing=2 cellpadding=2>
-<TR><TD>Place crude, low, and intermediate coastlines in:</TD><TD><INPUT NAME="gmt_cli_dir" TYPE="text" SIZE="30"></TD></TR>
-<TR><TD>Place high resolution coastlines in:</TD><TD><INPUT NAME="gmt_h_dir" TYPE="text" SIZE="30"></TD></TR>
-<TR><TD>Place full resolution coastlines in:</TD><TD><INPUT NAME="gmt_f_dir" TYPE="text" SIZE="30"></TD></TR>
-</TABLE>
-<P>
-
-<!--  GMT5 SUPPLEMENTAL PACKAGE SELECTION  -->
-
-<HR><B>11. Select supplemental packages to install:</B><BR>
-
-<INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED> DBASE: Extracting data from NGDC DEM and other grids<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline tools<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED> MECA: Plotting special symbols in seismology and geodesy<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mex"> MEX: Interface for reading/writing GMT5 grdfiles for
-<INPUT TYPE="radio" VALUE="matlab" NAME="radio_mex"> Matlab or <INPUT TYPE="radio" VALUE="octave" NAME="radio_mex" CHECKED>Octave<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED> MGD77: Programs for managing and plotting MGD77 data<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED> MGG: Programs for making, managing, and plotting *.gmt data<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_potential"  CHECKED> POTENTIAL: Misc geopotential calculations<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED> SEGYPROGS: Plot SEGY seismic data files<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_sph"  CHECKED> SPH: Spherical triangulation, Voronoi construction and interpolation<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_xgrid" > XGRID: X11 graphical editor for netCDF-based .nc files (REQUIRES Xlibs)<BR>
-
-<P>
-<I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
-above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab or Octave,
-and xgrid requires various X11 libraries.</I>
+<I>Note: GMT supplements that only depend on GMT are always installed.  The above packages will only be installed if you select them.
+The mex package requires Matlab or Octave, while xgrid requires various X11 libraries and include files.</I>
 <HR><B>11. Additional information for MEX (Matlab or Octave):</B><BR>
 <BR>
 Enter head of the Matlab system directory if you selected Matlab above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
 <I>Note: You can leave the path blank under OS X or if $MATLAB is defined in your environment and points to the correct directory</I>.<BR>
-Enter directory for *.m files for the GMT5/Matlab-Octave interface: <INPUT NAME="mex_mdir" TYPE="text" SIZE="30"><BR>
-Enter directory for *.mex files for the GMT5/Matlab-Octave interface: <INPUT NAME="mex_xdir" TYPE="text" SIZE="30"><BR>
+Enter directory for *.m files for the GMT/Matlab-Octave interface: <INPUT NAME="mex_mdir" TYPE="text" SIZE="30"><BR>
+Enter directory for *.mex files for the GMT/Matlab-Octave interface: <INPUT NAME="mex_xdir" TYPE="text" SIZE="30"><BR>
 <I>Note: You can leave these two paths blank to select the default paths for either Matlab or Octave.  In any case
 you must have permission to create these directories (if they don't exist) and write to them.  Finally, if you chose Octave
 then it is assumed that octave is already in your executable path, in particular that the utilities mkoctfile and octave-config
 can be found when configure is run</I>.
 
-<!--  GMT5 COMPLETION SELECTION  -->
+<!--  GMT COMPLETION SELECTION  -->
 
-<HR><B>12. Complete the operation:<BR>
+<HR><B>11. Complete the operation:<BR>
 
-</B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon successful installation<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes doc tar archive was chosen above)<BR>
+</B><INPUT TYPE="checkbox" NAME="checkbox_delete"> Delete all archives upon successful installation<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_run" CHECKED> Run all example scripts<BR>
 
 <P>
 <I>Note: Examples will only be run if you also ftp'ed the doc archive.</I>
@@ -385,7 +349,7 @@ can be found when configure is run</I>.
 <INPUT NAME="name" TYPE="submit" VALUE="GET PARAMETERS">&nbsp; &nbsp;
 <INPUT NAME="name" TYPE="reset" VALUE="RESET FORM"></CENTER>
 <P>
-Once received, use right-click to bring up the Save Frame As... option to save the GMTparam.txt
+Once received, use right-click to bring up the Save Frame As... option to save the GMT[45]param.txt
 file.
 </FORM>
 </BODY>
