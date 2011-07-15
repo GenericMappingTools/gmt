@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtconvert_func.c,v 1.20 2011-06-25 01:59:46 guru Exp $
+ *	$Id: gmtconvert_func.c,v 1.21 2011-07-15 20:55:47 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,6 +35,10 @@ EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
 
+#define INV_ROWS	1
+#define INV_SEGS	2
+#define INV_TBLS	4
+
 /* Control structure for gmtconvert */
 
 struct GMTCONVERT_CTRL {
@@ -56,8 +60,9 @@ struct GMTCONVERT_CTRL {
 	struct L {	/* -L */
 		GMT_LONG active;
 	} L;
-	struct I {	/* -I */
+	struct I {	/* -I[ast] */
 		GMT_LONG active;
+		GMT_LONG mode;
 	} I;
 	struct N {	/* -N */
 		GMT_LONG active;
@@ -99,7 +104,7 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtconvert %s [API] - Convert, paste, or extract columns from data tables\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l]] [-I] [-L] [-N] [-Q<seg>]\n");
+	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
 	GMT_message (GMT, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -119,7 +124,10 @@ GMT_LONG GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   replace them with the table number and table segment numbers.\n");
 	GMT_message (GMT, "\t-E Extract first and last point per segment only [Output all points].\n");
 	GMT_message (GMT, "\t   Append f for first only or l for last only.\n");
-	GMT_message (GMT, "\t-I Invert order of rows, i.e., output rows in reverse order.\n");
+	GMT_message (GMT, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
+	GMT_message (GMT, "\t     t: reverse the order of input tables on output.\n");
+	GMT_message (GMT, "\t     s: reverse the order of segments within each table on output.\n");
+	GMT_message (GMT, "\t     r: reverse the order of records within each segment on output [Default].\n");
 	GMT_message (GMT, "\t-L Output only segment headers and skip all data records.\n");
 	GMT_message (GMT, "\t   Requires -m and ASCII input data [Output headers and data].\n");
 	GMT_message (GMT, "\t-N Skip records where all fields == NaN [Write all records].\n");
@@ -181,8 +189,20 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				gmt_parse_o_option (GMT, opt->arg);
 				break;
 #endif
-			case 'I':	/* Invert order or rows */
+			case 'I':	/* Invert order or tables, segments, rows as indicated */
 				Ctrl->I.active = TRUE;
+				for (k = 0; opt->arg[k]; k++) {
+					switch (opt->arg[k]) {
+						case 'f': Ctrl->I.mode |= INV_TBLS; break;	/* Reverse table order */
+						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
+						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
+						default:
+							GMT_report (GMT, GMT_MSG_FATAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							n_errors++;
+							break;
+					}
+				}
+				if (Ctrl->I.mode == 0) Ctrl->I.mode = INV_ROWS;	/* Default is -Ir */
 				break;
 			case 'L':	/* Only output segment headers */
 				Ctrl->L.active = TRUE;
@@ -360,15 +380,36 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	GMT_free (GMT, val);
 
-	if (Ctrl->I.active) {	/* Must reverse the row order within segments */
-		GMT_LONG row1, row2;
-		for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
-			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
-				for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
-					for (col = 0; col < D[GMT_OUT]->table[tbl]->segment[seg]->n_columns; col++) {
-						d_swap (D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row2]);
+	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
+		GMT_LONG tbl1, tbl2, seg1, seg2, row1, row2;
+		void *p = NULL;
+		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of records within each segment.\n");
+			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
+				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
+					for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
+						for (col = 0; col < D[GMT_OUT]->table[tbl]->segment[seg]->n_columns; col++)
+							d_swap (D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row2]);
 					}
 				}
+			}
+		}
+		if (Ctrl->I.mode & INV_SEGS) {	/* Must reorder pointers to segments within each table */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of segments within each table.\n");
+			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
+				for (seg1 = 0, seg2 = D[GMT_OUT]->table[tbl]->n_segments-1; seg1 < D[GMT_OUT]->table[tbl]->n_segments/2; seg1++, seg2--) {	/* For each segment in the table */
+					p = (void *)D[GMT_OUT]->table[tbl]->segment[seg1];
+					D[GMT_OUT]->table[tbl]->segment[seg1] = D[GMT_OUT]->table[tbl]->segment[seg2];
+					D[GMT_OUT]->table[tbl]->segment[seg2] = (struct GMT_LINE_SEGMENT *)p;
+				}
+			}
+		}
+		if (Ctrl->I.mode & INV_TBLS) {	/* Must reorder pointers to tables within dataset  */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of tables within the data set.\n");
+			for (tbl1 = 0, tbl2 = D[GMT_OUT]->n_tables-1; tbl1 < D[GMT_OUT]->n_tables/2; tbl1++, tbl2--) {	/* For each table */
+				p = (void *)D[GMT_OUT]->table[tbl1];
+				D[GMT_OUT]->table[tbl1] = D[GMT_OUT]->table[tbl2];
+				D[GMT_OUT]->table[tbl2] = (struct GMT_TABLE *)p;
 			}
 		}
 	}
