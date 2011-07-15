@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.62 2011-07-12 02:03:37 remko Exp $
+#  $Id: Makefile,v 1.63 2011-07-15 23:21:52 guru Exp $
 #
-#		 Guru Makefile for GMT Version 4.x
+#		 Guru Makefile for GMT Version 5.x
 #			GNU make compatible
 #	
 #	!!! THIS MAKEFILE IS FOR THE GMT SITE ONLY !!!
@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		3-MAR-2011
+#	Date:		12-JUL-2011
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -82,6 +82,8 @@ update-version-live:	update-ftp-live update-www-live
 
 update-www-live:	update-www-local
 #	First completely remove the live www files then copy them from the www-local files
+		sh winsites.sh gmt
+		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
 		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
 		scp -r www/5 $(WEBSERVER):$(LIVEWWWDIR)
@@ -91,6 +93,8 @@ update-www-live:	update-www-local
 
 update-www-test:	update-www-local
 #	First completely remove the test www files then copy then from the www-local files
+		sh winsites.sh gmttest
+		cp -f gmt_windows_*.html www/gmt
 		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
 		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
 		scp -r www/5 $(WEBSERVER2):$(LIVEWWWDIR2)
@@ -102,12 +106,10 @@ update-www-test:	update-www-local
 		sed -f job.sed install_gmt_form.pl > install_gmt_form_test.pl
 		scp install_gmt_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
 		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg" > job.sed
-		sed -f job.sed gmt_windows.html > gmt_windows_test.html
 		rm -f install_gmt_form_test.pl job.sed
 #	Change the Href to the ftp server to go to the test server dir instead
 		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
 		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
-		scp gmt_windows_test.html $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_windows.html
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
 		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
@@ -117,12 +119,13 @@ update-www-test:	update-www-local
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
 		rm -f gmt_server_job.sh tmp
 
-update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.png
+update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01.zip
+		sh winsites.sh gmt
 		mkdir -p www/gmt
 		cp -f ../guru/install_gmt.sh www/gmt
 		cp -f gmt.html www/index.html
 		cp -f gmt_*.php gmt_*.html www/gmt
-		rm -f www/gmt/gmt_releases_template.html
+		rm -f www/gmt/gmt_*_template.html
 		cp -f newgmtguru www/gmt
 		cp -f *.gif *.ico linux.jpg osx.jpg unix.jpg vista.jpg www/gmt
 		cp -f gmt_*.png ../registration/gmt_usage.jpg www/gmt
@@ -131,8 +134,6 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		rm -rf www/gmt/{doc,html,pdf}
 		cp -Rf ../doc/{html,pdf} www/gmt
 		cp -Rf contrib www/gmt
-		mkdir -p www/5
-		cp -f gmt5.html www/5/index.html
 		find www -name '.*' -exec rm -f {} \;
 		rm -f www/gmt/contrib/*.sh
 
@@ -148,88 +149,38 @@ update-ftp-live:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*GMT* $(LIVEFTPDIR)/install_gmt.sh $(LIVEFTPDIR)/VERSION'
+	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/gmt-* $(LIVEFTPDIR)/install_gmt.sh $(LIVEFTPDIR)/VERSION'
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
 	scp ../guru/install_gmt.sh $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/gmt-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER):$(LIVEFTPDIR)/contrib
-	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
-	for p in doc share src suppl triangle; do \
-		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "rm -f GMT5_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT5_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
-	for p in install32 install64 pdf_install; do \
-		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
-		echo "rm -f windows/GMT5_$${p}.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT5_$${p}.exe)" >> gmt_server_job.sh; \
-	done
-	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
-	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
-	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
-	rm -f gmt_server_job.sh
 
 update-gshhs-live:
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/*GSHHS*'
-	scp ../ftp/GSHHS*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/GSHHS*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
-	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
-	for p in coast high full; do \
-		echo "rm -f GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
-	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
-	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
-	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
-	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
-	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
-	rm -f gmt_server_job.sh
+	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/gshhs-*'
+	scp ../ftp/gshhs-*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
+#	scp ../ftp/gshhs-*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 
 update-ftp-test:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*GMT* $(LIVEFTPDIR2)/install_gmt.sh $(LIVEFTPDIR2)/VERSION'
+	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/gmt-* $(LIVEFTPDIR2)/install_gmt.sh $(LIVEFTPDIR2)/VERSION'
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
 	scp ../guru/install_gmt.sh $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/gmt-*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../ftp/netcdf-3.6.3_win.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/Whale-watching_symbols_for_GMT.zip $(FTPSERVER2):$(LIVEFTPDIR2)/contrib
-	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
-	for p in doc share src suppl triangle; do \
-		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "rm -f GMT5_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT5_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
-	for p in install32 install64 pdf_install; do \
-		echo "rm -f windows/GMT_$${p}.exe" >> gmt_server_job.sh; \
-		echo "rm -f windows/GMT5_$${p}.exe" >> gmt_server_job.sh; \
-		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT5_$${p}.exe)" >> gmt_server_job.sh; \
-	done
-	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
-	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
-	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
-	rm -f gmt_server_job.sh
 
 update-gshhs-test:
-#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
-	scp ../ftp/GSHHS*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/GSHHS*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
-	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
-	for p in coast high full; do \
-		echo "rm -f GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
-	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
-	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
-	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
-	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
-	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
-	rm -f gmt_server_job.sh
+#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/gshhs-*'
+	scp ../ftp/gshhs-*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
+#	scp ../ftp/gshhs-*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 
 update-ftp-local:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -239,39 +190,24 @@ update-ftp-local:
 	rm -rf ftp
 	mkdir -p ftp/windows ftp/contrib
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt.sh > ftp/install_gmt.sh
-	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
-	cp -f ../ftp/GMT*.exe ftp/windows
+	cp -f ../ftp/gmt-*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
+	cp -f ../ftp/gmt-*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
 	cp -f ../ftp/netcdf-3.6.3_win.zip ftp/windows
 	cp -f ../ftp/Whale-watching_symbols_for_GMT.zip ftp/contrib
-	for p in doc share src suppl triangle; do \
-		\rm -f ftp/GMT_$$p.tar.bz2; \
-		\rm -f ftp/GMT5_$$p.tar.bz2; \
-		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT5_$$p.tar.bz2); \
-	done
-	for p in install32 install64 pdf_install; do \
-		rm -f windows/GMT_$$p.exe; \
-		rm -f windows/GMT5_$$p.exe; \
-		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}.exe GMT5_$${p}.exe); \
-	done
 
 update-gshhs-local:
-	rm -rf ftp/GSHHS*
-	cp -f ../ftp/GSHHS*.bz2 ftp
-	cp -f ../ftp/GSHHS*.exe ftp/windows
-	for p in coast high full; do \
-		\rm -f ftp/GSHHS_$$p.tar.bz2; \
-		(cd ftp; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
-	done
-	rm -f windows/GSHHS_highfull_install.exe
-	(cd ftp/windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
+	rm -rf ftp/gshhs-*
+	cp -f ../ftp/gshhs-*.bz2 ftp
+#	cp -f ../ftp/gshhs-*.exe ftp/windows
 
-clean-ftp:
-	rm -f ../ftp/G*.bz2
-
-clean-local:
+clean-ftp-local:
 	rm -rf ftp
+
+clean-www-local:
 	rm -rf www
+
+clean-local:	clean-ftp-local clean-www-local
 
 clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
@@ -284,11 +220,6 @@ netcdf: ../ftp/netcdf.tar.bz2
 	curl http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf.tar.gz --remote-name --silent; \
 	gunzip netcdf.tar.gz; \
 	bzip2 -9 netcdf.tar
-
-nan:
-	cd ../src; \
-	$(CC) $(CFLAGS) gmt_nan_save.c $(CDF) -lm -o gmt_nan_save; \
-	./gmt_nan_save `uname -s`
 
 gmt_mirrors.html:	gmt_hitmap.sh
 	gmt_hitmap.sh -s
