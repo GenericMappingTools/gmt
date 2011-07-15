@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt2kml_func.c,v 1.27 2011-07-01 08:03:00 guru Exp $
+ *	$Id: gmt2kml_func.c,v 1.28 2011-07-15 20:00:17 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -218,8 +218,10 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_message (GMT, "\t   -O and -K to organize features into groups.\n");
 	GMT_explain_options (GMT, "V");
-	GMT_pen_syntax (GMT, 'W', "Specify pen attributes for lines and polygons [Default is solid line of unit thickness].");
-	GMT_message (GMT, "\t   Give width in pixels and append p.  Use -W- to turn off polygon outlines.\n");
+	GMT_pen_syntax (GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].");
+	GMT_message (GMT, "\t   Give width in pixels and append p.\n");
+	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both polygon fill and outline.\n");
+	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the outline only.\n");
 	GMT_message (GMT, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
 	GMT_message (GMT, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit].\n");
 	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be active [always active].\n");
@@ -411,10 +413,13 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Pen attributes */
 				Ctrl->W.active = TRUE;
-				if (opt->arg[0] == '-')
-					Ctrl->W.mode = TRUE;
-				else if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ");
+				k = 0;
+				if (opt->arg[k] == '-') {Ctrl->W.mode = 1; k++;}
+				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
+				if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
+					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
+					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
+					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
 				}
 				break;
@@ -470,6 +475,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -N+ not valid for lines and polygons\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -532,7 +538,7 @@ void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double so
 	tabs (--N); printf ("</Region>\n");
 }
 
-void set_iconstyle (struct GMT_FILL *fill, double scale, char *iconfile, GMT_LONG N)
+void set_iconstyle (double *rgb, double scale, char *iconfile, GMT_LONG N)
 {	/* No icon = no symbol */
 	tabs (N++); printf ("<IconStyle>\n");
 	tabs (N++); printf ("<Icon>\n");
@@ -540,26 +546,43 @@ void set_iconstyle (struct GMT_FILL *fill, double scale, char *iconfile, GMT_LON
 	tabs (--N); printf ("</Icon>\n");
 	if (iconfile[0] != '-') {
 		tabs (N); printf ("<scale>%g</scale>\n", scale);
-		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - fill->rgb[3])), GMT_ui255 (fill->rgb));
+		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
 	}
 	tabs (--N); printf ("</IconStyle>\n");
 }
 
-void set_linestyle (struct GMT_PEN *pen, GMT_LONG N)
+void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
 {
 	tabs (N++); printf ("<LineStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - pen->rgb[3])), GMT_ui255 (pen->rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
 	tabs (N); printf ("<width>%d</width>\n", irint (pen->width));
 	tabs (--N); printf ("</LineStyle>\n");
 }
 
-void set_polystyle (struct GMT_FILL *fill, GMT_LONG outline, GMT_LONG active, GMT_LONG N)
+void set_polystyle (double *rgb, GMT_LONG outline, GMT_LONG active, GMT_LONG N)
 {
 	tabs (N++); printf ("<PolyStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - fill->rgb[3])), GMT_ui255 (fill->rgb));
+	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", (unsigned int)irint (255.0 * (1.0 - rgb[3])), GMT_ui255 (rgb));
 	tabs (N); printf ("<fill>%d</fill>\n", !active);
 	tabs (N); printf ("<outline>%ld</outline>\n", outline);
 	tabs (--N); printf ("</PolyStyle>\n");
+}
+
+void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, double *rgb)
+{	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
+
+	if (index < 0) {	/* NaN, Foreground, Background */
+		GMT_rgb_copy (rgb, P->patch[index+3].rgb);
+		P->skip = P->patch[index+3].skip;
+	}
+	else if (P->range[index].skip) {		/* Set to page color for now */
+		GMT_rgb_copy (rgb, C->current.setting.ps_page_rgb);
+		P->skip = TRUE;
+	}
+	else {	/* Return low color */
+		GMT_memcpy (rgb, P->range[index].rgb_low, 4, double);
+		P->skip = FALSE;
+	}
 }
 
 /* Must free allocated memory before returning */
@@ -601,10 +624,6 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	label[0] = '\0';
 	
-	if (Ctrl->C.active && Ctrl->F.mode >= LINE) {
-		GMT_message (GMT, "Color palette has no effect on plotting lines or polygons; -C option ignored\n");
-		Ctrl->C.active = FALSE;
-	}
 	if (Ctrl->C.active) {
 		if ((error = GMT_Begin_IO (API, GMT_IS_CPT, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		if (GMT_Get_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, (void **)&Ctrl->C.file, (void **)&P)) Return (GMT_DATA_READ_ERROR);
@@ -657,11 +676,11 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	tabs (N++); printf ("<Style id=\"GMT%ld\">\n", index);	/* Default style unless -C is used */
 
 	/* Set icon style (applies to symbols only */
-	set_iconstyle (&(Ctrl->G.fill[F_ID]), Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+	set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 
 	/* Set shared line and polygon style (also for extrusions) */
-	set_linestyle (&Ctrl->W.pen, N);
-	set_polystyle (&(Ctrl->G.fill[F_ID]), !Ctrl->W.mode, Ctrl->G.active[F_ID], N);
+	set_linestyle (&Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+	set_polystyle (Ctrl->G.fill[F_ID].rgb, !Ctrl->W.mode, Ctrl->G.active[F_ID], N);
 
 	/* Set style for labels */
 	tabs (N++); printf ("<LabelStyle>\n");
@@ -671,10 +690,29 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	tabs (--N); printf ("</Style>\n");
 
 	for (k = -3; Ctrl->C.active && k < P->n_colors; k++) {	/* Place styles for each color in CPT file */
-		GMT_get_rgb_lookup (GMT, P, k, 0.0, rgb);
+		get_rgb_lookup (GMT, P, k, rgb);
 		tabs (N++); printf ("<Style id=\"GMT%ld\">\n", k);
-		/* Set icon style (applies to symbols only */
-		set_iconstyle (&(Ctrl->G.fill[F_ID]), Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
+			set_iconstyle (Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+		else if (Ctrl->F.mode == LINE)	/* Line style only */
+			set_linestyle (&Ctrl->W.pen, rgb, N);
+		else {	/* Polygons */
+			if (!Ctrl->W.active) {	/* Only fill, no outline */
+				set_polystyle (rgb, FALSE, Ctrl->G.active[F_ID], N);
+			}
+			else if (Ctrl->W.mode == 0) { /* Use -C for fill, -W for outline */
+				set_polystyle (rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_linestyle (&Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+			}
+			else if (Ctrl->W.mode == 1) { /* Use -G for fill, -C for outline */
+				set_polystyle (Ctrl->G.fill[F_ID].rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_linestyle (&Ctrl->W.pen, rgb, N);
+			}
+			else if (Ctrl->W.mode == 2) { /* Use -C for fill and outline */
+				set_polystyle (rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_linestyle (&Ctrl->W.pen, rgb, N);
+			}
+		}
 		tabs (--N); printf ("</Style>\n");
 	}
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
@@ -826,6 +864,10 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
 				}
 				else {	/* Line or polygon means we lay down the placemark first*/
+					if (Ctrl->C.active && GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Z", description)) {
+						double z_val = atof (description);
+						index = GMT_get_index (GMT, P, z_val);
+					}
 					tabs (N++); printf ("<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 					else if (Ctrl->N.mode == FMT_LABEL) {
