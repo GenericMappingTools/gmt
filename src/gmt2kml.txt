@@ -10,7 +10,7 @@ BD(gmt2kml) [ IT(table) ] [ OPT(A)BD(a)|BD(g)|BD(s)[IT(alt)|BD(x)IT(scale)] ]
 [ OPT(L)IT(col1:name1),IT(col2:name2),... ] 
 [ OPT(N)[+|IT(name_template)|IT(name)] ] [ GMT_O_OPT] [ OPT(Ra)|IT(w/e/s/n) ] 
 [ OPT(S)BD(c)|BD(n)IT(scale)] ] [ OPT(T)IT(title)[/IT(foldername)] ] [ GMT_V_OPT ] 
-[ OPT(W)-|IT(pen) ] [ OPT(Z)IT(args) ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_f_OPT ] 
+[ OPT(W)[BD(-)|BD(+)]IT(pen) ] [ OPT(Z)IT(args) ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_f_OPT ] 
 [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] [ > IT(output.kml) ]
 .SH DESCRIPTION
 BD(gmt2kml) reads one or more GMT table file and converts them to a single output file
@@ -46,7 +46,8 @@ If no value is appended, the altitude (in m) is read from the 3rd column of the 
 .TP
 OPT(C)IT(cpt)
 Use color palette for assigning colors to the symbol, event, or timespan icons, based on the value in the 3rd column
-of the input file. Ignored when plotting lines or polygons.
+of the input file. For lines or polygons we examine the segment header for -Z<value> statements and obtain the
+color via the cpt lookup. Note only discrete colors are possible.
 .TP
 OPT(D)IT(descriptfile)
 File with HTML snippets that will be included as part of the main description content for the KML file [no description].
@@ -112,10 +113,12 @@ this allows you, with OPT(O), OPT(K), to group features into folders within the 
 [The default folder name is "\fIName\fP Features", where IT(Name) is Point, Event, Timespan, Line, or Polygon].
 #include "explain_-V.txt"
 .TP
-OPT(W)-|IT(pen)
+OPT(W)[BD(-)|BD(+)]IT(pen)
 Set pen attributes for lines or polygon outlines.  Append pen attributes to use
-[Defaults: width = 1, color = black, style = solid].  Optionally, use OPT(W-) to
-turn off polygon outline.  Note that for KML the pen width is given as integer pixel
+[Defaults: width = 1, color = black, style = solid].  If OPT(C) is given you may
+optionally use OPT(W-) to apply the cpt color to the polygon outline only (fill
+determined by OPT(G)) or OPT(W+) to use the cpt color for both polygon fill and
+outline.  Note that for KML the pen width is given as integer pixel
 widths so you must specify pen width as IT(n)BD(p), where IT(n) is an integer.
 .TP
 OPT(Z)IT(args)
@@ -172,6 +175,12 @@ grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
 gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
 .br
 gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+.br
+.sp
+To instead plot the contours as lines with colors taken from the cpt file contours.cpt, try
+.br
+.sp
+gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 .SH "LIMITATIONS"
 Google Earth has trouble displaying filled polygons across the Dateline.  For now you must manually break
 any polygon crossing the dateline into a west and east polygon and plot them separately.

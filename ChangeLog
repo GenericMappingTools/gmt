@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1139 2011-07-14 23:45:54 guru Exp $
+	$Id: ChangeLog,v 1.1140 2011-07-15 20:00:17 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2011-07-15	pwessel
+	* gmt2kml_func.c:	The -C option now also applies to lines or polygons; use
+				with -W-|+ to control if cpt is used for fill, outline or
+				both.  If no -W then no outline for polygons.
 
 2011-07-14	pwessel
 	* sph/sphtriangulate_func.c:	Passed lon,lat instead of lat,lon to GMT_geo_to_cart
