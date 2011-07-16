@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.79 2011-07-16 00:52:35 guru Exp $
+#	$Id: Makefile,v 1.80 2011-07-16 14:43:29 remko Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -226,7 +226,7 @@ libpsl.$(SL):	libpsl.a
 		$(LD) $(LD_OPT) $(LIBPS_O) $(LIBS) -o $@
 
 libgmt.$(SL):	libgmt.a libpsl.$(SL)
-		$(LD) $(LD_OPT) $(LIBGMT_O) $(LIBGMTPS_O) libpsl.$(SL) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(LIBGMT_O) $(LIBGMTPS_O) libpsl.$(SL) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

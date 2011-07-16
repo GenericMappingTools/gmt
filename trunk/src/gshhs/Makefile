@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.22 2011-07-16 14:43:29 remko Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -86,7 +86,7 @@ libgmt_gshhs.a:	$(FUNCS_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_gshhs.$(SL):	libgmt_gshhs.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

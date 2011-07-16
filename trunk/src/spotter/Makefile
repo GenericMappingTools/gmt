@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.38 2011-06-28 03:15:52 guru Exp $
+#	$Id: Makefile,v 1.39 2011-07-16 14:43:30 remko Exp $
 #
 #		Makefile for GMT 5 spotter supplements
 #
@@ -96,7 +96,7 @@ libgmt_spotter.a:	$(FUNCS_O) $(LIB_O)
 		$(RANLIB) $@
 
 libgmt_spotter.$(SL):	libgmt_spotter.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

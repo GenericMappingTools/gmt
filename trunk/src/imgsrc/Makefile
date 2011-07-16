@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2011-04-15 00:34:06 remko Exp $
+#	$Id: Makefile,v 1.30 2011-07-16 14:43:29 remko Exp $
 #
 #
 #	makefile for imgsrc directory
@@ -80,7 +80,7 @@ libgmt_img.a:	$(FUNCS_O) $(LIB_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_img.$(SL):	libgmt_img.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
