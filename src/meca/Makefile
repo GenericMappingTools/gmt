@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.33 2011-04-16 22:04:47 guru Exp $
+#       $Id: Makefile,v 1.34 2011-07-16 14:43:30 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -83,7 +83,7 @@ libgmt_meca.a:	$(FUNCS_O) $(LIB_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_meca.$(SL):	libgmt_meca.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

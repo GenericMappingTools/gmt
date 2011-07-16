@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.30 2011-07-16 14:43:29 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -85,7 +85,7 @@ libgmt_dbase.a:	$(FUNCS_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_dbase.$(SL):	libgmt_dbase.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.68 2011-06-22 01:40:54 guru Exp $
+#	$Id: Makefile,v 1.69 2011-07-16 14:43:30 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -101,7 +101,7 @@ libgmt_mgd77.a:	$(FUNCS_O) $(FUNCSPS_O) $(LIB_O)
 		$(RANLIB) $@
 
 libgmt_mgd77.$(SL):	libgmt_mgd77.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(FUNCSPS_O) $(LIB_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(FUNCSPS_O) $(LIB_O) $(GMT_LIB) $(NETCDF_LIB) $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------

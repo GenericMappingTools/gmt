@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.6 2011-07-16 14:43:30 remko Exp $
 #
 #	makefile for potential directory
 #
@@ -77,7 +77,7 @@ libgmt_potential.a:	$(FUNCS_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_potential.$(SL):	libgmt_potential.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(API_O) $(GMT_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

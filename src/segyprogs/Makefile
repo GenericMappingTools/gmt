@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.34 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.35 2011-07-16 14:43:30 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -86,7 +86,7 @@ libgmt_segy.a:	$(FUNCS_O) $(LIB_O) $(API_O)
 		$(RANLIB) $@
 
 libgmt_segy.$(SL):	libgmt_segy.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------

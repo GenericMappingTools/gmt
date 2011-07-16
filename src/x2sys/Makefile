@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.56 2011-04-14 22:18:30 guru Exp $
+#	$Id: Makefile,v 1.57 2011-07-16 14:43:30 remko Exp $
 #
 #		Makefile for GMT x2sys supplements
 #
@@ -94,7 +94,7 @@ libgmt_x2sys.a:	$(FUNCS_O) $(LIB_O)
 		$(RANLIB) $@
 
 libgmt_x2sys.$(SL):	libgmt_x2sys.a
-		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(FUNCS_O) $(LIB_O) $(GMT_LIB) -L../mgd77 -lgmt_mgd77 $(LIBS) -o $@
 
 
 #-------------------------------------------------------------------------------
