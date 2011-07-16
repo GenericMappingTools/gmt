@@ -1,6 +1,6 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.2 2011-07-16 02:20:55 guru Exp $
+#	 $Id: webman.sh,v 1.3 2011-07-16 12:55:22 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -46,11 +46,7 @@ done
 # similarly formatted links.
 
 while read f; do
-	if [ $f = src/gmt.conf.5 ]; then
-		prog=gmt.conf
-	else
-		prog=`basename $f|cut -d. -f1`
-	fi
+	prog=`basename ${f/.[135]/}`
 	echo $prog | awk '{printf "s%%<b>%s</b>%%<b><A HREF=%c%s.html%c>%s</A></b>%%g\n", $1, 34, $1, 34, $1}' >> $tmp/pages.w0.sed
 	echo $prog | awk '{printf "s%%<i>%s</i>%%<i><A HREF=%c%s.html%c>%s</A></i>%%g\n", $1, 34, $1, 34, $1}' >> $tmp/pages.w0.sed
 done < $tmp/pages.lis
@@ -68,11 +64,7 @@ grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%><b>%s</b>%%><b><A NAME=%c%s%
 # Do all the manpage conversions
 
 while read f; do
-	if [ $f = src/gmt.conf.5 ]; then
-		prog=gmt.conf
-	else
-		prog=`basename $f|cut -d. -f1`
-	fi
+	prog=`basename ${f/.[135]/}`
 	html=doc/html/man/$prog.html
 	[ $gush = 1 ] && echo "Making $prog.html"
 	grep -v "${prog}<" $tmp/pages.w0.sed > $tmp/pages.t0.sed
