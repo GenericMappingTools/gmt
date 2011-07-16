@@ -1,5 +1,5 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.122 2011-07-09 00:41:17 guru Exp $
+dnl $Id: configure.ac,v 1.123 2011-07-16 14:17:30 remko Exp $
 dnl 	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 dnl 	See LICENSE.TXT file for copying and redistribution conditions.
 dnl 
@@ -14,7 +14,7 @@ dnl 	GNU General Public License for more details.
 dnl 
 dnl 	Contact info: gmt.soest.hawaii.edu
 dnl -------------------------------------------------------------------------------
-AC_REVISION($Revision: 1.122 $)
+AC_REVISION($Revision: 1.123 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -721,7 +721,7 @@ elif test "$os" = "Darwin" ; then	# MacOS X
 	SL=dylib
 	SL_VERSION=$GMT_MAJOR_VERSION.$SL
 	LD='$(CC)'
-	LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version '$GMT_MAJOR_VERSION'.0.0 -current_version '$GMT_MAJOR_VERSION.$GMT_MINOR_VERSION.$GMT_RELEASE_VERSION' -dynamiclib '$OSX_L
+	LD_OPT='-install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version '$GMT_MAJOR_VERSION'.0.0 -current_version '$GMT_MAJOR_VERSION.$GMT_MINOR_VERSION.$GMT_RELEASE_VERSION' -dynamiclib '$OSX_L
 	if test $osr -eq 8 ; then	# Tiger needs special option for shared libs
 		CFLAGS="$CFLAGS -fno-common"
 	fi
