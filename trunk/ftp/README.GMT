@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.40 2011-07-08 02:43:03 guru Exp $
+	$Id: README.GMT,v 1.41 2011-07-16 00:10:38 guru Exp $
 
 Dear potential GMT users-
 
@@ -17,25 +17,12 @@ install page.
 Should you want to ftp the old-fashioned way then the files
 you will need are:
 
-GMT_src.tar.bz2		All source code
-GMT_share.tar.bz2	Support run-time files (patterns, cpt)
-GSHHS_coast.tar.bz2	Basic GSHHS 2.2.0 coastlines
-install_gmt		Bourne shell install script
+gmt-5.0.0b.tar.bz2	The entire GMT4 distribution
+gshhs-2.2.0.tar.bz2	The entire GSHHS 2.2.0 coastlines,
+			rivers, and borders data set.
+install_gmt.sh		Bourne shell install script
 
-In addition, you may want
-
-GMT_doc.tar.bz2		All documentation, examples, and tutorial
-GMT_suppl.tar.bz2	Supplemental program source and docs
-GSHHS_high.tar.bz2	High resolution GSHHS coastline files
-GSHHS_full.tar.bz2	Full resolution GSHHS coastline files
-
-Finally, we also provide the optional Delaunay triangulation
-routine of Shewchuck.  As it is not GNU licensed it is kept
-in a separate archive:
-
-GMT_triangle.tar.bz2		Shewchuck triangulation source code
-
-The install_gmt Bourne script can be used after manual ftp as well.
+The install_gmt.sh Bourne script can be used after manual ftp as well.
 Place script in the same directory as the archives and run.
 
 For new installers of GMT under Windows:

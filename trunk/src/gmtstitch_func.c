@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.22 2011-07-09 00:41:17 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.23 2011-07-16 00:10:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -358,7 +358,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			ns++;	/* Increment running segment ID */
 			/* Get distance between first and last point in this segment */
 			distance = GMT_distance (GMT, D[GMT_IN]->table[k]->segment[j]->coord[GMT_X][0], D[GMT_IN]->table[k]->segment[j]->coord[GMT_Y][0], D[GMT_IN]->table[k]->segment[j]->coord[GMT_X][np-1], D[GMT_IN]->table[k]->segment[j]->coord[GMT_Y][np-1]);
-			if (distance <= closed_dist) {	/* Already closed, just write out and forget in the rest of the program */
+			if (np > 2 && distance <= closed_dist) {	/* Already closed, just write out and forget in the rest of the program */
 				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Allocate segment structure */
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
 					(save_type) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);

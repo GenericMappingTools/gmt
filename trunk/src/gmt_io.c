@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.304 2011-07-14 23:45:54 guru Exp $
+ *	$Id: gmt_io.c,v 1.305 2011-07-16 00:10:38 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5349,7 +5349,7 @@ GMT_LONG GMT_read_table (struct GMT_CTRL *C, void *source, GMT_LONG source_type,
 		/* Reallocate to free up some memory */
 
 		if (n_row_alloc > T->segment[seg]->n_rows) GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_rows, T->segment[seg]->n_columns, FALSE);
-		n_row_alloc = T->segment[seg]->n_rows;	/* Reset initial allocation size to match last segment */
+		n_row_alloc = MAX (2, T->segment[seg]->n_rows);	/* Reset initial allocation size to match last segment, except no smaller than 2 due to test on T->n_alloc -1 below */
 		if (T->segment[seg]->n_rows == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
 			GMT_free (C, T->segment[seg]);
 			seg--;	/* Go back to where we were */
