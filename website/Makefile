@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.63 2011-07-15 23:21:52 guru Exp $
+#  $Id: Makefile,v 1.64 2011-07-16 00:10:38 guru Exp $
 #
 #		 Guru Makefile for GMT Version 5.x
 #			GNU make compatible
@@ -56,6 +56,8 @@ help::
 #!clean-test		: Empty the remote test directories
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
+
+GMT4 = /Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
 
 # Place stuff in the GMT website/www directory:
 
@@ -213,6 +215,9 @@ clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
 	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
 
+spotless:
+	rm -f gmt_windows_[A-Z]*.html
+
 netcdf: ../ftp/netcdf.tar.bz2
 
 ../ftp/netcdf.tar.bz2:
@@ -230,8 +235,8 @@ gmt_hitmap.png: 	gmt_hitmap.sh
 hitmap:
 	gmt_hitmap.sh -s
 
-../registration/gmt_usage.jpg:		../registration/GMT_old_unique_sites.d
-		(cd ../registration; GMT_usage_map.sh map)
+../registration/gmt_usage.jpg:
+		cp -f $(GMT4)/registration/gmt_usage.jpg ../registration
 
 www/gmt/gmt_releases.html:	gmt_releases_template.html
 	mkdir -p www/gmt

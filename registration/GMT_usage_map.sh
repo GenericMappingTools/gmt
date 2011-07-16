@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.42 2011-04-19 17:35:07 guru Exp $
+#	$Id: GMT_usage_map.sh,v 1.43 2011-07-16 00:10:38 guru Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -42,6 +42,8 @@
 # server (currently /var/www/cgi-bin on gmt) which will write the lon/lat
 # to /tmp/gmtregistration on gmt.  This script
 # then acts on these records as described above.
+
+GMT4=/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
 
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
 	. /sw/bin/init.sh
@@ -133,13 +135,11 @@ fi
 
 if [ $key = "all" ] || [ $key = "map" ]; then
 
-	gmtset DOTS_PR_INCH 100 FRAME_WIDTH 0.04i PAPER_MEDIA Letter+ ANOT_FONT_SIZE 12p
 	cvs -Q update GMT_old_unique_sites.d
-	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i > gmt_usage.ps
-	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02 -G255/255/0 >> gmt_usage.ps
-	date +%x | awk '{print 0.1, 0.1, 10, 0, 0, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -O -W255/255/255o >> gmt_usage.ps
+	pscoast -R-175/185/-60/72 -JM5.0i -G25/140/25 -S0/30/120 -Dc -A2000 -Ba60f30/30WSne -K -P -X0.6i -Y0.35i --MAP_FRAME_WIDTH=0.04i --FONT_ANNOT_PRIMARY=12p > gmt_usage.ps
+	grep -v '^#' GMT_old_unique_sites.d | psxy -R -JM -O -K -Sc0.02i -Gyellow >> gmt_usage.ps
+	date +%x | awk '{print 0.1, 0.1, "LB", $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gwhite -To -W0.25p >> gmt_usage.ps
 	ps2raster -E100 -A -Tj gmt_usage.ps
-	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
 	scp gmt_usage.jpg imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt/gmt
 fi
