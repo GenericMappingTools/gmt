@@ -107,13 +107,13 @@ Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction
 of the number of points required to represent a digitized line
 of its caricature, IT(Can. Cartogr., 10), 112-122.
 .br
-Gorny, A. J., 1977, IT(World Data Bank II General User GuideRep. PB 271869), 10pp,
+Gorny, A. J., 1977, \fIWorld Data Bank II General User GuideRep. PB 271869\fP, 10pp,
 Central Intelligence Agency, Washington, DC.
 .br
-Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, IT(Int. Hydrograph. Rev., LXVII(1)), 27-35.
+Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, \fIInt. Hydrograph. Rev., LXVII(1)\fP, 27-35.
 .br
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent, hierarchical, high-resolution
-shoreline database, IT(J. Geophys. Res., 101(B4)), 8741-8743.
+shoreline database, \fIJ. Geophys. Res., 101(B4)\fP, 8741-8743.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gshhs_dp (1)
