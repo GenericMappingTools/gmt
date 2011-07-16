@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.102 2011-07-15 22:16:35 remko Exp $
+#  $Id: GNUmakefile,v 1.103 2011-07-16 00:52:35 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -227,12 +227,11 @@ tar_all:	ftpdir
 		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
 		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis >> tmp.lis
-		ls doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis >> tmp.lis
 		COPYFILE_DISABLE=true tar -cjf ftp/gmt-$(GMT_VERSION).tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
-		rm -f tmp.lis
+#		rm -f tmp.lis
 
 # The tar_win target is for GMT Developers building GMT on a Windows platform without configure
 # and then building GMT installers with Inno Setup

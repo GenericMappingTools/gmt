@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.103 2011-07-16 00:40:59 guru Exp $
+#  $Id: GNUmakefile,v 1.104 2011-07-16 00:52:35 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -14,7 +14,7 @@
 #
 #	Author:	Paul Wessel and Remko Scharroo
 #
-#	Date:		1-JAN-2011
+#	Date:		1-AUG-2011
 #-------------------------------------------------------------------------------
 
 include Makefile
@@ -177,7 +177,3 @@ include manpages.mk
 
 spotless::
 			rm -f $(FILES)
-
-testgmt5$(EXE):		testgmt5.o
-testio$(EXE):		testio.o
-testgmtio$(EXE):	testgmtio.o
