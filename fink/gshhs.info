@@ -4,6 +4,7 @@ Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/gshhs-%v.tar.bz2
 Source-MD5: db98bff37adc0d51fdf0ffa3834d45ad
 Replaces: gmt-coast, gshhs-hires, gshhs-lores
+Conflicts: gmt-coast, gshhs-hires, gshhs-lores
 Recommends: gmt
 SourceDirectory: .
 CompileScript: echo "Moving files..."
