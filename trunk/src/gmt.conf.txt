@@ -1,5 +1,5 @@
 #include "common_options.txt"
-.TH GMTDEFAULTS 5 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GMT.CONF 5 MANDATE GMT_STRING "Generic Mapping Tools"
 #define CODE_SI		ISOLatin1+
 #define PAPER_SI	a4
 #define CODE_US		Standard+
