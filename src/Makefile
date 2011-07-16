@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.78 2011-07-16 00:40:59 guru Exp $
+#	$Id: Makefile,v 1.79 2011-07-16 00:52:35 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,7 +28,7 @@
 #
 #	Authors:	Paul Wessel and Remko Scharroo
 #
-#	Date:		1-JAN-2011
+#	Date:		1-AUG-2011
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
@@ -307,8 +307,12 @@ trend1d$(EXE):		trend1d.o
 trend2d$(EXE):		trend2d.o
 triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
+
 testapi$(EXE):		testapi.o
 gmtaverage$(EXE):	gmtaverage.o
+testgmt5$(EXE):		testgmt5.o
+testio$(EXE):		testio.o
+testgmtio$(EXE):	testgmtio.o
 
 gmt2rgb$(EXE):		grd2rgb$(EXE)
 		$(RM) gmt2rgb$(EXE)
