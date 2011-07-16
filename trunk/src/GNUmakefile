@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.102 2011-07-11 00:28:49 guru Exp $
+#  $Id: GNUmakefile,v 1.103 2011-07-16 00:40:59 guru Exp $
 #
 #	GNUmakefile for GMT Version 5.x src directory
 #
@@ -178,8 +178,6 @@ include manpages.mk
 spotless::
 			rm -f $(FILES)
 
-testapi$(EXE):		testapi.o
 testgmt5$(EXE):		testgmt5.o
 testio$(EXE):		testio.o
 testgmtio$(EXE):	testgmtio.o
-gmtaverage$(EXE):	gmtaverage.o
