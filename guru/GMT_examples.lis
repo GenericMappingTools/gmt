@@ -167,3 +167,7 @@ doc/examples/ex31/fonts/LinLibertine_It-4.2.6.otf
 doc/examples/ex31/fonts/LinLibertine_Re-4.7.5.otf
 doc/examples/ex31/fonts/OFL.txt
 doc/examples/ex31/fonts/README.txt
+doc/examples/ex32/job32.bat
+doc/examples/ex32/job32.sh
+doc/examples/ex32/euflag.nc
+doc/examples/ex32/topo.nc

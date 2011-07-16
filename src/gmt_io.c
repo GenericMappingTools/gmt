@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.305 2011-07-16 00:10:38 guru Exp $
+ *	$Id: gmt_io.c,v 1.306 2011-07-16 02:54:51 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -250,7 +250,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 	}
 	if (bad_record) {
 		C->current.io.n_bad_records++;
-		if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
+		if (C->current.io.give_report && C->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
 			GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid binary record near/at line # %ld\n", C->current.io.rec_no);
 			GMT_report (C, GMT_MSG_FATAL, "Likely causes:\n");
 			GMT_report (C, GMT_MSG_FATAL, "(1) Invalid x and/or y values, i.e. NaNs.\n");
@@ -261,7 +261,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 		if (C->current.io.curr_rec[GMT_X] == C->current.io.prev_rec[GMT_X] && C->current.io.curr_rec[GMT_Y] == C->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2) d_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);		/* Must account for periodicity in 360 */
+	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 */
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
 }
@@ -419,7 +419,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 {
 	char path[GMT_BUFSIZ];
-	FILE *fd;
+	FILE *fd = NULL;
 
 	if (mode[0] != 'r')	/* Open file for writing (no netCDF) */
 		return (fopen (filename, mode));
