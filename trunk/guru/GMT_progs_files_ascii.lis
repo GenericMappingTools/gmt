@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.83 2011-07-16 00:58:19 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.84 2011-07-16 01:09:13 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -85,11 +85,11 @@ src/gmt_version.h.in
 src/pslib.h
 src/pslconfig.h.in
 src/gmt.c
-src/colmath_func.c
 src/blockmean_func.c
 src/blockmedian_func.c
 src/blockmode_func.c
 src/block_subs.h
+src/colmath_func.c
 src/filter1d_func.c
 src/fitcircle_func.c
 src/gmt.c
@@ -203,10 +203,10 @@ src/testgmt5.c
 src/testgmtio.c
 src/testio.c
 src/gmt.1
-src/colmath.1
 src/blockmean.1
 src/blockmedian.1
 src/blockmode.1
+src/colmath.1
 src/filter1d.1
 src/fitcircle.1
 src/gmt_shell_functions.1

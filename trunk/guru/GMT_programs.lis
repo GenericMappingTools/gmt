@@ -1,13 +1,13 @@
-#	$Id: GMT_programs.lis,v 1.5 2011-07-16 01:00:20 guru Exp $
+#	$Id: GMT_programs.lis,v 1.6 2011-07-16 01:09:13 guru Exp $
 #
 # GMT_programs.lis contains a list of actual GMT programs written in C
 # It excludes scripts (such as GMT) and libraries (pslib etc).  We can
 # use this list to append .c or .exe for various purposes
 #
-colmath
 blockmean
 blockmedian
 blockmode
+colmath
 filter1d
 fitcircle
 gmt2kml
