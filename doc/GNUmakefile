@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.60 2011-06-30 20:16:28 remko Exp $
+#	$Id: GNUmakefile,v 1.61 2011-07-16 02:20:55 guru Exp $
 #
 #	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
 #	See COPYING file for copying and redistribution conditions.
@@ -19,7 +19,7 @@
 #	The following commands are available to create all the GMT documentation
 #
 #	make all	: same as : make pdf html
-#	make pdf	: Create PDF versions of documentation and man pages
+#	make pdf	: Creƒwebmanate PDF versions of documentation and man pages
 #	make html	: Create HTML version of man pages
 #	make install	: make all; and then install in place
 #
