@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.63 2011-07-11 01:33:05 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.64 2011-07-17 23:03:08 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -39,8 +39,19 @@ SET CC=CL
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
-SET DEBUG="yes"
+SET DEBUG="no"
 SET BITS=64
+
+REM
+REM If two input args, they must contain NETCDF & GDAL base dirs. 
+REM Otherwise this batch uses the default paths below.
+IF  "%2%" == "" (
+SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
+SET GDAL_DIR=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\
+) ELSE (
+SET NETCDF_DIR=%1%
+SET GDAL_DIR=%2%
+)
 
 REM
 REM STEP c: Install netcdf 3.6.3 as provided by the GMT site
@@ -50,9 +61,8 @@ REM	    NETCDF	Top dir of the netcdf installation tree
 REM	    lib_netcdf	Name of the netCDF .lib library
 REM
 REM
-SET NETCDF=C:\progs_cygw\netcdf-3.6.3
-SET INCLUDE=%INCLUDE%;%NETCDF%\INCLUDE
-SET LIB=%LIB%;%NETCDF%\LIB
+SET INCLUDE=%INCLUDE%;%NETCDF_DIR%\INCLUDE
+SET LIB=%LIB%;%NETCDF_DIR%\LIB
 SET lib_netcdf=libnetcdf_w%BITS%.lib
 
 REM STEP  : Set the environment needed by GMT.  These are
@@ -81,17 +91,14 @@ SET INCDIR=..\WIN32\include\gmt
 )
 SET GMT_SHARE_PATH="\"C:\\programs\\GMT5\\share\""
 
-REM STEP e: To optionally link against the GDAL library you must set
-REM	    GDAL to "yes" or pass gdal as 2nd argument to this script
-REM	    Set the right path in GDAL_INC & GDAL_LIB to reflect
-REM	    your FWTools installation.
+REM STEP e: To optionally link against the GDAL library you must set GDAL to "yes"
+REM	    The right path to GDAL_DIR must have been set already (top) or sent as input
 SET GDAL="yes"
-IF  "%2%" == "gdal" set GDAL="yes"
 SET GDAL_INC=
 SET GDAL_LIB=
 SET USE_GDAL=
-IF  %GDAL%=="yes" SET GDAL_INC="/IC:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\include" 
-IF  %GDAL%=="yes" SET GDAL_LIB=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\lib\gdal_i.lib 
+IF  %GDAL%=="yes" SET GDAL_INC="/I%GDAL_DIR%\include" 
+IF  %GDAL%=="yes" SET GDAL_LIB=%GDAL_DIR%\lib\gdal_i.lib 
 IF  %GDAL%=="yes" SET USE_GDAL=/DUSE_GDAL
 
 REM STEP f:  Set to "yes" to build only a gmt.dll version specially crafted for MATLAB
@@ -126,7 +133,7 @@ REM ----------------------------------------------------
 
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
-SET OPTIM=/Ox /DNDEBUG
+SET OPTIM=/O1 /DNDEBUG
 IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
 
 SET DLL_NETCDF=/DDLL_NETCDF
