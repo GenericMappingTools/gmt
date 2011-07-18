@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.306 2011-07-16 02:54:51 guru Exp $
+ *	$Id: gmt_io.c,v 1.307 2011-07-18 02:22:35 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -241,7 +241,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, GMT_LONG n_read) {
 		if (n_NaN == n_read) {
 			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %ld\n", C->current.io.rec_no);
 			C->current.io.status = GMT_IO_SEG_HEADER;
-			strcpy (C->current.io.segment_header, "Binary segment header");
+			C->current.io.segment_header[0] = '\0';
 			C->current.io.multi_segments[GMT_OUT] = TRUE;	/* Turn on -mo */
 			C->current.io.seg_no++;
 			C->current.io.pt_no = 0;
