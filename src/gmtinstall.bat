@@ -1,7 +1,7 @@
 @ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.64 2011-07-17 23:03:08 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.65 2011-07-18 21:39:58 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2010 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -30,7 +30,7 @@ REM How to build GMT executables under Windows:
 REM Actually, before using this batch files successfully, several files need to be generated
 REM from the GMT tree. On *nix this is done by the configure script, but on Windows we
 REM currently have no way to do the same job. So in practice, to build the Windows version
-REM it is necessary to build it first under Cygwin.
+REM it is necessary to build it first under Cygwin (or operate on a provided source tree).
 
 REM
 REM STEP a: Specify your compiler (Tested with MS CL and Intel ICL)
@@ -39,18 +39,27 @@ SET CC=CL
 REM
 REM STEP b: Specify the "Bitage" and if building normal or debug version
 REM         Set DEBUG to "yes" or "no" and BITS = 32 or 64 (no quotes)
-SET DEBUG="no"
+REM	    NOTE: The value set here for BITS will be the default but it
+REM		  can be overriden by a third input arg.
+SET DEBUG="yes"
 SET BITS=64
 
 REM
 REM If two input args, they must contain NETCDF & GDAL base dirs. 
 REM Otherwise this batch uses the default paths below.
+REM A third input arg will be used to set the "Bitage" (default was set above).
 IF  "%2%" == "" (
 SET NETCDF_DIR=C:\progs_cygw\netcdf-3.6.3
 SET GDAL_DIR=C:\programs\GDALtrunk\gdal\compileds\VC10_%BITS%\
 ) ELSE (
 SET NETCDF_DIR=%1%
 SET GDAL_DIR=%2%
+)
+IF "%3%" == "32" (
+SET BITS=%3%
+) ELSE (
+IF "%3%" == "64" (
+SET BITS=%3%)
 )
 
 REM
@@ -134,7 +143,7 @@ REM ----------------------------------------------------
 SET LDEBUG=
 IF  %DEBUG%=="yes" SET LDEBUG=/debug
 SET OPTIM=/O1 /DNDEBUG
-IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG
+IF  %DEBUG%=="yes" SET OPTIM=/Z7 /DDEBUG /O1
 
 SET DLL_NETCDF=/DDLL_NETCDF
 SET TR=/DTRIANGLE_D
