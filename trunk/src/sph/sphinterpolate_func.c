@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphinterpolate_func.c,v 1.16 2011-07-19 21:59:41 guru Exp $
+ *	$Id: sphinterpolate_func.c,v 1.17 2011-07-19 23:11:16 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -20,12 +20,13 @@
  * a grid using various interpolants on a sphere.  This program relies
  * on two Fortan F77 libraries by Renka:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
- *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
- *  Software, 23 (3), 416-434.
+ *     and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
+ *     Software, 23 (3), 416-434.
  * Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
- *  data on the Surface of a Sphere with a surface under tension, AMC
- *  Trans. Math. Software, 23 (3), 435-442.
- * We translate to C using f2c -r8 and link with -lf2c
+ *     data on the Surface of a Sphere with a surface under tension, AMC
+ *     Trans. Math. Software, 23 (3), 435-442.
+ * We translated to C using f2c -r8 and and manually edited the code
+ * so that f2c libs were not needed.
  *
  * Author:	Paul Wessel
  * Date:	1-AUG-2011
@@ -46,7 +47,7 @@ struct SPHINTERPOLATE_CTRL {
 	} I;
 	struct Q {	/* -Q<interpolation> */
 		GMT_LONG active;
-		int mode;
+		GMT_LONG mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */

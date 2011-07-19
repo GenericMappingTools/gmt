@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.10 2011-07-19 21:59:41 guru Exp $
+/* $Id: stripack.c,v 1.11 2011-07-19 23:11:16 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -1806,7 +1806,7 @@ doublereal areas_(doublereal *v1, doublereal *v2, doublereal *v3)
 
     *nb = 0;
     *na = (nn - 2) * 3;
-*nt = (nn - 2) << 1;
+    *nt = (nn - 2) << 1;
     return 0;
 
 /* NST is the first boundary node encountered.  Initialize */
@@ -4362,10 +4362,10 @@ nit = (iwc - 1) << 2;
 
 /*   Optimize the set of new arcs to the right of IN1->IN2. */
 
-nit = (iwend - iwc) << 2;
+	nit = (iwend - iwc) << 2;
 	i__1 = iwend - iwc;
 	optim_(&x[1], &y[1], &z__[1], &i__1, &list[1], &lptr[1], &lend[1], &
-nit, &iwk[((iwc + 1) << 1) + 1], &ierr);
+		nit, &iwk[((iwc + 1) << 1) + 1], &ierr);
 	if (ierr != 0 && ierr != 1) {
 	    goto L34;
 	}
@@ -6102,4 +6102,3 @@ L5:
     }
     return 0;
 } /* trmesh_ */
-

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.35 2011-07-19 21:59:41 guru Exp $
+ *	$Id: sph.c,v 1.36 2011-07-19 23:11:16 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -19,14 +19,14 @@
  * Spherical triangulation - Delaunay or Voronoi options.
  * Relies on STRIPACK Fortran F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
- *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
- *  Software, 23 (3), 416-434.
+ *    and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
+ *    Software, 23 (3), 416-434.
  * Spherical interpolation - tension or smoothing.
  * Relies on SSRFPACK Fortran F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of
- *  Scattered Data on the Surface of a Sphere with a Surface under Tension,
- *  AMC Trans. Math. Software, 23 (3), 435-442.
- * We translate both to C using f2c and link with -lf2c
+ *    Scattered Data on the Surface of a Sphere with a Surface under Tension,
+ *    AMC Trans. Math. Software, 23 (3), 435-442.
+ * We translated both to C using f2c and link with -lf2c
  *
  * Author:      Paul Wessel
  * Date:        1-AUG-2011
@@ -52,19 +52,8 @@ typedef GMT_LONG logical;
 
 /* define SPH_DEBUG to get more original verbose output from s*pack.c */
 
-/* STRIPACK FORTRAN SUBROUTINES PROTOTYPES */
-GMT_LONG trmesh_ (integer *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, integer *, integer *, doublereal *, integer *);
-GMT_LONG trlist_ (integer *, integer *, integer *, integer *, integer *, integer *, integer *, integer *);
-GMT_LONG crlist_ (integer *, integer *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, integer *, integer *, integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *);
-double areas_ (doublereal *, doublereal *, doublereal *);
-/* SSRFPACK FORTRAN SUBROUTINES PROTOTYPES */
-GMT_LONG getsig_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *);
-GMT_LONG gradg_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, doublereal *, integer *, doublereal *, doublereal *, integer *);
-GMT_LONG gradl_ (integer *, integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, doublereal *, integer *);
-GMT_LONG intrc0_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, doublereal *, integer *);
-GMT_LONG intrc1_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, doublereal *, integer *, doublereal *, integer *, doublereal *, integer *);
-GMT_LONG smsurf_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, doublereal *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, doublereal *, doublereal *, integer *);
-GMT_LONG unif_ (integer *, doublereal *, doublereal *, doublereal *, doublereal *, integer *, integer *, integer *, integer *, doublereal *, integer *, integer *, integer *, doublereal *, doublereal *, integer *, doublereal *, doublereal *, integer *);
+#include "stripack.c"
+#include "ssrfpack.c"
 
 void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
 {
@@ -78,9 +67,8 @@ void stripack_lists (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, doubl
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
-	GMT_LONG k, nrow = TRI_NROW, lnew, ierror;
+	GMT_LONG k, nrow = TRI_NROW, lnew, ierror, n_alloc;
 	GMT_LONG *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
-	GMT_LONG n_alloc;
 	double *ds = NULL;
 	
 	ds = GMT_memory (C, NULL, n, double);
@@ -192,9 +180,7 @@ void cart_to_geo (struct GMT_CTRL *C, GMT_LONG n, double *x, double *y, double *
 	GMT_LONG k;
 	double V[3];
 	for (k = 0; k < n; k++) {
-		V[0] = x[k];
-		V[1] = y[k];
-		V[2] = z[k];
+		V[0] = x[k];	V[1] = y[k];	V[2] = z[k];
 		GMT_cart_to_geo (C, &lat[k], &lon[k], V, TRUE);
 	}
 }
@@ -215,7 +201,7 @@ int compare_arc (const void *p1, const void *p2)
 
 void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, GMT_LONG n, GMT_LONG mode, double *par, GMT_LONG vartens, struct GRD_HEADER *h, double *f)
 {
-	GMT_LONG ierror, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs, plus = 1, minus = -1, nx = (GMT_LONG)h->nx, ny = (GMT_LONG)h->ny;
+	GMT_LONG ierror, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs, plus = (GMT_LONG)1, minus = (GMT_LONG)-1, nx = (GMT_LONG)h->nx, ny = (GMT_LONG)h->ny;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
@@ -225,7 +211,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 
 	GMT_memset (&P, 1, struct STRIPACK);
 	P.mode = INTERPOLATE;
-	stripack_lists (C, (GMT_LONG)n, x, y, z, &P);
+	stripack_lists (C, n, x, y, z, &P);
 	
 	/* Set out output nodes */
 	
@@ -384,7 +370,3 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	if (sigma) GMT_free (C, sigma);
 	if (grad) GMT_free (C, grad);
 }
-
-#include "stripack.c"
-
-#include "ssrfpack.c"

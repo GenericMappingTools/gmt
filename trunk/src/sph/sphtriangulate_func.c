@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphtriangulate_func.c,v 1.21 2011-07-19 21:59:41 guru Exp $
+ *	$Id: sphtriangulate_func.c,v 1.22 2011-07-19 23:11:16 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -21,7 +21,8 @@
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *  Software, 23 (3), 416-434.
- * We translate to C using f2c and link with -lf2c
+ * We translated to C using f2c -r8 and and manually edited the code
+ * so that f2c libs were not needed.
  *
  * Author:      Paul Wessel
  * Date:	1-AUG-2011
@@ -95,7 +96,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s: Output %d unique triangle polygons\n", GMT->init.progname, D->n);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s: Output %ld unique triangle polygons\n", GMT->init.progname, D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -106,7 +107,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				}
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
-				sprintf (segment_header, "Triangle: %ld %d-%d-%d Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %ld %ld-%ld-%ld Area: %g", k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
 			}
 			else	/* Just a plain header with triangle number */
 				sprintf (segment_header, "Triangle: %ld", k);

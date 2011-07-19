@@ -1,4 +1,4 @@
-/* $Id: ssrfpack.c,v 1.11 2011-07-19 21:59:41 guru Exp $
+/* $Id: ssrfpack.c,v 1.12 2011-07-19 23:11:16 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -2829,7 +2829,7 @@ L14:
     static integer i1, i2, i3, n1, n2;
     static doublereal s12;
     static integer lp;
-static doublereal cos_plat;
+    static doublereal cos_plat;
     static doublereal sum, ptn1, ptn2;
 
 
@@ -3258,7 +3258,7 @@ L13:
 
     /* Function Body */
     nn = *n;
-if (nn < 3 || (*iflgg <= 0 && nn < 7) || *ist < 1 || *ist > nn) {
+    if (nn < 3 || (*iflgg <= 0 && nn < 7) || *ist < 1 || *ist > nn) {
 	goto L11;
     }
 
@@ -3799,7 +3799,7 @@ L4:
     h1 = h__[*n1];
     h2 = h__[*n2];
     *ier = -3;
-if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
+    if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
 	goto L11;
     }
 
@@ -3813,7 +3813,7 @@ if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
 	    n2 * 3 + 3] * p1[2]) / unorm;
     *ier = 1;
     sig = sbig;
-if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
+    if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
 	goto L10;
     }
 
@@ -5852,4 +5852,3 @@ L5:
     *ier = ierr;
     return 0;
 } /* unif_ */
-

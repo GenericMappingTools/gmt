@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.21 2011-07-19 21:59:41 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.22 2011-07-19 23:11:16 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,8 +24,8 @@
  * unique Voronoi interior data node.
  * Relies on STRIPACK Fortran F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
- *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
- *  Software, 23 (3), 416-434.
+ *     and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
+ *     Software, 23 (3), 416-434.
  * We translated to C using f2c -r8 and and manually edited the code
  * so that f2c libs were not needed.
  *
