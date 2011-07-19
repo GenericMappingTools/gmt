@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.1142 2011-07-19 01:50:04 guru Exp $
+	$Id: ChangeLog,v 1.1143 2011-07-19 05:45:18 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2011-07-18	pwessel
 	* gmtstitch_func.c:	Warn that segment with a single point will not connect both
 				ends properly - you will need to rerun the task on the new
 				sets of segments.  We now give a warning.
+	* grdhisteq_func.c:	Fixed porting bugs for -D
 
 2011-07-15	pwessel
 	* gmt2kml_func.c:	The -C option now also applies to lines or polygons; use
