@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sphdistance_func.c,v 1.20 2011-07-15 02:49:25 guru Exp $
+ *	$Id: sphdistance_func.c,v 1.21 2011-07-19 21:59:41 guru Exp $
  *
  *	Copyright (c) 2008-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,8 +30,8 @@
  * so that f2c libs were not needed.
  *
  * Author:	Paul Wessel
- * Date:	16-FEB-2011
- * Version:	5
+ * Date:	1-AUG-2011
+ * Version:	5 API
  *
  */
  
@@ -258,6 +258,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 
 	GMT = GMT_begin_module (API, "GMT_sphdistance", &GMT_cpy);		/* Save current state */
 	if ((error = GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options))) Return (error);
+	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = (struct SPHDISTANCE_CTRL *) New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphdistance_parse (API, Ctrl, options))) Return (error);
 
@@ -280,7 +281,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
-		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);				/* Enables data input and sets access mode */
+		if ((error = GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_BY_SET))) Return (error);	/* Enables data input and sets access mode */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
 		if (GMT_Get_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, (void **)&Ctrl->Q.file, (void **)&Qin)) Return ((error = GMT_DATA_READ_ERROR));
 		Table = Qin->table[0];	/* Only one table in a file */
@@ -302,14 +303,12 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				GMT_report (GMT, GMT_MSG_FATAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			for (node = 0; node < NTable->n_records; node++) {
-				lon[node] = NTable->segment[0]->coord[GMT_X][node];
-				lat[node] = NTable->segment[0]->coord[GMT_Y][node];
-			}
+			GMT_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
+			GMT_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
 			GMT_Destroy_Data (API, GMT_ALLOCATED, (void **)&Nin);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld records\n", NTable->n_records);
 		}
-		else {	/* Get them from the segment header */
+		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
 				sscanf (Table->segment[node]->header, "%*s %*d %lf %lf", &lon[node], &lat[node]);
 			}
@@ -348,8 +347,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				lat[n] = in[GMT_Y];
 			}
 			
-			n++;
-			if (n == n_alloc) {	/* Get more memory */
+			if (++n == n_alloc) {	/* Get more memory */
 				if (!Ctrl->C.active) (void)GMT_malloc2 (GMT, lon, lat, n, n_alloc, double);
 				n_alloc = GMT_malloc3 (GMT, xx, yy, zz, n, n_alloc, double);
 			}
@@ -374,7 +372,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 	}
 	if ((error = GMT_End_IO (API, GMT_IN, 0))) Return (error);	/* Disables further data input */
 	
-	/* OK, time to work on the distance grid */
+	/* OK, time to create and work on the distance grid */
 	
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 
@@ -425,14 +423,14 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 				if (P->coord[GMT_X][vertex] < 0.0) P->coord[GMT_X][vertex] += 360.0;
 				if (P->coord[GMT_X][vertex] == 360.0) P->coord[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == (int)p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
+				if (vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
 			vertex++;
-			if (vertex == (int)p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
+			if (vertex == p_alloc) p_alloc = GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, p_alloc, double);
 			P->n_rows = vertex;
 		}
 		
@@ -473,8 +471,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 		GMT_free (GMT, xx);
 		GMT_free (GMT, yy);
 	}
-	GMT_free (GMT, grid_lon);
-	GMT_free (GMT, grid_lat);
+	GMT_free (GMT, grid_lon);	GMT_free (GMT, grid_lat);
 	if (!Ctrl->C.active) {
 		GMT_free (GMT, lon);
 		GMT_free (GMT, lat);

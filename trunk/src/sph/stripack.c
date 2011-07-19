@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.9 2011-07-14 21:43:55 guru Exp $
+/* $Id: stripack.c,v 1.10 2011-07-19 21:59:41 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -198,7 +198,7 @@ L2:
     return ret_val;
 } /* lstptr_ */
 
-/* Subroutine */ int swap_(integer *in1, integer *in2, integer *io1, integer *
+/* Subroutine */ integer swap_(integer *in1, integer *in2, integer *io1, integer *
 	io2, integer *list, integer *lptr, integer *lend, integer *lp21)
 {
     /* System generated locals */
@@ -272,7 +272,7 @@ L2:
 
     /* Function Body */
     lp = lstptr_(&lend[*in1], in2, &list[1], &lptr[1]);
-    if ((i__1 = list[lp], abs(i__1)) == *in2) {
+    if ((i__1 = list[lp], GMT_abs(i__1)) == *in2) {
 	*lp21 = 0;
 	return 0;
     }
@@ -323,7 +323,7 @@ L2:
     return 0;
 } /* swap_ */
 
-/* Subroutine */ int insert_(integer *k, integer *lp, integer *list, integer *
+/* Subroutine */ integer insert_(integer *k, integer *lp, integer *list, integer *
 	lptr, integer *lnew)
 {
     static integer lsav;
@@ -382,7 +382,7 @@ L2:
     return 0;
 } /* insert_ */
 
-/* Subroutine */ int bdyadd_(integer *kk, integer *i1, integer *i2, integer *
+/* Subroutine */ integer bdyadd_(integer *kk, integer *i1, integer *i2, integer *
 	list, integer *lptr, integer *lend, integer *lnew)
 {
     static integer k, n1, n2, lp, lsav, nsav, next;
@@ -513,7 +513,7 @@ L4:
     return 0;
 } /* bdyadd_ */
 
-/* Subroutine */ int intadd_(integer *kk, integer *i1, integer *i2, integer *
+/* Subroutine */ integer intadd_(integer *kk, integer *i1, integer *i2, integer *
 	i3, integer *list, integer *lptr, integer *lend, integer *lnew)
 {
     static integer k, n1, n2, n3, lp;
@@ -609,7 +609,7 @@ L4:
     return 0;
 } /* intadd_ */
 
-/* Subroutine */ int trfind_(integer *nst, doublereal *p, integer *n, 
+/* Subroutine */ integer trfind_(integer *nst, doublereal *p, integer *n, 
 	doublereal *x, doublereal *y, doublereal *z__, integer *list, integer 
 	*lptr, integer *lend, doublereal *b1, doublereal *b2, doublereal *b3, 
 	integer *i1, integer *i2, integer *i3)
@@ -837,7 +837,7 @@ L3:
 
 L4:
     lp = lptr[lp];
-    n2 = (i__1 = list[lp], abs(i__1));
+    n2 = (i__1 = list[lp], GMT_abs(i__1));
     if (xp * (y[n0] * z__[n2] - y[n2] * z__[n0]) - yp * (x[n0] * z__[n2] - x[
 	    n2] * z__[n0]) + zp * (x[n0] * y[n2] - x[n2] * y[n0]) < 0.) {
 	goto L7;
@@ -866,7 +866,7 @@ L5:
 		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >= 
 		0.) {
 	    lp = lptr[lp];
-	    n1 = (i__1 = list[lp], abs(i__1));
+	    n1 = (i__1 = list[lp], GMT_abs(i__1));
 	    if (n1 == nl) {
 		goto L14;
 	    }
@@ -909,7 +909,7 @@ L8:
 	    goto L9;
 	}
 	lp = lptr[lp];
-	n4 = (i__1 = list[lp], abs(i__1));
+	n4 = (i__1 = list[lp], GMT_abs(i__1));
 
 /*   Define a new arc N1->N2 which intersects the geodesic */
 /*     N0-P. */
@@ -1123,7 +1123,7 @@ L14:
     return 0;
 } /* trfind_ */
 
-/* Subroutine */ int covsph_(integer *kk, integer *n0, integer *list, integer 
+/* Subroutine */ integer covsph_(integer *kk, integer *n0, integer *list, integer 
 	*lptr, integer *lend, integer *lnew)
 {
     static integer k, lp, nst, lsav, next;
@@ -1316,7 +1316,7 @@ logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4,
     return ret_val;
 } /* swptst_ */
 
-int addnod_(integer *nst, integer *k, doublereal *x, 
+integer addnod_(integer *nst, integer *k, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lptr, integer 
 	*lend, integer *lnew, integer *ier)
 {
@@ -1492,7 +1492,7 @@ int addnod_(integer *nst, integer *k, doublereal *x,
     lpf = lptr[lp];
     io2 = list[lpf];
     lpo1 = lptr[lpf];
-    io1 = (i__1 = list[lpo1], abs(i__1));
+    io1 = (i__1 = list[lpo1], GMT_abs(i__1));
 
 /* Begin loop:  find the node opposite K. */
 
@@ -1502,7 +1502,7 @@ L1:
 	goto L2;
     }
     lp = lptr[lp];
-    in1 = (i__1 = list[lp], abs(i__1));
+    in1 = (i__1 = list[lp], GMT_abs(i__1));
 
 /* Swap test:  if a swap occurs, two new arcs are */
 /*             opposite K and must be tested. */
@@ -1534,7 +1534,7 @@ L2:
     }
     io2 = io1;
     lpo1 = lptr[lpo1];
-    io1 = (i__1 = list[lpo1], abs(i__1));
+    io1 = (i__1 = list[lpo1], GMT_abs(i__1));
     goto L1;
 
 /* KK < 4. */
@@ -1715,7 +1715,7 @@ doublereal areas_(doublereal *v1, doublereal *v2, doublereal *v3)
     return ret_val;
 } /* areas_ */
 
-/* Subroutine */ int bnodes_(integer *n, integer *list, integer *lptr, 
+/* Subroutine */ integer bnodes_(integer *n, integer *list, integer *lptr, 
 	integer *lend, integer *nodes, integer *nb, integer *na, integer *nt)
 {
     /* System generated locals */
@@ -1839,7 +1839,7 @@ L4:
     return 0;
 } /* bnodes_ */
 
-/* Subroutine */ int circum_(doublereal *v1, doublereal *v2, doublereal *v3, 
+/* Subroutine */ integer circum_(doublereal *v1, doublereal *v2, doublereal *v3, 
 	doublereal *c__, integer *ier)
 {
     /* Builtin functions */
@@ -1945,7 +1945,7 @@ L4:
     return 0;
 } /* circum_ */
 
-/* Subroutine */ int crlist_(integer *n, integer *ncol, doublereal *x, 
+/* Subroutine */ integer crlist_(integer *n, integer *ncol, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lend, integer 
 	*lptr, integer *lnew, integer *ltri, integer *listc, integer *nb, 
 	doublereal *xc, doublereal *yc, doublereal *zc, doublereal *rc, 
@@ -2398,7 +2398,7 @@ L9:
 L10:
 	lp = lptr[lp];
 	n2 = n3;
-	n3 = (i__2 = list[lp], abs(i__2));
+	n3 = (i__2 = list[lp], GMT_abs(i__2));
 	if (n2 <= n1 || n3 <= n1) {
 	    goto L11;
 	}
@@ -2570,7 +2570,7 @@ L23:
     return 0;
 } /* crlist_ */
 
-/* Subroutine */ int delnb_(integer *n0, integer *nb, integer *n, integer *
+/* Subroutine */ integer delnb_(integer *n0, integer *nb, integer *n, integer *
 	list, integer *lptr, integer *lend, integer *lnew, integer *lph)
 {
     /* System generated locals */
@@ -2684,7 +2684,7 @@ L1:
 
 /*   Test for error 2 (NB not found). */
 
-    if ((i__1 = list[lpb], abs(i__1)) != *nb) {
+    if ((i__1 = list[lpb], GMT_abs(i__1)) != *nb) {
 	*lph = -2;
 	return 0;
     }
@@ -2743,7 +2743,7 @@ L5:
     return 0;
 } /* delnb_ */
 
-/* Subroutine */ int delarc_(integer *n, integer *io1, integer *io2, integer *
+/* Subroutine */ integer delarc_(integer *n, integer *io1, integer *io2, integer *
 	list, integer *lptr, integer *lend, integer *lnew, integer *ier)
 {
     /* System generated locals */
@@ -2859,7 +2859,7 @@ L5:
     lpl = lend[n1];
     lp = lptr[lpl];
     lp = lptr[lp];
-    n3 = (i__1 = list[lp], abs(i__1));
+    n3 = (i__1 = list[lp], GMT_abs(i__1));
     lpl = lend[n3];
     if (list[lpl] <= 0) {
 	*ier = 3;
@@ -3012,7 +3012,7 @@ L2:
     return ret_val;
 } /* nbcnt_ */
 
-/* Subroutine */ int optim_(doublereal *x, doublereal *y, doublereal *z__, 
+/* Subroutine */ integer optim_(doublereal *x, doublereal *y, doublereal *z__, 
 	integer *na, integer *list, integer *lptr, integer *lend, integer *
 	nit, integer *iwk, integer *ier)
 {
@@ -3183,7 +3183,7 @@ L2:
 /*     arc and bypass the swap test if IO1 is a boundary */
 /*     node. */
 
-	if ((i__2 = list[lp], abs(i__2)) != io2) {
+	if ((i__2 = list[lp], GMT_abs(i__2)) != io2) {
 	    goto L8;
 	}
 	if (list[lp] < 0) {
@@ -3199,7 +3199,7 @@ L3:
 	    goto L4;
 	}
 	lp = lptr[lp];
-	n1 = (i__2 = list[lp], abs(i__2));
+	n1 = (i__2 = list[lp], GMT_abs(i__2));
 
 /*   Test IO1-IO2 for a swap, and update IWK if necessary. */
 
@@ -3256,7 +3256,7 @@ L9:
     return 0;
 } /* optim_ */
 
-/* Subroutine */ int delnod_(integer *k, integer *n, doublereal *x, 
+/* Subroutine */ integer delnod_(integer *k, integer *n, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *list, integer *lptr, integer 
 	*lend, integer *lnew, integer *lwk, integer *iwk, integer *ier)
 {
@@ -3473,7 +3473,7 @@ L9:
 /* Top of loop:  set NL to the neighbor following N2. */
 
 L1:
-    nl = (i__1 = list[lp], abs(i__1));
+    nl = (i__1 = list[lp], GMT_abs(i__1));
     if (nl == nfrst && bdry) {
 	goto L3;
     }
@@ -3553,7 +3553,7 @@ L1:
     z2 = zr;
     lp21 = lptr[lp21];
     lp21 = lptr[lp21];
-    nr = (i__1 = list[lp21], abs(i__1));
+    nr = (i__1 = list[lp21], GMT_abs(i__1));
     xr = x[nr];
     yr = y[nr];
     zr = z__[nr];
@@ -3628,7 +3628,7 @@ L5:
 
 L6:
     lp = lptr[lp];
-    n2 = (i__1 = list[lp], abs(i__1));
+    n2 = (i__1 = list[lp], GMT_abs(i__1));
     delnb_(&n2, &n1, n, &list[1], &lptr[1], &lend[1], &lnw, &lph);
     if (lph < 0) {
 	goto L23;
@@ -3787,7 +3787,7 @@ L26:
     return 0;
 } /* delnod_ */
 
-/* Subroutine */ int edge_(integer *in1, integer *in2, doublereal *x, 
+/* Subroutine */ integer edge_(integer *in1, integer *in2, doublereal *x, 
 	doublereal *y, doublereal *z__, integer *lwk, integer *iwk, integer *
 	list, integer *lptr, integer *lend, integer *ier)
 {
@@ -3961,7 +3961,7 @@ L26:
 /*   neighbor of N1. */
 
     lpl = lend[n1];
-    n0 = (i__1 = list[lpl], abs(i__1));
+    n0 = (i__1 = list[lpl], GMT_abs(i__1));
     lp = lpl;
 L1:
     if (n0 == n2) {
@@ -4029,7 +4029,7 @@ L3:
 L4:
     nr = nl;
     lp = lptr[lp];
-    nl = (i__1 = list[lp], abs(i__1));
+    nl = (i__1 = list[lp], GMT_abs(i__1));
     if (left_(&x1, &y1, &z1, &x2, &y2, &z2, &x[nl], &y[nl], &z__[nl])) {
 
 /*   NL LEFT N1->N2 and NR LEFT N2->N1.  The Forward tests */
@@ -4116,7 +4116,7 @@ L7:
 
 L8:
     lp = lptr[lp];
-    next = (i__1 = list[lp], abs(i__1));
+    next = (i__1 = list[lp], GMT_abs(i__1));
     if (next == n2) {
 	goto L9;
     }
@@ -4432,7 +4432,7 @@ L35:
     return 0;
 } /* edge_ */
 
-/* Subroutine */ int intrsc_(doublereal *p1, doublereal *p2, doublereal *cn, 
+/* Subroutine */ integer intrsc_(doublereal *p1, doublereal *p2, doublereal *cn, 
 	doublereal *p, integer *ier)
 {
     /* Builtin functions */
@@ -5114,7 +5114,7 @@ L2:
 	goto L3;
     }
     lp = lptr[lp];
-    n3 = (i__1 = list[lp], abs(i__1));
+    n3 = (i__1 = list[lp], GMT_abs(i__1));
 
 /* Swap test:  Exit the loop if L = LMAX. */
 
@@ -5200,7 +5200,7 @@ L6:
     return ret_val;
 } /* nearnd_ */
 
-/* Subroutine */ int scoord_(doublereal *px, doublereal *py, doublereal *pz, 
+/* Subroutine */ integer scoord_(doublereal *px, doublereal *py, doublereal *pz, 
 	doublereal *plat, doublereal *plon, doublereal *pnrm)
 {
     /* Builtin functions */
@@ -5259,7 +5259,7 @@ L6:
     return 0;
 } /* scoord_ */
 
-/* Subroutine */ int trans_(integer *n, doublereal *rlat, doublereal *rlon, 
+/* Subroutine */ integer trans_(integer *n, doublereal *rlat, doublereal *rlon, 
 	doublereal *x, doublereal *y, doublereal *z__)
 {
     /* System generated locals */
@@ -5346,7 +5346,7 @@ L6:
     return 0;
 } /* trans_ */
 
-int trlist_(integer *n, integer *list, integer *lptr, 
+integer trlist_(integer *n, integer *list, integer *lptr, 
 	integer *lend, integer *nrow, integer *nt, integer *ltri, integer *
 	ier)
 {
@@ -5500,7 +5500,7 @@ L1:
 	lp2 = lptr[lp2];
 	n2 = list[lp2];
 	lp = lptr[lp2];
-	n3 = (i__2 = list[lp], abs(i__2));
+	n3 = (i__2 = list[lp], GMT_abs(i__2));
 	if (n2 < n1 || n3 < n1) {
 	    goto L8;
 	}
@@ -5545,7 +5545,7 @@ L2:
 /*     is invalid.  Bypass the search for a neighboring */
 /*     triangle if I2->I1 is a boundary arc. */
 
-	    if ((i__2 = list[lp], abs(i__2)) != i2) {
+	    if ((i__2 = list[lp], GMT_abs(i__2)) != i2) {
 		goto L12;
 	    }
 	    kn = 0;
@@ -5558,7 +5558,7 @@ L2:
 
 L3:
 	    lp = lptr[lp];
-	    i3 = (i__2 = list[lp], abs(i__2));
+	    i3 = (i__2 = list[lp], GMT_abs(i__2));
 
 /* Find J such that LTRI(J,KN) = I3 (not used if KN > KT), */
 /*   and permute the vertex indexes of KN so that I1 is */
@@ -5649,7 +5649,7 @@ L12:
     return 0;
 } /* trlist_ */
 
-/* Subroutine */ int trmesh_(integer *n, doublereal *x, doublereal *y, 
+/* Subroutine */ integer trmesh_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, integer *list, integer *lptr, integer *lend, integer 
 	*lnew, integer *near__, integer *next, doublereal *dist, integer *ier)
 {
@@ -6049,7 +6049,7 @@ L2:
 	lp = lpl;
 L3:
 	lp = lptr[lp];
-	j = (i__2 = list[lp], abs(i__2));
+	j = (i__2 = list[lp], GMT_abs(i__2));
 
 /* Loop on elements I in the sequence of unprocessed nodes */
 /*   associated with J:  K is a candidate for replacing J */
