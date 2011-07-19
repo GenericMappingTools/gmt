@@ -37,12 +37,13 @@ equals the first point in the segment.  Requires OPT(m) [Default uses all points
 OPT(L)IT(unit)
 Specify the unit used for distance and area calculations.  Choose among BD(e) (m), BD(k) (km), BD(m) (mile),
 BD(n) (nautical mile), or BD(d) (spherical degree).  A spherical approximation is used unless
-BD(PROJ_ELLIPSOID) is set to an actual ellipsoid.  When degree is selected the areas are given in steradians.
+BD(PROJ_ELLIPSOID) is set to an actual ellipsoid, in which case we convert latitudes to authalic latitudes
+before calculating areas.  When degree is selected the areas are given in steradians.
 .TP
 OPT(N)IT(nfile)
-Write the information pertaining to each polygon (for Delaunay: the three node number and the triangle area;
-for Voronoi the unique node lon, lat and polygon area) to a separate file [Default puts this information in
-the segment headers of the output file].  Required if binary output is needed.
+Write the information pertaining to each polygon (for Delaunay: the three node number and the triangle area (if OPT(A) was set);
+for Voronoi the unique node lon, lat and polygon area (if OPT(A) was set)) to a separate file.  This information is also encoded in
+the segment headers of ASCII output files].  Required if binary output is needed.
 .TP
 BD(d)|BD(v)
 Select between BD(d)elaunay or BD(v)oronoi mode [Delaunay].

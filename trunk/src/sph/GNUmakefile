@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.21 2011-03-15 02:06:37 guru Exp $
+#  $Id: GNUmakefile,v 1.22 2011-07-19 22:12:03 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -24,7 +24,7 @@ getf2c:
 		wget http://www.netlib.org/f2c/libf2c.zip
 		mkdir f2c
 		unzip libf2c.zip -d f2c
-		
+
 libf2c64:
 		sed -f f2c64.sed f2c/makefile.u > f2c/makefile.u64
 		$(MAKE) -C f2c -f makefile.u64 all
