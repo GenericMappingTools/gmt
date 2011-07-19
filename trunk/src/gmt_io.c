@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.308 2011-07-19 01:50:04 guru Exp $
+ *	$Id: gmt_io.c,v 1.309 2011-07-19 02:48:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1138,7 +1138,7 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 			C->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
 			return (0);
 		}
-		/* Here we are passed any header records implied by -h */
+		/* Here we are done with any header records implied by -h */
 		if (C->current.setting.io_blankline[GMT_IN]) {	/* Treat blank lines as segment markers, so only read one line */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);
 			C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;
@@ -1146,15 +1146,15 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 		else {	/* Skip all blank lines until we get something else */
 			while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && GMT_is_a_blank_line (line)) C->current.io.rec_no++, C->current.io.rec_in_tbl_no++;
 		}
-		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up and get the next record */
-		if (line[0] == '#') {	/* Got a file header, take action and return */
+		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up to top of loop and get the next record */
+		if (line[0] == '#') {	/* Got a file header, copy it and return */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			return (0);
 		}
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			C->current.io.status = GMT_IO_EOF;
-			if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset */
+			if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset counters */
 				GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
 				C->current.io.n_bad_records = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
 				C->current.io.rec_no = C->current.io.rec_in_tbl_no = -1;
@@ -1170,14 +1170,14 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 				i = GMT_trim_segheader (C, line);			/* Eliminate DOS endings and both leading and trailing white space, incl segment marker */
 				strcpy (C->current.io.segment_header, &line[i]);	/* Just save the header content, not the marker and leading whitespace */
 			}
-			else
+			else	/* Got a segment break instead - set header to NULL */
 				C->current.io.segment_header[0] = '\0';
 			return (0);
 		}
 
-		/* Normal data record */
+		/* Here we know we are processing a data record */
 
-		if (C->common.a.active && !C->current.io.ogr) {
+		if (C->common.a.active && !C->current.io.ogr) {	/* Cannot give -a but not reading an OGR/GMT file */
 			GMT_report (C, GMT_MSG_FATAL, "Aspatial associations set with -a but file is not in OGR/GMT format!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -1188,41 +1188,42 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 
 		i = gmt_trim_line (C, line, FALSE);	/* Eliminate DOS endings and trailing white space, add linefeed */
 
-		bad_record = set_nan_flag = FALSE;
+		bad_record = set_nan_flag = FALSE;		/* Initialize flags */
 		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
-		col_no = pos = n_ok = 0;
-		in_col = -1;	/* Since we will increment right away inside the loop */
-		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get each field in turn */
+		col_no = pos = n_ok = 0;			/* Initialize counters */
+		in_col = -1;					/* Since we will increment right away inside the loop */
+		
+		while (!bad_record && col_no < n_use && (GMT_strtok (C, line, " \t,", &pos, token))) {	/* Get one field at the time until we run out or have issues */
 			in_col++;	/* This is the actual column number in the input file */
-			if (C->common.i.active) {	/* Must do special column-based processing since -i was used */
+			if (C->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (C->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
-				col_pos = C->current.io.col[GMT_IN][col_no].order;	/* Which data columns will get this value */
+				col_pos = C->current.io.col[GMT_IN][col_no].order;	/* Which data column will receive this value */
 			}
-			else
-				col_pos = col_no;	/* Default order */
-			if ((n_convert = GMT_scanf (C, token, C->current.io.col_type[GMT_IN][col_pos], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
+			else				/* Default column order */
+				col_pos = col_no;
+			if ((n_convert = GMT_scanf (C, token, C->current.io.col_type[GMT_IN][col_pos], &val)) == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (C->current.setting.io_nan_records || !C->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
 					C->current.io.curr_rec[col_pos] = C->session.d_NaN;
-					n_ok++;	/* Since NaN is OK */
+					n_ok++;	/* Since NaN is considered an OK result */
 				}
-				else	/* Cannot have NaN in this column, set flag */
+				else	/* Cannot have NaN in this column, flag record as bad */
 					bad_record = TRUE;
-				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;
+				if (C->current.io.skip_if_NaN[col_pos]) set_nan_flag = TRUE;	/* Flate that we found NaN in a column that means we should skip */
 			}
-			else {					/* Successful decode, assign to array */
+			else {					/* Successful decode, assign the value to the input array */
 				gmt_convert_col (C->current.io.col[GMT_IN][col_no], val);
 				C->current.io.curr_rec[col_pos] = val;
 				n_ok++;
 			}
-			col_no++;		/* Goto next field to keep */
+			col_no++;		/* Count up number of columns found */
 		}
-		if ((add = gmt_assign_aspatial_cols (C))) {	/* Fill in any columns given via aspatial OGR/GMT values */
+		if ((add = gmt_assign_aspatial_cols (C))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
 			n_ok += add;
 		}
-		if (bad_record) {
+		if (bad_record) {	/* This record failed our test and had NaNs */
 			C->current.io.n_bad_records++;
-			if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
+			if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence of bad record */
 				GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid record near/at line # %ld\n", C->current.io.rec_no);
 				GMT_report (C, GMT_MSG_FATAL, "Likely causes:\n");
 				GMT_report (C, GMT_MSG_FATAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
@@ -1230,25 +1231,25 @@ GMT_LONG gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data
 				GMT_report (C, GMT_MSG_FATAL, "(3) The -: switch is implied but not set.\n");
 			}
 		}
-		else if (C->current.io.skip_duplicates && C->current.io.pt_no) {	/* Test to determine if we should skip duplicate records with same x,y */
+		else if (C->current.io.skip_duplicates && C->current.io.pt_no) {	/* Test to determine if we should skip repeated duplicate records with same x,y */
 			done = !(C->current.io.curr_rec[GMT_X] == C->current.io.prev_rec[GMT_X] && C->current.io.curr_rec[GMT_Y] == C->current.io.prev_rec[GMT_Y]);	/* Yes, duplicate */
 		}
 		else
-			done = TRUE;
+			done = TRUE;	/* Success, we can get out of this loop and return what we got */
 	}
-	*ptr = C->current.io.curr_rec;
-	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;
-	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;
-	if (*n == GMT_MAX_COLUMNS) *n = n_ok;
+	*ptr = C->current.io.curr_rec;	/* Set input pointer to current hidden record array */
+	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
+	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;					/* But we might have to say we found NaNs */
+	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
 	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", col_no, *n, C->current.io.rec_no);
 
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) d_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 */
+	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
 
-	if (gmt_gap_detected (C)) return (gmt_set_gap (C));
+	if (gmt_gap_detected (C)) return (gmt_set_gap (C));	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
-	C->current.io.pt_no++;	/* Got a valid data record */
-	return (n_ok);
+	C->current.io.pt_no++;	/* Got a valid data record (which is true even if it was a gap) */
+	return (n_ok);		/* Return the number of fields successfully read */
 }
 
 GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **data)
@@ -1308,7 +1309,7 @@ GMT_LONG GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, GMT_LONG *n, void **
 	C->current.io.status = 0;
 
 	C->current.io.pt_no++;	/* Got a valid text record */
-	*n = 1;
+	*n = 1;			/* We always return 1 item as there are no columns */
 	return (1);
 }
 

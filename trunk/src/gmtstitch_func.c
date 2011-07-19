@@ -1,5 +1,5 @@
 /*
- *	$Id: gmtstitch_func.c,v 1.25 2011-07-19 01:55:26 guru Exp $
+ *	$Id: gmtstitch_func.c,v 1.26 2011-07-19 02:48:58 guru Exp $
  *
  *	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -389,7 +389,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 			}
 			else { /* No -C: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
 			
-				if (np == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld only consists of a single point.  Stitching will take repeated runs\n", id);
+				if (np == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Segment %ld only consists of a single point.  Stitching may require additional stitching.\n", id);
 				seg[id].id = id;
 				seg[id].orig_id = ns;
 				seg[id].group = k;
